@@ -208,6 +208,15 @@ the exception: it grows with its multi-line text and adds rows below.
 | Screen heading (`FONT.large`, 700 weight) | Rare screen titles | **~27+** | Large line ~27 + whatever margin its row adds. |
 | `common.divider` | Thin rule between blocks | **25** | `height 1` + `marginVertical 12 × 2`. |
 
+### 5.6 The Engage panel
+
+`screens/engage/engageStyles.ts` holds the panel's budget; its fullest screen is a meeting's
+page: header ~40, meeting line 36 + moment strip ~44 ("Next here" ~30 is hidden there), Now
+box ~130, ack line ~30, tabs ~45 + list header ~31 + 5 option rows × 64 (`ENGAGE_ROW_H`; a From
+group's caption is 28 inside the same viewport), collapsed Quick Add ~40, footer ~44, padding
+32. That is ~760 dp from ~195 dp down, ending near 955 dp of 1325; Quick Add's field, which
+replaces the list when open, stays in the upper two thirds.
+
 ## 6. How to budget a screen
 
 1. Start from **~1325 dp** of screen height and subtract the **~98 dp** global chrome (§5.1).

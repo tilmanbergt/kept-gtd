@@ -232,6 +232,7 @@ Ship the tender by end of quarter.
 | `## Marks` | open "Mark for later" lines (§2.10) | `parseMarksSpan`, `domain/marks.ts` |
 | `## Threads` | counterpart status lines `- mieke: active` (§2.6); `area.txt`, or `project.txt` of a Project without an Area, never `Inbox.txt` | `domain/threadsSection.ts` (`parseThreadsSpan` / `writeThreadsIntoContent`) |
 | `## Loops` | loop status lines `- workshop/offsite: active, 2026-11-14, [[file]]` (§2.6) | `domain/loopsSection.ts` (`parseLoopsSpan` / `writeLoopsIntoContent`) |
+| `## Agreements` | agreement lines `- text #tags [meeting::] [created::] [valid::] [ended::]`; unknown fields, other lines and blank lines kept, an unchanged line written back as read; never in `Inbox.txt` | `domain/agreements.ts` (`parseAgreementsSpan` / `writeAgreementsIntoContent`), written only through `storage/agreements.ts` |
 | `## Close-out` | the close-out plan (§2.9) | `domain/closeOut/plan.ts` via `readSectionLines` |
 
 `ensureSkeleton` writes a new file as frontmatter (`kind`, `status: active`) plus empty

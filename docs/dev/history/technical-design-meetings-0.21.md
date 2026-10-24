@@ -507,3 +507,53 @@ Mieke" (`#wf/mieke`), "Send role canvas" (done 20.10.).
 - **O3** The close-out archive PDF's project record does not list agreements yet (they stay in the
   archived file). A later close-out item if wanted.
 - **O4** Integrity Check gets no agreement findings in this release.
+
+## 16. As built (2026-10-24)
+
+Built on `feature/meetings-moment` in the steps of §13, one commit each (S0-S7). Every §11 scenario
+is a scenario test (`__tests__/scenarios/agreements.test.tsx`, `engageMoment.test.tsx`); the unit
+tests of §12 live in `__tests__/domain/agreement*.test.ts`, `meetingMoment.test.ts`,
+`engageFrom.test.ts`, `__tests__/storage/agreementsWrite.test.ts` and the updated Engage, review-step
+and since-last tests. **Device test: open** (§14).
+
+New files beyond §10: `domain/agreementText.ts` (every agreement text), `domain/agreementReview.ts`
+(the Review step's list and reasons), `ui/AgreementRow.tsx`, `ui/useAgreementActions.ts`,
+`ui/quickAdd/agreementForChips.ts`, `ui/capture/agreementFor.ts`,
+`screens/projectData/useProjectAgreements.ts`, `screens/engage/useEngageQuickAdd.ts`.
+
+Deviations and details:
+
+- **Data file layout.** `## Agreements` is not added to `DATA_FILE_HEADINGS` (§10): that list is
+  imported by the domain parsers the agreements module builds on, and adding it would close an
+  import cycle. The section is read and written through `getSpan`/`setSpan` like `## Marks`; an
+  existing section stays where it is in the file, a new one is appended. The writer drops one
+  trailing blank line because `setSpan` adds the separator before the next heading itself.
+- **Thread overview, Change.** The new agreement records the meeting selected in Looking back, the
+  same rule as a new agreement there (R18), not the old agreement's meeting.
+- **From tab, a chosen moment.** When During or After is chosen by hand before the meeting's start,
+  the page's meeting counts as started, so its group shows (scenario 5 needs this).
+- **Loop line "since".** The earliest of the loop's meetings and its todos' `created` dates; the
+  loop file has no start date of its own.
+- **"Next here"** is hidden for a loop too: the loop line already names the next meeting (R16).
+- **Inbox meeting pages** have no Engage owner, so no Agreement tab (scenario 18 checks the tab is
+  absent rather than refused).
+- **Quick Add seed from the strip** (+ Next sparring): `CollapsedQuickAdd` hands the seed over one
+  render after it mounts; a seed at mount was dropped by the widget's own reset.
+- **Lasso and marks.** `CaptureQuickAdd` takes `agreementFor: {choices, onAdd(text, valid, choice)}`;
+  the screen adds the owner's tag and the page meeting's key (from the provenance it already
+  resolves). Scenario 14 runs through mark processing; the fake device has no lasso, and both
+  paths share the capture panel.
+- **`lensAgreements(ctx, items)`** takes the lens context only; the lens is in the context.
+- **Review step "Agreements"** is hidden from the hub and the walk-through while it lists nothing
+  (`visibleReviewSteps`), but is still stamped empty, so the Review tab's dot does not wait for it.
+  **Change** in the step records no meeting, and counts under "agreements ended" in the recap
+  (the old one ends; the new one is not counted separately).
+- **Counterpart close-out.** The list header reads "Open todos and agreements" only when there are
+  agreements; Keep is preselected for each agreement, as for todos.
+- **Project close-out.** The `activeAgreements` finding appears only when there are active
+  agreements (no "ok" row); **End all** sits on the group's first row, since a finding row has a
+  fixed height.
+- **Since last time.** "Agreements made last time" lists only the active ones; one ended since is
+  left out.
+- **Help topics guard** (`__tests__/helpTopics.test.ts`) raised from 26 to 27 rows for the new
+  page "Agreements".
