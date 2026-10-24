@@ -25,6 +25,9 @@ or your project/area files are stored.
   During and after the meeting, todos and agreements added in Engage record the meeting. New tabs
   **Waiting** (what you wait for, with where it was agreed and **Done**) and **Agreements**
   (Change, End). A loop shows since when it runs, its open todos and its next meeting.
+- **Agreements from the lasso and from marks**: on a page that belongs to someone, the capture panel
+  has a third kind, **Agreement**, with **For** chips (the page meeting's thread or loop first, then
+  the note's project or area). On a meeting's page it records the meeting.
 
 ### Changed
 - The project now lives at github.com/tilmanbergt/kept-gtd. Old gtdpara links lead there too.

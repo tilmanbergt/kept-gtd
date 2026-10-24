@@ -931,6 +931,9 @@ buttons. "Link to this page" stores `<note>#page=N` as the item's `linkedFile`. 
 page is a meeting's (`storage/threadProvenance.ts`'s `meetingForNotePage`: its own note, a page
 link, or its page in a shared note - one `getKeyWords` call for that page; the meetings-only
 view of the page → entry lookup in §2.6), a saved todo gets that meeting as provenance (§2.4).
+With an owner on the page, the panel's third kind is Agreement (one item, no split): "For" chips
+(`ui/capture/agreementFor.ts` - the page meeting's thread or loop, then the note's item; More…
+any Project/Area) decide the file and tag; it is written through `storage/agreements.ts`.
 
 **Recognition** (`supernote/lassoRead.ts`, `supernote/strokeRecognition.ts`). The lasso's strokes
 are read once (page-size pixel points, §4 "Page-size pixels everywhere"), rebuilt as new elements

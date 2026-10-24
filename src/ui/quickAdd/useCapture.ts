@@ -2,7 +2,10 @@
  * The lasso capture panel's own state on top of Quick Add's drafts
  * (docs/dev/history/technical-design-lasso-0.8.md §3.5, §3.9): the
  * recognized seed, Split lines (one editable row per item), the "File to"
- * destination chips, the tag chip grid, and Save & next / view / close.
+ * destination chips, the tag chip grid, and Save & next / view / close. The
+ * Agreement kind (docs/dev/history/technical-design-meetings-0.21.md §7) is
+ * one agreement per capture: no Split lines; it is saved through
+ * `onAddAgreement`, which knows who it is for.
  */
 import React, {useEffect, useRef, useState} from 'react';
 import {Keyboard} from 'react-native';
@@ -26,6 +29,7 @@ import {
   MeetingQuickAddFields,
   truncateItemName,
 } from './types';
+import {AgreementDraftState} from './useAgreementDraft';
 import {MeetingDraftState} from './useMeetingDraft';
 import {QuickAddCore} from './useQuickAddCore';
 import {TaskDraftState} from './useTaskDraft';
@@ -46,6 +50,9 @@ interface Input {
   onCaptureDestinationChange?: (destination: Destination) => void;
   /** Set on every user change of the text: recognition then never overwrites it. */
   touchedRef: React.MutableRefObject<boolean>;
+  /** The Agreement kind's draft, where the panel offers it. */
+  agreement?: AgreementDraftState | null;
+  onAddAgreement?: (text: string, valid: string | null) => Promise<void>;
 }
 
 export function useCapture(core: QuickAddCore, task: TaskDraftState, meeting: MeetingDraftState, input: Input) {
@@ -79,6 +86,7 @@ export function useCapture(core: QuickAddCore, task: TaskDraftState, meeting: Me
     const items = captureSeed.items.length > 0 ? captureSeed.items : [''];
     const split = captureSeed.split && items.length > 1;
     const meetingTitle = captureSeed.meetingTitle ?? joinItems(items);
+    input.agreement?.seedText(joinItems(items));
     if (newKey) {
       task.setDraft({...makeTaskDraft(), text: split ? '' : items[0]});
       meeting.setDraft({...makeMeetingDraft(captureSeed.date ?? input.initialDate), title: meetingTitle});
@@ -177,6 +185,7 @@ export function useCapture(core: QuickAddCore, task: TaskDraftState, meeting: Me
       : resolveAbbrevFileTarget(splitRows ? splitRows.join(' ') : task.draft.text, core.abbrevItems, core.fixedExcludePath);
   const destination: Destination = abbrevTarget ? abbrevDestination(abbrevTarget) : fixedDestination;
   const count = displayType === 'task' ? captureItems().length : 1;
+  const {agreement} = input;
 
   const rememberDestination = (dest: Destination) => {
     if (dest.type !== 'item') return;
@@ -187,6 +196,29 @@ export function useCapture(core: QuickAddCore, task: TaskDraftState, meeting: Me
   const submit = async (mode: CaptureSaveMode) => {
     Keyboard.dismiss();
     if (core.pending) return;
+    if (displayType === 'agreement' && agreement && input.onAddAgreement) {
+      const text = agreement.fields.text.trim();
+      if (!text) {
+        setError('Nothing to save - write the agreement first.', 'text');
+        return;
+      }
+      setError(null);
+      setPending(true);
+      try {
+        await input.onAddAgreement(text, agreement.fields.valid);
+      } catch (e) {
+        setError(errorMessage(e));
+        setPending(false);
+        return;
+      }
+      setPending(false);
+      agreement.reset();
+      agreement.setJustAdded(`Added agreement "${truncateItemName(text, 40)}"`);
+      core.recordTags(extractContextTags(text));
+      touchedRef.current = false;
+      input.onCaptureSaved?.(mode);
+      return;
+    }
     if (displayType === 'meeting') {
       const composed = meeting.compose(meeting.draft, meeting.abbrevTarget ? meeting.abbrevTarget.tag : null);
       if (!composed) return;
@@ -247,18 +279,31 @@ export function useCapture(core: QuickAddCore, task: TaskDraftState, meeting: Me
 
   // ---- Chips: tags toggle in the single text, or in every row while split ----
   // Tags already in the text come first (like Quick Add's pinned chips), then the recent ones.
-  const tagText = displayType === 'meeting' ? meeting.fields.title : splitRows ? splitRows.join(' ') : task.fields.text;
+  const tagText =
+    displayType === 'agreement' && agreement
+      ? agreement.fields.text
+      : displayType === 'meeting'
+        ? meeting.fields.title
+        : splitRows
+          ? splitRows.join(' ')
+          : task.fields.text;
   const tagChips: GridChip[] = Array.from(new Set([...extractContextTags(tagText), ...core.recentTags])).map(tag => {
     const lower = tag.toLowerCase();
     const has = (text: string) => extractContextTags(text).some(t => t.toLowerCase() === lower);
     const on =
-      displayType === 'meeting'
+      displayType === 'agreement' && agreement
+        ? has(agreement.fields.text)
+        : displayType === 'meeting'
         ? has(meeting.fields.title)
         : splitRows
           ? splitRows.length > 0 && splitRows.every(has)
           : has(task.fields.text);
     const onPress = () => {
-      if (displayType === 'meeting') {
+      if (displayType === 'agreement' && agreement) {
+        touchedRef.current = true;
+        if (on) agreement.removeTag(tag);
+        else agreement.insertTag(tag);
+      } else if (displayType === 'meeting') {
         if (on) meeting.removeTag(tag);
         else meeting.insertTag(tag);
       } else if (splitRows) {

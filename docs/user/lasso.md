@@ -25,6 +25,10 @@ When the page belongs to a meeting - the meeting's own note, a page linked to it
 
 The lasso selection is removed once something is saved. **Mark for later** on this screen turns the selection into a mark instead.
 
+## Capturing an agreement
+
+When the page belongs to someone - a meeting's page, or a note of a project or area - the panel has a third kind, **Agreement**, next to Todo and Meeting. An agreement is one item, so **Split lines** isn't offered. Below the tags, **For** replaces **File to**: the thread or loop of the page's meeting comes first (for example `#sparring/mieke`), then the project or area of the note; **More…** offers every other one. The agreement gets that thread's or loop's tag and, on a meeting's page, records the meeting (the grey line, ✕ drops it). It goes into the file of the area or project that owns it, never into the Inbox. See [Agreements](agreements.md).
+
 ## Several todos from one selection
 
 A list with boxes, dashes, dots or numbers in front of the lines becomes one todo per line: **Split lines** is switched on and every line is a row you can edit or remove with ✕. A line without a bullet belongs to the line above it. A first line without a bullet is a heading and is put in front of every item, for example "Team sync: book room".
@@ -55,7 +59,7 @@ Open marks show as a card **n marks to process** under Quick Add:
 
 When a mark is saved, its bookmark in the note becomes a check mark. When it is discarded, the bookmark is removed. In a PDF, or where the icon can't be changed safely, the icon stays as it is.
 
-One mark creates items of one kind: several todos, or one meeting.
+One mark creates items of one kind: several todos, one meeting or one agreement.
 
 ## Closing out and archiving
 

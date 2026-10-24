@@ -1,6 +1,7 @@
 import {isoDateOffset} from '../../src/domain/meetingTime';
 import {describeScreen, expectNotShows, expectShows, openApp, tap, tapTab, type} from '../../test-helpers/scenario/app';
-import {areaFile, dataFile, fileText, projectFile, putFile, sectionLines} from '../../test-helpers/scenario/files';
+import {areaDir, areaFile, dataFile, fileText, projectFile, putFile, sectionLines} from '../../test-helpers/scenario/files';
+import {device} from '../../test-helpers/fakeDevice/device';
 import {and, given, scenario, then, when} from '../../test-helpers/scenario/scenario';
 import {sparringSettings} from '../../test-helpers/scenario/setups';
 
@@ -167,5 +168,47 @@ scenario('A Project page lists its own agreements; a thread\'s agreement shows i
   then('the tagged one shows there', () => {
     if (!describeScreen().includes('Looking back')) throw new Error(describeScreen());
     expectShows('◇ Mieke reviews module 1 #sparring/mieke');
+  });
+});
+
+scenario('Capture an agreement from a mark on a meeting\'s page: it goes to the thread\'s area with the meeting', {feature: 'Lasso', design: 'technical-design-meetings-0.21.md'}, () => {
+  const NOTEBOOK_REL = `Meetings/sparring mieke ${year}.note`;
+  const meetingKw = `${today} Sparring Mieke #sparring/mieke`;
+  given('today\'s sparring with Mieke has its page, and a mark on that page says "Feedback only in our 1:1s"', () => {
+    putFile(
+      areaFile('Coaching'),
+      dataFile(
+        'area',
+        {
+          Scope: [],
+          Tasks: [],
+          Meetings: [`- ${today} 10:00-11:00 Sparring Mieke #sparring/mieke → [[${NOTEBOOK_REL}#${meetingKw}]]`],
+          Threads: ['- mieke: active'],
+          Marks: [`- ${today} 10:30 [[${NOTEBOOK_REL}]] p1 Feedback only in our 1:1s ^m-20261024-103000-000`],
+        },
+        ['abbrev: Co'],
+      ),
+    );
+    device().sdk.putNote(`${areaDir('Coaching')}/${NOTEBOOK_REL}`, [{keywords: [today, meetingKw]}]);
+  });
+  when('I process the mark and choose Agreement', async () => {
+    await openApp({settings: sparringSettings()});
+    await tapTab('Areas');
+    await tap(/^Coaching/);
+    await tap(/to process/);
+    await tap('Agreement');
+  });
+  then('Split lines is not offered; it is for the thread first, with the meeting in the grey line', () => {
+    expectNotShows(/Split lines/);
+    expectShows('For');
+    expectShows('#sparring/mieke');
+    expectShows(/^↳ from Sparring Mieke/);
+  });
+  when('I tap Save & close', () => tap(/^Save & close/));
+  then('Coaching\'s file has the agreement with the thread tag and the meeting', () => {
+    expect(sectionLines(areaFile('Coaching'), 'Agreements')).toEqual([
+      `- Feedback only in our 1:1s #sparring/mieke [meeting:: ${today} Sparring Mieke sparring/mieke] [created:: ${today}]`,
+    ]);
+    expect(sectionLines(areaFile('Coaching'), 'Marks')).toEqual([]);
   });
 });

@@ -22,6 +22,8 @@ Quick Add has a tab **Agreement** wherever it knows who the agreement is with: i
 2. Optionally tap **valid till**. A strip hovers over the tabs: **none**, **+1 m**, **+3 m**, **end of year**, and **…** to type another day. **✕** puts it away.
 3. Tap **+ Add**. The status line says where it went, for example "Agreement added to Coaching".
 
+With the lasso, or when you process a mark, choose **Agreement** in the capture panel, see [Lasso](lasso.md).
+
 In a thread overview the agreement gets the thread's tag and the meeting selected in **Looking back**, the same way a new todo does; the grey line in Quick Add shows both, each with its ✕. In a loop overview it gets the loop's tag. In Engage on a meeting's page, during or after the meeting, it records that meeting.
 
 ## The card

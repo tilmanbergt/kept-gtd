@@ -109,9 +109,21 @@ export function useAgreementDraft(core: QuickAddCore, handlers: AgreementHandler
     );
   };
 
+  /** Empties the create draft (the capture panel after a save). */
+  const reset = () => {
+    setDraft(emptyDraft());
+    setTagPage(0);
+    setValidOpen(false);
+    setValidTyping(false);
+  };
+  /** The capture panel's recognized text as the create draft's words. */
+  const seedText = (text: string) => setDraft(d => ({...d, text: stripSpaceAfterHash(text)}));
+
   return {
     draft,
     fields,
+    reset,
+    seedText,
     editing,
     changing,
     justAdded,

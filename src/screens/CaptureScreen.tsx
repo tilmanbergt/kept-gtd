@@ -14,6 +14,11 @@
  * besides the lasso). Right: the picture, then the capture panel
  * ui/quickAdd/CaptureQuickAdd.tsx (flow, due, Split lines, tags, File to, Save buttons).
  *
+ * With an owner on the page, the panel also captures an agreement
+ * (docs/dev/history/technical-design-meetings-0.21.md §7): for the page
+ * meeting's thread or loop, or the note's Project or Area
+ * (ui/capture/agreementFor.ts), recording the page's meeting.
+ *
  * Saving a mark removes its `## Marks` line, turns the bookmark into the
  * check icon and deletes its private data (storage/marks.ts finishMark).
  * Save & next: the next open mark in the column; only when there is none, a
@@ -40,6 +45,14 @@ import {
   setMarkOutcome,
 } from '../storage/marks';
 import {toLinkedFile} from '../storage/linkedFiles';
+import {addAgreement} from '../storage/agreements';
+import {engageInboxOf, engageSourceOf} from '../storage/engageAggregate';
+import {buildAgreement} from '../domain/agreements';
+import {withOwnerTag} from '../domain/loopEdit';
+import {todayIso} from '../domain/meetingTime';
+import {NoteSetup} from '../domain/noteSetups';
+import {agreementForChoices} from '../ui/capture/agreementFor';
+import {AgreementForChoice} from '../ui/quickAdd/agreementForChips';
 import {ThreadSource, threadSourcesOf} from '../storage/threadAggregate';
 import {meetingForNotePage, NotePageMeeting} from '../storage/threadProvenance';
 import {loadProjectFile} from '../storage/projectFile';
@@ -84,6 +97,8 @@ interface Loaded {
   lassoPicture: string | null;
   lassoDestination: Destination;
   dataDir: string | null;
+  /** The Note setups (thread types, loop kinds) for who an agreement is for. */
+  noteSetups: NoteSetup[];
 }
 
 type LassoRecognition = {state: 'recognizing' | 'done'; text: string; error: string | null};
@@ -155,7 +170,7 @@ export default function CaptureScreen({request, onOpenItem, onOpenDaily, onExit}
       } catch (e) {
         log('CaptureScreen: no private data folder', errorMessage(e));
       }
-      setLoaded({paths: cache.paths, currentNotePath, lasso, lassoPicture, lassoDestination, dataDir});
+      setLoaded({paths: cache.paths, currentNotePath, lasso, lassoPicture, lassoDestination, dataDir, noteSetups: settings.noteSetups});
       const shownMs = Date.now() - t0;
       if (fromLasso) {setDestination(lassoDestination);}
       // Housekeeping, not awaited by the user.
@@ -334,6 +349,22 @@ export default function CaptureScreen({request, onOpenItem, onOpenDaily, onExit}
     if (nextInbox) {setCachedInbox(nextInbox);}
     log('CaptureScreen: todo saved', destinationLabel(dest), selectedMark ? 'mark' : 'lasso');
   };
+  // An agreement for the page's owner (§7): the owner's tag, the page's meeting unless dropped.
+  const agreementSavedRef = useRef<string | null>(null);
+  const agreementChoices =
+    loaded
+      ? agreementForChoices(
+          engageSourceOf(items, engageInboxOf(loaded.paths.inboxFolder, inbox), loaded.noteSetups),
+          sourceMeeting ? {itemPath: sourceMeeting.item.path, meeting: sourceMeeting.meeting} : null,
+          selectedMark ? selectedMark.owner : loaded.lassoDestination,
+        )
+      : [];
+  const onAddAgreement = async (text: string, valid: string | null, choice: AgreementForChoice) => {
+    const words = choice.tag ? withOwnerTag(text, choice.tag) : text;
+    await addAgreement(choice.targetPath, buildAgreement(words, {today: todayIso(), valid, meeting: origin.key}));
+    agreementSavedRef.current = choice.targetPath;
+    log('CaptureScreen: agreement saved', choice.tag ? 'owner' : 'item', selectedMark ? 'mark' : 'lasso');
+  };
   const onAddMeeting = async (fields: MeetingQuickAddFields, dest: Destination) => {
     const {nextInbox} = await addMeetingToDestination(
       buildMeeting({title: fields.title, date: fields.date, time: fields.time, endTime: fields.endTime, days: fields.days}, {linkedFile: linkedSource}),
@@ -366,7 +397,10 @@ export default function CaptureScreen({request, onOpenItem, onOpenDaily, onExit}
   };
 
   const onCaptureSaved = async (mode: CaptureSaveMode) => {
-    const savedTo = destination;
+    // An agreement went to its owner's file: "& view" opens that Project or Area.
+    const agreementItem = agreementSavedRef.current ? items.find(i => i.path === agreementSavedRef.current) : undefined;
+    agreementSavedRef.current = null;
+    const savedTo: Destination = agreementItem ? {type: 'item', kind: agreementItem.kind, name: agreementItem.name, path: agreementItem.path} : destination;
     origin.added();
     if (selectedMark) {
       const open = selectedMark;
@@ -590,6 +624,7 @@ export default function CaptureScreen({request, onOpenItem, onOpenDaily, onExit}
                 initialDate={selectedMark ? markDate(selectedMark.mark) : undefined}
                 captureExtras={extras}
                 provenance={origin.provenance}
+                agreementFor={agreementChoices.length > 0 ? {choices: agreementChoices, onAdd: onAddAgreement} : null}
                 placeholder="Todo text"
                 textColor={textColor}
                 borderColor={borderColor}

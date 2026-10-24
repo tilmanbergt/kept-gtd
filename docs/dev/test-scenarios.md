@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-62 scenarios.
+63 scenarios.
 
 ## Agreements
 
@@ -264,6 +264,18 @@ Test: `__tests__/scenarios/interruptions.test.tsx` · design: `docs/dev/history/
 - **Then** for every point where Kept GTD can be stopped: reopening the close-out and tapping "Archive now" finishes it, or the project is archived and the Integrity Check says what is left
 
 Test: `__tests__/scenarios/interruptions.test.tsx` · design: `docs/dev/history/technical-design-quality-hardening.md`
+
+## Lasso
+
+### Capture an agreement from a mark on a meeting's page: it goes to the thread's area with the meeting
+
+- **Given** today's sparring with Mieke has its page, and a mark on that page says "Feedback only in our 1:1s"
+- **When** I process the mark and choose Agreement
+- **Then** Split lines is not offered; it is for the thread first, with the meeting in the grey line
+- **When** I tap Save & close
+- **Then** Coaching's file has the agreement with the thread tag and the meeting
+
+Test: `__tests__/scenarios/agreements.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md`
 
 ## Meetings
 
