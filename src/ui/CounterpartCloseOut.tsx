@@ -8,12 +8,19 @@
  * storage/counterparts.ts. Used by the Threads tab and Review's "Tending
  * threads" step, drawn in place of the panel it was started from.
  *
- * With no open todos there is nothing to close out: `useSetInactive` asks
- * one confirmation in the status slot instead and writes the line.
+ * Its active agreements follow as a group "Agreements"
+ * (docs/dev/history/technical-design-meetings-0.21.md R26): Keep (the
+ * default) or End each, or End all; ended through storage/agreements.ts.
+ *
+ * With no open todos and no active agreements there is nothing to close out:
+ * `useSetInactive` asks one confirmation in the status slot instead and
+ * writes the line.
  */
 import React, {useCallback, useState} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
+import {AgreementRef} from '../domain/agreementOwner';
 import {displayTaskText} from '../domain/taskLabels';
+import {endAgreement} from '../storage/agreements';
 import {setCounterpartStatus} from '../storage/counterparts';
 import {closeTask} from '../storage/itemMove';
 import {RosterEntry} from '../storage/tendingRoster';
@@ -39,9 +46,13 @@ const GROUPS: Array<{key: 'owe' | 'waiting' | 'relevant' | 'someday'; label: str
 const HEAD_HEIGHT = 30;
 const ROW_HEIGHT = 44;
 
-type CloseOutRow = {kind: 'head'; key: string; label: string} | {kind: 'todo'; key: string; entry: ThreadTaskEntry};
+type CloseOutRow =
+  | {kind: 'head'; key: string; label: string; endAll?: boolean}
+  | {kind: 'todo'; key: string; entry: ThreadTaskEntry}
+  | {kind: 'agreement'; key: string; ref: AgreementRef};
 
 const keyOf = (e: ThreadTaskEntry) => `${e.item.path}#${e.taskIndex}`;
+const agreementKeyOf = (r: AgreementRef) => `a:${r.itemPath}#${r.index}`;
 
 /** The open todos a close-out offers (the overview's I owe, Waiting for, Relevant and Someday/Maybe; never Inbox entries). */
 export function closeOutTodos(overview: ThreadOverview): ThreadTaskEntry[] {
@@ -57,7 +68,7 @@ export function useSetInactive(statusName: string, onSet?: (entry: RosterEntry) 
   const action = useActionError(statusName, 'CounterpartCloseOut: set inactive failed');
   return useCallback(
     async (entry: RosterEntry) => {
-      if (closeOutTodos(entry.overview).length > 0) return 'closeOut';
+      if (closeOutTodos(entry.overview).length > 0 || entry.overview.ahead.agreements.length > 0) return 'closeOut';
       const leaf = entry.counterpart.leaf;
       const ok = await confirm({
         text: `Set ${leaf} inactive? Nothing is open.`,
@@ -90,6 +101,8 @@ interface Props {
 
 export default function CounterpartCloseOut({entry, onClose, viewportHeight, textColor, borderColor}: Props): React.JSX.Element {
   const [choices, setChoices] = useState<Record<string, Choice>>({});
+  const [agreementEnds, setAgreementEnds] = useState<Record<string, boolean>>({});
+  const agreements = entry.overview.ahead.agreements;
   const [busy, setBusy] = useState(false);
   const action = useActionError('CounterpartCloseOut.error', 'CounterpartCloseOut: apply failed');
   const leaf = entry.counterpart.leaf;
@@ -102,6 +115,11 @@ export default function CounterpartCloseOut({entry, onClose, viewportHeight, tex
       ...entries.map(e => ({kind: 'todo' as const, key: keyOf(e), entry: e})),
     ];
   });
+  if (agreements.length > 0) {
+    rows.push({kind: 'head', key: 'h-agreements', label: 'Agreements', endAll: true});
+    agreements.forEach(ref => rows.push({kind: 'agreement', key: agreementKeyOf(ref), ref}));
+  }
+  const endAll = () => setAgreementEnds(Object.fromEntries(agreements.map(ref => [agreementKeyOf(ref), true])));
 
   const apply = () => {
     setBusy(true);
@@ -116,8 +134,14 @@ export default function CounterpartCloseOut({entry, onClose, viewportHeight, tex
           if (choice === 'done') done += 1;
           else cancelled += 1;
         }
+        let ended = 0;
+        for (const ref of agreements) {
+          if (!agreementEnds[agreementKeyOf(ref)]) continue;
+          await endAgreement(ref);
+          ended += 1;
+        }
         await setCounterpartStatus(entry.owner.path, leaf, 'inactive');
-        log('CounterpartCloseOut: applied', `${done} done`, `${cancelled} cancelled`);
+        log('CounterpartCloseOut: applied', `${done} done`, `${cancelled} cancelled`, `${ended} agreements ended`);
       })
       .then(ok => {
         setBusy(false);
@@ -134,7 +158,7 @@ export default function CounterpartCloseOut({entry, onClose, viewportHeight, tex
         Set {leaf} inactive
       </Text>
       <Text style={[styles.hint, {color: textColor}]} numberOfLines={2}>
-        Close out its open todos first: Done, Cancel or Keep each one.
+        Close out its open todos and agreements first: Done, Cancel or Keep each todo; Keep or End each agreement.
       </Text>
       <View style={styles.actions}>
         <PillButton label="Set inactive" primary disabled={busy} onPress={apply} textColor={textColor} borderColor={borderColor} />
@@ -142,17 +166,40 @@ export default function CounterpartCloseOut({entry, onClose, viewportHeight, tex
       </View>
       <View style={viewportHeight === undefined ? styles.fill : undefined}>
         <PagedSection
-          header="Open todos"
+          header={agreements.length > 0 ? 'Open todos and agreements' : 'Open todos'}
           rows={rows}
           rowHeight={row => (row.kind === 'head' ? HEAD_HEIGHT : ROW_HEIGHT)}
-          isCountableRow={row => row.kind === 'todo'}
+          isCountableRow={row => row.kind !== 'head'}
           viewportHeight={viewportHeight}
           resetKey={`${entry.owner.path}|${leaf}`}
           renderRow={row =>
             row.kind === 'head' ? (
               <Text key={row.key} style={[styles.head, {color: textColor}]}>
                 {row.label}
+                {row.endAll ? (
+                  <Text onPress={endAll} suppressHighlighting style={styles.endAll}>
+                    {'   End all'}
+                  </Text>
+                ) : null}
               </Text>
+            ) : row.kind === 'agreement' ? (
+              <View key={row.key} style={[styles.row, {borderColor}]}>
+                <Text style={[styles.todo, {color: textColor}]} numberOfLines={1}>
+                  ◇ {row.ref.agreement.text}
+                </Text>
+                {(['keep', 'end'] as const).map(choice => {
+                  const selected = (agreementEnds[row.key] ? 'end' : 'keep') === choice;
+                  return (
+                    <Text
+                      key={choice}
+                      onPress={() => setAgreementEnds(prev => ({...prev, [row.key]: choice === 'end'}))}
+                      suppressHighlighting
+                      style={[styles.choice, {color: textColor}, selected ? [styles.choiceSelected, {borderColor: textColor}] : styles.choiceUnselected]}>
+                      {choice === 'end' ? 'End' : 'Keep'}
+                    </Text>
+                  );
+                })}
+              </View>
             ) : (
               <View key={row.key} style={[styles.row, {borderColor}]}>
                 <Text style={[styles.todo, {color: textColor}]} numberOfLines={1}>
@@ -193,4 +240,5 @@ const styles = StyleSheet.create({
   choice: {fontSize: FONT.small, borderWidth: 1, borderRadius: 4, paddingHorizontal: 6, paddingVertical: 3, marginLeft: 4},
   choiceSelected: {fontWeight: '700'},
   choiceUnselected: {borderColor: 'transparent'},
+  endAll: {fontWeight: '700', textDecorationLine: 'underline', opacity: 1},
 });

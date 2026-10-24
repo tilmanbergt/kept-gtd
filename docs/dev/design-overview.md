@@ -718,8 +718,8 @@ counterparts to confirm, the active and the inactive ones, each with signals fro
 counterpart lens (last and next meeting, I owe, Waiting for and the oldest one's age); the
 Threads tab (§2.1) and Review's "Tending threads" (§2.8) show it. Setting one inactive runs
 `ui/CounterpartCloseOut.tsx` over its open I owe, Waiting for and Relevant todos (Done / Cancel /
-Keep through `storage/itemMove.ts`'s `closeTask`), or one status-slot confirmation when nothing is
-open. "Not" on a counterpart back in use only hides that offer for the session
+Keep through `storage/itemMove.ts`'s `closeTask`) and its active agreements (Keep / End / End all
+through `storage/agreements.ts`), or one status-slot confirmation when nothing is open. "Not" on a counterpart back in use only hides that offer for the session
 (`screens/thread/useTending.ts`). Inactive counterparts are left out of the tag suggestions
 (`storage/tagUsage.ts`); the debug bundle counts status lines. Detail:
 `docs/dev/history/technical-design-tending-threads.md`.
@@ -834,6 +834,7 @@ with its count and last-reviewed date, and the steps themselves, one component e
 | Week ahead | ritual | `WeekAheadStep` (the Week screen, next week from Friday) |
 | Meetings to close out | backlog | `MeetingsCloseOutStep` |
 | Tending threads | ritual | `TendingThreadsStep` (the roster per scope, New block on top; detail: Quick Add above `screens/thread/ThreadSummary.tsx`) |
+| Agreements | backlog | `AgreementsStep` (`domain/agreementReview.ts`: active agreements past valid-till, of an inactive counterpart, of a non-active loop, in a done/on-hold item; Keep / Change / End through `storage/agreements.ts`). Hidden from hub and walk-through while empty (`visibleReviewSteps`), still empty-stamped |
 | Gmail inbox (experimental) | backlog | `GmailStep` |
 | Inbox to zero | backlog | `InboxStep` (Files pane, Refile, quick-file, marks card) |
 | Stalled projects, Done awaiting review, On Hold reconsideration, Neglected areas | backlog | `ItemListStep` + `ItemDetails` (master/detail, `ui/ReviewMasterDetail.tsx`) |
@@ -902,7 +903,7 @@ out…" in the status panel.
 
 - **Readiness** (`domain/closeOut/readiness.ts`): blockers (open todos, future meetings, a name
   collision at the target), warnings (meetings not closed out, week/month references, incoming
-  links, open marks) and notices (unreadable notes, plugin opened from inside the project).
+  links, open marks, active agreements with End all) and notices (unreadable notes, plugin opened from inside the project).
 - **Plan** (`domain/closeOut/plan.ts`, `storage/closeOut/planStore.ts`): a `## Close-out`
   section in `project.txt` with the step, mode, deviations from defaults, PDF status and a
   journal. Leaving and coming back resumes; any change to contents or outcomes clears the "I

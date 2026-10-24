@@ -3,7 +3,7 @@
  * (docs/dev/history/technical-design-tending-threads.md §3.11). Pure.
  *
  * A heading with the previous meeting's day, then the blocks in order -
- * Agreed last time, I owe, Waiting for, Relevant, Done since then - each at
+ * Agreed last time, Agreements made last time, I owe, Waiting for, Relevant, Done since then - each at
  * most `SINCE_LAST_BLOCK_LINES` lines, then "… +N more" (decision D10).
  * Empty blocks are left out; without blocks there is nothing to write.
  */

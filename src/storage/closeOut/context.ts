@@ -12,6 +12,8 @@
 import {buildContents, ContentsModel, ProjectScan} from '../../domain/closeOut/inventory';
 import {CloseOutMode, CloseOutPlan, OutcomeDest, parsePlan} from '../../domain/closeOut/plan';
 import {evaluateReadiness, Finding, OtherItemLinks} from '../../domain/closeOut/readiness';
+import {isActiveAgreement} from '../../domain/agreements';
+import {agreementPlainText} from '../../domain/agreementText';
 import {outcomeFolder} from '../../domain/closeOut/archiveOps';
 import {fileNameOf, resolveMarkPath} from '../../domain/marks';
 import {isoDate, readLifecycleDate} from '../../domain/lifecycleDates';
@@ -144,6 +146,7 @@ export async function refreshCloseOutContext(args: {
     targetPdfLabel: targets.pdf ? display(targets.pdf) : null,
     unreadableNoteNames: contents.unreadable.map(e => e.title),
     launchPath: getRememberedLaunchNotePath()?.path ?? null,
+    activeAgreements: item.agreements.flatMap((a, index) => (isActiveAgreement(a) ? [{index, label: agreementPlainText(a)}] : [])),
     openMarks: item.marks.map(m => `${fileNameOf(resolveMarkPath(item.path, m.notePath))} · p${m.page + 1} · ${m.createdAt.slice(0, 10)}`),
   });
 

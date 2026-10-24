@@ -1,4 +1,5 @@
 import {isoDateOffset} from '../../src/domain/meetingTime';
+import {validTillOf} from '../../src/domain/agreements';
 import {describeScreen, expectNotShows, expectShows, openApp, tap, tapTab, type} from '../../test-helpers/scenario/app';
 import {areaDir, areaFile, dataFile, fileText, projectFile, putFile, sectionLines} from '../../test-helpers/scenario/files';
 import {device} from '../../test-helpers/fakeDevice/device';
@@ -210,5 +211,53 @@ scenario('Capture an agreement from a mark on a meeting\'s page: it goes to the 
       `- Feedback only in our 1:1s #sparring/mieke [meeting:: ${today} Sparring Mieke sparring/mieke] [created:: ${today}]`,
     ]);
     expect(sectionLines(areaFile('Coaching'), 'Marks')).toEqual([]);
+  });
+});
+
+scenario('Review step "Agreements": keep one past its date for three more months, end one with an inactive thread', {feature: 'Agreements', design: 'technical-design-meetings-0.21.md'}, () => {
+  given('area "Coaching" has "Fridays are quiet" valid till yesterday, Mieke set inactive and an active agreement with her', () => {
+    putFile(
+      areaFile('Coaching'),
+      dataFile(
+        'area',
+        {
+          Scope: [],
+          Tasks: [],
+          Meetings: [],
+          Threads: ['- mieke: inactive'],
+          Agreements: [`- Fridays are quiet [created:: ${past}] [valid:: ${isoDateOffset(-1)}]`, `- Feedback only in our 1:1s #sparring/mieke [created:: ${past}]`],
+        },
+        ['abbrev: Co'],
+      ),
+    );
+  });
+  when('I open Review and the step "Agreements"', async () => {
+    await openApp({settings: sparringSettings()});
+    await tapTab('Review');
+    await tap('Agreements');
+  });
+  then('it lists both, with "till … – over" and "thread inactive"', () => {
+    expectShows('◇ Fridays are quiet');
+    expectShows(/^till .* – over$/);
+    expectShows('◇ Feedback only in our 1:1s #sparring/mieke');
+    expectShows('thread inactive');
+  });
+  when('I keep "Fridays are quiet" with "+3 m"', async () => {
+    await tap('◇ Fridays are quiet');
+    await tap('Keep');
+    await tap('+3 m');
+  });
+  then('its valid-till is three months ahead', () => {
+    expect(sectionLines(areaFile('Coaching'), 'Agreements')[0]).toBe(`- Fridays are quiet [created:: ${past}] [valid:: ${validTillOf('3m', today)}]`);
+  });
+  when('I end the agreement with Mieke', async () => {
+    await tap('◇ Feedback only in our 1:1s #sparring/mieke');
+    await tap('End');
+    await tap('End', 0);
+  });
+  then('it is ended today, and both rows carry a checkmark', () => {
+    expect(sectionLines(areaFile('Coaching'), 'Agreements')[1]).toBe(`- Feedback only in our 1:1s #sparring/mieke [created:: ${past}] [ended:: ${today}]`);
+    expectShows('✓ Fridays are quiet');
+    expectShows('✓ Feedback only in our 1:1s #sparring/mieke');
   });
 });

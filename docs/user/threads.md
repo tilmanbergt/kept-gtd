@@ -110,13 +110,13 @@ A counterpart you use for the first time is **new**: Kept asks you, in the Weekl
 
 You can edit these lines by hand. A counterpart used only with `#wf/name` or `#owe/name` (no meetings) is tended like the others but marked `w/f only`, `owe only` or `w/f · owe only`, so a one-off promise or waiting-for stands out from an ongoing relationship. The Inbox has no counterparts of its own: it is meant to be emptied soon.
 
-**Set inactive** (on the Threads tab or in the Review) first goes through the counterpart's open todos under I owe, Waiting for, Relevant and Someday / Maybe: Done, Cancel or Keep each one. An inactive counterpart leaves the Review and the tag suggestions; its overview and history keep working. When it gets a new meeting, it comes back as `back in use: name` with Tend / Not.
+**Set inactive** (on the Threads tab or in the Review) first goes through the counterpart's open todos under I owe, Waiting for, Relevant and Someday / Maybe: Done, Cancel or Keep each one. Its active [agreements](agreements.md) follow: Keep or End each one, or **End all**. An inactive counterpart leaves the Review and the tag suggestions; its overview and history keep working. When it gets a new meeting, it comes back as `back in use: name` with Tend / Not.
 
 See [Projects and Areas](projects-and-areas.md) for the Threads tab and [Weekly Review](review.md) for the step.
 
 ## Since last time on a meeting note
 
-A Meeting page can have the piece **Since last time**: on the meeting's note it prints what happened in the meeting's thread since the previous meeting of that thread - what was agreed then, what you owe, wait for and should raise, and what got done since. See [Note setups](note-setups.md).
+A Meeting page can have the piece **Since last time**: on the meeting's note it prints what happened in the meeting's thread since the previous meeting of that thread - what was agreed then, the agreements made then, what you owe, wait for and should raise, and what got done since. See [Note setups](note-setups.md).
 
 ## Naming shared notes by type
 

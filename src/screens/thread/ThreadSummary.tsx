@@ -3,8 +3,10 @@
  * (docs/dev/history/technical-design-tending-threads.md §3.10): the actions
  * (Tend / Not for a new one or one back in use; "Open overview ›" and "Set
  * inactive" for an active one), then its next meetings or "+ Next <type>",
- * I owe, Waiting for, Relevant and the last three past meetings - the
- * overview's counterpart lens, a few lines each, "+N more" for the rest.
+ * I owe, Waiting for, the active agreements (read only,
+ * docs/dev/history/technical-design-meetings-0.21.md R26), Relevant and the
+ * last three past meetings - the overview's counterpart lens, a few lines
+ * each, "+N more" for the rest.
  * Nothing scrolls: every list is cut to `PER_GROUP` lines.
  */
 import React from 'react';
@@ -88,6 +90,19 @@ export default function ThreadSummary({entry, confirm, onTend, onNot, onOpenOver
 
       {todoLines('I owe', overview.ahead.owe)}
       {todoLines('Waiting for', overview.ahead.waiting)}
+      {overview.ahead.agreements.length === 0 ? null : (
+        <View>
+          <Text style={[styles.group, {color: textColor}]}>Agreements · {overview.ahead.agreements.length}</Text>
+          {overview.ahead.agreements.slice(0, PER_GROUP).map(r => (
+            <Text key={`${r.itemPath}#${r.index}`} style={[styles.line, {color: textColor}]} numberOfLines={1}>
+              ◇ {r.agreement.text}
+            </Text>
+          ))}
+          {overview.ahead.agreements.length > PER_GROUP && (
+            <Text style={[styles.more, {color: textColor}]}>+{overview.ahead.agreements.length - PER_GROUP} more</Text>
+          )}
+        </View>
+      )}
       {todoLines('Relevant', overview.ahead.relevant)}
 
       {overview.past.length > 0 && <Text style={[styles.group, {color: textColor}]}>Looking back</Text>}

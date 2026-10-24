@@ -50,6 +50,13 @@ Agreements are never deleted: the old wording stays in your file.
 - **Thread and loop overviews**: a block **Agreements** in **Ahead**, after **Waiting for**. In **Looking back** a row such as **2 agreements ended ›** lists the ended ones on the right, and a past meeting lists the **Agreements made** in it.
 - **A project's or area's page**: when it has agreements of its own, its todo list ends with **◇ Agreements 2 ›**. Tap it to list them in that column; **‹ Todos** goes back.
 
+## Reviewing and closing out
+
+- **Weekly Review**: the step **Agreements** lists those past their date, with someone you set inactive, of a closed loop, or in a project that is done or on hold: **Keep** (with a new valid-till date), **Change** or **End**. See [Weekly Review](review.md).
+- **Setting someone inactive**: after the open todos, their agreements: **Keep** or **End**, or **End all**. **Tending threads** in the Review lists a counterpart's active agreements.
+- **Closing out a project**: the checklist warns "2 active agreements" with **End all**. It does not block archiving; agreements you keep stay in the archived file. See [Closing out a project](close-out.md).
+- **Since last time** on a meeting note lists the agreements made in the previous meeting.
+
 ## In your files
 
 Agreements are plain bullets in a section `## Agreements`:

@@ -49,6 +49,7 @@ import {setDoneDate} from '../storage/statusControl';
 import {fileExists, openPath} from '../supernote/fileSystem';
 import {replacePdfConfirmText} from '../domain/fileChangeText';
 import ArchiveStep, {ArchiveRunState} from '../ui/closeOut/ArchiveStep';
+import {endAgreement} from '../storage/agreements';
 import ChecklistStep, {ChecklistActions} from '../ui/closeOut/ChecklistStep';
 import ContentsStep from '../ui/closeOut/ContentsStep';
 import OutcomesStep from '../ui/closeOut/OutcomesStep';
@@ -232,6 +233,14 @@ export default function CloseOutWizard({projectPath, mode: requestedMode, onExit
           else await unassignProject(item);
         }),
       setDoneAt: date => run(() => setDoneDate(projectPath, date)),
+      endAgreements: indexes =>
+        run(async () => {
+          const agreements = findCachedItem(projectPath)?.agreements ?? [];
+          for (const index of indexes) {
+            const agreement = agreements[index];
+            if (agreement) await endAgreement({itemPath: projectPath, index, agreement});
+          }
+        }),
     }),
     [ctx, moveTarget, moveUi, projectPath, run, updatePlan],
   );

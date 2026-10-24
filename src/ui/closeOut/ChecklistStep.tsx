@@ -4,7 +4,8 @@
  * archive targets, then every readiness finding (domain/closeOut/
  * readiness.ts) with inline actions for the two blockers: open todos
  * (Done / Cancel / → Area / → Inbox) and future meetings (Cancel / → Area /
- * → Inbox), and "Process ›" for open marks (lasso 0.8, a warning). Findings and their items are one flattened paged list, so a
+ * → Inbox), "Process ›" for open marks (lasso 0.8, a warning) and "End all" for
+ * active agreements (meetings 0.21, a warning). Findings and their items are one flattened paged list, so a
  * project with many open todos never overflows the screen.
  *
  * "Change area" swaps the finding list for a paged list of active Areas
@@ -32,6 +33,8 @@ export interface ChecklistActions {
   moveMeeting: (index: number, to: 'area' | 'inbox') => void;
   setArea: (areaName: string | null) => void;
   setDoneAt: (date: string) => void;
+  /** Ends every agreement of the finding (meetings 0.21 R26), by index into the project's agreements. */
+  endAgreements: (indexes: number[]) => void;
 }
 
 type Row = {kind: 'finding'; finding: Finding} | {kind: 'item'; finding: Finding; item: FindingItem};
@@ -79,6 +82,15 @@ export default function ChecklistStep({ctx, busy, actions, textColor, borderColo
       return (
         <View style={co.row}>
           <PillButton label="Process ›" disabled={busy} onPress={() => openMarks({type: 'item', path: ctx.item.path}, 'closeOut')} textColor={textColor} borderColor={borderColor} />
+        </View>
+      );
+    }
+    if (f.id === 'activeAgreements') {
+      // One "End all" on the group's first row; the rows themselves are read only.
+      if (item !== f.items[0]) return null;
+      return (
+        <View style={co.row}>
+          <PillButton label="End all" disabled={busy} onPress={() => actions.endAgreements(f.items.flatMap(i => (i.index === undefined ? [] : [i.index])))} textColor={textColor} borderColor={borderColor} />
         </View>
       );
     }

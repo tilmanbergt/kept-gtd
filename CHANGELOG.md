@@ -28,6 +28,11 @@ or your project/area files are stored.
 - **Agreements from the lasso and from marks**: on a page that belongs to someone, the capture panel
   has a third kind, **Agreement**, with **For** chips (the page meeting's thread or loop first, then
   the note's project or area). On a meeting's page it records the meeting.
+- **Weekly Review step "Agreements"**: agreements past their date, with someone set inactive, of a
+  closed loop, or in a project that is done or on hold - **Keep** with a new date, **Change** or
+  **End**. Shown only when there is one. Setting someone inactive also goes through their
+  agreements (**Keep**, **End**, **End all**); a project's close-out warns about active agreements
+  with **End all**; "Since last time" lists the agreements made in the previous meeting.
 
 ### Changed
 - The project now lives at github.com/tilmanbergt/kept-gtd. Old gtdpara links lead there too.

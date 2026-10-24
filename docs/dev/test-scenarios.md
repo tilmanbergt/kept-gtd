@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-63 scenarios.
+64 scenarios.
 
 ## Agreements
 
@@ -66,6 +66,18 @@ Test: `__tests__/scenarios/agreements.test.tsx` · design: `docs/dev/history/tec
 - **Then** the column lists the untagged agreement, with "‹ Todos" back
 - **When** I open Mieke's thread overview from the meeting
 - **Then** the tagged one shows there
+
+Test: `__tests__/scenarios/agreements.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md`
+
+### Review step "Agreements": keep one past its date for three more months, end one with an inactive thread
+
+- **Given** area "Coaching" has "Fridays are quiet" valid till yesterday, Mieke set inactive and an active agreement with her
+- **When** I open Review and the step "Agreements"
+- **Then** it lists both, with "till … – over" and "thread inactive"
+- **When** I keep "Fridays are quiet" with "+3 m"
+- **Then** its valid-till is three months ahead
+- **When** I end the agreement with Mieke
+- **Then** it is ended today, and both rows carry a checkmark
 
 Test: `__tests__/scenarios/agreements.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md`
 

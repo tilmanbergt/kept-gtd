@@ -4,6 +4,7 @@
  * field and strip, the overview's counts. Pure; dates through
  * domain/dateFormat.ts.
  */
+import {AgreementReviewReason} from './agreementReview';
 import {Agreement, isOverAgreement, ValidPreset} from './agreements';
 import {formatDate} from './dateFormat';
 import {stripAllTags} from './markdown';
@@ -77,4 +78,25 @@ export function endAgreementConfirm(a: Pick<Agreement, 'text'>): {text: string; 
     detail: 'It stays in the file, marked as ended today.',
     actionLabel: 'End',
   };
+}
+
+/** Why the Review asks about an agreement (R25): "till 30.9. – over", "thread inactive", "loop closed", "project done", "on hold". */
+export function reviewReasonText(reason: AgreementReviewReason, a: Agreement, today: string): string {
+  switch (reason) {
+    case 'over':
+      return validTillText(a, today) ?? 'over';
+    case 'counterpartInactive':
+      return 'thread inactive';
+    case 'loopClosed':
+      return 'loop closed';
+    case 'itemDone':
+      return 'project done';
+    case 'itemOnHold':
+      return 'on hold';
+  }
+}
+
+/** "n active agreements" for the project close-out's warning (R26). */
+export function activeAgreementsText(count: number): string {
+  return `${count} active ${count === 1 ? 'agreement' : 'agreements'}`;
 }
