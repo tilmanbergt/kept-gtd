@@ -15,7 +15,7 @@ import {ElementWithTitle, getTitles, NoteTitle} from '../supernote/noteTitles';
 import {recycleElements} from '../supernote/sdkElements';
 import {errorMessage} from '../utils/errorMessage';
 import {log, logWarn} from '../utils/log';
-import {headingElementsOf, titleRect} from './notebookContents';
+import {headingElementsOf, titleRect} from './notebookPages';
 
 /** A rectangle as `l,t,r,b`, rounded. */
 const rectText = (r: {left: number; top: number; right: number; bottom: number}) => [r.left, r.top, r.right, r.bottom].map(Math.round).join(',');

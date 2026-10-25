@@ -7,7 +7,7 @@
  * domain/redact.ts so passwords, calendar links and e-mail addresses never
  * leave the device.
  */
-import {cachedContentsCount} from './notebookContents';
+import {cachedPageIndexCount} from './notebookPages';
 import {listOpenMarks} from './marks';
 import {listMarkDataIds, readPendingIconChanges} from './markData';
 import {DEFAULT_SETTINGS, GtdParaSettings} from '../domain/settings';
@@ -68,7 +68,7 @@ export function summarizeSettings(s: GtdParaSettings): string[] {
     `          keepTabs ${onOff(s.keepTabsAlive)} · perfTracing ${onOff(s.perfTracing)} · debugLogging ${onOff(s.debugLogging)}` +
       ` · reviewSteps recorded ${Object.keys(s.reviewSteps ?? {}).length}`,
     noteSetupsLine(s, didNoteSetupMigrationFail()),
-    `          homeNotebooks ${onOff(!!s.noteSetupDefaults?.notebook)} · contents ${onOff(s.notebookContentsEnabled)} · cached ${cachedContentsCount()}`,
+    `          homeNotebooks ${onOff(!!s.noteSetupDefaults?.notebook)} · contents ${onOff(s.notebookContentsEnabled)} · pageIndex: cached ${cachedPageIndexCount()}`,
   ];
 }
 

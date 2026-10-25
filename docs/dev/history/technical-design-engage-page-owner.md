@@ -308,3 +308,11 @@ and 15 are unit tests on the cache.
 ## As built
 
 Filled in step by step: differences from §3 and the reason.
+
+- **S8 page index.** Besides `headingTextOf` (the topmost heading's text, for a heading section),
+  `storage/notebookPages.ts` has `headingTextsOf(path, index, page)`: the text under every heading of the page, in
+  index order, because the Contents lists each heading of a page. Both share the per-page memo. `titleRect` and
+  `headingElementsOf` moved there with the read (storage/noteTitlesDiagnostic.ts imports them from it).
+  `storage/notebookContents.ts` keeps `cachedContentsCount` as the page index's count, so the Contents test stays
+  unchanged. Logs: `NotebookPages: index hit|miss` with pages, keywords, titles and ms. The debug bundle's
+  home-notebook line ends `contents on|off · pageIndex: cached n`.
