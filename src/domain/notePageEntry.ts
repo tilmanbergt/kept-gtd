@@ -29,7 +29,16 @@ export type PageEntry<R> =
 /** What the files alone say about a page: a direct match, or entries whose shared page may be it. */
 export interface NotePageCandidates<R> {
   direct: PageEntry<R> | null;
+  /** True when `direct` is the entry's own note (the whole file is the entry's), not a page link. */
+  ownNote: boolean;
   shared: Array<PageEntry<R> & {keyword: string}>;
+  /** Every `#page=N` link into the note, whatever page is open (0-based `page`). */
+  pageLinks: Array<{page: number; entry: PageEntry<R>}>;
+}
+
+export interface NotePageCandidateOptions {
+  /** Cancelled entries count too (their pages still start a section, docs/dev/history/technical-design-engage-page-owner.md P8). */
+  includeCancelled?: boolean;
 }
 
 export const ALL_PAGE_ENTRY_KINDS: readonly PageEntryKind[] = ['meeting', 'task'];
@@ -39,46 +48,55 @@ export function pageEntryKeyword(entry: PageEntry<unknown>): string {
   return entry.kind === 'task' ? todoPageKeyword(entry.task) : meetingPageKeyword(entry.meeting);
 }
 
+/** Whether the entry is cancelled. */
+export function isCancelledEntry(entry: PageEntry<unknown>): boolean {
+  return entry.kind === 'task' ? entry.task.cancelled : entry.meeting.cancelled;
+}
+
 /**
  * Own notes and page links of the entries of `kinds` (meetings before todos,
- * cancelled ones left out), plus the shared-page candidates. A literal own
- * note wins over a page link (an own note named with `#` reads like an
- * anchor, so the literal path is checked first).
+ * cancelled ones left out unless `includeCancelled`), plus the shared-page
+ * candidates. A literal own note wins over a page link (an own note named
+ * with `#` reads like an anchor, so the literal path is checked first).
  */
 export function notePageCandidates<R extends {path: string}>(
   absPath: string,
   page: number | null,
   sources: ReadonlyArray<PageEntrySource<R>>,
   kinds: readonly PageEntryKind[] = ALL_PAGE_ENTRY_KINDS,
+  options: NotePageCandidateOptions = {},
 ): NotePageCandidates<R> {
+  const counts = (cancelled: boolean) => options.includeCancelled || !cancelled;
   let pageLink: PageEntry<R> | null = null;
   const shared: NotePageCandidates<R>['shared'] = [];
+  const pageLinks: NotePageCandidates<R>['pageLinks'] = [];
   for (const source of sources) {
     const entries: Array<{entry: PageEntry<R>; notePath: string}> = [];
     if (kinds.includes('meeting')) {
       source.meetings.forEach((meeting, meetingIndex) => {
-        if (!meeting.cancelled && meeting.notePath) entries.push({entry: {kind: 'meeting', item: source.ref, meetingIndex, meeting}, notePath: meeting.notePath});
+        if (counts(meeting.cancelled) && meeting.notePath) entries.push({entry: {kind: 'meeting', item: source.ref, meetingIndex, meeting}, notePath: meeting.notePath});
       });
     }
     if (kinds.includes('task')) {
       source.tasks.forEach((task, taskIndex) => {
-        if (!task.cancelled && task.notePath) entries.push({entry: {kind: 'task', item: source.ref, taskIndex, task}, notePath: task.notePath});
+        if (counts(task.cancelled) && task.notePath) entries.push({entry: {kind: 'task', item: source.ref, taskIndex, task}, notePath: task.notePath});
       });
     }
     for (const {entry, notePath} of entries) {
       const pageAnchor = parsePageAnchor(notePath);
       if (pageAnchor) {
-        if (!pageLink && page !== null && pageAnchor.page === page && joinNotePath(source.ref.path, pageAnchor.filePath) === absPath) {
-          pageLink = entry;
+        if (joinNotePath(source.ref.path, pageAnchor.filePath) === absPath) {
+          pageLinks.push({page: pageAnchor.page, entry});
+          if (!pageLink && page !== null && pageAnchor.page === page) pageLink = entry;
         }
         continue;
       }
-      if (joinNotePath(source.ref.path, notePath) === absPath) return {direct: entry, shared: []};
+      if (joinNotePath(source.ref.path, notePath) === absPath) return {direct: entry, ownNote: true, shared: [], pageLinks: []};
       const anchor = parseSharedNoteAnchor(notePath);
       if (anchor && joinNotePath(source.ref.path, anchor.filePath) === absPath) shared.push({...entry, keyword: anchor.keyword});
     }
   }
-  return {direct: pageLink, shared};
+  return {direct: pageLink, ownNote: false, shared, pageLinks};
 }
 
 /**

@@ -316,3 +316,16 @@ Filled in step by step: differences from §3 and the reason.
   `storage/notebookContents.ts` keeps `cachedContentsCount` as the page index's count, so the Contents test stays
   unchanged. Logs: `NotebookPages: index hit|miss` with pages, keywords, titles and ms. The debug bundle's
   home-notebook line ends `contents on|off · pageIndex: cached n`.
+- **S9 claims.** An entry claim carries `reflection` (true for a meeting's Reflection page), which the title needs.
+  `notePageCandidates` also returns `ownNote` (the direct hit is the entry's own note, not a page link) and
+  `pageLinks` as `{page, entry}`; `isCancelledEntry` is exported with it. When a live and a cancelled entry share a
+  keyword, the live one claims the page. `sectionTitleOf(claim, {ownerName, headingText, today})` takes the
+  notebook owner's name instead of the source; a todo's title has no detail. The labels come from
+  `loopPageLabel`/`meetingPageLabel`/`todoPageLabel`, which `domain/notebookContents.ts`'s Contents uses too.
+  `HANDWRITTEN_SECTION` lives in `domain/engageText.ts` from S9 on, because the title needs it.
+- **S9 notebook owner, pure part.** `isHomeNotebookFile` in `domain/pageSection.ts` (folder and name check over
+  `homeNotebookYears`); the rest of §3.4 is in `storage/noteOwnerOf.ts` (S10).
+- **S9 lookup.** `PageSectionResult` also has `ownNote`. With no open page number (`page === null`) the single-page
+  lookup answers, as when the index can't be read. When a heading's text can't be read, the section still starts
+  there and reads as "Handwritten section" (`pageSection: heading text not read`). Unit tests also in
+  `__tests__/storage/pageSection.test.ts` (own note, walk back, fallback).

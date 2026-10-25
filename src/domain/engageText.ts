@@ -53,6 +53,9 @@ export const ENGAGE_TEXT = {
   lastNote: 'Note from last meeting ›',
 } as const;
 
+/** The section line's title for a section that starts at a handwritten heading (docs/dev/history/technical-design-engage-page-owner.md P9). */
+export const HANDWRITTEN_SECTION = 'Handwritten section';
+
 /** The moment switch's labels (docs/dev/history/technical-design-meetings-0.21.md R1). */
 export const MOMENT_LABELS = {before: 'Before', during: 'During', after: 'After'} as const;
 
