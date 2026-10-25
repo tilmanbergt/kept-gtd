@@ -634,9 +634,19 @@ Reflection page gets the standard one once); 0.14's Tag Rules are migrated once
 - **Page → entry.** Which todo or meeting a note page belongs to - its own note, a page link
   (`<note>#page=N`) or its page in a shared notebook (keyword: `todoPageKeyword` /
   `meetingPageKeyword`; a meeting's Reflection page by its reflection keyword) - is answered once: `domain/notePageEntry.ts` (`notePageCandidates`, pure)
-  and `storage/notePageEntry.ts` (`entryForNotePage`, one `getKeyWords` call for that page). The
-  Engage panel uses it for todos and meetings (`storage/noteOwnerOf.ts`), Capture's provenance
-  for meetings only (`meetingForNotePage`).
+  and `storage/notePageEntry.ts` (`entryForNotePage`, one `getKeyWords` call for that page).
+- **Page → section.** A page nothing claims belongs to the nearest earlier **section page**: an
+  entry's page link or keyword (a cancelled entry's too), the `home` page, a `loop …` page, or a
+  Supernote title (`domain/pageSection.ts`: `claimOfPage`, `sectionOfPage`, `sectionTitleOf`,
+  pure). `storage/pageSection.ts`'s `pageSectionOf` runs it over the notebook's **page index**
+  (`storage/notebookPages.ts`: every page's keywords and titles in two calls, cached per file and
+  modification time; a heading's typed text read lazily with one `getElements` and memoized) and
+  falls back to `entryForNotePage` when the index can't be read. The caller hands the index reader
+  in (`NOTEBOOK_PAGES`), so modules that only resolve owners load without the SDK. Engage's owner
+  (`storage/noteOwnerOf.ts`: a home notebook belongs to its item even when it is a loop's note,
+  `isHomeNotebookFile`), its section line, and Capture's provenance and For chips
+  (`storage/threadProvenance.ts`, `ui/capture/useSourceSection.ts`) all read it. Detail:
+  `docs/dev/history/technical-design-engage-page-owner.md`.
 - **Loops.** A Loop setup's tags are loop kinds (`domain/loops.ts`'s `loopKindsOf`, readable at
   once through `storage/loopKinds.ts`); `#<kind>/<name>` is a loop, its line lives in the owner's
   `## Loops` section (`domain/loopsSection.ts`, on the generic `domain/statusSection.ts` that
@@ -695,8 +705,9 @@ latest monthly and weekly goal), written once, from the icon (`storage/homeNoteb
 or from a todo's or meeting's first note into that file (`itemNotePlan` → `fillHomePage`); the
 page order pins it first. The Notebook tab lists the years and the experimental **Contents**
 (`domain/notebookContents.ts` / `storage/notebookContents.ts`: Kept's pages titled from their
-item, other headings from the textbox they cover - by trail, title element or position - cached
-per file and modification time; switch `notebookContentsEnabled`). Engage shows "Go to <notebook>
+item, other headings from the textbox they cover - by trail, title element or position - on the
+shared page index `storage/notebookPages.ts`; switch `notebookContentsEnabled`, which hides the
+Contents only). Engage shows "Go to <notebook>
 ›" in another note of the owner (`screens/engage/useEngageGoTo.ts`). The item's name is kept as
 `name:` in its front matter (`readStoredName`); a folder renamed elsewhere is offered as a rename
 on the page (`ui/useHomeNotebookRenameOffer.ts`) and reported by the Integrity Check; the rename
@@ -1280,6 +1291,10 @@ place it happens.
 - A Project's or Area's home notebook comes from `storage/homeNotebooks.ts`'s `homeNotebookOf`
   (screens through `ui/useHomeNotebooks.ts`); its name only from `domain/homeNotebook.ts`'s
   `homeNotebookName`.
+- A notebook's keywords and headings are read only through the page index
+  (`storage/notebookPages.ts`, one read per file and modification time), and which section a page
+  belongs to only through `storage/pageSection.ts`'s `pageSectionOf`: the Notebook tab's
+  Contents, Engage and Capture share both.
 
 **Code and verification**
 

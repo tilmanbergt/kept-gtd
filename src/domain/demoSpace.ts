@@ -179,6 +179,21 @@ export function buildDemoFiles(today: Date): DemoFile[] {
     ],
     sections: ['## Threads', '', '- mieke: active', '', '## Loops', '', `- workshop/offsite: active, ${d(14)}`, ''],
   });
+  // A home notebook a loop shares (docs/dev/history/technical-design-engage-page-owner.md §6): the Races
+  // setup names its loop notes like the Default, so loop race/marathon's note is "Sport <year>.note".
+  const coachCall = 'Coach call';
+  const raceDay = d(30).slice(0, 4) === String(today.getFullYear()) ? d(30) : `${today.getFullYear()}-12-31`;
+  area('Sport', {
+    abbrev: 'SP',
+    scope: 'Running and strength: a marathon this year, without injuries.',
+    tasks: [
+      '- [ ] Plan long runs #race/marathon #next',
+      '- [ ] Buy running shoes #next',
+      `- [ ] Book a sports massage [meeting:: ${meetingKey({date: d(-1), title: coachCall})}]`,
+    ],
+    meetings: [`- ${d(-1)} 18:00-18:30 ${coachCall}`, `- ${d(13)} 18:00-18:30 ${coachCall}`],
+    sections: ['## Loops', '', `- race/marathon: active, ${raceDay}`, ''],
+  });
   area('Team', {
     abbrev: 'TM',
     weeklyFocus: true,
@@ -220,8 +235,8 @@ export function buildDemoFiles(today: Date): DemoFile[] {
 
 /**
  * Per-profile settings of the demo profile: the demo folders, the Note setups
- * (1:1 meetings, tracked; Sparring threads; Workshops loops), integrations off. The Default and the setup put
- * their notes into the same file, each Project's and Area's home notebook.
+ * (1:1 meetings, tracked; Sparring threads; Workshops and Races loops), integrations off. The Default, the
+ * thread setups and Races put their notes into the same file, each Project's and Area's home notebook.
  */
 export function demoProfileSettings(): GtdParaSettings {
   const oneOnOne = {
@@ -233,12 +248,13 @@ export function demoProfileSettings(): GtdParaSettings {
   };
   const sparringSetup = {...createNoteSetup('2', 'thread'), name: 'Sparring', tags: ['sparring'], notebook: {...DEFAULT_HOME_NOTEBOOK}};
   const workshops = {...createNoteSetup('3', 'loop'), name: 'Workshops', tags: ['workshop']};
+  const races = {...createNoteSetup('4', 'loop'), name: 'Races', tags: ['race'], notebook: {...DEFAULT_HOME_NOTEBOOK}};
   return {
     ...DEFAULT_SETTINGS,
     baseRoot: DEMO_BASE_ROOT,
-    noteSetups: [oneOnOne, sparringSetup, workshops],
+    noteSetups: [oneOnOne, sparringSetup, workshops, races],
     noteSetupDefaults: seedNoteSetupDefaults(),
-    nextNoteSetupId: 4,
+    nextNoteSetupId: 5,
     noteSetupsMigrated: true,
     experimentalGoogleCalendar: false,
     experimentalGmail: false,

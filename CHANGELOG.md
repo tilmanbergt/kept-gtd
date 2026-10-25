@@ -55,6 +55,8 @@ or your project/area files are stored.
 - **Capture follows the page's section too**: a todo or agreement you lasso or mark on a page after a
   meeting's page records that meeting ("↳ from …", ✕ drops it), until your own heading. An
   agreement's **For** chips put the thread or loop of the todo's or loop's page first.
+- The demo space has a fifth area, **Sport**, whose loop `#race/marathon` shares its home notebook, to
+  try the sections in Engage.
 
 ### Upgrade notes
 - The first time you add an agreement to a Project or Area, its file gets a new `## Agreements`

@@ -557,3 +557,6 @@ Deviations and details:
   left out.
 - **Help topics guard** (`__tests__/helpTopics.test.ts`) raised from 26 to 27 rows for the new
   page "Agreements".
+- **Steps S8-S12** (Engage and Capture follow the page's section) extend this release; their design and as-built
+  notes are in `docs/dev/history/technical-design-engage-page-owner.md`. The device test (§14) runs once, together
+  with §6.3 there.

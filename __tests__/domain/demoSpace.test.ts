@@ -18,7 +18,7 @@ describe('demo space', () => {
   it('has projects, areas, inbox and the folders', () => {
     const paths = files.map(f => f.path);
     expect(paths.filter(p => p.startsWith('1 Projects/')).length).toBe(5);
-    expect(paths.filter(p => p.startsWith('2 Areas/') && p.endsWith('/area.txt')).length).toBe(4);
+    expect(paths.filter(p => p.startsWith('2 Areas/') && p.endsWith('/area.txt')).length).toBe(5);
     expect(paths).toContain('2 Areas/0 Inbox/Inbox.txt');
     expect(paths).not.toContain('Inbox.txt');
     expect(paths).toContain('3 Resources/README.txt');
@@ -75,14 +75,21 @@ describe('demo space', () => {
     expect(coaching).toContain('- workshop/offsite: active, 2026-10-15');
   });
 
+  it('has Area Sport whose loop note is its home notebook, with a past coach call to follow up (docs/dev/history/technical-design-engage-page-owner.md §6)', () => {
+    const sport = byPath('2 Areas/Sport/area.txt');
+    expect(parseMeetingsSpan(sport).meetings.map(m => [m.date, m.title])).toEqual([['2026-09-30', 'Coach call'], ['2026-10-14', 'Coach call']]);
+    expect(parseTasksSpan(sport).tasks.map(t => t.text)).toContain('Plan long runs #race/marathon #next');
+    expect(sport).toContain('- race/marathon: active, 2026-10-31');
+  });
+
   it('profile settings point at the demo folders and survive the profile file filter', () => {
     const s = demoProfileSettings();
     expect(s.baseRoot).toBe(DEMO_BASE_ROOT);
-    expect(s.noteSetups.map(x => x.tags)).toEqual([['1on1'], ['sparring'], ['workshop']]);
+    expect(s.noteSetups.map(x => x.tags)).toEqual([['1on1'], ['sparring'], ['workshop'], ['race']]);
     expect(s.noteSetupsMigrated).toBe(true);
-    // One file per Project/Area and year: the Default and the thread setups share the home notebook; a loop has its loop note.
+    // One file per Project/Area and year: the Default, the thread setups and Races share the home notebook; a Workshops loop has its loop note.
     expect(s.noteSetupDefaults.notebook).toEqual({name: '{name} {year}', folder: ''});
-    expect(s.noteSetups.map(x => x.notebook)).toEqual([{name: '{name} {year}', folder: ''}, {name: '{name} {year}', folder: ''}, {name: '{year}-{month} {tag} {subtag}', folder: ''}]);
+    expect(s.noteSetups.map(x => x.notebook)).toEqual([{name: '{name} {year}', folder: ''}, {name: '{name} {year}', folder: ''}, {name: '{year}-{month} {tag} {subtag}', folder: ''}, {name: '{name} {year}', folder: ''}]);
     expect(sanitizeProfileSettings(profileSettingsOf(s))).toEqual(profileSettingsOf(s));
   });
 });

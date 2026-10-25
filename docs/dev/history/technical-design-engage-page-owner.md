@@ -307,7 +307,12 @@ and 15 are unit tests on the cache.
 
 ## As built
 
-Filled in step by step: differences from §3 and the reason.
+Built on `feature/meetings-moment` in S8-S12, one commit each. Every §6.2 scenario is a test:
+`__tests__/scenarios/pageSection.test.tsx` (1-13, 16-19), `__tests__/storage/notebookPages.test.ts` (14, 15). Unit
+tests: `__tests__/domain/pageSection.test.ts`, `__tests__/storage/pageSection.test.ts`,
+`__tests__/domain/engageSection.test.ts`, `__tests__/ui/agreementForSection.test.ts`. The 0.21 scenario tests and
+the existing Engage, Contents and Capture tests run unchanged. No file-format change. **Device test: open** (§6.3,
+with 0.21 §14). Differences from §3 and the reason, step by step:
 
 - **S8 page index.** Besides `headingTextOf` (the topmost heading's text, for a heading section),
   `storage/notebookPages.ts` has `headingTextsOf(path, index, page)`: the text under every heading of the page, in
@@ -365,3 +370,15 @@ Filled in step by step: differences from §3 and the reason.
 - **S11 scenarios.** 16-19 in `__tests__/scenarios/pageSection.test.tsx`, through mark processing: the fake device
   has no lasso, and both paths share the capture panel and its provenance (as 0.21's scenario 14). Unit test of the
   chips' order: `__tests__/ui/agreementForSection.test.ts`. The help (lasso.md) and the CHANGELOG line came with S11.
+- **S12 demo space.** Area "Sport" with `#race/marathon` (main date this year) and a fourth demo setup, the Loop
+  setup "Races" on `race` named `{name} {year}`, so the loop note is Sport's home notebook; a "Coach call"
+  yesterday with an agreed todo, and one in two weeks. The demo writes text files only: the meeting page, its
+  follow-up page and the typed and handwritten headings are made on the device during §6.3 (open the Coach call's
+  note from Sport's page, add a page after it, write the headings). A demo profile written by an earlier version
+  keeps its setups (the profile file is written only when missing); the help says to add the Races setup by hand
+  there. `__tests__/domain/demoSpace.test.ts` counts five areas and four setups.
+- **S12 docs.** design-overview §2.6 "Page → section" and the building block in §3, the Contents paragraph on the
+  shared index; profiles-and-demo.md on Sport; `technical-design-meetings-0.21.md` §16 points here.
+- **Cost (§7).** On the fake device the index reads in 0 ms (files in memory); the real figure comes from the
+  device test's log (`NotebookPages: index miss … ms`, `pageSection: found … ms`). The "titles only up to the
+  open page" fallback of §7 is not built.
