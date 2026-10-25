@@ -353,3 +353,15 @@ Filled in step by step: differences from §3 and the reason.
   Scenario 13 makes `getTitles` fail. The fresh device of every scenario also clears the page index
   (`clearPageIndex`): the fake file system reuses paths and modification times. Scenarios 14 and 15 are the unit
   tests in `__tests__/storage/notebookPages.test.ts`.
+- **S11 provenance.** `storage/threadProvenance.ts` has `sourceSectionOf(absPath, page, sources, pages)`:
+  `{meeting (with distance), todo, loopTag}` of the section; `meetingForNotePage` keeps its signature (the page
+  index reader is an optional fourth argument) and returns `.meeting`. Without the reader, or when the index can't
+  be read, the single page answers, now for todos and meetings alike (a todo's page records no meeting either way).
+- **S11 section owner.** `useSourceSection` returns `sectionOwner` for a todo section (`ownerOfTodo`) and also for a
+  loop page section (the loop, while it is active in the enclosing item): P10 says "the section's thread or loop",
+  and a loop page's follow-ups are that loop's. `agreementForChoices` uses it only when it is a thread or a loop.
+  The hook also memoizes the Engage source CaptureScreen builds for the For chips; CaptureScreen.tsx shrinks from
+  662 to 648 lines.
+- **S11 scenarios.** 16-19 in `__tests__/scenarios/pageSection.test.tsx`, through mark processing: the fake device
+  has no lasso, and both paths share the capture panel and its provenance (as 0.21's scenario 14). Unit test of the
+  chips' order: `__tests__/ui/agreementForSection.test.ts`. The help (lasso.md) and the CHANGELOG line came with S11.

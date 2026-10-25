@@ -52,6 +52,9 @@ or your project/area files are stored.
   belongs to its project or area even when a loop's note has the same name. A line under Engage's
   header names the section ("Section: Training plan · from p. 7"). See "Which owner a page belongs
   to" on the help page "Engage".
+- **Capture follows the page's section too**: a todo or agreement you lasso or mark on a page after a
+  meeting's page records that meeting ("↳ from …", ✕ drops it), until your own heading. An
+  agreement's **For** chips put the thread or loop of the todo's or loop's page first.
 
 ### Upgrade notes
 - The first time you add an agreement to a Project or Area, its file gets a new `## Agreements`

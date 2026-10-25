@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-77 scenarios.
+81 scenarios.
 
 ## Agreements
 
@@ -395,6 +395,46 @@ Test: `__tests__/scenarios/interruptions.test.tsx` · design: `docs/dev/history/
 - **Then** Coaching's file has the agreement with the thread tag and the meeting
 
 Test: `__tests__/scenarios/agreements.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md`
+
+### A todo captured on a meeting's follow-up page records the meeting
+
+- **Given** page 4 follows the page of meeting "Coach call" and has a mark "Ask coach about intervals"
+- **When** I process the mark
+- **Then** the panel shows "↳ from Coach call"
+- **When** I save it as a todo
+- **Then** the todo ends with the meeting
+
+Test: `__tests__/scenarios/pageSection.test.tsx`
+
+### An agreement from a mark on a thread notebook's follow-up page: for the thread, with the sparring
+
+- **Given** Mieke's sparring notebook has the sparring's page and a follow-up page with a mark "Feedback only in our 1:1s"
+- **When** I process the mark as an Agreement
+- **Then** the For chips start with #sparring/mieke, and the grey line names the sparring
+- **When** I tap Save & close
+- **Then** the agreement records the sparring meeting
+
+Test: `__tests__/scenarios/pageSection.test.tsx`
+
+### Your own heading stops the provenance
+
+- **Given** page 8 follows the heading "Training plan" and has a mark "Book track time"
+- **When** I process the mark
+- **Then** no "↳ from" line shows
+- **When** I save it as a todo
+- **Then** no meeting is recorded
+
+Test: `__tests__/scenarios/pageSection.test.tsx`
+
+### A cancelled meeting's follow-up page records no meeting
+
+- **Given** the meeting "Coach call" of page 3 is cancelled; page 4 has a mark "Ask coach about intervals"
+- **When** I process the mark
+- **Then** no "↳ from" line shows
+- **When** I save it as a todo
+- **Then** no meeting is recorded
+
+Test: `__tests__/scenarios/pageSection.test.tsx`
 
 ## Meetings
 

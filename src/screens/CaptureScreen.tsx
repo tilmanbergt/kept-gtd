@@ -52,9 +52,9 @@ import {withOwnerTag} from '../domain/loopEdit';
 import {todayIso} from '../domain/meetingTime';
 import {NoteSetup} from '../domain/noteSetups';
 import {agreementForChoices} from '../ui/capture/agreementFor';
+import {useSourceSection} from '../ui/capture/useSourceSection';
 import {AgreementForChoice} from '../ui/quickAdd/agreementForChips';
-import {ThreadSource, threadSourcesOf} from '../storage/threadAggregate';
-import {meetingForNotePage, NotePageMeeting} from '../storage/threadProvenance';
+import {threadSourcesOf} from '../storage/threadAggregate';
 import {loadProjectFile} from '../storage/projectFile';
 import {loadSettings} from '../storage/settingsStorage';
 import {FolderEntry, getCurrentNotePath, getPrivateDataDir, getPrivateTempDir, openPath} from '../supernote/fileSystem';
@@ -307,35 +307,20 @@ export default function CaptureScreen({request, onOpenItem, onOpenDaily, onExit}
         })()
       : '';
 
-  // Provenance (docs/dev/history/technical-design-tending-threads.md §3.4): a
-  // todo captured from a meeting's note page records that meeting. Resolved
-  // once per source page; at most one keyword read, for a shared note.
-  const [sourceMeeting, setSourceMeeting] = useState<NotePageMeeting | null>(null);
-  const sourceMeetingsRef = useRef(new Map<string, NotePageMeeting | null>());
-  const threadSourcesRef = useRef<ThreadSource[]>([]);
-  threadSourcesRef.current = threadSourcesOf(items, inbox && loaded ? {...inbox, path: loaded.paths.inboxFolder} : null);
-  const sourceKey = sourcePath ? `${sourcePath}#${sourcePage ?? ''}` : null;
-  useEffect(() => {
-    if (!sourcePath || !sourceKey) {
-      setSourceMeeting(null);
-      return;
-    }
-    const known = sourceMeetingsRef.current.get(sourceKey);
-    if (known !== undefined) {
-      setSourceMeeting(known);
-      return;
-    }
-    let alive = true;
-    meetingForNotePage(sourcePath, sourcePage ?? null, threadSourcesRef.current).then(found => {
-      sourceMeetingsRef.current.set(sourceKey, found);
-      if (alive) setSourceMeeting(found);
-      if (found) log('CaptureScreen: source page belongs to a meeting', found.item.kind, found.meetingIndex);
-    });
-    return () => {
-      alive = false;
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sourceKey]);
+  // Provenance (docs/dev/history/technical-design-engage-page-owner.md §3.6): a
+  // todo captured from a meeting's page, or a follow-up page of it, records that
+  // meeting; the section's thread or loop comes first in the For chips.
+  const engageSource = useMemo(
+    () => (loaded ? engageSourceOf(items, engageInboxOf(loaded.paths.inboxFolder, inbox), loaded.noteSetups) : null),
+    [loaded, items, inbox],
+  );
+  const {meeting: sourceMeeting, sectionOwner} = useSourceSection({
+    sourcePath,
+    sourcePage: sourcePage ?? null,
+    threadSources: threadSourcesOf(items, inbox && loaded ? {...inbox, path: loaded.paths.inboxFolder} : null),
+    engageSource,
+    paths: loaded?.paths ?? null,
+  });
   const origin = useProvenance(sourceMeeting?.meeting ?? null);
 
   const inboxContext = async (dest: Destination) => {
@@ -352,11 +337,12 @@ export default function CaptureScreen({request, onOpenItem, onOpenDaily, onExit}
   // An agreement for the page's owner (§7): the owner's tag, the page's meeting unless dropped.
   const agreementSavedRef = useRef<string | null>(null);
   const agreementChoices =
-    loaded
+    loaded && engageSource
       ? agreementForChoices(
-          engageSourceOf(items, engageInboxOf(loaded.paths.inboxFolder, inbox), loaded.noteSetups),
+          engageSource,
           sourceMeeting ? {itemPath: sourceMeeting.item.path, meeting: sourceMeeting.meeting} : null,
           selectedMark ? selectedMark.owner : loaded.lassoDestination,
+          sectionOwner,
         )
       : [];
   const onAddAgreement = async (text: string, valid: string | null, choice: AgreementForChoice) => {

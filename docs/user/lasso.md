@@ -21,13 +21,13 @@ The lasso toolbar has two Kept GTD buttons:
 
 **Link to this page** (on by default) gives the new item a link to the page you captured from: its clip opens the note at that page. The item's own note icon still creates its own note.
 
-When the page belongs to a meeting - the meeting's own note, a page linked to it, or its page in a shared note - a todo you save records that meeting at the end of its line; no tag is added. The grey line in Quick Add shows it first; ✕ drops it. See [Threads](threads.md).
+When the page belongs to a meeting - the meeting's own note, a page linked to it, its page or its Reflection page in a shared note, or a page you wrote after one of those - a todo you save records that meeting at the end of its line; no tag is added. Your own heading, or a todo's page, ends the meeting's pages; a cancelled meeting records nothing (see "Which owner a page belongs to" in [Engage](engage.md)). The grey line in Quick Add shows it first; ✕ drops it. See [Threads](threads.md).
 
 The lasso selection is removed once something is saved. **Mark for later** on this screen turns the selection into a mark instead.
 
 ## Capturing an agreement
 
-When the page belongs to someone - a meeting's page, or a note of a project or area - the panel has a third kind, **Agreement**, next to Todo and Meeting. An agreement is one item, so **Split lines** isn't offered. Below the tags, **For** replaces **File to**: the thread or loop of the page's meeting comes first (for example `#sparring/mieke`), then the project or area of the note; **More…** offers every other one. The agreement gets that thread's or loop's tag and, on a meeting's page, records the meeting (the grey line, ✕ drops it). It goes into the file of the area or project that owns it, never into the Inbox. See [Agreements](agreements.md).
+When the page belongs to someone - a meeting's page, or a note of a project or area - the panel has a third kind, **Agreement**, next to Todo and Meeting. An agreement is one item, so **Split lines** isn't offered. Below the tags, **For** replaces **File to**: the thread or loop of the page's meeting comes first (for example `#sparring/mieke`) - without a meeting, the thread or loop of the todo's or loop's page the page follows - then the project or area of the note; **More…** offers every other one. The agreement gets that thread's or loop's tag and, on a meeting's page, records the meeting (the grey line, ✕ drops it). It goes into the file of the area or project that owns it, never into the Inbox. See [Agreements](agreements.md).
 
 ## Several todos from one selection
 

@@ -2,8 +2,8 @@ import {meetingKey} from '../../src/domain/provenance';
 import {NoteSetup, seedNoteSetupDefaults} from '../../src/domain/noteSetups';
 import {GtdParaSettings} from '../../src/domain/settings';
 import {resetMomentChoices} from '../../src/ui/meetingMomentStore';
-import {expectNotShows, expectShows, labelled, openEngage, tap, texts} from '../../test-helpers/scenario/app';
-import {areaDir, areaFile, dataFile, putFile} from '../../test-helpers/scenario/files';
+import {expectNotShows, expectShows, labelled, openApp, openEngage, tap, tapTab, texts} from '../../test-helpers/scenario/app';
+import {areaDir, areaFile, dataFile, putFile, sectionLines} from '../../test-helpers/scenario/files';
 import {and, given, scenario, then, when} from '../../test-helpers/scenario/scenario';
 import {sparringSettings} from '../../test-helpers/scenario/setups';
 import {device} from '../../test-helpers/fakeDevice/device';
@@ -55,9 +55,9 @@ function headingPage(page: number, typed: string | null): object {
  * #loop/marathon", p6 free, p7 typed heading "Training plan", p8 free, p9 handwritten heading, p10 todo "Buy shoes"
  * (keyword, no title), p11 free.
  */
-function sport(options: {loop?: 'active' | 'done'; shoes?: 'open' | 'cancelled'; coach?: 'held' | 'cancelled'} = {}): void {
+function sport(options: {loop?: 'active' | 'done'; shoes?: 'open' | 'cancelled'; coach?: 'held' | 'cancelled'; marks?: string[]} = {}): void {
   const shoes = options.shoes === 'cancelled' ? '- [-] Buy shoes' : '- [ ] Buy shoes';
-  const coach = `- ${COACH_DATE} 10:00-11:00 Coach call${options.coach === 'cancelled' ? ' #cancelled' : ''} → [[Sport 2026.note#${COACH_DATE} Coach call]]`;
+  const coach = `- ${options.coach === 'cancelled' ? '[-] ' : ''}${COACH_DATE} 10:00-11:00 Coach call → [[Sport 2026.note#${COACH_DATE} Coach call]]`;
   putFile(
     areaFile('Sport'),
     dataFile(
@@ -71,6 +71,7 @@ function sport(options: {loop?: 'active' | 'done'; shoes?: 'open' | 'cancelled';
         ],
         Meetings: [coach],
         Loops: [`- loop/marathon: ${options.loop ?? 'active'}, 2026-11-15`],
+        ...(options.marks ? {Marks: options.marks} : {}),
       },
       ['abbrev: Sp'],
     ),
@@ -252,4 +253,91 @@ scenario('The page index can\'t be read: the single-page lookup, and the panel o
   });
   when('I tap Close', () => tap('Close'));
   then('the panel closed without an error', () => expect(device().sdk.closed).toBeGreaterThan(0));
+});
+
+// Capture (§6.2 16-19). The fake device has no lasso; marks go through the same capture panel and provenance.
+
+/** A mark in Sport 2026.note on page `page` (1-based) saying `text`. */
+const sportMark = (page: number, text: string) => `- 2026-10-25 09:00 [[Sport 2026.note]] p${page} ${text} ^m-20261025-0900${String(page).padStart(2, '0')}-000`;
+
+/** Sport's page, its marks to process. */
+async function processSportMarks(): Promise<void> {
+  await openApp({settings: settings()});
+  await tapTab('Areas');
+  await tap(/^Sport/);
+  await tap(/to process/);
+}
+
+scenario('A todo captured on a meeting\'s follow-up page records the meeting', {feature: 'Lasso', design: DESIGN}, () => {
+  given('page 4 follows the page of meeting "Coach call" and has a mark "Ask coach about intervals"', () => sport({marks: [sportMark(4, 'Ask coach about intervals')]}));
+  when('I process the mark', processSportMarks);
+  then('the panel shows "↳ from Coach call"', () => expectShows(/^↳ from Coach call/));
+  when('I save it as a todo', () => tap(/^Save & close/));
+  then('the todo ends with the meeting', () => {
+    expect(sectionLines(areaFile('Sport'), 'Tasks')).toContainEqual(expect.stringMatching(new RegExp(`^- \\[ \\] Ask coach about intervals .*\\[meeting:: ${COACH_KEY}\\]`)));
+  });
+});
+
+scenario('An agreement from a mark on a thread notebook\'s follow-up page: for the thread, with the sparring', {feature: 'Lasso', design: DESIGN}, () => {
+  const kw = '2026-10-24 Sparring Mieke #sparring/mieke';
+  given('Mieke\'s sparring notebook has the sparring\'s page and a follow-up page with a mark "Feedback only in our 1:1s"', () => {
+    putFile(
+      areaFile('Coaching'),
+      dataFile(
+        'area',
+        {
+          Scope: [],
+          Tasks: [],
+          Meetings: [`- 2026-10-24 10:00-11:00 Sparring Mieke #sparring/mieke → [[Meetings/sparring mieke 2026.note#${kw}]]`],
+          Threads: ['- mieke: active'],
+          Marks: ['- 2026-10-25 09:00 [[Meetings/sparring mieke 2026.note]] p2 Feedback only in our 1:1s ^m-20261025-090000-000'],
+        },
+        ['abbrev: Co'],
+      ),
+    );
+    device().sdk.putNote(`${areaDir('Coaching')}/Meetings/sparring mieke 2026.note`, [{keywords: ['2026-10-24', kw]}, {}]);
+  });
+  when('I process the mark as an Agreement', async () => {
+    await openApp({settings: settings()});
+    await tapTab('Areas');
+    await tap(/^Coaching/);
+    await tap(/to process/);
+    await tap('Agreement');
+  });
+  then('the For chips start with #sparring/mieke, and the grey line names the sparring', () => {
+    const all = texts();
+    expect(all.indexOf('#sparring/mieke')).toBeGreaterThan(all.indexOf('For'));
+    expect(all.indexOf('#sparring/mieke')).toBeLessThan(all.indexOf('#CO Coaching'));
+    expectShows(/^↳ from Sparring Mieke/);
+  });
+  when('I tap Save & close', () => tap(/^Save & close/));
+  then('the agreement records the sparring meeting', () => {
+    expect(sectionLines(areaFile('Coaching'), 'Agreements')).toEqual([
+      '- Feedback only in our 1:1s #sparring/mieke [meeting:: 2026-10-24 Sparring Mieke sparring/mieke] [created:: 2026-10-25]',
+    ]);
+  });
+});
+
+scenario('Your own heading stops the provenance', {feature: 'Lasso', design: DESIGN}, () => {
+  given('page 8 follows the heading "Training plan" and has a mark "Book track time"', () => sport({marks: [sportMark(8, 'Book track time')]}));
+  when('I process the mark', processSportMarks);
+  then('no "↳ from" line shows', () => expectNotShows(/^↳ from/));
+  when('I save it as a todo', () => tap(/^Save & close/));
+  then('no meeting is recorded', () => {
+    const line = sectionLines(areaFile('Sport'), 'Tasks').find(l => l.includes('Book track time'));
+    expect(line).toBeDefined();
+    expect(line).not.toContain('[meeting::');
+  });
+});
+
+scenario('A cancelled meeting\'s follow-up page records no meeting', {feature: 'Lasso', design: DESIGN}, () => {
+  given('the meeting "Coach call" of page 3 is cancelled; page 4 has a mark "Ask coach about intervals"', () => sport({coach: 'cancelled', marks: [sportMark(4, 'Ask coach about intervals')]}));
+  when('I process the mark', processSportMarks);
+  then('no "↳ from" line shows', () => expectNotShows(/^↳ from/));
+  when('I save it as a todo', () => tap(/^Save & close/));
+  then('no meeting is recorded', () => {
+    const line = sectionLines(areaFile('Sport'), 'Tasks').find(l => l.includes('Ask coach about intervals'));
+    expect(line).toBeDefined();
+    expect(line).not.toContain('[meeting::');
+  });
 });
