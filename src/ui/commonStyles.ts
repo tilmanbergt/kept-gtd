@@ -70,6 +70,13 @@ export const common = StyleSheet.create({
    * positioned, so it costs no layout space; the field's wrapper must be
    * `position: 'relative'`. Pair with a `display: 'none'` style while the
    * field isn't focused (kept mounted so taps aren't lost).
+   *
+   * No zIndex: on Android a zIndex child switches its parent to a custom
+   * drawing order, and a zIndex sibling can stop other views in the same
+   * parent being drawn (Quick Add's title field next to these strips).
+   * `elevation` alone draws the strip above its siblings, and it hovers over
+   * content earlier in the tree (above it), which is drawn and hit-tested
+   * before it anyway.
    */
   floatingStrip: {
     position: 'absolute',
@@ -82,7 +89,6 @@ export const common = StyleSheet.create({
     borderRadius: 4,
     paddingVertical: 3,
     paddingHorizontal: 3,
-    zIndex: 20,
     elevation: 4,
   },
   /** floatingStrip variant: left-aligned above the field (Quick Add keeps its R1 buttons on the right free). */

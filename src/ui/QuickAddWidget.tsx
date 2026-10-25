@@ -53,7 +53,7 @@
  * the screen's own `onCancelEdit` and turns the edit form's current values
  * into the Meeting create draft.
  */
-import React from 'react';
+import React, {useEffect} from 'react';
 import {Keyboard} from 'react-native';
 import {AbbrevFileMatch, resolveAbbrevFileTarget} from '../domain/abbrev';
 import {insertTagAtPosition, stripSpaceAfterHash} from '../domain/markdown';
@@ -61,6 +61,7 @@ import {replacesLabel} from '../domain/agreementText';
 import {formatMeetingWhen, todayIso} from '../domain/meetingTime';
 import {meetingDisplayTitle} from '../domain/meetingTracking';
 import {Destination} from '../domain/destination';
+import {log} from '../utils/log';
 import {usePerfRender} from '../utils/perf';
 import MeetingCard from './itemCard/MeetingCard';
 import {MeetingCardData} from './itemCard/useMeetingCard';
@@ -318,6 +319,7 @@ function QuickAddWidget(props: Props): React.JSX.Element {
   const newFromThis = (fields: {title: string; date: string; time: string}) => {
     if (!onCancelEdit) return;
     Keyboard.dismiss();
+    log('QuickAddWidget: new from this', {fromCard: editTarget?.mode === 'card', tabBefore: core.activeType});
     const displayTitle = meetingDisplayTitle({title: fields.title});
     let draftTitle = displayTitle;
     const {fixedExcludePath, abbrevItems} = core;
@@ -393,6 +395,11 @@ function QuickAddWidget(props: Props): React.JSX.Element {
   const cardShown =
     editTarget?.mode === 'card' &&
     ((editTarget.kind === 'meeting' && !!meetingCard) || (editTarget.kind === 'task' && !!todoCard) || (editTarget.kind === 'agreement' && !!props.agreementCard));
+  // The rows go hidden/shown with the card - part of the title-field diagnosis (ui/quickAdd/layoutLog.ts).
+  const cardKind = cardShown ? editTarget?.kind ?? null : null;
+  useEffect(() => {
+    log('QuickAddWidget: card', cardKind ? 'shown' : 'hidden', {kind: cardKind});
+  }, [cardKind]);
   // A loop's own edit (the loop overview) has no card: it keeps the commands.
   const taskCommands = editKind === 'task' && (!todoCard || editTarget?.kind === 'loop');
   const editCommands = editKind && editKind !== 'agreement' ? (

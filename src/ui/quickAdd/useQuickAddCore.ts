@@ -13,6 +13,7 @@ import {useCallback, useEffect, useState} from 'react';
 import {AbbrevFileMatch} from '../../domain/abbrev';
 import {Destination} from '../../domain/destination';
 import {getRecentTags, getRecentTagsSync, recordTagsUsed} from '../../storage/tagUsage';
+import {log} from '../../utils/log';
 import {useAbbrevItems} from '../useAbbrevItems';
 import {EditFields} from './editFields';
 import {QuickAddField, QuickAddType} from './types';
@@ -24,7 +25,15 @@ interface Input {
 }
 
 export function useQuickAddCore({fixedDestination, editingItemPath}: Input) {
-  const [activeType, setActiveType] = useState<QuickAddType>('task');
+  const [activeType, setActiveTypeState] = useState<QuickAddType>('task');
+  // Every tab change is logged: a row going from hidden to shown is part of
+  // the title-field diagnosis (ui/quickAdd/layoutLog.ts).
+  const setActiveType = useCallback((type: QuickAddType) => {
+    setActiveTypeState(current => {
+      if (current !== type) log('QuickAdd: tab', current, '->', type);
+      return type;
+    });
+  }, []);
   const [editFields, setEditFields] = useState<EditFields | null>(null);
   const [pending, setPending] = useState(false);
   // Validation/save error, plus which field it's about (drives the in-place

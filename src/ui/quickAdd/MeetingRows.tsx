@@ -3,6 +3,10 @@
  * start - meetings almost always have one), R3 (time + tag chips) and R4
  * (more tags, or what the widget puts there). All stay mounted while
  * another tab shows - see ui/quickAdd/styles.ts.
+ *
+ * In the box the title's wrappers are real Android views and the title
+ * logs its frame and focus (ui/quickAdd/styles.ts `row2Wrap`,
+ * ui/quickAdd/layoutLog.ts).
  */
 import React from 'react';
 import {StyleSheet, TextInput, View} from 'react-native';
@@ -12,9 +16,14 @@ import MarkWrap from '../status/StatusMark';
 import TagChips, {useTwoRowTagChips} from '../TagChips';
 import {useTagRowBudget} from '../tagChipLayout';
 import {FONT} from '../theme';
+import {log} from '../../utils/log';
+import {layoutLogger} from './layoutLog';
 import {rowStyles} from './styles';
 import {MeetingDraftState} from './useMeetingDraft';
 import {QuickAddCore} from './useQuickAddCore';
+
+const logTitleLayout = layoutLogger('meeting title');
+const logTitleRowLayout = layoutLogger('meeting title row');
 
 interface Props {
   core: QuickAddCore;
@@ -29,16 +38,22 @@ interface Props {
 export function MeetingInputRow({core, meeting, capture = false, textColor, borderColor, placeholderColor}: Props) {
   return (
     <View style={[rowStyles.row2, capture && rowStyles.row2Free, core.displayType !== 'meeting' && rowStyles.hidden]}>
-      <View style={rowStyles.row2Wrap}>
-        <MarkWrap mark={core.fieldMark('title')} textColor={textColor} flex>
+      {/* In the capture panel the date field draws its own strip inside this
+          wrap, outside its bounds: the wrap stays flattened there. */}
+      <View style={rowStyles.row2Wrap} collapsable={capture} onLayout={capture ? undefined : logTitleRowLayout}>
+        <MarkWrap mark={core.fieldMark('title')} textColor={textColor} flex collapsable={capture}>
           <TextInput
             ref={meeting.inputRef}
+            onLayout={capture ? undefined : logTitleLayout}
             style={[rowStyles.input, rowStyles.inputFlex, {color: textColor, borderColor}]}
             value={meeting.fields.title}
             onChangeText={meeting.setTitle}
             onSelectionChange={e => meeting.onSelectionChange(e.nativeEvent.selection)}
             selection={meeting.selectionOverride ?? undefined}
-            onFocus={() => meeting.setInputFocused(true)}
+            onFocus={() => {
+              log('QuickAdd: meeting title focused');
+              meeting.setInputFocused(true);
+            }}
             onBlur={() => meeting.setInputFocused(false)}
             placeholder="New meeting title"
             placeholderTextColor={placeholderColor}
@@ -47,7 +62,14 @@ export function MeetingInputRow({core, meeting, capture = false, textColor, bord
         </MarkWrap>
         <MarkWrap mark={core.fieldMark('date')} textColor={textColor}>
           <DateInput
-            onFocusChange={capture ? undefined : meeting.setDateFocused}
+            onFocusChange={
+              capture
+                ? undefined
+                : focused => {
+                    log('QuickAdd: meeting date', focused ? 'focused' : 'blurred', {titleLength: meeting.fields.title.length});
+                    meeting.setDateFocused(focused);
+                  }
+            }
             value={meeting.fields.date}
             onChangeText={meeting.setDate}
             placeholder="YYYY-MM-DD"

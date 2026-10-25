@@ -15,6 +15,7 @@ import {meetingDisplayTitle} from '../../domain/meetingTracking';
 import {validateMeetingFields} from '../../domain/meetingTime';
 import {setHighlight} from '../../domain/monthHighlight';
 import {errorMessage} from '../../utils/errorMessage';
+import {log} from '../../utils/log';
 import {clipboardActions} from '../ClipboardStrip';
 import {MeetingEditFields} from './editFields';
 import {abbrevDestination, makeMeetingDraft, MeetingDraft, MeetingQuickAddFields, truncateItemName} from './types';
@@ -121,6 +122,8 @@ export function useMeetingDraft(core: QuickAddCore, input: Input) {
 
   /** Puts `next` into the create draft and shows the Meeting tab ("New from this", "+ Next", a prefill). */
   const showDraft = (next: MeetingDraft, note: string | null) => {
+    // Lengths only, never the title (ui/quickAdd/layoutLog.ts).
+    log('QuickAdd: meeting draft shown', {titleLength: next.title.length, rowWasHidden: core.displayType !== 'meeting', editing: core.isEditing});
     setDraft(next);
     lastSelectionRef.current = null;
     setTagPage(0);

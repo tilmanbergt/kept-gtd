@@ -13,6 +13,7 @@
  */
 import {useEffect, useRef, useState} from 'react';
 import {Keyboard} from 'react-native';
+import {log} from '../../utils/log';
 import {useOnScreenHide} from '../screenActivity';
 import {useStableCallback} from '../useStableCallback';
 import {EditFields, loadAgreementEditFields, loadEditFields} from './editFields';
@@ -66,6 +67,7 @@ export function useEditSession(core: QuickAddCore, task: TaskDraftState, meeting
       taskSelectionRef.current = null;
       meetingSelectionRef.current = null;
       const loaded = fieldsOf(editTarget);
+      log('QuickAdd: edit loaded', {kind: loaded?.kind ?? null, switched: wasEditingRef.current});
       setEditFields(loaded);
       loadedFieldsRef.current = loaded ? JSON.stringify(loaded.fields) : null;
       // The agreement field (ClipboardTextInput) is not focused from outside.
@@ -75,6 +77,7 @@ export function useEditSession(core: QuickAddCore, task: TaskDraftState, meeting
       setTaskTagPage(0);
       setMeetingTagPage(0);
     } else if (!isEditingNow && wasEditingRef.current) {
+      log('QuickAdd: edit closed', {card: editTarget?.mode === 'card'});
       setEditFields(null);
       loadedFieldsRef.current = null;
       setError(null);
