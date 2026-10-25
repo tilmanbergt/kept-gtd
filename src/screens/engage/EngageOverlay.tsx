@@ -1,7 +1,8 @@
 /**
  * The Engage panel over the note (docs/dev/history/technical-design-engage.md
  * §3.7): the frame - backdrop, panel, the body for `state.screen.kind` - and
- * the wiring of the hooks to the parts: under the header the meeting line
+ * the wiring of the hooks to the parts: under the header the page's section
+ * line (docs/dev/history/technical-design-engage-page-owner.md §3.8), the meeting line
  * with its moment and the strip on a meeting's page
  * (docs/dev/history/technical-design-meetings-0.21.md R1-R6), a loop's line
  * (R16) and "Next here" (hidden while it names the page's meeting, and for a
@@ -47,6 +48,7 @@ import {ENGAGE_BACKDROP_TRANSPARENT, ENGAGE_TEXT_WIDTH, engageStyles as styles} 
 import MarksLine from './MarksLine';
 import MeetingLine from './MeetingLine';
 import NowBox from './NowBox';
+import SectionLine from './SectionLine';
 import OptionTabs from './OptionTabs';
 import OwnerEmpty from './OwnerEmpty';
 import OwnerList from './OwnerList';
@@ -342,6 +344,7 @@ export default function EngageOverlay({request, onClose, onOpenGtdpara, onExit}:
             onBack={onFocusScreen && owner ? () => dispatch({type: 'back'}) : undefined}
             textColor={textColor}
           />
+          {ownerScreen && owner && state.section ? <SectionLine section={state.section} textColor={textColor} /> : null}
           {pageEntry && page && owner && source ? (
             <>
               <MomentLine

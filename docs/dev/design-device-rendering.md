@@ -211,10 +211,11 @@ the exception: it grows with its multi-line text and adds rows below.
 ### 5.6 The Engage panel
 
 `screens/engage/engageStyles.ts` holds the panel's budget; its fullest screen is a meeting's
-page: header ~40, meeting line 36 + moment strip ~44 ("Next here" ~30 is hidden there), Now
+page: header ~40, section line ~28 (`sectionLine`: small line 18 + `marginBottom 8`, shown whenever
+the page belongs to a section), meeting line 36 + moment strip ~44 ("Next here" ~30 is hidden there), Now
 box ~130, ack line ~30, tabs ~45 + list header ~31 + 5 option rows × 64 (`ENGAGE_ROW_H`; a From
 group's caption is 28 inside the same viewport), collapsed Quick Add ~40, footer ~44, padding
-32. That is ~760 dp from ~195 dp down, ending near 955 dp of 1325; Quick Add's field, which
+32. That is ~790 dp from ~195 dp down, ending near 985 dp of 1325; Quick Add's field, which
 replaces the list when open, stays in the upper two thirds.
 
 ## 6. How to budget a screen

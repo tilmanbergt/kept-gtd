@@ -4,11 +4,12 @@
  *
  * Budget on the A5 X (docs/dev/design-device-rendering.md §5-6, dp): the
  * panel starts at 12 % of the height under the 36 dp status slot (~195 dp)
- * and is at most ~760 dp tall on its fullest screen, a meeting's page: header
- * ~40, meeting line 36 + strip ~44 (docs/dev/history/technical-design-meetings-0.21.md
+ * and is at most ~790 dp tall on its fullest screen, a meeting's page: header
+ * ~40, section line ~28 (docs/dev/history/technical-design-engage-page-owner.md
+ * §3.8), meeting line 36 + strip ~44 (docs/dev/history/technical-design-meetings-0.21.md
  * §4.3; "Next here" ~30 is hidden there), Now box ~130, ack line ~30, tabs
  * ~45 + list header ~31 + 5 rows × 64 (a From caption is 28 inside the same
- * box), collapsed Quick Add ~40, footer ~44, padding 32. It ends near 955 dp
+ * box), collapsed Quick Add ~40, footer ~44, padding 32. It ends near 985 dp
  * of 1325; Quick Add's field (which replaces the list when open) still sits
  * near the top of the panel, in the upper two thirds (DEVELOPMENT-POLICY §4).
  */
@@ -188,6 +189,13 @@ export const engageStyles = StyleSheet.create({
   inline: {
     marginBottom: 0,
     flexShrink: 1,
+  },
+  /** The section line under the header (docs/dev/history/technical-design-engage-page-owner.md §3.8): small line 18 + 8 ≈ 26-28. */
+  sectionLine: {
+    fontSize: FONT.small,
+    opacity: 0.7,
+    includeFontPadding: false,
+    marginBottom: SPACING.sm,
   },
   /** The loop owner's line under the header (R16). */
   loopLine: {

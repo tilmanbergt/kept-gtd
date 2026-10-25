@@ -45,6 +45,14 @@ or your project/area files are stored.
   and **Remove #next**; the meeting the todo was agreed in opens that meeting's note. The owner's tag
   that Quick Add adds now shows in its grey line and can be dropped for one entry.
 
+- **Engage follows the page's section**: in a notebook several things share, a page you write by hand
+  belongs to the nearest page before it with a heading or a page Kept made. Follow-up pages of a
+  meeting's page show its meeting line and **From** tab; follow-up pages of a todo's page make it the
+  one you are working on; your own heading starts a section of the notebook's owner. A home notebook
+  belongs to its project or area even when a loop's note has the same name. A line under Engage's
+  header names the section ("Section: Training plan · from p. 7"). See "Which owner a page belongs
+  to" on the help page "Engage".
+
 ### Upgrade notes
 - The first time you add an agreement to a Project or Area, its file gets a new `## Agreements`
   section of plain bullets. Older versions of Kept GTD keep that section as it is.

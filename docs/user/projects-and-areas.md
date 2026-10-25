@@ -116,6 +116,8 @@ Contents can be switched off in Settings → Advanced → **Notebook contents**.
 
 ### Engage: Go to the notebook
 
+A loop's note can be the same file as the home notebook, when the Loop setup names its notes like the Default (`{name} {year}`). The notebook still belongs to the project or area: in [Engage](engage.md) its pages belong to the area, except the loop's pages and what follows them up to your next heading (see "Which owner a page belongs to" there).
+
 In [Engage](engage.md), when you work in another note of a project or area - a todo's own note, for example - one line **Go to Garden renovation 2026 ›** takes you to its home notebook and closes the panel. Inside the notebook itself the line isn't shown. Engage never creates a notebook.
 
 ### When you rename a project or area

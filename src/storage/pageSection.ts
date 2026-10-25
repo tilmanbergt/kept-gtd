@@ -6,14 +6,14 @@
  * nearest page with a claim (domain/pageSection.ts). A heading section also
  * gets its typed text. When the index can't be read, the single-page lookup
  * (storage/notePageEntry.ts) answers instead, so neither Engage nor Capture
- * fails because of it (P7). Logs kinds, distances and ms - never texts or
- * paths.
+ * fails because of it (P7); so does a caller that hands in no index reader.
+ * Logs kinds, distances and ms - never texts or paths.
  */
 import {ALL_PAGE_ENTRY_KINDS, notePageCandidates, PageEntrySource} from '../domain/notePageEntry';
 import {claimOfPage, PageSection, sectionOfPage} from '../domain/pageSection';
 import {errorMessage} from '../utils/errorMessage';
 import {log, logWarn} from '../utils/log';
-import {headingTextOf, loadPageIndex} from './notebookPages';
+import type {NotebookPageIndex, PageIndexReader} from './notebookPages';
 import {entryForNotePage} from './notePageEntry';
 
 export interface PageSectionResult<R> {
@@ -37,22 +37,26 @@ async function singlePage<R extends {path: string}>(absPath: string, page: numbe
   return {section: {page: page ?? 0, claim: {kind: 'entry', entry, cancelled: false, reflection: false}}, distance: 0, headingText: null, indexRead: false, ownNote: false};
 }
 
-/** The section of `absPath`'s 0-based `page` among the entries of `sources`. Never throws. */
+/**
+ * The section of `absPath`'s 0-based `page` among the entries of `sources`,
+ * read through `pages` (storage/notebookPages.ts's `NOTEBOOK_PAGES`). Never throws.
+ */
 export async function pageSectionOf<R extends {path: string}>(
   absPath: string,
   page: number | null,
   sources: ReadonlyArray<PageEntrySource<R>>,
+  pages: PageIndexReader | null,
 ): Promise<PageSectionResult<R>> {
   const plain = notePageCandidates(absPath, page, sources);
   if (plain.ownNote && plain.direct) {
     const claim = {kind: 'entry' as const, entry: plain.direct, cancelled: false, reflection: false};
     return {section: {page: page ?? 0, claim}, distance: 0, headingText: null, indexRead: false, ownNote: true};
   }
-  if (page === null) return singlePage(absPath, page, sources);
+  if (page === null || !pages) return singlePage(absPath, page, sources);
   const start = Date.now();
-  let index;
+  let index: NotebookPageIndex;
   try {
-    index = await loadPageIndex(absPath);
+    index = await pages.loadPageIndex(absPath);
   } catch (e) {
     logWarn('pageSection: index not read', errorMessage(e));
     return singlePage(absPath, page, sources);
@@ -63,7 +67,7 @@ export async function pageSectionOf<R extends {path: string}>(
   let headingText: string | null = null;
   if (section?.claim.kind === 'heading') {
     try {
-      headingText = await headingTextOf(absPath, index, section.page);
+      headingText = await pages.headingTextOf(absPath, index, section.page);
     } catch (e) {
       // The heading still starts the section; without its text it reads as handwritten.
       logWarn('pageSection: heading text not read', errorMessage(e));

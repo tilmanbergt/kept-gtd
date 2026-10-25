@@ -56,6 +56,16 @@ export const ENGAGE_TEXT = {
 /** The section line's title for a section that starts at a handwritten heading (docs/dev/history/technical-design-engage-page-owner.md P9). */
 export const HANDWRITTEN_SECTION = 'Handwritten section';
 
+/**
+ * Engage's section line (P9): "Section: Coach call · 14.10." on the section
+ * page itself, "Section: Training plan · from p. 7" on a follow-up page
+ * (`page` is 0-based, shown 1-based).
+ */
+export function sectionLineText(title: {text: string; detail: string}, page: number, distance: number): string {
+  const parts = [title.text, title.detail, distance > 0 ? `from p. ${page + 1}` : ''].filter(Boolean);
+  return `Section: ${parts.join(' · ')}`;
+}
+
 /** The moment switch's labels (docs/dev/history/technical-design-meetings-0.21.md R1). */
 export const MOMENT_LABELS = {before: 'Before', during: 'During', after: 'After'} as const;
 

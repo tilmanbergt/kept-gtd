@@ -120,6 +120,13 @@ export interface SectionTitle {
   detail: string;
 }
 
+/** What Engage's section line shows: the section page (0-based), how far back it is, its title. */
+export interface SectionInfo {
+  page: number;
+  distance: number;
+  title: SectionTitle;
+}
+
 /**
  * The section's title (P9): a todo's page label, a meeting's title with its
  * date ("Reflection · …" for its Reflection page), the notebook owner's name

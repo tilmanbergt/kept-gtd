@@ -169,7 +169,7 @@ The labels are shared with `domain/notebookContents.ts`'s `pageEntry` (one sourc
   `pageMeeting` when you pick another owner, go back, or switch owner from a focus screen.
 - `screens/engage/SectionLine.tsx` (new): one quiet line directly under the header, above MomentLine / LoopLine.
   FONT.small, not tappable, `numberOfLines={1}`:
-  - `Section: Sparring Mieke · Tue 14 Oct` (on the section page itself);
+  - `Section: Sparring Mieke · 14.10.` (on the section page itself; the date as `formatDate`, see "As built");
   - `Section: Training plan · from p. 7` (a follow-up page; page numbers 1-based);
   - `Section: Handwritten section · from p. 12`.
 - Shown on the options screen whenever `section` is set; hidden on the focus screens.
@@ -329,3 +329,27 @@ Filled in step by step: differences from §3 and the reason.
   lookup answers, as when the index can't be read. When a heading's text can't be read, the section still starts
   there and reads as "Handwritten section" (`pageSection: heading text not read`). Unit tests also in
   `__tests__/storage/pageSection.test.ts` (own note, walk back, fallback).
+- **S10 date.** The section line shows a meeting's date as `formatDate` gives it (§3.7, the Contents' detail):
+  "Section: Coach call · 24.10.", not "Tue 14 Oct" as §3.8 and §6.2 first sketched; dateFormat.ts has no such
+  format. A meeting's title is its page label as words, so a thread meeting reads
+  "Sparring Mieke sparring/mieke", as in the Contents.
+- **S10 page index reader.** `noteContextOf(absPath, page, source, paths, {notebook, pages})`: the Default
+  notebook (P1) and the page index reader (`NOTEBOOK_PAGES`, storage/notebookPages.ts) are handed in by
+  `useEngageFlow`, and `pageSectionOf` takes the reader as its fourth argument. The index reads through the SDK
+  (`getTitles`, element recycling); handing it in keeps the owner and provenance lookups loadable without it, so
+  their unit tests (`noteOwnerOf.test.ts`, `threadProvenance.test.ts`) run unchanged on the single-page path.
+- **S10 context.** `NoteContext.section` is optional (absent rather than null) and is set only when the index was
+  read: an own note, no section and the single-page fallback show no line (scenario 13). The section does not go
+  through `decideOpening`: `useEngageFlow` adds it to the `open` event when the opening's owner is the note's
+  owner, so `decideOpening` and its results stay as they are. The line also shows on the owner-empty screen, like
+  the meeting lines. The `rule=section` log line adds `distance`, `claim`, `cancelled` to the four usual fields;
+  "EngageOverlay: section line distance=n" is a line of its own, so the existing log lines stay.
+- **S10 docs in the same commit.** The help (engage.md "Which owner a page belongs to", projects-and-areas.md on a
+  loop sharing the home notebook), the CHANGELOG line and the render budget came with S10, not S12
+  (DEVELOPMENT-POLICY §6: user-visible change and its help page in one change). `docs/dev/test-scenarios.md` is
+  regenerated in every step, since `npm run check` requires it.
+- **S10 scenarios.** `__tests__/scenarios/pageSection.test.tsx` 1-13. Scenario 3's meeting is a day back
+  (24.10.), because the moment line shows up to seven days after a meeting; its From tab is "From meetings".
+  Scenario 13 makes `getTitles` fail. The fresh device of every scenario also clears the page index
+  (`clearPageIndex`): the fake file system reuses paths and modification times. Scenarios 14 and 15 are the unit
+  tests in `__tests__/storage/notebookPages.test.ts`.

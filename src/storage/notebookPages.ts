@@ -45,6 +45,11 @@ interface CachedIndex {
 
 const cache = new Map<string, CachedIndex>();
 
+/** Forgets every file's index (a fresh start: the scenario tests' new device reuses paths and times). */
+export function clearPageIndex(): void {
+  cache.clear();
+}
+
 /** How many files the page index holds (the debug bundle's count). */
 export function cachedPageIndexCount(): number {
   return cache.size;
@@ -135,3 +140,15 @@ export async function headingTextOf(path: string, index: NotebookPageIndex, page
   });
   return texts[top] ?? null;
 }
+
+/**
+ * The page index as storage/pageSection.ts reads it. Its callers hand it in
+ * (`NOTEBOOK_PAGES`): the reads go through the SDK, and the owner and
+ * provenance lookups stay loadable without it.
+ */
+export interface PageIndexReader {
+  loadPageIndex: (path: string) => Promise<NotebookPageIndex>;
+  headingTextOf: (path: string, index: NotebookPageIndex, page: number) => Promise<string | null>;
+}
+
+export const NOTEBOOK_PAGES: PageIndexReader = {loadPageIndex, headingTextOf};

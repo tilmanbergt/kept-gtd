@@ -12,11 +12,26 @@ The panel is about one **owner** at a time: a Project, an Area, a loop or a thre
 - **Engage ›** on a page: that page's Project, Area, loop or thread.
 - The Engage button on a todo's note (its own note, its page in a loop note, or its page in a shared notebook): that todo becomes the one you are working on. The owner is its loop; else its thread (the todo's own thread tag, or the thread of the meeting it was agreed in); else its Project or Area.
 - The Engage button on a meeting's note or page: the meeting's thread, or else its loop or its Project or Area. When something came out of the thread's meetings, Engage opens on **From Thread** (below). The meeting's Reflection page counts as its page ([Meetings](meetings.md)).
-- On a loop note: the loop. On any other note in a Project's or Area's folder: that Project or Area.
+- On a loop note: the loop. On a Project's or Area's home notebook - this year's or an earlier one - that Project or Area, even when a loop's note has the same name. On any other note in a Project's or Area's folder: that Project or Area.
 - On a note that belongs to none of them: the owner of the todo you were last working on.
 - Nothing fits: Engage shows today's focus to choose from (or this week's, when nothing is in today's focus).
 
 When Engage shows another owner than the one of the todo you were working on, a line at the bottom, above **Open Kept GTD** and **Close**, offers the way back, for example **Continue with Measure the beds**. Tap it to return to that todo. It is offered once: if you close the panel without it, what the panel showed - the new place's next action - is the one you are working on from then on (with no next action there, nothing is). Choosing a todo in the new place does the same at once. After **Engage ›** there is no such line: you chose the owner yourself.
+
+## Which owner a page belongs to
+
+In a notebook several things share - a home notebook, a loop note, a thread's notebook - a page you write yourself belongs to the nearest page before it that starts a **section**:
+
+- a page with a heading (a Supernote title: Kept's, or your own, typed or handwritten), or
+- a page Kept made: a todo's or meeting's page, a Reflection page, the Home page, a loop's first page. Kept's keyword on the page is enough, even when its heading is missing.
+
+So the follow-up pages after a meeting's page belong to that meeting: the meeting line, the row under it and **From** work there as on the meeting's page. Follow-up pages of a todo's page make that todo the one you are working on (while it is open). Your own heading starts a new section that belongs to the notebook's owner - a "Training plan" heading after a meeting page belongs to the Area again. The Home page belongs to the notebook's owner, a loop's first page to its loop while the loop is active.
+
+A cancelled todo's or meeting's page still starts a section of its owner, but nothing becomes current and there is no meeting line. Pages before the first section, and notes Kept can't read, belong to the notebook's owner. A todo's or meeting's own note is as before: every page is its.
+
+A line under the header names the section, for example "Section: Coach call · 24.10." on the meeting's page, "Section: Training plan · from p. 7" on a later page, or "Section: Handwritten section" for a handwritten heading. Kept can't read handwriting, so it doesn't say what the heading says.
+
+A heading you just wrote on the open page counts once the Supernote saved the page, for example after you turned to another page and back.
 
 ## What belongs to an owner
 

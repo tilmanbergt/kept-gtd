@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-64 scenarios.
+77 scenarios.
 
 ## Agreements
 
@@ -242,6 +242,113 @@ Test: `__tests__/scenarios/engageMoment.test.tsx` · design: `docs/dev/history/t
 - **And** it doesn't offer to reflect again
 
 Test: `__tests__/scenarios/meetingReflection.test.tsx` · design: `docs/dev/history/technical-design-meeting-reflection.md`
+
+### Engage on the Home page of a home notebook that is also a loop's note: the Area, not the loop
+
+- **Given** Sport 2026.note is Area Sport's home notebook and the note of loop marathon; page 1 is its Home page
+- **When** I open Engage on page 1
+- **Then** the owner is Area Sport and the line reads "Section: Sport"
+
+Test: `__tests__/scenarios/pageSection.test.tsx`
+
+### Engage on a free page after the Home page: the Area, from p. 1
+
+- **Given** page 2 has no title and no keyword
+- **When** I open Engage on page 2
+- **Then** the owner is Area Sport and the line reads "Section: Sport · from p. 1"
+
+Test: `__tests__/scenarios/pageSection.test.tsx`
+
+### Engage on a meeting's follow-up page: the meeting is passed on
+
+- **Given** page 3 is the page of meeting "Coach call" (Sport, no loop tag), where "Book physio" was agreed; page 4 is handwritten without a title
+- **When** I open Engage on page 4
+- **Then** the owner is Area Sport, the moment line shows Coach call with its moment, From offers its group
+- **And** the line reads "Section: Coach call · 24.10. · from p. 3"
+
+Test: `__tests__/scenarios/pageSection.test.tsx`
+
+### Engage on a loop todo's follow-up page: the loop, with that todo current
+
+- **Given** page 5 is the page of the open todo "Plan long runs #loop/marathon", page 6 a follow-up
+- **When** I open Engage on page 6
+- **Then** the owner is Loop marathon, the todo is current, and the line names it from p. 5
+
+Test: `__tests__/scenarios/pageSection.test.tsx`
+
+### Your own heading starts a section of the notebook owner
+
+- **Given** page 7 has my typed heading "Training plan"
+- **When** I open Engage on page 8
+- **Then** the owner is Area Sport and the line reads "Section: Training plan · from p. 7"
+
+Test: `__tests__/scenarios/pageSection.test.tsx`
+
+### A handwritten heading starts a section too
+
+- **Given** page 9 has a handwritten title
+- **When** I open Engage on page 9
+- **Then** the owner is Area Sport and the line reads "Section: Handwritten section"
+
+Test: `__tests__/scenarios/pageSection.test.tsx`
+
+### A todo's keyword without a title still starts its section
+
+- **Given** page 10 carries the keyword of todo "Buy shoes" but no title; page 11 is a follow-up
+- **When** I open Engage on page 11
+- **Then** "Buy shoes" is current and the section is p. 10
+
+Test: `__tests__/scenarios/pageSection.test.tsx`
+
+### A cancelled todo's page still starts a section, but nothing becomes current
+
+- **Given** the todo "Buy shoes" of page 10 is cancelled
+- **When** I open Engage on page 11
+- **Then** the owner is Area Sport, no todo is current, and the line still reads "Section: Buy shoes · from p. 10"
+
+Test: `__tests__/scenarios/pageSection.test.tsx`
+
+### A closed loop's todo page goes back to the Area
+
+- **Given** loop marathon is done
+- **When** I open Engage on page 6
+- **Then** the owner is Area Sport
+
+Test: `__tests__/scenarios/pageSection.test.tsx`
+
+### A pure loop note: a free page after the loop page belongs to the loop
+
+- **Given** loop marathon's note "2026-11 loop marathon.note" is not a home notebook; page 2 is free
+- **When** I open Engage on page 2 of the loop note
+- **Then** the owner is the loop and the line names the loop page
+
+Test: `__tests__/scenarios/pageSection.test.tsx`
+
+### A thread notebook's follow-up page: the thread and its sparring
+
+- **Given** a thread notebook with a sparring page for Mieke and a follow-up page
+- **When** I open Engage on the follow-up page
+- **Then** the owner is Thread #sparring/mieke and the moment line shows that sparring
+
+Test: `__tests__/scenarios/pageSection.test.tsx`
+
+### A todo's own note: as before, no section line
+
+- **Given** the todo "Stretch daily" has its own note
+- **When** I open Engage on its page 2
+- **Then** the todo is current and no section line shows
+
+Test: `__tests__/scenarios/pageSection.test.tsx`
+
+### The page index can't be read: the single-page lookup, and the panel opens
+
+- **Given** the notebook's headings can't be read
+- **When** I open Engage on the meeting page 3
+- **Then** it falls back to the page's own keyword: the meeting's moment line, no section line, "index not read" logged
+- **When** I tap Close
+- **Then** the panel closed without an error
+
+Test: `__tests__/scenarios/pageSection.test.tsx`
 
 ## Inbox
 

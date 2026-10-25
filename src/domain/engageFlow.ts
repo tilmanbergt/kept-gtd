@@ -6,6 +6,7 @@
  */
 import {EngageOwner, EngageTodoKey, MeetingRef, OwnedTodo, sameOwner, sameTodo} from './engageOwner';
 import {EngageOptions, FocusRing} from './engageOptions';
+import {SectionInfo} from './pageSection';
 import {Task} from './types';
 
 /** How the panel was opened: the sidebar button (from the open note) or "Engage ›" on an owner page. */
@@ -81,10 +82,20 @@ export interface EngageState {
   back: OwnedTodo | null;
   /** The meeting whose note page the panel was opened on; it belongs to the note's owner only (E6). */
   pageMeeting: MeetingRef | null;
+  /** The note page's section (docs/dev/history/technical-design-engage-page-owner.md P9), for the note's owner only; cleared with `pageMeeting`. */
+  section: SectionInfo | null;
 }
 
 export type EngageEvent =
-  | {type: 'open'; owner: EngageOwner | null; current: EngageTodoKey | null; ring: FocusRing; back?: OwnedTodo | null; pageMeeting?: MeetingRef | null}
+  | {
+      type: 'open';
+      owner: EngageOwner | null;
+      current: EngageTodoKey | null;
+      ring: FocusRing;
+      back?: OwnedTodo | null;
+      pageMeeting?: MeetingRef | null;
+      section?: SectionInfo | null;
+    }
   | {type: 'picked'; key: EngageTodoKey}
   | {type: 'acted'; ack: EngageAck}
   | {type: 'undone'}
@@ -124,6 +135,7 @@ export const INITIAL_ENGAGE_STATE: EngageState = {
   tab: null,
   back: null,
   pageMeeting: null,
+  section: null,
 };
 
 /** The owner's own screen: its options, or S8 when it is empty. */
@@ -144,6 +156,7 @@ export function engageFlow(state: EngageState, event: EngageEvent): EngageState 
         tab: null,
         back: event.back ?? null,
         pageMeeting: event.owner ? event.pageMeeting ?? null : null,
+        section: event.owner ? event.section ?? null : null,
       };
     case 'picked':
       // A todo chosen in this context becomes the stored one: the way back goes.
@@ -160,7 +173,7 @@ export function engageFlow(state: EngageState, event: EngageEvent): EngageState 
     case 'back':
       return state.owner ? {...state, screen: ownerScreen(state)} : state;
     case 'ownerChosen':
-      return {...state, owner: event.owner, current: null, ack: null, ownerEmpty: false, screen: {kind: 'options'}, tab: null, back: backAfterChoosing(state, event.owner), pageMeeting: null};
+      return {...state, owner: event.owner, current: null, ack: null, ownerEmpty: false, screen: {kind: 'options'}, tab: null, back: backAfterChoosing(state, event.owner), pageMeeting: null, section: null};
     case 'expandQuickAdd':
       return state.owner ? {...state, screen: {kind: 'quickAdd'}} : state;
     case 'collapseQuickAdd':
@@ -169,7 +182,7 @@ export function engageFlow(state: EngageState, event: EngageEvent): EngageState 
       return {...state, tab: event.tab};
     case 'goBack':
       if (!state.back) return state;
-      return {...state, owner: state.back.owner, current: state.back.key, ack: null, ownerEmpty: false, screen: {kind: 'options'}, tab: null, back: null, pageMeeting: null};
+      return {...state, owner: state.back.owner, current: state.back.key, ack: null, ownerEmpty: false, screen: {kind: 'options'}, tab: null, back: null, pageMeeting: null, section: null};
     case 'dataChanged':
       return onDataChanged(state, event);
   }
