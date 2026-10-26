@@ -18,6 +18,17 @@
  * sets only the field, never a tag (decision D12; tags are only ever set by
  * the user). Quick Add shows it in one grey line before saving
  * (`provenanceLabel`), and ✕ there drops it for that one todo.
+ *
+ * Speed (docs/dev/history/technical-design-perf-threads.md §3.1-3.3). Two
+ * module-level memos keep resolution cheap without changing its result:
+ * - `meetingKey` remembers keys by content (`date` + `title`), so a changed
+ *   copy or a draft never gets a stale key; cleared at MEMO_CAP entries.
+ * - Each meetings list gets a lookup table (key → first index, date →
+ *   indexes) the first time it is searched, held in a WeakMap by the array
+ *   object. Cached arrays and entries are replaced, never changed in place
+ *   (docs/dev/design-overview.md §3), so a changed file brings a new array and
+ *   thus a new table, and nothing has to be invalidated. A table whose list
+ *   length differs from the one it was built for is rebuilt.
  */
 import {formatDayHeader} from './dateFormat';
 import {stripAllTags} from './markdown';
@@ -33,9 +44,31 @@ export function normalizeMeetingKey(text: string): string {
   return text.replace(/[#[\]]/g, '').replace(/\s+/g, ' ').trim();
 }
 
-/** The provenance key of `meeting`. */
+/** Entries a memo holds before it is cleared: a few hundred meetings per data set, plus drafts. */
+const MEMO_CAP = 4000;
+const keyMemo = new Map<string, string>();
+const stats = {keyBuilds: 0};
+
+/** Test-only: how often a key was built (memo misses), the memo's size, and a reset. */
+export const __provenanceStatsForTests = {
+  keyBuilds: () => stats.keyBuilds,
+  memoSize: () => keyMemo.size,
+  reset: () => {
+    stats.keyBuilds = 0;
+    keyMemo.clear();
+  },
+};
+
+/** The provenance key of `meeting` (memoized by content, see the module doc comment). */
 export function meetingKey(meeting: Pick<Meeting, 'date' | 'title'>): string {
-  return normalizeMeetingKey(meetingPageKeyword(meeting));
+  const memoKey = `${meeting.date}\u0000${meeting.title}`;
+  const known = keyMemo.get(memoKey);
+  if (known !== undefined) return known;
+  stats.keyBuilds++;
+  const key = normalizeMeetingKey(meetingPageKeyword(meeting));
+  if (keyMemo.size >= MEMO_CAP) keyMemo.clear();
+  keyMemo.set(memoKey, key);
+  return key;
 }
 
 /**
@@ -73,16 +106,33 @@ export interface ProvenanceMatch {
   exact: boolean;
 }
 
-function findIn(
-  sources: readonly ProvenanceSource[],
-  test: (meeting: Meeting) => boolean,
-  exact: boolean,
-): ProvenanceMatch | null {
-  for (const source of sources) {
-    const index = source.meetings.findIndex(test);
-    if (index >= 0) return {path: source.path, meetingIndex: index, meeting: source.meetings[index], exact};
-  }
-  return null;
+/** A meetings list's lookup table: the first index per key, every index per date (cancelled included). */
+interface MeetingListIndex {
+  /** The list's length when the table was built (the guard, see the module doc comment). */
+  length: number;
+  firstByKey: Map<string, number>;
+  byDate: Map<string, number[]>;
+}
+
+const indexes = new WeakMap<readonly Meeting[], MeetingListIndex>();
+
+function indexOf(meetings: readonly Meeting[]): MeetingListIndex {
+  const known = indexes.get(meetings);
+  if (known && known.length === meetings.length) return known;
+  const index: MeetingListIndex = {length: meetings.length, firstByKey: new Map(), byDate: new Map()};
+  meetings.forEach((m, i) => {
+    const key = meetingKey(m);
+    if (!index.firstByKey.has(key)) index.firstByKey.set(key, i);
+    const onDate = index.byDate.get(m.date);
+    if (onDate) onDate.push(i);
+    else index.byDate.set(m.date, [i]);
+  });
+  indexes.set(meetings, index);
+  return index;
+}
+
+function matchAt(source: ProvenanceSource, index: number, exact: boolean): ProvenanceMatch {
+  return {path: source.path, meetingIndex: index, meeting: source.meetings[index], exact};
 }
 
 /**
@@ -98,10 +148,14 @@ export function resolveProvenance(
   // Normalized, so a hand-written key with `#` still matches.
   const key = task.fields.meeting ? normalizeMeetingKey(task.fields.meeting) : '';
   if (!key) return null;
+  // Sources in the given order, those in scope first, then all; inside a source the first index.
   const inScope = sources.filter(s => scopePaths.includes(s.path));
-  const exactTest = (m: Meeting) => meetingKey(m) === key;
-  const exact = findIn(inScope, exactTest, true) ?? findIn(sources, exactTest, true);
-  if (exact) return exact;
+  for (const group of [inScope, sources]) {
+    for (const source of group) {
+      const index = indexOf(source.meetings).firstByKey.get(key);
+      if (index !== undefined) return matchAt(source, index, true);
+    }
+  }
   const date = parseKeywordLeadingDate(key);
   // The key's words as thread tags: `retro/alpha/2026` counts as `retro/alpha`.
   const keyThreads = key
@@ -110,7 +164,13 @@ export function resolveProvenance(
     .map(word => threadOf(word)?.tag)
     .filter((tag): tag is string => !!tag);
   if (!date || keyThreads.length === 0) return null;
-  const fallbackTest = (m: Meeting) =>
-    !m.cancelled && m.date === date && threadsOfTags(m.tags).some(thread => keyThreads.includes(thread.tag));
-  return findIn(inScope, fallbackTest, false) ?? findIn(sources, fallbackTest, false);
+  for (const group of [inScope, sources]) {
+    for (const source of group) {
+      for (const index of indexOf(source.meetings).byDate.get(date) ?? []) {
+        const m = source.meetings[index];
+        if (!m.cancelled && threadsOfTags(m.tags).some(thread => keyThreads.includes(thread.tag))) return matchAt(source, index, false);
+      }
+    }
+  }
+  return null;
 }

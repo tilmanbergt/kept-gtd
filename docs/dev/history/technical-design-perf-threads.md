@@ -318,3 +318,16 @@ parser's `push` during construction found.
   gives the expected result for all of them.
 - **S13.** Until the memo exists (S15), the log line's `lookups` is the number of resolves the build does:
   counterparts × the scope's todos (not cancelled) and agreements with a `meeting` field.
+- **S14 audit** (whole repo, §5): no code changes a cached `meetings`, `tasks` or `agreements` array or a
+  `Meeting`/`Task` in place. Every index assignment (`tasks[i] = …`, `meetings[i] = …` in `ui/useEntryActions.ts`,
+  `ui/useEngagePrompt.ts`, `screens/DailyView.tsx`, `screens/InboxScreen.tsx`, `screens/usePlanningScreen.ts`)
+  writes into the `.slice()` copy `storage/itemMutations.ts`'s `mutateEntryTasks`/`mutateEntryMeetings` or
+  InboxScreen's `saveInboxTasks`/`saveInboxMeetings` hand to it; every `push` and `sort` works on a list built
+  locally; the write-through functions in `storage/dataCache.ts` assign new arrays to the item
+  (`item.meetings = meetings`, `Object.assign(item, parse…)`). `cached.items.push` changes the list of items, which
+  no index is keyed by. The only in-place element replacement is in a test, on a mock store
+  (`__tests__/ui/useEntryActionsEngage.test.tsx`, "Undo writes nothing when the todo changed meanwhile").
+- **S14.** The table keeps only the **first** index per key (`firstByKey: Map<string, number>`): exact resolution
+  never reads more. `byDate` keeps every index, as designed. `threadOf` returns `Readonly<ThreadRef>`; no caller
+  changed one.
+- **S14.** `__provenanceStatsForTests` is `{keyBuilds(), memoSize(), reset()}`.
