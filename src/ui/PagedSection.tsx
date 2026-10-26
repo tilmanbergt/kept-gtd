@@ -120,6 +120,8 @@ interface Props<T> {
    * stable (breadcrumb, pin) across a load instead of the whole section
    * disappearing and reappearing. */
   viewportContent?: React.ReactNode;
+  /** Self-measuring mode: the key its measured height is remembered under for the session (ui/useMeasuredHeight.ts), e.g. `current:Todos`; the next mount starts with it. */
+  heightKey?: string;
   /** Called with the index of the current page's first row whenever it changes (ui/pagination.ts's PagedByHeight.startIndex) - ui/MeetingList.tsx uses it to keep that row in view across a layout switch. */
   onFirstRowChange?: (index: number) => void;
   textColor: string;
@@ -140,12 +142,13 @@ export default function PagedSection<T>({
   emptyHint,
   viewportContent,
   onFirstRowChange,
+  heightKey,
   textColor,
   borderColor,
 }: Props<T>): React.JSX.Element {
   perfCount('render:PagedSection');
   const selfMeasuring = viewportHeight == null;
-  const [measuredOnLayout, measuredHeight] = useMeasuredHeight();
+  const [measuredOnLayout, measuredHeight] = useMeasuredHeight(heightKey);
   // 0 only ever applies for the one render before the first onLayout fires
   // (self-measuring mode, nothing measured yet) - usePagedByHeight always
   // admits at least one row regardless (see its own doc comment), so that

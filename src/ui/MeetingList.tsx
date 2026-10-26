@@ -65,6 +65,7 @@ export default function MeetingList<T>({
   return (
     <PagedSection
       header={header}
+      heightKey={`meetings:${listId}`}
       headerAccessory={<LayoutSwitch layout={layout} onChange={setLayout} textColor={textColor} />}
       rows={rows}
       rowHeight={row => (isHeaderRow(row) ? MEETING_LIST_HEADER_ROW_HEIGHT : MEETING_ROW_HEIGHT[layout])}

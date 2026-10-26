@@ -360,3 +360,10 @@ The Atruvia roster (≈ 180 ms) stays inside the first render.
   runs `runAfterEinkFlush()` (every tab built, as once the page is on screen), its expectations unchanged. Per open:
   the Current page's Quick Add renders once before the flush and once after it (the other tabs' rows); a kept
   screen's Quick Add (Daily) does the same once, at its own first flush.
+- **P5.** Final heights: after P3 nothing on the Current page appears after the first render (ItemStatusPanel has
+  its content, MarksCard and the agreements line are computed in render, the counterpart pill only shows on a
+  tap), so no box needed a reserved height. Remembered heights: `useMeasuredHeight(memoKey?)` and
+  `PagedSection`'s `heightKey`; the Current page passes `current:Threads` and `current:Todos`, and
+  `ui/MeetingList.tsx` passes `meetings:<listId>` itself, so every meeting list (Daily's too) starts with its last
+  height. The fake device lays out every box at one size, so the effect shows only on the device
+  (`layout:PagedSection` per open).
