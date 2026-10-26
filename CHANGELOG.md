@@ -10,6 +10,8 @@ or your project/area files are stored.
 
 ## [Unreleased]
 
+## [0.21.0] — 2026-10-26
+
 ### New
 - **Agreements**: keep what you settled with someone - "Feedback only in our 1:1s" - next to the
   thread, loop, project or area it belongs to. Add one on Quick Add's new **Agreement** tab in a
