@@ -447,7 +447,9 @@ export default function FileBrowserPane({
     const built = builtForRef.current === activeRoot.key;
     builtForRef.current = null;
     if (built) return;
-    setStack(buildStack(activeRoot, activeRoot.defaultSubfolder));
+    // The same levels keep the same stack (the mount's own start, a reset to where it already is).
+    const next = buildStack(activeRoot, activeRoot.defaultSubfolder);
+    setStack(prev => (prev.length === next.length && prev.every((level, i) => level.path === next[i].path && level.name === next[i].name) ? prev : next));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeRootIdentity, resetKey]);
 
@@ -573,9 +575,15 @@ export default function FileBrowserPane({
     [],
   );
   const loadedPathRef = useRef<string | null>(null);
+  // A root's folder is listed only once a root is shown in this mount (a tap on its tab, an arm, a locate):
+  // while an extra tab (Threads, Projects, Notebook) is open nothing is listed, and the page's e-ink refresh
+  // does not wait for it (docs/dev/history/technical-design-perf-current-page.md §3.6).
+  const showingRoot = activeExtra === null;
+  const rootShownRef = useRef(false);
+  if (showingRoot) rootShownRef.current = true;
 
   useEffect(() => {
-    if (!current) return;
+    if (!current || !rootShownRef.current) return;
     if (showSourceChooser && activeRoot?.sources) {
       // Synthetic, in-memory - no scan needed (see the module doc comment).
       setEntries(activeRoot.sources.map(source => ({name: source.label, path: source.path, isFolder: true})));
@@ -620,7 +628,7 @@ export default function FileBrowserPane({
     // level change (or genuinely entering/leaving the depth-0 chooser)
     // should trigger a rescan.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [current?.path, showSourceChooser, reloadTick]);
+  }, [current?.path, showSourceChooser, reloadTick, showingRoot]);
 
   /** Which `sources` entry `current` (the folder actually being listed, one level below the depth-0 chooser) came from - null off a non-`sources` root, or above/below that level. Depends only on `current`, not on which of its child entries is being picked/navigated - every entry at pickNavigateDepth came from the same one source. */
   const currentSourceKind = (): 'project' | 'area' | null => {

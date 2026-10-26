@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-85 scenarios.
+86 scenarios.
 
 ## Agreements
 
@@ -595,6 +595,16 @@ Test: `__tests__/scenarios/currentPageGolden.test.tsx` · design: `docs/dev/hist
 - **When** I open Zen's page, then Atruvia's from the Areas list, then Zen's again
 - **Then** Quick Add, the page and its parts render at most as often as recorded
 - **And** the settings are read at most as often as recorded
+
+Test: `__tests__/scenarios/currentPagePerf.test.tsx` · design: `docs/dev/history/technical-design-perf-current-page.md`
+
+### An Area page lists its folder only when the Files tab is opened
+
+- **Given** the big data set and the app started
+- **When** I open Atruvia's page (the Threads tab is shown)
+- **Then** its folder is not listed
+- **When** I tap Files
+- **Then** the folder is listed once and its entries show
 
 Test: `__tests__/scenarios/currentPagePerf.test.tsx` · design: `docs/dev/history/technical-design-perf-current-page.md`
 

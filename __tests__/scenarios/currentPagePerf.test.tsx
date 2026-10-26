@@ -4,8 +4,9 @@
 jest.mock('../../src/utils/perf', () => require('../../test-helpers/renderCounts').perfWithRenderCounts());
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {openApp, settle, tap, tapTab} from '../../test-helpers/scenario/app';
-import {putFile} from '../../test-helpers/scenario/files';
+import {expectShows, openApp, settle, tap, tapTab, texts} from '../../test-helpers/scenario/app';
+import {areaDir, putFile} from '../../test-helpers/scenario/files';
+import {device} from '../../test-helpers/fakeDevice/device';
 import {and, given, scenario, then, when} from '../../test-helpers/scenario/scenario';
 import {BIG_NOW, bigScopeFiles, bigScopeSettings} from '../../test-helpers/bigScope';
 import {renderCounts, resetRenderCounts} from '../../test-helpers/renderCounts';
@@ -82,6 +83,27 @@ scenario('Opening an Area page renders each part a bounded number of times and r
   });
 });
 
+const listings = (folder: string) => device().logs.filter(l => l.text === `FileBrowserPane: loading ${folder} `).length;
+
+scenario('An Area page lists its folder only when the Files tab is opened', {feature: 'Projects and Areas', design: 'technical-design-perf-current-page.md'}, () => {
+  given('the big data set and the app started', async () => {
+    clock();
+    for (const f of bigScopeFiles()) putFile(f.path, f.content);
+    await openApp({settings: bigScopeSettings()});
+  });
+  when('I open Atruvia\'s page (the Threads tab is shown)', async () => {
+    await tapTab('Areas');
+    await tap(/^Atruvia/);
+  });
+  then('its folder is not listed', () => expect(listings(areaDir('Atruvia'))).toBe(0));
+  // "Files" shows twice on this page; the Files tab is the last one.
+  when('I tap Files', () => tap('Files', texts().filter(t => t === 'Files').length - 1));
+  then('the folder is listed once and its entries show', () => {
+    expect(listings(areaDir('Atruvia'))).toBe(1);
+    expectShows('Meetings');
+  });
+});
+
 /**
  * Before this work (P0, as on the device): Quick Add 6, ItemDetail 5, ProjectDataPanel 7 renders and 8 settings
  * reads per open. P1 (settings from the snapshot): 3, 3, 3 and none. P2 (stable Quick Add props): Quick Add 1.
@@ -90,4 +112,5 @@ scenario('Opening an Area page renders each part a bounded number of times and r
  * kept screen's Quick Add (Daily) at its own first flush.
  */
 const LIMITS = {quickAdd: 3, itemDetail: 1, projectDataPanel: 1, settingsReads: 0};
-const ONCE = ['ItemStatusPanel', 'TodosSection', 'MeetingsSection', 'MarksCard'];
+/** Once per open since P3; FileBrowserPane and the Threads tab inside it since P6 (no hidden listing). */
+const ONCE = ['ItemStatusPanel', 'TodosSection', 'MeetingsSection', 'MarksCard', 'FileBrowserPane', 'ThreadsTab'];

@@ -367,3 +367,9 @@ The Atruvia roster (≈ 180 ms) stays inside the first render.
   `ui/MeetingList.tsx` passes `meetings:<listId>` itself, so every meeting list (Daily's too) starts with its last
   height. The fake device lays out every box at one size, so the effect shows only on the device
   (`layout:PagedSection` per open).
+- **P6.** As designed (O2): the listing effect runs only once a root has been shown in this mount
+  (`rootShownRef`, set while no extra tab is active - a tap on Files, an arm or a locate), and `loading` keeps its
+  start value until then, so `useEinkRefreshOnLoad` waits for nothing on open. The mount's own `setStack` (the
+  root's start levels) keeps the same stack when the levels are the same. Per open: FileBrowserPane and the
+  Threads tab render once. Scenario 7 is in `__tests__/scenarios/currentPagePerf.test.tsx` (the folder's
+  `FileBrowserPane: loading` log line: none on open, one after tapping Files).
