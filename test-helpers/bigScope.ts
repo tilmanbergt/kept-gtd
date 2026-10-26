@@ -21,7 +21,8 @@ import {parseAgreementsSpan} from '../src/domain/agreements';
 import {parseLoopsSpan} from '../src/domain/loopsSection';
 import {parseFrontMatter, parseMeetingsSpan, parseTasksSpan} from '../src/domain/markdown';
 import {meetingKey} from '../src/domain/provenance';
-import {DEFAULT_SETTINGS, resolvePaths} from '../src/domain/settings';
+import {createNoteSetup, seedNoteSetupDefaults} from '../src/domain/noteSetups';
+import {DEFAULT_SETTINGS, GtdParaSettings, resolvePaths} from '../src/domain/settings';
 import {parseThreadsSpan} from '../src/domain/threadsSection';
 import type {CachedItem} from '../src/storage/dataCache';
 import type {ThreadInboxInput} from '../src/storage/threadAggregate';
@@ -355,4 +356,10 @@ export function bigScopeCache(): {items: CachedItem[]; inbox: ThreadInboxInput; 
   const inboxFile = files.find(f => f.kind === 'inbox')!;
   const inbox = {path: inboxFile.folder, tasks: parseTasksSpan(inboxFile.content).tasks, meetings: parseMeetingsSpan(inboxFile.content).meetings};
   return {items, inbox, atruvia: items.find(i => i.name === 'Atruvia')!};
+}
+
+/** The settings for the data set: its Thread and Loop setups, the seeded Default, everything else default. */
+export function bigScopeSettings(): Partial<GtdParaSettings> {
+  const noteSetups = BIG_SETUP_TAGS.map((s, i) => ({...createNoteSetup(`b${i}`, s.kind), name: s.name, tags: [s.tag]}));
+  return {noteSetups, noteSetupDefaults: seedNoteSetupDefaults(), nextNoteSetupId: noteSetups.length + 1, noteSetupsMigrated: true};
 }

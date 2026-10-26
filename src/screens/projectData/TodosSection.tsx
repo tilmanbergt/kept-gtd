@@ -8,6 +8,7 @@
  * ProjectDataPanel's single Quick Add above both lists.
  */
 import React, {useEffect, useState} from 'react';
+import {usePerfRender} from '../../utils/perf';
 import {Keyboard, Pressable, Text, View} from 'react-native';
 import {Task} from '../../domain/types';
 import {formatDate} from '../../domain/dateFormat';
@@ -65,6 +66,7 @@ export default function TodosSection({
   /** The counterpart filter (counterpartFilter.tsx): only todos it accepts show. Applied after grouping, like hideDone. */
   filter?: ((task: Task) => boolean) | null;
 }): React.JSX.Element {
+  usePerfRender('TodosSection');
   const [actionError, setActionError] = useState<string | null>(null);
   useErrorStatus('ProjectDataPanel.actionError', actionError, () => setActionError(null));
   const confirmNoteCreate = useNoteCreateConfirm('ProjectDataPanel.todoNoteCreateConfirm');

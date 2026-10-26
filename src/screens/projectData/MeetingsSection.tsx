@@ -6,6 +6,7 @@
  * in ProjectDataPanel's single Quick Add above both lists.
  */
 import React, {useEffect, useState} from 'react';
+import {usePerfRender} from '../../utils/perf';
 import {Keyboard, View} from 'react-native';
 import {Meeting} from '../../domain/types';
 import {splitAndSortMeetings} from '../../domain/meetingTime';
@@ -64,6 +65,7 @@ export default function MeetingsSection({
   /** The counterpart filter (counterpartFilter.tsx): only meetings it accepts show. */
   filter?: ((meeting: Meeting) => boolean) | null;
 }): React.JSX.Element {
+  usePerfRender('MeetingsSection');
   const [actionError, setActionError] = useState<string | null>(null);
   useErrorStatus('ProjectDataPanel.actionError', actionError, () => setActionError(null));
   const confirmNoteCreate = useNoteCreateConfirm('ProjectDataPanel.meetingNoteCreateConfirm');

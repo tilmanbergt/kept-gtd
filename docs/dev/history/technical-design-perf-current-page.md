@@ -308,4 +308,16 @@ The Atruvia roster (≈ 180 ms) stays inside the first render.
 
 ## As built
 
-(Filled in during P0-P7.)
+- **P0.** Render marks in `ThreadsTab`, `FileBrowserPane`, `TodosSection`, `MeetingsSection`, `MarksCard` and in each
+  Quick Add tab's input row (`QuickAddRows:task|meeting|note|agreement`). The `settings:read` counter (§3.7) comes with
+  P1, where reads and parses part ways.
+- **P0 golden master:** `__tests__/scenarios/currentPageGolden.test.tsx` records Atruvia (and each Quick Add tab),
+  Zen, Tender and Solo from the perf-threads data set: the visible texts and the rows every paged list on screen is
+  handed (kept tabs' lists included) in `__tests__/scenarios/__golden__/currentPage.json`.
+- **P0 render counter:** `test-helpers/renderCounts.ts` counts `usePerfRender` calls; the scenario
+  `__tests__/scenarios/currentPagePerf.test.tsx` opens Atruvia and Zen with another item's page open before. The fake
+  storage answers at once, which lets React batch every settings read into one render; the test makes each settings
+  read answer a few ticks after the previous one, as on the device. With that it shows the device's picture: per
+  open Quick Add 6, ItemDetail 5, ProjectDataPanel 7 (device: 9) renders, 8 settings reads. These are P0's limits;
+  each step lowers them.
+- `test-helpers/bigScope.ts` gains `bigScopeSettings()` (the data set's Note setups).

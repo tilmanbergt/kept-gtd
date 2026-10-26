@@ -154,6 +154,7 @@ import React, {useEffect, useRef, useState} from 'react';
 import {ActivityIndicator, Pressable, StyleSheet, Text, View} from 'react-native';
 import {FolderEntry, listFolderEntries, openPath, subscribeFolderChanges} from '../supernote/fileSystem';
 import {log, logError} from '../utils/log';
+import {usePerfRender} from '../utils/perf';
 import {requestEinkRefresh, useEinkRefreshOnLoad} from '../utils/screenRefresh';
 import MiniTabs from './MiniTabs';
 import {activeTopTab, FILES_GROUP_KEY, groupEntryKey, groupTopTab} from './fileBrowserGroup';
@@ -376,6 +377,7 @@ export default function FileBrowserPane({
   textColor,
   borderColor,
 }: Props): React.JSX.Element {
+  usePerfRender('FileBrowserPane');
   // See `viewportHeight`'s own doc comment above.
   const selfMeasuring = viewportHeight == null;
   const arming = linkTarget?.mode === 'arming';

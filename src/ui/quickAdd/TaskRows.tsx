@@ -8,6 +8,7 @@
  * logs its frame (ui/quickAdd/styles.ts `row2Wrap`, ui/quickAdd/layoutLog.ts).
  */
 import React from 'react';
+import {usePerfRender} from '../../utils/perf';
 import {Pressable, StyleSheet, Text, TextInput, View} from 'react-native';
 import ClipboardStrip from '../ClipboardStrip';
 import DateInput, {DateNudgeStrip} from '../DateInput';
@@ -75,6 +76,7 @@ interface InputRowProps extends Colors {
 }
 
 export function TaskInputRow({core, task, placeholder, capture, ...colors}: InputRowProps) {
+  usePerfRender('QuickAddRows:task');
   const {textColor, borderColor, placeholderColor} = colors;
   return (
     <View style={[rowStyles.row2, !!capture && rowStyles.row2Free, core.displayType !== 'task' && rowStyles.hidden]}>

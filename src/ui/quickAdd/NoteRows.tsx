@@ -4,6 +4,7 @@
  * `#tag` tokens in the title. No due date, no edit mode.
  */
 import React from 'react';
+import {usePerfRender} from '../../utils/perf';
 import {View} from 'react-native';
 import ClipboardTextInput from '../ClipboardTextInput';
 import {useTwoRowTagChips} from '../TagChips';
@@ -20,6 +21,7 @@ interface Props {
 }
 
 export function NoteInputRow({core, note, textColor, borderColor, placeholderColor}: Props & {placeholderColor: string}) {
+  usePerfRender('QuickAddRows:note');
   return (
     <View style={[rowStyles.row2, core.displayType !== 'note' && rowStyles.hidden]}>
       <ClipboardTextInput
