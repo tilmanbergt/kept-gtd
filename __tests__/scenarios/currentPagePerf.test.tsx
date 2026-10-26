@@ -104,6 +104,32 @@ scenario('An Area page lists its folder only when the Files tab is opened', {fea
   });
 });
 
+scenario('Hiding done todos on an Area page changes the Todos list and nothing else, and is kept', {feature: 'Projects and Areas', design: 'technical-design-perf-current-page.md'}, () => {
+  given('the big data set and Atruvia\'s page open', async () => {
+    clock();
+    for (const f of bigScopeFiles()) putFile(f.path, f.content);
+    await openApp({settings: bigScopeSettings()});
+    await tapTab('Areas');
+    await tap(/^Atruvia/);
+  });
+  when('I tap "Hide done tasks"', async () => {
+    resetRenderCounts();
+    await tap('Hide done tasks');
+  });
+  then('the Todos list offers to show the done ones again, and Quick Add did not render', () => {
+    expectShows(/^Show \d+ done tasks?$/);
+    expect(renderCounts().QuickAddWidget ?? 0).toBe(0);
+    expect(renderCounts().TodosSection).toBeGreaterThan(0);
+  });
+  and('after opening Zen and coming back, done todos are still hidden', async () => {
+    await tapTab('Areas');
+    await tap(/^Zen/);
+    await tapTab('Areas');
+    await tap(/^Atruvia/);
+    expectShows(/^Show \d+ done tasks?$/);
+  });
+});
+
 /**
  * Before this work (P0, as on the device): Quick Add 6, ItemDetail 5, ProjectDataPanel 7 renders and 8 settings
  * reads per open. P1 (settings from the snapshot): 3, 3, 3 and none. P2 (stable Quick Add props): Quick Add 1.

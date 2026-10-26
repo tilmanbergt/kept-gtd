@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-86 scenarios.
+87 scenarios.
 
 ## Agreements
 
@@ -605,6 +605,15 @@ Test: `__tests__/scenarios/currentPagePerf.test.tsx` · design: `docs/dev/histor
 - **Then** its folder is not listed
 - **When** I tap Files
 - **Then** the folder is listed once and its entries show
+
+Test: `__tests__/scenarios/currentPagePerf.test.tsx` · design: `docs/dev/history/technical-design-perf-current-page.md`
+
+### Hiding done todos on an Area page changes the Todos list and nothing else, and is kept
+
+- **Given** the big data set and Atruvia's page open
+- **When** I tap "Hide done tasks"
+- **Then** the Todos list offers to show the done ones again, and Quick Add did not render
+- **And** after opening Zen and coming back, done todos are still hidden
 
 Test: `__tests__/scenarios/currentPagePerf.test.tsx` · design: `docs/dev/history/technical-design-perf-current-page.md`
 

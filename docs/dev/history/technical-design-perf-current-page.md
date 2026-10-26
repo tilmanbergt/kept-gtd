@@ -373,3 +373,25 @@ The Atruvia roster (≈ 180 ms) stays inside the first render.
   root's start levels) keeps the same stack when the levels are the same. Per open: FileBrowserPane and the
   Threads tab render once. Scenario 7 is in `__tests__/scenarios/currentPagePerf.test.tsx` (the folder's
   `FileBrowserPane: loading` log line: none on open, one after tapping Files).
+- **P7.** Scenario tests: §6 1 is the golden master (`currentPageGolden.test.tsx`, unchanged since P0); 2, 3 and 8
+  are the counts in `currentPagePerf.test.tsx` (Quick Add, settings reads, ProjectDataPanel once: its first render
+  has the content); 4 ("Hide done tasks": the Todos list changes, Quick Add does not render, kept across items)
+  and 7 are scenarios there; 5 is `__tests__/ui/quickAddTabsOnDemand.test.tsx` plus the golden's walk through the
+  Quick Add tabs; 6 is `__tests__/ui/measuredHeightMemo.test.tsx` (the fake device lays out every box at one
+  size). Docs: `design-overview.md` §2.1 (kept tabs take the settings from the snapshot), §2.4 (Quick Add's rows
+  per tab), §2.6 (the Files pane lists a root once one is shown), §2.12 (snapshot and hooks), §3 (settings in
+  components). No help page describes what changed (the Files tab's first open shows its loading state, as when
+  drilling into a folder).
+- **Result on the fake device** (per open of an Area page, another item's page open before, settings reads
+  answering one after another as on the device):
+
+  | | P0 | After P7 |
+  |---|---|---|
+  | Settings reads | 8 | 0 |
+  | Quick Add renders | 6 | 2 (first render with the Todo tab; the other tabs after the flush) |
+  | ItemDetail / ProjectDataPanel renders | 5 / 7 | 1 / 1 |
+  | ItemStatusPanel, TodosSection, MeetingsSection, MarksCard | 5, 4, 5, 4 | 1 each |
+  | FileBrowserPane, ThreadsTab | 5, 5 | 1, 1 |
+  | Folder listings on open | 1 | 0 |
+
+  The device numbers (tap → flush) come from the §7 device test.
