@@ -6,19 +6,17 @@
  * (storage/homeNotebooks.ts's state cache), refreshed when the cache or a
  * notebook's folder changes, when the plugin is opened again (the files are
  * checked) and when the screen is shown again; the screen
- * never polls. Settings are read on mount and on show, like every other
- * reader of the Default.
+ * never polls. The settings come from the snapshot (ui/useSettings.ts), so
+ * a change of the Default arrives at once.
  */
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
-import {GtdParaSettings} from '../domain/settings';
 import {CachedItem, subscribeCache, subscribeFilesChecked} from '../storage/dataCache';
 import {HomeNotebook, homeNotebookOf, refreshHomeNotebookStates, subscribeHomeNotebookStates} from '../storage/homeNotebooks';
-import {loadSettings} from '../storage/settingsStorage';
 import {subscribeFolderChanges} from '../supernote/fileSystem';
-import {errorMessage} from '../utils/errorMessage';
-import {logWarn} from '../utils/log';
 import {requestEinkRefresh} from '../utils/screenRefresh';
 import {useOnScreenShow, useScreenActivity} from './screenActivity';
+import {samePaths, useSettingsValue} from './useSettings';
+import {GtdParaSettings, resolvePaths} from '../domain/settings';
 
 type ItemRef = Pick<CachedItem, 'path' | 'name' | 'abbrev'>;
 
@@ -29,17 +27,17 @@ export interface HomeNotebooks {
   enabled: boolean;
 }
 
+const keepSettings = (settings: GtdParaSettings) => settings;
+const sameForHomeNotebooks = (a: GtdParaSettings, b: GtdParaSettings) =>
+  a.noteSetupDefaults.notebook === b.noteSetupDefaults.notebook && samePaths(resolvePaths(a), resolvePaths(b));
+
 export function useHomeNotebooks(items: readonly ItemRef[]): HomeNotebooks {
-  const [settings, setSettings] = useState<GtdParaSettings | null>(null);
+  // The settings snapshot, live (ui/useSettings.ts): a change in Settings arrives without a read here.
+  // Kept while what a home notebook depends on (the Default's notebook, the folders) is the same, so
+  // a change of another setting renders nothing (storage/homeNotebooks.ts's homeNotebookOf).
+  const settings = useSettingsValue(keepSettings, sameForHomeNotebooks);
   const [, setTick] = useState(0);
   const activity = useScreenActivity();
-
-  const reloadSettings = useCallback(() => {
-    loadSettings()
-      .then(setSettings)
-      .catch(e => logWarn('useHomeNotebooks: settings not loaded', errorMessage(e)));
-  }, []);
-  useEffect(reloadSettings, [reloadSettings]);
 
   const notebooks = useMemo(
     () => (settings ? items.map(item => homeNotebookOf(item, settings)).filter((nb): nb is HomeNotebook => nb !== null) : []),
@@ -53,10 +51,7 @@ export function useHomeNotebooks(items: readonly ItemRef[]): HomeNotebooks {
     if (pathsKey) void refreshHomeNotebookStates(pathsKey.split('\n'));
   }, [pathsKey]);
   useEffect(refresh, [refresh]);
-  useOnScreenShow(() => {
-    reloadSettings();
-    refresh();
-  });
+  useOnScreenShow(refresh);
 
   useEffect(() => {
     const unsubscribeStates = subscribeHomeNotebookStates(() => {

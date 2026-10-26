@@ -15,6 +15,7 @@
  *   `agreementTargetPath`); without one the tab is not offered. It gets the
  *   screen's preset tag and the meeting it is made in (`meetingKey`).
  */
+import {useMemo} from 'react';
 import {AgreementRef} from '../domain/agreementOwner';
 import {buildAgreement} from '../domain/agreements';
 import {agreementAddedText} from '../domain/fileChangeText';
@@ -28,6 +29,7 @@ import {AgreementHandlers} from './quickAdd/useAgreementDraft';
 import {QuickAddEditTarget} from './quickAdd/types';
 import {EntryEditKey} from './useEntryActions';
 import {useEditTarget} from './useEditTarget';
+import {useStableCallback} from './useStableCallback';
 
 export const agreementRefKey = (ref: Pick<AgreementRef, 'itemPath' | 'index'>) => `${ref.itemPath}#${ref.index}`;
 
@@ -113,33 +115,38 @@ export function useAgreementActions(input: Input): AgreementActions {
       ? {kind: 'agreementChange', mode: 'edit', key: `agreementChange:${agreementRefKey(selected)}`, replaces: selected}
       : {kind: 'agreement', mode: edit.mode, key: `agreement:${agreementRefKey(selected)}`, agreement: selected};
 
-  const handlers: AgreementHandlers = {
-    onAddAgreement: targetPath
-      ? async (text, valid) => {
-          const words = input.applyTags ? input.applyTags(text) : text;
-          await addAgreement(targetPath, buildAgreement(words, {today: todayIso(), valid, meeting: input.meetingKey ?? null}));
-          log(`${name}: agreement added`);
-          input.onAdded?.();
-          requestEinkRefresh();
-          return agreementAddedText(itemName(targetPath));
-        }
-      : undefined,
-    onSaveEditAgreement: async (text, valid) => {
-      if (!selected) return true;
-      await editAgreement(selected, text, valid);
-      edit.saved();
-      requestEinkRefresh();
-      return true;
-    },
-    onChangeAgreement: async (text, valid) => {
-      if (!selected) return true;
-      // The new one goes where the old one is, and records the meeting the screen is in (if any).
-      await changeAgreement(selected, text, valid, input.meetingKey ?? null);
-      edit.cancel();
-      requestEinkRefresh();
-      return true;
-    },
-  };
+  // Stable handlers (ui/useStableCallback.ts: called from events only), so the memoized Quick Add
+  // that gets them as props skips a parent's re-render (docs/dev/history/technical-design-perf-current-page.md §3.2).
+  // Only `onAddAgreement`'s presence changes what Quick Add shows (the Agreement tab).
+  const onAddAgreement = useStableCallback(async (text: string, valid: string | null) => {
+    if (!targetPath) return;
+    const words = input.applyTags ? input.applyTags(text) : text;
+    await addAgreement(targetPath, buildAgreement(words, {today: todayIso(), valid, meeting: input.meetingKey ?? null}));
+    log(`${name}: agreement added`);
+    input.onAdded?.();
+    requestEinkRefresh();
+    return agreementAddedText(itemName(targetPath));
+  });
+  const onSaveEditAgreement = useStableCallback(async (text: string, valid: string | null) => {
+    if (!selected) return true;
+    await editAgreement(selected, text, valid);
+    edit.saved();
+    requestEinkRefresh();
+    return true;
+  });
+  const onChangeAgreement = useStableCallback(async (text: string, valid: string | null) => {
+    if (!selected) return true;
+    // The new one goes where the old one is, and records the meeting the screen is in (if any).
+    await changeAgreement(selected, text, valid, input.meetingKey ?? null);
+    edit.cancel();
+    requestEinkRefresh();
+    return true;
+  });
+  const hasTarget = !!targetPath;
+  const handlers: AgreementHandlers = useMemo(
+    () => ({onAddAgreement: hasTarget ? onAddAgreement : undefined, onSaveEditAgreement, onChangeAgreement}),
+    [hasTarget, onAddAgreement, onSaveEditAgreement, onChangeAgreement],
+  );
 
   return {
     editTarget,

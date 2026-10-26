@@ -7,6 +7,7 @@
  * while another tab shows.
  */
 import React from 'react';
+import {usePerfRender} from '../../utils/perf';
 import {View} from 'react-native';
 import ClipboardTextInput from '../ClipboardTextInput';
 import TagChips, {useTwoRowTagChips} from '../TagChips';
@@ -30,6 +31,7 @@ interface Props extends Colors {
 }
 
 export function AgreementInputRow({core, agreement, today, textColor, borderColor, placeholderColor}: Props) {
+  usePerfRender('QuickAddRows:agreement');
   const {fields} = agreement;
   return (
     <View style={[rowStyles.row2, core.displayType !== 'agreement' && rowStyles.hidden]}>

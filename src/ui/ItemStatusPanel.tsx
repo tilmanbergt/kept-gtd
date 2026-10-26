@@ -41,7 +41,7 @@ import {assignedProjects, assignProjectToArea, unassignProject} from '../storage
 import {archiveItem, archiveLeavesEmptyFolder, archiveTargetsFor, describeAreaArchiveBlock} from '../storage/archive';
 import {archiveDoneText, emptyFolderConfirmNote} from '../domain/fileChangeText';
 import {displayPath} from '../supernote/fileSystem';
-import {ensureItemCached, findCachedItem} from '../storage/dataCache';
+import {CachedItem, ensureItemCached, findCachedItem} from '../storage/dataCache';
 import {useOnScreenShow} from './screenActivity';
 import {loadSettings} from '../storage/settingsStorage';
 import {SettableStatus, setItemStatus} from '../storage/statusControl';
@@ -101,6 +101,21 @@ function currentItem(kind: 'project' | 'area', name: string, path: string, snaps
   return {kind, name, path, ...(findCachedItem(path) ?? snapshot)};
 }
 
+/** The fields this panel keeps of `item` (all of them follow from its text, `rawContent`). */
+function statusPanelStateOf(item: CachedItem): StatusPanelState {
+  return {
+    rawContent: item.rawContent,
+    status: item.status,
+    dailyFocus: item.dailyFocus,
+    weeklyFocus: item.weeklyFocus,
+    monthlyFocus: item.monthlyFocus,
+    frontMatterExtraLines: item.frontMatterExtraLines,
+    defaultResourceFolder: item.defaultResourceFolder,
+    area: item.area,
+    abbrev: item.abbrev,
+  };
+}
+
 export default function ItemStatusPanel({
   kind,
   name,
@@ -113,7 +128,12 @@ export default function ItemStatusPanel({
   borderColor,
 }: Props): React.JSX.Element | null {
   usePerfRender('ItemStatusPanel');
-  const [state, setState] = useState<StatusPanelState | null>(null);
+  // A cached item is shown in the first render, so the panel has its height in the first layout
+  // (docs/dev/history/technical-design-perf-current-page.md §3.3, §3.5); `load` then keeps the same state.
+  const [state, setState] = useState<StatusPanelState | null>(() => {
+    const cached = findCachedItem(path);
+    return cached && !cached.loadError ? statusPanelStateOf(cached) : null;
+  });
   // Explicit e-ink refresh once this panel's own independent load actually
   // lands - see src/utils/screenRefresh.ts. No separate loading flag here
   // (see the module doc comment's "extract, don't lift" note), so `state
@@ -164,17 +184,7 @@ export default function ItemStatusPanel({
     try {
       const item = await ensureItemCached(kind, name, path);
       if (item.loadError) throw new Error(item.loadError);
-      setState({
-        rawContent: item.rawContent,
-        status: item.status,
-        dailyFocus: item.dailyFocus,
-        weeklyFocus: item.weeklyFocus,
-        monthlyFocus: item.monthlyFocus,
-        frontMatterExtraLines: item.frontMatterExtraLines,
-        defaultResourceFolder: item.defaultResourceFolder,
-        area: item.area,
-        abbrev: item.abbrev,
-      });
+      setState(prev => (prev && prev.rawContent === item.rawContent ? prev : statusPanelStateOf(item)));
     } catch (e) {
       const message = errorMessage(e);
       logError('ItemStatusPanel: load failed', kind, path, message);

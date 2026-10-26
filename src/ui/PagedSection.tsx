@@ -8,8 +8,12 @@
  * Arrows are only rendered when that direction is actually available - not
  * shown disabled. Most lists fit on one page, so most `PagedSection`
  * instances show no arrow at all. `styles.headerRow`'s height is fixed by
- * its own padding/line-height, never by whether arrows are present, so the
- * header line never changes height page to page.
+ * its own padding and one line height (HEADER_LINE_HEIGHT) that the header
+ * text, the `+N` label and the arrows all use, the arrows without vertical
+ * padding (their tap area is `hitSlop`) - never by whether arrows are
+ * present. So a list that needs a second page does not shrink its own
+ * viewport, which would page it a second time
+ * (docs/dev/history/technical-design-perf-current-page.md, As built P8).
  *
  * A `+N` hidden-count label sits just left of the arrows:
  * `N = rows.length - pageItems.length`, i.e. how many entries exist that
@@ -120,6 +124,12 @@ interface Props<T> {
    * stable (breadcrumb, pin) across a load instead of the whole section
    * disappearing and reappearing. */
   viewportContent?: React.ReactNode;
+  /**
+   * Self-measuring mode: the keys its measured height is remembered under for the session
+   * (ui/useMeasuredHeight.ts), most specific first, e.g. `['current:Todos:<item path>', 'current:Todos']`;
+   * the next mount starts with the first one known.
+   */
+  heightKey?: string | readonly string[];
   /** Called with the index of the current page's first row whenever it changes (ui/pagination.ts's PagedByHeight.startIndex) - ui/MeetingList.tsx uses it to keep that row in view across a layout switch. */
   onFirstRowChange?: (index: number) => void;
   textColor: string;
@@ -140,12 +150,13 @@ export default function PagedSection<T>({
   emptyHint,
   viewportContent,
   onFirstRowChange,
+  heightKey,
   textColor,
   borderColor,
 }: Props<T>): React.JSX.Element {
   perfCount('render:PagedSection');
   const selfMeasuring = viewportHeight == null;
-  const [measuredOnLayout, measuredHeight] = useMeasuredHeight();
+  const [measuredOnLayout, measuredHeight] = useMeasuredHeight(heightKey);
   // 0 only ever applies for the one render before the first onLayout fires
   // (self-measuring mode, nothing measured yet) - usePagedByHeight always
   // admits at least one row regardless (see its own doc comment), so that
@@ -226,6 +237,9 @@ export default function PagedSection<T>({
   );
 }
 
+/** The header line's one line height: header text, `+N` and arrows (see the module doc comment). */
+const HEADER_LINE_HEIGHT = 20;
+
 const styles = StyleSheet.create({
   headerRow: {
     flexDirection: 'row',
@@ -242,6 +256,7 @@ const styles = StyleSheet.create({
   header: {
     flex: 1,
     fontSize: FONT.small,
+    lineHeight: HEADER_LINE_HEIGHT,
     fontWeight: '700',
   },
   arrows: {
@@ -252,15 +267,16 @@ const styles = StyleSheet.create({
   // visually with the arrows next to it.
   hiddenCount: {
     fontSize: FONT.small,
+    lineHeight: HEADER_LINE_HEIGHT,
     opacity: 0.6,
     marginRight: 4,
   },
   arrowButton: {
-    paddingVertical: 2,
     paddingHorizontal: 8,
   },
   arrow: {
     fontSize: FONT.medium,
+    lineHeight: HEADER_LINE_HEIGHT,
     fontWeight: '700',
   },
   viewport: {

@@ -27,6 +27,7 @@ import {useEffect, useRef} from 'react';
 import {NativePluginManager} from 'sn-plugin-lib';
 import {log, logError} from './log';
 import {perfMark} from './perf';
+import {runAfterEinkFlush} from './einkFlush';
 import {errorMessage} from './errorMessage';
 
 const DEBOUNCE_MS = 150;
@@ -55,6 +56,7 @@ export function requestEinkRefresh(): void {
         } catch (e) {
           logError('requestEinkRefresh: invalidatePluginView failed', errorMessage(e));
         }
+        runAfterEinkFlush();
       });
     });
   }, DEBOUNCE_MS);

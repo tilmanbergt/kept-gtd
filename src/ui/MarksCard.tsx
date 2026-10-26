@@ -11,6 +11,7 @@ import {todayIso} from '../domain/meetingTime';
 import {openMarks, MarksReturnTo} from './marksNav';
 import {FONT} from './theme';
 import {useOpenMarks} from './useOpenMarks';
+import {usePerfRender} from '../utils/perf';
 
 export const MARKS_CARD_H = 56;
 
@@ -22,6 +23,7 @@ interface Props {
 }
 
 export default function MarksCard({scope, returnTo, textColor, borderColor}: Props): React.JSX.Element | null {
+  usePerfRender('MarksCard');
   const marks = useOpenMarks(scope);
   if (marks.length === 0) {return null;}
   const summary = summarizeMarks(marks, todayIso());

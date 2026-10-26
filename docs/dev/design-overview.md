@@ -133,8 +133,8 @@ Week, Month, Current, Projects and Areas stay mounted after their first visit, h
 `ui/screenActivity.ts` tells a kept screen whether it is showing (`useScreenActivity`,
 `useOnScreenShow`, `useOnScreenHide`). Leaving a kept tab saves and closes an open Quick Add edit,
 dismisses the keyboard and withdraws its screen-scoped status messages; drafts and view state
-stay. Coming back, cache subscriptions catch up (they pause while hidden), settings are re-read
-and one e-ink refresh is requested. "Reload all files" drops all kept tabs
+stay. Coming back, cache subscriptions catch up (they pause while hidden), the settings are the
+snapshot's (§2.12) and one e-ink refresh is requested. "Reload all files" drops all kept tabs
 (`ui/keepAliveStore.ts`'s `dropKeptTabs`). Design detail:
 `docs/dev/history/technical-design-keep-tabs-alive.md`.
 
@@ -404,7 +404,9 @@ item being edited with one `editTarget` prop (`editTargetFor(key, {task, meeting
 widget is a composition in `ui/quickAdd/`: the box with its row slots (`QuickAddFrame.tsx`), one
 hook per draft (`useTaskDraft`, `useMeetingDraft`, `useNoteDraft`) over the shared state of
 `useQuickAddCore`, the edit session (`useEditSession`: loading, focus, save-then-switch) and the
-row components. The lasso-capture panel is its own shell over the same parts
+row components. A tab's rows are built once the tab is shown (active, or by an edit), and every
+tab's right after the next e-ink flush (`utils/einkFlush.ts`), so a screen's first render builds
+one tab and a later switch finds its rows ready; built rows stay, hidden. The lasso-capture panel is its own shell over the same parts
 (`ui/quickAdd/CaptureQuickAdd.tsx`, §2.10). The Note tab creates a standalone `.note` in the Files
 pane's current folder (`storage/standaloneNotes.ts`), its `#tags` becoming page keywords.
 
@@ -534,7 +536,8 @@ carry Browse as its `alternate` instead of a tab of its own: the slot shows it (
 "Browse") while an arm targets it and switches back when the arm ends; during a file-link arm the
 slot's list starts with "Other Projects/Areas ›", which opens it there. `extraTabs` add tabs with
 their own content before the roots (the Current page's Threads tab); the first is shown when the
-pane opens and when `resetKey` changes. Arming and locating never switch to one and disable them;
+pane opens and when `resetKey` changes. A root's folder is listed only once a root has been shown
+in that mount (its tab, an arm, a locate), so a pane opening on an extra tab lists nothing. Arming and locating never switch to one and disable them;
 an arm started on one switches to its root and back to the extra tab when it ends. An extra tab
 can carry an `armingRoot`: while any arm is active that root takes the tab's slot (with its
 `alternate`), and the slot is the extra tab again when the arm ends. Roots per screen:
@@ -1027,8 +1030,12 @@ once after an update), Debug logging and "Export debug bundle".
 JSON blob in AsyncStorage (`storage/settingsStorage.ts`); load fills missing fields from the
 defaults and runs idempotent migrations (Tag Rule key names, Tag Rules to Note setups,
 experimental-switch defaults). The settings last read or written stay in memory
-(`storage/settingsSnapshot.ts`'s `peekSettings`), so a screen can start with the real values
-while its own load runs (the Threads tab builds its roster once, with the final thread types). Recent tags, recent capture destinations and the Google Calendar
+(`storage/settingsSnapshot.ts`): `peekSettings`, and `subscribeSettings` for a change. A read
+that finds the same stored text returns the same object (no parse, no migrations), concurrent
+reads share one, and a loaded settings object is never changed in place: a change spreads into
+a new object and is saved. Components read the settings through `ui/useSettings.ts`
+(`useSettings`, `useSettingsValue`), which follow the snapshot and load only while there is
+none; so a page builds once with the real values, and a saved change shows at once. Recent tags, recent capture destinations and the Google Calendar
 cache are AsyncStorage entries per profile (`storage/profileKeys.ts`'s `profileScopedKey`). PARA
 content never goes into AsyncStorage.
 
@@ -1193,6 +1200,10 @@ place it happens.
 - **Secrets** (passwords, private calendar links) never go into a file, a log, a debug bundle or a
   profile file. Every new setting gets a default in `DEFAULT_SETTINGS` and a classification in
   `domain/profiles.ts`.
+- **Settings in components.** A loaded settings object is never changed in place: a change
+  spreads into a new object and is saved. The Current page's components read settings through
+  `ui/useSettings.ts` (the in-memory snapshot, §2.12); a screen that loads them itself gets the
+  same object back while nothing changed, so setting it as state renders nothing.
 - **File changes are visible.** Moves, overwrites and deletes are confirmed before and reported
   after (`domain/fileChangeText.ts`). A delete needs a confirmation naming it, then FILE:DELETE,
   then `deleteEmptyFolder`. Temporary files only in the private temp folder. Everything Kept

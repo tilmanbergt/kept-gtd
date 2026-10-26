@@ -120,9 +120,9 @@ import {useHomeNotebookActions} from '../ui/useHomeNotebookTap';
 import {useHomeNotebookRenameOffer} from '../ui/useHomeNotebookRenameOffer';
 import NotebookTab from './notebook/NotebookTab';
 import {ResolvedParaPaths, resolvePaths} from '../domain/settings';
-import {ensureItemCached, findCachedItem, frontMatterOf, getCachedData, updateItemFrontMatter} from '../storage/dataCache';
+import {CachedItem, ensureItemCached, findCachedItem, frontMatterOf, getCachedData, updateItemFrontMatter} from '../storage/dataCache';
 import {saveFrontMatter} from '../storage/projectFile';
-import {loadSettings} from '../storage/settingsStorage';
+import {samePaths, useSettingsValue} from '../ui/useSettings';
 import {FolderEntry} from '../supernote/fileSystem';
 import {logError} from '../utils/log';
 import {useEinkRefreshOnLoad} from '../utils/screenRefresh';
@@ -194,6 +194,21 @@ interface ResourceFolderState {
   abbrev: string | null;
 }
 
+/** The frontmatter fields this screen keeps of `item` (all of them follow from its text, `rawContent`). */
+function resourceFolderStateOf(item: CachedItem): ResourceFolderState {
+  return {
+    rawContent: item.rawContent,
+    status: item.status,
+    dailyFocus: item.dailyFocus,
+    weeklyFocus: item.weeklyFocus,
+    monthlyFocus: item.monthlyFocus,
+    frontMatterExtraLines: item.frontMatterExtraLines,
+    defaultResourceFolder: item.defaultResourceFolder,
+    area: item.area,
+    abbrev: item.abbrev,
+  };
+}
+
 export default function ItemDetail({
   kind,
   name,
@@ -208,38 +223,23 @@ export default function ItemDetail({
 
   const [error, setError] = useState<string | null>(null);
 
-  // The user's resolved Resources folder (domain/settings.ts) - the
-  // 'resources' root's rootPath below. Loaded once; Settings changes take
-  // effect the next time this screen mounts, same as every other reader of
-  // loadSettings() in this codebase.
-  const [paths, setPaths] = useState<ResolvedParaPaths | null>(null);
-  useEffect(() => {
-    let cancelled = false;
-    loadSettings().then(s => {
-      if (!cancelled) setPaths(resolvePaths(s));
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  // The user's resolved folders (domain/settings.ts) - the 'resources' root's
+  // rootPath below - from the settings snapshot (ui/useSettings.ts); a change of
+  // another setting ("Hide done tasks") renders nothing here.
+  const paths: ResolvedParaPaths | null = useSettingsValue(resolvePaths, samePaths);
 
   // See the module doc comment's "handleSetDefaultResourceFolder" note.
-  const [resourceFolderState, setResourceFolderState] = useState<ResourceFolderState | null>(null);
+  // A cached item is there in the first render (docs/dev/history/technical-design-perf-current-page.md §3.3);
+  // the load below then keeps the same state, so it renders nothing again.
+  const [resourceFolderState, setResourceFolderState] = useState<ResourceFolderState | null>(() => {
+    const cached = findCachedItem(path);
+    return cached ? resourceFolderStateOf(cached) : null;
+  });
   useEffect(() => {
     let cancelled = false;
     ensureItemCached(kind, name, path).then(item => {
       if (cancelled) return;
-      setResourceFolderState({
-        rawContent: item.rawContent,
-        status: item.status,
-        dailyFocus: item.dailyFocus,
-        weeklyFocus: item.weeklyFocus,
-        monthlyFocus: item.monthlyFocus,
-        frontMatterExtraLines: item.frontMatterExtraLines,
-        defaultResourceFolder: item.defaultResourceFolder,
-        area: item.area,
-        abbrev: item.abbrev,
-      });
+      setResourceFolderState(prev => (prev && prev.rawContent === item.rawContent ? prev : resourceFolderStateOf(item)));
     });
     return () => {
       cancelled = true;
@@ -259,17 +259,7 @@ export default function ItemDetail({
   useOnScreenShow(() => {
     const item = findCachedItem(path);
     if (!item || item.rawContent === resourceFolderState?.rawContent) return;
-    setResourceFolderState({
-      rawContent: item.rawContent,
-      status: item.status,
-      dailyFocus: item.dailyFocus,
-      weeklyFocus: item.weeklyFocus,
-      monthlyFocus: item.monthlyFocus,
-      frontMatterExtraLines: item.frontMatterExtraLines,
-      defaultResourceFolder: item.defaultResourceFolder,
-      area: item.area,
-      abbrev: item.abbrev,
-    });
+    setResourceFolderState(resourceFolderStateOf(item));
   });
 
   // Explicit e-ink refresh once the initial ensureItemCached load lands -
@@ -352,7 +342,15 @@ export default function ItemDetail({
   // assigned Area, Project Files of an Area, Browse), same restriction
   // fileBrowserRoots below already encodes. Read fresh by QuickAddWidget at
   // the moment "+Add" is pressed, not frozen when its Note tab was opened.
-  const [activeFilesLocation, setActiveFilesLocation] = useState<{rootKey: string; path: string} | null>(null);
+  // It starts at the pane's first root, this item's own folder, so Quick Add has
+  // its Note tab in the first render; the pane's report of the same place
+  // changes nothing (docs/dev/history/technical-design-perf-current-page.md §3.3).
+  const [activeFilesLocation, setActiveFilesLocation] = useState<{rootKey: string; path: string} | null>(() => ({rootKey: 'project', path}));
+  const reportFilesLocation = useCallback(
+    (rootKey: string, folderPath: string) =>
+      setActiveFilesLocation(prev => (prev?.rootKey === rootKey && prev.path === folderPath ? prev : {rootKey, path: folderPath})),
+    [],
+  );
   const noteFolderPath = activeFilesLocation?.rootKey === 'project' ? activeFilesLocation.path : null;
 
   // The Area this Project supports, if any - null for Areas, and null for a
@@ -579,7 +577,7 @@ export default function ItemDetail({
               roots={fileBrowserRoots}
               linkTarget={linkTarget}
               resetKey={path}
-              onActiveLocationChange={(rootKey, folderPath) => setActiveFilesLocation({rootKey, path: folderPath})}
+              onActiveLocationChange={reportFilesLocation}
               extraTabs={extraTabs}
               groupLabel="Files"
               textColor={textColor}

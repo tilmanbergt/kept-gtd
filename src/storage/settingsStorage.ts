@@ -7,7 +7,7 @@ import {log, logError, logWarn} from '../utils/log';
 import {getSettingsUnreadable, setSettingsUnreadable} from './settingsUnreadable';
 import {markNoteSetupMigrationFailed} from './noteSetupMigrationState';
 import {ReviewStepsMap} from '../domain/reviewSteps';
-import {perfEnd, perfStart} from '../utils/perf';
+import {perfCount, perfEnd, perfStart} from '../utils/perf';
 import {migrateExperimentalFlags} from '../domain/features';
 import {BUILD_INFO} from '../generated/buildInfo';
 import {rememberSettings} from './settingsSnapshot';
@@ -15,6 +15,19 @@ import {rememberSettings} from './settingsSnapshot';
 export {peekSettings} from './settingsSnapshot';
 
 const SETTINGS_KEY = 'gtdpara:settings:v1';
+
+/**
+ * The stored text last read or written and the settings it stands for
+ * (docs/dev/history/technical-design-perf-current-page.md §3.1): a read that finds the
+ * same text returns the same object, so callers that set it as state re-render
+ * nothing. A loaded settings object is therefore never changed in place: a change
+ * spreads into a new object and is saved through saveSettings/patchSettings.
+ */
+let lastStored: {raw: string | null; settings: GtdParaSettings | null} = {raw: null, settings: null};
+/** The read in flight, shared by concurrent loadSettings calls; dropped by every write. */
+let readInFlight: Promise<GtdParaSettings> | null = null;
+/** Counts writes, so a read that started before a write never puts its older result into the snapshot. */
+let writeSeq = 0;
 
 /**
  * Reads persisted settings, filling in any missing field from the defaults -
@@ -40,6 +53,9 @@ const SETTINGS_KEY = 'gtdpara:settings:v1';
  */
 async function readSettings(): Promise<GtdParaSettings> {
   const raw = await AsyncStorage.getItem(SETTINGS_KEY);
+  // Unchanged since the last read or write: the same object, without parsing or migrating again.
+  if (raw !== null && raw === lastStored.raw && lastStored.settings) return lastStored.settings;
+  perfCount('settings:read');
   const stored: Record<string, unknown> = raw ? JSON.parse(raw) : {};
   const parsed = renameLegacyTagRuleKeys(stored);
   const merged: GtdParaSettings = {...DEFAULT_SETTINGS, ...parsed};
@@ -52,6 +68,8 @@ async function readSettings(): Promise<GtdParaSettings> {
       // Best-effort: the migrated values still apply this session.
       logError('settingsStorage: storing migrated settings failed', errorMessage(e));
     }
+  } else {
+    lastStored = {raw, settings: migrated};
   }
   return migrated;
 }
@@ -78,14 +96,22 @@ function migrateNoteSetups(settings: GtdParaSettings): GtdParaSettings {
  * This is plugin-internal configuration (not PARA content), so it's fine to
  * keep it in AsyncStorage rather than a filesystem-native file - unlike
  * Projects/Areas data, nobody needs to hand-edit this outside the plugin.
- * See readSettings above for the migrations it runs.
+ * See readSettings above for the migrations it runs. Concurrent calls share one
+ * read; unchanged stored settings come back as the same object.
  */
 export async function loadSettings(): Promise<GtdParaSettings> {
   const perfToken = perfStart();
+  const seq = writeSeq;
   try {
-    const settings = await readSettings();
+    if (!readInFlight) {
+      const read: Promise<GtdParaSettings> = readSettings().finally(() => {
+        if (readInFlight === read) readInFlight = null;
+      });
+      readInFlight = read;
+    }
+    const settings = await readInFlight;
     setSettingsUnreadable(null);
-    rememberSettings(settings);
+    if (seq === writeSeq) rememberSettings(settings);
     return settings;
   } catch (e) {
     const reason = errorMessage(e);
@@ -117,7 +143,11 @@ export async function resetSettingsToDefaults(): Promise<GtdParaSettings> {
 
 /** The single writer of the stored settings; keeps the in-memory snapshot (storage/settingsSnapshot.ts) current. */
 async function writeSettings(settings: GtdParaSettings): Promise<void> {
-  await AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+  const raw = JSON.stringify(settings);
+  writeSeq++;
+  readInFlight = null;
+  await AsyncStorage.setItem(SETTINGS_KEY, raw);
+  lastStored = {raw, settings};
   rememberSettings(settings);
 }
 

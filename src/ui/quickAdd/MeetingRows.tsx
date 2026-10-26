@@ -9,6 +9,7 @@
  * ui/quickAdd/layoutLog.ts).
  */
 import React from 'react';
+import {usePerfRender} from '../../utils/perf';
 import {StyleSheet, TextInput, View} from 'react-native';
 import ClipboardStrip from '../ClipboardStrip';
 import DateInput, {DateNudgeStrip} from '../DateInput';
@@ -36,6 +37,7 @@ interface Props {
 }
 
 export function MeetingInputRow({core, meeting, capture = false, textColor, borderColor, placeholderColor}: Props) {
+  usePerfRender('QuickAddRows:meeting');
   return (
     <View style={[rowStyles.row2, capture && rowStyles.row2Free, core.displayType !== 'meeting' && rowStyles.hidden]}>
       {/* In the capture panel the date field draws its own strip inside this

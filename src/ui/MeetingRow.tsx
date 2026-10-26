@@ -41,7 +41,7 @@ import {Meeting} from '../domain/types';
 import {ClipIcon, TrackingBoxIcon} from './icons';
 import {renderTaggableText} from './TaggableText';
 import {FONT} from './theme';
-import {perfCount} from '../utils/perf';
+import {perfCount, usePerfRender} from '../utils/perf';
 import {probePressable, probeSpan, useTouchProbe} from './touchDiag/touchProbe';
 
 /**
@@ -283,6 +283,7 @@ const v2 = StyleSheet.create({
 /** The standard meeting row - see the module doc comment. */
 export default function MeetingRow(props: MeetingRowProps): React.JSX.Element {
   perfCount('row:meeting');
+  usePerfRender('MeetingRow');
   return <MeetingRowV2 {...props} />;
 }
 

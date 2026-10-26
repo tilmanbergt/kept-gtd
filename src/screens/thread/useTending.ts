@@ -10,24 +10,24 @@
  * the status line nothing in the file can tell this meeting from a later
  * one.
  *
- * The thread types start from the settings snapshot (storage/settingsSnapshot.ts),
- * so a page that opens after the app loaded its settings builds its roster once,
- * with the final types (docs/dev/history/technical-design-perf-threads.md §3.6).
- * The settings are still loaded, so a change arrives; it replaces the types only
- * when they differ by value.
+ * The thread types come from the settings snapshot (ui/useSettings.ts), so a page
+ * that opens after the app loaded its settings builds its roster once, with the
+ * final types (docs/dev/history/technical-design-perf-threads.md §3.6). A change of
+ * the settings arrives through the snapshot; it replaces the types only when they
+ * differ by value.
  */
-import {useCallback, useEffect, useMemo, useState} from 'react';
+import {useCallback, useMemo, useState} from 'react';
 import {threadTypesOf} from '../../domain/counterparts';
 import {CounterpartStatus} from '../../domain/threadsSection';
 import {setCounterpartStatus} from '../../storage/counterparts';
 import {CachedItem, getCachedData} from '../../storage/dataCache';
-import {loadSettings} from '../../storage/settingsStorage';
-import {peekSettings} from '../../storage/settingsSnapshot';
 import {RosterEntry} from '../../storage/tendingRoster';
 import {ThreadInboxInput} from '../../storage/threadAggregate';
 import {useActionError} from '../../ui/useActionError';
 import {useCachedInbox} from '../../ui/useCachedInbox';
 import {useCachedItems} from '../../ui/useCachedItems';
+import {useSettingsValue} from '../../ui/useSettings';
+import {GtdParaSettings} from '../../domain/settings';
 import {requestEinkRefresh} from '../../utils/screenRefresh';
 
 const dismissed = new Set<string>();
@@ -53,6 +53,9 @@ export interface TendingData {
 }
 
 const sameList = (a: readonly string[], b: readonly string[]) => a.length === b.length && a.every((x, i) => x === b[i]);
+const ruleTypesOf = (settings: GtdParaSettings) => threadTypesOf(settings.noteSetups);
+/** The types while the settings are not known yet (`ready` is false then). */
+const NO_SETTINGS_TYPES = threadTypesOf([]);
 
 export function useTendingData(): TendingData {
   const items = useCachedItems();
@@ -62,21 +65,9 @@ export function useTendingData(): TendingData {
     () => (inboxState && inboxPath ? {path: inboxPath, tasks: inboxState.tasks, meetings: inboxState.meetings} : null),
     [inboxState, inboxPath],
   );
-  const [ruleTypes, setRuleTypes] = useState<string[]>(() => threadTypesOf(peekSettings()?.noteSetups ?? []));
-  const [ready, setReady] = useState(() => peekSettings() !== null);
-  useEffect(() => {
-    let cancelled = false;
-    loadSettings().then(s => {
-      if (cancelled) return;
-      const next = threadTypesOf(s.noteSetups);
-      setRuleTypes(prev => (sameList(prev, next) ? prev : next));
-      setReady(true);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-  return {items, inbox, ruleTypes, ready};
+  // The same array while the types stay the same by value, so the roster's memo holds and another setting renders nothing.
+  const types = useSettingsValue(ruleTypesOf, sameList);
+  return {items, inbox, ruleTypes: types ?? NO_SETTINGS_TYPES, ready: types !== null};
 }
 
 export interface TendActions {

@@ -40,6 +40,7 @@ import PagedSection from '../../ui/PagedSection';
 import {FONT, SPACING} from '../../ui/theme';
 import {openOverview} from '../../ui/overviewStore';
 import {needsConfirm, useTendActions, useTendingData} from './useTending';
+import {usePerfRender} from '../../utils/perf';
 
 const HEAD_HEIGHT = 30;
 const CONFIRM_HEIGHT = 44;
@@ -95,6 +96,7 @@ interface Props {
 }
 
 export default function ThreadsTab({path, selected, onSelect, onNextMeeting, viewportHeight, textColor, borderColor}: Props): React.JSX.Element {
+  usePerfRender('ThreadsTab');
   const {items, inbox, ruleTypes, ready} = useTendingData();
   const tend = useTendActions('ThreadsTab.error');
   const setInactive = useSetInactive('ThreadsTab.setInactive', entry => {
@@ -287,6 +289,7 @@ export default function ThreadsTab({path, selected, onSelect, onNextMeeting, vie
     <View style={viewportHeight === undefined ? styles.fill : undefined}>
       <PagedSection
         header={header}
+        heightKey={[`current:Threads:${path}`, 'current:Threads']}
         rows={rows}
         rowHeight={row => HEIGHTS[row.kind]}
         isCountableRow={row => row.kind === 'confirm' || row.kind === 'active' || row.kind === 'inactive'}

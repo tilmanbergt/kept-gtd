@@ -13,6 +13,7 @@ import {renameDoneText, renameOfferText} from '../domain/homeNotebook';
 import {findCachedItem} from '../storage/dataCache';
 import {detectHomeNotebookRename, rememberItemName, renameHomeNotebook} from '../storage/homeNotebookRename';
 import {loadSettings} from '../storage/settingsStorage';
+import {peekSettings} from '../storage/settingsSnapshot';
 import {errorMessage} from '../utils/errorMessage';
 import {logWarn} from '../utils/log';
 import {useActionError} from './useActionError';
@@ -32,7 +33,7 @@ export function useHomeNotebookRenameOffer(name: string, itemPath: string, enabl
     if (!enabled || notNow.has(itemPath)) return;
     let cancelled = false;
     (async () => {
-      const settings = await loadSettings();
+      const settings = peekSettings() ?? (await loadSettings());
       const item = findCachedItem(itemPath);
       const offer = item ? await detectHomeNotebookRename(item, settings) : null;
       if (cancelled || !item || !offer) return;
