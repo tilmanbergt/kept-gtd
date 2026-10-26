@@ -83,6 +83,6 @@ scenario('Opening an Area page renders each part a bounded number of times and r
 
 /**
  * Before this work (P0, as on the device): Quick Add 6, ItemDetail 5, ProjectDataPanel 7 renders and 8 settings
- * reads per open. P1 (settings from the snapshot): 3, 3, 3 and none.
+ * reads per open. P1 (settings from the snapshot): 3, 3, 3 and none. P2 (stable Quick Add props): Quick Add 1.
  */
-const LIMITS = {quickAdd: 3, itemDetail: 3, projectDataPanel: 3, settingsReads: 0};
+const LIMITS = {quickAdd: 1, itemDetail: 3, projectDataPanel: 3, settingsReads: 0};

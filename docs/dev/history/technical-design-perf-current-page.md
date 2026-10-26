@@ -331,3 +331,10 @@ The Atruvia roster (≈ 180 ms) stays inside the first render.
   thread types rebuilds the roster; with P1 a change arrives through the snapshot instead, so its two cases now
   change the snapshot (same types: no rebuild; other types: one more). Counts per open after P1: Quick Add 3,
   ItemDetail 3, ProjectDataPanel 3 renders, no settings read.
+- **P2.** The props that broke Quick Add's memo were the agreement handlers alone (`ui/useAgreementActions.ts`, new
+  closures per render); they are stable now, and the handlers object is memoized. The todo and meeting cards are
+  `null` while nothing is selected, so an open is not affected by them; memoizing them (§3.2) is left out, as it
+  changes nothing for the open and their callbacks read the latest state. One more render came from Quick Add
+  itself: the meeting draft's "follow `initialDate`" effect (`ui/quickAdd/useMeetingDraft.ts`) built a new draft
+  on mount even when date and monthly were the same; it keeps the draft then. Per open after P2: Quick Add 1
+  render (ItemDetail and ProjectDataPanel 3: those rounds no longer reach Quick Add).

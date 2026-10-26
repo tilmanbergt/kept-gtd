@@ -44,12 +44,14 @@ export function useMeetingDraft(core: QuickAddCore, input: Input) {
   // panel: tapping another day retargets the draft) - but only while the
   // draft is still untouched, so a half-typed meeting never jumps dates. A
   // title of tags only (the prefilled abbreviation tag) counts as untouched.
+  // The same draft when nothing changes, so mounting renders nothing twice.
   useEffect(() => {
-    setDraft(d =>
-      d.title.replace(/#\S+/g, '').trim() || d.time.trim()
-        ? d
-        : {...d, date: initialDate ?? d.date, monthly: initialMonthly ?? d.monthly},
-    );
+    setDraft(d => {
+      if (d.title.replace(/#\S+/g, '').trim() || d.time.trim()) return d;
+      const date = initialDate ?? d.date;
+      const monthly = initialMonthly ?? d.monthly;
+      return date === d.date && monthly === d.monthly ? d : {...d, date, monthly};
+    });
   }, [initialDate, initialMonthly]);
   const [justAdded, setJustAdded] = useState<string | null>(null);
   // Set together with justAdded when the added meeting's date is not in the
