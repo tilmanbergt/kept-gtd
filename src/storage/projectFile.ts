@@ -31,6 +31,7 @@ import {
 } from '../domain/markdown';
 import {CounterpartLine, parseThreadsSpan, THREADS_HEADING, writeThreadsIntoContent} from '../domain/threadsSection';
 import {LoopLine, LOOPS_HEADING, parseLoopsSpan, writeLoopsIntoContent} from '../domain/loopsSection';
+import {Agreement, AGREEMENTS_HEADING, parseAgreementsSpan, writeAgreementsIntoContent} from '../domain/agreements';
 import {
   AREA_FILE_NAME,
   GtdParaKind,
@@ -83,6 +84,9 @@ export interface ProjectFileState {
   /** From the `## Loops` span (docs/dev/history/technical-design-loops.md §3.2) - the loops this file owns; empty for most files and always for the Inbox. Written only through storage/loops.ts. */
   loops: LoopLine[];
   loopsExtraLines: string[];
+  /** From the `## Agreements` span (docs/dev/history/technical-design-meetings-0.21.md §2.1) - the agreements this file holds; empty for most files and always for the Inbox. Written only through storage/agreements.ts. */
+  agreements: Agreement[];
+  agreementsExtraLines: string[];
   /** From the frontmatter block's status/dailyFocus/weeklyFocus/monthlyFocus/defaultResourceFolder/area fields - see domain/markdown.ts's parseFrontMatter. */
   status: ItemStatus;
   dailyFocus: boolean;
@@ -131,6 +135,7 @@ export function parseProjectFileContent(rawContent: string): ProjectFileState {
   const {marks, extraLines: marksExtraLines} = parseMarksSpan(rawContent);
   const {threads, extraLines: threadsExtraLines} = parseThreadsSpan(rawContent);
   const {loops, extraLines: loopsExtraLines} = parseLoopsSpan(rawContent);
+  const {agreements, extraLines: agreementsExtraLines} = parseAgreementsSpan(rawContent);
   const {
     status,
     dailyFocus,
@@ -158,6 +163,8 @@ export function parseProjectFileContent(rawContent: string): ProjectFileState {
     threadsExtraLines,
     loops,
     loopsExtraLines,
+    agreements,
+    agreementsExtraLines,
     status,
     dailyFocus,
     weeklyFocus,
@@ -228,6 +235,20 @@ export async function saveLoops(
   return writeDataFile(kind, itemPath, dataFilePath(kind, itemPath), rawContent, {
     parts: [LOOPS_HEADING],
     apply: content => writeLoopsIntoContent(content, loops, extraLines),
+  });
+}
+
+/** Saves the Agreements span (docs/dev/history/technical-design-meetings-0.21.md §2.3) - see saveTasks for the shared rawContent/scaffolding behavior. Only storage/agreements.ts calls it. */
+export async function saveAgreements(
+  kind: GtdParaKind,
+  itemPath: string,
+  rawContent: string,
+  agreements: readonly Agreement[],
+  extraLines: readonly string[] = [],
+): Promise<string> {
+  return writeDataFile(kind, itemPath, dataFilePath(kind, itemPath), rawContent, {
+    parts: [AGREEMENTS_HEADING],
+    apply: content => writeAgreementsIntoContent(content, agreements, extraLines),
   });
 }
 

@@ -68,6 +68,9 @@
  *   §2.10): active and on-hold Projects/Areas with open Someday/Maybe todos,
  *   for the "Someday / Maybe" step; archived items are never in the cache.
  */
+import {AgreementReviewGroup, agreementsToReview as reviewAgreements} from '../domain/agreementReview';
+import {NoteSetup} from '../domain/noteSetups';
+import {engageSourceOf} from './engageAggregate';
 import {isFocused} from '../domain/destination';
 import {isSomedayMaybe} from '../domain/flowState';
 import {countMeetingsInRange} from '../domain/meetingSpan';
@@ -334,12 +337,15 @@ export function buildReviewStepCounts(
   weekAheadInboxCount = 0,
   tendingCount = 0,
   openLoopsCount = 0,
+  agreementsCount = 0,
 ): Record<ReviewStepId, ReviewStepCount> {
   return {
     weekAhead: {n: aggregate.weekMeetings.length + weekAheadInboxCount},
     meetingsCloseOut: {n: aggregate.meetingsToClose.length},
     // New and active counterparts (docs/dev/history/technical-design-tending-threads.md §3.10).
     tendingThreads: {n: tendingCount},
+    // Agreements that need a decision (domain/agreementReview.ts).
+    agreements: {n: agreementsCount},
     gmailInbox: {n: gmailInboxCount},
     inbox: {n: inboxOpenCount},
     stalled: {n: aggregate.stalledProjects.length},
@@ -362,4 +368,13 @@ export function buildReviewStepCounts(
         settings.monthlyFocusAreaCount,
     },
   };
+}
+
+/**
+ * The Review step "Agreements" (docs/dev/history/technical-design-meetings-0.21.md
+ * §9, R25): domain/agreementReview.ts over the warm cache, with the Note
+ * setups' thread types and loop kinds.
+ */
+export function agreementsToReview(items: readonly CachedItem[], noteSetups: readonly NoteSetup[], today: string): AgreementReviewGroup[] {
+  return reviewAgreements(engageSourceOf(items, null, noteSetups), today);
 }

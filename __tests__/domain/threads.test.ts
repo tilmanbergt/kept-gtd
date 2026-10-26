@@ -112,3 +112,16 @@ describe('#owe/<counterpart> (D13)', () => {
     expect(validateAbbrev('OWEN', []).valid).toBe(true);
   });
 });
+
+describe('threadOf memo (docs/dev/history/technical-design-perf-threads.md §3.5)', () => {
+  it('returns equal results for every kind of tag', () => {
+    expect(threadOf('Retro/Alpha/2026')).toEqual({type: 'retro', counterpart: 'alpha', tag: 'retro/alpha'});
+    expect(threadOf('retro')).toBeNull();
+    expect(threadOf('/alpha')).toBeNull();
+    expect(threadOf('retro/')).toBeNull();
+  });
+  it('returns the same object for the same tag', () => {
+    expect(threadOf('101/mieke')).toBe(threadOf('101/mieke'));
+    expect(threadOf('101/mieke/q4')).toEqual(threadOf('101/mieke'));
+  });
+});

@@ -7,13 +7,16 @@
  * current todo's owner > none, with the way back to the stored todo.
  */
 import {useEffect, useMemo, useReducer, useState} from 'react';
-import {decideOpening, EngageOpening, EngageSource, resolveTodoKey, todoKeyOf} from '../../domain/engageOwner';
-import {effectiveFocus, engageListsOf, optionsOf, ownersLeft} from '../../domain/engageOptions';
+import {decideOpening, EngageOpening, EngageSource, resolveTodoKey, sameOwner, todoKeyOf} from '../../domain/engageOwner';
+import {chosenMomentAt, useMomentChoices} from '../../ui/meetingMomentStore';
+import {effectiveFocus, engageListsOf, engagePageOf, fromRowCount, optionsOf, ownersLeft} from '../../domain/engageOptions';
 import {engageFlow, EngageRequest, EngageState, INITIAL_ENGAGE_STATE} from '../../domain/engageFlow';
+import {SectionInfo} from '../../domain/pageSection';
 import {GtdParaSettings, resolvePaths} from '../../domain/settings';
 import {getCachedData, getCachedInbox, rebuildCache} from '../../storage/dataCache';
 import {engageInboxOf, engageSourceOf} from '../../storage/engageAggregate';
 import {getEngageCurrent, setEngageCurrent} from '../../storage/engageCurrent';
+import {NOTEBOOK_PAGES} from '../../storage/notebookPages';
 import {noteContextOf} from '../../storage/noteOwnerOf';
 import {loadSettings} from '../../storage/settingsStorage';
 import {getCurrentPageNum} from '../../supernote/currentPage';
@@ -24,15 +27,19 @@ import {errorMessage} from '../../utils/errorMessage';
 import {log, logError} from '../../utils/log';
 
 
-async function resolveOpening(request: EngageRequest, source: EngageSource, settings: GtdParaSettings): Promise<EngageOpening> {
+/** The opening, plus the note page's section while the panel opens on the note's owner. */
+async function resolveOpening(request: EngageRequest, source: EngageSource, settings: GtdParaSettings): Promise<EngageOpening & {section: SectionInfo | null}> {
   const stored = await getEngageCurrent();
   const storedRef = stored ? resolveTodoKey(stored.key, source) : null;
   if (stored && !storedRef) await setEngageCurrent(null, null);
   const found = stored && storedRef ? {owner: stored.owner, key: todoKeyOf(storedRef)} : null;
 
-  if (request.via === 'ownerPage') return decideOpening({pageOwner: request.owner, noteOwner: null, noteTodo: null, stored: found});
+  if (request.via === 'ownerPage') return {...decideOpening({pageOwner: request.owner, noteOwner: null, noteTodo: null, stored: found}), section: null};
   const [path, page] = await Promise.all([getCurrentNotePath(), getCurrentPageNum()]);
-  const context = await noteContextOf(path, page, source, resolvePaths(settings));
+  const context = await noteContextOf(path, page, source, resolvePaths(settings), {
+    notebook: settings.noteSetupDefaults?.notebook ?? null,
+    pages: NOTEBOOK_PAGES,
+  });
   // The todo the panel shows for the note's owner without a current one: its only #next.
   const shown = context.owner ? engageListsOf(optionsOf(context.owner, source, Date.now(), null), null).nowTodo : null;
   const opening = decideOpening({
@@ -44,7 +51,8 @@ async function resolveOpening(request: EngageRequest, source: EngageSource, sett
     stored: found,
   });
   if (opening.store) await setEngageCurrent(opening.store.owner, opening.store.key);
-  return opening;
+  const onNoteOwner = !!context.owner && sameOwner(opening.owner, context.owner);
+  return {...opening, section: onNoteOwner ? context.section ?? null : null};
 }
 
 export interface EngageFlow {
@@ -71,9 +79,10 @@ export function useEngageFlow(request: EngageRequest): EngageFlow {
       const opening = await resolveOpening(request, source, loaded);
       if (cancelled) return;
       setSettings(loaded);
-      dispatch({type: 'open', owner: opening.owner, current: opening.current, ring: effectiveFocus(source), back: opening.back, pageMeeting: opening.pageMeeting});
+      dispatch({type: 'open', owner: opening.owner, current: opening.current, ring: effectiveFocus(source), back: opening.back, pageMeeting: opening.pageMeeting, section: opening.section});
       setOpened(true);
       log('EngageOverlay: opened', 'owner=' + (opening.owner?.kind ?? 'none'), 'via=' + request.via, 'current=' + (opening.current ? 'yes' : 'no'), 'back=' + (opening.back ? 'yes' : 'no'), 'pageMeeting=' + (opening.pageMeeting ? 'yes' : 'no'));
+      if (opening.section) log('EngageOverlay: section line', `distance=${opening.section.distance}`);
     })().catch(e => {
       logError('EngageOverlay: opening failed', errorMessage(e));
       if (!cancelled) setOpened(true);
@@ -92,13 +101,15 @@ export function useEngageFlow(request: EngageRequest): EngageFlow {
   }, [opened, settings, items, inbox]);
 
   const {owner, current, pageMeeting} = state;
+  const moments = useMomentChoices();
   useEffect(() => {
     if (!source) return;
     const nowMs = Date.now();
     const currentRef = current ? resolveTodoKey(current, source) : null;
     const currentKey = currentRef ? todoKeyOf(currentRef) : null;
     if (current && !currentRef) setEngageCurrent(null, null).catch(e => logError('EngageOverlay: forgetting the current todo failed', errorMessage(e)));
-    const options = owner ? optionsOf(owner, source, nowMs, currentKey, pageMeeting) : null;
+    const page = engagePageOf(pageMeeting, source, nowMs, chosenMomentAt(pageMeeting, source));
+    const options = owner ? optionsOf(owner, source, nowMs, currentKey, page) : null;
     dispatch({
       type: 'dataChanged',
       options,
@@ -106,9 +117,12 @@ export function useEngageFlow(request: EngageRequest): EngageFlow {
       dailyLeft: ownersLeft('daily', source, nowMs),
       current: currentKey,
       nextRows: options ? engageListsOf(options, currentRef).next.length : 0,
-      agreedRows: options?.agreed?.rows.length ?? 0,
+      fromRows: options ? fromRowCount(options.from) : 0,
+      waitingRows: options?.waiting.length ?? 0,
+      agreementRows: options?.agreements.length ?? 0,
     });
-  }, [source, owner, current, pageMeeting]);
+    // `moments` re-runs it when a moment is chosen.
+  }, [source, owner, current, pageMeeting, moments]);
 
   return {state, dispatch, source};
 }

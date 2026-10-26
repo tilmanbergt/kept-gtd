@@ -26,6 +26,7 @@ import {countMeetingsInRange} from '../../domain/meetingSpan';
 import {MarkScope} from '../../domain/marks';
 import {
   activeReviewSteps,
+  visibleReviewSteps,
   applyEmptyStamps,
   applyStepVisit,
   nextReviewStepId,
@@ -62,6 +63,7 @@ import InboxStep, {inboxStepEntries} from './steps/InboxStep';
 import ItemListStep from './steps/ItemListStep';
 import MeetingsCloseOutStep from './steps/MeetingsCloseOutStep';
 import OpenLoopsStep, {openLoopsCount, useLoopRoster} from './steps/OpenLoopsStep';
+import AgreementsStep, {agreementsStepCount, useAgreementReview} from './steps/AgreementsStep';
 import TendingThreadsStep, {tendingCount, useTendingRoster} from './steps/TendingThreadsStep';
 import SomedayStep from './steps/SomedayStep';
 import UnfocusedNextStep from './steps/UnfocusedNextStep';
@@ -90,7 +92,7 @@ export default function ReviewScreen({onOpenItem, onReviewRecorded, onOpenCalend
   const {items, settings, setSettings, aggregate, inbox, inboxPath, loading, error, load, refreshFromCache} = data;
   // The Gmail step only while the experimental Gmail integration is on.
   const features = useFeatures();
-  const activeSteps = useMemo(() => activeReviewSteps(features), [features]);
+  const allSteps = useMemo(() => activeReviewSteps(features), [features]);
   // Open marks count toward Inbox to zero.
   const openMarkCount = useOpenMarks(ALL_MARKS).length;
 
@@ -115,7 +117,7 @@ export default function ReviewScreen({onOpenItem, onReviewRecorded, onOpenCalend
 
   // The open step was just hidden (Gmail switched off in Settings → Advanced
   // while this kept-alive screen stood on it): back to the overview.
-  const viewHidden = view.kind === 'step' && !activeSteps.some(def => def.id === view.id);
+  const viewHidden = view.kind === 'step' && !allSteps.some(def => def.id === view.id);
   useEffect(() => {
     if (viewHidden) showView({kind: 'hub'});
   }, [viewHidden]);
@@ -218,6 +220,7 @@ export default function ReviewScreen({onOpenItem, onReviewRecorded, onOpenCalend
 
   const tendingRoster = useTendingRoster(data);
   const loopRoster = useLoopRoster(data);
+  const agreementReview = useAgreementReview(data);
   // The hub's per-step numbers, from the same aggregate the steps read.
   const inboxEntries = inboxStepEntries(inbox);
   const week = weekAheadRangeIso();
@@ -232,11 +235,15 @@ export default function ReviewScreen({onOpenItem, onReviewRecorded, onOpenCalend
           countMeetingsInRange(inbox?.meetings ?? [], week.start, week.end),
           tendingCount(tendingRoster),
           openLoopsCount(loopRoster),
+          agreementsStepCount(agreementReview),
         )
       : null;
+  // What the hub and the walk-through show: a hide-when-empty step (Agreements) only while it lists
+  // something, or while it is the step shown. Empty stamps go over every step (the tab badge).
+  const activeSteps = visibleReviewSteps(allSteps, stepCounts, view.kind === 'step' ? view.id : null);
   // Backlog steps with nothing in them, as a string so the effect below only runs when that set changes.
   const emptyBacklogKey = stepCounts
-    ? activeSteps
+    ? allSteps
         .filter(def => def.kind === 'backlog' && stepCounts[def.id].n === 0)
         .map(def => def.id)
         .join(',')
@@ -252,8 +259,8 @@ export default function ReviewScreen({onOpenItem, onReviewRecorded, onOpenCalend
     if (view.kind !== 'hub' || loading || emptyBacklogKey === null || !settings) return;
     const emptyIds = emptyBacklogKey === '' ? [] : (emptyBacklogKey.split(',') as ReviewStepId[]);
     const now = new Date();
-    if (applyEmptyStamps(settings.reviewSteps, emptyIds, now, activeSteps) === settings.reviewSteps) return;
-    updateReviewSteps(steps => applyEmptyStamps(steps, emptyIds, now, activeSteps))
+    if (applyEmptyStamps(settings.reviewSteps, emptyIds, now, allSteps) === settings.reviewSteps) return;
+    updateReviewSteps(steps => applyEmptyStamps(steps, emptyIds, now, allSteps))
       .then(saved => {
         setSettings(saved);
         onReviewRecorded?.();
@@ -293,6 +300,8 @@ export default function ReviewScreen({onOpenItem, onReviewRecorded, onOpenCalend
         return <MeetingsCloseOutStep {...stepProps} />;
       case 'tendingThreads':
         return <TendingThreadsStep {...stepProps} />;
+      case 'agreements':
+        return <AgreementsStep {...stepProps} />;
       case 'gmailInbox':
         return <GmailStep {...stepProps} />;
       case 'inbox':

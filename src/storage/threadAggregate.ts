@@ -20,7 +20,11 @@
  *   recorded never appear.
  * - **Looking back.** Meetings that are over, newest first, each with the
  *   todos agreed in it (domain/provenance.ts) and their counts; a todo's age
- *   is today minus its created date (or the meeting's date).
+ *   is today minus its created date (or the meeting's date) - and the
+ *   agreements made in it.
+ * - **Agreements** (docs/dev/history/technical-design-meetings-0.21.md R24):
+ *   the lens's agreements in the scope's files (domain/agreementOwner.ts),
+ *   active ones in Ahead, ended ones counted in Looking back.
  *
  * Todos count where they are filed (decision D15): an agreed todo in the
  * Inbox shows in its meeting's thread only once it is filed into the scope.
@@ -29,19 +33,21 @@
  * can be changed through storage/itemMutations.ts's mutateEntryTasks/
  * mutateEntryMeetings (the index-safety rule).
  */
+import {AgreementRef, lensAgreements} from '../domain/agreementOwner';
 import {isSomedayMaybe} from '../domain/flowState';
 import {meetingEndMs, todayIso} from '../domain/meetingTime';
-import {daysBetween, MeetingSeedFields, nextMeetingSeed} from '../domain/nextMeeting';
+import {daysBetween, MeetingSeedFields, nextMeetingOf} from '../domain/nextMeeting';
 import {meetingKey} from '../domain/provenance';
 import {
   LensItemRef,
   LensSource,
   meetingStartKey,
+  ProvenanceMemo,
   threadLensContext as lensContextOf,
   ThreadLensContext,
   ThreadRelation,
 } from '../domain/threadLens';
-import {belongsToThread, isCounterpartType, ThreadLens, ThreadRef} from '../domain/threads';
+import {isCounterpartType, ThreadLens, ThreadRef} from '../domain/threads';
 import {Meeting, Task} from '../domain/types';
 import {CachedItem} from './dataCache';
 
@@ -67,6 +73,8 @@ export interface PastMeeting {
   key: string;
   /** Todos agreed in it (not cancelled): open first, then done. */
   agreed: ThreadTaskEntry[];
+  /** Agreements made in it (active and ended), file order. */
+  agreements: AgreementRef[];
   counts: {agreed: number; done: number; open: number; oldestOpenDays: number | null};
 }
 
@@ -85,7 +93,11 @@ export interface ThreadOverview {
     relevant: ThreadTaskEntry[];
     /** Open Someday/Maybe todos of the lens: counted only, never in owe/relevant (E10). */
     someday: ThreadTaskEntry[];
+    /** The lens's active agreements, item and file order. */
+    agreements: AgreementRef[];
   };
+  /** The lens's ended agreements (Looking back's "n agreements ended ›"). */
+  endedAgreements: AgreementRef[];
   /** `from`: the latest past meeting's date (null without one); `done`: latest completion first. */
   since: {from: string | null; done: ThreadTaskEntry[]};
   /** Newest first. */
@@ -117,25 +129,30 @@ export function threadSourcesOf(items: readonly CachedItem[], inbox: ThreadInbox
   return sources;
 }
 
-export type {ThreadLensContext, ThreadRelation};
+export type {ProvenanceMemo, ThreadLensContext, ThreadRelation};
 
 const startKey = meetingStartKey;
 
-/** The lens of `tag` over the cache plus the Inbox (domain/threadLens.ts). Null when `tag` is not a nested tag. */
+/**
+ * The lens of `tag` over the cache plus the Inbox (domain/threadLens.ts). Null when `tag` is not a nested tag.
+ * `provenanceMemo` is shared only by lenses with the same items, Inbox and owner (domain/threadLens.ts).
+ */
 export function threadLensContext(
   items: readonly CachedItem[],
   inbox: ThreadInboxInput | null,
   tag: string,
   requestedLens: ThreadLens,
   ownerPath: string | null,
+  provenanceMemo?: ProvenanceMemo,
 ): ThreadLensContext | null {
-  return lensContextOf(items, threadSourcesOf(items, inbox), inbox?.path ?? null, tag, requestedLens, ownerPath);
+  return lensContextOf(items, threadSourcesOf(items, inbox), inbox?.path ?? null, tag, requestedLens, ownerPath, provenanceMemo);
 }
 
 /**
  * The overview of the thread of `tag` in `requestedLens` (the counterpart
  * lens for `wf`/`owe` tags), scoped to `ownerPath` - see the module doc
- * comment. Null when `tag` is not a nested tag.
+ * comment. Null when `tag` is not a nested tag. `opts.provenanceMemo`: see
+ * threadLensContext above.
  */
 export function buildThreadOverview(
   items: readonly CachedItem[],
@@ -144,8 +161,9 @@ export function buildThreadOverview(
   requestedLens: ThreadLens,
   ownerPath: string | null,
   now: Date = new Date(),
+  opts: {provenanceMemo?: ProvenanceMemo} = {},
 ): ThreadOverview | null {
-  const ctx = threadLensContext(items, inbox, tag, requestedLens, ownerPath);
+  const ctx = threadLensContext(items, inbox, tag, requestedLens, ownerPath, opts.provenanceMemo);
   if (!ctx) return null;
   const {lens, thread, scope, inScope, types, inLens, provenanceOf, relationOf} = ctx;
   const today = todayIso(now);
@@ -181,6 +199,18 @@ export function buildThreadOverview(
   aheadMeetings.sort((a, b) => startKey(a.meeting).localeCompare(startKey(b.meeting)));
   pastEntries.sort((a, b) => startKey(b.meeting).localeCompare(startKey(a.meeting)));
 
+  const loaded = items.filter(item => !item.loadError);
+  const agreements = lensAgreements(ctx, loaded);
+  const madeIn = new Map<string, AgreementRef[]>();
+  for (const item of loaded.filter(i => scope.includes(i.path))) {
+    item.agreements.forEach((agreement, index) => {
+      const match = provenanceOf(agreement);
+      if (!match) return;
+      const key = `${match.path}#${match.meetingIndex}`;
+      madeIn.set(key, [...(madeIn.get(key) ?? []), {itemPath: item.path, index, agreement}]);
+    });
+  }
+
   const past: PastMeeting[] = pastEntries.map(entry => {
     const agreed = agreedByMeeting.get(`${entry.item.path}#${entry.meetingIndex}`) ?? [];
     const open = agreed.filter(a => !a.task.done);
@@ -190,6 +220,7 @@ export function buildThreadOverview(
       entry,
       key: meetingKey(entry.meeting),
       agreed: [...open, ...done],
+      agreements: madeIn.get(`${entry.item.path}#${entry.meetingIndex}`) ?? [],
       counts: {
         agreed: agreed.length,
         done: done.length,
@@ -212,7 +243,8 @@ export function buildThreadOverview(
     owner: ctx.owner,
     scope,
     types,
-    ahead: {meetings: aheadMeetings, ...lists},
+    ahead: {meetings: aheadMeetings, ...lists, agreements: agreements.active},
+    endedAgreements: agreements.ended,
     since: {from, done: sinceDone},
     past,
   };
@@ -248,14 +280,8 @@ export function nextMeetingOffers(overview: ThreadOverview, today: string): Next
   const entries = [...overview.ahead.meetings, ...overview.past.map(p => p.entry)];
   const out: NextMeetingOffer[] = [];
   for (const type of types) {
-    const tag = `${type}/${overview.thread.counterpart}`;
-    const own = entries.filter(e => belongsToThread(e.meeting.tags, {type, counterpart: overview.thread.counterpart, tag}));
-    const seed = nextMeetingSeed(own.map(e => e.meeting), today);
-    const base = own.reduce<ThreadMeetingEntry | null>(
-      (latest, e) => (!latest || startKey(e.meeting) > startKey(latest.meeting) ? e : latest),
-      null,
-    );
-    if (seed && base) out.push({type, seed, item: base.item});
+    const next = nextMeetingOf(entries, `${type}/${overview.thread.counterpart}`, today);
+    if (next) out.push({type, seed: next.seed, item: next.base.item});
   }
   return out;
 }

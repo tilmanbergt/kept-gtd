@@ -23,6 +23,17 @@ export const rowStyles = StyleSheet.create({
     height: undefined,
     minHeight: QUICK_ADD_ROWS.input,
   },
+  /**
+   * The field and its date. The rows render it with `collapsable={false}`
+   * (and the field's MarkWrap likewise): left to itself, Android flattens
+   * these layout-only Views, and the TextInput's frame is then the sum of
+   * their offsets, which has to be re-applied through the flattened parents
+   * whenever a `display: none` above them toggles. Real views get their own
+   * frames - the fix tried for a title field that sometimes isn't drawn
+   * (ui/quickAdd/layoutLog.ts).
+   * R2 itself stays flattened: it is the floating strips' positioning
+   * context, and they hover outside its bounds.
+   */
   row2Wrap: {
     flexDirection: 'row',
     alignItems: 'center',

@@ -44,7 +44,65 @@ export const ENGAGE_TEXT = {
   alsoHere: 'Also here:',
   overview: 'Overview ›',
   waitingRow: '· waiting',
+  doSomeday: 'Do someday',
+  waitingFor: 'w/f',
+  change: 'Change',
+  end: 'End',
+  markPrepped: 'Mark prepped',
+  markReviewed: 'Mark reviewed',
+  lastNote: 'Note from last meeting ›',
 } as const;
+
+/** The section line's title for a section that starts at a handwritten heading (docs/dev/history/technical-design-engage-page-owner.md P9). */
+export const HANDWRITTEN_SECTION = 'Handwritten section';
+
+/**
+ * Engage's section line (P9): "Section: Coach call · 14.10." on the section
+ * page itself, "Section: Training plan · from p. 7" on a follow-up page
+ * (`page` is 0-based, shown 1-based).
+ */
+export function sectionLineText(title: {text: string; detail: string}, page: number, distance: number): string {
+  const parts = [title.text, title.detail, distance > 0 ? `from p. ${page + 1}` : ''].filter(Boolean);
+  return `Section: ${parts.join(' · ')}`;
+}
+
+/** The moment switch's labels (docs/dev/history/technical-design-meetings-0.21.md R1). */
+export const MOMENT_LABELS = {before: 'Before', during: 'During', after: 'After'} as const;
+
+/** The meeting line's left part (R1): "Sparring Mieke · today 10:00–11:00", "Offsite · Tue 14.10.". */
+export function momentLineText(meeting: Pick<Meeting, 'title' | 'date' | 'time' | 'endTime'>, today: string): string {
+  const day = meeting.date === today ? 'today' : formatDayHeader(meeting.date, today);
+  const time = meeting.time ? ` ${formatTime(meeting.time)}${meeting.endTime ? `–${formatTime(meeting.endTime)}` : ''}` : '';
+  return `${plainMeetingTitle(meeting)} · ${day}${time}`;
+}
+
+/** "+ Next sparring" (the thread's type, or the loop's kind). */
+export function nextMeetingButtonText(type: string): string {
+  return `+ Next ${type}`;
+}
+
+/** The Now box's Waiting For button (R15): "w/f Mieke", or "w/f" without a counterpart. */
+export function waitingForButtonText(counterpart: string | null): string {
+  return counterpart ? `w/f ${titleCaseSlug(counterpart)}` : ENGAGE_TEXT.waitingFor;
+}
+
+/** The Now box's link to the meeting a todo was agreed in (R15): "From Sparring Mieke · 14.10. ›". */
+export function nowMeetingText(key: string, today: string): string {
+  const m = /^(\d{4}-\d{2}-\d{2})\s+(.*)$/.exec(key.trim());
+  if (!m) return `From ${key.trim()} ›`;
+  const words = m[2].split(' ').filter(w => !w.includes('/'));
+  return `From ${words.join(' ') || m[2]} · ${formatDate(m[1], today)} ›`;
+}
+
+/** A loop owner's line (R16): "Loop since 2.10. · 3 open" (without a start date: "3 open"). */
+export function loopLineText(since: string | null, open: number, today: string): string {
+  return `${since ? `Loop since ${formatDate(since, today)} · ` : ''}${open} open`;
+}
+
+/** The loop line's meeting part (R16): "next: Thu 23.10. Workshop ›". */
+export function loopNextText(meeting: Pick<Meeting, 'title' | 'date'>, today: string): string {
+  return `next: ${formatDayHeader(meeting.date, today)} ${plainMeetingTitle(meeting)} ›`;
+}
 
 /** S8's signal. */
 export function nothingLeftText(ownerName: string): string {
@@ -52,8 +110,10 @@ export function nothingLeftText(ownerName: string): string {
 }
 
 /** The ack line's verb for each action (S5). */
-export function ackLabel(kind: 'done' | 'someday' | 'unnext' | 'next'): string {
+export function ackLabel(kind: 'done' | 'someday' | 'unnext' | 'next' | 'waiting'): string {
   switch (kind) {
+    case 'waiting':
+      return 'Waiting for:';
     case 'done':
       return 'Done:';
     case 'someday':
@@ -75,9 +135,16 @@ export function backLineText(todoTitle: string): string {
   return `Continue with ${todoTitle}`;
 }
 
-/** The options screen's tab labels, with the rows each lists. */
-export function tabLabel(tab: 'agreed' | 'next' | 'plan', rows: number): string {
-  return `${tab === 'agreed' ? 'Agreed' : tab === 'next' ? 'Next' : 'Plan'} ${rows}`;
+/** The From tab's name by owner (docs/dev/history/technical-design-meetings-0.21.md R9). */
+export function fromTabName(ownerKind: 'item' | 'loop' | 'thread'): string {
+  return ownerKind === 'thread' ? 'From Thread' : ownerKind === 'loop' ? 'From Loop' : 'From meetings';
+}
+
+const TAB_NAMES = {next: 'Next', plan: 'Plan', waiting: 'Waiting', agreements: 'Agreements'} as const;
+
+/** The options screen's tab labels, with the rows each lists ("From Thread 3", "Next 2"). */
+export function tabLabel(tab: 'from' | 'next' | 'plan' | 'waiting' | 'agreements', rows: number, ownerKind: 'item' | 'loop' | 'thread' = 'item'): string {
+  return `${tab === 'from' ? fromTabName(ownerKind) : TAB_NAMES[tab]} ${rows}`;
 }
 
 /** A meeting's title without tags ("Sparring Mieke"). */
@@ -86,14 +153,19 @@ function plainMeetingTitle(meeting: Pick<Meeting, 'title'>): string {
   return stripAllTags(display) || display;
 }
 
-/** The Agreed tab's first line (docs/dev/history/technical-design-engage-in-context.md E6): "Agreed in Sparring Mieke · Tue 14.10.". */
-export function agreedCaption(meeting: Pick<Meeting, 'title' | 'date'>, today: string): string {
-  return `Agreed in ${plainMeetingTitle(meeting)} · ${formatDayHeader(meeting.date, today)}`;
+/** A From group's caption (R10): "Tue 14.10. · Sparring Mieke", "today · Sparring Mieke". */
+export function fromCaption(meeting: Pick<Meeting, 'title' | 'date'>, today: string): string {
+  return `${meeting.date === today ? 'today' : formatDayHeader(meeting.date, today)} · ${plainMeetingTitle(meeting)}`;
 }
 
-/** The "Also here" counts (E7): each part only when it isn't zero; both null hides the line. */
-export function alsoHereParts(waiting: number, someday: number): {waiting: string | null; someday: string | null} {
-  return {waiting: waiting > 0 ? `${waiting} waiting` : null, someday: someday > 0 ? `${someday} someday` : null};
+/** A Waiting row's origin (R11): "from 14.10." for one agreed in a meeting. */
+export function fromMeetingText(meeting: Pick<Meeting, 'date'>, today: string): string {
+  return `from ${formatDate(meeting.date, today)}`;
+}
+
+/** The "Also here" count (E7): Someday and Maybe; null hides the line. */
+export function alsoHereParts(someday: number): {someday: string | null} {
+  return {someday: someday > 0 ? `${someday} someday` : null};
 }
 
 /** "Next here: Thu 23.10. 10:00 Sparring Mieke ›" (E8), with "· next today" when it is also today's next meeting. */
@@ -151,8 +223,9 @@ export function noNextPromptText(ownerName: string): string {
 
 /**
  * The Now box's details line (D11 follow-up): what is set of the due date
- * (or a Waiting For's counterpart and follow-up date) and the meeting the
- * todo was agreed in; empty when none is set. Dates through dateFormat.
+ * (or a Waiting For's counterpart and follow-up date); empty when none is
+ * set. The meeting the todo was agreed in is its own link
+ * (`nowMeetingText`). Dates through dateFormat.
  */
 export function nowDetailsText(task: Pick<Task, 'flowState' | 'waitingOn' | 'dueDate' | 'fields'>, today: string): string {
   const parts: string[] = [];
@@ -161,11 +234,6 @@ export function nowDetailsText(task: Pick<Task, 'flowState' | 'waitingOn' | 'due
     parts.push(`Waiting for${who ? ` ${who}` : ''}${task.dueDate ? ` · follow up ${formatDate(task.dueDate, today)}` : ''}`);
   } else if (task.dueDate) {
     parts.push(`Due ${formatDate(task.dueDate, today)}${task.dueDate < today ? ' - overdue' : ''}`);
-  }
-  const key = task.fields.meeting;
-  if (key) {
-    const m = /^(\d{4}-\d{2}-\d{2})\s+(.*)$/.exec(key.trim());
-    parts.push(m ? `Agreed in ${m[2]} · ${formatDayHeader(m[1], today)}` : `Agreed in ${key.trim()}`);
   }
   return parts.join('   ');
 }

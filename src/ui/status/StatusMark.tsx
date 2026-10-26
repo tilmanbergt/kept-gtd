@@ -11,6 +11,10 @@
  * `flex` makes the wrapper take the control's flex:1 share of a row (for
  * inputs that stretch); the wrapper is a row itself, so a wrapped
  * `flex: 1` input keeps growing horizontally, not vertically.
+ *
+ * `collapsable={false}` keeps the wrapper a real Android view instead of
+ * letting React Native flatten it away (Quick Add's title fields - see
+ * ui/quickAdd/styles.ts `row2Wrap`).
  */
 import React from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
@@ -26,11 +30,13 @@ interface Props {
   flex?: boolean;
   /** Optional: tap on the badge (e.g. re-show a dismissed message). */
   onPress?: () => void;
+  /** Default true (Android may flatten the wrapper); false keeps it a real view. */
+  collapsable?: boolean;
 }
 
-export default function MarkWrap({mark, children, textColor, flex, onPress}: Props): React.JSX.Element {
+export default function MarkWrap({mark, children, textColor, flex, onPress, collapsable}: Props): React.JSX.Element {
   return (
-    <View style={[styles.wrap, flex && styles.flex]}>
+    <View style={[styles.wrap, flex && styles.flex]} collapsable={collapsable}>
       {children}
       {mark && (
         <Pressable

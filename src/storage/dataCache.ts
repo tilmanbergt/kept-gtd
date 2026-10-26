@@ -49,6 +49,7 @@ import {FrontMatterFields} from '../domain/markdown';
 import {ItemStatus, Mark, Meeting, MonthlyGoal, Task, WeeklyGoal} from '../domain/types';
 import {CounterpartLine} from '../domain/threadsSection';
 import {LoopLine} from '../domain/loopsSection';
+import {Agreement} from '../domain/agreements';
 import {FileStat, listFolderEntries, statFiles} from '../supernote/fileSystem';
 import {ensureFileReadPermission} from '../supernote/pluginPermissions';
 import {log, logError} from '../utils/log';
@@ -83,6 +84,9 @@ export interface CachedItem {
   /** From the `## Loops` span (docs/dev/history/technical-design-loops.md §3.2) - the loops this item owns. Written only through storage/loops.ts. */
   loops: LoopLine[];
   loopsExtraLines: string[];
+  /** From the `## Agreements` span (docs/dev/history/technical-design-meetings-0.21.md §2.1). Written only through storage/agreements.ts. */
+  agreements: Agreement[];
+  agreementsExtraLines: string[];
   /** From the frontmatter block - see domain/markdown.ts's parseFrontMatter, storage/focusSlots.ts and storage/statusControl.ts. */
   status: ItemStatus;
   dailyFocus: boolean;
@@ -276,6 +280,8 @@ async function loadOneItem(kind: 'project' | 'area', name: string, path: string)
       threadsExtraLines: [],
       loops: [],
       loopsExtraLines: [],
+      agreements: [],
+      agreementsExtraLines: [],
       status: 'active',
       dailyFocus: false,
       weeklyFocus: false,
@@ -737,6 +743,18 @@ export function updateItemLoops(path: string, rawContent: string, loops: LoopLin
   item.rawContent = rawContent;
   item.loops = loops;
   item.loopsExtraLines = loopsExtraLines;
+  item.loadError = undefined;
+  reparseIfMerged(item);
+  notifyCacheChanged();
+}
+
+/** Write-through after saving an item's Agreements span (storage/agreements.ts) - see updateItemTasks. */
+export function updateItemAgreements(path: string, rawContent: string, agreements: Agreement[], agreementsExtraLines: string[]): void {
+  const item = cached?.items.find(i => i.path === path);
+  if (!item) return;
+  item.rawContent = rawContent;
+  item.agreements = agreements;
+  item.agreementsExtraLines = agreementsExtraLines;
   item.loadError = undefined;
   reparseIfMerged(item);
   notifyCacheChanged();

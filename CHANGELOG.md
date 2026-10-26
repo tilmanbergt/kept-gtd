@@ -10,8 +10,63 @@ or your project/area files are stored.
 
 ## [Unreleased]
 
+### New
+- **Agreements**: keep what you settled with someone - "Feedback only in our 1:1s" - next to the
+  thread, loop, project or area it belongs to. Add one on Quick Add's new **Agreement** tab in a
+  thread or loop overview or on a project's or area's page, optionally **valid till** a date
+  (+1 m, +3 m, end of year). Its card offers **Edit**, **Change** (the old one is ended, the new
+  one added) and **End**; nothing is ever deleted. Overviews list them in **Ahead**, count the
+  ended ones in **Looking back** and show the **Agreements made** in a past meeting; a page lists
+  its own under **◇ Agreements n ›**. See the help page "Agreements".
+- **Engage in the moment**: on a meeting's page Engage shows the meeting with a switch
+  **Before · During · After**, chosen by the time and changeable with a tap (kept while Kept GTD
+  runs). Under it a row offers what fits: **Mark prepped** and **Note from last meeting ›** before,
+  **+ Next sparring** when no next meeting is planned, **Reflect ›** and **Mark reviewed** after.
+  During and after the meeting, todos and agreements added in Engage record the meeting. New tabs
+  **Waiting** (what you wait for, with where it was agreed and **Done**) and **Agreements**
+  (Change, End). A loop shows since when it runs, its open todos and its next meeting.
+- **Agreements from the lasso and from marks**: on a page that belongs to someone, the capture panel
+  has a third kind, **Agreement**, with **For** chips (the page meeting's thread or loop first, then
+  the note's project or area). On a meeting's page it records the meeting.
+- **Weekly Review step "Agreements"**: agreements past their date, with someone set inactive, of a
+  closed loop, or in a project that is done or on hold - **Keep** with a new date, **Change** or
+  **End**. Shown only when there is one. Setting someone inactive also goes through their
+  agreements (**Keep**, **End**, **End all**); a project's close-out warns about active agreements
+  with **End all**; "Since last time" lists the agreements made in the previous meeting.
+
 ### Changed
 - The project now lives at github.com/tilmanbergt/kept-gtd. Old gtdpara links lead there too.
+- Engage: the **Agreed** tab is now **From Thread** (**From Loop**, **From meetings** for a project
+  or area): what came out of the owner's meetings, newest meeting first, with the todos done since
+  struck through. "Also here" counts only Someday and Maybe.
+- Engage: "Reflect on this meeting ›" is now **Reflect ›** in the row under the meeting line.
+  "Next here" is hidden while it names the meeting whose page you are on.
+- Engage's Now box offers **w/f Mieke** (Waiting For on the thread's counterpart), **Do someday**
+  and **Remove #next**; the meeting the todo was agreed in opens that meeting's note. The owner's tag
+  that Quick Add adds now shows in its grey line and can be dropped for one entry.
+
+- **Engage follows the page's section**: in a notebook several things share, a page you write by hand
+  belongs to the nearest page before it with a heading or a page Kept made. Follow-up pages of a
+  meeting's page show its meeting line and **From** tab; follow-up pages of a todo's page make it the
+  one you are working on; your own heading starts a section of the notebook's owner. A home notebook
+  belongs to its project or area even when a loop's note has the same name. A line under Engage's
+  header names the section ("Section: Training plan · from p. 7"). See "Which owner a page belongs
+  to" on the help page "Engage".
+- **Capture follows the page's section too**: a todo or agreement you lasso or mark on a page after a
+  meeting's page records that meeting ("↳ from …", ✕ drops it), until your own heading. An
+  agreement's **For** chips put the thread or loop of the todo's or loop's page first.
+- The demo space has a fifth area, **Sport**, whose loop `#race/marathon` shares its home notebook, to
+  try the sections in Engage.
+
+### Fixed
+- Project and Area pages with many meetings and threads open much faster: the Threads tab no longer
+  compares every meeting again for every person. Review's "Tending threads", the counterpart filter
+  and Engage profit too.
+- With Debug logging on, Kept GTD no longer writes to its log file every few seconds while idle.
+
+### Upgrade notes
+- The first time you add an agreement to a Project or Area, its file gets a new `## Agreements`
+  section of plain bullets. Older versions of Kept GTD keep that section as it is.
 
 ## [0.20.0] — 2026-10-24
 

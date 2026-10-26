@@ -10,6 +10,9 @@ import {ReviewStepsMap} from '../domain/reviewSteps';
 import {perfEnd, perfStart} from '../utils/perf';
 import {migrateExperimentalFlags} from '../domain/features';
 import {BUILD_INFO} from '../generated/buildInfo';
+import {rememberSettings} from './settingsSnapshot';
+
+export {peekSettings} from './settingsSnapshot';
 
 const SETTINGS_KEY = 'gtdpara:settings:v1';
 
@@ -82,11 +85,13 @@ export async function loadSettings(): Promise<GtdParaSettings> {
   try {
     const settings = await readSettings();
     setSettingsUnreadable(null);
+    rememberSettings(settings);
     return settings;
   } catch (e) {
     const reason = errorMessage(e);
     logError('settingsStorage: settings unreadable, running on defaults and saving none', reason);
     setSettingsUnreadable(reason);
+    rememberSettings(null);
     return DEFAULT_SETTINGS;
   } finally {
     perfEnd('load:settings', perfToken);
@@ -110,8 +115,10 @@ export async function resetSettingsToDefaults(): Promise<GtdParaSettings> {
   return DEFAULT_SETTINGS;
 }
 
+/** The single writer of the stored settings; keeps the in-memory snapshot (storage/settingsSnapshot.ts) current. */
 async function writeSettings(settings: GtdParaSettings): Promise<void> {
   await AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+  rememberSettings(settings);
 }
 
 /** Stores `settings`. Throws while the stored settings are unreadable, so defaults never replace them unasked. */

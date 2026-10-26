@@ -14,6 +14,7 @@
  * full tasks array, the same shape as the thread overview's entries, so the
  * one action hook (ui/useEntryActions.ts) takes them unchanged.
  */
+import {Agreement} from './agreements';
 import {scopeOwnerOf} from './counterparts';
 import {belongsToLoop, isLoopMember, loopAgreedIn} from './loops';
 import {LoopLine} from './loopsSection';
@@ -65,6 +66,8 @@ export interface EngageItem {
   meetings: readonly Meeting[];
   loops: readonly LoopLine[];
   threads: readonly CounterpartLine[];
+  /** The `## Agreements` section, in file order (domain/agreementOwner.ts reads membership). */
+  agreements: readonly Agreement[];
 }
 
 /** The Inbox's lists: the lens's provenance sources and today's meetings (E9). */
@@ -139,7 +142,8 @@ export function isOpenTask(task: Task): boolean {
   return !task.done && !task.cancelled;
 }
 
-function itemAt(source: EngageSource, path: string): EngageItem | null {
+/** The Project or Area at `path`, or null. */
+export function itemAt(source: EngageSource, path: string): EngageItem | null {
   return source.items.find(item => item.path === path) ?? null;
 }
 
@@ -157,7 +161,7 @@ export function threadOfTags(tags: readonly string[], source: EngageSource): Thr
 }
 
 /** The Projects/Areas, then the Inbox, as the lens reads them. */
-function lensSourcesOf(source: EngageSource): LensSource[] {
+export function lensSourcesOf(source: EngageSource): LensSource[] {
   const sources: LensSource[] = source.items.map(item => ({ref: itemRefOf(item), tasks: item.tasks, meetings: item.meetings}));
   if (source.inbox) sources.push({ref: {kind: 'inbox', name: 'Inbox', path: source.inbox.path, abbrev: null}, tasks: source.inbox.tasks, meetings: source.inbox.meetings});
   return sources;
@@ -234,6 +238,42 @@ export function ownerTodos(owner: EngageOwner, source: EngageSource): OwnerTodoR
   }
 }
 
+const inRefs = (refs: readonly MeetingRef[], match: ProvenanceMatch | null) =>
+  match !== null && refs.some(r => r.itemPath === match.path && r.meetingIndex === match.meetingIndex);
+
+/**
+ * The owner's todos agreed in one of `meetings` (open and done, not
+ * cancelled), in item and file order - Engage's From tab
+ * (docs/dev/history/technical-design-meetings-0.21.md §4.1). A thread reads
+ * its scope through the lens's provenance; a loop or item its own file.
+ * Done todos keep the relation they would have open ("owe" when nothing
+ * else applies).
+ */
+export function ownerAgreedTodos(owner: EngageOwner, source: EngageSource, meetings: readonly MeetingRef[]): OwnerTodoRef[] {
+  if (meetings.length === 0) return [];
+  const out: OwnerTodoRef[] = [];
+  if (owner.kind === 'thread') {
+    const ctx = threadLensOf(owner, source);
+    for (const s of ctx?.inScope ?? []) {
+      s.tasks.forEach((task, taskIndex) => {
+        if (task.cancelled) return;
+        const match = ctx!.provenanceOf(task);
+        if (!inRefs(meetings, match)) return;
+        out.push({item: s.ref, taskIndex, task, relation: ctx!.relationOf(task, match) ?? 'owe', agreedIn: refOfMatch(match)});
+      });
+    }
+    return out;
+  }
+  const item = itemAt(source, owner.itemPath);
+  if (!item) return out;
+  item.tasks.forEach((task, taskIndex) => {
+    if (task.cancelled) return;
+    const match = agreedInItem(item, task);
+    if (inRefs(meetings, match)) out.push({item: itemRefOf(item), taskIndex, task, relation: 'owe', agreedIn: refOfMatch(match)});
+  });
+  return out;
+}
+
 /** The owner's meetings that are not cancelled: a thread's lens (leaf-tagged ones too), a loop's, an item's outside its active loops. */
 export function ownerMeetings(owner: EngageOwner, source: EngageSource): MeetingEntryRef[] {
   const out: MeetingEntryRef[] = [];
@@ -274,6 +314,20 @@ export function threadOfTodo(itemPath: string, task: Pick<Task, 'tags' | 'fields
   const match = resolveProvenance(task, sources, scope);
   const thread = match && scope.includes(match.path) ? threadOfTags(match.meeting.tags, source) : null;
   return thread ? {kind: 'thread', scopeOwnerPath, tag: thread.tag} : null;
+}
+
+/**
+ * The meeting a todo was agreed in, searched in its item's scope first
+ * (domain/provenance.ts); null without one or when it doesn't resolve. The
+ * Now box links it (docs/dev/history/technical-design-meetings-0.21.md R15).
+ */
+export function agreedInMeeting(itemPath: string, task: Pick<Task, 'fields'>, source: EngageSource): MeetingEntryRef | null {
+  if (!task.fields.meeting) return null;
+  const scope = scopeOf(itemPath, source.items, source.inbox?.path ?? null);
+  const sources = lensSourcesOf(source);
+  const match = resolveProvenance(task, sources.map(s => ({path: s.ref.path, meetings: s.meetings})), scope);
+  const ref = match ? sources.find(s => s.ref.path === match.path)?.ref : undefined;
+  return match && ref ? {item: ref, meetingIndex: match.meetingIndex, meeting: match.meeting} : null;
 }
 
 /** The owner of a todo (E4): its active loop, else its thread, else its item. */

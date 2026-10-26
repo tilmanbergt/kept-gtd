@@ -6,10 +6,18 @@
  * / view / close under the input, then tag and "File to" chips in wrapped
  * rows and the screen's own extras. `fixedDestination` is the destination
  * picked there; a typed #ABBR still wins, as in Quick Add. Never edits.
+ *
+ * Agreement (docs/dev/history/technical-design-meetings-0.21.md §7): a third
+ * kind while the page has an owner (`agreementFor`). One agreement per
+ * capture - no Split lines - with its valid-till field, the tag chips, the
+ * grey line (the page's meeting, droppable) and "For" chips in place of
+ * "File to": the page meeting's thread or loop first, then the note's
+ * Project or Area, More… for any other.
  */
-import React, {useRef} from 'react';
+import React, {useRef, useState} from 'react';
 import {Keyboard, Pressable, StyleSheet, Text, TextInput, View} from 'react-native';
 import {FILE_TO_SHORT} from '../../domain/captureFileTo';
+import {todayIso} from '../../domain/meetingTime';
 import {Destination, destinationLabel} from '../../domain/destination';
 import HighlightMark from '../HighlightMark';
 import {useOnScreenHide} from '../screenActivity';
@@ -17,6 +25,8 @@ import MarkWrap from '../status/StatusMark';
 import TagChipGrid from '../TagChipGrid';
 import {COLORS, FONT} from '../theme';
 import {quickAddButtons} from './ActionRow';
+import {AgreementForChoice, buildAgreementForChips} from './agreementForChips';
+import {AgreementInputRow} from './AgreementRows';
 import {MeetingInputRow, MeetingMetaRows} from './MeetingRows';
 import ProvenanceLine, {QuickAddAdds} from './ProvenanceLine';
 import QuickAddFrame from './QuickAddFrame';
@@ -25,6 +35,7 @@ import TabsRow from './TabsRow';
 import {TaskDueControl, TaskInputRow, TaskMetaRows} from './TaskRows';
 import {CaptureSaveMode, CaptureSeed, MeetingQuickAddFields, truncateItemName} from './types';
 import {CaptureState, FILE_TO_PAGE, SPLIT_ROWS_PER_PAGE, useCapture} from './useCapture';
+import {useAgreementDraft} from './useAgreementDraft';
 import {useMeetingDraft} from './useMeetingDraft';
 import {useQuickAddCore} from './useQuickAddCore';
 import {useQuickAddStatus} from './useQuickAddStatus';
@@ -46,8 +57,10 @@ interface Props {
   initialDate?: string;
   onAddTask: (text: string, destination: Destination) => Promise<void>;
   onAddMeeting: (fields: MeetingQuickAddFields, destination: Destination) => Promise<void>;
-  /** Todo tab: one grey line saying what the screen adds to the new todo (ui/quickAdd/ProvenanceLine.tsx). */
+  /** Todo and Agreement kinds: one grey line saying what the screen adds to the new entry (ui/quickAdd/ProvenanceLine.tsx). */
   provenance?: QuickAddAdds | null;
+  /** The Agreement kind: who it can be for (the first is chosen) and how it is saved; absent or no choice: no tab. */
+  agreementFor?: {choices: AgreementForChoice[]; onAdd: (text: string, valid: string | null, choice: AgreementForChoice) => Promise<void>} | null;
   placeholder?: string;
   textColor: string;
   borderColor: string;
@@ -69,6 +82,17 @@ function CaptureQuickAdd(props: Props): React.JSX.Element {
     onAddMeeting: props.onAddMeeting,
     onUserEdit,
   });
+  const agreement = useAgreementDraft(core, {});
+  const choices = props.agreementFor?.choices ?? [];
+  const choicesKey = choices.map(c => c.key).join('|');
+  const [picked, setPicked] = useState<{choice: AgreementForChoice; forKey: string} | null>(null);
+  const [forAll, setForAll] = useState(false);
+  const [forPage, setForPage] = useState(0);
+  // A pick holds for the page it was made on; another page starts at its first choice.
+  const choice = picked && picked.forKey === choicesKey ? picked.choice : choices[0] ?? null;
+  const onAddAgreement = props.agreementFor
+    ? (text: string, valid: string | null) => (choice ? props.agreementFor!.onAdd(text, valid, choice) : Promise.reject(new Error('Choose who the agreement is for.')))
+    : undefined;
   const capture = useCapture(core, task, meeting, {
     captureSeed: props.captureSeed,
     fixedDestination,
@@ -79,8 +103,22 @@ function CaptureQuickAdd(props: Props): React.JSX.Element {
     onCaptureSaved: props.onCaptureSaved,
     onCaptureDestinationChange: props.onCaptureDestinationChange,
     touchedRef,
+    agreement: props.agreementFor ? agreement : null,
+    onAddAgreement,
   });
-  useQuickAddStatus(core, task, meeting, null);
+  useQuickAddStatus(core, task, meeting, null, agreement);
+  const isAgreement = core.displayType === 'agreement';
+  const forChips = buildAgreementForChips({
+    choices,
+    items: core.abbrevItems,
+    current: choice,
+    showAll: forAll,
+    page: forPage,
+    pageSize: FILE_TO_PAGE,
+    onPick: c => setPicked({choice: c, forKey: choicesKey}),
+    setShowAll: setForAll,
+    setPage: setForPage,
+  });
   useOnScreenHide(() => Keyboard.dismiss());
 
   const optionsRow =
@@ -109,7 +147,7 @@ function CaptureQuickAdd(props: Props): React.JSX.Element {
   const row4 = (
     <View style={quickAddButtons.row4}>
       <Text style={[styles.captureDest, {color: textColor}]} numberOfLines={1}>
-        → {truncateItemName(destinationLabel(capture.destination), 24)}
+        → {truncateItemName(isAgreement ? choice?.label ?? '' : destinationLabel(capture.destination), 24)}
       </Text>
       {saveButton('next', ' & next')}
       {saveButton('view', ' & view')}
@@ -132,10 +170,10 @@ function CaptureQuickAdd(props: Props): React.JSX.Element {
           <TagChipGrid chips={capture.tagChips} maxChips={18} textColor={textColor} borderColor={borderColor} />
         </>
       ) : null}
-      <Text style={[styles.captureLabel, {color: textColor}]}>File to</Text>
+      <Text style={[styles.captureLabel, {color: textColor}]}>{isAgreement ? 'For' : 'File to'}</Text>
       <TagChipGrid
-        chips={capture.fileToChips}
-        maxChips={capture.fileToAll ? FILE_TO_PAGE + 2 : FILE_TO_SHORT + 1}
+        chips={isAgreement ? forChips : capture.fileToChips}
+        maxChips={(isAgreement ? forAll : capture.fileToAll) ? FILE_TO_PAGE + 2 : FILE_TO_SHORT + 1}
         maxLabelChars={22}
         textColor={textColor}
         borderColor={borderColor}
@@ -147,19 +185,20 @@ function CaptureQuickAdd(props: Props): React.JSX.Element {
   return (
     <QuickAddFrame
       free
-      row1={<TabsRow core={core} taskOnly={false} hasNoteTab={false} noteFolderPath={null} textColor={textColor} />}
+      row1={<TabsRow core={core} taskOnly={false} hasNoteTab={false} hasAgreementTab={choices.length > 0} noteFolderPath={null} textColor={textColor} />}
       row2={
         <>
           <TaskInputRow core={core} task={task} placeholder={placeholder} capture={{splitBlock: capture.splitRows ? <SplitRows capture={capture} {...colors} /> : null}} {...colors} />
           {optionsRow}
           <MeetingInputRow core={core} meeting={meeting} capture {...colors} />
+          <AgreementInputRow core={core} agreement={agreement} today={todayIso()} {...colors} />
         </>
       }
       rows34={
         <>
           <TaskMetaRows core={core} task={task} capture {...colors} />
           <MeetingMetaRows core={core} meeting={meeting} capture {...colors} />
-          {provenance && provenance.length > 0 && core.displayType === 'task' ? (
+          {provenance && provenance.length > 0 && (core.displayType === 'task' || isAgreement) ? (
             <View style={styles.provenance}>
               <ProvenanceLine parts={provenance} textColor={textColor} />
             </View>

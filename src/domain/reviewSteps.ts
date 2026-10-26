@@ -75,6 +75,10 @@ export interface ReviewSummaryCounts {
   loopsClosed: number;
   /** "Someday / Maybe" (docs/dev/history/technical-design-engage-in-context.md §2.10): todos made #next. Absent in older saved stats - every reader uses `?? 0`. */
   somedayActivated: number;
+  /** "Agreements" (docs/dev/history/technical-design-meetings-0.21.md §9): agreements kept (a new valid-till or none). Absent in older saved stats - every reader uses `?? 0`. */
+  agreementsKept: number;
+  /** "Agreements": agreements ended, and the old ones a Change ended. */
+  agreementsEnded: number;
 }
 
 export const ZERO_REVIEW_SUMMARY: ReviewSummaryCounts = {
@@ -97,6 +101,8 @@ export const ZERO_REVIEW_SUMMARY: ReviewSummaryCounts = {
   nextMeetingsAdded: 0,
   loopsClosed: 0,
   somedayActivated: 0,
+  agreementsKept: 0,
+  agreementsEnded: 0,
 };
 
 /** Stable ids - the persisted key of a step. Adding a step: one id here, one REVIEW_STEPS entry, one entry in storage/reviewAggregate.ts's buildReviewStepCounts (the `Record<ReviewStepId, ...>` type makes the compiler insist), one renderer in screens/ReviewScreen.tsx. */
@@ -104,6 +110,7 @@ export type ReviewStepId =
   | 'weekAhead'
   | 'meetingsCloseOut'
   | 'tendingThreads'
+  | 'agreements'
   | 'gmailInbox'
   | 'inbox'
   | 'stalled'
@@ -146,6 +153,9 @@ export const REVIEW_STEPS: ReviewStepDef[] = [
   // Tending ongoing relationships right after routing the last meetings'
   // outcomes (docs/dev/history/technical-design-tending-threads.md §3.10).
   {id: 'tendingThreads', title: 'Tending threads', kind: 'ritual'},
+  // Agreements that need a decision, after the relationships they belong to
+  // (docs/dev/history/technical-design-meetings-0.21.md §9); hidden while empty.
+  {id: 'agreements', title: 'Agreements', kind: 'backlog'},
   {id: 'gmailInbox', title: 'Gmail inbox', kind: 'backlog'},
   {id: 'inbox', title: 'Inbox to zero', kind: 'backlog'},
   {id: 'stalled', title: 'Stalled projects', kind: 'backlog'},
@@ -173,6 +183,14 @@ export const REVIEW_STEPS: ReviewStepDef[] = [
  */
 export function activeReviewSteps(features: Pick<Features, 'gmail'>): ReviewStepDef[] {
   return features.gmail ? REVIEW_STEPS : REVIEW_STEPS.filter(step => step.id !== 'gmailInbox');
+}
+
+/** Steps that leave the hub and the walk-through while they list nothing (R25); they still count as empty for the badge. */
+const HIDDEN_WHEN_EMPTY: readonly ReviewStepId[] = ['agreements'];
+
+/** `steps` without the hide-when-empty steps whose live count is 0, except `keep` (the step shown right now). */
+export function visibleReviewSteps(steps: ReviewStepDef[], counts: Partial<Record<ReviewStepId, {n: number}>> | null, keep: ReviewStepId | null): ReviewStepDef[] {
+  return steps.filter(def => !HIDDEN_WHEN_EMPTY.includes(def.id) || def.id === keep || (counts?.[def.id]?.n ?? 0) > 0);
 }
 
 export function reviewStepDef(id: ReviewStepId): ReviewStepDef {
@@ -389,6 +407,8 @@ export function summaryLines(counts: ReviewSummaryCounts): string[] {
   if ((counts.counterpartsSetInactive ?? 0) > 0) lines.push(`${pluralize(counts.counterpartsSetInactive, 'counterpart')} set inactive`);
   if ((counts.nextMeetingsAdded ?? 0) > 0) lines.push(`${pluralize(counts.nextMeetingsAdded, 'next meeting')} added`);
   if ((counts.loopsClosed ?? 0) > 0) lines.push(`${pluralize(counts.loopsClosed, 'loop')} closed`);
+  if ((counts.agreementsKept ?? 0) > 0) lines.push(`${pluralize(counts.agreementsKept, 'agreement')} kept`);
+  if ((counts.agreementsEnded ?? 0) > 0) lines.push(`${pluralize(counts.agreementsEnded, 'agreement')} ended`);
   if (counts.gmailItemsCreated > 0) lines.push(`${pluralize(counts.gmailItemsCreated, 'item')} created from email`);
   if (counts.gmailArchived > 0) lines.push(`${pluralize(counts.gmailArchived, 'email')} archived`);
   if (counts.inboxCleared > 0) lines.push(`${pluralize(counts.inboxCleared, 'inbox item')} cleared`);

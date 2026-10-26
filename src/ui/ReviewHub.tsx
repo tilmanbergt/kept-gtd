@@ -50,6 +50,8 @@ function countText(id: ReviewStepId, count: ReviewStepCount): string {
       return pluralize(count.n, 'meeting');
     case 'tendingThreads':
       return pluralize(count.n, 'counterpart');
+    case 'agreements':
+      return pluralize(count.n, 'agreement');
     case 'gmailInbox':
       return pluralize(count.n, 'email');
     case 'inbox':

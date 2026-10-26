@@ -3,6 +3,9 @@
  * or the "Waiting on" field) and R4 (more tags, or what the widget puts
  * there). All stay mounted while another tab shows (`hidden`), so the
  * TextInputs are created once - see ui/quickAdd/styles.ts.
+ *
+ * In the box the text field's wrappers are real Android views and the field
+ * logs its frame (ui/quickAdd/styles.ts `row2Wrap`, ui/quickAdd/layoutLog.ts).
  */
 import React from 'react';
 import {Pressable, StyleSheet, Text, TextInput, View} from 'react-native';
@@ -14,9 +17,12 @@ import MarkWrap from '../status/StatusMark';
 import TagChips, {useTwoRowTagChips} from '../TagChips';
 import {useTagRowBudget} from '../tagChipLayout';
 import {FONT} from '../theme';
+import {layoutLogger} from './layoutLog';
 import {rowStyles} from './styles';
 import {QuickAddCore} from './useQuickAddCore';
 import {TaskDraftState} from './useTaskDraft';
+
+const logTextLayout = layoutLogger('todo text');
 
 interface Colors {
   textColor: string;
@@ -73,10 +79,11 @@ export function TaskInputRow({core, task, placeholder, capture, ...colors}: Inpu
   return (
     <View style={[rowStyles.row2, !!capture && rowStyles.row2Free, core.displayType !== 'task' && rowStyles.hidden]}>
       {capture?.splitBlock ?? null}
-      <View style={[rowStyles.row2Wrap, !!capture?.splitBlock && rowStyles.hidden]}>
-        <MarkWrap mark={core.fieldMark('text')} textColor={textColor} flex>
+      <View style={[rowStyles.row2Wrap, !!capture?.splitBlock && rowStyles.hidden]} collapsable={!!capture}>
+        <MarkWrap mark={core.fieldMark('text')} textColor={textColor} flex collapsable={!!capture}>
           <TextInput
             ref={task.inputRef}
+            onLayout={capture ? undefined : logTextLayout}
             style={[rowStyles.input, rowStyles.inputFlex, !!capture && styles.inputMultiline, {color: textColor, borderColor}]}
             multiline={!!capture}
             textAlignVertical={capture ? 'top' : undefined}

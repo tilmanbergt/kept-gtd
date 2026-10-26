@@ -17,6 +17,7 @@ Tap a step to open it. Inside a step:
 - **Week ahead**: this week's meetings and focus; from Friday to Sunday the coming week
 - **Meetings to close out**: past meetings (last 7 days) whose review is still open. A todo you add there records the meeting it came from, so it shows under **I owe** in that meeting's thread (the grey line in Quick Add, see [Threads](threads.md)). Next to **Mark reviewed** and **Open note**, **Reflect ›** opens the meeting's Reflection page (creating it after one question, see [Meetings](meetings.md)); reflecting does not mark the meeting reviewed
 - **Tending threads**: the people, teams and series you work with (counterparts, see [Threads](threads.md)), per area or project. See below.
+- **Agreements**: agreements that need a decision - past their date, with someone you set inactive, of a closed loop, or in a project that is done or on hold. Only shown when there is one. See below.
 - **Gmail inbox**: only with the experimental Gmail integration, see [integrations](integrations.md)
 - **Inbox to zero**: file or finish everything in the Inbox - tap an item for its card, where the arrow next to **Inbox** moves it (see [Quick Add](quick-add.md)). Open lasso marks count too; the card **n marks to process** opens them, see [Lasso](lasso.md)
 - **Stalled projects**: active projects without a next action: no open `#next` todo and nothing you wait for. Planned todos (no flow state), Someday and Maybe don't count. The step lists them - the plan first - and **→ Next** makes one the next action with one tap.
@@ -41,9 +42,26 @@ On the left:
 
 Each row has two lines: the counterpart, then `last 30.9. · next 14.10.` and what is open (`2 owe · w/f 18 d`). One-off counterparts (only `#wf/name` or `#owe/name`) show `w/f only`, `owe only` or `w/f · owe only` instead of meeting dates.
 
-Tap a counterpart to see it on the right: Quick Add, then **Tend** and **Not** for a new one, **Open overview ›** and **Set inactive** for an active one, its next meetings (or **+ Next retro**, which puts the next meeting into Quick Add), what you owe, wait for and should raise, and its last three meetings. **Open overview ›** opens its thread overview over the Review; **‹ Review** brings you back to the step as you left it. **Set inactive** first goes through its open todos (Done, Cancel or Keep each one), see [Projects and Areas](projects-and-areas.md).
+Tap a counterpart to see it on the right: Quick Add, then **Tend** and **Not** for a new one, **Open overview ›** and **Set inactive** for an active one, its next meetings (or **+ Next retro**, which puts the next meeting into Quick Add), what you owe, wait for and should raise, its active agreements, and its last three meetings. **Open overview ›** opens its thread overview over the Review; **‹ Review** brings you back to the step as you left it. **Set inactive** first goes through its open todos (Done, Cancel or Keep each one) and its agreements (Keep or End each one, or **End all**), see [Projects and Areas](projects-and-areas.md).
 
 The recap counts counterparts confirmed, set inactive and next meetings added.
+
+## Agreements
+
+This step lists the active [agreements](agreements.md) that need a decision, grouped by the project or area they live in. Each row has two lines: the agreement, then why it is listed:
+
+- `till 30.9. – over`: the day it was valid till has passed
+- `thread inactive`: it is with someone you set inactive
+- `loop closed`: its loop is done or no longer active
+- `project done` or `on hold`: its project or area is done or paused
+
+Tap one to decide on the right:
+
+- **Keep**: it holds on. Choose a new valid-till date: **none**, **+1 m**, **+3 m** or **end of year**.
+- **Change**: Quick Add opens with its words; **+ Add** ends the old one and adds the new one.
+- **End**: asks once, then marks it ended today.
+
+Rows you decided on stay listed with a checkmark. The step only shows in the overview while it lists something. The recap counts agreements kept and ended.
 
 ## Someday / Maybe
 

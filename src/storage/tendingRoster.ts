@@ -11,12 +11,20 @@
  * (today minus its created date; todos without one have no age). No sorting
  * by urgency: counterparts alphabetically, scopes in the order of
  * `counterpartScopes`. The Inbox is no scope (decision D18).
+ *
+ * Within one scope roster the sources and the owner are the same for every
+ * counterpart, so one provenance memo serves them all: each todo's meeting is
+ * resolved once per build (docs/dev/history/technical-design-perf-threads.md §3.4).
+ * Each scope roster logs one line with counts and its time and records a
+ * `calc:roster` perf span (§3.8); `lookups` is the number of resolves (the memo's size).
  */
 import {Counterpart, counterpartScopes, counterpartsOf, counterpartTag, CounterpartScope, CounterpartSource} from '../domain/counterparts';
 import {todayIso} from '../domain/meetingTime';
 import {daysBetween} from '../domain/nextMeeting';
+import {log} from '../utils/log';
+import {perfEnd, perfStart} from '../utils/perf';
 import {CachedItem} from './dataCache';
-import {buildThreadOverview, ThreadInboxInput, ThreadItemRef, ThreadOverview} from './threadAggregate';
+import {buildThreadOverview, ProvenanceMemo, ThreadInboxInput, ThreadItemRef, ThreadOverview} from './threadAggregate';
 
 export interface RosterEntry {
   counterpart: Counterpart;
@@ -48,16 +56,17 @@ function refOf(item: CachedItem): ThreadItemRef {
   return {kind: item.kind, name: item.name, path: item.path, abbrev: item.abbrev};
 }
 
-/** One counterpart's roster entry inside the scope headed by `owner`. */
+/** One counterpart's roster entry inside the scope headed by `owner`; `provenanceMemo` is the scope roster's. */
 export function rosterEntryOf(
   items: readonly CachedItem[],
   inbox: ThreadInboxInput | null,
   owner: ThreadItemRef,
   counterpart: Counterpart,
   now: Date,
+  provenanceMemo?: ProvenanceMemo,
 ): RosterEntry {
   const tag = counterpartTag(counterpart);
-  const overview = buildThreadOverview(items, inbox, tag, 'counterpart', owner.path, now)!;
+  const overview = buildThreadOverview(items, inbox, tag, 'counterpart', owner.path, now, {provenanceMemo})!;
   const today = todayIso(now);
   const ages = overview.ahead.waiting
     .map(e => (e.task.fields.created ? daysBetween(e.task.fields.created, today) : null))
@@ -83,10 +92,23 @@ export function buildScopeRoster(
   ruleTypes: readonly string[],
   now: Date = new Date(),
 ): RosterScope {
+  const perfToken = perfStart();
+  const startedAt = Date.now();
   const owner = refOf(scope.owner);
+  const memo: ProvenanceMemo = new Map();
   const entries = counterpartsOf(scope as CounterpartScope<CounterpartSource>, ruleTypes, now).map(cp =>
-    rosterEntryOf(items, inbox, owner, cp, now),
+    rosterEntryOf(items, inbox, owner, cp, now, memo),
   );
+  const ms = Date.now() - startedAt;
+  const stats = {
+    counterparts: entries.length,
+    todos: scope.members.reduce((n, m) => n + m.tasks.length, 0),
+    meetings: scope.members.reduce((n, m) => n + m.meetings.length, 0),
+    provenanceLookups: memo.size,
+    ms,
+  };
+  perfEnd('calc:roster', perfToken, stats);
+  log('tendingRoster: built', `${stats.counterparts} counterparts`, `${stats.todos} todos`, `${stats.meetings} meetings`, `${stats.provenanceLookups} lookups`, `${ms} ms`);
   return {
     owner,
     confirm: entries.filter(e => e.counterpart.status === 'new' || e.counterpart.backInUse),

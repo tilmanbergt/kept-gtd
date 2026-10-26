@@ -232,6 +232,7 @@ Ship the tender by end of quarter.
 | `## Marks` | open "Mark for later" lines (§2.10) | `parseMarksSpan`, `domain/marks.ts` |
 | `## Threads` | counterpart status lines `- mieke: active` (§2.6); `area.txt`, or `project.txt` of a Project without an Area, never `Inbox.txt` | `domain/threadsSection.ts` (`parseThreadsSpan` / `writeThreadsIntoContent`) |
 | `## Loops` | loop status lines `- workshop/offsite: active, 2026-11-14, [[file]]` (§2.6) | `domain/loopsSection.ts` (`parseLoopsSpan` / `writeLoopsIntoContent`) |
+| `## Agreements` | agreement lines `- text #tags [meeting::] [created::] [valid::] [ended::]`; unknown fields, other lines and blank lines kept, an unchanged line written back as read; never in `Inbox.txt` | `domain/agreements.ts` (`parseAgreementsSpan` / `writeAgreementsIntoContent`), written only through `storage/agreements.ts` |
 | `## Close-out` | the close-out plan (§2.9) | `domain/closeOut/plan.ts` via `readSectionLines` |
 
 `ensureSkeleton` writes a new file as frontmatter (`kind`, `status: active`) plus empty
@@ -355,7 +356,8 @@ Screens read it through `ui/useCachedInbox.ts`; a write anywhere is seen everywh
    `removeCachedItem`): every plugin save writes the file first, then updates the cache entry.
    A write-through whose text came from a write that kept an outside edit (below) parses the
    whole text instead of trusting the caller's fields.
-4. **Change notification**: write-through mutates items in place, so every mutation calls
+4. **Change notification**: write-through changes the item objects in place (giving them new
+   arrays, never changing a cached array or entry), so every mutation calls
    `notifyCacheChanged()`, which bumps a version and notifies `subscribeCache` listeners.
    `ui/useCachedItems.ts` turns that into a re-render and a new array identity per change (plain
    `useState` + `useEffect`, paused while a kept tab is hidden).
@@ -633,9 +635,19 @@ Reflection page gets the standard one once); 0.14's Tag Rules are migrated once
 - **Page → entry.** Which todo or meeting a note page belongs to - its own note, a page link
   (`<note>#page=N`) or its page in a shared notebook (keyword: `todoPageKeyword` /
   `meetingPageKeyword`; a meeting's Reflection page by its reflection keyword) - is answered once: `domain/notePageEntry.ts` (`notePageCandidates`, pure)
-  and `storage/notePageEntry.ts` (`entryForNotePage`, one `getKeyWords` call for that page). The
-  Engage panel uses it for todos and meetings (`storage/noteOwnerOf.ts`), Capture's provenance
-  for meetings only (`meetingForNotePage`).
+  and `storage/notePageEntry.ts` (`entryForNotePage`, one `getKeyWords` call for that page).
+- **Page → section.** A page nothing claims belongs to the nearest earlier **section page**: an
+  entry's page link or keyword (a cancelled entry's too), the `home` page, a `loop …` page, or a
+  Supernote title (`domain/pageSection.ts`: `claimOfPage`, `sectionOfPage`, `sectionTitleOf`,
+  pure). `storage/pageSection.ts`'s `pageSectionOf` runs it over the notebook's **page index**
+  (`storage/notebookPages.ts`: every page's keywords and titles in two calls, cached per file and
+  modification time; a heading's typed text read lazily with one `getElements` and memoized) and
+  falls back to `entryForNotePage` when the index can't be read. The caller hands the index reader
+  in (`NOTEBOOK_PAGES`), so modules that only resolve owners load without the SDK. Engage's owner
+  (`storage/noteOwnerOf.ts`: a home notebook belongs to its item even when it is a loop's note,
+  `isHomeNotebookFile`), its section line, and Capture's provenance and For chips
+  (`storage/threadProvenance.ts`, `ui/capture/useSourceSection.ts`) all read it. Detail:
+  `docs/dev/history/technical-design-engage-page-owner.md`.
 - **Loops.** A Loop setup's tags are loop kinds (`domain/loops.ts`'s `loopKindsOf`, readable at
   once through `storage/loopKinds.ts`); `#<kind>/<name>` is a loop, its line lives in the owner's
   `## Loops` section (`domain/loopsSection.ts`, on the generic `domain/statusSection.ts` that
@@ -669,7 +681,8 @@ Reflection page gets the standard one once); 0.14's Tag Rules are migrated once
   without a page gets it first through `ensureMeetingNote`, the planning half of
   `openOrCreateMeetingNote`) and opens it; `ui/useReflectionLookup.ts` gives the label. Entry
   points: the meeting card, Review's close-out pill, the thread/loop overview's Looking back,
-  and Engage's `ReflectLine` on the meeting's page. Writing it never ticks `#reviewed`.
+  and Engage's moment strip on the meeting's page (`screens/engage/MomentStrip.tsx`, After).
+  Writing it never ticks `#reviewed`.
 - **Since last time.** A Meeting page can place the `sinceLast` piece (never in a page's
   defaults): `storage/sinceLast.ts`'s `buildSinceLast` takes the meeting's first thread tag, the
   thread lens with the meeting's item as owner, and the previous meeting of the thread, and lists
@@ -693,8 +706,9 @@ latest monthly and weekly goal), written once, from the icon (`storage/homeNoteb
 or from a todo's or meeting's first note into that file (`itemNotePlan` → `fillHomePage`); the
 page order pins it first. The Notebook tab lists the years and the experimental **Contents**
 (`domain/notebookContents.ts` / `storage/notebookContents.ts`: Kept's pages titled from their
-item, other headings from the textbox they cover - by trail, title element or position - cached
-per file and modification time; switch `notebookContentsEnabled`). Engage shows "Go to <notebook>
+item, other headings from the textbox they cover - by trail, title element or position - on the
+shared page index `storage/notebookPages.ts`; switch `notebookContentsEnabled`, which hides the
+Contents only). Engage shows "Go to <notebook>
 ›" in another note of the owner (`screens/engage/useEngageGoTo.ts`). The item's name is kept as
 `name:` in its front matter (`readStoredName`); a folder renamed elsewhere is offered as a rename
 on the page (`ui/useHomeNotebookRenameOffer.ts`) and reported by the Integrity Check; the rename
@@ -717,8 +731,8 @@ counterparts to confirm, the active and the inactive ones, each with signals fro
 counterpart lens (last and next meeting, I owe, Waiting for and the oldest one's age); the
 Threads tab (§2.1) and Review's "Tending threads" (§2.8) show it. Setting one inactive runs
 `ui/CounterpartCloseOut.tsx` over its open I owe, Waiting for and Relevant todos (Done / Cancel /
-Keep through `storage/itemMove.ts`'s `closeTask`), or one status-slot confirmation when nothing is
-open. "Not" on a counterpart back in use only hides that offer for the session
+Keep through `storage/itemMove.ts`'s `closeTask`) and its active agreements (Keep / End / End all
+through `storage/agreements.ts`), or one status-slot confirmation when nothing is open. "Not" on a counterpart back in use only hides that offer for the session
 (`screens/thread/useTending.ts`). Inactive counterparts are left out of the tag suggestions
 (`storage/tagUsage.ts`); the debug bundle counts status lines. Detail:
 `docs/dev/history/technical-design-tending-threads.md`.
@@ -767,19 +781,29 @@ a thread (`domain/engageOwner.ts`) - holding what its overview holds: a thread t
 (`domain/threadLens.ts`), a loop `isLoopMember`, a Project/Area everything but its active loops'
 members; each todo carries its relation (owe / waiting / relevant) and the meeting it was agreed
 in. A todo's owner is its active loop, else its thread (`threadOfTodo`: its own thread tag, else
-the thread of the meeting it was agreed in), else its item. The panel shows "Next here" (the
-owner's next meeting, a tap opens its note), the Now box (the current todo, else the owner's only
-`#next`: details, Done, Remove #next or Someday, Note ›/+ Note, File ›), up to three tabs - Agreed
-(the todos agreed in the note page's meeting, else in a thread's or loop's latest meeting that is
-over; only while it has rows), Next (the other `#next` todos) and Plan (no flow state), "I owe"
-first for threads and loops, five rows per page (`domain/engageOptions.ts`) - then "Also here"
-(the waiting and Someday/Maybe counts, links to Review's "Someday / Maybe" and to the overview)
-and, above the footer, "Today next" (the next timed meeting today anywhere, computed with the
-data, never by a timer; merged into Next here when it is the same meeting). One reducer
+the thread of the meeting it was agreed in), else its item. On a meeting's page the panel shows
+the meeting line with its moment - Before / During / After by time (`domain/meetingMoment.ts`'s
+`momentByTime`; After for REVIEW_LOOKBACK_DAYS), or as chosen, kept per meeting while the plugin
+runs (`ui/meetingMomentStore.ts`) - and the strip (`stripActions`: Mark prepped, Note from last
+meeting, + Next, Reflect, Mark reviewed; at most three). A loop shows its line (since, open todos,
+next meeting or + Next). "Next here" names the owner's next meeting (a tap opens its note), hidden
+while it is the page's meeting and for a loop. The Now box (the current todo, else the owner's
+only `#next`: details, the meeting it was agreed in as a link to its note, Done, w/f <counterpart>,
+Do someday, Remove #next, Note ›/+ Note, File ›), then the tabs (`domain/engageOptions.ts`) - From
+(what came out of the owner's meetings that have started, by meeting, newest first: open agreed
+todos, agreements made, done todos of the reference meetings by moment; a Project/Area only on a
+meeting's page), Next (the other `#next` todos), Plan (no flow state), Waiting (open Waiting For,
+a thread's by the lens) and Agreements (`domain/agreementOwner.ts`), "I owe" first for threads and
+loops in Next and Plan, five rows per page - then "Also here" (the Someday/Maybe count, links to
+Review's "Someday / Maybe" and to the overview) and, above the footer, "Today next" (the next
+timed meeting today anywhere, computed with the data, never by a timer; merged into Next here
+when it is the same meeting). Engage's Quick Add records the page's meeting during and after it,
+and shows the owner's tag in its grey line (`screens/engage/useEngageQuickAdd.ts`). One reducer
 (`domain/engageFlow.ts`) decides every screen and tab: options, owner empty, select focus
 (today's or this week's owners in ring order), all done in today's focus, Quick Add; the note
-page's meeting (`pageMeeting`) opens Agreed and belongs to the note's owner only. Writes go
-through `ui/useEntryActions.ts` (`setTaskFlow`, `completeTask`, `undoTask`); the current todo is
+page's meeting (`pageMeeting`) opens From when it has rows and belongs to the note's owner only.
+Writes go through `ui/useEntryActions.ts` (`setTaskFlow`, `completeTask`, `undoTask`,
+`toggleTracking`), agreements through `ui/useAgreementActions.ts`; the current todo is
 per-profile app state in `settings.engageCurrent` (`storage/engageCurrent.ts`), found again by
 index and text. Opening follows the note (`decideOpening`): "Engage ›" > the note page's todo > the
 note's owner > the stored todo's owner, with "Continue with <todo>" above the footer back to the stored todo of another owner - offered once: that opening stores what the panel shows for the note's owner (its next action, or nothing) in its place. The panel leaves to a place in
@@ -789,7 +813,8 @@ largest height while open, because the A5 X does not reliably redraw the note wh
 shrank. After a Done on Daily, the Current tab or an overview, `ui/useEngagePrompt.ts` offers
 the owner's plan in the status slot when its last `#next` was done. Detail:
 `docs/dev/history/technical-design-engage.md`,
-`docs/dev/history/technical-design-engage-in-context.md`.
+`docs/dev/history/technical-design-engage-in-context.md`,
+`docs/dev/history/technical-design-meetings-0.21.md`.
 
 **Week and Month** share `screens/usePlanningScreen.ts` (loading and every meeting, focus and
 goal action). Both have Quick Add (to the Inbox) on the right, then either the shared day panel
@@ -822,6 +847,7 @@ with its count and last-reviewed date, and the steps themselves, one component e
 | Week ahead | ritual | `WeekAheadStep` (the Week screen, next week from Friday) |
 | Meetings to close out | backlog | `MeetingsCloseOutStep` |
 | Tending threads | ritual | `TendingThreadsStep` (the roster per scope, New block on top; detail: Quick Add above `screens/thread/ThreadSummary.tsx`) |
+| Agreements | backlog | `AgreementsStep` (`domain/agreementReview.ts`: active agreements past valid-till, of an inactive counterpart, of a non-active loop, in a done/on-hold item; Keep / Change / End through `storage/agreements.ts`). Hidden from hub and walk-through while empty (`visibleReviewSteps`), still empty-stamped |
 | Gmail inbox (experimental) | backlog | `GmailStep` |
 | Inbox to zero | backlog | `InboxStep` (Files pane, Refile, quick-file, marks card) |
 | Stalled projects, Done awaiting review, On Hold reconsideration, Neglected areas | backlog | `ItemListStep` + `ItemDetails` (master/detail, `ui/ReviewMasterDetail.tsx`) |
@@ -890,7 +916,7 @@ out…" in the status panel.
 
 - **Readiness** (`domain/closeOut/readiness.ts`): blockers (open todos, future meetings, a name
   collision at the target), warnings (meetings not closed out, week/month references, incoming
-  links, open marks) and notices (unreadable notes, plugin opened from inside the project).
+  links, open marks, active agreements with End all) and notices (unreadable notes, plugin opened from inside the project).
 - **Plan** (`domain/closeOut/plan.ts`, `storage/closeOut/planStore.ts`): a `## Close-out`
   section in `project.txt` with the step, mode, deviations from defaults, PDF status and a
   journal. Leaving and coming back resumes; any change to contents or outcomes clears the "I
@@ -919,6 +945,9 @@ buttons. "Link to this page" stores `<note>#page=N` as the item's `linkedFile`. 
 page is a meeting's (`storage/threadProvenance.ts`'s `meetingForNotePage`: its own note, a page
 link, or its page in a shared note - one `getKeyWords` call for that page; the meetings-only
 view of the page → entry lookup in §2.6), a saved todo gets that meeting as provenance (§2.4).
+With an owner on the page, the panel's third kind is Agreement (one item, no split): "For" chips
+(`ui/capture/agreementFor.ts` - the page meeting's thread or loop, then the note's item; More…
+any Project/Area) decide the file and tag; it is written through `storage/agreements.ts`.
 
 **Recognition** (`supernote/lassoRead.ts`, `supernote/strokeRecognition.ts`). The lasso's strokes
 are read once (page-size pixel points, §4 "Page-size pixels everywhere"), rebuilt as new elements
@@ -997,7 +1026,9 @@ once after an update), Debug logging and "Export debug bundle".
 **Persistence.** `GtdParaSettings` (`domain/settings.ts`, defaults in `DEFAULT_SETTINGS`) is one
 JSON blob in AsyncStorage (`storage/settingsStorage.ts`); load fills missing fields from the
 defaults and runs idempotent migrations (Tag Rule key names, Tag Rules to Note setups,
-experimental-switch defaults). Recent tags, recent capture destinations and the Google Calendar
+experimental-switch defaults). The settings last read or written stay in memory
+(`storage/settingsSnapshot.ts`'s `peekSettings`), so a screen can start with the real values
+while its own load runs (the Threads tab builds its roster once, with the final thread types). Recent tags, recent capture destinations and the Google Calendar
 cache are AsyncStorage entries per profile (`storage/profileKeys.ts`'s `profileScopedKey`). PARA
 content never goes into AsyncStorage.
 
@@ -1065,7 +1096,9 @@ modules: `GmailImapModule` (§2.11).
 **Permissions and deletes** (`supernote/pluginPermissions.ts`). Declared: FILE:READ, FILE:WRITE,
 FILE:DELETE, INTERNET (`PluginConfig.json`). Every file or network call checks its permission
 right before use, through a wrapper with an 8-second timeout (the host's permission bridge can
-hang without answering). FILE:DELETE is requested only after a confirmation that names what is
+hang without answering). A grant is remembered for the session, so later checks make no bridge
+call and log nothing (the log file's own write included); a denial or timeout is not, and a
+failed native file call forgets every grant, so a permission revoked meanwhile is asked again. FILE:DELETE is requested only after a confirmation that names what is
 deleted (`ensureFileDeletePermission(description)`). The only deletes are `deleteEmptyFolder`
 (native: empty folders only), `deleteTempTree` (only inside the private temp folder,
 `getPrivateTempDir`, cleaned once per start) and the private data folder for marks
@@ -1171,6 +1204,10 @@ place it happens.
   alone.
 - **Data files are written only through `writeDataFile`** (storage/dataFileWrite.ts), never with
   `writeTextFile` directly, so an edit made outside Kept is never overwritten unasked.
+- **Cache arrays and entries are replaced, never changed in place**: a change maps or spreads into
+  a new array of new entries (`storage/itemMutations.ts` hands every mutation a copy). Derived
+  indexes are in-memory and keyed by those arrays (`domain/provenance.ts`'s lookup table per
+  meetings list, in a WeakMap), so a changed file brings a new array and thus a new index.
 - **Write-through is not optional.** Write the file first, then the cache, in the same operation,
   so a failed write never leaves the cache claiming a change. Every cache mutation calls
   `notifyCacheChanged()`.
@@ -1263,6 +1300,10 @@ place it happens.
 - A Project's or Area's home notebook comes from `storage/homeNotebooks.ts`'s `homeNotebookOf`
   (screens through `ui/useHomeNotebooks.ts`); its name only from `domain/homeNotebook.ts`'s
   `homeNotebookName`.
+- A notebook's keywords and headings are read only through the page index
+  (`storage/notebookPages.ts`, one read per file and modification time), and which section a page
+  belongs to only through `storage/pageSection.ts`'s `pageSectionOf`: the Notebook tab's
+  Contents, Engage and Capture share both.
 
 **Code and verification**
 

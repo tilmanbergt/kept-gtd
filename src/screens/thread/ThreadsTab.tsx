@@ -21,7 +21,9 @@
  * - **New** rows: the name opens the overview as well, to decide Tend / Not.
  *
  * Every status write goes to the scope's owner file (decision D16) through
- * storage/counterparts.ts. The signals are storage/tendingRoster.ts's.
+ * storage/counterparts.ts. The signals are storage/tendingRoster.ts's. No
+ * roster is built before the thread types are known; the list then shows
+ * "Loading threads…" (docs/dev/history/technical-design-perf-threads.md §3.6).
  */
 import React, {useMemo, useState} from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
@@ -93,7 +95,7 @@ interface Props {
 }
 
 export default function ThreadsTab({path, selected, onSelect, onNextMeeting, viewportHeight, textColor, borderColor}: Props): React.JSX.Element {
-  const {items, inbox, ruleTypes} = useTendingData();
+  const {items, inbox, ruleTypes, ready} = useTendingData();
   const tend = useTendActions('ThreadsTab.error');
   const setInactive = useSetInactive('ThreadsTab.setInactive', entry => {
     if (selected?.leaf === entry.counterpart.leaf) onSelect(null);
@@ -104,12 +106,13 @@ export default function ThreadsTab({path, selected, onSelect, onNextMeeting, vie
   const today = todayIso();
 
   const built = useMemo(() => {
+    if (!ready) return null;
     const page = pageScope(path, items, ruleTypes);
     if (!page) return null;
     const scopeRoster = buildScopeRoster(items, inbox, page.scope, ruleTypes);
     const keep = (e: RosterEntry) => page.only === null || page.only.has(e.counterpart.leaf);
     return {owner: scopeRoster.owner, all: [...scopeRoster.confirm, ...scopeRoster.active, ...scopeRoster.inactive].filter(keep)};
-  }, [path, items, inbox, ruleTypes]);
+  }, [path, items, inbox, ruleTypes, ready]);
   // Split outside the memo: a "Not" on a back-in-use row changes only needsConfirm.
   const roster = built && {
     owner: built.owner,
@@ -290,7 +293,13 @@ export default function ThreadsTab({path, selected, onSelect, onNextMeeting, vie
         viewportHeight={viewportHeight}
         resetKey={path}
         renderRow={renderRow}
-        emptyHint={roster ? 'No counterparts here yet. Nested tags like #retro/alpha make them.' : 'Counterparts belong to Projects and Areas.'}
+        emptyHint={
+          !ready
+            ? 'Loading threads…'
+            : roster
+              ? 'No counterparts here yet. Nested tags like #retro/alpha make them.'
+              : 'Counterparts belong to Projects and Areas.'
+        }
         textColor={textColor}
         borderColor={borderColor}
       />

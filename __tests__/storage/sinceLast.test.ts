@@ -1,4 +1,5 @@
 /** The "Since last time" piece (docs/dev/history/technical-design-tending-threads.md §3.11, D10). */
+import {parseAgreementLine} from '../../src/domain/agreements';
 import {deriveMeetingFields} from '../../src/domain/markdown';
 import {meetingKey} from '../../src/domain/provenance';
 import {renderSinceLast, SINCE_LAST_BLOCK_LINES} from '../../src/domain/sinceLastText';
@@ -34,6 +35,11 @@ const area = item('area', 'Coaching', {
     withFields('Ticked before #retro/alpha', {completion: '2026-09-29'}, {done: true}),
     task('Other thread #retro/beta'),
   ],
+  agreements: [
+    parseAgreementLine(`- Fridays are quiet #retro/alpha [meeting:: ${meetingKey(previous)}] [created:: 2026-09-30]`)!,
+    parseAgreementLine(`- Ended already [meeting:: ${meetingKey(previous)}] [created:: 2026-09-30] [ended:: 2026-10-01]`)!,
+    parseAgreementLine(`- From the first one [meeting:: ${meetingKey(first)}] [created:: 2026-09-23]`)!,
+  ],
 });
 const items = [area];
 
@@ -45,6 +51,7 @@ describe('buildSinceLast', () => {
     const byTitle = Object.fromEntries(since.blocks.map(b => [b.title, b.lines.map(l => `${l.done ? 'x' : 'o'} ${l.text}`)]));
     expect(byTitle).toEqual({
       'Agreed last time': ['o Send minutes #retro/alpha', 'o Agreed and waiting', 'x Book room'],
+      'Agreements made last time': ['o Fridays are quiet #retro/alpha'],
       'I owe': ['o Old promise'],
       'Waiting for': ['o Signed offer'],
       Relevant: ['o Raise budget #alpha'],

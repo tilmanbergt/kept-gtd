@@ -5,7 +5,81 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-46 scenarios.
+83 scenarios.
+
+## Agreements
+
+### An agreement in the thread overview: it shows in the block "Agreements", another thread's does not
+
+- **Given** area "Coaching" has an agreement tagged #mieke and one tagged #sparring/sven
+- **When** I open Mieke's thread overview
+- **Then** Ahead lists the block "Agreements" with the first one only
+- **When** I switch to All mieke
+- **Then** the agreement shows there too
+
+Test: `__tests__/scenarios/agreements.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md`
+
+### Add an agreement from the thread overview with valid till end of year
+
+- **Given** area "Coaching" has a past sparring session with Mieke and no agreements
+- **When** I open Mieke's thread overview, choose the Agreement tab and type "No calls after six"
+- **And** I tap "valid till" and choose "end of year", then + Add
+- **Then** the area file has the agreement with the thread tag, the meeting it was made in, today and the valid-till date
+- **And** the status slot says where it went, and the overview lists it
+
+Test: `__tests__/scenarios/agreements.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md`
+
+### Change an agreement: the old one is ended, the new one added; Cancel changes nothing
+
+- **Given** area "Coaching" has the agreement "Feedback only in our 1:1s" with Mieke
+- **When** I open Mieke's thread overview, tap the agreement and Change on its card, then Cancel
+- **Then** the file is unchanged
+- **When** I tap Change again, edit the words to "Feedback only in our 1:1s, except urgent" and tap + Add
+- **Then** the old line is ended today and the new one is added after it, made in the meeting the overview shows
+- **And** the overview lists only the new one, and Looking back counts the ended one
+
+Test: `__tests__/scenarios/agreements.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md`
+
+### End an agreement: asked once, then ended today
+
+- **Given** area "Coaching" has the agreement "Feedback only in our 1:1s" with Mieke
+- **When** I tap it in Mieke's thread overview, tap End on its card and confirm
+- **Then** the line gets [ended:: today]
+- **And** the overview shows "1 agreement ended ›" in Looking back
+
+Test: `__tests__/scenarios/agreements.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md`
+
+### A hand-edited Agreements section keeps every other line byte for byte when one agreement is ended
+
+- **Given** area "Coaching" has two agreements, one with the unknown field [who:: both], a comment line and a blank line between them
+- **When** I end the first one in Mieke's thread overview
+- **Then** only that line changed; everything else is byte-identical
+
+Test: `__tests__/scenarios/agreements.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md`
+
+### A Project page lists its own agreements; a thread's agreement shows in the thread overview instead
+
+- **Given** project "Leadership program" has one untagged agreement and one tagged #sparring/mieke
+- **When** I open the project
+- **Then** its todo list ends with "◇ Agreements 1 ›"
+- **When** I tap it
+- **Then** the column lists the untagged agreement, with "‹ Todos" back
+- **When** I open Mieke's thread overview from the meeting
+- **Then** the tagged one shows there
+
+Test: `__tests__/scenarios/agreements.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md`
+
+### Review step "Agreements": keep one past its date for three more months, end one with an inactive thread
+
+- **Given** area "Coaching" has "Fridays are quiet" valid till yesterday, Mieke set inactive and an active agreement with her
+- **When** I open Review and the step "Agreements"
+- **Then** it lists both, with "till … – over" and "thread inactive"
+- **When** I keep "Fridays are quiet" with "+3 m"
+- **Then** its valid-till is three months ahead
+- **When** I end the agreement with Mieke
+- **Then** it is ended today, and both rows carry a checkmark
+
+Test: `__tests__/scenarios/agreements.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md`
 
 ## Close-out
 
@@ -51,18 +125,230 @@ Test: `__tests__/scenarios/meetingReflection.test.tsx` · design: `docs/dev/hist
 
 ## Engage
 
-### Engage on the meeting's page offers the reflection; on the reflection page it opens on what was agreed
+### Engage before the meeting: Before is chosen, the strip offers prep and the last note, From Thread shows the last session
+
+- **Given** it is 09:30 and today's sparring with Mieke is at 10:00; on 14.10. "Draft feedback" and "Org chart from Mieke" were agreed and "Send role canvas" is done
+- **When** I open Engage on today's meeting page
+- **Then** the meeting line shows the meeting with Before chosen
+- **And** the strip offers Mark prepped and Note from last meeting ›
+- **And** From Thread is open with the group of 14.10.: the two agreed todos, the done one struck last
+- **And** "Next here" does not repeat today's meeting
+- **When** I tap Mark prepped
+- **Then** today's meeting line in area.txt carries #prepped and the button is gone
+
+Test: `__tests__/scenarios/engageMoment.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md`
+
+### During the meeting: a todo and an agreement carry the meeting and the thread tag
+
+- **Given** it is 10:20, during today's sparring
+- **When** I open Engage on the meeting page, open Quick Add and add "Book follow-up with HR"
+- **Then** the todo records the meeting and has the thread tag
+- **And** From Thread shows today's group on top, with it
+- **When** at 10:30 I add on the Agreement tab "Feedback only in our 1:1s", valid till end of year
+- **Then** area.txt has it under ## Agreements with the meeting, today and the end of the year
+- **And** the Agreements tab lists it, and From Thread lists it in today's group
+
+Test: `__tests__/scenarios/engageMoment.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md`
+
+### Ended early: After is chosen by hand and kept when Engage opens again; after the end it is After by time
+
+- **Given** it is 10:40, during today's sparring
+- **When** I open Engage on the meeting page and tap After
+- **Then** the strip shows Reflect › and Mark reviewed
+- **When** I close Engage and open it again on the page
+- **Then** After is still chosen
+- **When** it is 11:01 and I open Engage again
+- **Then** the moment is After without a tap
+
+Test: `__tests__/scenarios/engageMoment.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md`
+
+### Done rows follow the moment: Before the last session's, During both, After only today's
+
+- **Given** "Send role canvas" (from 14.10.) is done, and "Book follow-up" was agreed today and is done
+- **When** I open Engage on the meeting page at 09:30
+- **Then** only 14.10.'s done row shows
+- **When** I choose During
+- **Then** both show
+- **When** I choose After
+- **Then** only today's shows
+
+Test: `__tests__/scenarios/engageMoment.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md`
+
+### The Waiting tab lists what I wait for from Mieke, where it was agreed, with Done
+
+- **Given** "Org chart from Mieke #wf/mieke" was agreed on 14.10. and "Budget numbers #wf/mieke" not in a meeting
+- **When** I open Engage on the meeting page and choose Waiting
+- **Then** it lists both, the first "from 14.10."; "Also here" counts no waiting
+- **When** I tap Done on the first
+- **Then** it is ticked in the file
+
+Test: `__tests__/scenarios/engageMoment.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md`
+
+### + Next sparring only when no session follows today's
+
+- **Given** it is 10:20 during today's sparring, and no sparring with Mieke is planned after it
+- **When** I open Engage on the meeting page
+- **Then** the strip offers + Next sparring
+- **When** I tap it
+- **Then** Quick Add's Meeting tab holds the next session, ten days on
+
+Test: `__tests__/scenarios/engageMoment.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md`
+
+### No + Next when the next session is planned already
+
+- **Given** it is 10:20 during today's sparring, and a sparring is planned on 6.11.
+- **When** I open Engage on the meeting page
+- **Then** there is no + Next
+
+Test: `__tests__/scenarios/engageMoment.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md`
+
+### Change an agreement from the Agreements tab: the old one ends, the new one is added
+
+- **Given** today's sparring made the agreement "Feedback only in our 1:1s"
+- **When** I open Engage on the meeting page, tap the agreement on the Agreements tab and Change, then Cancel
+- **Then** the file is unchanged
+- **When** I change it to "Feedback only in our 1:1s, except urgent" and add it
+- **Then** the old line is ended today and the new one added with today as created
+- **And** the tab lists only the new one
+
+Test: `__tests__/scenarios/engageMoment.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md`
+
+### On a todo's page, w/f Mieke turns #next into Waiting For, with Undo
+
+- **Given** area "Coaching" has "Send Mieke the role canvas #next #sparring/mieke" with its own note
+- **When** I open Engage on the todo's note and tap w/f Mieke
+- **Then** the line carries #wf/mieke instead of #next
+- **And** the ack offers Undo, and the todo is on the Waiting tab
+
+Test: `__tests__/scenarios/engageMoment.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md`
+
+### An Inbox meeting's page: no Agreement tab, agreements are never kept in the Inbox
+
+- **Given** the Inbox has a meeting "Call with Sven" today with its own note
+- **When** I open Engage on its page and open Quick Add if offered
+- **Then** Quick Add has no Agreement tab
+
+Test: `__tests__/scenarios/engageMoment.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md`
+
+### Engage on the meeting's page offers the reflection; on the reflection page it opens on what came out of the thread's meetings
 
 - **Given** the todo "Send Mieke the role canvas" was agreed in the sparring session three days ago; in the notebook the session's page is followed by a page added by hand, then the page of the todo "Prepare the workshop"
 - **When** I open Engage on the meeting's page
-- **Then** it offers "Reflect on this meeting ›"
+- **Then** the strip offers "Reflect ›" (the meeting is over: After)
 - **When** I tap it and confirm
 - **Then** the reflection page comes after the hand-added page and before the todo's page, and opens
 - **When** I open Engage on the reflection page
-- **Then** it opens on "Agreed 1" from the sparring session, with the agreed todo
+- **Then** it opens on "From Thread 1" with the sparring session's group and the agreed todo
 - **And** it doesn't offer to reflect again
 
 Test: `__tests__/scenarios/meetingReflection.test.tsx` · design: `docs/dev/history/technical-design-meeting-reflection.md`
+
+### Engage on the Home page of a home notebook that is also a loop's note: the Area, not the loop
+
+- **Given** Sport 2026.note is Area Sport's home notebook and the note of loop marathon; page 1 is its Home page
+- **When** I open Engage on page 1
+- **Then** the owner is Area Sport and the line reads "Section: Sport"
+
+Test: `__tests__/scenarios/pageSection.test.tsx`
+
+### Engage on a free page after the Home page: the Area, from p. 1
+
+- **Given** page 2 has no title and no keyword
+- **When** I open Engage on page 2
+- **Then** the owner is Area Sport and the line reads "Section: Sport · from p. 1"
+
+Test: `__tests__/scenarios/pageSection.test.tsx`
+
+### Engage on a meeting's follow-up page: the meeting is passed on
+
+- **Given** page 3 is the page of meeting "Coach call" (Sport, no loop tag), where "Book physio" was agreed; page 4 is handwritten without a title
+- **When** I open Engage on page 4
+- **Then** the owner is Area Sport, the moment line shows Coach call with its moment, From offers its group
+- **And** the line reads "Section: Coach call · 24.10. · from p. 3"
+
+Test: `__tests__/scenarios/pageSection.test.tsx`
+
+### Engage on a loop todo's follow-up page: the loop, with that todo current
+
+- **Given** page 5 is the page of the open todo "Plan long runs #loop/marathon", page 6 a follow-up
+- **When** I open Engage on page 6
+- **Then** the owner is Loop marathon, the todo is current, and the line names it from p. 5
+
+Test: `__tests__/scenarios/pageSection.test.tsx`
+
+### Your own heading starts a section of the notebook owner
+
+- **Given** page 7 has my typed heading "Training plan"
+- **When** I open Engage on page 8
+- **Then** the owner is Area Sport and the line reads "Section: Training plan · from p. 7"
+
+Test: `__tests__/scenarios/pageSection.test.tsx`
+
+### A handwritten heading starts a section too
+
+- **Given** page 9 has a handwritten title
+- **When** I open Engage on page 9
+- **Then** the owner is Area Sport and the line reads "Section: Handwritten section"
+
+Test: `__tests__/scenarios/pageSection.test.tsx`
+
+### A todo's keyword without a title still starts its section
+
+- **Given** page 10 carries the keyword of todo "Buy shoes" but no title; page 11 is a follow-up
+- **When** I open Engage on page 11
+- **Then** "Buy shoes" is current and the section is p. 10
+
+Test: `__tests__/scenarios/pageSection.test.tsx`
+
+### A cancelled todo's page still starts a section, but nothing becomes current
+
+- **Given** the todo "Buy shoes" of page 10 is cancelled
+- **When** I open Engage on page 11
+- **Then** the owner is Area Sport, no todo is current, and the line still reads "Section: Buy shoes · from p. 10"
+
+Test: `__tests__/scenarios/pageSection.test.tsx`
+
+### A closed loop's todo page goes back to the Area
+
+- **Given** loop marathon is done
+- **When** I open Engage on page 6
+- **Then** the owner is Area Sport
+
+Test: `__tests__/scenarios/pageSection.test.tsx`
+
+### A pure loop note: a free page after the loop page belongs to the loop
+
+- **Given** loop marathon's note "2026-11 loop marathon.note" is not a home notebook; page 2 is free
+- **When** I open Engage on page 2 of the loop note
+- **Then** the owner is the loop and the line names the loop page
+
+Test: `__tests__/scenarios/pageSection.test.tsx`
+
+### A thread notebook's follow-up page: the thread and its sparring
+
+- **Given** a thread notebook with a sparring page for Mieke and a follow-up page
+- **When** I open Engage on the follow-up page
+- **Then** the owner is Thread #sparring/mieke and the moment line shows that sparring
+
+Test: `__tests__/scenarios/pageSection.test.tsx`
+
+### A todo's own note: as before, no section line
+
+- **Given** the todo "Stretch daily" has its own note
+- **When** I open Engage on its page 2
+- **Then** the todo is current and no section line shows
+
+Test: `__tests__/scenarios/pageSection.test.tsx`
+
+### The page index can't be read: the single-page lookup, and the panel opens
+
+- **Given** the notebook's headings can't be read
+- **When** I open Engage on the meeting page 3
+- **Then** it falls back to the page's own keyword: the meeting's moment line, no section line, "index not read" logged
+- **When** I tap Close
+- **Then** the panel closed without an error
+
+Test: `__tests__/scenarios/pageSection.test.tsx`
 
 ## Inbox
 
@@ -97,6 +383,58 @@ Test: `__tests__/scenarios/interruptions.test.tsx` · design: `docs/dev/history/
 - **Then** for every point where Kept GTD can be stopped: reopening the close-out and tapping "Archive now" finishes it, or the project is archived and the Integrity Check says what is left
 
 Test: `__tests__/scenarios/interruptions.test.tsx` · design: `docs/dev/history/technical-design-quality-hardening.md`
+
+## Lasso
+
+### Capture an agreement from a mark on a meeting's page: it goes to the thread's area with the meeting
+
+- **Given** today's sparring with Mieke has its page, and a mark on that page says "Feedback only in our 1:1s"
+- **When** I process the mark and choose Agreement
+- **Then** Split lines is not offered; it is for the thread first, with the meeting in the grey line
+- **When** I tap Save & close
+- **Then** Coaching's file has the agreement with the thread tag and the meeting
+
+Test: `__tests__/scenarios/agreements.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md`
+
+### A todo captured on a meeting's follow-up page records the meeting
+
+- **Given** page 4 follows the page of meeting "Coach call" and has a mark "Ask coach about intervals"
+- **When** I process the mark
+- **Then** the panel shows "↳ from Coach call"
+- **When** I save it as a todo
+- **Then** the todo ends with the meeting
+
+Test: `__tests__/scenarios/pageSection.test.tsx`
+
+### An agreement from a mark on a thread notebook's follow-up page: for the thread, with the sparring
+
+- **Given** Mieke's sparring notebook has the sparring's page and a follow-up page with a mark "Feedback only in our 1:1s"
+- **When** I process the mark as an Agreement
+- **Then** the For chips start with #sparring/mieke, and the grey line names the sparring
+- **When** I tap Save & close
+- **Then** the agreement records the sparring meeting
+
+Test: `__tests__/scenarios/pageSection.test.tsx`
+
+### Your own heading stops the provenance
+
+- **Given** page 8 follows the heading "Training plan" and has a mark "Book track time"
+- **When** I process the mark
+- **Then** no "↳ from" line shows
+- **When** I save it as a todo
+- **Then** no meeting is recorded
+
+Test: `__tests__/scenarios/pageSection.test.tsx`
+
+### A cancelled meeting's follow-up page records no meeting
+
+- **Given** the meeting "Coach call" of page 3 is cancelled; page 4 has a mark "Ask coach about intervals"
+- **When** I process the mark
+- **Then** no "↳ from" line shows
+- **When** I save it as a todo
+- **Then** no meeting is recorded
+
+Test: `__tests__/scenarios/pageSection.test.tsx`
 
 ## Meetings
 
@@ -432,6 +770,27 @@ Test: `__tests__/scenarios/touchTest.test.tsx` · design: `docs/dev/history/tech
 - **Then** the thread overview opens
 
 Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/technical-design-item-card.md`
+
+### A big Area's Threads tab shows the same counterparts and signals as before, built once
+
+- **Given** area "Atruvia" with 2 projects, 26 counterparts, 133 meetings and 97 todos (half agreed in a meeting, some in the Inbox and in area "Zen", two with a renamed meeting)
+- **When** I open Atruvia's page
+- **And** I unfold the inactive counterparts
+- **Then** the Threads tab lists New, Active and Inactive counterparts with the recorded last/next, I-owe and Waiting
+- **And** the roster was built once for this open
+
+Test: `__tests__/scenarios/threadsBigArea.test.tsx` · design: `docs/dev/history/technical-design-perf-threads.md`
+
+### Renaming a meeting in Quick Add updates the Threads tab of the big Area
+
+- **Given** area "Atruvia" of the big data set also has a todo agreed in "1:1 Ines" on a day only "1:1 Vera" has a meeting
+- **When** I open Atruvia's page
+- **Then** Ines has no next meeting and owes nothing
+- **When** I rename that meeting to "1:1 Ines #101/ines" in Quick Add
+- **Then** the file has the new title
+- **And** Ines shows the meeting as next, and the todo agreed in it as one more I-owe
+
+Test: `__tests__/scenarios/threadsBigArea.test.tsx` · design: `docs/dev/history/technical-design-perf-threads.md`
 
 ## Weekly Review
 

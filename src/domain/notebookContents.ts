@@ -44,16 +44,29 @@ export interface ContentsItem {
   meetings: ReadonlyArray<Pick<Meeting, 'date' | 'title'>>;
 }
 
+/** A loop page's label from its keyword (`loop <kind>/<name>` → "<kind> <name>"); shared with Engage's section line. */
+export function loopPageLabel(keyword: string): string {
+  return keyword.slice(LOOP_PAGE_KEYWORD_PREFIX.length).replace(/\//g, ' ');
+}
+
+/** A meeting page's label: its title as words; shared with Engage's section line. */
+export function meetingPageLabel(meeting: Pick<Meeting, 'title'>): string {
+  return tagsAsWords(meetingDisplayTitle(meeting));
+}
+
+/** A todo page's label: its page keyword as words; shared with Engage's section line. */
+export function todoPageLabel(task: Pick<Task, 'text'>): string {
+  return tagsAsWords(todoPageKeyword(task));
+}
+
 /** The entry for a page gtdpara titles itself, from one of its keywords; null when no keyword is gtdpara's. */
 function pageEntry(page: number, keyword: string, item: ContentsItem, today: string): ContentsEntry | null {
   if (keyword === HOME_PAGE_KEYWORD) return {page, y: 0, text: item.name, detail: '', source: 'home'};
-  if (keyword.startsWith(LOOP_PAGE_KEYWORD_PREFIX)) {
-    return {page, y: 0, text: keyword.slice(LOOP_PAGE_KEYWORD_PREFIX.length).replace(/\//g, ' '), detail: '', source: 'loop'};
-  }
+  if (keyword.startsWith(LOOP_PAGE_KEYWORD_PREFIX)) return {page, y: 0, text: loopPageLabel(keyword), detail: '', source: 'loop'};
   const meeting = item.meetings.find(m => meetingPageKeyword(m) === keyword);
-  if (meeting) return {page, y: 0, text: tagsAsWords(meetingDisplayTitle(meeting)), detail: formatDate(meeting.date, today), source: 'meeting'};
+  if (meeting) return {page, y: 0, text: meetingPageLabel(meeting), detail: formatDate(meeting.date, today), source: 'meeting'};
   const task = item.tasks.find(t => todoPageKeyword(t) === keyword);
-  if (task) return {page, y: 0, text: tagsAsWords(todoPageKeyword(task)), detail: 'todo', source: 'todo'};
+  if (task) return {page, y: 0, text: todoPageLabel(task), detail: 'todo', source: 'todo'};
   return null;
 }
 

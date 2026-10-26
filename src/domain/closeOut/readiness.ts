@@ -11,6 +11,7 @@ import {Meeting, Task} from '../types';
 import {NoteSetupConfig} from '../noteSetups';
 import {meetingDisplayTitle, resolveMeetingTracking} from '../meetingTracking';
 import {CloseOutPlan} from './plan';
+import {activeAgreementsText} from '../agreementText';
 
 export type Severity = 'blocker' | 'warning' | 'notice' | 'ok';
 
@@ -23,10 +24,11 @@ export type FindingId =
   | 'targetCollision'
   | 'unreadableNotes'
   | 'openFromHere'
-  | 'openMarks';
+  | 'openMarks'
+  | 'activeAgreements';
 
 export interface FindingItem {
-  /** For openTodos/futureMeetings: index into the project's tasks/meetings array. */
+  /** For openTodos/futureMeetings/activeAgreements: index into the project's tasks/meetings/agreements array. */
   index?: number;
   label: string;
 }
@@ -75,6 +77,8 @@ export interface ReadinessInput {
   launchPath: string | null;
   /** Open "Mark for later" marks of this project (lasso 0.8), as list labels. Optional for older callers. */
   openMarks?: string[];
+  /** The project's active agreements (docs/dev/history/technical-design-meetings-0.21.md R26): index into its agreements and the row's text. */
+  activeAgreements?: {index: number; label: string}[];
 }
 
 function plural(n: number, word: string): string {
@@ -171,6 +175,12 @@ export function evaluateReadiness(input: ReadinessInput): Finding[] {
       ? {id: 'openMarks', severity: 'warning', label: `${plural(marks.length, 'open mark')}`, caption: 'process them, or they move to the Inbox on archive', items: marks.map(label => ({label}))}
       : {id: 'openMarks', severity: 'ok', label: 'No open marks', caption: '', items: []},
   );
+
+  // Active agreements (meetings 0.21 R26): a warning - they stay in the archived file as they are.
+  const agreements = input.activeAgreements ?? [];
+  if (agreements.length > 0) {
+    out.push({id: 'activeAgreements', severity: 'warning', label: activeAgreementsText(agreements.length), caption: 'they stay in the archived file as they are', items: agreements});
+  }
 
   if (input.launchPath && input.launchPath.startsWith(`${input.projectPath.replace(/\/+$/, '')}/`)) {
     const name = input.launchPath.slice(input.projectPath.replace(/\/+$/, '').length + 1);

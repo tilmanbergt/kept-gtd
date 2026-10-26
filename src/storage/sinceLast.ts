@@ -8,12 +8,15 @@
  * Previous = the latest meeting of the thread (its tag or deeper, not
  * cancelled) that starts before this one; without one there is nothing to
  * write. Blocks: "Agreed last time" (todos agreed in the previous meeting,
- * open first, then done), "I owe", "Waiting for", "Relevant" (the overview's
+ * open first, then done), "Agreements made last time" (the active agreements
+ * made in the previous meeting, docs/dev/history/technical-design-meetings-0.21.md
+ * R24), "I owe", "Waiting for", "Relevant" (the overview's
  * open todos), "Done since then" (todos of the lens completed on or after
  * the previous meeting's day). Each todo appears once: one agreed last time
  * stays in that block, open or done, and is left out of the others; the rest
  * follow the overview's precedence (Waiting for > I owe > Relevant).
  */
+import {isActiveAgreement} from '../domain/agreements';
 import {SinceLast, SinceLastLine} from '../domain/sinceLastText';
 import {displayTaskText} from '../domain/taskLabels';
 import {belongsToThread, isCounterpartType, threadsOfTags} from '../domain/threads';
@@ -66,6 +69,14 @@ export function buildSinceLast(
       }
     });
   }
+  const madeLastTime = items
+    .filter(item => ctx.scope.includes(item.path))
+    .flatMap(item => item.agreements)
+    .filter(a => isActiveAgreement(a))
+    .filter(a => {
+      const match = ctx.provenanceOf(a);
+      return match !== null && match.path === prev.path && match.meetingIndex === prev.meetingIndex;
+    });
   const agreedKeys = new Set(agreed.map(entryKey));
   const rest = (list: ThreadTaskEntry[]) => list.filter(e => !agreedKeys.has(entryKey(e))).map(e => lineOf(e.task));
   doneSince.sort((a, b) => (b.task.fields.completion ?? '').localeCompare(a.task.fields.completion ?? ''));
@@ -74,6 +85,7 @@ export function buildSinceLast(
     previous: prev.meeting.date,
     blocks: [
       {title: 'Agreed last time', lines: [...agreed.filter(e => !e.task.done), ...agreed.filter(e => e.task.done)].map(e => lineOf(e.task))},
+      {title: 'Agreements made last time', lines: madeLastTime.map(a => ({text: a.text, done: false}))},
       {title: 'I owe', lines: rest(overview.ahead.owe)},
       {title: 'Waiting for', lines: rest(overview.ahead.waiting)},
       {title: 'Relevant', lines: rest(overview.ahead.relevant)},

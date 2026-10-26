@@ -23,6 +23,11 @@
  * Every overview is **scoped** to one owner (decision D9): the owner's Area
  * plus the Projects assigned to it. A Project without an Area is its own
  * scope, and so is the Inbox.
+ *
+ * `threadOf` is memoized per tag string in a module-level map, cleared at
+ * MEMO_CAP entries (docs/dev/history/technical-design-perf-threads.md §3.5): it
+ * runs for every tag of every todo and meeting in each counterpart's pass. The
+ * objects it returns are shared, hence `Readonly`.
  */
 
 import {WAITING_FOR_TYPE} from './flowState';
@@ -40,12 +45,18 @@ export interface ThreadRef {
 /** The two ways to look at a thread: just this thread, or everything with its counterpart. */
 export type ThreadLens = 'thread' | 'counterpart';
 
-/** The thread a tag belongs to (deeper segments are dropped), or null for a tag without `/`. */
-export function threadOf(tag: string): ThreadRef | null {
+const MEMO_CAP = 4000;
+const threadMemo = new Map<string, Readonly<ThreadRef> | null>();
+
+/** The thread a tag belongs to (deeper segments are dropped), or null for a tag without `/`. Shared: never change it. */
+export function threadOf(tag: string): Readonly<ThreadRef> | null {
+  const known = threadMemo.get(tag);
+  if (known !== undefined) return known;
   const parts = tag.toLowerCase().split('/');
-  if (parts.length < 2 || !parts[0] || !parts[1]) return null;
-  const [type, counterpart] = parts;
-  return {type, counterpart, tag: `${type}/${counterpart}`};
+  const thread = parts.length < 2 || !parts[0] || !parts[1] ? null : {type: parts[0], counterpart: parts[1], tag: `${parts[0]}/${parts[1]}`};
+  if (threadMemo.size >= MEMO_CAP) threadMemo.clear();
+  threadMemo.set(tag, thread);
+  return thread;
 }
 
 /** The threads among `tags`, once each, in order. */

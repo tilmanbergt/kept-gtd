@@ -6,6 +6,7 @@
  */
 import {EngageOwner, EngageTodoKey, MeetingRef, OwnedTodo, sameOwner, sameTodo} from './engageOwner';
 import {EngageOptions, FocusRing} from './engageOptions';
+import {SectionInfo} from './pageSection';
 import {Task} from './types';
 
 /** How the panel was opened: the sidebar button (from the open note) or "Engage ›" on an owner page. */
@@ -33,8 +34,16 @@ export interface UndoRecord {
   afterText: string;
 }
 
-/** The options screen's tabs; Agreed only while it has rows (docs/dev/history/technical-design-engage-in-context.md E6). */
-export type EngageTab = 'agreed' | 'next' | 'plan';
+/**
+ * The options screen's tabs (docs/dev/history/technical-design-meetings-0.21.md
+ * R9): From (a thread's "From Thread", a loop's "From Loop", a
+ * Project/Area's "From meetings"), Next, Plan, Waiting, Agreements. From,
+ * Waiting and Agreements show only while they have rows.
+ */
+export type EngageTab = 'from' | 'next' | 'plan' | 'waiting' | 'agreements';
+
+/** The tabs that give way to Next/Plan once they list nothing (R14). */
+const VANISHING_TABS: readonly EngageTab[] = ['from', 'waiting', 'agreements'];
 
 /**
  * Leaving the panel to a place in gtdpara (docs/dev/history/technical-design-engage-in-context.md
@@ -47,8 +56,8 @@ export type EngageExit =
   | {kind: 'someday'; owner: EngageOwner; label: string; keys: string[]};
 
 export interface EngageAck {
-  /** Done, Someday, Remove #next, or #next from the Plan tab. */
-  kind: 'done' | 'someday' | 'unnext' | 'next';
+  /** Done, Someday, Remove #next, #next from the Plan tab, or Waiting For from the Now box. */
+  kind: 'done' | 'someday' | 'unnext' | 'next' | 'waiting';
   /** The todo's title for the ack line. */
   text: string;
   /** The todo acted on. */
@@ -73,10 +82,20 @@ export interface EngageState {
   back: OwnedTodo | null;
   /** The meeting whose note page the panel was opened on; it belongs to the note's owner only (E6). */
   pageMeeting: MeetingRef | null;
+  /** The note page's section (docs/dev/history/technical-design-engage-page-owner.md P9), for the note's owner only; cleared with `pageMeeting`. */
+  section: SectionInfo | null;
 }
 
 export type EngageEvent =
-  | {type: 'open'; owner: EngageOwner | null; current: EngageTodoKey | null; ring: FocusRing; back?: OwnedTodo | null; pageMeeting?: MeetingRef | null}
+  | {
+      type: 'open';
+      owner: EngageOwner | null;
+      current: EngageTodoKey | null;
+      ring: FocusRing;
+      back?: OwnedTodo | null;
+      pageMeeting?: MeetingRef | null;
+      section?: SectionInfo | null;
+    }
   | {type: 'picked'; key: EngageTodoKey}
   | {type: 'acted'; ack: EngageAck}
   | {type: 'undone'}
@@ -91,8 +110,8 @@ export type EngageEvent =
   /**
    * The cache changed: the owner's options, the effective ring, how many
    * owners today's focus still has, the current todo found again
-   * (`resolveTodoKey`; null when it is gone, D7), how many rows the Next
-   * tab lists (`engageListsOf`) and how many the Agreed tab lists.
+   * (`resolveTodoKey`; null when it is gone, D7), and how many rows the
+   * Next (`engageListsOf`), From, Waiting and Agreements tabs list.
    */
   | {
       type: 'dataChanged';
@@ -101,7 +120,9 @@ export type EngageEvent =
       dailyLeft: number;
       current: EngageTodoKey | null;
       nextRows: number;
-      agreedRows: number;
+      fromRows: number;
+      waitingRows: number;
+      agreementRows: number;
     };
 
 export const INITIAL_ENGAGE_STATE: EngageState = {
@@ -114,6 +135,7 @@ export const INITIAL_ENGAGE_STATE: EngageState = {
   tab: null,
   back: null,
   pageMeeting: null,
+  section: null,
 };
 
 /** The owner's own screen: its options, or S8 when it is empty. */
@@ -134,6 +156,7 @@ export function engageFlow(state: EngageState, event: EngageEvent): EngageState 
         tab: null,
         back: event.back ?? null,
         pageMeeting: event.owner ? event.pageMeeting ?? null : null,
+        section: event.owner ? event.section ?? null : null,
       };
     case 'picked':
       // A todo chosen in this context becomes the stored one: the way back goes.
@@ -150,7 +173,7 @@ export function engageFlow(state: EngageState, event: EngageEvent): EngageState 
     case 'back':
       return state.owner ? {...state, screen: ownerScreen(state)} : state;
     case 'ownerChosen':
-      return {...state, owner: event.owner, current: null, ack: null, ownerEmpty: false, screen: {kind: 'options'}, tab: null, back: backAfterChoosing(state, event.owner), pageMeeting: null};
+      return {...state, owner: event.owner, current: null, ack: null, ownerEmpty: false, screen: {kind: 'options'}, tab: null, back: backAfterChoosing(state, event.owner), pageMeeting: null, section: null};
     case 'expandQuickAdd':
       return state.owner ? {...state, screen: {kind: 'quickAdd'}} : state;
     case 'collapseQuickAdd':
@@ -159,7 +182,7 @@ export function engageFlow(state: EngageState, event: EngageEvent): EngageState 
       return {...state, tab: event.tab};
     case 'goBack':
       if (!state.back) return state;
-      return {...state, owner: state.back.owner, current: state.back.key, ack: null, ownerEmpty: false, screen: {kind: 'options'}, tab: null, back: null, pageMeeting: null};
+      return {...state, owner: state.back.owner, current: state.back.key, ack: null, ownerEmpty: false, screen: {kind: 'options'}, tab: null, back: null, pageMeeting: null, section: null};
     case 'dataChanged':
       return onDataChanged(state, event);
   }
@@ -182,13 +205,14 @@ function onDataChanged(state: EngageState, event: Extract<EngageEvent, {type: 'd
   const current = sameKey(state.current, event.current) ? state.current : event.current;
   // Next when it lists anything, else Plan; an empty Next always gives way to Plan. Adding #next from Plan doesn't switch.
   const nextOrPlan: EngageTab = event.nextRows > 0 ? 'next' : 'plan';
-  // Opened on a meeting page with agreed rows: Agreed first (E6); an emptied Agreed gives way like an empty Next.
+  const rowsOf: Record<EngageTab, number> = {from: event.fromRows, next: event.nextRows, plan: 0, waiting: event.waitingRows, agreements: event.agreementRows};
+  // Opened on a meeting page with From rows: From first (R14); an emptied From, Waiting or Agreements gives way like an empty Next.
   const tab: EngageTab =
     state.tab === null
-      ? state.pageMeeting && event.agreedRows > 0
-        ? 'agreed'
+      ? state.pageMeeting && event.fromRows > 0
+        ? 'from'
         : nextOrPlan
-      : state.tab === 'next' || (state.tab === 'agreed' && event.agreedRows === 0)
+      : state.tab === 'next' || (VANISHING_TABS.includes(state.tab) && rowsOf[state.tab] === 0)
         ? nextOrPlan
         : state.tab;
   const next = {...state, ownerEmpty, ring: event.ring, current, tab};
