@@ -1,12 +1,12 @@
 # Technical design: the Current page opens in one render (perf round "Current page")
 
-Status: **draft for review** (Tilman). Branch `feature/perf-current-page`, after 0.21.0. Release: see O1.
+Status: **approved** (Tilman, 2026-10-26). Branch `feature/perf-current-page`, after 0.21.0. Release **0.21.1** (O1).
 Builds on `docs/dev/history/technical-design-render-perf-ab.md` (rounds A + B: memoized Quick Add, stable
 callbacks) and `docs/dev/history/technical-design-perf-threads.md` (§10 O2: once the Threads roster is fast, measure
 the base time of a page open). This document is the source for the implementation. Where the code shows the design
 is wrong or incomplete, update this document in the same commit and note it under "As built".
 
-## 1. Requirements (to be confirmed in review)
+## 1. Requirements (as decided in review)
 
 - **R1 Same page, less work.** The Current page (a Project's or Area's page: Threads/Projects/Files on the left,
   Quick Add, Todos and Meetings on the right) shows exactly what it shows today, with the same paging, the same
@@ -297,16 +297,14 @@ The Atruvia roster (≈ 180 ms) stays inside the first render.
 
 ## 10. Open points
 
-- **O1 Release:** no new feature, no changed behavior beyond R2's and R6's small ones, so a patch release
-  (**0.21.1**) fits `RELEASING.md` §5. Set with `npm run next-version -- 0.21.1` after 0.21.0 is published.
-  Decision: Tilman.
-- **O2 R6 confirmation:** the Files tab's first open shows its loading state (today it is preloaded). Accept, or
-  pre-list it after the flush like §3.4's rows (no visible change, the listing still costs one render round later).
-- **O3 After the device numbers:** if the page is still above ≈ 2 s, the next candidate is keeping the Current page
-  mounted across items (suggestion 8: the kept Areas list reopens in 0.6-0.75 s).
-- **O4 Cold start** (seen in the same bundles, separate topic): `area.txt` read and parsed 4-5 times in parallel while
-  no cache exists; the launch note's page elements and titles read twice (1.5-9.9 s host calls); `getCurrentNotePath`
-  twice. Backlog.
+- **O1 Release - decided:** a patch release, **0.21.1** (`nextVersion` set on this branch).
+- **O2 R6 - decided:** the Files tab's folder is listed and its list rendered only when the tab is actually opened;
+  its first open shows the loading state it has when drilling into a folder.
+- **O3 - decided:** whether to keep the Current page mounted across items (suggestion 8) is decided on the device
+  numbers after P7.
+- **O4 Cold start - later** (separate topic, backlog): `area.txt` read and parsed 4-5 times in parallel while no
+  cache exists; the launch note's page elements and titles read twice (1.5-9.9 s host calls); `getCurrentNotePath`
+  twice.
 
 ## As built
 
