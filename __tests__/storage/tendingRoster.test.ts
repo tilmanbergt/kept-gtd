@@ -1,13 +1,14 @@
 /** The tending roster and the counterpart predicate (docs/dev/history/technical-design-tending-threads.md §1.2.1, §3.9.4, §3.10). */
-import {threadTypesOf} from '../../src/domain/counterparts';
+import {counterpartScopes, threadTypesOf} from '../../src/domain/counterparts';
 import {deriveMeetingFields} from '../../src/domain/markdown';
-import {meetingKey} from '../../src/domain/provenance';
+import {__provenanceStatsForTests, meetingKey} from '../../src/domain/provenance';
 import {emptyTaskFields} from '../../src/domain/taskLine';
 import {parseThreadsSpan} from '../../src/domain/threadsSection';
 import {Meeting, Task} from '../../src/domain/types';
 import {counterpartMatcher} from '../../src/storage/threadAggregate';
-import {buildTendingRoster} from '../../src/storage/tendingRoster';
+import {buildScopeRoster, buildTendingRoster} from '../../src/storage/tendingRoster';
 import {item, meeting, task} from '../../test-helpers/fixtures';
+import {BIG_NOW, BIG_SETUP_TAGS, bigScopeCache} from '../../test-helpers/bigScope';
 
 const NOW = new Date(2026, 9, 8, 12, 0, 0);
 const INBOX = '/Note/2 Areas/0 Inbox';
@@ -86,5 +87,41 @@ describe('buildTendingRoster', () => {
     const [anna, bert] = roster[0].confirm;
     expect([anna.counterpart.oneOff, anna.tag, anna.waitingCount]).toEqual(['wf', 'wf/anna', 1]);
     expect([bert.counterpart.oneOff, bert.tag, bert.oweCount]).toEqual(['owe', 'owe/bert', 1]);
+  });
+});
+
+// docs/dev/history/technical-design-perf-threads.md R2, R4, R7: work done for one scope roster of the big scope.
+describe('buildScopeRoster on a big scope: work per build', () => {
+  const big = bigScopeCache();
+  const types = threadTypesOf(BIG_SETUP_TAGS.map(s => ({enabled: true, kind: s.kind, tags: [s.tag]})));
+  const scope = counterpartScopes(big.items).find(s => s.owner === big.atruvia)!;
+  const allMeetings = [...big.items.flatMap(i => i.meetings), ...big.inbox.meetings];
+  const distinctMeetings = new Set(allMeetings.map(x => `${x.date}|${x.title}`)).size;
+  const withMeeting =
+    scope.members.flatMap(i => i.tasks).filter(t => !t.cancelled && t.fields.meeting).length +
+    scope.members.flatMap(i => i.agreements).filter(a => a.fields.meeting).length;
+
+  it('builds each meeting key at most once, and none again on the next build', () => {
+    __provenanceStatsForTests.reset();
+    buildScopeRoster(big.items, big.inbox, scope, types, BIG_NOW);
+    expect(__provenanceStatsForTests.keyBuilds()).toBeGreaterThan(0);
+    expect(__provenanceStatsForTests.keyBuilds()).toBeLessThanOrEqual(distinctMeetings);
+    const first = __provenanceStatsForTests.keyBuilds();
+    buildScopeRoster(big.items, big.inbox, scope, types, BIG_NOW);
+    expect(__provenanceStatsForTests.keyBuilds()).toBe(first);
+  });
+
+  it('resolves each todo and agreement with a meeting once, and logs counts only', () => {
+    const spy = jest.spyOn(console, 'log').mockImplementation(() => undefined);
+    try {
+      const roster = buildScopeRoster(big.items, big.inbox, scope, types, BIG_NOW);
+      const lines = spy.mock.calls.filter(call => call[1] === 'tendingRoster: built');
+      expect(lines).toHaveLength(1);
+      const counterparts = roster.confirm.length + roster.active.length + roster.inactive.length;
+      expect(lines[0].slice(2, 6)).toEqual([`${counterparts} counterparts`, '97 todos', '133 meetings', `${withMeeting} lookups`]);
+      expect(lines[0][6]).toMatch(/^\d+ ms$/);
+    } finally {
+      spy.mockRestore();
+    }
   });
 });

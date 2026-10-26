@@ -331,3 +331,9 @@ parser's `push` during construction found.
   never reads more. `byDate` keeps every index, as designed. `threadOf` returns `Readonly<ThreadRef>`; no caller
   changed one.
 - **S14.** `__provenanceStatsForTests` is `{keyBuilds(), memoSize(), reset()}`.
+- **S15.** As designed. `threadAggregate.ts`'s `threadLensContext` takes the memo as well (its last, optional
+  argument) and re-exports the `ProvenanceMemo` type; `rosterEntryOf` takes it as its last, optional argument.
+  The log line's `lookups` is now the memo's size: one per todo (not cancelled) and agreement of the scope with a
+  `meeting` field.
+- **S15.** `[Unreleased]` had no Fixed section yet; S15 adds it (between Changed and Upgrade notes) with the first
+  §8 line, S17 adds the second line to it.

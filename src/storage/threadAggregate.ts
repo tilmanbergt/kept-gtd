@@ -42,6 +42,7 @@ import {
   LensItemRef,
   LensSource,
   meetingStartKey,
+  ProvenanceMemo,
   threadLensContext as lensContextOf,
   ThreadLensContext,
   ThreadRelation,
@@ -128,25 +129,30 @@ export function threadSourcesOf(items: readonly CachedItem[], inbox: ThreadInbox
   return sources;
 }
 
-export type {ThreadLensContext, ThreadRelation};
+export type {ProvenanceMemo, ThreadLensContext, ThreadRelation};
 
 const startKey = meetingStartKey;
 
-/** The lens of `tag` over the cache plus the Inbox (domain/threadLens.ts). Null when `tag` is not a nested tag. */
+/**
+ * The lens of `tag` over the cache plus the Inbox (domain/threadLens.ts). Null when `tag` is not a nested tag.
+ * `provenanceMemo` is shared only by lenses with the same items, Inbox and owner (domain/threadLens.ts).
+ */
 export function threadLensContext(
   items: readonly CachedItem[],
   inbox: ThreadInboxInput | null,
   tag: string,
   requestedLens: ThreadLens,
   ownerPath: string | null,
+  provenanceMemo?: ProvenanceMemo,
 ): ThreadLensContext | null {
-  return lensContextOf(items, threadSourcesOf(items, inbox), inbox?.path ?? null, tag, requestedLens, ownerPath);
+  return lensContextOf(items, threadSourcesOf(items, inbox), inbox?.path ?? null, tag, requestedLens, ownerPath, provenanceMemo);
 }
 
 /**
  * The overview of the thread of `tag` in `requestedLens` (the counterpart
  * lens for `wf`/`owe` tags), scoped to `ownerPath` - see the module doc
- * comment. Null when `tag` is not a nested tag.
+ * comment. Null when `tag` is not a nested tag. `opts.provenanceMemo`: see
+ * threadLensContext above.
  */
 export function buildThreadOverview(
   items: readonly CachedItem[],
@@ -155,8 +161,9 @@ export function buildThreadOverview(
   requestedLens: ThreadLens,
   ownerPath: string | null,
   now: Date = new Date(),
+  opts: {provenanceMemo?: ProvenanceMemo} = {},
 ): ThreadOverview | null {
-  const ctx = threadLensContext(items, inbox, tag, requestedLens, ownerPath);
+  const ctx = threadLensContext(items, inbox, tag, requestedLens, ownerPath, opts.provenanceMemo);
   if (!ctx) return null;
   const {lens, thread, scope, inScope, types, inLens, provenanceOf, relationOf} = ctx;
   const today = todayIso(now);

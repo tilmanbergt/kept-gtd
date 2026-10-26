@@ -58,6 +58,11 @@ or your project/area files are stored.
 - The demo space has a fifth area, **Sport**, whose loop `#race/marathon` shares its home notebook, to
   try the sections in Engage.
 
+### Fixed
+- Project and Area pages with many meetings and threads open much faster: the Threads tab no longer
+  compares every meeting again for every person. Review's "Tending threads", the counterpart filter
+  and Engage profit too.
+
 ### Upgrade notes
 - The first time you add an agreement to a Project or Area, its file gets a new `## Agreements`
   section of plain bullets. Older versions of Kept GTD keep that section as it is.

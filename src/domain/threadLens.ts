@@ -22,6 +22,12 @@
  *   3. relevant: the lens's tags.
  *   A meeting of the lens is one with the lens's tags, past or ahead, inside
  *   the scope.
+ *
+ * A caller that builds many lenses with the same sources and the same scope
+ * (storage/tendingRoster.ts: every counterpart of one scope) passes one
+ * `ProvenanceMemo`, so each todo's meeting is resolved once for all of them
+ * (docs/dev/history/technical-design-perf-threads.md §3.4). It lives for that one
+ * synchronous build only.
  */
 import {ProvenanceMatch, ProvenanceSource, resolveProvenance} from './provenance';
 import {
@@ -74,6 +80,9 @@ export interface ThreadLensContext {
   relationOf: (task: Task, match?: ProvenanceMatch | null) => ThreadRelation | null;
 }
 
+/** Resolved provenance by todo or agreement object; valid only for one set of sources and one scope. */
+export type ProvenanceMemo = Map<object, ProvenanceMatch | null>;
+
 /** A meeting's start as a sortable key. */
 export function meetingStartKey(m: Pick<Meeting, 'date' | 'time'>): string {
   return `${m.date} ${m.time || '00:00'}`;
@@ -95,7 +104,8 @@ function fallbackOwner(sources: readonly LensSource[], thread: ThreadRef): LensI
  * The lens of `tag` in `requestedLens` (the counterpart lens for `wf`/`owe`
  * tags), scoped to `ownerPath` - see the module doc comment. `scopeItems`
  * are the Projects and Areas `scopeOf` reads, `sources` every loaded item
- * plus the Inbox. Null when `tag` is not a nested tag.
+ * plus the Inbox. Null when `tag` is not a nested tag. `memo` is shared by
+ * lenses with the same sources and scope (see the module doc comment).
  */
 export function threadLensContext(
   scopeItems: readonly ScopeItem[],
@@ -104,6 +114,7 @@ export function threadLensContext(
   tag: string,
   requestedLens: ThreadLens,
   ownerPath: string | null,
+  memo?: ProvenanceMemo,
 ): ThreadLensContext | null {
   const thread = threadOf(tag);
   if (!thread) return null;
@@ -126,8 +137,14 @@ export function threadLensContext(
     lens === 'thread' ? inThreadLens(tags, thread) : belongsToCounterpart(tags, cp, threadTypes);
 
   const provenanceSources: ProvenanceSource[] = sources.map(s => ({path: s.ref.path, meetings: s.meetings}));
-  const provenanceOf = (task: {fields: {meeting: string | null}}): ProvenanceMatch | null =>
-    task.fields.meeting ? resolveProvenance(task, provenanceSources, scope) : null;
+  const provenanceOf = (task: {fields: {meeting: string | null}}): ProvenanceMatch | null => {
+    if (!task.fields.meeting) return null;
+    const known = memo?.get(task);
+    if (known !== undefined) return known;
+    const match = resolveProvenance(task, provenanceSources, scope);
+    memo?.set(task, match);
+    return match;
+  };
   const agreedInLens = (match: ProvenanceMatch | null) =>
     match !== null && scope.includes(match.path) && inLens(match.meeting.tags);
 
