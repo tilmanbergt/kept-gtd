@@ -349,3 +349,14 @@ The Atruvia roster (≈ 180 ms) stays inside the first render.
   the two components (`resourceFolderStateOf`, `statusPanelStateOf`). `FileBrowserPane` and the Threads tab inside
   it still render 3 times: its own mount state and the hidden listing (P6). The CHANGELOG line comes with this
   step: from here on it is true.
+- **P4.** As designed, with two changes. `onNextEinkFlush` lives in its own module, `utils/einkFlush.ts`
+  (`utils/screenRefresh.ts` calls `runAfterEinkFlush()` after `invalidatePluginView`), for the reason of P1's
+  snapshot module: many tests replace `screenRefresh.ts` with a mock without it. And there is no fallback timer:
+  every page open asks for a flush (`tab:shown`), and a timer that fires after a test ends made React report 46
+  updates outside `act`; a tab whose rows are not built yet when it is shown (no flush came) builds them in that
+  render. The rows are built per tab in `QuickAddWidget` (`needs(type)`: all tabs after the flush, else the shown
+  tab, which an edit sets); `QuickAddFrame` is unchanged. `__tests__/ui/quickAddEditSession.test.tsx` ("focuses
+  the field on a fresh edit only") put focus spies on the hidden Meeting field right after mounting; it now first
+  runs `runAfterEinkFlush()` (every tab built, as once the page is on screen), its expectations unchanged. Per open:
+  the Current page's Quick Add renders once before the flush and once after it (the other tabs' rows); a kept
+  screen's Quick Add (Daily) does the same once, at its own first flush.

@@ -26,6 +26,7 @@ import QuickAddWidget, {editTargetFor, QuickAddEditTarget} from '../../src/ui/Qu
 import {sameEditTarget} from '../../src/ui/quickAdd/types';
 import {StatusProvider} from '../../src/ui/status/StatusProvider';
 import {Meeting, Task} from '../../src/domain/types';
+import {runAfterEinkFlush} from '../../src/utils/einkFlush';
 
 const task = (text: string): Task =>
   ({text, done: false, cancelled: false, tags: [], dueDate: null, flowState: null, waitingOn: null, now: false, notePath: '', linkedFile: ''}) as unknown as Task;
@@ -125,6 +126,8 @@ describe('Quick Add edit session', () => {
 
   it('focuses the field on a fresh edit only, not on a switch', () => {
     const {r, setTarget, focused} = render(jest.fn(async () => undefined));
+    // Every tab's rows exist once the page is on screen (docs/dev/history/technical-design-perf-current-page.md §3.4).
+    act(() => runAfterEinkFlush());
     for (const placeholder of ['New task', 'New meeting title']) {
       field(r, placeholder).instance.focus = () => focused.push(placeholder);
     }

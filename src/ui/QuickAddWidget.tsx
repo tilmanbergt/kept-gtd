@@ -53,7 +53,8 @@
  * the screen's own `onCancelEdit` and turns the edit form's current values
  * into the Meeting create draft.
  */
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
+import {onNextEinkFlush} from '../utils/einkFlush';
 import {Keyboard} from 'react-native';
 import {AbbrevFileMatch, resolveAbbrevFileTarget} from '../domain/abbrev';
 import {insertTagAtPosition, stripSpaceAfterHash} from '../domain/markdown';
@@ -80,7 +81,7 @@ import ProvenanceLine, {QuickAddAdds} from './quickAdd/ProvenanceLine';
 import QuickAddFrame from './quickAdd/QuickAddFrame';
 import TabsRow from './quickAdd/TabsRow';
 import {AttachmentCluster, TaskInputRow, TaskMetaRows} from './quickAdd/TaskRows';
-import {MeetingQuickAddFields, QuickAddEditTarget, QuickFilePayload, sameEditTarget, truncateItemName} from './quickAdd/types';
+import {MeetingQuickAddFields, QuickAddEditTarget, QuickAddType, QuickFilePayload, sameEditTarget, truncateItemName} from './quickAdd/types';
 import {DraftPrefill, MeetingSeed, useDraftRequests} from './quickAdd/useDraftRequests';
 import {useEditSession} from './quickAdd/useEditSession';
 import {useMeetingDraft} from './quickAdd/useMeetingDraft';
@@ -256,6 +257,14 @@ function QuickAddWidget(props: Props): React.JSX.Element {
     onChangeAgreement: props.onChangeAgreement,
   });
   useEditSession(core, task, meeting, {editTarget, flushEditRef: props.flushEditRef, onCancelEdit, agreement});
+
+  // A tab's rows are built once the tab is needed: shown (as the active tab or by an edit), or all of them
+  // right after the page is on screen (the next e-ink flush; every page open asks for one), so the first
+  // render builds one tab and a later tab switch finds its rows ready
+  // (docs/dev/history/technical-design-perf-current-page.md §3.4). Built rows stay, hidden.
+  const [allTabs, setAllTabs] = useState(false);
+  useEffect(() => (allTabs ? undefined : onNextEinkFlush(() => setAllTabs(true))), [allTabs]);
+  const needs = (type: QuickAddType) => allTabs || displayType === type;
 
   useDraftRequests(props.prefill, props.meetingSeed, isEditing, {
     text: (kind, addition) => {
@@ -467,24 +476,28 @@ function QuickAddWidget(props: Props): React.JSX.Element {
       }
       row2={
         <>
-          <TaskInputRow core={core} task={task} placeholder={props.placeholder ?? 'New task'} {...colors} />
-          <MeetingInputRow core={core} meeting={meeting} {...colors} />
-          <NoteInputRow core={core} note={note} {...colors} />
-          <AgreementInputRow core={core} agreement={agreement} today={today} {...colors} />
+          {needs('task') && <TaskInputRow core={core} task={task} placeholder={props.placeholder ?? 'New task'} {...colors} />}
+          {needs('meeting') && <MeetingInputRow core={core} meeting={meeting} {...colors} />}
+          {needs('note') && <NoteInputRow core={core} note={note} {...colors} />}
+          {needs('agreement') && <AgreementInputRow core={core} agreement={agreement} today={today} {...colors} />}
         </>
       }
       rows34={
         <>
-          <TaskMetaRows core={core} task={task} layoutKey={layoutKey} row4={taskRow4} {...colors} />
-          <MeetingMetaRows
-            core={core}
-            meeting={meeting}
-            layoutKey={layoutKey}
-            row4={editKind === 'meeting' && !meetingCard ? editCommands : undefined}
-            {...colors}
-          />
-          <NoteTagRows core={core} note={note} layoutKey={layoutKey} textColor={textColor} borderColor={borderColor} />
-          <AgreementTagRows core={core} agreement={agreement} layoutKey={layoutKey} row4={agreementRow4} textColor={textColor} borderColor={borderColor} />
+          {needs('task') && <TaskMetaRows core={core} task={task} layoutKey={layoutKey} row4={taskRow4} {...colors} />}
+          {needs('meeting') && (
+            <MeetingMetaRows
+              core={core}
+              meeting={meeting}
+              layoutKey={layoutKey}
+              row4={editKind === 'meeting' && !meetingCard ? editCommands : undefined}
+              {...colors}
+            />
+          )}
+          {needs('note') && <NoteTagRows core={core} note={note} layoutKey={layoutKey} textColor={textColor} borderColor={borderColor} />}
+          {needs('agreement') && (
+            <AgreementTagRows core={core} agreement={agreement} layoutKey={layoutKey} row4={agreementRow4} textColor={textColor} borderColor={borderColor} />
+          )}
         </>
       }
       card={
