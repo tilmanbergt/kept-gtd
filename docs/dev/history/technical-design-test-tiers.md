@@ -385,3 +385,19 @@ checklist).
   | `files` | 20 | 26 | files-and-folders.md, obsidian.md |
   | `settings` | 22 | 45 | settings.md, profiles-and-demo.md |
   | `foundation` | 10 | 37 | - |
+
+### T2 - tiers in `check.mjs`
+
+- The pure part (flags, tier name, Jest plan) is `scripts/lib/checkTiers.mjs`, tested by
+  `scripts/test-check-tiers.mjs` (design scenarios 3 and 4), which is part of `test:scripts` and the quick tier.
+- **Order**: Jest runs last, after the script tests, the catalog check and code-health, so the cheap checks
+  fail first.
+- `--area` and `--smoke` run Jest with `--runTestsByPath <files>`; `--affected` runs one
+  `jest --findRelatedTests <changed files> <smoke and area test files>` (a test file relates to itself), so
+  smoke needs no second Jest start. Changed files count only when Jest can relate them (`.ts/.tsx/.js/.jsx`
+  outside `scripts/` and `src/generated/`) and still exist. Without `origin/main` (no merge base) `--affected`
+  says so and runs all of Jest.
+- `--coverage` does not combine with the smaller tiers (it always runs everything) and is refused with them.
+  Unknown flags are refused with the usage.
+- A file under `src/domain/` is imported, through `App.tsx`, by every scenario, so `--affected` for one domain file
+  runs most suites (125 of 202 for `domain/period.ts`).
