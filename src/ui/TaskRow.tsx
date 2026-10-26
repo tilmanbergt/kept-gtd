@@ -58,7 +58,7 @@ import {renderTaggableText} from './TaggableText';
 import {openOverview} from './overviewStore';
 import {WAITING_FOR_TYPE} from '../domain/flowState';
 import {FONT} from './theme';
-import {perfCount} from '../utils/perf';
+import {perfCount, usePerfRender} from '../utils/perf';
 import {probePressable, useTouchProbe} from './touchDiag/touchProbe';
 
 /** Space above and below the row's content, inside each tap target. */
@@ -153,6 +153,7 @@ export default function TaskRow({
   borderColor,
 }: Props): React.JSX.Element {
   perfCount('row:task');
+  usePerfRender('TaskRow');
   const probe = useTouchProbe();
   // Whether this row is showing because of an active Daily context filter
   // (technical-design-context-tags.md §6) - derived from contextTag rather

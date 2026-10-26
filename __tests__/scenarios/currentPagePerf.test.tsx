@@ -4,6 +4,7 @@
 jest.mock('../../src/utils/perf', () => require('../../test-helpers/renderCounts').perfWithRenderCounts());
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {act} from '@testing-library/react-native';
 import {expectShows, openApp, settle, tap, tapTab, texts} from '../../test-helpers/scenario/app';
 import {areaDir, putFile} from '../../test-helpers/scenario/files';
 import {device} from '../../test-helpers/fakeDevice/device';
@@ -113,13 +114,19 @@ scenario('Hiding done todos on an Area page changes the Todos list and nothing e
     await tap(/^Atruvia/);
   });
   when('I tap "Hide done tasks"', async () => {
+    // After the page's first e-ink flush, which builds Quick Add's other tabs once.
+    await act(async () => {
+      await new Promise(resolve => setTimeout(resolve, 500));
+    });
+    await settle();
     resetRenderCounts();
     await tap('Hide done tasks');
   });
-  then('the Todos list offers to show the done ones again, and Quick Add did not render', () => {
+  then('the Todos list offers to show the done ones again, and neither Quick Add nor the left pane rendered', () => {
     expectShows(/^Show \d+ done tasks?$/);
-    expect(renderCounts().QuickAddWidget ?? 0).toBe(0);
-    expect(renderCounts().TodosSection).toBeGreaterThan(0);
+    const counts = renderCounts();
+    expect(counts.TodosSection).toBeGreaterThan(0);
+    for (const name of ['QuickAddWidget', 'ItemDetail', 'FileBrowserPane', 'ThreadsTab', 'ItemFocusPanel', 'ItemStatusPanel']) expect([name, counts[name] ?? 0]).toEqual([name, 0]);
   });
   and('after opening Zen and coming back, done todos are still hidden', async () => {
     await tapTab('Areas');

@@ -395,3 +395,25 @@ The Atruvia roster (≈ 180 ms) stays inside the first render.
   | Folder listings on open | 1 | 0 |
 
   The device numbers (tap → flush) come from the §7 device test.
+- **Device test of 0.21.1-alpha+4f42d36** (trace `ajes-004`, Art of Transformation from the Areas list): tap →
+  flush 5318 → 3297 ms; one render before the flush (Quick Add with the Todo tab ≈ 180 ms, the Meetings section ≈
+  740 ms for 6 rows, the Todos section ≈ 310 ms for 7), then ≈ 1.3 s without JS work or frames (the native views),
+  then a second paging of the Threads list (592 → 599 px). From the log: Zen ≈ 2.5 s, Atruvia ≈ 3.5 s. Cold reopen
+  16.5 s (0.21.0: 21 s), O4.
+- **P8** (fixes from that test). (1) The list header changed height with its arrows: the arrows (`FONT.medium`,
+  2 px padding) were taller than the header text, so a list that needs a second page shrank its own viewport by
+  ≈ 7 px and paged again (Todos 435.4 → 442.5, Threads 592.6 → 599.6, the Areas list 1126.4 → 1133.5, every
+  screen). `ui/PagedSection.tsx` now gives the header text, `+N` and the arrows one line height (20) and the
+  arrows no vertical padding (their tap area is `hitSlop`), as its doc comment always required. (2) The Todos box
+  holds the "Hide done tasks" line only with done todos (≈ 45 px: Zen 480.7, Atruvia 435.4), so the remembered
+  heights are kept per item first, then per kind (`heightKey` takes a list: `current:Todos:<path>`,
+  `current:Todos`; the same for Threads and `meetings:<listId>:<resetKey>`). (3) `ItemFocusPanel` (the focus and
+  goals block at the top of the left pane) still rendered nothing first and loaded the item in an effect; when it
+  appeared, the Threads list below it shrank (Zen 806 → 576). It now starts from the cached item like
+  ItemStatusPanel. P5's "nothing appears after the first render" missed it. (4) A settings write ("Hide done
+  tasks") re-rendered the whole page, because ItemDetail, `useHomeNotebooks` and the Threads tab followed the
+  whole settings object: they now select what they use (`useSettingsValue` with `samePaths`, the Default notebook
+  and paths, the thread types). The scenario checks it (no Quick Add, ItemDetail, Files pane, Threads,
+  ItemFocusPanel or ItemStatusPanel render on the tap); its first version passed only because the save landed
+  after the counting window. It now waits for the page's first e-ink flush before counting, which builds Quick
+  Add's other tabs. (5) Render marks in `ItemFocusPanel`, `MeetingRow` and `TaskRow`.

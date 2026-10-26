@@ -12,7 +12,7 @@
  * settingsStorage.ts) both load once and use that result.
  */
 import {useEffect, useRef, useState} from 'react';
-import {GtdParaSettings} from '../domain/settings';
+import {GtdParaSettings, ResolvedParaPaths} from '../domain/settings';
 import {loadSettings} from '../storage/settingsStorage';
 import {peekSettings, subscribeSettings} from '../storage/settingsSnapshot';
 import {errorMessage} from '../utils/errorMessage';
@@ -64,4 +64,9 @@ export function useSettingsValue<T>(select: (settings: GtdParaSettings) => T, eq
     setValue(prev => (prev !== null && equal(prev, next) ? prev : next));
   });
   return value;
+}
+
+/** Whether two resolved folder sets are the same (`useSettingsValue(resolvePaths, samePaths)`). */
+export function samePaths(a: ResolvedParaPaths, b: ResolvedParaPaths): boolean {
+  return (Object.keys(a) as Array<keyof ResolvedParaPaths>).every(key => a[key] === b[key]);
 }

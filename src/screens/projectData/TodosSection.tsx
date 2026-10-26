@@ -197,7 +197,8 @@ export default function TodosSection({
           height - these boxes are fixed and always there. */}
       <PagedSection
         header="Todos"
-        heightKey="current:Todos"
+        // Per item first: the "Hide done tasks" line above the list is there only with done todos.
+        heightKey={[`current:Todos:${itemPath}`, 'current:Todos']}
         rows={flatRows}
         rowHeight={row => (row.kind === 'header' ? SUBHEADING_ROW_PX : taskRowHeight(row.task, COLUMN_WIDTH_PX, 'grouped'))}
         isCountableRow={row => row.kind === 'entry'}

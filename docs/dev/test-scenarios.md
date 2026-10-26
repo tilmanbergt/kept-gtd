@@ -612,7 +612,7 @@ Test: `__tests__/scenarios/currentPagePerf.test.tsx` · design: `docs/dev/histor
 
 - **Given** the big data set and Atruvia's page open
 - **When** I tap "Hide done tasks"
-- **Then** the Todos list offers to show the done ones again, and Quick Add did not render
+- **Then** the Todos list offers to show the done ones again, and neither Quick Add nor the left pane rendered
 - **And** after opening Zen and coming back, done todos are still hidden
 
 Test: `__tests__/scenarios/currentPagePerf.test.tsx` · design: `docs/dev/history/technical-design-perf-current-page.md`

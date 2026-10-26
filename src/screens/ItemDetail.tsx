@@ -122,7 +122,7 @@ import NotebookTab from './notebook/NotebookTab';
 import {ResolvedParaPaths, resolvePaths} from '../domain/settings';
 import {CachedItem, ensureItemCached, findCachedItem, frontMatterOf, getCachedData, updateItemFrontMatter} from '../storage/dataCache';
 import {saveFrontMatter} from '../storage/projectFile';
-import {useSettings} from '../ui/useSettings';
+import {samePaths, useSettingsValue} from '../ui/useSettings';
 import {FolderEntry} from '../supernote/fileSystem';
 import {logError} from '../utils/log';
 import {useEinkRefreshOnLoad} from '../utils/screenRefresh';
@@ -224,9 +224,9 @@ export default function ItemDetail({
   const [error, setError] = useState<string | null>(null);
 
   // The user's resolved folders (domain/settings.ts) - the 'resources' root's
-  // rootPath below - from the settings snapshot (ui/useSettings.ts).
-  const settings = useSettings();
-  const paths: ResolvedParaPaths | null = useMemo(() => (settings ? resolvePaths(settings) : null), [settings]);
+  // rootPath below - from the settings snapshot (ui/useSettings.ts); a change of
+  // another setting ("Hide done tasks") renders nothing here.
+  const paths: ResolvedParaPaths | null = useSettingsValue(resolvePaths, samePaths);
 
   // See the module doc comment's "handleSetDefaultResourceFolder" note.
   // A cached item is there in the first render (docs/dev/history/technical-design-perf-current-page.md §3.3);

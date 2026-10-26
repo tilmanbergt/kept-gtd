@@ -15,7 +15,8 @@ import {HomeNotebook, homeNotebookOf, refreshHomeNotebookStates, subscribeHomeNo
 import {subscribeFolderChanges} from '../supernote/fileSystem';
 import {requestEinkRefresh} from '../utils/screenRefresh';
 import {useOnScreenShow, useScreenActivity} from './screenActivity';
-import {useSettings} from './useSettings';
+import {samePaths, useSettingsValue} from './useSettings';
+import {GtdParaSettings, resolvePaths} from '../domain/settings';
 
 type ItemRef = Pick<CachedItem, 'path' | 'name' | 'abbrev'>;
 
@@ -26,9 +27,15 @@ export interface HomeNotebooks {
   enabled: boolean;
 }
 
+const keepSettings = (settings: GtdParaSettings) => settings;
+const sameForHomeNotebooks = (a: GtdParaSettings, b: GtdParaSettings) =>
+  a.noteSetupDefaults.notebook === b.noteSetupDefaults.notebook && samePaths(resolvePaths(a), resolvePaths(b));
+
 export function useHomeNotebooks(items: readonly ItemRef[]): HomeNotebooks {
   // The settings snapshot, live (ui/useSettings.ts): a change in Settings arrives without a read here.
-  const settings = useSettings();
+  // Kept while what a home notebook depends on (the Default's notebook, the folders) is the same, so
+  // a change of another setting renders nothing (storage/homeNotebooks.ts's homeNotebookOf).
+  const settings = useSettingsValue(keepSettings, sameForHomeNotebooks);
   const [, setTick] = useState(0);
   const activity = useScreenActivity();
 

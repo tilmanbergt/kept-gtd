@@ -22,16 +22,26 @@ import {LayoutChangeEvent} from 'react-native';
 import {perfMark} from '../utils/perf';
 
 /**
- * The last height measured per `memoKey`, for this session
+ * The last height measured per key, for this session
  * (docs/dev/history/technical-design-perf-current-page.md §3.5): a box that was measured
  * before starts with that height, so a list in it pages once - and not at all again
- * when the new measurement is the same. A wrong start (the layout differs this time) is
- * corrected by the first measurement, as without a key.
+ * when the new measurement is the same. `memoKey` may list keys, most specific first
+ * (one item's page, then any page of that kind): the box starts with the first one
+ * known, and every measurement is kept under all of them. A wrong start (the layout
+ * differs this time) is corrected by the first measurement, as without a key.
  */
 const remembered = new Map<string, number>();
 
-export function useMeasuredHeight(memoKey?: string): [(e: LayoutChangeEvent) => void, number | null] {
-  const [height, setHeight] = useState<number | null>(() => (memoKey ? remembered.get(memoKey) ?? null : null));
+export function useMeasuredHeight(memoKey?: string | readonly string[]): [(e: LayoutChangeEvent) => void, number | null] {
+  const keys: readonly string[] = memoKey === undefined ? [] : typeof memoKey === 'string' ? [memoKey] : memoKey;
+  const keysId = keys.join('\n');
+  const [height, setHeight] = useState<number | null>(() => {
+    for (const key of keys) {
+      const known = remembered.get(key);
+      if (known !== undefined) return known;
+    }
+    return null;
+  });
   // Guard against redundant state updates (onLayout can fire again with an
   // unchanged value, e.g. when an unrelated sibling re-renders) - avoids an
   // extra render/repagination pass for a size that didn't actually change.
@@ -43,8 +53,8 @@ export function useMeasuredHeight(memoKey?: string): [(e: LayoutChangeEvent) => 
     // meaningful list viewport, so this changes nothing elsewhere.
     if (measured <= 0) return;
     perfMark('layout:measured', {height: measured});
-    if (memoKey) remembered.set(memoKey, measured);
+    for (const key of keysId ? keysId.split('\n') : []) remembered.set(key, measured);
     setHeight(prev => (prev === measured ? prev : measured));
-  }, [memoKey]);
+  }, [keysId]);
   return [onLayout, height];
 }

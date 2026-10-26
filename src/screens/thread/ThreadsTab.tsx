@@ -289,7 +289,7 @@ export default function ThreadsTab({path, selected, onSelect, onNextMeeting, vie
     <View style={viewportHeight === undefined ? styles.fill : undefined}>
       <PagedSection
         header={header}
-        heightKey="current:Threads"
+        heightKey={[`current:Threads:${path}`, 'current:Threads']}
         rows={rows}
         rowHeight={row => HEIGHTS[row.kind]}
         isCountableRow={row => row.kind === 'confirm' || row.kind === 'active' || row.kind === 'inactive'}

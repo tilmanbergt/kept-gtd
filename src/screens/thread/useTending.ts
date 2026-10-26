@@ -16,7 +16,7 @@
  * the settings arrives through the snapshot; it replaces the types only when they
  * differ by value.
  */
-import {useCallback, useMemo, useRef, useState} from 'react';
+import {useCallback, useMemo, useState} from 'react';
 import {threadTypesOf} from '../../domain/counterparts';
 import {CounterpartStatus} from '../../domain/threadsSection';
 import {setCounterpartStatus} from '../../storage/counterparts';
@@ -26,7 +26,8 @@ import {ThreadInboxInput} from '../../storage/threadAggregate';
 import {useActionError} from '../../ui/useActionError';
 import {useCachedInbox} from '../../ui/useCachedInbox';
 import {useCachedItems} from '../../ui/useCachedItems';
-import {useSettings} from '../../ui/useSettings';
+import {useSettingsValue} from '../../ui/useSettings';
+import {GtdParaSettings} from '../../domain/settings';
 import {requestEinkRefresh} from '../../utils/screenRefresh';
 
 const dismissed = new Set<string>();
@@ -52,6 +53,9 @@ export interface TendingData {
 }
 
 const sameList = (a: readonly string[], b: readonly string[]) => a.length === b.length && a.every((x, i) => x === b[i]);
+const ruleTypesOf = (settings: GtdParaSettings) => threadTypesOf(settings.noteSetups);
+/** The types while the settings are not known yet (`ready` is false then). */
+const NO_SETTINGS_TYPES = threadTypesOf([]);
 
 export function useTendingData(): TendingData {
   const items = useCachedItems();
@@ -61,12 +65,9 @@ export function useTendingData(): TendingData {
     () => (inboxState && inboxPath ? {path: inboxPath, tasks: inboxState.tasks, meetings: inboxState.meetings} : null),
     [inboxState, inboxPath],
   );
-  const settings = useSettings();
-  // The same array while the types stay the same by value, so the roster's memo holds.
-  const typesRef = useRef<string[]>(threadTypesOf([]));
-  const next = threadTypesOf(settings?.noteSetups ?? []);
-  if (!sameList(typesRef.current, next)) typesRef.current = next;
-  return {items, inbox, ruleTypes: typesRef.current, ready: settings !== null};
+  // The same array while the types stay the same by value, so the roster's memo holds and another setting renders nothing.
+  const types = useSettingsValue(ruleTypesOf, sameList);
+  return {items, inbox, ruleTypes: types ?? NO_SETTINGS_TYPES, ready: types !== null};
 }
 
 export interface TendActions {

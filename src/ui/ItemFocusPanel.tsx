@@ -55,6 +55,7 @@ import React, {useCallback, useEffect, useState} from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
 import {PeriodScope, periodOf} from '../domain/period';
 import {CachedItem, ensureItemCached, findCachedItem, getCachedData, updateItemScope} from '../storage/dataCache';
+import {usePerfRender} from '../utils/perf';
 import {FocusScope, toggleItemFocus} from '../storage/focusSlots';
 import {goalsOf, saveItemGoal} from '../storage/periodGoals';
 import {saveScope} from '../storage/projectFile';
@@ -97,9 +98,16 @@ export default function ItemFocusPanel({
   borderColor,
   placeholderColor,
 }: Props): React.JSX.Element | null {
+  usePerfRender('ItemFocusPanel');
   // This panel's view of the item - always a copy of the shared cache entry
-  // (re-synced after every write below).
-  const [state, setState] = useState<CachedItem | null>(null);
+  // (re-synced after every write below). A cached item is there in the first
+  // render, so the panel has its height in the first layout and the list below
+  // it pages once (docs/dev/history/technical-design-perf-current-page.md §3.5);
+  // `load` then keeps the same state while the file text is the same.
+  const [state, setState] = useState<CachedItem | null>(() => {
+    const cached = findCachedItem(path);
+    return cached && !cached.loadError ? {...cached} : null;
+  });
   useEinkRefreshOnLoad(state === null);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [pending, setPending] = useState<FocusScope | null>(null);
@@ -111,7 +119,7 @@ export default function ItemFocusPanel({
     try {
       const item = await ensureItemCached(kind, name, path);
       if (item.loadError) throw new Error(item.loadError);
-      setState({...item});
+      setState(prev => (prev && prev.rawContent === item.rawContent ? prev : {...item}));
     } catch (e) {
       const message = errorMessage(e);
       logError('ItemFocusPanel: load failed', kind, path, message);
