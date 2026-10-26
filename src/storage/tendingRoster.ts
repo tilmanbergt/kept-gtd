@@ -11,10 +11,15 @@
  * (today minus its created date; todos without one have no age). No sorting
  * by urgency: counterparts alphabetically, scopes in the order of
  * `counterpartScopes`. The Inbox is no scope (decision D18).
+ *
+ * Each scope roster logs one line with counts and its time and records a
+ * `calc:roster` perf span (docs/dev/history/technical-design-perf-threads.md §3.8).
  */
 import {Counterpart, counterpartScopes, counterpartsOf, counterpartTag, CounterpartScope, CounterpartSource} from '../domain/counterparts';
 import {todayIso} from '../domain/meetingTime';
 import {daysBetween} from '../domain/nextMeeting';
+import {log} from '../utils/log';
+import {perfEnd, perfStart} from '../utils/perf';
 import {CachedItem} from './dataCache';
 import {buildThreadOverview, ThreadInboxInput, ThreadItemRef, ThreadOverview} from './threadAggregate';
 
@@ -75,6 +80,16 @@ export function rosterEntryOf(
   };
 }
 
+/** The todos (not cancelled) and agreements of the scope with a `meeting` field: what one overview resolves. */
+function provenanceLookupsPerOverview(scope: CounterpartScope<CachedItem>): number {
+  let n = 0;
+  for (const member of scope.members) {
+    for (const task of member.tasks) if (!task.cancelled && task.fields.meeting) n++;
+    for (const agreement of member.agreements) if (agreement.fields.meeting) n++;
+  }
+  return n;
+}
+
 /** The roster of one scope (see the module doc comment). */
 export function buildScopeRoster(
   items: readonly CachedItem[],
@@ -83,10 +98,22 @@ export function buildScopeRoster(
   ruleTypes: readonly string[],
   now: Date = new Date(),
 ): RosterScope {
+  const perfToken = perfStart();
+  const startedAt = Date.now();
   const owner = refOf(scope.owner);
   const entries = counterpartsOf(scope as CounterpartScope<CounterpartSource>, ruleTypes, now).map(cp =>
     rosterEntryOf(items, inbox, owner, cp, now),
   );
+  const ms = Date.now() - startedAt;
+  const stats = {
+    counterparts: entries.length,
+    todos: scope.members.reduce((n, m) => n + m.tasks.length, 0),
+    meetings: scope.members.reduce((n, m) => n + m.meetings.length, 0),
+    provenanceLookups: entries.length * provenanceLookupsPerOverview(scope),
+    ms,
+  };
+  perfEnd('calc:roster', perfToken, stats);
+  log('tendingRoster: built', `${stats.counterparts} counterparts`, `${stats.todos} todos`, `${stats.meetings} meetings`, `${stats.provenanceLookups} lookups`, `${ms} ms`);
   return {
     owner,
     confirm: entries.filter(e => e.counterpart.status === 'new' || e.counterpart.backInUse),

@@ -305,4 +305,16 @@ parser's `push` during construction found.
 
 ## As built
 
-(Filled in during S13-S18.)
+- **S13.** `test-helpers/bigScope.ts` writes the data set as files (`bigScopeFiles`, for the fake device) and
+  parses them for unit tests (`bigScopeCache`) with the domain parsers `parseProjectFileContent` uses:
+  `storage/projectFile.ts` itself cannot be imported in a unit test, it pulls in the SDK. Seeded (Park-Miller,
+  ESLint forbids bitwise operators), "now" fixed at 2026-10-26 12:00 local time. Atruvia's scope has 26
+  counterparts (25 in use plus one status line nobody uses), 133 meetings, 97 todos (50 with a `meeting` field) and
+  14 agreements; around it an Area Zen, a lone Project Solo and the Inbox.
+- **S13.** The golden master is a committed JSON file, `__tests__/storage/__golden__/bigScope.json`, not a Jest
+  snapshot, so `jest -u` cannot overwrite it; it is recorded only with `GOLDEN_WRITE=1`. Entries are written as
+  `<item>:<list><index>`. Besides the §7 list it also pins the overviews without an owner (fallback owner) and
+  `agreementMadeIn` for every agreement. One more test checks the §6 scenario 2-5 cases by name; today's code
+  gives the expected result for all of them.
+- **S13.** Until the memo exists (S15), the log line's `lookups` is the number of resolves the build does:
+  counterparts × the scope's todos (not cancelled) and agreements with a `meeting` field.

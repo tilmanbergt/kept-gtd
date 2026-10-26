@@ -1,0 +1,8955 @@
+{
+ "scopeRoster": {
+  "owner": "Atruvia",
+  "confirm": [
+   {
+    "leaf": "jonas",
+    "status": "new",
+    "threads": [
+     "101/jonas"
+    ],
+    "oneOff": null,
+    "inUse": true,
+    "backInUse": false,
+    "owner": "Atruvia",
+    "tag": "101/jonas",
+    "lastMeeting": "2026-10-22",
+    "nextMeeting": null,
+    "oweCount": 0,
+    "waitingCount": 3,
+    "oldestWaitingDays": 145,
+    "overview": {
+     "lens": "counterpart",
+     "thread": "101/jonas",
+     "owner": "Atruvia",
+     "scope": [
+      "Tender",
+      "Migration",
+      "Atruvia"
+     ],
+     "types": [
+      "101",
+      "wf"
+     ],
+     "ahead": {
+      "meetings": [],
+      "owe": [],
+      "waiting": [
+       "Tender:t12",
+       "Tender:t17",
+       "Migration:t4"
+      ],
+      "relevant": [],
+      "someday": [],
+      "agreements": [
+       "Tender:a0"
+      ]
+     },
+     "endedAgreements": [],
+     "since": {
+      "from": "2026-10-22",
+      "done": []
+     },
+     "past": [
+      {
+       "meeting": "Atruvia:m60",
+       "key": "2026-10-22 1:1 Jonas 101/jonas",
+       "agreed": [
+        "Tender:t12"
+       ],
+       "agreements": [],
+       "counts": {
+        "agreed": 1,
+        "done": 0,
+        "open": 1,
+        "oldestOpenDays": 96
+       }
+      },
+      {
+       "meeting": "Tender:m11",
+       "key": "2026-09-08 1:1 Jonas 101/jonas",
+       "agreed": [],
+       "agreements": [
+        "Tender:a0"
+       ],
+       "counts": {
+        "agreed": 0,
+        "done": 0,
+        "open": 0,
+        "oldestOpenDays": null
+       }
+      }
+     ]
+    }
+   },
+   {
+    "leaf": "olga",
+    "status": "new",
+    "threads": [],
+    "oneOff": "wf",
+    "inUse": true,
+    "backInUse": false,
+    "owner": "Atruvia",
+    "tag": "wf/olga",
+    "lastMeeting": null,
+    "nextMeeting": null,
+    "oweCount": 0,
+    "waitingCount": 1,
+    "oldestWaitingDays": 12,
+    "overview": {
+     "lens": "counterpart",
+     "thread": "wf/olga",
+     "owner": "Atruvia",
+     "scope": [
+      "Tender",
+      "Migration",
+      "Atruvia"
+     ],
+     "types": [
+      "wf"
+     ],
+     "ahead": {
+      "meetings": [],
+      "owe": [],
+      "waiting": [
+       "Atruvia:t40"
+      ],
+      "relevant": [],
+      "someday": [],
+      "agreements": []
+     },
+     "endedAgreements": [],
+     "since": {
+      "from": null,
+      "done": []
+     },
+     "past": []
+    }
+   },
+   {
+    "leaf": "paul",
+    "status": "new",
+    "threads": [],
+    "oneOff": "wf",
+    "inUse": true,
+    "backInUse": false,
+    "owner": "Atruvia",
+    "tag": "wf/paul",
+    "lastMeeting": null,
+    "nextMeeting": null,
+    "oweCount": 0,
+    "waitingCount": 1,
+    "oldestWaitingDays": 12,
+    "overview": {
+     "lens": "counterpart",
+     "thread": "wf/paul",
+     "owner": "Atruvia",
+     "scope": [
+      "Tender",
+      "Migration",
+      "Atruvia"
+     ],
+     "types": [
+      "wf"
+     ],
+     "ahead": {
+      "meetings": [],
+      "owe": [],
+      "waiting": [
+       "Atruvia:t41"
+      ],
+      "relevant": [],
+      "someday": [],
+      "agreements": []
+     },
+     "endedAgreements": [],
+     "since": {
+      "from": null,
+      "done": []
+     },
+     "past": []
+    }
+   },
+   {
+    "leaf": "quinn",
+    "status": "new",
+    "threads": [],
+    "oneOff": "owe",
+    "inUse": true,
+    "backInUse": false,
+    "owner": "Atruvia",
+    "tag": "owe/quinn",
+    "lastMeeting": null,
+    "nextMeeting": null,
+    "oweCount": 1,
+    "waitingCount": 0,
+    "oldestWaitingDays": null,
+    "overview": {
+     "lens": "counterpart",
+     "thread": "owe/quinn",
+     "owner": "Atruvia",
+     "scope": [
+      "Tender",
+      "Migration",
+      "Atruvia"
+     ],
+     "types": [
+      "owe"
+     ],
+     "ahead": {
+      "meetings": [],
+      "owe": [
+       "Tender:t26"
+      ],
+      "waiting": [],
+      "relevant": [],
+      "someday": [],
+      "agreements": []
+     },
+     "endedAgreements": [],
+     "since": {
+      "from": null,
+      "done": []
+     },
+     "past": []
+    }
+   },
+   {
+    "leaf": "rosa",
+    "status": "new",
+    "threads": [],
+    "oneOff": "owe",
+    "inUse": true,
+    "backInUse": false,
+    "owner": "Atruvia",
+    "tag": "owe/rosa",
+    "lastMeeting": null,
+    "nextMeeting": null,
+    "oweCount": 1,
+    "waitingCount": 0,
+    "oldestWaitingDays": null,
+    "overview": {
+     "lens": "counterpart",
+     "thread": "owe/rosa",
+     "owner": "Atruvia",
+     "scope": [
+      "Tender",
+      "Migration",
+      "Atruvia"
+     ],
+     "types": [
+      "owe"
+     ],
+     "ahead": {
+      "meetings": [],
+      "owe": [
+       "Tender:t27"
+      ],
+      "waiting": [],
+      "relevant": [],
+      "someday": [],
+      "agreements": []
+     },
+     "endedAgreements": [],
+     "since": {
+      "from": null,
+      "done": []
+     },
+     "past": []
+    }
+   },
+   {
+    "leaf": "stan",
+    "status": "new",
+    "threads": [],
+    "oneOff": "wf+owe",
+    "inUse": true,
+    "backInUse": false,
+    "owner": "Atruvia",
+    "tag": "wf/stan",
+    "lastMeeting": null,
+    "nextMeeting": null,
+    "oweCount": 0,
+    "waitingCount": 1,
+    "oldestWaitingDays": 30,
+    "overview": {
+     "lens": "counterpart",
+     "thread": "wf/stan",
+     "owner": "Atruvia",
+     "scope": [
+      "Tender",
+      "Migration",
+      "Atruvia"
+     ],
+     "types": [
+      "wf",
+      "owe"
+     ],
+     "ahead": {
+      "meetings": [],
+      "owe": [],
+      "waiting": [
+       "Migration:t18"
+      ],
+      "relevant": [],
+      "someday": [],
+      "agreements": []
+     },
+     "endedAgreements": [],
+     "since": {
+      "from": null,
+      "done": []
+     },
+     "past": []
+    }
+   },
+   {
+    "leaf": "ulf",
+    "status": "inactive",
+    "threads": [
+     "101/ulf"
+    ],
+    "oneOff": null,
+    "inUse": true,
+    "backInUse": true,
+    "owner": "Atruvia",
+    "tag": "101/ulf",
+    "lastMeeting": "2026-09-06",
+    "nextMeeting": "2026-11-25",
+    "oweCount": 2,
+    "waitingCount": 0,
+    "oldestWaitingDays": null,
+    "overview": {
+     "lens": "counterpart",
+     "thread": "101/ulf",
+     "owner": "Atruvia",
+     "scope": [
+      "Tender",
+      "Migration",
+      "Atruvia"
+     ],
+     "types": [
+      "101",
+      "owe"
+     ],
+     "ahead": {
+      "meetings": [
+       "Atruvia:m68"
+      ],
+      "owe": [
+       "Tender:t0",
+       "Migration:t11"
+      ],
+      "waiting": [],
+      "relevant": [],
+      "someday": [],
+      "agreements": []
+     },
+     "endedAgreements": [],
+     "since": {
+      "from": "2026-09-06",
+      "done": [
+       "Atruvia:t11",
+       "Atruvia:t36"
+      ]
+     },
+     "past": [
+      {
+       "meeting": "Migration:m9",
+       "key": "2026-09-06 1:1 Ulf 101/ulf",
+       "agreed": [
+        "Tender:t0",
+        "Atruvia:t36"
+       ],
+       "agreements": [],
+       "counts": {
+        "agreed": 2,
+        "done": 1,
+        "open": 1,
+        "oldestOpenDays": 91
+       }
+      },
+      {
+       "meeting": "Tender:m15",
+       "key": "2026-08-16 1:1 Ulf 101/ulf",
+       "agreed": [],
+       "agreements": [],
+       "counts": {
+        "agreed": 0,
+        "done": 0,
+        "open": 0,
+        "oldestOpenDays": null
+       }
+      }
+     ]
+    }
+   },
+   {
+    "leaf": "vera",
+    "status": "inactive",
+    "threads": [
+     "101/vera"
+    ],
+    "oneOff": null,
+    "inUse": true,
+    "backInUse": true,
+    "owner": "Atruvia",
+    "tag": "101/vera",
+    "lastMeeting": "2026-08-27",
+    "nextMeeting": "2026-11-04",
+    "oweCount": 0,
+    "waitingCount": 0,
+    "oldestWaitingDays": null,
+    "overview": {
+     "lens": "counterpart",
+     "thread": "101/vera",
+     "owner": "Atruvia",
+     "scope": [
+      "Tender",
+      "Migration",
+      "Atruvia"
+     ],
+     "types": [
+      "101"
+     ],
+     "ahead": {
+      "meetings": [
+       "Atruvia:m74"
+      ],
+      "owe": [],
+      "waiting": [],
+      "relevant": [],
+      "someday": [],
+      "agreements": [
+       "Tender:a2"
+      ]
+     },
+     "endedAgreements": [],
+     "since": {
+      "from": "2026-08-27",
+      "done": []
+     },
+     "past": [
+      {
+       "meeting": "Atruvia:m75",
+       "key": "2026-08-27 1:1 Vera 101/vera",
+       "agreed": [],
+       "agreements": [],
+       "counts": {
+        "agreed": 0,
+        "done": 0,
+        "open": 0,
+        "oldestOpenDays": null
+       }
+      }
+     ]
+    }
+   }
+  ],
+  "active": [
+   {
+    "leaf": "alpha",
+    "status": "active",
+    "threads": [
+     "retro/alpha"
+    ],
+    "oneOff": null,
+    "inUse": true,
+    "backInUse": false,
+    "owner": "Atruvia",
+    "tag": "retro/alpha",
+    "lastMeeting": "2026-10-15",
+    "nextMeeting": "2026-11-06",
+    "oweCount": 2,
+    "waitingCount": 0,
+    "oldestWaitingDays": null,
+    "overview": {
+     "lens": "counterpart",
+     "thread": "retro/alpha",
+     "owner": "Atruvia",
+     "scope": [
+      "Tender",
+      "Migration",
+      "Atruvia"
+     ],
+     "types": [
+      "retro"
+     ],
+     "ahead": {
+      "meetings": [
+       "Atruvia:m11",
+       "Tender:m18",
+       "Atruvia:m32",
+       "Tender:m3"
+      ],
+      "owe": [
+       "Atruvia:t13",
+       "Atruvia:t35"
+      ],
+      "waiting": [],
+      "relevant": [],
+      "someday": [
+       "Atruvia:t0",
+       "Atruvia:t5"
+      ],
+      "agreements": []
+     },
+     "endedAgreements": [],
+     "since": {
+      "from": "2026-10-15",
+      "done": []
+     },
+     "past": [
+      {
+       "meeting": "Migration:m2",
+       "key": "2026-10-15 Retro Alpha sprint retro/alpha",
+       "agreed": [
+        "Atruvia:t35"
+       ],
+       "agreements": [],
+       "counts": {
+        "agreed": 1,
+        "done": 0,
+        "open": 1,
+        "oldestOpenDays": 11
+       }
+      },
+      {
+       "meeting": "Atruvia:m0",
+       "key": "2026-09-12 Retro Alpha sprint retro/alpha",
+       "agreed": [],
+       "agreements": [],
+       "counts": {
+        "agreed": 0,
+        "done": 0,
+        "open": 0,
+        "oldestOpenDays": null
+       }
+      },
+      {
+       "meeting": "Atruvia:m48",
+       "key": "2026-06-24 Retro Alpha sprint retro/alpha",
+       "agreed": [
+        "Atruvia:t13"
+       ],
+       "agreements": [],
+       "counts": {
+        "agreed": 1,
+        "done": 0,
+        "open": 1,
+        "oldestOpenDays": 124
+       }
+      },
+      {
+       "meeting": "Atruvia:m70",
+       "key": "2026-06-18 Retro Alpha sprint retro/alpha",
+       "agreed": [],
+       "agreements": [],
+       "counts": {
+        "agreed": 0,
+        "done": 0,
+        "open": 0,
+        "oldestOpenDays": null
+       }
+      },
+      {
+       "meeting": "Migration:m16",
+       "key": "2026-06-05 Retro Alpha sprint retro/alpha",
+       "agreed": [
+        "Tender:t21"
+       ],
+       "agreements": [],
+       "counts": {
+        "agreed": 1,
+        "done": 1,
+        "open": 0,
+        "oldestOpenDays": null
+       }
+      }
+     ]
+    }
+   },
+   {
+    "leaf": "anna",
+    "status": "active",
+    "threads": [
+     "retro/anna",
+     "101/anna"
+    ],
+    "oneOff": null,
+    "inUse": true,
+    "backInUse": false,
+    "owner": "Atruvia",
+    "tag": "retro/anna",
+    "lastMeeting": "2026-10-24",
+    "nextMeeting": "2026-11-26",
+    "oweCount": 4,
+    "waitingCount": 3,
+    "oldestWaitingDays": 106,
+    "overview": {
+     "lens": "counterpart",
+     "thread": "retro/anna",
+     "owner": "Atruvia",
+     "scope": [
+      "Tender",
+      "Migration",
+      "Atruvia"
+     ],
+     "types": [
+      "retro",
+      "wf",
+      "owe",
+      "101"
+     ],
+     "ahead": {
+      "meetings": [
+       "Atruvia:m29",
+       "Tender:m12",
+       "Atruvia:m37"
+      ],
+      "owe": [
+       "Tender:t7",
+       "Atruvia:t31",
+       "Atruvia:t33",
+       "Atruvia:t34"
+      ],
+      "waiting": [
+       "Atruvia:t8",
+       "Atruvia:t12",
+       "Atruvia:t39"
+      ],
+      "relevant": [],
+      "someday": [],
+      "agreements": []
+     },
+     "endedAgreements": [],
+     "since": {
+      "from": "2026-10-24",
+      "done": []
+     },
+     "past": [
+      {
+       "meeting": "Atruvia:m71",
+       "key": "2026-10-24 Retro with Anna",
+       "agreed": [
+        "Atruvia:t12"
+       ],
+       "agreements": [],
+       "counts": {
+        "agreed": 1,
+        "done": 0,
+        "open": 1,
+        "oldestOpenDays": 62
+       }
+      },
+      {
+       "meeting": "Atruvia:m67",
+       "key": "2026-10-19 1:1 Anna 101/anna",
+       "agreed": [],
+       "agreements": [],
+       "counts": {
+        "agreed": 0,
+        "done": 0,
+        "open": 0,
+        "oldestOpenDays": null
+       }
+      },
+      {
+       "meeting": "Atruvia:m63",
+       "key": "2026-10-13 1:1 Anna 101/anna",
+       "agreed": [],
+       "agreements": [],
+       "counts": {
+        "agreed": 0,
+        "done": 0,
+        "open": 0,
+        "oldestOpenDays": null
+       }
+      },
+      {
+       "meeting": "Atruvia:m65",
+       "key": "2026-09-26 1:1 Anna 101/anna",
+       "agreed": [],
+       "agreements": [],
+       "counts": {
+        "agreed": 0,
+        "done": 0,
+        "open": 0,
+        "oldestOpenDays": null
+       }
+      },
+      {
+       "meeting": "Atruvia:m1",
+       "key": "2026-09-16 1:1 Anna 101/anna",
+       "agreed": [],
+       "agreements": [],
+       "counts": {
+        "agreed": 0,
+        "done": 0,
+        "open": 0,
+        "oldestOpenDays": null
+       }
+      },
+      {
+       "meeting": "Atruvia:m38",
+       "key": "2026-09-06 1:1 Anna 101/anna",
+       "agreed": [],
+       "agreements": [],
+       "counts": {
+        "agreed": 0,
+        "done": 0,
+        "open": 0,
+        "oldestOpenDays": null
+       }
+      },
+      {
+       "meeting": "Tender:m5",
+       "key": "2026-08-12 1:1 Anna 101/anna",
+       "agreed": [],
+       "agreements": [],
+       "counts": {
+        "agreed": 0,
+        "done": 0,
+        "open": 0,
+        "oldestOpenDays": null
+       }
+      },
+      {
+       "meeting": "Atruvia:m44",
+       "key": "2026-07-26 1:1 Anna 101/anna",
+       "agreed": [],
+       "agreements": [],
+       "counts": {
+        "agreed": 0,
+        "done": 0,
+        "open": 0,
+        "oldestOpenDays": null
+       }
+      },
+      {
+       "meeting": "Atruvia:m23",
+       "key": "2026-07-20 Retro with Anna retro/anna/2026",
+       "agreed": [],
+       "agreements": [],
+       "counts": {
+        "agreed": 0,
+        "done": 0,
+        "open": 0,
+        "oldestOpenDays": null
+       }
+      },
+      {
+       "meeting": "Atruvia:m30",
+       "key": "2026-07-15 1:1 Anna 101/anna",
+       "agreed": [
+        "Tender:t15"
+       ],
+       "agreements": [],
+       "counts": {
+        "agreed": 1,
+        "done": 1,
+        "open": 0,
+        "oldestOpenDays": null
+       }
+      },
+      {
+       "meeting": "Atruvia:m15",
+       "key": "2026-07-04 Retro with Anna retro/anna",
+       "agreed": [
+        "Atruvia:t31",
+        "Atruvia:t33"
+       ],
+       "agreements": [],
+       "counts": {
+        "agreed": 2,
+        "done": 0,
+        "open": 2,
+        "oldestOpenDays": 114
+       }
+      },
+      {
+       "meeting": "Atruvia:m7",
+       "key": "2026-06-01 1:1 Anna 101/anna anna",
+       "agreed": [],
+       "agreements": [],
+       "counts": {
+        "agreed": 0,
+        "done": 0,
+        "open": 0,
+        "oldestOpenDays": null
+       }
+      }
+     ]
+    }
+   },
+   {
+    "leaf": "bert",
+    "status": "active",
+    "threads": [
+     "101/bert"
+    ],
+    "oneOff": null,
+    "inUse": true,
+    "backInUse": false,
+    "owner": "Atruvia",
+    "tag": "101/bert",
+    "lastMeeting": "2026-10-15",
+    "nextMeeting": "2026-11-14",
+    "oweCount": 3,
+    "waitingCount": 2,
+    "oldestWaitingDays": null,
+    "overview": {
+     "lens": "counterpart",
+     "thread": "101/bert",
+     "owner": "Atruvia",
+     "scope": [
+      "Tender",
+      "Migration",
+      "Atruvia"
+     ],
+     "types": [
+      "101",
+      "owe"
+     ],
+     "ahead": {
+      "meetings": [
+       "Migration:m14",
+       "Tender:m10"
+      ],
+      "owe": [
+       "Migration:t6",
+       "Migration:t10",
+       "Atruvia:t38"
+      ],
+      "waiting": [
+       "Tender:t29",
+       "Atruvia:t6"
+      ],
+      "relevant": [
+       "Tender:t18",
+       "Tender:t25"
+      ],
+      "someday": [],
+      "agreements": [
+       "Atruvia:a5",
+       "Atruvia:a7"
+      ]
+     },
+     "endedAgreements": [],
+     "since": {
+      "from": "2026-10-15",
+      "done": []
+     },
+     "past": [
+      {
+       "meeting": "Atruvia:m82",
+       "key": "2026-10-15 1:1 Bert (short) 101/bert",
+       "agreed": [
+        "Tender:t29"
+       ],
+       "agreements": [],
+       "counts": {
+        "agreed": 1,
+        "done": 0,
+        "open": 1,
+        "oldestOpenDays": 11
+       }
+      },
+      {
+       "meeting": "Migration:m18",
+       "key": "2026-10-11 1:1 Bert 101/bert",
+       "agreed": [],
+       "agreements": [
+        "Atruvia:a5"
+       ],
+       "counts": {
+        "agreed": 0,
+        "done": 0,
+        "open": 0,
+        "oldestOpenDays": null
+       }
+      },
+      {
+       "meeting": "Atruvia:m19",
+       "key": "2026-09-30 1:1 Bert 101/bert",
+       "agreed": [],
+       "agreements": [],
+       "counts": {
+        "agreed": 0,
+        "done": 0,
+        "open": 0,
+        "oldestOpenDays": null
+       }
+      },
+      {
+       "meeting": "Atruvia:m64",
+       "key": "2026-09-28 1:1 Bert 101/bert",
+       "agreed": [
+        "Atruvia:t6"
+       ],
+       "agreements": [],
+       "counts": {
+        "agreed": 1,
+        "done": 0,
+        "open": 1,
+        "oldestOpenDays": 28
+       }
+      },
+      {
+       "meeting": "Atruvia:m8",
+       "key": "2026-09-25 1:1 Bert 101/bert",
+       "agreed": [],
+       "agreements": [],
+       "counts": {
+        "agreed": 0,
+        "done": 0,
+        "open": 0,
+        "oldestOpenDays": null
+       }
+      },
+      {
+       "meeting": "Atruvia:m14",
+       "key": "2026-09-05 1:1 Bert 101/bert",
+       "agreed": [],
+       "agreements": [],
+       "counts": {
+        "agreed": 0,
+        "done": 0,
+        "open": 0,
+        "oldestOpenDays": null
+       }
+      },
+      {
+       "meeting": "Atruvia:m58",
+       "key": "2026-08-19 1:1 Bert 101/bert",
+       "agreed": [],
+       "agreements": [],
+       "counts": {
+        "agreed": 0,
+        "done": 0,
+        "open": 0,
+        "oldestOpenDays": null
+       }
+      },
+      {
+       "meeting": "Atruvia:m51",
+       "key": "2026-08-11 1:1 Bert 101/bert",
+       "agreed": [],
+       "agreements": [],
+       "counts": {
+        "agreed": 0,
+        "done": 0,
+        "open": 0,
+        "oldestOpenDays": null
+       }
+      },
+      {
+       "meeting": "Migration:m10",
+       "key": "2026-07-17 1:1 Bert 101/bert",
+       "agreed": [],
+       "agreements": [
+        "Atruvia:a7"
+       ],
+       "counts": {
+        "agreed": 0,
+        "done": 0,
+        "open": 0,
+        "oldestOpenDays": null
+       }
+      },
+      {
+       "meeting": "Atruvia:m13",
+       "key": "2026-06-26 1:1 Bert 101/bert",
+       "agreed": [
+        "Atruvia:t38"
+       ],
+       "agreements": [],
+       "counts": {
+        "agreed": 1,
+        "done": 0,
+        "open": 1,
+        "oldestOpenDays": 82
+       }
+      },
+      {
+       "meeting": "Atruvia:m43",
+       "key": "2026-06-22 1:1 Bert 101/bert",
+       "agreed": [],
+       "agreements": [],
+       "counts": {
+        "agreed": 0,
+        "done": 0,
+        "open": 0,
+        "oldestOpenDays": null
+       }
+      }
+     ]
+    }
+   },
+   {
+    "leaf": "beta",
+    "status": "active",
+    "threads": [
+     "retro/beta"
+    ],
+    "oneOff": null,
+    "inUse": true,
+    "backInUse": false,
+    "owner": "Atruvia",
+    "tag": "retro/beta",
+    "lastMeeting": "2026-10-15",
+    "nextMeeting": "2026-11-16",
+    "oweCount": 1,
+    "waitingCount": 0,
+    "oldestWaitingDays": null,
+    "overview": {
+     "lens": "counterpart",
+     "thread": "retro/beta",
+     "owner": "Atruvia",
+     "scope": [
+      "Tender",
+      "Migration",
+      "Atruvia"
+     ],
+     "types": [
+      "retro"
+     ],
+     "ahead": {
+      "meetings": [
+       "Tender:m24",
+       "Atruvia:m26",
+       "Atruvia:m41"
+      ],
+      "owe": [
+       "Tender:t9"
+      ],
+      "waiting": [],
+      "relevant": [],
+      "someday": [
+       "Tender:t3"
+      ],
+      "agreements": [
+       "Atruvia:a2"
+      ]
+     },
+     "endedAgreements": [],
+     "since": {
+      "from": "2026-10-15",
+      "done": []
+     },
+     "past": [
+      {
+       "meeting": "Atruvia:m62",
+       "key": "2026-10-15 Retro Beta retro/beta/2026",
+       "agreed": [],
+       "agreements": [],
+       "counts": {
+        "agreed": 0,
+        "done": 0,
+        "open": 0,
+        "oldestOpenDays": null
+       }
+      },
+      {
+       "meeting": "Tender:m22",
+       "key": "2026-09-19 Retro Beta retro/beta",
+       "agreed": [],
+       "agreements": [],
+       "counts": {
+        "agreed": 0,
+        "done": 0,
+        "open": 0,
+        "oldestOpenDays": null
+       }
+      },
+      {
+       "meeting": "Migration:m22",
+       "key": "2026-08-13 Retro Beta retro/beta",
+       "agreed": [],
+       "agreements": [],
+       "counts": {
+        "agreed": 0,
+        "done": 0,
+        "open": 0,
+        "oldestOpenDays": null
+       }
+      },
+      {
+       "meeting": "Atruvia:m56",
+       "key": "2026-06-14 Retro Beta retro/beta",
+       "agreed": [],
+       "agreements": [],
+       "counts": {
+        "agreed": 0,
+        "done": 0,
+        "open": 0,
+        "oldestOpenDays": null
+       }
+      },
+      {
+       "meeting": "Tender:m0",
+       "key": "2026-06-06 Retro Beta retro/beta/2026",
+       "agreed": [],
+       "agreements": [
+        "Atruvia:a2"
+       ],
+       "counts": {
+        "agreed": 0,
+        "done": 0,
+        "open": 0,
+        "oldestOpenDays": null
+       }
+      },
+      {
+       "meeting": "Atruvia:m25",
+       "key": "2026-05-30 Retro Beta retro/beta",
+       "agreed": [
+        "Tender:t9"
+       ],
+       "agreements": [],
+       "counts": {
+        "agreed": 1,
+        "done": 0,
+        "open": 1,
+        "oldestOpenDays": 36
+       }
+      }
+     ]
+    }
+   },
+   {
+    "leaf": "board",
+    "status": "active",
+    "threads": [
+     "jf/board"
+    ],
+    "oneOff": null,
+    "inUse": true,
+    "backInUse": false,
+    "owner": "Atruvia",
+    "tag": "jf/board",
+    "lastMeeting": "2026-09-16",
+    "nextMeeting": "2026-11-15",
+    "oweCount": 1,
+    "waitingCount": 1,
+    "oldestWaitingDays": null,
+    "overview": {
+     "lens": "counterpart",
+     "thread": "jf/board",
+     "owner": "Atruvia",
+     "scope": [
+      "Tender",
+      "Migration",
+      "Atruvia"
+     ],
+     "types": [
+      "jf",
+      "wf",
+      "owe"
+     ],
+     "ahead": {
+      "meetings": [
+       "Atruvia:m6"
+      ],
+      "owe": [
+       "Atruvia:t42"
+      ],
+      "waiting": [
+       "Tender:t22"
+      ],
+      "relevant": [],
+      "someday": [],
+      "agreements": [
+       "Atruvia:a8"
+      ]
+     },
+     "endedAgreements": [],
+     "since": {
+      "from": "2026-09-16",
+      "done": []
+     },
+     "past": [
+      {
+       "meeting": "Atruvia:m76",
+       "key": "2026-09-16 Strategy offsite jf/board",
+       "agreed": [
+        "Atruvia:t42"
+       ],
+       "agreements": [
+        "Atruvia:a8"
+       ],
+       "counts": {
+        "agreed": 1,
+        "done": 0,
+        "open": 1,
+        "oldestOpenDays": 40
+       }
+      },
+      {
+       "meeting": "Tender:m8",
+       "key": "2026-09-13 Jour fixe Board: budget…",
+       "agreed": [],
+       "agreements": [],
+       "counts": {
+        "agreed": 0,
+        "done": 0,
+        "open": 0,
+        "oldestOpenDays": null
+       }
+      },
+      {
+       "meeting": "Migration:m3",
+       "key": "2026-09-12 Jour fixe Board: budget…",
+       "agreed": [],
+       "agreements": [],
+       "counts": {
+        "agreed": 0,
+        "done": 0,
+        "open": 0,
+        "oldestOpenDays": null
+       }
+      },
+      {
+       "meeting": "Atruvia:m16",
+       "key": "2026-09-02 Jour fixe Board: budget…",
+       "agreed": [],
+       "agreements": [],
+       "counts": {
+        "agreed": 0,
+        "done": 0,
+        "open": 0,
+        "oldestOpenDays": null
+       }
+      },
+      {
+       "meeting": "Atruvia:m49",
+       "key": "2026-08-18 Jour fixe Board: budget…",
+       "agreed": [],
+       "agreements": [],
+       "counts": {
+        "agreed": 0,
+        "done": 0,
+        "open": 0,
+        "oldestOpenDays": null
+       }
+      },
+      {
+       "meeting": "Atruvia:m61",
+       "key": "2026-07-29 Jour fixe Board: budget…",
+       "agreed": [],
+       "agreements": [],
+       "counts": {
+        "agreed": 0,
+        "done": 0,
+        "open": 0,
+        "oldestOpenDays": null
+       }
+      }
+     ]
+    }
+   },
+   {
+    "leaf": "carla",
+    "status": "active",
+    "threads": [
+     "101/carla"
+    ],
+    "oneOff": null,
+    "inUse": true,
+    "backInUse": false,
+    "owner": "Atruvia",
+    "tag": "101/carla",
+    "lastMeeting": "2026-10-12",
+    "nextMeeting": null,
+    "oweCount": 5,
+    "waitingCount": 0,
+    "oldestWaitingDays": null,
+    "overview": {
+     "lens": "counterpart",
+     "thread": "101/carla",
+     "owner": "Atruvia",
+     "scope": [
+      "Tender",
+      "Migration",
+      "Atruvia"
+     ],
+     "types": [
+      "101",
+      "owe"
+     ],
+     "ahead": {
+      "meetings": [],
+      "owe": [
+       "Migration:t8",
+       "Atruvia:t4",
+       "Atruvia:t17",
+       "Atruvia:t19",
+       "Atruvia:t45"
+      ],
+      "waiting": [],
+      "relevant": [
+       "Atruvia:t28"
+      ],
+      "someday": [],
+      "agreements": []
+     },
+     "endedAgreements": [],
+     "since": {
+      "from": "2026-10-12",
+      "done": []
+     },
+     "past": [
+      {
+       "meeting": "Tender:m16",
+       "key": "2026-10-12 1:1 Carla 101/carla",
+       "agreed": [
+        "Atruvia:t4",
+        "Atruvia:t19"
+       ],
+       "agreements": [],
+       "counts": {
+        "agreed": 2,
+        "done": 0,
+        "open": 2,
+        "oldestOpenDays": 160
+       }
+      },
+      {
+       "meeting": "Tender:m13",
+       "key": "2026-10-10 1:1 Carla 101/carla",
+       "agreed": [],
+       "agreements": [],
+       "counts": {
+        "agreed": 0,
+        "done": 0,
+        "open": 0,
+        "oldestOpenDays": null
+       }
+      },
+      {
+       "meeting": "Atruvia:m52",
+       "key": "2026-09-09 1:1 Carla 101/carla",
+       "agreed": [],
+       "agreements": [],
+       "counts": {
+        "agreed": 0,
+        "done": 0,
+        "open": 0,
+        "oldestOpenDays": null
+       }
+      },
+      {
+       "meeting": "Migration:m6",
+       "key": "2026-07-06 1:1 Carla 101/carla",
+       "agreed": [],
+       "agreements": [],
+       "counts": {
+        "agreed": 0,
+        "done": 0,
+        "open": 0,
+        "oldestOpenDays": null
+       }
+      },
+      {
+       "meeting": "Migration:m0",
+       "key": "2026-07-05 1:1 Carla 101/carla",
+       "agreed": [],
+       "agreements": [],
+       "counts": {
+        "agreed": 0,
+        "done": 0,
+        "open": 0,
+        "oldestOpenDays": null
+       }
+      },
+      {
+       "meeting": "Migration:m1",
+       "key": "2026-06-29 1:1 Carla 101/carla",
+       "agreed": [
+        "Migration:t8",
+        "Atruvia:t17",
+        "Atruvia:t21"
+       ],
+       "agreements": [],
+       "counts": {
+        "agreed": 3,
+        "done": 1,
+        "open": 2,
+        "oldestOpenDays": 139
+       }
+      }
+     ]
+    }
+   },
+   {
+    "leaf": "dirk",
+    "status": "active",
+    "threads": [
+     "101/dirk"
+    ],
+    "oneOff": null,
+    "inUse": true,
+    "backInUse": false,
+    "owner": "Atruvia",
+    "tag": "101/dirk",
+    "lastMeeting": "2026-10-21",
+    "nextMeeting": "2026-10-29",
+    "oweCount": 1,
+    "waitingCount": 0,
+    "oldestWaitingDays": null,
+    "overview": {
+     "lens": "counterpart",
+     "thread": "101/dirk",
+     "owner": "Atruvia",
+     "scope": [
+      "Tender",
+      "Migration",
+      "Atruvia"
+     ],
+     "types": [
+      "101",
+      "owe"
+     ],
+     "ahead": {
+      "meetings": [
+       "Atruvia:m18"
+      ],
+      "owe": [
+       "Migration:t7"
+      ],
+      "waiting": [],
+      "relevant": [],
+      "someday": [],
+      "agreements": [
+       "Atruvia:a4"
+      ]
+     },
+     "endedAgreements": [],
+     "since": {
+      "from": "2026-10-21",
+      "done": []
+     },
+     "past": [
+      {
+       "meeting": "Atruvia:m35",
+       "key": "2026-10-21 1:1 Dirk 101/dirk",
+       "agreed": [],
+       "agreements": [],
+       "counts": {
+        "agreed": 0,
+        "done": 0,
+        "open": 0,
+        "oldestOpenDays": null
+       }
+      },
+      {
+       "meeting": "Atruvia:m12",
+       "key": "2026-10-06 1:1 Dirk 101/dirk",
+       "agreed": [],
+       "agreements": [],
+       "counts": {
+        "agreed": 0,
+        "done": 0,
+        "open": 0,
+        "oldestOpenDays": null
+       }
+      },
+      {
+       "meeting": "Migration:m15",
+       "key": "2026-09-16 1:1 Dirk 101/dirk dirk",
+       "agreed": [],
+       "agreements": [
+        "Atruvia:a4"
+       ],
+       "counts": {
+        "agreed": 0,
+        "done": 0,
+        "open": 0,
+        "oldestOpenDays": null
+       }
+      },
+      {
+       "meeting": "Migration:m5",
+       "key": "2026-06-18 1:1 Dirk 101/dirk",
+       "agreed": [
+        "Migration:t7"
+       ],
+       "agreements": [],
+       "counts": {
+        "agreed": 1,
+        "done": 0,
+        "open": 1,
+        "oldestOpenDays": 130
+       }
+      },
+      {
+       "meeting": "Atruvia:m59",
+       "key": "2026-05-31 1:1 Dirk 101/dirk",
+       "agreed": [],
+       "agreements": [],
+       "counts": {
+        "agreed": 0,
+        "done": 0,
+        "open": 0,
+        "oldestOpenDays": null
+       }
+      }
+     ]
+    }
+   },
+   {
+    "leaf": "eva",
+    "status": "active",
+    "threads": [
+     "101/eva"
+    ],
+    "oneOff": null,
+    "inUse": true,
+    "backInUse": false,
+    "owner": "Atruvia",
+    "tag": "101/eva",
+    "lastMeeting": "2026-10-20",
+    "nextMeeting": "2026-11-03",
+    "oweCount": 5,
+    "waitingCount": 1,
+    "oldestWaitingDays": null,
+    "overview": {
+     "lens": "counterpart",
+     "thread": "101/eva",
+     "owner": "Atruvia",
+     "scope": [
+      "Tender",
+      "Migration",
+      "Atruvia"
+     ],
+     "types": [
+      "101",
+      "owe",
+      "wf"
+     ],
+     "ahead": {
+      "meetings": [
+       "Atruvia:m45",
+       "Tender:m2"
+      ],
+      "owe": [
+       "Tender:t1",
+       "Tender:t28",
+       "Migration:t3",
+       "Migration:t14",
+       "Atruvia:t3"
+      ],
+      "waiting": [
+       "Atruvia:t7"
+      ],
+      "relevant": [],
+      "someday": [],
+      "agreements": [
+       "Atruvia:a9"
+      ]
+     },
+     "endedAgreements": [],
+     "since": {
+      "from": "2026-10-20",
+      "done": []
+     },
+     "past": [
+      {
+       "meeting": "Atruvia:m5",
+       "key": "2026-10-20 1:1 Eva 101/eva",
+       "agreed": [],
+       "agreements": [],
+       "counts": {
+        "agreed": 0,
+        "done": 0,
+        "open": 0,
+        "oldestOpenDays": null
+       }
+      },
+      {
+       "meeting": "Atruvia:m81",
+       "key": "2026-10-08 1:1 Eva - goals 101/eva",
+       "agreed": [
+        "Tender:t28",
+        "Tender:t5"
+       ],
+       "agreements": [
+        "Atruvia:a9"
+       ],
+       "counts": {
+        "agreed": 2,
+        "done": 1,
+        "open": 1,
+        "oldestOpenDays": 18
+       }
+      },
+      {
+       "meeting": "Atruvia:m50",
+       "key": "2026-09-10 1:1 Eva 101/eva",
+       "agreed": [
+        "Migration:t14"
+       ],
+       "agreements": [],
+       "counts": {
+        "agreed": 1,
+        "done": 0,
+        "open": 1,
+        "oldestOpenDays": 46
+       }
+      }
+     ]
+    }
+   },
+   {
+    "leaf": "frank",
+    "status": "active",
+    "threads": [
+     "101/frank"
+    ],
+    "oneOff": null,
+    "inUse": true,
+    "backInUse": false,
+    "owner": "Atruvia",
+    "tag": "101/frank",
+    "lastMeeting": "2026-10-11",
+    "nextMeeting": "2026-11-09",
+    "oweCount": 0,
+    "waitingCount": 2,
+    "oldestWaitingDays": null,
+    "overview": {
+     "lens": "counterpart",
+     "thread": "101/frank",
+     "owner": "Atruvia",
+     "scope": [
+      "Tender",
+      "Migration",
+      "Atruvia"
+     ],
+     "types": [
+      "101",
+      "wf"
+     ],
+     "ahead": {
+      "meetings": [
+       "Atruvia:m24"
+      ],
+      "owe": [],
+      "waiting": [
+       "Tender:t16",
+       "Tender:t24"
+      ],
+      "relevant": [],
+      "someday": [],
+      "agreements": [
+       "Tender:a3"
+      ]
+     },
+     "endedAgreements": [],
+     "since": {
+      "from": "2026-10-11",
+      "done": []
+     },
+     "past": [
+      {
+       "meeting": "Migration:m23",
+       "key": "2026-10-11 1:1 Frank 101/frank",
+       "agreed": [
+        "Atruvia:t24"
+       ],
+       "agreements": [],
+       "counts": {
+        "agreed": 1,
+        "done": 1,
+        "open": 0,
+        "oldestOpenDays": null
+       }
+      },
+      {
+       "meeting": "Atruvia:m34",
+       "key": "2026-10-11 1:1 Frank 101/frank",
+       "agreed": [],
+       "agreements": [],
+       "counts": {
+        "agreed": 0,
+        "done": 0,
+        "open": 0,
+        "oldestOpenDays": null
+       }
+      },
+      {
+       "meeting": "Atruvia:m53",
+       "key": "2026-10-05 1:1 Frank 101/frank",
+       "agreed": [],
+       "agreements": [
+        "Tender:a3"
+       ],
+       "counts": {
+        "agreed": 0,
+        "done": 0,
+        "open": 0,
+        "oldestOpenDays": null
+       }
+      }
+     ]
+    }
+   },
+   {
+    "leaf": "gamma",
+    "status": "active",
+    "threads": [
+     "retro/gamma",
+     "101/gamma"
+    ],
+    "oneOff": null,
+    "inUse": true,
+    "backInUse": false,
+    "owner": "Atruvia",
+    "tag": "retro/gamma",
+    "lastMeeting": "2026-10-17",
+    "nextMeeting": "2026-10-29",
+    "oweCount": 0,
+    "waitingCount": 0,
+    "oldestWaitingDays": null,
+    "overview": {
+     "lens": "counterpart",
+     "thread": "retro/gamma",
+     "owner": "Atruvia",
+     "scope": [
+      "Tender",
+      "Migration",
+      "Atruvia"
+     ],
+     "types": [
+      "retro",
+      "wf",
+      "101"
+     ],
+     "ahead": {
+      "meetings": [
+       "Migration:m11",
+       "Atruvia:m21",
+       "Migration:m8",
+       "Atruvia:m55",
+       "Atruvia:m4"
+      ],
+      "owe": [],
+      "waiting": [],
+      "relevant": [
+       "Tender:t10"
+      ],
+      "someday": [],
+      "agreements": [
+       "Atruvia:a3"
+      ]
+     },
+     "endedAgreements": [
+      "Atruvia:a1",
+      "Atruvia:a6"
+     ],
+     "since": {
+      "from": "2026-10-17",
+      "done": []
+     },
+     "past": [
+      {
+       "meeting": "Atruvia:m27",
+       "key": "2026-10-17 Retro Gamma with the whole…",
+       "agreed": [
+        "Tender:t23"
+       ],
+       "agreements": [],
+       "counts": {
+        "agreed": 1,
+        "done": 1,
+        "open": 0,
+        "oldestOpenDays": null
+       }
+      },
+      {
+       "meeting": "Migration:m21",
+       "key": "2026-09-06 Retro Gamma with the whole…",
+       "agreed": [],
+       "agreements": [
+        "Atruvia:a6"
+       ],
+       "counts": {
+        "agreed": 0,
+        "done": 0,
+        "open": 0,
+        "oldestOpenDays": null
+       }
+      },
+      {
+       "meeting": "Tender:m21",
+       "key": "2026-07-27 Retro Gamma with the whole…",
+       "agreed": [],
+       "agreements": [],
+       "counts": {
+        "agreed": 0,
+        "done": 0,
+        "open": 0,
+        "oldestOpenDays": null
+       }
+      },
+      {
+       "meeting": "Migration:m13",
+       "key": "2026-06-17 Retro Gamma with the whole…",
+       "agreed": [],
+       "agreements": [],
+       "counts": {
+        "agreed": 0,
+        "done": 0,
+        "open": 0,
+        "oldestOpenDays": null
+       }
+      }
+     ]
+    }
+   },
+   {
+    "leaf": "greta",
+    "status": "active",
+    "threads": [
+     "101/greta"
+    ],
+    "oneOff": null,
+    "inUse": true,
+    "backInUse": false,
+    "owner": "Atruvia",
+    "tag": "101/greta",
+    "lastMeeting": "2026-10-22",
+    "nextMeeting": "2026-11-06",
+    "oweCount": 2,
+    "waitingCount": 0,
+    "oldestWaitingDays": null,
+    "overview": {
+     "lens": "counterpart",
+     "thread": "101/greta",
+     "owner": "Atruvia",
+     "scope": [
+      "Tender",
+      "Migration",
+      "Atruvia"
+     ],
+     "types": [
+      "101",
+      "owe"
+     ],
+     "ahead": {
+      "meetings": [
+       "Atruvia:m3"
+      ],
+      "owe": [
+       "Migration:t16",
+       "Atruvia:t44"
+      ],
+      "waiting": [],
+      "relevant": [],
+      "someday": [],
+      "agreements": [
+       "Atruvia:a0"
+      ]
+     },
+     "endedAgreements": [
+      "Tender:a1"
+     ],
+     "since": {
+      "from": "2026-10-22",
+      "done": []
+     },
+     "past": [
+      {
+       "meeting": "Atruvia:m20",
+       "key": "2026-10-22 1:1 Greta 101/greta",
+       "agreed": [],
+       "agreements": [
+        "Tender:a1"
+       ],
+       "counts": {
+        "agreed": 0,
+        "done": 0,
+        "open": 0,
+        "oldestOpenDays": null
+       }
+      },
+      {
+       "meeting": "Atruvia:m77",
+       "key": "2026-09-23 1:1 Greta 101/greta",
+       "agreed": [
+        "Atruvia:t44"
+       ],
+       "agreements": [
+        "Atruvia:a0"
+       ],
+       "counts": {
+        "agreed": 1,
+        "done": 0,
+        "open": 1,
+        "oldestOpenDays": 33
+       }
+      },
+      {
+       "meeting": "Atruvia:m78",
+       "key": "2026-09-23 1:1 Greta 101/greta",
+       "agreed": [],
+       "agreements": [],
+       "counts": {
+        "agreed": 0,
+        "done": 0,
+        "open": 0,
+        "oldestOpenDays": null
+       }
+      },
+      {
+       "meeting": "Atruvia:m42",
+       "key": "2026-06-05 1:1 Greta 101/greta",
+       "agreed": [],
+       "agreements": [],
+       "counts": {
+        "agreed": 0,
+        "done": 0,
+        "open": 0,
+        "oldestOpenDays": null
+       }
+      }
+     ]
+    }
+   },
+   {
+    "leaf": "hans",
+    "status": "active",
+    "threads": [
+     "101/hans"
+    ],
+    "oneOff": null,
+    "inUse": true,
+    "backInUse": false,
+    "owner": "Atruvia",
+    "tag": "101/hans",
+    "lastMeeting": "2026-09-11",
+    "nextMeeting": "2026-11-03",
+    "oweCount": 1,
+    "waitingCount": 0,
+    "oldestWaitingDays": null,
+    "overview": {
+     "lens": "counterpart",
+     "thread": "101/hans",
+     "owner": "Atruvia",
+     "scope": [
+      "Tender",
+      "Migration",
+      "Atruvia"
+     ],
+     "types": [
+      "101"
+     ],
+     "ahead": {
+      "meetings": [
+       "Atruvia:m9"
+      ],
+      "owe": [
+       "Atruvia:t37"
+      ],
+      "waiting": [],
+      "relevant": [
+       "Migration:t2"
+      ],
+      "someday": [],
+      "agreements": []
+     },
+     "endedAgreements": [],
+     "since": {
+      "from": "2026-09-11",
+      "done": []
+     },
+     "past": [
+      {
+       "meeting": "Tender:m19",
+       "key": "2026-09-11 1:1 Hans 101/hans",
+       "agreed": [
+        "Atruvia:t37"
+       ],
+       "agreements": [],
+       "counts": {
+        "agreed": 1,
+        "done": 0,
+        "open": 1,
+        "oldestOpenDays": 45
+       }
+      },
+      {
+       "meeting": "Migration:m20",
+       "key": "2026-06-04 1:1 Hans 101/hans",
+       "agreed": [],
+       "agreements": [],
+       "counts": {
+        "agreed": 0,
+        "done": 0,
+        "open": 0,
+        "oldestOpenDays": null
+       }
+      }
+     ]
+    }
+   },
+   {
+    "leaf": "ines",
+    "status": "active",
+    "threads": [
+     "101/ines"
+    ],
+    "oneOff": null,
+    "inUse": true,
+    "backInUse": false,
+    "owner": "Atruvia",
+    "tag": "101/ines",
+    "lastMeeting": "2026-09-20",
+    "nextMeeting": null,
+    "oweCount": 0,
+    "waitingCount": 2,
+    "oldestWaitingDays": 89,
+    "overview": {
+     "lens": "counterpart",
+     "thread": "101/ines",
+     "owner": "Atruvia",
+     "scope": [
+      "Tender",
+      "Migration",
+      "Atruvia"
+     ],
+     "types": [
+      "101",
+      "wf",
+      "owe"
+     ],
+     "ahead": {
+      "meetings": [],
+      "owe": [],
+      "waiting": [
+       "Tender:t19",
+       "Migration:t1"
+      ],
+      "relevant": [],
+      "someday": [],
+      "agreements": []
+     },
+     "endedAgreements": [],
+     "since": {
+      "from": "2026-09-20",
+      "done": []
+     },
+     "past": [
+      {
+       "meeting": "Migration:m4",
+       "key": "2026-09-20 1:1 Ines 101/ines",
+       "agreed": [
+        "Migration:t1"
+       ],
+       "agreements": [],
+       "counts": {
+        "agreed": 1,
+        "done": 0,
+        "open": 1,
+        "oldestOpenDays": 59
+       }
+      }
+     ]
+    }
+   },
+   {
+    "leaf": "it",
+    "status": "active",
+    "threads": [
+     "101/it",
+     "jf/it"
+    ],
+    "oneOff": null,
+    "inUse": true,
+    "backInUse": false,
+    "owner": "Atruvia",
+    "tag": "101/it",
+    "lastMeeting": "2026-10-24",
+    "nextMeeting": "2026-11-17",
+    "oweCount": 0,
+    "waitingCount": 0,
+    "oldestWaitingDays": null,
+    "overview": {
+     "lens": "counterpart",
+     "thread": "101/it",
+     "owner": "Atruvia",
+     "scope": [
+      "Tender",
+      "Migration",
+      "Atruvia"
+     ],
+     "types": [
+      "101",
+      "jf"
+     ],
+     "ahead": {
+      "meetings": [
+       "Migration:m19"
+      ],
+      "owe": [],
+      "waiting": [],
+      "relevant": [
+       "Atruvia:t16"
+      ],
+      "someday": [],
+      "agreements": []
+     },
+     "endedAgreements": [],
+     "since": {
+      "from": "2026-10-24",
+      "done": []
+     },
+     "past": [
+      {
+       "meeting": "Tender:m1",
+       "key": "2026-10-24 JF IT jf/it",
+       "agreed": [],
+       "agreements": [],
+       "counts": {
+        "agreed": 0,
+        "done": 0,
+        "open": 0,
+        "oldestOpenDays": null
+       }
+      },
+      {
+       "meeting": "Atruvia:m17",
+       "key": "2026-06-09 JF IT jf/it it",
+       "agreed": [],
+       "agreements": [],
+       "counts": {
+        "agreed": 0,
+        "done": 0,
+        "open": 0,
+        "oldestOpenDays": null
+       }
+      }
+     ]
+    }
+   },
+   {
+    "leaf": "mieke",
+    "status": "active",
+    "threads": [
+     "sparring/mieke"
+    ],
+    "oneOff": null,
+    "inUse": true,
+    "backInUse": false,
+    "owner": "Atruvia",
+    "tag": "sparring/mieke",
+    "lastMeeting": "2026-10-19",
+    "nextMeeting": "2026-10-30",
+    "oweCount": 2,
+    "waitingCount": 0,
+    "oldestWaitingDays": null,
+    "overview": {
+     "lens": "counterpart",
+     "thread": "sparring/mieke",
+     "owner": "Atruvia",
+     "scope": [
+      "Tender",
+      "Migration",
+      "Atruvia"
+     ],
+     "types": [
+      "sparring"
+     ],
+     "ahead": {
+      "meetings": [
+       "Tender:m9",
+       "Atruvia:m54",
+       "Atruvia:m33"
+      ],
+      "owe": [
+       "Tender:t11",
+       "Atruvia:t30"
+      ],
+      "waiting": [],
+      "relevant": [],
+      "someday": [],
+      "agreements": []
+     },
+     "endedAgreements": [],
+     "since": {
+      "from": "2026-10-19",
+      "done": []
+     },
+     "past": [
+      {
+       "meeting": "Atruvia:m66",
+       "key": "2026-10-19 Sparring Mieke sparring/mieke",
+       "agreed": [],
+       "agreements": [],
+       "counts": {
+        "agreed": 0,
+        "done": 0,
+        "open": 0,
+        "oldestOpenDays": null
+       }
+      },
+      {
+       "meeting": "Atruvia:m47",
+       "key": "2026-09-14 Sparring Mieke",
+       "agreed": [],
+       "agreements": [],
+       "counts": {
+        "agreed": 0,
+        "done": 0,
+        "open": 0,
+        "oldestOpenDays": null
+       }
+      },
+      {
+       "meeting": "Atruvia:m31",
+       "key": "2026-08-11 Sparring Mieke sparring/mieke",
+       "agreed": [],
+       "agreements": [],
+       "counts": {
+        "agreed": 0,
+        "done": 0,
+        "open": 0,
+        "oldestOpenDays": null
+       }
+      },
+      {
+       "meeting": "Migration:m7",
+       "key": "2026-08-08 Sparring Mieke sparring/mieke",
+       "agreed": [],
+       "agreements": [],
+       "counts": {
+        "agreed": 0,
+        "done": 0,
+        "open": 0,
+        "oldestOpenDays": null
+       }
+      },
+      {
+       "meeting": "Atruvia:m57",
+       "key": "2026-07-02 Sparring Mieke sparring/mieke",
+       "agreed": [],
+       "agreements": [],
+       "counts": {
+        "agreed": 0,
+        "done": 0,
+        "open": 0,
+        "oldestOpenDays": null
+       }
+      },
+      {
+       "meeting": "Tender:m17",
+       "key": "2026-06-07 Sparring Mieke sparring/mieke",
+       "agreed": [
+        "Tender:t11",
+        "Atruvia:t30"
+       ],
+       "agreements": [],
+       "counts": {
+        "agreed": 2,
+        "done": 0,
+        "open": 2,
+        "oldestOpenDays": 150
+       }
+      }
+     ]
+    }
+   },
+   {
+    "leaf": "sven",
+    "status": "active",
+    "threads": [
+     "sparring/sven"
+    ],
+    "oneOff": null,
+    "inUse": true,
+    "backInUse": false,
+    "owner": "Atruvia",
+    "tag": "sparring/sven",
+    "lastMeeting": "2026-10-14",
+    "nextMeeting": null,
+    "oweCount": 1,
+    "waitingCount": 1,
+    "oldestWaitingDays": null,
+    "overview": {
+     "lens": "counterpart",
+     "thread": "sparring/sven",
+     "owner": "Atruvia",
+     "scope": [
+      "Tender",
+      "Migration",
+      "Atruvia"
+     ],
+     "types": [
+      "sparring",
+      "wf"
+     ],
+     "ahead": {
+      "meetings": [],
+      "owe": [
+       "Atruvia:t2"
+      ],
+      "waiting": [
+       "Atruvia:t26"
+      ],
+      "relevant": [],
+      "someday": [],
+      "agreements": []
+     },
+     "endedAgreements": [],
+     "since": {
+      "from": "2026-10-14",
+      "done": []
+     },
+     "past": [
+      {
+       "meeting": "Atruvia:m46",
+       "key": "2026-10-14 Sparring Sven sparring/sven",
+       "agreed": [],
+       "agreements": [],
+       "counts": {
+        "agreed": 0,
+        "done": 0,
+        "open": 0,
+        "oldestOpenDays": null
+       }
+      },
+      {
+       "meeting": "Atruvia:m28",
+       "key": "2026-06-27 Sparring Sven sparring/sven",
+       "agreed": [
+        "Atruvia:t2"
+       ],
+       "agreements": [],
+       "counts": {
+        "agreed": 1,
+        "done": 0,
+        "open": 1,
+        "oldestOpenDays": 1
+       }
+      },
+      {
+       "meeting": "Migration:m17",
+       "key": "2026-06-23 Sparring Sven sparring/sven",
+       "agreed": [],
+       "agreements": [],
+       "counts": {
+        "agreed": 0,
+        "done": 0,
+        "open": 0,
+        "oldestOpenDays": null
+       }
+      }
+     ]
+    }
+   },
+   {
+    "leaf": "works",
+    "status": "active",
+    "threads": [
+     "jf/works"
+    ],
+    "oneOff": null,
+    "inUse": true,
+    "backInUse": false,
+    "owner": "Atruvia",
+    "tag": "jf/works",
+    "lastMeeting": "2026-07-28",
+    "nextMeeting": "2026-11-23",
+    "oweCount": 3,
+    "waitingCount": 0,
+    "oldestWaitingDays": null,
+    "overview": {
+     "lens": "counterpart",
+     "thread": "jf/works",
+     "owner": "Atruvia",
+     "scope": [
+      "Tender",
+      "Migration",
+      "Atruvia"
+     ],
+     "types": [
+      "jf",
+      "owe"
+     ],
+     "ahead": {
+      "meetings": [
+       "Tender:m23",
+       "Migration:m12"
+      ],
+      "owe": [
+       "Tender:t2",
+       "Tender:t4",
+       "Migration:t17"
+      ],
+      "waiting": [],
+      "relevant": [],
+      "someday": [],
+      "agreements": []
+     },
+     "endedAgreements": [],
+     "since": {
+      "from": "2026-07-28",
+      "done": []
+     },
+     "past": [
+      {
+       "meeting": "Atruvia:m10",
+       "key": "2026-07-28 Jour fixe works council",
+       "agreed": [
+        "Tender:t2"
+       ],
+       "agreements": [],
+       "counts": {
+        "agreed": 1,
+        "done": 0,
+        "open": 1,
+        "oldestOpenDays": 90
+       }
+      },
+      {
+       "meeting": "Tender:m4",
+       "key": "2026-07-24 Jour fixe works council",
+       "agreed": [],
+       "agreements": [],
+       "counts": {
+        "agreed": 0,
+        "done": 0,
+        "open": 0,
+        "oldestOpenDays": null
+       }
+      },
+      {
+       "meeting": "Tender:m6",
+       "key": "2026-07-07 Jour fixe works council",
+       "agreed": [],
+       "agreements": [],
+       "counts": {
+        "agreed": 0,
+        "done": 0,
+        "open": 0,
+        "oldestOpenDays": null
+       }
+      }
+     ]
+    }
+   }
+  ],
+  "inactive": [
+   {
+    "leaf": "gone",
+    "status": "inactive",
+    "threads": [],
+    "oneOff": null,
+    "inUse": false,
+    "backInUse": false,
+    "owner": "Atruvia",
+    "tag": "wf/gone",
+    "lastMeeting": null,
+    "nextMeeting": null,
+    "oweCount": 0,
+    "waitingCount": 0,
+    "oldestWaitingDays": null,
+    "overview": {
+     "lens": "counterpart",
+     "thread": "wf/gone",
+     "owner": "Atruvia",
+     "scope": [
+      "Tender",
+      "Migration",
+      "Atruvia"
+     ],
+     "types": [
+      "wf"
+     ],
+     "ahead": {
+      "meetings": [],
+      "owe": [],
+      "waiting": [],
+      "relevant": [],
+      "someday": [],
+      "agreements": []
+     },
+     "endedAgreements": [],
+     "since": {
+      "from": null,
+      "done": []
+     },
+     "past": []
+    }
+   }
+  ]
+ },
+ "tendingRoster": [
+  {
+   "owner": "Atruvia",
+   "confirm": [
+    {
+     "leaf": "jonas",
+     "status": "new",
+     "threads": [
+      "101/jonas"
+     ],
+     "oneOff": null,
+     "inUse": true,
+     "backInUse": false,
+     "owner": "Atruvia",
+     "tag": "101/jonas",
+     "lastMeeting": "2026-10-22",
+     "nextMeeting": null,
+     "oweCount": 0,
+     "waitingCount": 3,
+     "oldestWaitingDays": 145,
+     "overview": {
+      "lens": "counterpart",
+      "thread": "101/jonas",
+      "owner": "Atruvia",
+      "scope": [
+       "Tender",
+       "Migration",
+       "Atruvia"
+      ],
+      "types": [
+       "101",
+       "wf"
+      ],
+      "ahead": {
+       "meetings": [],
+       "owe": [],
+       "waiting": [
+        "Tender:t12",
+        "Tender:t17",
+        "Migration:t4"
+       ],
+       "relevant": [],
+       "someday": [],
+       "agreements": [
+        "Tender:a0"
+       ]
+      },
+      "endedAgreements": [],
+      "since": {
+       "from": "2026-10-22",
+       "done": []
+      },
+      "past": [
+       {
+        "meeting": "Atruvia:m60",
+        "key": "2026-10-22 1:1 Jonas 101/jonas",
+        "agreed": [
+         "Tender:t12"
+        ],
+        "agreements": [],
+        "counts": {
+         "agreed": 1,
+         "done": 0,
+         "open": 1,
+         "oldestOpenDays": 96
+        }
+       },
+       {
+        "meeting": "Tender:m11",
+        "key": "2026-09-08 1:1 Jonas 101/jonas",
+        "agreed": [],
+        "agreements": [
+         "Tender:a0"
+        ],
+        "counts": {
+         "agreed": 0,
+         "done": 0,
+         "open": 0,
+         "oldestOpenDays": null
+        }
+       }
+      ]
+     }
+    },
+    {
+     "leaf": "olga",
+     "status": "new",
+     "threads": [],
+     "oneOff": "wf",
+     "inUse": true,
+     "backInUse": false,
+     "owner": "Atruvia",
+     "tag": "wf/olga",
+     "lastMeeting": null,
+     "nextMeeting": null,
+     "oweCount": 0,
+     "waitingCount": 1,
+     "oldestWaitingDays": 12,
+     "overview": {
+      "lens": "counterpart",
+      "thread": "wf/olga",
+      "owner": "Atruvia",
+      "scope": [
+       "Tender",
+       "Migration",
+       "Atruvia"
+      ],
+      "types": [
+       "wf"
+      ],
+      "ahead": {
+       "meetings": [],
+       "owe": [],
+       "waiting": [
+        "Atruvia:t40"
+       ],
+       "relevant": [],
+       "someday": [],
+       "agreements": []
+      },
+      "endedAgreements": [],
+      "since": {
+       "from": null,
+       "done": []
+      },
+      "past": []
+     }
+    },
+    {
+     "leaf": "paul",
+     "status": "new",
+     "threads": [],
+     "oneOff": "wf",
+     "inUse": true,
+     "backInUse": false,
+     "owner": "Atruvia",
+     "tag": "wf/paul",
+     "lastMeeting": null,
+     "nextMeeting": null,
+     "oweCount": 0,
+     "waitingCount": 1,
+     "oldestWaitingDays": 12,
+     "overview": {
+      "lens": "counterpart",
+      "thread": "wf/paul",
+      "owner": "Atruvia",
+      "scope": [
+       "Tender",
+       "Migration",
+       "Atruvia"
+      ],
+      "types": [
+       "wf"
+      ],
+      "ahead": {
+       "meetings": [],
+       "owe": [],
+       "waiting": [
+        "Atruvia:t41"
+       ],
+       "relevant": [],
+       "someday": [],
+       "agreements": []
+      },
+      "endedAgreements": [],
+      "since": {
+       "from": null,
+       "done": []
+      },
+      "past": []
+     }
+    },
+    {
+     "leaf": "quinn",
+     "status": "new",
+     "threads": [],
+     "oneOff": "owe",
+     "inUse": true,
+     "backInUse": false,
+     "owner": "Atruvia",
+     "tag": "owe/quinn",
+     "lastMeeting": null,
+     "nextMeeting": null,
+     "oweCount": 1,
+     "waitingCount": 0,
+     "oldestWaitingDays": null,
+     "overview": {
+      "lens": "counterpart",
+      "thread": "owe/quinn",
+      "owner": "Atruvia",
+      "scope": [
+       "Tender",
+       "Migration",
+       "Atruvia"
+      ],
+      "types": [
+       "owe"
+      ],
+      "ahead": {
+       "meetings": [],
+       "owe": [
+        "Tender:t26"
+       ],
+       "waiting": [],
+       "relevant": [],
+       "someday": [],
+       "agreements": []
+      },
+      "endedAgreements": [],
+      "since": {
+       "from": null,
+       "done": []
+      },
+      "past": []
+     }
+    },
+    {
+     "leaf": "rosa",
+     "status": "new",
+     "threads": [],
+     "oneOff": "owe",
+     "inUse": true,
+     "backInUse": false,
+     "owner": "Atruvia",
+     "tag": "owe/rosa",
+     "lastMeeting": null,
+     "nextMeeting": null,
+     "oweCount": 1,
+     "waitingCount": 0,
+     "oldestWaitingDays": null,
+     "overview": {
+      "lens": "counterpart",
+      "thread": "owe/rosa",
+      "owner": "Atruvia",
+      "scope": [
+       "Tender",
+       "Migration",
+       "Atruvia"
+      ],
+      "types": [
+       "owe"
+      ],
+      "ahead": {
+       "meetings": [],
+       "owe": [
+        "Tender:t27"
+       ],
+       "waiting": [],
+       "relevant": [],
+       "someday": [],
+       "agreements": []
+      },
+      "endedAgreements": [],
+      "since": {
+       "from": null,
+       "done": []
+      },
+      "past": []
+     }
+    },
+    {
+     "leaf": "stan",
+     "status": "new",
+     "threads": [],
+     "oneOff": "wf+owe",
+     "inUse": true,
+     "backInUse": false,
+     "owner": "Atruvia",
+     "tag": "wf/stan",
+     "lastMeeting": null,
+     "nextMeeting": null,
+     "oweCount": 0,
+     "waitingCount": 1,
+     "oldestWaitingDays": 30,
+     "overview": {
+      "lens": "counterpart",
+      "thread": "wf/stan",
+      "owner": "Atruvia",
+      "scope": [
+       "Tender",
+       "Migration",
+       "Atruvia"
+      ],
+      "types": [
+       "wf",
+       "owe"
+      ],
+      "ahead": {
+       "meetings": [],
+       "owe": [],
+       "waiting": [
+        "Migration:t18"
+       ],
+       "relevant": [],
+       "someday": [],
+       "agreements": []
+      },
+      "endedAgreements": [],
+      "since": {
+       "from": null,
+       "done": []
+      },
+      "past": []
+     }
+    },
+    {
+     "leaf": "ulf",
+     "status": "inactive",
+     "threads": [
+      "101/ulf"
+     ],
+     "oneOff": null,
+     "inUse": true,
+     "backInUse": true,
+     "owner": "Atruvia",
+     "tag": "101/ulf",
+     "lastMeeting": "2026-09-06",
+     "nextMeeting": "2026-11-25",
+     "oweCount": 2,
+     "waitingCount": 0,
+     "oldestWaitingDays": null,
+     "overview": {
+      "lens": "counterpart",
+      "thread": "101/ulf",
+      "owner": "Atruvia",
+      "scope": [
+       "Tender",
+       "Migration",
+       "Atruvia"
+      ],
+      "types": [
+       "101",
+       "owe"
+      ],
+      "ahead": {
+       "meetings": [
+        "Atruvia:m68"
+       ],
+       "owe": [
+        "Tender:t0",
+        "Migration:t11"
+       ],
+       "waiting": [],
+       "relevant": [],
+       "someday": [],
+       "agreements": []
+      },
+      "endedAgreements": [],
+      "since": {
+       "from": "2026-09-06",
+       "done": [
+        "Atruvia:t11",
+        "Atruvia:t36"
+       ]
+      },
+      "past": [
+       {
+        "meeting": "Migration:m9",
+        "key": "2026-09-06 1:1 Ulf 101/ulf",
+        "agreed": [
+         "Tender:t0",
+         "Atruvia:t36"
+        ],
+        "agreements": [],
+        "counts": {
+         "agreed": 2,
+         "done": 1,
+         "open": 1,
+         "oldestOpenDays": 91
+        }
+       },
+       {
+        "meeting": "Tender:m15",
+        "key": "2026-08-16 1:1 Ulf 101/ulf",
+        "agreed": [],
+        "agreements": [],
+        "counts": {
+         "agreed": 0,
+         "done": 0,
+         "open": 0,
+         "oldestOpenDays": null
+        }
+       }
+      ]
+     }
+    },
+    {
+     "leaf": "vera",
+     "status": "inactive",
+     "threads": [
+      "101/vera"
+     ],
+     "oneOff": null,
+     "inUse": true,
+     "backInUse": true,
+     "owner": "Atruvia",
+     "tag": "101/vera",
+     "lastMeeting": "2026-08-27",
+     "nextMeeting": "2026-11-04",
+     "oweCount": 0,
+     "waitingCount": 0,
+     "oldestWaitingDays": null,
+     "overview": {
+      "lens": "counterpart",
+      "thread": "101/vera",
+      "owner": "Atruvia",
+      "scope": [
+       "Tender",
+       "Migration",
+       "Atruvia"
+      ],
+      "types": [
+       "101"
+      ],
+      "ahead": {
+       "meetings": [
+        "Atruvia:m74"
+       ],
+       "owe": [],
+       "waiting": [],
+       "relevant": [],
+       "someday": [],
+       "agreements": [
+        "Tender:a2"
+       ]
+      },
+      "endedAgreements": [],
+      "since": {
+       "from": "2026-08-27",
+       "done": []
+      },
+      "past": [
+       {
+        "meeting": "Atruvia:m75",
+        "key": "2026-08-27 1:1 Vera 101/vera",
+        "agreed": [],
+        "agreements": [],
+        "counts": {
+         "agreed": 0,
+         "done": 0,
+         "open": 0,
+         "oldestOpenDays": null
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "active": [
+    {
+     "leaf": "alpha",
+     "status": "active",
+     "threads": [
+      "retro/alpha"
+     ],
+     "oneOff": null,
+     "inUse": true,
+     "backInUse": false,
+     "owner": "Atruvia",
+     "tag": "retro/alpha",
+     "lastMeeting": "2026-10-15",
+     "nextMeeting": "2026-11-06",
+     "oweCount": 2,
+     "waitingCount": 0,
+     "oldestWaitingDays": null,
+     "overview": {
+      "lens": "counterpart",
+      "thread": "retro/alpha",
+      "owner": "Atruvia",
+      "scope": [
+       "Tender",
+       "Migration",
+       "Atruvia"
+      ],
+      "types": [
+       "retro"
+      ],
+      "ahead": {
+       "meetings": [
+        "Atruvia:m11",
+        "Tender:m18",
+        "Atruvia:m32",
+        "Tender:m3"
+       ],
+       "owe": [
+        "Atruvia:t13",
+        "Atruvia:t35"
+       ],
+       "waiting": [],
+       "relevant": [],
+       "someday": [
+        "Atruvia:t0",
+        "Atruvia:t5"
+       ],
+       "agreements": []
+      },
+      "endedAgreements": [],
+      "since": {
+       "from": "2026-10-15",
+       "done": []
+      },
+      "past": [
+       {
+        "meeting": "Migration:m2",
+        "key": "2026-10-15 Retro Alpha sprint retro/alpha",
+        "agreed": [
+         "Atruvia:t35"
+        ],
+        "agreements": [],
+        "counts": {
+         "agreed": 1,
+         "done": 0,
+         "open": 1,
+         "oldestOpenDays": 11
+        }
+       },
+       {
+        "meeting": "Atruvia:m0",
+        "key": "2026-09-12 Retro Alpha sprint retro/alpha",
+        "agreed": [],
+        "agreements": [],
+        "counts": {
+         "agreed": 0,
+         "done": 0,
+         "open": 0,
+         "oldestOpenDays": null
+        }
+       },
+       {
+        "meeting": "Atruvia:m48",
+        "key": "2026-06-24 Retro Alpha sprint retro/alpha",
+        "agreed": [
+         "Atruvia:t13"
+        ],
+        "agreements": [],
+        "counts": {
+         "agreed": 1,
+         "done": 0,
+         "open": 1,
+         "oldestOpenDays": 124
+        }
+       },
+       {
+        "meeting": "Atruvia:m70",
+        "key": "2026-06-18 Retro Alpha sprint retro/alpha",
+        "agreed": [],
+        "agreements": [],
+        "counts": {
+         "agreed": 0,
+         "done": 0,
+         "open": 0,
+         "oldestOpenDays": null
+        }
+       },
+       {
+        "meeting": "Migration:m16",
+        "key": "2026-06-05 Retro Alpha sprint retro/alpha",
+        "agreed": [
+         "Tender:t21"
+        ],
+        "agreements": [],
+        "counts": {
+         "agreed": 1,
+         "done": 1,
+         "open": 0,
+         "oldestOpenDays": null
+        }
+       }
+      ]
+     }
+    },
+    {
+     "leaf": "anna",
+     "status": "active",
+     "threads": [
+      "retro/anna",
+      "101/anna"
+     ],
+     "oneOff": null,
+     "inUse": true,
+     "backInUse": false,
+     "owner": "Atruvia",
+     "tag": "retro/anna",
+     "lastMeeting": "2026-10-24",
+     "nextMeeting": "2026-11-26",
+     "oweCount": 4,
+     "waitingCount": 3,
+     "oldestWaitingDays": 106,
+     "overview": {
+      "lens": "counterpart",
+      "thread": "retro/anna",
+      "owner": "Atruvia",
+      "scope": [
+       "Tender",
+       "Migration",
+       "Atruvia"
+      ],
+      "types": [
+       "retro",
+       "wf",
+       "owe",
+       "101"
+      ],
+      "ahead": {
+       "meetings": [
+        "Atruvia:m29",
+        "Tender:m12",
+        "Atruvia:m37"
+       ],
+       "owe": [
+        "Tender:t7",
+        "Atruvia:t31",
+        "Atruvia:t33",
+        "Atruvia:t34"
+       ],
+       "waiting": [
+        "Atruvia:t8",
+        "Atruvia:t12",
+        "Atruvia:t39"
+       ],
+       "relevant": [],
+       "someday": [],
+       "agreements": []
+      },
+      "endedAgreements": [],
+      "since": {
+       "from": "2026-10-24",
+       "done": []
+      },
+      "past": [
+       {
+        "meeting": "Atruvia:m71",
+        "key": "2026-10-24 Retro with Anna",
+        "agreed": [
+         "Atruvia:t12"
+        ],
+        "agreements": [],
+        "counts": {
+         "agreed": 1,
+         "done": 0,
+         "open": 1,
+         "oldestOpenDays": 62
+        }
+       },
+       {
+        "meeting": "Atruvia:m67",
+        "key": "2026-10-19 1:1 Anna 101/anna",
+        "agreed": [],
+        "agreements": [],
+        "counts": {
+         "agreed": 0,
+         "done": 0,
+         "open": 0,
+         "oldestOpenDays": null
+        }
+       },
+       {
+        "meeting": "Atruvia:m63",
+        "key": "2026-10-13 1:1 Anna 101/anna",
+        "agreed": [],
+        "agreements": [],
+        "counts": {
+         "agreed": 0,
+         "done": 0,
+         "open": 0,
+         "oldestOpenDays": null
+        }
+       },
+       {
+        "meeting": "Atruvia:m65",
+        "key": "2026-09-26 1:1 Anna 101/anna",
+        "agreed": [],
+        "agreements": [],
+        "counts": {
+         "agreed": 0,
+         "done": 0,
+         "open": 0,
+         "oldestOpenDays": null
+        }
+       },
+       {
+        "meeting": "Atruvia:m1",
+        "key": "2026-09-16 1:1 Anna 101/anna",
+        "agreed": [],
+        "agreements": [],
+        "counts": {
+         "agreed": 0,
+         "done": 0,
+         "open": 0,
+         "oldestOpenDays": null
+        }
+       },
+       {
+        "meeting": "Atruvia:m38",
+        "key": "2026-09-06 1:1 Anna 101/anna",
+        "agreed": [],
+        "agreements": [],
+        "counts": {
+         "agreed": 0,
+         "done": 0,
+         "open": 0,
+         "oldestOpenDays": null
+        }
+       },
+       {
+        "meeting": "Tender:m5",
+        "key": "2026-08-12 1:1 Anna 101/anna",
+        "agreed": [],
+        "agreements": [],
+        "counts": {
+         "agreed": 0,
+         "done": 0,
+         "open": 0,
+         "oldestOpenDays": null
+        }
+       },
+       {
+        "meeting": "Atruvia:m44",
+        "key": "2026-07-26 1:1 Anna 101/anna",
+        "agreed": [],
+        "agreements": [],
+        "counts": {
+         "agreed": 0,
+         "done": 0,
+         "open": 0,
+         "oldestOpenDays": null
+        }
+       },
+       {
+        "meeting": "Atruvia:m23",
+        "key": "2026-07-20 Retro with Anna retro/anna/2026",
+        "agreed": [],
+        "agreements": [],
+        "counts": {
+         "agreed": 0,
+         "done": 0,
+         "open": 0,
+         "oldestOpenDays": null
+        }
+       },
+       {
+        "meeting": "Atruvia:m30",
+        "key": "2026-07-15 1:1 Anna 101/anna",
+        "agreed": [
+         "Tender:t15"
+        ],
+        "agreements": [],
+        "counts": {
+         "agreed": 1,
+         "done": 1,
+         "open": 0,
+         "oldestOpenDays": null
+        }
+       },
+       {
+        "meeting": "Atruvia:m15",
+        "key": "2026-07-04 Retro with Anna retro/anna",
+        "agreed": [
+         "Atruvia:t31",
+         "Atruvia:t33"
+        ],
+        "agreements": [],
+        "counts": {
+         "agreed": 2,
+         "done": 0,
+         "open": 2,
+         "oldestOpenDays": 114
+        }
+       },
+       {
+        "meeting": "Atruvia:m7",
+        "key": "2026-06-01 1:1 Anna 101/anna anna",
+        "agreed": [],
+        "agreements": [],
+        "counts": {
+         "agreed": 0,
+         "done": 0,
+         "open": 0,
+         "oldestOpenDays": null
+        }
+       }
+      ]
+     }
+    },
+    {
+     "leaf": "bert",
+     "status": "active",
+     "threads": [
+      "101/bert"
+     ],
+     "oneOff": null,
+     "inUse": true,
+     "backInUse": false,
+     "owner": "Atruvia",
+     "tag": "101/bert",
+     "lastMeeting": "2026-10-15",
+     "nextMeeting": "2026-11-14",
+     "oweCount": 3,
+     "waitingCount": 2,
+     "oldestWaitingDays": null,
+     "overview": {
+      "lens": "counterpart",
+      "thread": "101/bert",
+      "owner": "Atruvia",
+      "scope": [
+       "Tender",
+       "Migration",
+       "Atruvia"
+      ],
+      "types": [
+       "101",
+       "owe"
+      ],
+      "ahead": {
+       "meetings": [
+        "Migration:m14",
+        "Tender:m10"
+       ],
+       "owe": [
+        "Migration:t6",
+        "Migration:t10",
+        "Atruvia:t38"
+       ],
+       "waiting": [
+        "Tender:t29",
+        "Atruvia:t6"
+       ],
+       "relevant": [
+        "Tender:t18",
+        "Tender:t25"
+       ],
+       "someday": [],
+       "agreements": [
+        "Atruvia:a5",
+        "Atruvia:a7"
+       ]
+      },
+      "endedAgreements": [],
+      "since": {
+       "from": "2026-10-15",
+       "done": []
+      },
+      "past": [
+       {
+        "meeting": "Atruvia:m82",
+        "key": "2026-10-15 1:1 Bert (short) 101/bert",
+        "agreed": [
+         "Tender:t29"
+        ],
+        "agreements": [],
+        "counts": {
+         "agreed": 1,
+         "done": 0,
+         "open": 1,
+         "oldestOpenDays": 11
+        }
+       },
+       {
+        "meeting": "Migration:m18",
+        "key": "2026-10-11 1:1 Bert 101/bert",
+        "agreed": [],
+        "agreements": [
+         "Atruvia:a5"
+        ],
+        "counts": {
+         "agreed": 0,
+         "done": 0,
+         "open": 0,
+         "oldestOpenDays": null
+        }
+       },
+       {
+        "meeting": "Atruvia:m19",
+        "key": "2026-09-30 1:1 Bert 101/bert",
+        "agreed": [],
+        "agreements": [],
+        "counts": {
+         "agreed": 0,
+         "done": 0,
+         "open": 0,
+         "oldestOpenDays": null
+        }
+       },
+       {
+        "meeting": "Atruvia:m64",
+        "key": "2026-09-28 1:1 Bert 101/bert",
+        "agreed": [
+         "Atruvia:t6"
+        ],
+        "agreements": [],
+        "counts": {
+         "agreed": 1,
+         "done": 0,
+         "open": 1,
+         "oldestOpenDays": 28
+        }
+       },
+       {
+        "meeting": "Atruvia:m8",
+        "key": "2026-09-25 1:1 Bert 101/bert",
+        "agreed": [],
+        "agreements": [],
+        "counts": {
+         "agreed": 0,
+         "done": 0,
+         "open": 0,
+         "oldestOpenDays": null
+        }
+       },
+       {
+        "meeting": "Atruvia:m14",
+        "key": "2026-09-05 1:1 Bert 101/bert",
+        "agreed": [],
+        "agreements": [],
+        "counts": {
+         "agreed": 0,
+         "done": 0,
+         "open": 0,
+         "oldestOpenDays": null
+        }
+       },
+       {
+        "meeting": "Atruvia:m58",
+        "key": "2026-08-19 1:1 Bert 101/bert",
+        "agreed": [],
+        "agreements": [],
+        "counts": {
+         "agreed": 0,
+         "done": 0,
+         "open": 0,
+         "oldestOpenDays": null
+        }
+       },
+       {
+        "meeting": "Atruvia:m51",
+        "key": "2026-08-11 1:1 Bert 101/bert",
+        "agreed": [],
+        "agreements": [],
+        "counts": {
+         "agreed": 0,
+         "done": 0,
+         "open": 0,
+         "oldestOpenDays": null
+        }
+       },
+       {
+        "meeting": "Migration:m10",
+        "key": "2026-07-17 1:1 Bert 101/bert",
+        "agreed": [],
+        "agreements": [
+         "Atruvia:a7"
+        ],
+        "counts": {
+         "agreed": 0,
+         "done": 0,
+         "open": 0,
+         "oldestOpenDays": null
+        }
+       },
+       {
+        "meeting": "Atruvia:m13",
+        "key": "2026-06-26 1:1 Bert 101/bert",
+        "agreed": [
+         "Atruvia:t38"
+        ],
+        "agreements": [],
+        "counts": {
+         "agreed": 1,
+         "done": 0,
+         "open": 1,
+         "oldestOpenDays": 82
+        }
+       },
+       {
+        "meeting": "Atruvia:m43",
+        "key": "2026-06-22 1:1 Bert 101/bert",
+        "agreed": [],
+        "agreements": [],
+        "counts": {
+         "agreed": 0,
+         "done": 0,
+         "open": 0,
+         "oldestOpenDays": null
+        }
+       }
+      ]
+     }
+    },
+    {
+     "leaf": "beta",
+     "status": "active",
+     "threads": [
+      "retro/beta"
+     ],
+     "oneOff": null,
+     "inUse": true,
+     "backInUse": false,
+     "owner": "Atruvia",
+     "tag": "retro/beta",
+     "lastMeeting": "2026-10-15",
+     "nextMeeting": "2026-11-16",
+     "oweCount": 1,
+     "waitingCount": 0,
+     "oldestWaitingDays": null,
+     "overview": {
+      "lens": "counterpart",
+      "thread": "retro/beta",
+      "owner": "Atruvia",
+      "scope": [
+       "Tender",
+       "Migration",
+       "Atruvia"
+      ],
+      "types": [
+       "retro"
+      ],
+      "ahead": {
+       "meetings": [
+        "Tender:m24",
+        "Atruvia:m26",
+        "Atruvia:m41"
+       ],
+       "owe": [
+        "Tender:t9"
+       ],
+       "waiting": [],
+       "relevant": [],
+       "someday": [
+        "Tender:t3"
+       ],
+       "agreements": [
+        "Atruvia:a2"
+       ]
+      },
+      "endedAgreements": [],
+      "since": {
+       "from": "2026-10-15",
+       "done": []
+      },
+      "past": [
+       {
+        "meeting": "Atruvia:m62",
+        "key": "2026-10-15 Retro Beta retro/beta/2026",
+        "agreed": [],
+        "agreements": [],
+        "counts": {
+         "agreed": 0,
+         "done": 0,
+         "open": 0,
+         "oldestOpenDays": null
+        }
+       },
+       {
+        "meeting": "Tender:m22",
+        "key": "2026-09-19 Retro Beta retro/beta",
+        "agreed": [],
+        "agreements": [],
+        "counts": {
+         "agreed": 0,
+         "done": 0,
+         "open": 0,
+         "oldestOpenDays": null
+        }
+       },
+       {
+        "meeting": "Migration:m22",
+        "key": "2026-08-13 Retro Beta retro/beta",
+        "agreed": [],
+        "agreements": [],
+        "counts": {
+         "agreed": 0,
+         "done": 0,
+         "open": 0,
+         "oldestOpenDays": null
+        }
+       },
+       {
+        "meeting": "Atruvia:m56",
+        "key": "2026-06-14 Retro Beta retro/beta",
+        "agreed": [],
+        "agreements": [],
+        "counts": {
+         "agreed": 0,
+         "done": 0,
+         "open": 0,
+         "oldestOpenDays": null
+        }
+       },
+       {
+        "meeting": "Tender:m0",
+        "key": "2026-06-06 Retro Beta retro/beta/2026",
+        "agreed": [],
+        "agreements": [
+         "Atruvia:a2"
+        ],
+        "counts": {
+         "agreed": 0,
+         "done": 0,
+         "open": 0,
+         "oldestOpenDays": null
+        }
+       },
+       {
+        "meeting": "Atruvia:m25",
+        "key": "2026-05-30 Retro Beta retro/beta",
+        "agreed": [
+         "Tender:t9"
+        ],
+        "agreements": [],
+        "counts": {
+         "agreed": 1,
+         "done": 0,
+         "open": 1,
+         "oldestOpenDays": 36
+        }
+       }
+      ]
+     }
+    },
+    {
+     "leaf": "board",
+     "status": "active",
+     "threads": [
+      "jf/board"
+     ],
+     "oneOff": null,
+     "inUse": true,
+     "backInUse": false,
+     "owner": "Atruvia",
+     "tag": "jf/board",
+     "lastMeeting": "2026-09-16",
+     "nextMeeting": "2026-11-15",
+     "oweCount": 1,
+     "waitingCount": 1,
+     "oldestWaitingDays": null,
+     "overview": {
+      "lens": "counterpart",
+      "thread": "jf/board",
+      "owner": "Atruvia",
+      "scope": [
+       "Tender",
+       "Migration",
+       "Atruvia"
+      ],
+      "types": [
+       "jf",
+       "wf",
+       "owe"
+      ],
+      "ahead": {
+       "meetings": [
+        "Atruvia:m6"
+       ],
+       "owe": [
+        "Atruvia:t42"
+       ],
+       "waiting": [
+        "Tender:t22"
+       ],
+       "relevant": [],
+       "someday": [],
+       "agreements": [
+        "Atruvia:a8"
+       ]
+      },
+      "endedAgreements": [],
+      "since": {
+       "from": "2026-09-16",
+       "done": []
+      },
+      "past": [
+       {
+        "meeting": "Atruvia:m76",
+        "key": "2026-09-16 Strategy offsite jf/board",
+        "agreed": [
+         "Atruvia:t42"
+        ],
+        "agreements": [
+         "Atruvia:a8"
+        ],
+        "counts": {
+         "agreed": 1,
+         "done": 0,
+         "open": 1,
+         "oldestOpenDays": 40
+        }
+       },
+       {
+        "meeting": "Tender:m8",
+        "key": "2026-09-13 Jour fixe Board: budget…",
+        "agreed": [],
+        "agreements": [],
+        "counts": {
+         "agreed": 0,
+         "done": 0,
+         "open": 0,
+         "oldestOpenDays": null
+        }
+       },
+       {
+        "meeting": "Migration:m3",
+        "key": "2026-09-12 Jour fixe Board: budget…",
+        "agreed": [],
+        "agreements": [],
+        "counts": {
+         "agreed": 0,
+         "done": 0,
+         "open": 0,
+         "oldestOpenDays": null
+        }
+       },
+       {
+        "meeting": "Atruvia:m16",
+        "key": "2026-09-02 Jour fixe Board: budget…",
+        "agreed": [],
+        "agreements": [],
+        "counts": {
+         "agreed": 0,
+         "done": 0,
+         "open": 0,
+         "oldestOpenDays": null
+        }
+       },
+       {
+        "meeting": "Atruvia:m49",
+        "key": "2026-08-18 Jour fixe Board: budget…",
+        "agreed": [],
+        "agreements": [],
+        "counts": {
+         "agreed": 0,
+         "done": 0,
+         "open": 0,
+         "oldestOpenDays": null
+        }
+       },
+       {
+        "meeting": "Atruvia:m61",
+        "key": "2026-07-29 Jour fixe Board: budget…",
+        "agreed": [],
+        "agreements": [],
+        "counts": {
+         "agreed": 0,
+         "done": 0,
+         "open": 0,
+         "oldestOpenDays": null
+        }
+       }
+      ]
+     }
+    },
+    {
+     "leaf": "carla",
+     "status": "active",
+     "threads": [
+      "101/carla"
+     ],
+     "oneOff": null,
+     "inUse": true,
+     "backInUse": false,
+     "owner": "Atruvia",
+     "tag": "101/carla",
+     "lastMeeting": "2026-10-12",
+     "nextMeeting": null,
+     "oweCount": 5,
+     "waitingCount": 0,
+     "oldestWaitingDays": null,
+     "overview": {
+      "lens": "counterpart",
+      "thread": "101/carla",
+      "owner": "Atruvia",
+      "scope": [
+       "Tender",
+       "Migration",
+       "Atruvia"
+      ],
+      "types": [
+       "101",
+       "owe"
+      ],
+      "ahead": {
+       "meetings": [],
+       "owe": [
+        "Migration:t8",
+        "Atruvia:t4",
+        "Atruvia:t17",
+        "Atruvia:t19",
+        "Atruvia:t45"
+       ],
+       "waiting": [],
+       "relevant": [
+        "Atruvia:t28"
+       ],
+       "someday": [],
+       "agreements": []
+      },
+      "endedAgreements": [],
+      "since": {
+       "from": "2026-10-12",
+       "done": []
+      },
+      "past": [
+       {
+        "meeting": "Tender:m16",
+        "key": "2026-10-12 1:1 Carla 101/carla",
+        "agreed": [
+         "Atruvia:t4",
+         "Atruvia:t19"
+        ],
+        "agreements": [],
+        "counts": {
+         "agreed": 2,
+         "done": 0,
+         "open": 2,
+         "oldestOpenDays": 160
+        }
+       },
+       {
+        "meeting": "Tender:m13",
+        "key": "2026-10-10 1:1 Carla 101/carla",
+        "agreed": [],
+        "agreements": [],
+        "counts": {
+         "agreed": 0,
+         "done": 0,
+         "open": 0,
+         "oldestOpenDays": null
+        }
+       },
+       {
+        "meeting": "Atruvia:m52",
+        "key": "2026-09-09 1:1 Carla 101/carla",
+        "agreed": [],
+        "agreements": [],
+        "counts": {
+         "agreed": 0,
+         "done": 0,
+         "open": 0,
+         "oldestOpenDays": null
+        }
+       },
+       {
+        "meeting": "Migration:m6",
+        "key": "2026-07-06 1:1 Carla 101/carla",
+        "agreed": [],
+        "agreements": [],
+        "counts": {
+         "agreed": 0,
+         "done": 0,
+         "open": 0,
+         "oldestOpenDays": null
+        }
+       },
+       {
+        "meeting": "Migration:m0",
+        "key": "2026-07-05 1:1 Carla 101/carla",
+        "agreed": [],
+        "agreements": [],
+        "counts": {
+         "agreed": 0,
+         "done": 0,
+         "open": 0,
+         "oldestOpenDays": null
+        }
+       },
+       {
+        "meeting": "Migration:m1",
+        "key": "2026-06-29 1:1 Carla 101/carla",
+        "agreed": [
+         "Migration:t8",
+         "Atruvia:t17",
+         "Atruvia:t21"
+        ],
+        "agreements": [],
+        "counts": {
+         "agreed": 3,
+         "done": 1,
+         "open": 2,
+         "oldestOpenDays": 139
+        }
+       }
+      ]
+     }
+    },
+    {
+     "leaf": "dirk",
+     "status": "active",
+     "threads": [
+      "101/dirk"
+     ],
+     "oneOff": null,
+     "inUse": true,
+     "backInUse": false,
+     "owner": "Atruvia",
+     "tag": "101/dirk",
+     "lastMeeting": "2026-10-21",
+     "nextMeeting": "2026-10-29",
+     "oweCount": 1,
+     "waitingCount": 0,
+     "oldestWaitingDays": null,
+     "overview": {
+      "lens": "counterpart",
+      "thread": "101/dirk",
+      "owner": "Atruvia",
+      "scope": [
+       "Tender",
+       "Migration",
+       "Atruvia"
+      ],
+      "types": [
+       "101",
+       "owe"
+      ],
+      "ahead": {
+       "meetings": [
+        "Atruvia:m18"
+       ],
+       "owe": [
+        "Migration:t7"
+       ],
+       "waiting": [],
+       "relevant": [],
+       "someday": [],
+       "agreements": [
+        "Atruvia:a4"
+       ]
+      },
+      "endedAgreements": [],
+      "since": {
+       "from": "2026-10-21",
+       "done": []
+      },
+      "past": [
+       {
+        "meeting": "Atruvia:m35",
+        "key": "2026-10-21 1:1 Dirk 101/dirk",
+        "agreed": [],
+        "agreements": [],
+        "counts": {
+         "agreed": 0,
+         "done": 0,
+         "open": 0,
+         "oldestOpenDays": null
+        }
+       },
+       {
+        "meeting": "Atruvia:m12",
+        "key": "2026-10-06 1:1 Dirk 101/dirk",
+        "agreed": [],
+        "agreements": [],
+        "counts": {
+         "agreed": 0,
+         "done": 0,
+         "open": 0,
+         "oldestOpenDays": null
+        }
+       },
+       {
+        "meeting": "Migration:m15",
+        "key": "2026-09-16 1:1 Dirk 101/dirk dirk",
+        "agreed": [],
+        "agreements": [
+         "Atruvia:a4"
+        ],
+        "counts": {
+         "agreed": 0,
+         "done": 0,
+         "open": 0,
+         "oldestOpenDays": null
+        }
+       },
+       {
+        "meeting": "Migration:m5",
+        "key": "2026-06-18 1:1 Dirk 101/dirk",
+        "agreed": [
+         "Migration:t7"
+        ],
+        "agreements": [],
+        "counts": {
+         "agreed": 1,
+         "done": 0,
+         "open": 1,
+         "oldestOpenDays": 130
+        }
+       },
+       {
+        "meeting": "Atruvia:m59",
+        "key": "2026-05-31 1:1 Dirk 101/dirk",
+        "agreed": [],
+        "agreements": [],
+        "counts": {
+         "agreed": 0,
+         "done": 0,
+         "open": 0,
+         "oldestOpenDays": null
+        }
+       }
+      ]
+     }
+    },
+    {
+     "leaf": "eva",
+     "status": "active",
+     "threads": [
+      "101/eva"
+     ],
+     "oneOff": null,
+     "inUse": true,
+     "backInUse": false,
+     "owner": "Atruvia",
+     "tag": "101/eva",
+     "lastMeeting": "2026-10-20",
+     "nextMeeting": "2026-11-03",
+     "oweCount": 5,
+     "waitingCount": 1,
+     "oldestWaitingDays": null,
+     "overview": {
+      "lens": "counterpart",
+      "thread": "101/eva",
+      "owner": "Atruvia",
+      "scope": [
+       "Tender",
+       "Migration",
+       "Atruvia"
+      ],
+      "types": [
+       "101",
+       "owe",
+       "wf"
+      ],
+      "ahead": {
+       "meetings": [
+        "Atruvia:m45",
+        "Tender:m2"
+       ],
+       "owe": [
+        "Tender:t1",
+        "Tender:t28",
+        "Migration:t3",
+        "Migration:t14",
+        "Atruvia:t3"
+       ],
+       "waiting": [
+        "Atruvia:t7"
+       ],
+       "relevant": [],
+       "someday": [],
+       "agreements": [
+        "Atruvia:a9"
+       ]
+      },
+      "endedAgreements": [],
+      "since": {
+       "from": "2026-10-20",
+       "done": []
+      },
+      "past": [
+       {
+        "meeting": "Atruvia:m5",
+        "key": "2026-10-20 1:1 Eva 101/eva",
+        "agreed": [],
+        "agreements": [],
+        "counts": {
+         "agreed": 0,
+         "done": 0,
+         "open": 0,
+         "oldestOpenDays": null
+        }
+       },
+       {
+        "meeting": "Atruvia:m81",
+        "key": "2026-10-08 1:1 Eva - goals 101/eva",
+        "agreed": [
+         "Tender:t28",
+         "Tender:t5"
+        ],
+        "agreements": [
+         "Atruvia:a9"
+        ],
+        "counts": {
+         "agreed": 2,
+         "done": 1,
+         "open": 1,
+         "oldestOpenDays": 18
+        }
+       },
+       {
+        "meeting": "Atruvia:m50",
+        "key": "2026-09-10 1:1 Eva 101/eva",
+        "agreed": [
+         "Migration:t14"
+        ],
+        "agreements": [],
+        "counts": {
+         "agreed": 1,
+         "done": 0,
+         "open": 1,
+         "oldestOpenDays": 46
+        }
+       }
+      ]
+     }
+    },
+    {
+     "leaf": "frank",
+     "status": "active",
+     "threads": [
+      "101/frank"
+     ],
+     "oneOff": null,
+     "inUse": true,
+     "backInUse": false,
+     "owner": "Atruvia",
+     "tag": "101/frank",
+     "lastMeeting": "2026-10-11",
+     "nextMeeting": "2026-11-09",
+     "oweCount": 0,
+     "waitingCount": 2,
+     "oldestWaitingDays": null,
+     "overview": {
+      "lens": "counterpart",
+      "thread": "101/frank",
+      "owner": "Atruvia",
+      "scope": [
+       "Tender",
+       "Migration",
+       "Atruvia"
+      ],
+      "types": [
+       "101",
+       "wf"
+      ],
+      "ahead": {
+       "meetings": [
+        "Atruvia:m24"
+       ],
+       "owe": [],
+       "waiting": [
+        "Tender:t16",
+        "Tender:t24"
+       ],
+       "relevant": [],
+       "someday": [],
+       "agreements": [
+        "Tender:a3"
+       ]
+      },
+      "endedAgreements": [],
+      "since": {
+       "from": "2026-10-11",
+       "done": []
+      },
+      "past": [
+       {
+        "meeting": "Migration:m23",
+        "key": "2026-10-11 1:1 Frank 101/frank",
+        "agreed": [
+         "Atruvia:t24"
+        ],
+        "agreements": [],
+        "counts": {
+         "agreed": 1,
+         "done": 1,
+         "open": 0,
+         "oldestOpenDays": null
+        }
+       },
+       {
+        "meeting": "Atruvia:m34",
+        "key": "2026-10-11 1:1 Frank 101/frank",
+        "agreed": [],
+        "agreements": [],
+        "counts": {
+         "agreed": 0,
+         "done": 0,
+         "open": 0,
+         "oldestOpenDays": null
+        }
+       },
+       {
+        "meeting": "Atruvia:m53",
+        "key": "2026-10-05 1:1 Frank 101/frank",
+        "agreed": [],
+        "agreements": [
+         "Tender:a3"
+        ],
+        "counts": {
+         "agreed": 0,
+         "done": 0,
+         "open": 0,
+         "oldestOpenDays": null
+        }
+       }
+      ]
+     }
+    },
+    {
+     "leaf": "gamma",
+     "status": "active",
+     "threads": [
+      "retro/gamma",
+      "101/gamma"
+     ],
+     "oneOff": null,
+     "inUse": true,
+     "backInUse": false,
+     "owner": "Atruvia",
+     "tag": "retro/gamma",
+     "lastMeeting": "2026-10-17",
+     "nextMeeting": "2026-10-29",
+     "oweCount": 0,
+     "waitingCount": 0,
+     "oldestWaitingDays": null,
+     "overview": {
+      "lens": "counterpart",
+      "thread": "retro/gamma",
+      "owner": "Atruvia",
+      "scope": [
+       "Tender",
+       "Migration",
+       "Atruvia"
+      ],
+      "types": [
+       "retro",
+       "wf",
+       "101"
+      ],
+      "ahead": {
+       "meetings": [
+        "Migration:m11",
+        "Atruvia:m21",
+        "Migration:m8",
+        "Atruvia:m55",
+        "Atruvia:m4"
+       ],
+       "owe": [],
+       "waiting": [],
+       "relevant": [
+        "Tender:t10"
+       ],
+       "someday": [],
+       "agreements": [
+        "Atruvia:a3"
+       ]
+      },
+      "endedAgreements": [
+       "Atruvia:a1",
+       "Atruvia:a6"
+      ],
+      "since": {
+       "from": "2026-10-17",
+       "done": []
+      },
+      "past": [
+       {
+        "meeting": "Atruvia:m27",
+        "key": "2026-10-17 Retro Gamma with the whole…",
+        "agreed": [
+         "Tender:t23"
+        ],
+        "agreements": [],
+        "counts": {
+         "agreed": 1,
+         "done": 1,
+         "open": 0,
+         "oldestOpenDays": null
+        }
+       },
+       {
+        "meeting": "Migration:m21",
+        "key": "2026-09-06 Retro Gamma with the whole…",
+        "agreed": [],
+        "agreements": [
+         "Atruvia:a6"
+        ],
+        "counts": {
+         "agreed": 0,
+         "done": 0,
+         "open": 0,
+         "oldestOpenDays": null
+        }
+       },
+       {
+        "meeting": "Tender:m21",
+        "key": "2026-07-27 Retro Gamma with the whole…",
+        "agreed": [],
+        "agreements": [],
+        "counts": {
+         "agreed": 0,
+         "done": 0,
+         "open": 0,
+         "oldestOpenDays": null
+        }
+       },
+       {
+        "meeting": "Migration:m13",
+        "key": "2026-06-17 Retro Gamma with the whole…",
+        "agreed": [],
+        "agreements": [],
+        "counts": {
+         "agreed": 0,
+         "done": 0,
+         "open": 0,
+         "oldestOpenDays": null
+        }
+       }
+      ]
+     }
+    },
+    {
+     "leaf": "greta",
+     "status": "active",
+     "threads": [
+      "101/greta"
+     ],
+     "oneOff": null,
+     "inUse": true,
+     "backInUse": false,
+     "owner": "Atruvia",
+     "tag": "101/greta",
+     "lastMeeting": "2026-10-22",
+     "nextMeeting": "2026-11-06",
+     "oweCount": 2,
+     "waitingCount": 0,
+     "oldestWaitingDays": null,
+     "overview": {
+      "lens": "counterpart",
+      "thread": "101/greta",
+      "owner": "Atruvia",
+      "scope": [
+       "Tender",
+       "Migration",
+       "Atruvia"
+      ],
+      "types": [
+       "101",
+       "owe"
+      ],
+      "ahead": {
+       "meetings": [
+        "Atruvia:m3"
+       ],
+       "owe": [
+        "Migration:t16",
+        "Atruvia:t44"
+       ],
+       "waiting": [],
+       "relevant": [],
+       "someday": [],
+       "agreements": [
+        "Atruvia:a0"
+       ]
+      },
+      "endedAgreements": [
+       "Tender:a1"
+      ],
+      "since": {
+       "from": "2026-10-22",
+       "done": []
+      },
+      "past": [
+       {
+        "meeting": "Atruvia:m20",
+        "key": "2026-10-22 1:1 Greta 101/greta",
+        "agreed": [],
+        "agreements": [
+         "Tender:a1"
+        ],
+        "counts": {
+         "agreed": 0,
+         "done": 0,
+         "open": 0,
+         "oldestOpenDays": null
+        }
+       },
+       {
+        "meeting": "Atruvia:m77",
+        "key": "2026-09-23 1:1 Greta 101/greta",
+        "agreed": [
+         "Atruvia:t44"
+        ],
+        "agreements": [
+         "Atruvia:a0"
+        ],
+        "counts": {
+         "agreed": 1,
+         "done": 0,
+         "open": 1,
+         "oldestOpenDays": 33
+        }
+       },
+       {
+        "meeting": "Atruvia:m78",
+        "key": "2026-09-23 1:1 Greta 101/greta",
+        "agreed": [],
+        "agreements": [],
+        "counts": {
+         "agreed": 0,
+         "done": 0,
+         "open": 0,
+         "oldestOpenDays": null
+        }
+       },
+       {
+        "meeting": "Atruvia:m42",
+        "key": "2026-06-05 1:1 Greta 101/greta",
+        "agreed": [],
+        "agreements": [],
+        "counts": {
+         "agreed": 0,
+         "done": 0,
+         "open": 0,
+         "oldestOpenDays": null
+        }
+       }
+      ]
+     }
+    },
+    {
+     "leaf": "hans",
+     "status": "active",
+     "threads": [
+      "101/hans"
+     ],
+     "oneOff": null,
+     "inUse": true,
+     "backInUse": false,
+     "owner": "Atruvia",
+     "tag": "101/hans",
+     "lastMeeting": "2026-09-11",
+     "nextMeeting": "2026-11-03",
+     "oweCount": 1,
+     "waitingCount": 0,
+     "oldestWaitingDays": null,
+     "overview": {
+      "lens": "counterpart",
+      "thread": "101/hans",
+      "owner": "Atruvia",
+      "scope": [
+       "Tender",
+       "Migration",
+       "Atruvia"
+      ],
+      "types": [
+       "101"
+      ],
+      "ahead": {
+       "meetings": [
+        "Atruvia:m9"
+       ],
+       "owe": [
+        "Atruvia:t37"
+       ],
+       "waiting": [],
+       "relevant": [
+        "Migration:t2"
+       ],
+       "someday": [],
+       "agreements": []
+      },
+      "endedAgreements": [],
+      "since": {
+       "from": "2026-09-11",
+       "done": []
+      },
+      "past": [
+       {
+        "meeting": "Tender:m19",
+        "key": "2026-09-11 1:1 Hans 101/hans",
+        "agreed": [
+         "Atruvia:t37"
+        ],
+        "agreements": [],
+        "counts": {
+         "agreed": 1,
+         "done": 0,
+         "open": 1,
+         "oldestOpenDays": 45
+        }
+       },
+       {
+        "meeting": "Migration:m20",
+        "key": "2026-06-04 1:1 Hans 101/hans",
+        "agreed": [],
+        "agreements": [],
+        "counts": {
+         "agreed": 0,
+         "done": 0,
+         "open": 0,
+         "oldestOpenDays": null
+        }
+       }
+      ]
+     }
+    },
+    {
+     "leaf": "ines",
+     "status": "active",
+     "threads": [
+      "101/ines"
+     ],
+     "oneOff": null,
+     "inUse": true,
+     "backInUse": false,
+     "owner": "Atruvia",
+     "tag": "101/ines",
+     "lastMeeting": "2026-09-20",
+     "nextMeeting": null,
+     "oweCount": 0,
+     "waitingCount": 2,
+     "oldestWaitingDays": 89,
+     "overview": {
+      "lens": "counterpart",
+      "thread": "101/ines",
+      "owner": "Atruvia",
+      "scope": [
+       "Tender",
+       "Migration",
+       "Atruvia"
+      ],
+      "types": [
+       "101",
+       "wf",
+       "owe"
+      ],
+      "ahead": {
+       "meetings": [],
+       "owe": [],
+       "waiting": [
+        "Tender:t19",
+        "Migration:t1"
+       ],
+       "relevant": [],
+       "someday": [],
+       "agreements": []
+      },
+      "endedAgreements": [],
+      "since": {
+       "from": "2026-09-20",
+       "done": []
+      },
+      "past": [
+       {
+        "meeting": "Migration:m4",
+        "key": "2026-09-20 1:1 Ines 101/ines",
+        "agreed": [
+         "Migration:t1"
+        ],
+        "agreements": [],
+        "counts": {
+         "agreed": 1,
+         "done": 0,
+         "open": 1,
+         "oldestOpenDays": 59
+        }
+       }
+      ]
+     }
+    },
+    {
+     "leaf": "it",
+     "status": "active",
+     "threads": [
+      "101/it",
+      "jf/it"
+     ],
+     "oneOff": null,
+     "inUse": true,
+     "backInUse": false,
+     "owner": "Atruvia",
+     "tag": "101/it",
+     "lastMeeting": "2026-10-24",
+     "nextMeeting": "2026-11-17",
+     "oweCount": 0,
+     "waitingCount": 0,
+     "oldestWaitingDays": null,
+     "overview": {
+      "lens": "counterpart",
+      "thread": "101/it",
+      "owner": "Atruvia",
+      "scope": [
+       "Tender",
+       "Migration",
+       "Atruvia"
+      ],
+      "types": [
+       "101",
+       "jf"
+      ],
+      "ahead": {
+       "meetings": [
+        "Migration:m19"
+       ],
+       "owe": [],
+       "waiting": [],
+       "relevant": [
+        "Atruvia:t16"
+       ],
+       "someday": [],
+       "agreements": []
+      },
+      "endedAgreements": [],
+      "since": {
+       "from": "2026-10-24",
+       "done": []
+      },
+      "past": [
+       {
+        "meeting": "Tender:m1",
+        "key": "2026-10-24 JF IT jf/it",
+        "agreed": [],
+        "agreements": [],
+        "counts": {
+         "agreed": 0,
+         "done": 0,
+         "open": 0,
+         "oldestOpenDays": null
+        }
+       },
+       {
+        "meeting": "Atruvia:m17",
+        "key": "2026-06-09 JF IT jf/it it",
+        "agreed": [],
+        "agreements": [],
+        "counts": {
+         "agreed": 0,
+         "done": 0,
+         "open": 0,
+         "oldestOpenDays": null
+        }
+       }
+      ]
+     }
+    },
+    {
+     "leaf": "mieke",
+     "status": "active",
+     "threads": [
+      "sparring/mieke"
+     ],
+     "oneOff": null,
+     "inUse": true,
+     "backInUse": false,
+     "owner": "Atruvia",
+     "tag": "sparring/mieke",
+     "lastMeeting": "2026-10-19",
+     "nextMeeting": "2026-10-30",
+     "oweCount": 2,
+     "waitingCount": 0,
+     "oldestWaitingDays": null,
+     "overview": {
+      "lens": "counterpart",
+      "thread": "sparring/mieke",
+      "owner": "Atruvia",
+      "scope": [
+       "Tender",
+       "Migration",
+       "Atruvia"
+      ],
+      "types": [
+       "sparring"
+      ],
+      "ahead": {
+       "meetings": [
+        "Tender:m9",
+        "Atruvia:m54",
+        "Atruvia:m33"
+       ],
+       "owe": [
+        "Tender:t11",
+        "Atruvia:t30"
+       ],
+       "waiting": [],
+       "relevant": [],
+       "someday": [],
+       "agreements": []
+      },
+      "endedAgreements": [],
+      "since": {
+       "from": "2026-10-19",
+       "done": []
+      },
+      "past": [
+       {
+        "meeting": "Atruvia:m66",
+        "key": "2026-10-19 Sparring Mieke sparring/mieke",
+        "agreed": [],
+        "agreements": [],
+        "counts": {
+         "agreed": 0,
+         "done": 0,
+         "open": 0,
+         "oldestOpenDays": null
+        }
+       },
+       {
+        "meeting": "Atruvia:m47",
+        "key": "2026-09-14 Sparring Mieke",
+        "agreed": [],
+        "agreements": [],
+        "counts": {
+         "agreed": 0,
+         "done": 0,
+         "open": 0,
+         "oldestOpenDays": null
+        }
+       },
+       {
+        "meeting": "Atruvia:m31",
+        "key": "2026-08-11 Sparring Mieke sparring/mieke",
+        "agreed": [],
+        "agreements": [],
+        "counts": {
+         "agreed": 0,
+         "done": 0,
+         "open": 0,
+         "oldestOpenDays": null
+        }
+       },
+       {
+        "meeting": "Migration:m7",
+        "key": "2026-08-08 Sparring Mieke sparring/mieke",
+        "agreed": [],
+        "agreements": [],
+        "counts": {
+         "agreed": 0,
+         "done": 0,
+         "open": 0,
+         "oldestOpenDays": null
+        }
+       },
+       {
+        "meeting": "Atruvia:m57",
+        "key": "2026-07-02 Sparring Mieke sparring/mieke",
+        "agreed": [],
+        "agreements": [],
+        "counts": {
+         "agreed": 0,
+         "done": 0,
+         "open": 0,
+         "oldestOpenDays": null
+        }
+       },
+       {
+        "meeting": "Tender:m17",
+        "key": "2026-06-07 Sparring Mieke sparring/mieke",
+        "agreed": [
+         "Tender:t11",
+         "Atruvia:t30"
+        ],
+        "agreements": [],
+        "counts": {
+         "agreed": 2,
+         "done": 0,
+         "open": 2,
+         "oldestOpenDays": 150
+        }
+       }
+      ]
+     }
+    },
+    {
+     "leaf": "sven",
+     "status": "active",
+     "threads": [
+      "sparring/sven"
+     ],
+     "oneOff": null,
+     "inUse": true,
+     "backInUse": false,
+     "owner": "Atruvia",
+     "tag": "sparring/sven",
+     "lastMeeting": "2026-10-14",
+     "nextMeeting": null,
+     "oweCount": 1,
+     "waitingCount": 1,
+     "oldestWaitingDays": null,
+     "overview": {
+      "lens": "counterpart",
+      "thread": "sparring/sven",
+      "owner": "Atruvia",
+      "scope": [
+       "Tender",
+       "Migration",
+       "Atruvia"
+      ],
+      "types": [
+       "sparring",
+       "wf"
+      ],
+      "ahead": {
+       "meetings": [],
+       "owe": [
+        "Atruvia:t2"
+       ],
+       "waiting": [
+        "Atruvia:t26"
+       ],
+       "relevant": [],
+       "someday": [],
+       "agreements": []
+      },
+      "endedAgreements": [],
+      "since": {
+       "from": "2026-10-14",
+       "done": []
+      },
+      "past": [
+       {
+        "meeting": "Atruvia:m46",
+        "key": "2026-10-14 Sparring Sven sparring/sven",
+        "agreed": [],
+        "agreements": [],
+        "counts": {
+         "agreed": 0,
+         "done": 0,
+         "open": 0,
+         "oldestOpenDays": null
+        }
+       },
+       {
+        "meeting": "Atruvia:m28",
+        "key": "2026-06-27 Sparring Sven sparring/sven",
+        "agreed": [
+         "Atruvia:t2"
+        ],
+        "agreements": [],
+        "counts": {
+         "agreed": 1,
+         "done": 0,
+         "open": 1,
+         "oldestOpenDays": 1
+        }
+       },
+       {
+        "meeting": "Migration:m17",
+        "key": "2026-06-23 Sparring Sven sparring/sven",
+        "agreed": [],
+        "agreements": [],
+        "counts": {
+         "agreed": 0,
+         "done": 0,
+         "open": 0,
+         "oldestOpenDays": null
+        }
+       }
+      ]
+     }
+    },
+    {
+     "leaf": "works",
+     "status": "active",
+     "threads": [
+      "jf/works"
+     ],
+     "oneOff": null,
+     "inUse": true,
+     "backInUse": false,
+     "owner": "Atruvia",
+     "tag": "jf/works",
+     "lastMeeting": "2026-07-28",
+     "nextMeeting": "2026-11-23",
+     "oweCount": 3,
+     "waitingCount": 0,
+     "oldestWaitingDays": null,
+     "overview": {
+      "lens": "counterpart",
+      "thread": "jf/works",
+      "owner": "Atruvia",
+      "scope": [
+       "Tender",
+       "Migration",
+       "Atruvia"
+      ],
+      "types": [
+       "jf",
+       "owe"
+      ],
+      "ahead": {
+       "meetings": [
+        "Tender:m23",
+        "Migration:m12"
+       ],
+       "owe": [
+        "Tender:t2",
+        "Tender:t4",
+        "Migration:t17"
+       ],
+       "waiting": [],
+       "relevant": [],
+       "someday": [],
+       "agreements": []
+      },
+      "endedAgreements": [],
+      "since": {
+       "from": "2026-07-28",
+       "done": []
+      },
+      "past": [
+       {
+        "meeting": "Atruvia:m10",
+        "key": "2026-07-28 Jour fixe works council",
+        "agreed": [
+         "Tender:t2"
+        ],
+        "agreements": [],
+        "counts": {
+         "agreed": 1,
+         "done": 0,
+         "open": 1,
+         "oldestOpenDays": 90
+        }
+       },
+       {
+        "meeting": "Tender:m4",
+        "key": "2026-07-24 Jour fixe works council",
+        "agreed": [],
+        "agreements": [],
+        "counts": {
+         "agreed": 0,
+         "done": 0,
+         "open": 0,
+         "oldestOpenDays": null
+        }
+       },
+       {
+        "meeting": "Tender:m6",
+        "key": "2026-07-07 Jour fixe works council",
+        "agreed": [],
+        "agreements": [],
+        "counts": {
+         "agreed": 0,
+         "done": 0,
+         "open": 0,
+         "oldestOpenDays": null
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "inactive": [
+    {
+     "leaf": "gone",
+     "status": "inactive",
+     "threads": [],
+     "oneOff": null,
+     "inUse": false,
+     "backInUse": false,
+     "owner": "Atruvia",
+     "tag": "wf/gone",
+     "lastMeeting": null,
+     "nextMeeting": null,
+     "oweCount": 0,
+     "waitingCount": 0,
+     "oldestWaitingDays": null,
+     "overview": {
+      "lens": "counterpart",
+      "thread": "wf/gone",
+      "owner": "Atruvia",
+      "scope": [
+       "Tender",
+       "Migration",
+       "Atruvia"
+      ],
+      "types": [
+       "wf"
+      ],
+      "ahead": {
+       "meetings": [],
+       "owe": [],
+       "waiting": [],
+       "relevant": [],
+       "someday": [],
+       "agreements": []
+      },
+      "endedAgreements": [],
+      "since": {
+       "from": null,
+       "done": []
+      },
+      "past": []
+     }
+    }
+   ]
+  },
+  {
+   "owner": "Zen",
+   "confirm": [
+    {
+     "leaf": "anna",
+     "status": "new",
+     "threads": [
+      "101/anna"
+     ],
+     "oneOff": null,
+     "inUse": true,
+     "backInUse": false,
+     "owner": "Zen",
+     "tag": "101/anna",
+     "lastMeeting": "2026-10-23",
+     "nextMeeting": null,
+     "oweCount": 0,
+     "waitingCount": 0,
+     "oldestWaitingDays": null,
+     "overview": {
+      "lens": "counterpart",
+      "thread": "101/anna",
+      "owner": "Zen",
+      "scope": [
+       "Zen"
+      ],
+      "types": [
+       "101"
+      ],
+      "ahead": {
+       "meetings": [],
+       "owe": [],
+       "waiting": [],
+       "relevant": [],
+       "someday": [],
+       "agreements": []
+      },
+      "endedAgreements": [],
+      "since": {
+       "from": "2026-10-23",
+       "done": []
+      },
+      "past": [
+       {
+        "meeting": "Zen:m4",
+        "key": "2026-10-23 1:1 Anna 101/anna",
+        "agreed": [],
+        "agreements": [],
+        "counts": {
+         "agreed": 0,
+         "done": 0,
+         "open": 0,
+         "oldestOpenDays": null
+        }
+       }
+      ]
+     }
+    },
+    {
+     "leaf": "board",
+     "status": "new",
+     "threads": [
+      "jf/board"
+     ],
+     "oneOff": null,
+     "inUse": true,
+     "backInUse": false,
+     "owner": "Zen",
+     "tag": "jf/board",
+     "lastMeeting": "2026-09-18",
+     "nextMeeting": null,
+     "oweCount": 1,
+     "waitingCount": 0,
+     "oldestWaitingDays": null,
+     "overview": {
+      "lens": "counterpart",
+      "thread": "jf/board",
+      "owner": "Zen",
+      "scope": [
+       "Zen"
+      ],
+      "types": [
+       "jf"
+      ],
+      "ahead": {
+       "meetings": [],
+       "owe": [
+        "Zen:t1"
+       ],
+       "waiting": [],
+       "relevant": [],
+       "someday": [],
+       "agreements": []
+      },
+      "endedAgreements": [],
+      "since": {
+       "from": "2026-09-18",
+       "done": []
+      },
+      "past": [
+       {
+        "meeting": "Zen:m1",
+        "key": "2026-09-18 Zen planning jf/board",
+        "agreed": [],
+        "agreements": [],
+        "counts": {
+         "agreed": 0,
+         "done": 0,
+         "open": 0,
+         "oldestOpenDays": null
+        }
+       },
+       {
+        "meeting": "Zen:m0",
+        "key": "2026-09-16 Strategy offsite jf/board",
+        "agreed": [
+         "Zen:t1"
+        ],
+        "agreements": [],
+        "counts": {
+         "agreed": 1,
+         "done": 0,
+         "open": 1,
+         "oldestOpenDays": 40
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "active": [
+    {
+     "leaf": "morning",
+     "status": "active",
+     "threads": [],
+     "oneOff": null,
+     "inUse": false,
+     "backInUse": false,
+     "owner": "Zen",
+     "tag": "wf/morning",
+     "lastMeeting": "2026-10-12",
+     "nextMeeting": "2026-11-02",
+     "oweCount": 1,
+     "waitingCount": 0,
+     "oldestWaitingDays": null,
+     "overview": {
+      "lens": "counterpart",
+      "thread": "wf/morning",
+      "owner": "Zen",
+      "scope": [
+       "Zen"
+      ],
+      "types": [
+       "wf",
+       "sangha"
+      ],
+      "ahead": {
+       "meetings": [
+        "Zen:m3"
+       ],
+       "owe": [
+        "Zen:t0"
+       ],
+       "waiting": [],
+       "relevant": [],
+       "someday": [],
+       "agreements": []
+      },
+      "endedAgreements": [],
+      "since": {
+       "from": "2026-10-12",
+       "done": []
+      },
+      "past": [
+       {
+        "meeting": "Zen:m2",
+        "key": "2026-10-12 Sitting group sangha/morning",
+        "agreed": [
+         "Zen:t0"
+        ],
+        "agreements": [],
+        "counts": {
+         "agreed": 1,
+         "done": 0,
+         "open": 1,
+         "oldestOpenDays": 14
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "inactive": []
+  },
+  {
+   "owner": "Solo",
+   "confirm": [
+    {
+     "leaf": "omega",
+     "status": "new",
+     "threads": [
+      "retro/omega"
+     ],
+     "oneOff": null,
+     "inUse": true,
+     "backInUse": false,
+     "owner": "Solo",
+     "tag": "retro/omega",
+     "lastMeeting": "2026-10-17",
+     "nextMeeting": "2026-10-31",
+     "oweCount": 1,
+     "waitingCount": 0,
+     "oldestWaitingDays": null,
+     "overview": {
+      "lens": "counterpart",
+      "thread": "retro/omega",
+      "owner": "Solo",
+      "scope": [
+       "Solo"
+      ],
+      "types": [
+       "retro"
+      ],
+      "ahead": {
+       "meetings": [
+        "Solo:m1"
+       ],
+       "owe": [
+        "Solo:t0"
+       ],
+       "waiting": [],
+       "relevant": [],
+       "someday": [],
+       "agreements": []
+      },
+      "endedAgreements": [],
+      "since": {
+       "from": "2026-10-17",
+       "done": []
+      },
+      "past": [
+       {
+        "meeting": "Solo:m0",
+        "key": "2026-10-17 Retro Omega retro/omega",
+        "agreed": [
+         "Solo:t0"
+        ],
+        "agreements": [],
+        "counts": {
+         "agreed": 1,
+         "done": 0,
+         "open": 1,
+         "oldestOpenDays": 9
+        }
+       }
+      ]
+     }
+    }
+   ],
+   "active": [],
+   "inactive": []
+  }
+ ],
+ "overviews": [
+  {
+   "tag": "101/anna",
+   "lens": "thread",
+   "owner": "Atruvia",
+   "overview": {
+    "lens": "thread",
+    "thread": "101/anna",
+    "owner": "Atruvia",
+    "scope": [
+     "Tender",
+     "Migration",
+     "Atruvia"
+    ],
+    "types": [
+     "101",
+     "wf",
+     "owe",
+     "retro"
+    ],
+    "ahead": {
+     "meetings": [
+      "Atruvia:m29",
+      "Tender:m12",
+      "Atruvia:m37"
+     ],
+     "owe": [
+      "Tender:t7",
+      "Atruvia:t34"
+     ],
+     "waiting": [
+      "Atruvia:t8",
+      "Atruvia:t12",
+      "Atruvia:t39"
+     ],
+     "relevant": [
+      "Atruvia:t31"
+     ],
+     "someday": [],
+     "agreements": []
+    },
+    "endedAgreements": [],
+    "since": {
+     "from": "2026-10-24",
+     "done": []
+    },
+    "past": [
+     {
+      "meeting": "Atruvia:m71",
+      "key": "2026-10-24 Retro with Anna",
+      "agreed": [
+       "Atruvia:t12"
+      ],
+      "agreements": [],
+      "counts": {
+       "agreed": 1,
+       "done": 0,
+       "open": 1,
+       "oldestOpenDays": 62
+      }
+     },
+     {
+      "meeting": "Atruvia:m67",
+      "key": "2026-10-19 1:1 Anna 101/anna",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Atruvia:m63",
+      "key": "2026-10-13 1:1 Anna 101/anna",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Atruvia:m65",
+      "key": "2026-09-26 1:1 Anna 101/anna",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Atruvia:m1",
+      "key": "2026-09-16 1:1 Anna 101/anna",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Atruvia:m38",
+      "key": "2026-09-06 1:1 Anna 101/anna",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Tender:m5",
+      "key": "2026-08-12 1:1 Anna 101/anna",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Atruvia:m44",
+      "key": "2026-07-26 1:1 Anna 101/anna",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Atruvia:m30",
+      "key": "2026-07-15 1:1 Anna 101/anna",
+      "agreed": [
+       "Tender:t15"
+      ],
+      "agreements": [],
+      "counts": {
+       "agreed": 1,
+       "done": 1,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Atruvia:m7",
+      "key": "2026-06-01 1:1 Anna 101/anna anna",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     }
+    ]
+   }
+  },
+  {
+   "tag": "101/anna",
+   "lens": "thread",
+   "owner": null,
+   "overview": {
+    "lens": "thread",
+    "thread": "101/anna",
+    "owner": "Atruvia",
+    "scope": [
+     "Tender",
+     "Migration",
+     "Atruvia"
+    ],
+    "types": [
+     "101",
+     "wf",
+     "owe",
+     "retro"
+    ],
+    "ahead": {
+     "meetings": [
+      "Atruvia:m29",
+      "Tender:m12",
+      "Atruvia:m37"
+     ],
+     "owe": [
+      "Tender:t7",
+      "Atruvia:t34"
+     ],
+     "waiting": [
+      "Atruvia:t8",
+      "Atruvia:t12",
+      "Atruvia:t39"
+     ],
+     "relevant": [
+      "Atruvia:t31"
+     ],
+     "someday": [],
+     "agreements": []
+    },
+    "endedAgreements": [],
+    "since": {
+     "from": "2026-10-24",
+     "done": []
+    },
+    "past": [
+     {
+      "meeting": "Atruvia:m71",
+      "key": "2026-10-24 Retro with Anna",
+      "agreed": [
+       "Atruvia:t12"
+      ],
+      "agreements": [],
+      "counts": {
+       "agreed": 1,
+       "done": 0,
+       "open": 1,
+       "oldestOpenDays": 62
+      }
+     },
+     {
+      "meeting": "Atruvia:m67",
+      "key": "2026-10-19 1:1 Anna 101/anna",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Atruvia:m63",
+      "key": "2026-10-13 1:1 Anna 101/anna",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Atruvia:m65",
+      "key": "2026-09-26 1:1 Anna 101/anna",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Atruvia:m1",
+      "key": "2026-09-16 1:1 Anna 101/anna",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Atruvia:m38",
+      "key": "2026-09-06 1:1 Anna 101/anna",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Tender:m5",
+      "key": "2026-08-12 1:1 Anna 101/anna",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Atruvia:m44",
+      "key": "2026-07-26 1:1 Anna 101/anna",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Atruvia:m30",
+      "key": "2026-07-15 1:1 Anna 101/anna",
+      "agreed": [
+       "Tender:t15"
+      ],
+      "agreements": [],
+      "counts": {
+       "agreed": 1,
+       "done": 1,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Atruvia:m7",
+      "key": "2026-06-01 1:1 Anna 101/anna anna",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     }
+    ]
+   }
+  },
+  {
+   "tag": "101/anna",
+   "lens": "counterpart",
+   "owner": "Atruvia",
+   "overview": {
+    "lens": "counterpart",
+    "thread": "101/anna",
+    "owner": "Atruvia",
+    "scope": [
+     "Tender",
+     "Migration",
+     "Atruvia"
+    ],
+    "types": [
+     "101",
+     "wf",
+     "owe",
+     "retro"
+    ],
+    "ahead": {
+     "meetings": [
+      "Atruvia:m29",
+      "Tender:m12",
+      "Atruvia:m37"
+     ],
+     "owe": [
+      "Tender:t7",
+      "Atruvia:t31",
+      "Atruvia:t33",
+      "Atruvia:t34"
+     ],
+     "waiting": [
+      "Atruvia:t8",
+      "Atruvia:t12",
+      "Atruvia:t39"
+     ],
+     "relevant": [],
+     "someday": [],
+     "agreements": []
+    },
+    "endedAgreements": [],
+    "since": {
+     "from": "2026-10-24",
+     "done": []
+    },
+    "past": [
+     {
+      "meeting": "Atruvia:m71",
+      "key": "2026-10-24 Retro with Anna",
+      "agreed": [
+       "Atruvia:t12"
+      ],
+      "agreements": [],
+      "counts": {
+       "agreed": 1,
+       "done": 0,
+       "open": 1,
+       "oldestOpenDays": 62
+      }
+     },
+     {
+      "meeting": "Atruvia:m67",
+      "key": "2026-10-19 1:1 Anna 101/anna",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Atruvia:m63",
+      "key": "2026-10-13 1:1 Anna 101/anna",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Atruvia:m65",
+      "key": "2026-09-26 1:1 Anna 101/anna",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Atruvia:m1",
+      "key": "2026-09-16 1:1 Anna 101/anna",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Atruvia:m38",
+      "key": "2026-09-06 1:1 Anna 101/anna",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Tender:m5",
+      "key": "2026-08-12 1:1 Anna 101/anna",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Atruvia:m44",
+      "key": "2026-07-26 1:1 Anna 101/anna",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Atruvia:m23",
+      "key": "2026-07-20 Retro with Anna retro/anna/2026",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Atruvia:m30",
+      "key": "2026-07-15 1:1 Anna 101/anna",
+      "agreed": [
+       "Tender:t15"
+      ],
+      "agreements": [],
+      "counts": {
+       "agreed": 1,
+       "done": 1,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Atruvia:m15",
+      "key": "2026-07-04 Retro with Anna retro/anna",
+      "agreed": [
+       "Atruvia:t31",
+       "Atruvia:t33"
+      ],
+      "agreements": [],
+      "counts": {
+       "agreed": 2,
+       "done": 0,
+       "open": 2,
+       "oldestOpenDays": 114
+      }
+     },
+     {
+      "meeting": "Atruvia:m7",
+      "key": "2026-06-01 1:1 Anna 101/anna anna",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     }
+    ]
+   }
+  },
+  {
+   "tag": "101/anna",
+   "lens": "counterpart",
+   "owner": null,
+   "overview": {
+    "lens": "counterpart",
+    "thread": "101/anna",
+    "owner": "Atruvia",
+    "scope": [
+     "Tender",
+     "Migration",
+     "Atruvia"
+    ],
+    "types": [
+     "101",
+     "wf",
+     "owe",
+     "retro"
+    ],
+    "ahead": {
+     "meetings": [
+      "Atruvia:m29",
+      "Tender:m12",
+      "Atruvia:m37"
+     ],
+     "owe": [
+      "Tender:t7",
+      "Atruvia:t31",
+      "Atruvia:t33",
+      "Atruvia:t34"
+     ],
+     "waiting": [
+      "Atruvia:t8",
+      "Atruvia:t12",
+      "Atruvia:t39"
+     ],
+     "relevant": [],
+     "someday": [],
+     "agreements": []
+    },
+    "endedAgreements": [],
+    "since": {
+     "from": "2026-10-24",
+     "done": []
+    },
+    "past": [
+     {
+      "meeting": "Atruvia:m71",
+      "key": "2026-10-24 Retro with Anna",
+      "agreed": [
+       "Atruvia:t12"
+      ],
+      "agreements": [],
+      "counts": {
+       "agreed": 1,
+       "done": 0,
+       "open": 1,
+       "oldestOpenDays": 62
+      }
+     },
+     {
+      "meeting": "Atruvia:m67",
+      "key": "2026-10-19 1:1 Anna 101/anna",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Atruvia:m63",
+      "key": "2026-10-13 1:1 Anna 101/anna",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Atruvia:m65",
+      "key": "2026-09-26 1:1 Anna 101/anna",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Atruvia:m1",
+      "key": "2026-09-16 1:1 Anna 101/anna",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Atruvia:m38",
+      "key": "2026-09-06 1:1 Anna 101/anna",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Tender:m5",
+      "key": "2026-08-12 1:1 Anna 101/anna",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Atruvia:m44",
+      "key": "2026-07-26 1:1 Anna 101/anna",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Atruvia:m23",
+      "key": "2026-07-20 Retro with Anna retro/anna/2026",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Atruvia:m30",
+      "key": "2026-07-15 1:1 Anna 101/anna",
+      "agreed": [
+       "Tender:t15"
+      ],
+      "agreements": [],
+      "counts": {
+       "agreed": 1,
+       "done": 1,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Atruvia:m15",
+      "key": "2026-07-04 Retro with Anna retro/anna",
+      "agreed": [
+       "Atruvia:t31",
+       "Atruvia:t33"
+      ],
+      "agreements": [],
+      "counts": {
+       "agreed": 2,
+       "done": 0,
+       "open": 2,
+       "oldestOpenDays": 114
+      }
+     },
+     {
+      "meeting": "Atruvia:m7",
+      "key": "2026-06-01 1:1 Anna 101/anna anna",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     }
+    ]
+   }
+  },
+  {
+   "tag": "retro/alpha",
+   "lens": "thread",
+   "owner": "Atruvia",
+   "overview": {
+    "lens": "thread",
+    "thread": "retro/alpha",
+    "owner": "Atruvia",
+    "scope": [
+     "Tender",
+     "Migration",
+     "Atruvia"
+    ],
+    "types": [
+     "retro"
+    ],
+    "ahead": {
+     "meetings": [
+      "Atruvia:m11",
+      "Tender:m18",
+      "Atruvia:m32",
+      "Tender:m3"
+     ],
+     "owe": [
+      "Atruvia:t13",
+      "Atruvia:t35"
+     ],
+     "waiting": [],
+     "relevant": [],
+     "someday": [
+      "Atruvia:t0",
+      "Atruvia:t5"
+     ],
+     "agreements": []
+    },
+    "endedAgreements": [],
+    "since": {
+     "from": "2026-10-15",
+     "done": []
+    },
+    "past": [
+     {
+      "meeting": "Migration:m2",
+      "key": "2026-10-15 Retro Alpha sprint retro/alpha",
+      "agreed": [
+       "Atruvia:t35"
+      ],
+      "agreements": [],
+      "counts": {
+       "agreed": 1,
+       "done": 0,
+       "open": 1,
+       "oldestOpenDays": 11
+      }
+     },
+     {
+      "meeting": "Atruvia:m0",
+      "key": "2026-09-12 Retro Alpha sprint retro/alpha",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Atruvia:m48",
+      "key": "2026-06-24 Retro Alpha sprint retro/alpha",
+      "agreed": [
+       "Atruvia:t13"
+      ],
+      "agreements": [],
+      "counts": {
+       "agreed": 1,
+       "done": 0,
+       "open": 1,
+       "oldestOpenDays": 124
+      }
+     },
+     {
+      "meeting": "Atruvia:m70",
+      "key": "2026-06-18 Retro Alpha sprint retro/alpha",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Migration:m16",
+      "key": "2026-06-05 Retro Alpha sprint retro/alpha",
+      "agreed": [
+       "Tender:t21"
+      ],
+      "agreements": [],
+      "counts": {
+       "agreed": 1,
+       "done": 1,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     }
+    ]
+   }
+  },
+  {
+   "tag": "retro/alpha",
+   "lens": "thread",
+   "owner": null,
+   "overview": {
+    "lens": "thread",
+    "thread": "retro/alpha",
+    "owner": "Tender",
+    "scope": [
+     "Tender",
+     "Migration",
+     "Atruvia"
+    ],
+    "types": [
+     "retro"
+    ],
+    "ahead": {
+     "meetings": [
+      "Atruvia:m11",
+      "Tender:m18",
+      "Atruvia:m32",
+      "Tender:m3"
+     ],
+     "owe": [
+      "Atruvia:t13",
+      "Atruvia:t35"
+     ],
+     "waiting": [],
+     "relevant": [],
+     "someday": [
+      "Atruvia:t0",
+      "Atruvia:t5"
+     ],
+     "agreements": []
+    },
+    "endedAgreements": [],
+    "since": {
+     "from": "2026-10-15",
+     "done": []
+    },
+    "past": [
+     {
+      "meeting": "Migration:m2",
+      "key": "2026-10-15 Retro Alpha sprint retro/alpha",
+      "agreed": [
+       "Atruvia:t35"
+      ],
+      "agreements": [],
+      "counts": {
+       "agreed": 1,
+       "done": 0,
+       "open": 1,
+       "oldestOpenDays": 11
+      }
+     },
+     {
+      "meeting": "Atruvia:m0",
+      "key": "2026-09-12 Retro Alpha sprint retro/alpha",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Atruvia:m48",
+      "key": "2026-06-24 Retro Alpha sprint retro/alpha",
+      "agreed": [
+       "Atruvia:t13"
+      ],
+      "agreements": [],
+      "counts": {
+       "agreed": 1,
+       "done": 0,
+       "open": 1,
+       "oldestOpenDays": 124
+      }
+     },
+     {
+      "meeting": "Atruvia:m70",
+      "key": "2026-06-18 Retro Alpha sprint retro/alpha",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Migration:m16",
+      "key": "2026-06-05 Retro Alpha sprint retro/alpha",
+      "agreed": [
+       "Tender:t21"
+      ],
+      "agreements": [],
+      "counts": {
+       "agreed": 1,
+       "done": 1,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     }
+    ]
+   }
+  },
+  {
+   "tag": "retro/alpha",
+   "lens": "counterpart",
+   "owner": "Atruvia",
+   "overview": {
+    "lens": "counterpart",
+    "thread": "retro/alpha",
+    "owner": "Atruvia",
+    "scope": [
+     "Tender",
+     "Migration",
+     "Atruvia"
+    ],
+    "types": [
+     "retro"
+    ],
+    "ahead": {
+     "meetings": [
+      "Atruvia:m11",
+      "Tender:m18",
+      "Atruvia:m32",
+      "Tender:m3"
+     ],
+     "owe": [
+      "Atruvia:t13",
+      "Atruvia:t35"
+     ],
+     "waiting": [],
+     "relevant": [],
+     "someday": [
+      "Atruvia:t0",
+      "Atruvia:t5"
+     ],
+     "agreements": []
+    },
+    "endedAgreements": [],
+    "since": {
+     "from": "2026-10-15",
+     "done": []
+    },
+    "past": [
+     {
+      "meeting": "Migration:m2",
+      "key": "2026-10-15 Retro Alpha sprint retro/alpha",
+      "agreed": [
+       "Atruvia:t35"
+      ],
+      "agreements": [],
+      "counts": {
+       "agreed": 1,
+       "done": 0,
+       "open": 1,
+       "oldestOpenDays": 11
+      }
+     },
+     {
+      "meeting": "Atruvia:m0",
+      "key": "2026-09-12 Retro Alpha sprint retro/alpha",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Atruvia:m48",
+      "key": "2026-06-24 Retro Alpha sprint retro/alpha",
+      "agreed": [
+       "Atruvia:t13"
+      ],
+      "agreements": [],
+      "counts": {
+       "agreed": 1,
+       "done": 0,
+       "open": 1,
+       "oldestOpenDays": 124
+      }
+     },
+     {
+      "meeting": "Atruvia:m70",
+      "key": "2026-06-18 Retro Alpha sprint retro/alpha",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Migration:m16",
+      "key": "2026-06-05 Retro Alpha sprint retro/alpha",
+      "agreed": [
+       "Tender:t21"
+      ],
+      "agreements": [],
+      "counts": {
+       "agreed": 1,
+       "done": 1,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     }
+    ]
+   }
+  },
+  {
+   "tag": "retro/alpha",
+   "lens": "counterpart",
+   "owner": null,
+   "overview": {
+    "lens": "counterpart",
+    "thread": "retro/alpha",
+    "owner": "Tender",
+    "scope": [
+     "Tender",
+     "Migration",
+     "Atruvia"
+    ],
+    "types": [
+     "retro"
+    ],
+    "ahead": {
+     "meetings": [
+      "Atruvia:m11",
+      "Tender:m18",
+      "Atruvia:m32",
+      "Tender:m3"
+     ],
+     "owe": [
+      "Atruvia:t13",
+      "Atruvia:t35"
+     ],
+     "waiting": [],
+     "relevant": [],
+     "someday": [
+      "Atruvia:t0",
+      "Atruvia:t5"
+     ],
+     "agreements": []
+    },
+    "endedAgreements": [],
+    "since": {
+     "from": "2026-10-15",
+     "done": []
+    },
+    "past": [
+     {
+      "meeting": "Migration:m2",
+      "key": "2026-10-15 Retro Alpha sprint retro/alpha",
+      "agreed": [
+       "Atruvia:t35"
+      ],
+      "agreements": [],
+      "counts": {
+       "agreed": 1,
+       "done": 0,
+       "open": 1,
+       "oldestOpenDays": 11
+      }
+     },
+     {
+      "meeting": "Atruvia:m0",
+      "key": "2026-09-12 Retro Alpha sprint retro/alpha",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Atruvia:m48",
+      "key": "2026-06-24 Retro Alpha sprint retro/alpha",
+      "agreed": [
+       "Atruvia:t13"
+      ],
+      "agreements": [],
+      "counts": {
+       "agreed": 1,
+       "done": 0,
+       "open": 1,
+       "oldestOpenDays": 124
+      }
+     },
+     {
+      "meeting": "Atruvia:m70",
+      "key": "2026-06-18 Retro Alpha sprint retro/alpha",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Migration:m16",
+      "key": "2026-06-05 Retro Alpha sprint retro/alpha",
+      "agreed": [
+       "Tender:t21"
+      ],
+      "agreements": [],
+      "counts": {
+       "agreed": 1,
+       "done": 1,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     }
+    ]
+   }
+  },
+  {
+   "tag": "jf/board",
+   "lens": "thread",
+   "owner": "Atruvia",
+   "overview": {
+    "lens": "thread",
+    "thread": "jf/board",
+    "owner": "Atruvia",
+    "scope": [
+     "Tender",
+     "Migration",
+     "Atruvia"
+    ],
+    "types": [
+     "jf",
+     "wf",
+     "owe"
+    ],
+    "ahead": {
+     "meetings": [
+      "Atruvia:m6"
+     ],
+     "owe": [
+      "Atruvia:t42"
+     ],
+     "waiting": [
+      "Tender:t22"
+     ],
+     "relevant": [],
+     "someday": [],
+     "agreements": [
+      "Atruvia:a8"
+     ]
+    },
+    "endedAgreements": [],
+    "since": {
+     "from": "2026-09-16",
+     "done": []
+    },
+    "past": [
+     {
+      "meeting": "Atruvia:m76",
+      "key": "2026-09-16 Strategy offsite jf/board",
+      "agreed": [
+       "Atruvia:t42"
+      ],
+      "agreements": [
+       "Atruvia:a8"
+      ],
+      "counts": {
+       "agreed": 1,
+       "done": 0,
+       "open": 1,
+       "oldestOpenDays": 40
+      }
+     },
+     {
+      "meeting": "Tender:m8",
+      "key": "2026-09-13 Jour fixe Board: budget…",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Migration:m3",
+      "key": "2026-09-12 Jour fixe Board: budget…",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Atruvia:m16",
+      "key": "2026-09-02 Jour fixe Board: budget…",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Atruvia:m49",
+      "key": "2026-08-18 Jour fixe Board: budget…",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Atruvia:m61",
+      "key": "2026-07-29 Jour fixe Board: budget…",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     }
+    ]
+   }
+  },
+  {
+   "tag": "jf/board",
+   "lens": "thread",
+   "owner": null,
+   "overview": {
+    "lens": "thread",
+    "thread": "jf/board",
+    "owner": "Atruvia",
+    "scope": [
+     "Tender",
+     "Migration",
+     "Atruvia"
+    ],
+    "types": [
+     "jf",
+     "wf",
+     "owe"
+    ],
+    "ahead": {
+     "meetings": [
+      "Atruvia:m6"
+     ],
+     "owe": [
+      "Atruvia:t42"
+     ],
+     "waiting": [
+      "Tender:t22"
+     ],
+     "relevant": [],
+     "someday": [],
+     "agreements": [
+      "Atruvia:a8"
+     ]
+    },
+    "endedAgreements": [],
+    "since": {
+     "from": "2026-09-16",
+     "done": []
+    },
+    "past": [
+     {
+      "meeting": "Atruvia:m76",
+      "key": "2026-09-16 Strategy offsite jf/board",
+      "agreed": [
+       "Atruvia:t42"
+      ],
+      "agreements": [
+       "Atruvia:a8"
+      ],
+      "counts": {
+       "agreed": 1,
+       "done": 0,
+       "open": 1,
+       "oldestOpenDays": 40
+      }
+     },
+     {
+      "meeting": "Tender:m8",
+      "key": "2026-09-13 Jour fixe Board: budget…",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Migration:m3",
+      "key": "2026-09-12 Jour fixe Board: budget…",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Atruvia:m16",
+      "key": "2026-09-02 Jour fixe Board: budget…",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Atruvia:m49",
+      "key": "2026-08-18 Jour fixe Board: budget…",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Atruvia:m61",
+      "key": "2026-07-29 Jour fixe Board: budget…",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     }
+    ]
+   }
+  },
+  {
+   "tag": "jf/board",
+   "lens": "counterpart",
+   "owner": "Atruvia",
+   "overview": {
+    "lens": "counterpart",
+    "thread": "jf/board",
+    "owner": "Atruvia",
+    "scope": [
+     "Tender",
+     "Migration",
+     "Atruvia"
+    ],
+    "types": [
+     "jf",
+     "wf",
+     "owe"
+    ],
+    "ahead": {
+     "meetings": [
+      "Atruvia:m6"
+     ],
+     "owe": [
+      "Atruvia:t42"
+     ],
+     "waiting": [
+      "Tender:t22"
+     ],
+     "relevant": [],
+     "someday": [],
+     "agreements": [
+      "Atruvia:a8"
+     ]
+    },
+    "endedAgreements": [],
+    "since": {
+     "from": "2026-09-16",
+     "done": []
+    },
+    "past": [
+     {
+      "meeting": "Atruvia:m76",
+      "key": "2026-09-16 Strategy offsite jf/board",
+      "agreed": [
+       "Atruvia:t42"
+      ],
+      "agreements": [
+       "Atruvia:a8"
+      ],
+      "counts": {
+       "agreed": 1,
+       "done": 0,
+       "open": 1,
+       "oldestOpenDays": 40
+      }
+     },
+     {
+      "meeting": "Tender:m8",
+      "key": "2026-09-13 Jour fixe Board: budget…",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Migration:m3",
+      "key": "2026-09-12 Jour fixe Board: budget…",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Atruvia:m16",
+      "key": "2026-09-02 Jour fixe Board: budget…",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Atruvia:m49",
+      "key": "2026-08-18 Jour fixe Board: budget…",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Atruvia:m61",
+      "key": "2026-07-29 Jour fixe Board: budget…",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     }
+    ]
+   }
+  },
+  {
+   "tag": "jf/board",
+   "lens": "counterpart",
+   "owner": null,
+   "overview": {
+    "lens": "counterpart",
+    "thread": "jf/board",
+    "owner": "Atruvia",
+    "scope": [
+     "Tender",
+     "Migration",
+     "Atruvia"
+    ],
+    "types": [
+     "jf",
+     "wf",
+     "owe"
+    ],
+    "ahead": {
+     "meetings": [
+      "Atruvia:m6"
+     ],
+     "owe": [
+      "Atruvia:t42"
+     ],
+     "waiting": [
+      "Tender:t22"
+     ],
+     "relevant": [],
+     "someday": [],
+     "agreements": [
+      "Atruvia:a8"
+     ]
+    },
+    "endedAgreements": [],
+    "since": {
+     "from": "2026-09-16",
+     "done": []
+    },
+    "past": [
+     {
+      "meeting": "Atruvia:m76",
+      "key": "2026-09-16 Strategy offsite jf/board",
+      "agreed": [
+       "Atruvia:t42"
+      ],
+      "agreements": [
+       "Atruvia:a8"
+      ],
+      "counts": {
+       "agreed": 1,
+       "done": 0,
+       "open": 1,
+       "oldestOpenDays": 40
+      }
+     },
+     {
+      "meeting": "Tender:m8",
+      "key": "2026-09-13 Jour fixe Board: budget…",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Migration:m3",
+      "key": "2026-09-12 Jour fixe Board: budget…",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Atruvia:m16",
+      "key": "2026-09-02 Jour fixe Board: budget…",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Atruvia:m49",
+      "key": "2026-08-18 Jour fixe Board: budget…",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Atruvia:m61",
+      "key": "2026-07-29 Jour fixe Board: budget…",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     }
+    ]
+   }
+  },
+  {
+   "tag": "wf/olga",
+   "lens": "thread",
+   "owner": "Atruvia",
+   "overview": {
+    "lens": "counterpart",
+    "thread": "wf/olga",
+    "owner": "Atruvia",
+    "scope": [
+     "Tender",
+     "Migration",
+     "Atruvia"
+    ],
+    "types": [
+     "wf"
+    ],
+    "ahead": {
+     "meetings": [],
+     "owe": [],
+     "waiting": [
+      "Atruvia:t40"
+     ],
+     "relevant": [],
+     "someday": [],
+     "agreements": []
+    },
+    "endedAgreements": [],
+    "since": {
+     "from": null,
+     "done": []
+    },
+    "past": []
+   }
+  },
+  {
+   "tag": "wf/olga",
+   "lens": "thread",
+   "owner": null,
+   "overview": {
+    "lens": "counterpart",
+    "thread": "wf/olga",
+    "owner": null,
+    "scope": [
+     "Tender",
+     "Migration",
+     "Solo",
+     "Atruvia",
+     "Zen",
+     "Inbox"
+    ],
+    "types": [
+     "wf"
+    ],
+    "ahead": {
+     "meetings": [],
+     "owe": [],
+     "waiting": [
+      "Atruvia:t40"
+     ],
+     "relevant": [],
+     "someday": [],
+     "agreements": []
+    },
+    "endedAgreements": [],
+    "since": {
+     "from": null,
+     "done": []
+    },
+    "past": []
+   }
+  },
+  {
+   "tag": "wf/olga",
+   "lens": "counterpart",
+   "owner": "Atruvia",
+   "overview": {
+    "lens": "counterpart",
+    "thread": "wf/olga",
+    "owner": "Atruvia",
+    "scope": [
+     "Tender",
+     "Migration",
+     "Atruvia"
+    ],
+    "types": [
+     "wf"
+    ],
+    "ahead": {
+     "meetings": [],
+     "owe": [],
+     "waiting": [
+      "Atruvia:t40"
+     ],
+     "relevant": [],
+     "someday": [],
+     "agreements": []
+    },
+    "endedAgreements": [],
+    "since": {
+     "from": null,
+     "done": []
+    },
+    "past": []
+   }
+  },
+  {
+   "tag": "wf/olga",
+   "lens": "counterpart",
+   "owner": null,
+   "overview": {
+    "lens": "counterpart",
+    "thread": "wf/olga",
+    "owner": null,
+    "scope": [
+     "Tender",
+     "Migration",
+     "Solo",
+     "Atruvia",
+     "Zen",
+     "Inbox"
+    ],
+    "types": [
+     "wf"
+    ],
+    "ahead": {
+     "meetings": [],
+     "owe": [],
+     "waiting": [
+      "Atruvia:t40"
+     ],
+     "relevant": [],
+     "someday": [],
+     "agreements": []
+    },
+    "endedAgreements": [],
+    "since": {
+     "from": null,
+     "done": []
+    },
+    "past": []
+   }
+  },
+  {
+   "tag": "sparring/mieke",
+   "lens": "thread",
+   "owner": "Atruvia",
+   "overview": {
+    "lens": "thread",
+    "thread": "sparring/mieke",
+    "owner": "Atruvia",
+    "scope": [
+     "Tender",
+     "Migration",
+     "Atruvia"
+    ],
+    "types": [
+     "sparring"
+    ],
+    "ahead": {
+     "meetings": [
+      "Tender:m9",
+      "Atruvia:m54",
+      "Atruvia:m33"
+     ],
+     "owe": [
+      "Tender:t11",
+      "Atruvia:t30"
+     ],
+     "waiting": [],
+     "relevant": [],
+     "someday": [],
+     "agreements": []
+    },
+    "endedAgreements": [],
+    "since": {
+     "from": "2026-10-19",
+     "done": []
+    },
+    "past": [
+     {
+      "meeting": "Atruvia:m66",
+      "key": "2026-10-19 Sparring Mieke sparring/mieke",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Atruvia:m47",
+      "key": "2026-09-14 Sparring Mieke",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Atruvia:m31",
+      "key": "2026-08-11 Sparring Mieke sparring/mieke",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Migration:m7",
+      "key": "2026-08-08 Sparring Mieke sparring/mieke",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Atruvia:m57",
+      "key": "2026-07-02 Sparring Mieke sparring/mieke",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Tender:m17",
+      "key": "2026-06-07 Sparring Mieke sparring/mieke",
+      "agreed": [
+       "Tender:t11",
+       "Atruvia:t30"
+      ],
+      "agreements": [],
+      "counts": {
+       "agreed": 2,
+       "done": 0,
+       "open": 2,
+       "oldestOpenDays": 150
+      }
+     }
+    ]
+   }
+  },
+  {
+   "tag": "sparring/mieke",
+   "lens": "thread",
+   "owner": null,
+   "overview": {
+    "lens": "thread",
+    "thread": "sparring/mieke",
+    "owner": "Atruvia",
+    "scope": [
+     "Tender",
+     "Migration",
+     "Atruvia"
+    ],
+    "types": [
+     "sparring"
+    ],
+    "ahead": {
+     "meetings": [
+      "Tender:m9",
+      "Atruvia:m54",
+      "Atruvia:m33"
+     ],
+     "owe": [
+      "Tender:t11",
+      "Atruvia:t30"
+     ],
+     "waiting": [],
+     "relevant": [],
+     "someday": [],
+     "agreements": []
+    },
+    "endedAgreements": [],
+    "since": {
+     "from": "2026-10-19",
+     "done": []
+    },
+    "past": [
+     {
+      "meeting": "Atruvia:m66",
+      "key": "2026-10-19 Sparring Mieke sparring/mieke",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Atruvia:m47",
+      "key": "2026-09-14 Sparring Mieke",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Atruvia:m31",
+      "key": "2026-08-11 Sparring Mieke sparring/mieke",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Migration:m7",
+      "key": "2026-08-08 Sparring Mieke sparring/mieke",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Atruvia:m57",
+      "key": "2026-07-02 Sparring Mieke sparring/mieke",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Tender:m17",
+      "key": "2026-06-07 Sparring Mieke sparring/mieke",
+      "agreed": [
+       "Tender:t11",
+       "Atruvia:t30"
+      ],
+      "agreements": [],
+      "counts": {
+       "agreed": 2,
+       "done": 0,
+       "open": 2,
+       "oldestOpenDays": 150
+      }
+     }
+    ]
+   }
+  },
+  {
+   "tag": "sparring/mieke",
+   "lens": "counterpart",
+   "owner": "Atruvia",
+   "overview": {
+    "lens": "counterpart",
+    "thread": "sparring/mieke",
+    "owner": "Atruvia",
+    "scope": [
+     "Tender",
+     "Migration",
+     "Atruvia"
+    ],
+    "types": [
+     "sparring"
+    ],
+    "ahead": {
+     "meetings": [
+      "Tender:m9",
+      "Atruvia:m54",
+      "Atruvia:m33"
+     ],
+     "owe": [
+      "Tender:t11",
+      "Atruvia:t30"
+     ],
+     "waiting": [],
+     "relevant": [],
+     "someday": [],
+     "agreements": []
+    },
+    "endedAgreements": [],
+    "since": {
+     "from": "2026-10-19",
+     "done": []
+    },
+    "past": [
+     {
+      "meeting": "Atruvia:m66",
+      "key": "2026-10-19 Sparring Mieke sparring/mieke",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Atruvia:m47",
+      "key": "2026-09-14 Sparring Mieke",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Atruvia:m31",
+      "key": "2026-08-11 Sparring Mieke sparring/mieke",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Migration:m7",
+      "key": "2026-08-08 Sparring Mieke sparring/mieke",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Atruvia:m57",
+      "key": "2026-07-02 Sparring Mieke sparring/mieke",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Tender:m17",
+      "key": "2026-06-07 Sparring Mieke sparring/mieke",
+      "agreed": [
+       "Tender:t11",
+       "Atruvia:t30"
+      ],
+      "agreements": [],
+      "counts": {
+       "agreed": 2,
+       "done": 0,
+       "open": 2,
+       "oldestOpenDays": 150
+      }
+     }
+    ]
+   }
+  },
+  {
+   "tag": "sparring/mieke",
+   "lens": "counterpart",
+   "owner": null,
+   "overview": {
+    "lens": "counterpart",
+    "thread": "sparring/mieke",
+    "owner": "Atruvia",
+    "scope": [
+     "Tender",
+     "Migration",
+     "Atruvia"
+    ],
+    "types": [
+     "sparring"
+    ],
+    "ahead": {
+     "meetings": [
+      "Tender:m9",
+      "Atruvia:m54",
+      "Atruvia:m33"
+     ],
+     "owe": [
+      "Tender:t11",
+      "Atruvia:t30"
+     ],
+     "waiting": [],
+     "relevant": [],
+     "someday": [],
+     "agreements": []
+    },
+    "endedAgreements": [],
+    "since": {
+     "from": "2026-10-19",
+     "done": []
+    },
+    "past": [
+     {
+      "meeting": "Atruvia:m66",
+      "key": "2026-10-19 Sparring Mieke sparring/mieke",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Atruvia:m47",
+      "key": "2026-09-14 Sparring Mieke",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Atruvia:m31",
+      "key": "2026-08-11 Sparring Mieke sparring/mieke",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Migration:m7",
+      "key": "2026-08-08 Sparring Mieke sparring/mieke",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Atruvia:m57",
+      "key": "2026-07-02 Sparring Mieke sparring/mieke",
+      "agreed": [],
+      "agreements": [],
+      "counts": {
+       "agreed": 0,
+       "done": 0,
+       "open": 0,
+       "oldestOpenDays": null
+      }
+     },
+     {
+      "meeting": "Tender:m17",
+      "key": "2026-06-07 Sparring Mieke sparring/mieke",
+      "agreed": [
+       "Tender:t11",
+       "Atruvia:t30"
+      ],
+      "agreements": [],
+      "counts": {
+       "agreed": 2,
+       "done": 0,
+       "open": 2,
+       "oldestOpenDays": 150
+      }
+     }
+    ]
+   }
+  }
+ ],
+ "counterpartMatcher": [
+  {
+   "tag": "101/bert",
+   "tasks": [
+    "Tender:t18",
+    "Tender:t25",
+    "Tender:t29",
+    "Migration:t5",
+    "Migration:t6",
+    "Migration:t10",
+    "Atruvia:t6",
+    "Atruvia:t38"
+   ],
+   "meetings": [
+    "Tender:m10",
+    "Migration:m10",
+    "Migration:m14",
+    "Migration:m18",
+    "Atruvia:m2",
+    "Atruvia:m8",
+    "Atruvia:m13",
+    "Atruvia:m14",
+    "Atruvia:m19",
+    "Atruvia:m39",
+    "Atruvia:m43",
+    "Atruvia:m51",
+    "Atruvia:m58",
+    "Atruvia:m64",
+    "Atruvia:m82"
+   ]
+  },
+  {
+   "tag": "retro/gamma",
+   "tasks": [
+    "Tender:t8",
+    "Tender:t10",
+    "Tender:t23",
+    "Inbox:t1"
+   ],
+   "meetings": [
+    "Tender:m7",
+    "Tender:m14",
+    "Tender:m21",
+    "Migration:m8",
+    "Migration:m11",
+    "Migration:m13",
+    "Migration:m21",
+    "Atruvia:m4",
+    "Atruvia:m21",
+    "Atruvia:m27",
+    "Atruvia:m55"
+   ]
+  },
+  {
+   "tag": "owe/quinn",
+   "tasks": [
+    "Tender:t26"
+   ],
+   "meetings": []
+  }
+ ],
+ "provenance": [
+  {
+   "entry": "Tender:t0",
+   "match": "Migration:m9"
+  },
+  {
+   "entry": "Tender:t1",
+   "match": "Atruvia:m45"
+  },
+  {
+   "entry": "Tender:t2",
+   "match": "Atruvia:m10"
+  },
+  {
+   "entry": "Tender:t3",
+   "match": null
+  },
+  {
+   "entry": "Tender:t4",
+   "match": null
+  },
+  {
+   "entry": "Tender:t5",
+   "match": "Atruvia:m81"
+  },
+  {
+   "entry": "Tender:t6",
+   "match": null
+  },
+  {
+   "entry": "Tender:t7",
+   "match": "Atruvia:m37"
+  },
+  {
+   "entry": "Tender:t8",
+   "match": null
+  },
+  {
+   "entry": "Tender:t9",
+   "match": "Atruvia:m25"
+  },
+  {
+   "entry": "Tender:t10",
+   "match": null
+  },
+  {
+   "entry": "Tender:t11",
+   "match": "Tender:m17"
+  },
+  {
+   "entry": "Tender:t12",
+   "match": "Atruvia:m60"
+  },
+  {
+   "entry": "Tender:t13",
+   "match": null
+  },
+  {
+   "entry": "Tender:t14",
+   "match": "Atruvia:m72"
+  },
+  {
+   "entry": "Tender:t15",
+   "match": "Atruvia:m30"
+  },
+  {
+   "entry": "Tender:t16",
+   "match": null
+  },
+  {
+   "entry": "Tender:t17",
+   "match": null
+  },
+  {
+   "entry": "Tender:t18",
+   "match": null
+  },
+  {
+   "entry": "Tender:t19",
+   "match": null
+  },
+  {
+   "entry": "Tender:t20",
+   "match": null
+  },
+  {
+   "entry": "Tender:t21",
+   "match": "Migration:m16"
+  },
+  {
+   "entry": "Tender:t22",
+   "match": null
+  },
+  {
+   "entry": "Tender:t23",
+   "match": "Atruvia:m27"
+  },
+  {
+   "entry": "Tender:t24",
+   "match": null
+  },
+  {
+   "entry": "Tender:t25",
+   "match": null
+  },
+  {
+   "entry": "Tender:t26",
+   "match": null
+  },
+  {
+   "entry": "Tender:t27",
+   "match": null
+  },
+  {
+   "entry": "Tender:t28",
+   "match": "Atruvia:m81 (fallback)"
+  },
+  {
+   "entry": "Tender:t29",
+   "match": "Atruvia:m82 (fallback)"
+  },
+  {
+   "entry": "Tender:t30",
+   "match": null
+  },
+  {
+   "entry": "Tender:a0",
+   "match": "Tender:m11"
+  },
+  {
+   "entry": "Tender:a1",
+   "match": "Atruvia:m20"
+  },
+  {
+   "entry": "Tender:a2",
+   "match": "Atruvia:m74"
+  },
+  {
+   "entry": "Tender:a3",
+   "match": "Atruvia:m53"
+  },
+  {
+   "entry": "Migration:t0",
+   "match": null
+  },
+  {
+   "entry": "Migration:t1",
+   "match": "Migration:m4"
+  },
+  {
+   "entry": "Migration:t2",
+   "match": null
+  },
+  {
+   "entry": "Migration:t3",
+   "match": "Atruvia:m45"
+  },
+  {
+   "entry": "Migration:t4",
+   "match": null
+  },
+  {
+   "entry": "Migration:t5",
+   "match": "Migration:m14"
+  },
+  {
+   "entry": "Migration:t6",
+   "match": "Migration:m14"
+  },
+  {
+   "entry": "Migration:t7",
+   "match": "Migration:m5"
+  },
+  {
+   "entry": "Migration:t8",
+   "match": "Migration:m1"
+  },
+  {
+   "entry": "Migration:t9",
+   "match": null
+  },
+  {
+   "entry": "Migration:t10",
+   "match": "Tender:m10"
+  },
+  {
+   "entry": "Migration:t11",
+   "match": null
+  },
+  {
+   "entry": "Migration:t12",
+   "match": "Tender:m25"
+  },
+  {
+   "entry": "Migration:t13",
+   "match": null
+  },
+  {
+   "entry": "Migration:t14",
+   "match": "Atruvia:m50"
+  },
+  {
+   "entry": "Migration:t15",
+   "match": null
+  },
+  {
+   "entry": "Migration:t16",
+   "match": null
+  },
+  {
+   "entry": "Migration:t17",
+   "match": "Tender:m23"
+  },
+  {
+   "entry": "Migration:t18",
+   "match": null
+  },
+  {
+   "entry": "Solo:t0",
+   "match": "Solo:m0"
+  },
+  {
+   "entry": "Atruvia:t0",
+   "match": null
+  },
+  {
+   "entry": "Atruvia:t1",
+   "match": null
+  },
+  {
+   "entry": "Atruvia:t2",
+   "match": "Atruvia:m28"
+  },
+  {
+   "entry": "Atruvia:t3",
+   "match": null
+  },
+  {
+   "entry": "Atruvia:t4",
+   "match": "Tender:m16"
+  },
+  {
+   "entry": "Atruvia:t5",
+   "match": null
+  },
+  {
+   "entry": "Atruvia:t6",
+   "match": "Atruvia:m64"
+  },
+  {
+   "entry": "Atruvia:t7",
+   "match": null
+  },
+  {
+   "entry": "Atruvia:t8",
+   "match": "Atruvia:m37"
+  },
+  {
+   "entry": "Atruvia:t9",
+   "match": null
+  },
+  {
+   "entry": "Atruvia:t10",
+   "match": "Atruvia:m76"
+  },
+  {
+   "entry": "Atruvia:t11",
+   "match": null
+  },
+  {
+   "entry": "Atruvia:t12",
+   "match": "Atruvia:m71"
+  },
+  {
+   "entry": "Atruvia:t13",
+   "match": "Atruvia:m48"
+  },
+  {
+   "entry": "Atruvia:t14",
+   "match": "Tender:m18"
+  },
+  {
+   "entry": "Atruvia:t15",
+   "match": null
+  },
+  {
+   "entry": "Atruvia:t16",
+   "match": null
+  },
+  {
+   "entry": "Atruvia:t17",
+   "match": "Migration:m1"
+  },
+  {
+   "entry": "Atruvia:t18",
+   "match": null
+  },
+  {
+   "entry": "Atruvia:t19",
+   "match": "Tender:m16"
+  },
+  {
+   "entry": "Atruvia:t20",
+   "match": null
+  },
+  {
+   "entry": "Atruvia:t21",
+   "match": "Migration:m1"
+  },
+  {
+   "entry": "Atruvia:t22",
+   "match": null
+  },
+  {
+   "entry": "Atruvia:t23",
+   "match": null
+  },
+  {
+   "entry": "Atruvia:t24",
+   "match": "Migration:m23"
+  },
+  {
+   "entry": "Atruvia:t25",
+   "match": null
+  },
+  {
+   "entry": "Atruvia:t26",
+   "match": null
+  },
+  {
+   "entry": "Atruvia:t27",
+   "match": null
+  },
+  {
+   "entry": "Atruvia:t28",
+   "match": null
+  },
+  {
+   "entry": "Atruvia:t29",
+   "match": null
+  },
+  {
+   "entry": "Atruvia:t30",
+   "match": "Tender:m17"
+  },
+  {
+   "entry": "Atruvia:t31",
+   "match": "Atruvia:m15"
+  },
+  {
+   "entry": "Atruvia:t32",
+   "match": null
+  },
+  {
+   "entry": "Atruvia:t33",
+   "match": "Atruvia:m15"
+  },
+  {
+   "entry": "Atruvia:t34",
+   "match": null
+  },
+  {
+   "entry": "Atruvia:t35",
+   "match": "Migration:m2"
+  },
+  {
+   "entry": "Atruvia:t36",
+   "match": "Migration:m9"
+  },
+  {
+   "entry": "Atruvia:t37",
+   "match": "Tender:m19"
+  },
+  {
+   "entry": "Atruvia:t38",
+   "match": "Atruvia:m13"
+  },
+  {
+   "entry": "Atruvia:t39",
+   "match": "Atruvia:m73"
+  },
+  {
+   "entry": "Atruvia:t40",
+   "match": null
+  },
+  {
+   "entry": "Atruvia:t41",
+   "match": null
+  },
+  {
+   "entry": "Atruvia:t42",
+   "match": "Atruvia:m76"
+  },
+  {
+   "entry": "Atruvia:t43",
+   "match": "Zen:m1"
+  },
+  {
+   "entry": "Atruvia:t44",
+   "match": "Atruvia:m77"
+  },
+  {
+   "entry": "Atruvia:t45",
+   "match": "Atruvia:m79"
+  },
+  {
+   "entry": "Atruvia:t46",
+   "match": null
+  },
+  {
+   "entry": "Atruvia:a0",
+   "match": "Atruvia:m77"
+  },
+  {
+   "entry": "Atruvia:a1",
+   "match": "Migration:m8"
+  },
+  {
+   "entry": "Atruvia:a2",
+   "match": "Tender:m0"
+  },
+  {
+   "entry": "Atruvia:a3",
+   "match": "Atruvia:m4"
+  },
+  {
+   "entry": "Atruvia:a4",
+   "match": "Migration:m15"
+  },
+  {
+   "entry": "Atruvia:a5",
+   "match": "Migration:m18"
+  },
+  {
+   "entry": "Atruvia:a6",
+   "match": "Migration:m21"
+  },
+  {
+   "entry": "Atruvia:a7",
+   "match": "Migration:m10"
+  },
+  {
+   "entry": "Atruvia:a8",
+   "match": "Atruvia:m76"
+  },
+  {
+   "entry": "Atruvia:a9",
+   "match": "Atruvia:m81 (fallback)"
+  },
+  {
+   "entry": "Zen:t0",
+   "match": "Zen:m2"
+  },
+  {
+   "entry": "Zen:t1",
+   "match": "Zen:m0"
+  },
+  {
+   "entry": "Inbox:t0",
+   "match": "Inbox:m0"
+  },
+  {
+   "entry": "Inbox:t1",
+   "match": "Atruvia:m4"
+  },
+  {
+   "entry": "Inbox:t2",
+   "match": null
+  },
+  {
+   "entry": "Inbox:t3",
+   "match": null
+  },
+  {
+   "entry": "Inbox:t4",
+   "match": null
+  }
+ ],
+ "engage": [
+  {
+   "entry": "Tender:t0",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "101/ulf"
+   },
+   "agreedInMeeting": "Migration:m9"
+  },
+  {
+   "entry": "Tender:t1",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "101/eva"
+   },
+   "agreedInMeeting": "Atruvia:m45"
+  },
+  {
+   "entry": "Tender:t2",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "owe/works"
+   },
+   "agreedInMeeting": "Atruvia:m10"
+  },
+  {
+   "entry": "Tender:t3",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "retro/beta"
+   },
+   "agreedInMeeting": null
+  },
+  {
+   "entry": "Tender:t4",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "owe/works"
+   },
+   "agreedInMeeting": null
+  },
+  {
+   "entry": "Tender:t5",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "101/eva"
+   },
+   "agreedInMeeting": "Atruvia:m81"
+  },
+  {
+   "entry": "Tender:t6",
+   "threadOfTodo": null,
+   "agreedInMeeting": null
+  },
+  {
+   "entry": "Tender:t7",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "101/anna"
+   },
+   "agreedInMeeting": "Atruvia:m37"
+  },
+  {
+   "entry": "Tender:t8",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "wf/gamma"
+   },
+   "agreedInMeeting": null
+  },
+  {
+   "entry": "Tender:t9",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "retro/beta"
+   },
+   "agreedInMeeting": "Atruvia:m25"
+  },
+  {
+   "entry": "Tender:t10",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "101/gamma"
+   },
+   "agreedInMeeting": null
+  },
+  {
+   "entry": "Tender:t11",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "sparring/mieke"
+   },
+   "agreedInMeeting": "Tender:m17"
+  },
+  {
+   "entry": "Tender:t12",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "101/jonas"
+   },
+   "agreedInMeeting": "Atruvia:m60"
+  },
+  {
+   "entry": "Tender:t13",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "wf/ines"
+   },
+   "agreedInMeeting": null
+  },
+  {
+   "entry": "Tender:t14",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "wf/anna"
+   },
+   "agreedInMeeting": "Atruvia:m72"
+  },
+  {
+   "entry": "Tender:t15",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "owe/anna"
+   },
+   "agreedInMeeting": "Atruvia:m30"
+  },
+  {
+   "entry": "Tender:t16",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "wf/frank"
+   },
+   "agreedInMeeting": null
+  },
+  {
+   "entry": "Tender:t17",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "wf/jonas"
+   },
+   "agreedInMeeting": null
+  },
+  {
+   "entry": "Tender:t18",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "101/bert"
+   },
+   "agreedInMeeting": null
+  },
+  {
+   "entry": "Tender:t19",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "wf/ines"
+   },
+   "agreedInMeeting": null
+  },
+  {
+   "entry": "Tender:t20",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "owe/ines"
+   },
+   "agreedInMeeting": null
+  },
+  {
+   "entry": "Tender:t21",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "retro/beta"
+   },
+   "agreedInMeeting": "Migration:m16"
+  },
+  {
+   "entry": "Tender:t22",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "wf/board"
+   },
+   "agreedInMeeting": null
+  },
+  {
+   "entry": "Tender:t23",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "retro/gamma"
+   },
+   "agreedInMeeting": "Atruvia:m27"
+  },
+  {
+   "entry": "Tender:t24",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "wf/frank"
+   },
+   "agreedInMeeting": null
+  },
+  {
+   "entry": "Tender:t25",
+   "threadOfTodo": null,
+   "agreedInMeeting": null
+  },
+  {
+   "entry": "Tender:t26",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "owe/quinn"
+   },
+   "agreedInMeeting": null
+  },
+  {
+   "entry": "Tender:t27",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "owe/rosa"
+   },
+   "agreedInMeeting": null
+  },
+  {
+   "entry": "Tender:t28",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "101/eva"
+   },
+   "agreedInMeeting": "Atruvia:m81"
+  },
+  {
+   "entry": "Tender:t29",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "101/bert"
+   },
+   "agreedInMeeting": "Atruvia:m82"
+  },
+  {
+   "entry": "Tender:t30",
+   "threadOfTodo": null,
+   "agreedInMeeting": null
+  },
+  {
+   "entry": "Tender:a0",
+   "agreementMadeIn": {
+    "itemPath": "/storage/emulated/0/Note/1 Projects/Tender",
+    "meetingIndex": 11
+   }
+  },
+  {
+   "entry": "Tender:a1",
+   "agreementMadeIn": {
+    "itemPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "meetingIndex": 20
+   }
+  },
+  {
+   "entry": "Tender:a2",
+   "agreementMadeIn": {
+    "itemPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "meetingIndex": 74
+   }
+  },
+  {
+   "entry": "Tender:a3",
+   "agreementMadeIn": {
+    "itemPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "meetingIndex": 53
+   }
+  },
+  {
+   "entry": "Migration:t0",
+   "threadOfTodo": null,
+   "agreedInMeeting": null
+  },
+  {
+   "entry": "Migration:t1",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "wf/ines"
+   },
+   "agreedInMeeting": "Migration:m4"
+  },
+  {
+   "entry": "Migration:t2",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "101/hans"
+   },
+   "agreedInMeeting": null
+  },
+  {
+   "entry": "Migration:t3",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "101/eva"
+   },
+   "agreedInMeeting": "Atruvia:m45"
+  },
+  {
+   "entry": "Migration:t4",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "wf/jonas"
+   },
+   "agreedInMeeting": null
+  },
+  {
+   "entry": "Migration:t5",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "101/bert"
+   },
+   "agreedInMeeting": "Migration:m14"
+  },
+  {
+   "entry": "Migration:t6",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "owe/bert"
+   },
+   "agreedInMeeting": "Migration:m14"
+  },
+  {
+   "entry": "Migration:t7",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "owe/dirk"
+   },
+   "agreedInMeeting": "Migration:m5"
+  },
+  {
+   "entry": "Migration:t8",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "101/carla"
+   },
+   "agreedInMeeting": "Migration:m1"
+  },
+  {
+   "entry": "Migration:t9",
+   "threadOfTodo": null,
+   "agreedInMeeting": null
+  },
+  {
+   "entry": "Migration:t10",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "owe/bert"
+   },
+   "agreedInMeeting": "Tender:m10"
+  },
+  {
+   "entry": "Migration:t11",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "owe/ulf"
+   },
+   "agreedInMeeting": null
+  },
+  {
+   "entry": "Migration:t12",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "owe/dirk"
+   },
+   "agreedInMeeting": "Tender:m25"
+  },
+  {
+   "entry": "Migration:t13",
+   "threadOfTodo": null,
+   "agreedInMeeting": null
+  },
+  {
+   "entry": "Migration:t14",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "101/eva"
+   },
+   "agreedInMeeting": "Atruvia:m50"
+  },
+  {
+   "entry": "Migration:t15",
+   "threadOfTodo": null,
+   "agreedInMeeting": null
+  },
+  {
+   "entry": "Migration:t16",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "owe/greta"
+   },
+   "agreedInMeeting": null
+  },
+  {
+   "entry": "Migration:t17",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "jf/works"
+   },
+   "agreedInMeeting": "Tender:m23"
+  },
+  {
+   "entry": "Migration:t18",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "wf/stan"
+   },
+   "agreedInMeeting": null
+  },
+  {
+   "entry": "Solo:t0",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/1 Projects/Solo",
+    "tag": "retro/omega"
+   },
+   "agreedInMeeting": "Solo:m0"
+  },
+  {
+   "entry": "Atruvia:t0",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "retro/alpha"
+   },
+   "agreedInMeeting": null
+  },
+  {
+   "entry": "Atruvia:t1",
+   "threadOfTodo": null,
+   "agreedInMeeting": null
+  },
+  {
+   "entry": "Atruvia:t2",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "sparring/sven"
+   },
+   "agreedInMeeting": "Atruvia:m28"
+  },
+  {
+   "entry": "Atruvia:t3",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "owe/eva"
+   },
+   "agreedInMeeting": null
+  },
+  {
+   "entry": "Atruvia:t4",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "owe/carla"
+   },
+   "agreedInMeeting": "Tender:m16"
+  },
+  {
+   "entry": "Atruvia:t5",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "retro/alpha"
+   },
+   "agreedInMeeting": null
+  },
+  {
+   "entry": "Atruvia:t6",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "101/bert"
+   },
+   "agreedInMeeting": "Atruvia:m64"
+  },
+  {
+   "entry": "Atruvia:t7",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "wf/eva"
+   },
+   "agreedInMeeting": null
+  },
+  {
+   "entry": "Atruvia:t8",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "wf/anna"
+   },
+   "agreedInMeeting": "Atruvia:m37"
+  },
+  {
+   "entry": "Atruvia:t9",
+   "threadOfTodo": null,
+   "agreedInMeeting": null
+  },
+  {
+   "entry": "Atruvia:t10",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "wf/board"
+   },
+   "agreedInMeeting": "Atruvia:m76"
+  },
+  {
+   "entry": "Atruvia:t11",
+   "threadOfTodo": null,
+   "agreedInMeeting": null
+  },
+  {
+   "entry": "Atruvia:t12",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "retro/anna"
+   },
+   "agreedInMeeting": "Atruvia:m71"
+  },
+  {
+   "entry": "Atruvia:t13",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "retro/alpha"
+   },
+   "agreedInMeeting": "Atruvia:m48"
+  },
+  {
+   "entry": "Atruvia:t14",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "retro/beta"
+   },
+   "agreedInMeeting": "Tender:m18"
+  },
+  {
+   "entry": "Atruvia:t15",
+   "threadOfTodo": null,
+   "agreedInMeeting": null
+  },
+  {
+   "entry": "Atruvia:t16",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "101/it"
+   },
+   "agreedInMeeting": null
+  },
+  {
+   "entry": "Atruvia:t17",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "owe/carla"
+   },
+   "agreedInMeeting": "Migration:m1"
+  },
+  {
+   "entry": "Atruvia:t18",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "wf/anna"
+   },
+   "agreedInMeeting": null
+  },
+  {
+   "entry": "Atruvia:t19",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "101/carla"
+   },
+   "agreedInMeeting": "Tender:m16"
+  },
+  {
+   "entry": "Atruvia:t20",
+   "threadOfTodo": null,
+   "agreedInMeeting": null
+  },
+  {
+   "entry": "Atruvia:t21",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "101/carla"
+   },
+   "agreedInMeeting": "Migration:m1"
+  },
+  {
+   "entry": "Atruvia:t22",
+   "threadOfTodo": null,
+   "agreedInMeeting": null
+  },
+  {
+   "entry": "Atruvia:t23",
+   "threadOfTodo": null,
+   "agreedInMeeting": null
+  },
+  {
+   "entry": "Atruvia:t24",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "101/frank"
+   },
+   "agreedInMeeting": "Migration:m23"
+  },
+  {
+   "entry": "Atruvia:t25",
+   "threadOfTodo": null,
+   "agreedInMeeting": null
+  },
+  {
+   "entry": "Atruvia:t26",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "wf/sven"
+   },
+   "agreedInMeeting": null
+  },
+  {
+   "entry": "Atruvia:t27",
+   "threadOfTodo": null,
+   "agreedInMeeting": null
+  },
+  {
+   "entry": "Atruvia:t28",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "101/carla"
+   },
+   "agreedInMeeting": null
+  },
+  {
+   "entry": "Atruvia:t29",
+   "threadOfTodo": null,
+   "agreedInMeeting": null
+  },
+  {
+   "entry": "Atruvia:t30",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "sparring/mieke"
+   },
+   "agreedInMeeting": "Tender:m17"
+  },
+  {
+   "entry": "Atruvia:t31",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "retro/anna"
+   },
+   "agreedInMeeting": "Atruvia:m15"
+  },
+  {
+   "entry": "Atruvia:t32",
+   "threadOfTodo": null,
+   "agreedInMeeting": null
+  },
+  {
+   "entry": "Atruvia:t33",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "retro/anna"
+   },
+   "agreedInMeeting": "Atruvia:m15"
+  },
+  {
+   "entry": "Atruvia:t34",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "owe/anna"
+   },
+   "agreedInMeeting": null
+  },
+  {
+   "entry": "Atruvia:t35",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "retro/alpha"
+   },
+   "agreedInMeeting": "Migration:m2"
+  },
+  {
+   "entry": "Atruvia:t36",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "101/ulf"
+   },
+   "agreedInMeeting": "Migration:m9"
+  },
+  {
+   "entry": "Atruvia:t37",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "101/hans"
+   },
+   "agreedInMeeting": "Tender:m19"
+  },
+  {
+   "entry": "Atruvia:t38",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "101/bert"
+   },
+   "agreedInMeeting": "Atruvia:m13"
+  },
+  {
+   "entry": "Atruvia:t39",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "wf/anna"
+   },
+   "agreedInMeeting": "Atruvia:m73"
+  },
+  {
+   "entry": "Atruvia:t40",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "wf/olga"
+   },
+   "agreedInMeeting": null
+  },
+  {
+   "entry": "Atruvia:t41",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "wf/paul"
+   },
+   "agreedInMeeting": null
+  },
+  {
+   "entry": "Atruvia:t42",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "owe/board"
+   },
+   "agreedInMeeting": "Atruvia:m76"
+  },
+  {
+   "entry": "Atruvia:t43",
+   "threadOfTodo": null,
+   "agreedInMeeting": "Zen:m1"
+  },
+  {
+   "entry": "Atruvia:t44",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "101/greta"
+   },
+   "agreedInMeeting": "Atruvia:m77"
+  },
+  {
+   "entry": "Atruvia:t45",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "tag": "101/carla"
+   },
+   "agreedInMeeting": "Atruvia:m79"
+  },
+  {
+   "entry": "Atruvia:t46",
+   "threadOfTodo": null,
+   "agreedInMeeting": null
+  },
+  {
+   "entry": "Atruvia:a0",
+   "agreementMadeIn": {
+    "itemPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "meetingIndex": 77
+   }
+  },
+  {
+   "entry": "Atruvia:a1",
+   "agreementMadeIn": {
+    "itemPath": "/storage/emulated/0/Note/1 Projects/Migration",
+    "meetingIndex": 8
+   }
+  },
+  {
+   "entry": "Atruvia:a2",
+   "agreementMadeIn": {
+    "itemPath": "/storage/emulated/0/Note/1 Projects/Tender",
+    "meetingIndex": 0
+   }
+  },
+  {
+   "entry": "Atruvia:a3",
+   "agreementMadeIn": {
+    "itemPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "meetingIndex": 4
+   }
+  },
+  {
+   "entry": "Atruvia:a4",
+   "agreementMadeIn": {
+    "itemPath": "/storage/emulated/0/Note/1 Projects/Migration",
+    "meetingIndex": 15
+   }
+  },
+  {
+   "entry": "Atruvia:a5",
+   "agreementMadeIn": {
+    "itemPath": "/storage/emulated/0/Note/1 Projects/Migration",
+    "meetingIndex": 18
+   }
+  },
+  {
+   "entry": "Atruvia:a6",
+   "agreementMadeIn": {
+    "itemPath": "/storage/emulated/0/Note/1 Projects/Migration",
+    "meetingIndex": 21
+   }
+  },
+  {
+   "entry": "Atruvia:a7",
+   "agreementMadeIn": {
+    "itemPath": "/storage/emulated/0/Note/1 Projects/Migration",
+    "meetingIndex": 10
+   }
+  },
+  {
+   "entry": "Atruvia:a8",
+   "agreementMadeIn": {
+    "itemPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "meetingIndex": 76
+   }
+  },
+  {
+   "entry": "Atruvia:a9",
+   "agreementMadeIn": {
+    "itemPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "meetingIndex": 81
+   }
+  },
+  {
+   "entry": "Zen:t0",
+   "threadOfTodo": null,
+   "agreedInMeeting": "Zen:m2"
+  },
+  {
+   "entry": "Zen:t1",
+   "threadOfTodo": {
+    "kind": "thread",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Zen",
+    "tag": "jf/board"
+   },
+   "agreedInMeeting": "Zen:m0"
+  }
+ ]
+}
