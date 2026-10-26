@@ -9,6 +9,12 @@
  * rest of the session (`dismissBackInUse`, memory only): without a date in
  * the status line nothing in the file can tell this meeting from a later
  * one.
+ *
+ * The thread types start from the settings snapshot (storage/settingsSnapshot.ts),
+ * so a page that opens after the app loaded its settings builds its roster once,
+ * with the final types (docs/dev/history/technical-design-perf-threads.md §3.6).
+ * The settings are still loaded, so a change arrives; it replaces the types only
+ * when they differ by value.
  */
 import {useCallback, useEffect, useMemo, useState} from 'react';
 import {threadTypesOf} from '../../domain/counterparts';
@@ -16,6 +22,7 @@ import {CounterpartStatus} from '../../domain/threadsSection';
 import {setCounterpartStatus} from '../../storage/counterparts';
 import {CachedItem, getCachedData} from '../../storage/dataCache';
 import {loadSettings} from '../../storage/settingsStorage';
+import {peekSettings} from '../../storage/settingsSnapshot';
 import {RosterEntry} from '../../storage/tendingRoster';
 import {ThreadInboxInput} from '../../storage/threadAggregate';
 import {useActionError} from '../../ui/useActionError';
@@ -41,9 +48,11 @@ export interface TendingData {
   items: CachedItem[];
   inbox: ThreadInboxInput | null;
   ruleTypes: string[];
-  /** Whether the Note setups have loaded (the thread types are only `wf`/`owe` until then). */
+  /** Whether the Note setups are known (the thread types are only `wf`/`owe` until then). */
   ready: boolean;
 }
+
+const sameList = (a: readonly string[], b: readonly string[]) => a.length === b.length && a.every((x, i) => x === b[i]);
 
 export function useTendingData(): TendingData {
   const items = useCachedItems();
@@ -53,13 +62,14 @@ export function useTendingData(): TendingData {
     () => (inboxState && inboxPath ? {path: inboxPath, tasks: inboxState.tasks, meetings: inboxState.meetings} : null),
     [inboxState, inboxPath],
   );
-  const [ruleTypes, setRuleTypes] = useState<string[]>(() => threadTypesOf([]));
-  const [ready, setReady] = useState(false);
+  const [ruleTypes, setRuleTypes] = useState<string[]>(() => threadTypesOf(peekSettings()?.noteSetups ?? []));
+  const [ready, setReady] = useState(() => peekSettings() !== null);
   useEffect(() => {
     let cancelled = false;
     loadSettings().then(s => {
       if (cancelled) return;
-      setRuleTypes(threadTypesOf(s.noteSetups));
+      const next = threadTypesOf(s.noteSetups);
+      setRuleTypes(prev => (sameList(prev, next) ? prev : next));
       setReady(true);
     });
     return () => {

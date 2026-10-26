@@ -337,3 +337,10 @@ parser's `push` during construction found.
   `meeting` field.
 - **S15.** `[Unreleased]` had no Fixed section yet; S15 adds it (between Changed and Upgrade notes) with the first
   §8 line, S17 adds the second line to it.
+- **S16.** The snapshot lives in its own module, `storage/settingsSnapshot.ts` (`peekSettings`, and
+  `rememberSettings` for settingsStorage only); `storage/settingsStorage.ts` re-exports `peekSettings` and sets it
+  in `loadSettings` and `writeSettings`. Reason: 17 test files replace `settingsStorage.ts` with a factory that has
+  no `peekSettings`; a hook importing it from there would crash them. A failed read clears the snapshot, so
+  unreadable settings fall back to loading as today. The scenario-7 test is its own file,
+  `__tests__/ui/threadsTabOnce.test.tsx` (it replaces the roster and the settings load), so
+  `currentThreadsTab.test.tsx` and its mocks stay as they are.
