@@ -90,7 +90,8 @@ The full rules are in `docs/dev/design-overview.md` §3. They are binding; the m
   (`getPrivateDataDir`, `deletePrivateDataTree`); both deletes are refused natively outside their
   folder. No other native delete.
 - **Permissions**: every file or network call checks its permission right before use
-  (`supernote/pluginPermissions.ts`); a new permission needs a line in PRIVACY.md and in
+  (`supernote/pluginPermissions.ts`); a grant is remembered for the session and forgotten when a
+  file call fails. A new permission needs a line in PRIVACY.md and in
   `docs/dev/inkhub-listing.md`.
 - **Reuse the shared building blocks**: status slot for messages, `PagedSection` for lists, the
   PDF pipeline, wizard frame, operation journal for multi-step file moves

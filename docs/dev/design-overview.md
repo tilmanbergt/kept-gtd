@@ -356,7 +356,8 @@ Screens read it through `ui/useCachedInbox.ts`; a write anywhere is seen everywh
    `removeCachedItem`): every plugin save writes the file first, then updates the cache entry.
    A write-through whose text came from a write that kept an outside edit (below) parses the
    whole text instead of trusting the caller's fields.
-4. **Change notification**: write-through mutates items in place, so every mutation calls
+4. **Change notification**: write-through changes the item objects in place (giving them new
+   arrays, never changing a cached array or entry), so every mutation calls
    `notifyCacheChanged()`, which bumps a version and notifies `subscribeCache` listeners.
    `ui/useCachedItems.ts` turns that into a re-render and a new array identity per change (plain
    `useState` + `useEffect`, paused while a kept tab is hidden).
@@ -1025,7 +1026,9 @@ once after an update), Debug logging and "Export debug bundle".
 **Persistence.** `GtdParaSettings` (`domain/settings.ts`, defaults in `DEFAULT_SETTINGS`) is one
 JSON blob in AsyncStorage (`storage/settingsStorage.ts`); load fills missing fields from the
 defaults and runs idempotent migrations (Tag Rule key names, Tag Rules to Note setups,
-experimental-switch defaults). Recent tags, recent capture destinations and the Google Calendar
+experimental-switch defaults). The settings last read or written stay in memory
+(`storage/settingsSnapshot.ts`'s `peekSettings`), so a screen can start with the real values
+while its own load runs (the Threads tab builds its roster once, with the final thread types). Recent tags, recent capture destinations and the Google Calendar
 cache are AsyncStorage entries per profile (`storage/profileKeys.ts`'s `profileScopedKey`). PARA
 content never goes into AsyncStorage.
 
@@ -1093,7 +1096,9 @@ modules: `GmailImapModule` (§2.11).
 **Permissions and deletes** (`supernote/pluginPermissions.ts`). Declared: FILE:READ, FILE:WRITE,
 FILE:DELETE, INTERNET (`PluginConfig.json`). Every file or network call checks its permission
 right before use, through a wrapper with an 8-second timeout (the host's permission bridge can
-hang without answering). FILE:DELETE is requested only after a confirmation that names what is
+hang without answering). A grant is remembered for the session, so later checks make no bridge
+call and log nothing (the log file's own write included); a denial or timeout is not, and a
+failed native file call forgets every grant, so a permission revoked meanwhile is asked again. FILE:DELETE is requested only after a confirmation that names what is
 deleted (`ensureFileDeletePermission(description)`). The only deletes are `deleteEmptyFolder`
 (native: empty folders only), `deleteTempTree` (only inside the private temp folder,
 `getPrivateTempDir`, cleaned once per start) and the private data folder for marks
@@ -1199,6 +1204,10 @@ place it happens.
   alone.
 - **Data files are written only through `writeDataFile`** (storage/dataFileWrite.ts), never with
   `writeTextFile` directly, so an edit made outside Kept is never overwritten unasked.
+- **Cache arrays and entries are replaced, never changed in place**: a change maps or spreads into
+  a new array of new entries (`storage/itemMutations.ts` hands every mutation a copy). Derived
+  indexes are in-memory and keyed by those arrays (`domain/provenance.ts`'s lookup table per
+  meetings list, in a WeakMap), so a changed file brings a new array and thus a new index.
 - **Write-through is not optional.** Write the file first, then the cache, in the same operation,
   so a failed write never leaves the cache claiming a change. Every cache mutation calls
   `notifyCacheChanged()`.

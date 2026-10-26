@@ -352,3 +352,18 @@ parser's `push` during construction found.
   `supernote/fileSystem.ts` within its code-health baseline (1,248 lines, ratcheted down from 1,250).
 - **S17.** A host without the runtime permission API is remembered as granted too, so its
   "treating as granted" line is logged once per session, not per call.
+- **S18.** `__tests__/scenarios/threadsBigArea.test.tsx` puts `bigScopeFiles()` on the fake device with only the
+  clock set to the data set's "now", so the app's Threads rows are compared with the golden master's
+  `scopeRoster` (counterpart, status, last/next, I-owe, Waiting with the oldest age). It reads the rows the list was
+  handed (the list pages them on the device) after unfolding the inactive ones, and also checks one row as text.
+  Scenario 6 renames an upcoming meeting in Quick Add (Edit, title, Save) so that an open todo agreed in a meeting
+  of the new name resolves to it: that counterpart's next date and I-owe count update. Scenario 7 is checked there
+  too, by the number of `tendingRoster: built` log lines per open (one).
+- **S18.** Docs: `DEVELOPMENT-POLICY.md` §3 permission wording; `design-overview.md` §2.3 (write-through gives items
+  new arrays), §2.12 (settings snapshot), §2.13 (grants remembered for the session) and §3 (cache arrays and
+  entries are replaced, never changed in place; derived indexes are keyed by them). No help page describes the
+  changed behavior; "Loading threads…" is not described, as it does not show once the app has loaded its settings.
+- **Jest timings** (rough, the big scope, `buildScopeRoster` median of 7 runs on the development machine): before
+  S14 ≈ 390 ms; after S14 ≈ 6 ms (first, cold build ≈ 17 ms); after S15 ≈ 4 ms; after S16 ≈ 4 ms (S16 halves the
+  builds per open, not their cost). The device target (§4) is checked with the §7 checklist.
+

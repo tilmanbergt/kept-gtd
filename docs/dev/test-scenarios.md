@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-81 scenarios.
+83 scenarios.
 
 ## Agreements
 
@@ -770,6 +770,27 @@ Test: `__tests__/scenarios/touchTest.test.tsx` · design: `docs/dev/history/tech
 - **Then** the thread overview opens
 
 Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/technical-design-item-card.md`
+
+### A big Area's Threads tab shows the same counterparts and signals as before, built once
+
+- **Given** area "Atruvia" with 2 projects, 26 counterparts, 133 meetings and 97 todos (half agreed in a meeting, some in the Inbox and in area "Zen", two with a renamed meeting)
+- **When** I open Atruvia's page
+- **And** I unfold the inactive counterparts
+- **Then** the Threads tab lists New, Active and Inactive counterparts with the recorded last/next, I-owe and Waiting
+- **And** the roster was built once for this open
+
+Test: `__tests__/scenarios/threadsBigArea.test.tsx` · design: `docs/dev/history/technical-design-perf-threads.md`
+
+### Renaming a meeting in Quick Add updates the Threads tab of the big Area
+
+- **Given** area "Atruvia" of the big data set also has a todo agreed in "1:1 Ines" on a day only "1:1 Vera" has a meeting
+- **When** I open Atruvia's page
+- **Then** Ines has no next meeting and owes nothing
+- **When** I rename that meeting to "1:1 Ines #101/ines" in Quick Add
+- **Then** the file has the new title
+- **And** Ines shows the meeting as next, and the todo agreed in it as one more I-owe
+
+Test: `__tests__/scenarios/threadsBigArea.test.tsx` · design: `docs/dev/history/technical-design-perf-threads.md`
 
 ## Weekly Review
 
