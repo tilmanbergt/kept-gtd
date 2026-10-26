@@ -10,6 +10,8 @@ or your project/area files are stored.
 
 ## [Unreleased]
 
+## [0.21.1] — 2026-10-26
+
 ### Fixed
 - Opening a Project or Area page is much faster: the page is built once instead of several times, and no
   longer re-reads the settings for every part of it.
