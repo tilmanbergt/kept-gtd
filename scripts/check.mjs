@@ -32,6 +32,7 @@ const steps = [
   {name: 'help page tests', cmd: 'node', args: ['scripts/test-userdocs.mjs']},
   {name: 'code-health tests', cmd: 'node', args: ['scripts/test-code-health.mjs']},
   {name: 'scenario catalog tests', cmd: 'node', args: ['scripts/test-scenario-catalog.mjs']},
+  {name: 'test area tests', cmd: 'node', args: ['scripts/test-test-areas.mjs']},
   {name: 'scenario catalog up to date', cmd: 'node', args: ['scripts/scenario-catalog.mjs', '--check']},
   {name: 'code health', cmd: 'node', args: ['scripts/code-health.mjs', ...(CODE_HEALTH_STRICT ? ['--strict'] : [])]},
 ];

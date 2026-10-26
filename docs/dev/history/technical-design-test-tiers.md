@@ -346,4 +346,42 @@ checklist).
 
 ## As built
 
-(Filled in during T1-T5.)
+### T1 - feature areas
+
+- **Area order** in `scripts/test-areas.json` is chosen for "first match wins", not the order of §3.1:
+  `integrations`, `planning`, `engage`, `close-out`, `lasso`, `agreements`, `loops`, `threads`, `review`,
+  `meetings`, `note-setups`, `quick-add`, `current-page`, `tags`, `files`, `settings`, `foundation`. So
+  `review/steps/GmailStep.tsx` belongs to `integrations`, `review/steps/TendingThreadsStep.tsx` to `threads`,
+  `meetingMoment` to `engage`, and the name globs of the later areas (`*note*`, `*tag*`) don't take files of the
+  earlier ones.
+- `planning`'s test glob is `*{daily,month,period,planning}*` plus `focusedItemRowAccessory` and the smoke files;
+  `*week*` and `*focus*` were left out because they took Review's `weekAhead` (Week ahead step) and nothing else.
+- `obsidian.md` (not in §3.1) belongs to `files`. `App.tsx` belongs to `foundation`.
+- Every file under `__tests__/` counts, including test data (`__golden__/*.json`); only `*.test.ts(x)` files are
+  test files for `--area` and the matrix.
+- The rule also reports a help page an area names that doesn't exist. Its pure part is `areaFindings()` in
+  `scripts/lib/testAreas.mjs`; `scripts/code-health.mjs` only reads the files.
+- Measured on `main` after 0.21.1 (4-core container): 202 test files and 468 source files (`src/` and `App.tsx`),
+  none unassigned. 0.21.1's files: `utils/einkFlush.ts` → `foundation`, `test-helpers/renderCounts.ts` is outside
+  `src/` and `__tests__/`, `ui/useSettings.ts` and its test → `settings`, `currentPageGolden`/`currentPagePerf` →
+  `current-page`.
+
+  | Area | Test files | Source files | Help pages |
+  |---|---:|---:|---|
+  | `integrations` | 1 | 15 | integrations.md |
+  | `planning` | 5 | 22 | daily.md, week-and-month.md |
+  | `engage` | 15 | 39 | engage.md |
+  | `close-out` | 4 | 31 | close-out.md |
+  | `lasso` | 13 | 20 | lasso.md |
+  | `agreements` | 8 | 9 | agreements.md |
+  | `loops` | 12 | 17 | loops.md |
+  | `threads` | 17 | 23 | threads.md |
+  | `review` | 7 | 23 | review.md |
+  | `meetings` | 9 | 14 | meetings.md |
+  | `note-setups` | 32 | 64 | note-setups.md |
+  | `quick-add` | 15 | 57 | quick-add.md |
+  | `current-page` | 6 | 16 | projects-and-areas.md |
+  | `tags` | 6 | 10 | tags.md |
+  | `files` | 20 | 26 | files-and-folders.md, obsidian.md |
+  | `settings` | 22 | 45 | settings.md, profiles-and-demo.md |
+  | `foundation` | 10 | 37 | - |

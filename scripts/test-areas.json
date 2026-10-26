@@ -1,0 +1,273 @@
+{
+  "about": "Feature areas: which tests and source files belong to which part of the app, following the help pages. The first area whose globs match a file wins, in this order. Every file under __tests__/ and src/ must match one (npm run code-health). Design: docs/dev/history/technical-design-test-tiers.md §3.1.",
+  "smoke": "__tests__/scenarios/smoke/",
+  "areas": [
+    {
+      "id": "integrations",
+      "name": "Integrations (experimental)",
+      "help": ["integrations.md"],
+      "tests": ["__tests__/**/*{icsParser,gmail,Gmail,googleCalendar,GoogleCalendar}*"],
+      "sources": [
+        "src/domain/{icsParser,googleCalendarEvent,emailNote,attachmentSummary,textPagination}.ts",
+        "src/storage/{gmail,googleCalendar}*.ts",
+        "src/storage/textNote.ts",
+        "src/ui/{GmailBodyPane,GoogleCalendarPanel}.tsx",
+        "src/screens/review/steps/GmailStep.tsx"
+      ]
+    },
+    {
+      "id": "planning",
+      "name": "Daily, Week and Month",
+      "help": ["daily.md", "week-and-month.md"],
+      "tests": [
+        "__tests__/**/*{daily,month,period,planning}*",
+        "__tests__/ui/focusedItemRowAccessory.test.tsx",
+        "__tests__/scenarios/smoke/{daily,week,month,weekAndMonth}*"
+      ],
+      "sources": [
+        "src/screens/{DailyView,WeekView,WeekPlanner,MonthView,usePlanningScreen}.ts*",
+        "src/ui/{Daily,Period,Week,Month,Focus,DayMeetings}*",
+        "src/storage/{daily,weekly,monthly}Aggregate.ts",
+        "src/storage/{periodFocusCards,periodGoals,focusSlots}.ts",
+        "src/domain/{period,weekDate,monthHighlight}.ts"
+      ]
+    },
+    {
+      "id": "engage",
+      "name": "Engage",
+      "help": ["engage.md"],
+      "tests": ["__tests__/**/*{engage,Engage,meetingMoment}*"],
+      "sources": [
+        "src/screens/engage/**",
+        "src/screens/useEngageExit.ts",
+        "src/domain/{engage*,meetingMoment}.ts",
+        "src/storage/{engage*,returnRecord}.ts",
+        "src/ui/{EngageButton.tsx,engageStore.ts,meetingMomentStore.ts,useEngagePrompt.ts}"
+      ]
+    },
+    {
+      "id": "close-out",
+      "name": "Close out and archive",
+      "help": ["close-out.md"],
+      "tests": ["__tests__/**/*{closeOut,CloseOut,archive}*"],
+      "sources": [
+        "src/domain/closeOut/**",
+        "src/domain/pdf/**",
+        "src/storage/closeOut/**",
+        "src/storage/{archive,pdfExport,itemMove}.ts",
+        "src/domain/lifecycleDates.ts",
+        "src/supernote/pdfNative.ts",
+        "src/ui/closeOut/**",
+        "src/ui/wizard/**",
+        "src/ui/StatusMarkRow.tsx",
+        "src/screens/CloseOutWizard.tsx"
+      ]
+    },
+    {
+      "id": "lasso",
+      "name": "Lasso capture and marks",
+      "help": ["lasso.md"],
+      "tests": [
+        "__tests__/**/*{capture,Capture,marks,Marks,markStore,markData,markOutcome,pageAnchor}*"
+      ],
+      "sources": [
+        "src/screens/CaptureScreen.tsx",
+        "src/ui/capture/**",
+        "src/domain/{captureText,captureFileTo,marks}.ts",
+        "src/storage/{marks,markStore,markData}.ts",
+        "src/supernote/{lasso,lassoRead,strokeRecognition,markIcons,sdkElements}.ts",
+        "src/ui/{MarksCard,MarkOutcomeScreen}.tsx",
+        "src/ui/{marksNav,useOpenMarks}.ts"
+      ]
+    },
+    {
+      "id": "agreements",
+      "name": "Agreements",
+      "help": ["agreements.md"],
+      "tests": ["__tests__/**/*{agreement,Agreement}*"],
+      "sources": [
+        "src/domain/agreement*.ts",
+        "src/storage/agreements.ts",
+        "src/ui/{AgreementRow.tsx,useAgreementActions.ts}",
+        "src/screens/projectData/{AgreementsList.tsx,useProjectAgreements.ts}"
+      ]
+    },
+    {
+      "id": "loops",
+      "name": "Loops",
+      "help": ["loops.md"],
+      "tests": ["__tests__/**/*{loop,Loop}*"],
+      "sources": [
+        "src/domain/{loops,loopEdit,loopsSection}.ts",
+        "src/storage/loop*.ts",
+        "src/storage/noteOwner.ts",
+        "src/screens/loop/**",
+        "src/screens/area/useLoopLinkArm.ts",
+        "src/ui/{loopLinkStore,useLoopEvents,useLoopKinds,useLoopNote,useCloseLoop}.ts"
+      ]
+    },
+    {
+      "id": "threads",
+      "name": "Threads and tending",
+      "help": ["threads.md"],
+      "tests": [
+        "__tests__/**/*{thread,Thread,counterpart,tending,Tending,sinceLast,bigScope}*",
+        "__tests__/domain/provenance.test.ts"
+      ],
+      "sources": [
+        "src/domain/{threads,threadLens,threadText,threadsSection,counterparts,provenance,sinceLastText,statusSection}.ts",
+        "src/storage/{threadAggregate,threadProvenance,tendingRoster,counterparts,sinceLast}.ts",
+        "src/screens/thread/**",
+        "src/screens/review/steps/TendingThreadsStep.tsx",
+        "src/ui/{CounterpartCloseOut.tsx,overviewStore.ts}"
+      ]
+    },
+    {
+      "id": "review",
+      "name": "Weekly Review",
+      "help": ["review.md"],
+      "tests": [
+        "__tests__/**/*{review,Review,weekAhead,FrozenStepList}*"
+      ],
+      "sources": [
+        "src/screens/review/**",
+        "src/screens/useReviewStepNav.ts",
+        "src/domain/{reviewSteps,meetingSpan}.ts",
+        "src/storage/reviewAggregate.ts",
+        "src/ui/{ReviewHub,ReviewMasterDetail}.tsx"
+      ]
+    },
+    {
+      "id": "meetings",
+      "name": "Meetings and reflection",
+      "help": ["meetings.md"],
+      "tests": [
+        "__tests__/**/*{meeting,Meeting,nextMeeting,reflection,Reflection}*"
+      ],
+      "sources": [
+        "src/domain/{meetingDisplay,meetingNoteBlock,meetingTime,meetingTracking,nextMeeting,reflection}.ts",
+        "src/storage/{meetingNoteAggregate,meetingNoteContent,reflectionPage}.ts",
+        "src/ui/{MeetingChip,MeetingList,MeetingRow}.tsx",
+        "src/ui/useReflectionLookup.ts",
+        "src/screens/projectData/MeetingsSection.tsx"
+      ]
+    },
+    {
+      "id": "note-setups",
+      "name": "Note setups, notebooks and pages",
+      "help": ["note-setups.md"],
+      "tests": [
+        "__tests__/**/*{noteSetup,NoteSetup,homeNotebook,HomeNotebook,notebook,Notebook,note,Note,pageSection,pageOrder,keywordLength,splitByTag}*"
+      ],
+      "sources": [
+        "src/screens/settings/noteSetups/**",
+        "src/screens/notebook/**",
+        "src/domain/{noteSetups,noteSetupText,noteSetupMigration,pageLayout,homeNotebook,noteCreationPlan,noteFindability,notebookContents,pageSection,pageOrder,notePageEntry,sharedNotePages,keywordLength,noteRelocation,returnContext}.ts",
+        "src/storage/{homeNotebook*,noteSetupMigrationState,itemNotePlan,noteTargets,noteFindability,notePieceMetrics,notebookContents,notebookPages,pageSection,notePageEntry,sharedNotePages,standaloneNotes,noteLinks,noteOwnerOf,noteTitlesDiagnostic}.ts",
+        "src/supernote/{noteElements,noteTitles,textboxMetrics,currentPage}.ts",
+        "src/ui/{HomeNotebookButton,NoteTemplatePreview,NudgePad}.tsx",
+        "src/ui/{useHomeNotebook*,useFocusHomeNotebooks,useNoteCreateConfirm,useNoteSetupsNotice}.ts*"
+      ]
+    },
+    {
+      "id": "quick-add",
+      "name": "Quick Add, item card and Inbox",
+      "help": ["quick-add.md"],
+      "tests": [
+        "__tests__/**/*{quickAdd,QuickAdd,itemCard,ItemCard,todoCard,destination,clipboard,inbox,entryMove,EntryMove,createItem}*"
+      ],
+      "sources": [
+        "src/ui/quickAdd/**",
+        "src/ui/itemCard/**",
+        "src/ui/{QuickAddWidget,CollapsedQuickAdd,DestinationPicker,DateInput,ValidTillInput,FlowStateChips,InlineTextEditor,ClipboardStrip,ClipboardTextInput}.tsx",
+        "src/ui/{useEntryMoveUi,useEditFlush}.ts",
+        "src/domain/{quickAddCompose,itemCard,destination,dateNudge,clipboardText}.ts",
+        "src/storage/{destinationUsage,inboxFiling,inboxFolder,createItem,entryMove}.ts",
+        "src/screens/InboxScreen.tsx"
+      ]
+    },
+    {
+      "id": "current-page",
+      "name": "Projects and Areas, status and the Current page",
+      "help": ["projects-and-areas.md"],
+      "tests": [
+        "__tests__/**/*{currentPage,areaProjects,itemsList,itemDetail,projectGlance,frontMatterStatus}*"
+      ],
+      "sources": [
+        "src/screens/{ItemsList,ItemDetail,ProjectDataPanel}.tsx",
+        "src/screens/area/**",
+        "src/screens/projectData/**",
+        "src/ui/{ItemStatusPanel,ItemFocusPanel,ItemContextBlock,ItemContextRows}.tsx",
+        "src/ui/{useStatusChoice,useStatusConfirm}.ts",
+        "src/storage/{areaAssignment,statusControl,projectGlance}.ts"
+      ]
+    },
+    {
+      "id": "tags",
+      "name": "Tags",
+      "help": ["tags.md"],
+      "tests": [
+        "__tests__/**/*{tag,Tag,flowState,taskLabels}*"
+      ],
+      "sources": [
+        "src/domain/{flowState,taskLabels,abbrev}.ts",
+        "src/storage/tagUsage.ts",
+        "src/ui/{TagChips,TagChipGrid,TaggableText,TaskLabels}.tsx",
+        "src/ui/{tagChipLayout,useAbbrevItems}.ts"
+      ]
+    },
+    {
+      "id": "files",
+      "name": "Your files: cache, writes, safety, integrity",
+      "help": ["files-and-folders.md", "obsidian.md"],
+      "tests": [
+        "__tests__/**/*{dataFileWrite,writeConflicts,writeGuard,writeLeftovers,fileName,fileChangeText,oddFiles,outsideEdits,refreshCache,legacyInbox,noteMissing,meetingsRoundTrip,markdownMarks,taskLine,taskEdit,fileBrowser,fileSafety,interruptions,pluginPermissions}*"
+      ],
+      "sources": [
+        "src/storage/{dataCache,dataFileWrite,projectFile,writeConflicts,integrityCheck,fileNaming,fileNameFix,linkedFiles,itemMutations}.ts",
+        "src/domain/{markdown,writeGuard,fileName,fileNameFix,fileChangeText,integrityCheck,taskLine,taskEdit,types}.ts",
+        "src/supernote/{fileSystem,pluginPermissions}.ts",
+        "src/ui/{FileBrowserPane,LoadErrorNotice}.tsx",
+        "src/ui/{fileBrowserGroup,useWriteConflicts,useCachedItems,useCachedInbox}.ts"
+      ]
+    },
+    {
+      "id": "settings",
+      "name": "Settings, profiles, demo, help and logging",
+      "help": ["settings.md", "profiles-and-demo.md"],
+      "tests": [
+        "__tests__/**/*{settings,Settings,profile,Profile,demoSpace,buildVersionText,helpTopics,markdownBlocks,features,redact,debugBundle,logSink,userDocs,keptGtd,touch,Touch}*"
+      ],
+      "sources": [
+        "src/screens/settings/**",
+        "src/domain/{settings,profiles,profileCopy,demoSpace,buildVersionText,helpTopics,markdownBlocks,features,redact,touchDiag}.ts",
+        "src/storage/{settings*,profiles,profileKeys,demoSpace,debugBundle,perfStats,touchLog}.ts",
+        "src/ui/{HelpOverlay,MarkdownBlocks}.tsx",
+        "src/ui/{useSettings,useSettingsUnreadableNotice,useProfileCopyNotice,useWhatsNewNotice,featureStore}.ts",
+        "src/ui/touchDiag/**",
+        "src/utils/{log,logSink,perf,touchDiagStore}.ts"
+      ]
+    },
+    {
+      "id": "foundation",
+      "name": "Foundation: shared UI, utils, device wrappers, App shell",
+      "help": [],
+      "tests": [
+        "__tests__/fakeDevice/**",
+        "__tests__/domain/dateFormat.test.ts",
+        "__tests__/ui/{measuredHeightMemo,useActionError,useEditTarget,rowTapTargets,taskRow*,itemEntryRow}*"
+      ],
+      "sources": [
+        "App.tsx",
+        "src/screens/useAppOverlays.tsx",
+        "src/ui/{PagedSection,PillButton,ProgressBar,MiniTabs,TabBar,TwoLineRow,KeepAliveTab,TaskRow,HighlightMark}.tsx",
+        "src/ui/{icons.tsx,commonStyles.ts,theme.ts,listLayout.ts,pagination.ts,keepAliveStore.ts,screenActivity.ts}",
+        "src/ui/{useMeasuredHeight,useStableCallback,useActionError,useEditTarget,useEntryActions,taskRowLayout,itemEntryRow}.ts",
+        "src/ui/status/**",
+        "src/domain/{dateFormat,dateLabel,textLineEstimator,buttonIds}.ts",
+        "src/utils/**",
+        "src/supernote/**"
+      ]
+    }
+  ]
+}
