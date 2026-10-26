@@ -5,7 +5,7 @@
  * Link file), behind a Meetings | Google mini-tab. Add, edit and delete live
  * in ProjectDataPanel's single Quick Add above both lists.
  */
-import React, {useEffect, useState} from 'react';
+import React, {useMemo, useState} from 'react';
 import {usePerfRender} from '../../utils/perf';
 import {Keyboard, View} from 'react-native';
 import {Meeting} from '../../domain/types';
@@ -14,6 +14,7 @@ import {EMPTY_NOTE_SETUP_CONFIG, noteSetupConfig, NoteSetupConfig} from '../../d
 import {CachedItem, getCachedData} from '../../storage/dataCache';
 import {openOrCreateMeetingNote} from '../../storage/meetingNoteContent';
 import {loadSettings} from '../../storage/settingsStorage';
+import {useSettings} from '../../ui/useSettings';
 import {useNoteCreateConfirm} from '../../ui/useNoteCreateConfirm';
 import GoogleCalendarPanel from '../../ui/GoogleCalendarPanel';
 import MeetingRow, {MeetingTrackingConfig} from '../../ui/MeetingRow';
@@ -81,20 +82,10 @@ export default function MeetingsSection({
   const features = useFeatures();
   const mainTabs = visibleTabs(MEETINGS_MAIN_TABS, mainTabState, 'google', features.googleCalendar);
   const mainTab = mainTabs.activeKey;
-  const [icsUrl, setIcsUrl] = useState('');
-  // Note setups for the rows' prep/review checkpoint icon - same one-shot load.
-  const [noteSetups, setNoteSetups] = useState<NoteSetupConfig>(EMPTY_NOTE_SETUP_CONFIG);
-  useEffect(() => {
-    let cancelled = false;
-    loadSettings().then(s => {
-      if (cancelled) return;
-      setIcsUrl(s.googleCalendarIcsUrl);
-      setNoteSetups(noteSetupConfig(s));
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  // The calendar link and the Note setups (the rows' prep/review checkpoint icon), from the settings snapshot.
+  const settings = useSettings();
+  const icsUrl = settings?.googleCalendarIcsUrl ?? '';
+  const noteSetups: NoteSetupConfig = useMemo(() => (settings ? noteSetupConfig(settings) : EMPTY_NOTE_SETUP_CONFIG), [settings]);
 
   const visible = meetings
     .map((meeting, index) => ({meeting, index}))
@@ -119,8 +110,8 @@ export default function MeetingsSection({
   const handleNote = (index: number) => {
     Keyboard.dismiss();
     runAction(async () => {
-      const settings = await loadSettings();
-      const {meeting, changed} = await openOrCreateMeetingNote(meetings[index], itemPath, settings, null, {
+      const loaded = await loadSettings();
+      const {meeting, changed} = await openOrCreateMeetingNote(meetings[index], itemPath, loaded, null, {
         confirmCreate: confirmNoteCreate,
       });
       if (changed) {

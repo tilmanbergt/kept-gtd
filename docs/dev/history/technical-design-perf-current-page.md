@@ -321,3 +321,13 @@ The Atruvia roster (≈ 180 ms) stays inside the first render.
   open Quick Add 6, ItemDetail 5, ProjectDataPanel 7 (device: 9) renders, 8 settings reads. These are P0's limits;
   each step lowers them.
 - `test-helpers/bigScope.ts` gains `bigScopeSettings()` (the data set's Note setups).
+- **P1.** As designed, plus: a read that started before a write never puts its (older) result into the snapshot
+  (a write counter), and the in-flight read is dropped by every write. The audit found no code that changes a
+  loaded settings object in place (the Settings screen's draft is replaced, never changed). `useHomeNotebooks` no
+  longer reloads the settings when its screen is shown (the snapshot has every change);
+  `useHomeNotebookRenameOffer` reads `peekSettings()` first. `useEntryActions` is not on the Current page (thread
+  and loop overviews) and keeps its own load; it profits from the cheaper read. The `settings:read` perf counter
+  counts reads that parse. `__tests__/ui/threadsTabOnce.test.tsx` (S16) tested that a settings *load* with other
+  thread types rebuilds the roster; with P1 a change arrives through the snapshot instead, so its two cases now
+  change the snapshot (same types: no rebuild; other types: one more). Counts per open after P1: Quick Add 3,
+  ItemDetail 3, ProjectDataPanel 3 renders, no settings read.

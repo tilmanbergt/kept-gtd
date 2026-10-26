@@ -1027,8 +1027,12 @@ once after an update), Debug logging and "Export debug bundle".
 JSON blob in AsyncStorage (`storage/settingsStorage.ts`); load fills missing fields from the
 defaults and runs idempotent migrations (Tag Rule key names, Tag Rules to Note setups,
 experimental-switch defaults). The settings last read or written stay in memory
-(`storage/settingsSnapshot.ts`'s `peekSettings`), so a screen can start with the real values
-while its own load runs (the Threads tab builds its roster once, with the final thread types). Recent tags, recent capture destinations and the Google Calendar
+(`storage/settingsSnapshot.ts`): `peekSettings`, and `subscribeSettings` for a change. A read
+that finds the same stored text returns the same object (no parse, no migrations), concurrent
+reads share one, and a loaded settings object is never changed in place: a change spreads into
+a new object and is saved. Components read the settings through `ui/useSettings.ts`
+(`useSettings`, `useSettingsValue`), which follow the snapshot and load only while there is
+none; so a page builds once with the real values, and a saved change shows at once. Recent tags, recent capture destinations and the Google Calendar
 cache are AsyncStorage entries per profile (`storage/profileKeys.ts`'s `profileScopedKey`). PARA
 content never goes into AsyncStorage.
 

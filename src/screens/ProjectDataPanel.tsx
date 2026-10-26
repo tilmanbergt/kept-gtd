@@ -83,6 +83,7 @@ import {addMeetingToDestination, addTaskToDestination, applyMeetingEdit, applyTa
 import {linkedFileStatus, linkRootPath, locateLinkedFile, openLinkedFile, toLinkedFile} from '../storage/linkedFiles';
 import {saveMeetings, saveTasks} from '../storage/projectFile';
 import {loadSettings} from '../storage/settingsStorage';
+import {useSettings} from '../ui/useSettings';
 import {GtdParaSettings} from '../domain/settings';
 import {openOrCreateMeetingNote, openOrCreateTodoNote} from '../storage/meetingNoteContent';
 import {todayIso} from '../domain/meetingTime';
@@ -236,20 +237,9 @@ export default function ProjectDataPanel({
   // pattern hideDone/icsUrl below already use - needed to resolve linkedFile
   // (base-root-relative) to/from an absolute path and to know where the
   // Resources root actually is.
-  const [paths, setPaths] = useState<ResolvedParaPaths | null>(null);
-  // The meeting card's setups and reflection page need the settings too.
-  const [settings, setSettings] = useState<GtdParaSettings | null>(null);
-  useEffect(() => {
-    let cancelled = false;
-    loadSettings().then(s => {
-      if (cancelled) return;
-      setPaths(resolvePaths(s));
-      setSettings(s);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  // The meeting card's setups and reflection page need the settings too (ui/useSettings.ts: the snapshot, live).
+  const settings: GtdParaSettings | null = useSettings();
+  const paths: ResolvedParaPaths | null = useMemo(() => (settings ? resolvePaths(settings) : null), [settings]);
 
   const load = useCallback(async () => {
     setLoading(true);

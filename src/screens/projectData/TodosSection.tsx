@@ -7,7 +7,7 @@
  * the `footer` (the agreements line). Add, edit and delete live in
  * ProjectDataPanel's single Quick Add above both lists.
  */
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {usePerfRender} from '../../utils/perf';
 import {Keyboard, Pressable, Text, View} from 'react-native';
 import {Task} from '../../domain/types';
@@ -19,6 +19,7 @@ import {withTaskDone} from '../../domain/taskEdit';
 import {todayIso} from '../../domain/meetingTime';
 import {openOrCreateTodoNote} from '../../storage/meetingNoteContent';
 import {loadSettings, saveSettings} from '../../storage/settingsStorage';
+import {useSettingsValue} from '../../ui/useSettings';
 import {useEngagePrompt} from '../../ui/useEngagePrompt';
 import {useNoteCreateConfirm} from '../../ui/useNoteCreateConfirm';
 import PagedSection from '../../ui/PagedSection';
@@ -72,25 +73,17 @@ export default function TodosSection({
   const confirmNoteCreate = useNoteCreateConfirm('ProjectDataPanel.todoNoteCreateConfirm');
 
   // "Hide done tasks" - remembered across visits via
-  // GtdParaSettings.hideDoneProjectTasks (domain/settings.ts), loaded once
-  // on mount; done tasks are shown by default (false). Loaded/saved directly
-  // here via loadSettings/saveSettings rather than threaded down as a prop
-  // through ItemDetail - same self-contained "load your own settings"
-  // pattern this file's own toggleFocus already uses.
-  const [hideDone, setHideDone] = useState(false);
-  useEffect(() => {
-    let cancelled = false;
-    loadSettings().then(s => {
-      if (!cancelled) setHideDone(s.hideDoneProjectTasks);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  // GtdParaSettings.hideDoneProjectTasks (domain/settings.ts), read from the
+  // settings snapshot (ui/useSettings.ts); done tasks are shown by default
+  // (false). A tap shows at once (`toggled`) and saves; the saved settings then
+  // arrive through the snapshot.
+  const stored = useSettingsValue(s => s.hideDoneProjectTasks);
+  const [toggled, setToggled] = useState<boolean | null>(null);
+  const hideDone = toggled ?? stored ?? false;
 
   const toggleHideDone = () => {
     const next = !hideDone;
-    setHideDone(next);
+    setToggled(next);
     loadSettings()
       .then(s => saveSettings({...s, hideDoneProjectTasks: next}))
       .catch(e => logError('TodosSection: save hideDoneProjectTasks failed', errorMessage(e)));

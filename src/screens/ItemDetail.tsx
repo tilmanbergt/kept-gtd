@@ -122,7 +122,7 @@ import NotebookTab from './notebook/NotebookTab';
 import {ResolvedParaPaths, resolvePaths} from '../domain/settings';
 import {ensureItemCached, findCachedItem, frontMatterOf, getCachedData, updateItemFrontMatter} from '../storage/dataCache';
 import {saveFrontMatter} from '../storage/projectFile';
-import {loadSettings} from '../storage/settingsStorage';
+import {useSettings} from '../ui/useSettings';
 import {FolderEntry} from '../supernote/fileSystem';
 import {logError} from '../utils/log';
 import {useEinkRefreshOnLoad} from '../utils/screenRefresh';
@@ -208,20 +208,10 @@ export default function ItemDetail({
 
   const [error, setError] = useState<string | null>(null);
 
-  // The user's resolved Resources folder (domain/settings.ts) - the
-  // 'resources' root's rootPath below. Loaded once; Settings changes take
-  // effect the next time this screen mounts, same as every other reader of
-  // loadSettings() in this codebase.
-  const [paths, setPaths] = useState<ResolvedParaPaths | null>(null);
-  useEffect(() => {
-    let cancelled = false;
-    loadSettings().then(s => {
-      if (!cancelled) setPaths(resolvePaths(s));
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  // The user's resolved folders (domain/settings.ts) - the 'resources' root's
+  // rootPath below - from the settings snapshot (ui/useSettings.ts).
+  const settings = useSettings();
+  const paths: ResolvedParaPaths | null = useMemo(() => (settings ? resolvePaths(settings) : null), [settings]);
 
   // See the module doc comment's "handleSetDefaultResourceFolder" note.
   const [resourceFolderState, setResourceFolderState] = useState<ResourceFolderState | null>(null);

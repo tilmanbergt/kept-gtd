@@ -81,5 +81,8 @@ scenario('Opening an Area page renders each part a bounded number of times and r
   });
 });
 
-/** P0 (today, as on the device): Quick Add 6, ItemDetail 5, ProjectDataPanel 7 renders and 8 settings reads per open. */
-const LIMITS = {quickAdd: 6, itemDetail: 5, projectDataPanel: 7, settingsReads: 8};
+/**
+ * Before this work (P0, as on the device): Quick Add 6, ItemDetail 5, ProjectDataPanel 7 renders and 8 settings
+ * reads per open. P1 (settings from the snapshot): 3, 3, 3 and none.
+ */
+const LIMITS = {quickAdd: 3, itemDetail: 3, projectDataPanel: 3, settingsReads: 0};

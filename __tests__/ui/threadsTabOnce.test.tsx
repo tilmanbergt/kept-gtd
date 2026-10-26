@@ -1,5 +1,6 @@
 // docs/dev/history/technical-design-perf-threads.md §3.6, §6 scenario 7: the Threads tab builds its roster
-// once per open, with the final thread types.
+// once per open, with the final thread types; a settings change arrives through the snapshot
+// (docs/dev/history/technical-design-perf-current-page.md §3.1).
 jest.mock('react-native-svg', () => {
   const ReactLib = require('react');
   const stub = (props: object) => ReactLib.createElement('Svg', props);
@@ -78,22 +79,20 @@ beforeEach(() => {
 });
 
 describe('Threads tab: one roster per open (scenario 7)', () => {
-  it('builds once from the snapshot, and not again when the load brings the same types', async () => {
+  it('builds once from the snapshot, and not again when the settings change but the types stay', async () => {
     rememberSettings(withSetups(['retro']));
-    const finishLoad = deferredLoad();
     const r = await mount();
     expect(built).toHaveBeenCalledTimes(1);
     expect(list(r).rows.map((row: {kind: string}) => row.kind)).toContain('active');
-    await finishLoad(withSetups(['retro']));
+    await act(async () => rememberSettings(withSetups(['retro'])));
     expect(built).toHaveBeenCalledTimes(1);
     act(() => r.unmount());
   });
 
-  it('builds again when the loaded types differ', async () => {
+  it('builds again when the settings change the thread types', async () => {
     rememberSettings(withSetups(['retro']));
-    const finishLoad = deferredLoad();
     const r = await mount();
-    await finishLoad(withSetups(['retro', '101']));
+    await act(async () => rememberSettings(withSetups(['retro', '101'])));
     expect(built).toHaveBeenCalledTimes(2);
     act(() => r.unmount());
   });
