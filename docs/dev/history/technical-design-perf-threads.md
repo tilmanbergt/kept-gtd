@@ -344,3 +344,11 @@ parser's `push` during construction found.
   unreadable settings fall back to loading as today. The scenario-7 test is its own file,
   `__tests__/ui/threadsTabOnce.test.tsx` (it replaces the roster and the settings load), so
   `currentThreadsTab.test.tsx` and its mocks stay as they are.
+- **S17.** Besides `forgetPermissionGrants()`, `supernote/pluginPermissions.ts` has two small helpers for
+  `fileSystem.ts`: `logFileCallFailure(...)` (logs like `logError`, then forgets) replaces `logError` in the
+  failure paths of every permission-checked native call, and `forgetGrantsAndRethrow` is the `.catch` of the
+  calls that must not log (the log file's append, the perf trace writes), each marked `// silent:` for code health. `openPath`'s thrown path forgets too.
+  The private-folder calls (temp and data folders, exempt from permissions) do not. This keeps
+  `supernote/fileSystem.ts` within its code-health baseline (1,248 lines, ratcheted down from 1,250).
+- **S17.** A host without the runtime permission API is remembered as granted too, so its
+  "treating as granted" line is logged once per session, not per call.

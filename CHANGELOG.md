@@ -62,6 +62,7 @@ or your project/area files are stored.
 - Project and Area pages with many meetings and threads open much faster: the Threads tab no longer
   compares every meeting again for every person. Review's "Tending threads", the counterpart filter
   and Engage profit too.
+- With Debug logging on, Kept GTD no longer writes to its log file every few seconds while idle.
 
 ### Upgrade notes
 - The first time you add an agreement to a Project or Area, its file gets a new `## Agreements`

@@ -15,6 +15,32 @@ type PermissionAwareManager = typeof PluginManager & {
 
 const pending = new Map<string, Promise<boolean>>();
 
+/**
+ * Permissions granted this session (docs/dev/history/technical-design-perf-threads.md §3.7):
+ * a later check returns at once, with no bridge call and no log line, which also keeps the
+ * log file's own write from logging (utils/logSink.ts). A denial, an error or a timeout is
+ * never kept, so the next call asks again. Forgotten when a native file call fails
+ * (supernote/fileSystem.ts), so a permission revoked while the plugin runs is asked for again.
+ */
+const granted = new Set<string>();
+
+/** Forgets every grant of this session; the next check asks the host again. */
+export function forgetPermissionGrants(): void {
+  granted.clear();
+}
+
+/** A native file call failed: logs it (as logError) and forgets the grants. */
+export function logFileCallFailure(...args: unknown[]): void {
+  forgetPermissionGrants();
+  logError(...args);
+}
+
+/** A native file call that must not log failed: forgets the grants and rethrows `error`. */
+export function forgetGrantsAndRethrow(error: unknown): never {
+  forgetPermissionGrants();
+  throw error;
+}
+
 // Observed in practice: the host's hasPermission/requestPermission bridge
 // calls can simply never resolve (no dialog shown, no rejection either) -
 // e.g. when the host doesn't support prompting for a given permission at
@@ -48,19 +74,22 @@ function withTimeout<T>(promise: Promise<T>, label: string): Promise<T> {
  * permission API (the firmware shipping alongside sn-plugin-lib 0.1.65+,
  * see sdk-migration-0.1.65-analysis.md). On older hosts without
  * hasPermission/requestPermission, treats the operation as already allowed
- * rather than blocking on an API that doesn't exist there.
+ * rather than blocking on an API that doesn't exist there. A grant is
+ * remembered for the session (see `granted` above).
  */
 export async function ensurePluginPermission(
   permission: string,
   description: string,
 ): Promise<boolean> {
   const manager = PluginManager as PermissionAwareManager;
+  if (granted.has(permission)) return true;
 
   if (
     typeof manager.hasPermission !== 'function' ||
     typeof manager.requestPermission !== 'function'
   ) {
     log('ensurePluginPermission: host has no runtime permission API, treating as granted', permission);
+    granted.add(permission);
     return true;
   }
 
@@ -75,7 +104,10 @@ export async function ensurePluginPermission(
         await withTimeout(manager.hasPermission!(permission), `hasPermission(${permission})`),
       );
       log('ensurePluginPermission: hasPermission', permission, '=>', has);
-      if (has > 0) return true;
+      if (has > 0) {
+        granted.add(permission);
+        return true;
+      }
 
       log('ensurePluginPermission: calling requestPermission', permission);
       const requested = Number(
@@ -85,6 +117,7 @@ export async function ensurePluginPermission(
         ),
       );
       log('ensurePluginPermission: requestPermission', permission, '=>', requested);
+      if (requested > 0) granted.add(permission);
       return requested > 0;
     } catch (e) {
       logError(

@@ -1,6 +1,6 @@
 import {NativeModules} from 'react-native';
 import {PluginCommAPI, PluginFileAPI} from 'sn-plugin-lib';
-import {ensureFileDeletePermission, ensureFileReadPermission, ensureFileWritePermission} from './pluginPermissions';
+import {ensureFileDeletePermission, ensureFileReadPermission, ensureFileWritePermission, forgetGrantsAndRethrow, forgetPermissionGrants, logFileCallFailure} from './pluginPermissions';
 import {log, logError, logWarn} from '../utils/log';
 import {perfEnd, perfStart} from '../utils/perf';
 import {errorMessage} from '../utils/errorMessage';
@@ -256,11 +256,7 @@ export async function listFolderEntries(folderPath: string): Promise<FolderEntry
     log('listFolderEntries: done', folderPath, `${entries.length} entries`);
     return entries;
   } catch (e) {
-    logError(
-      'listFolderEntries: failed',
-      folderPath,
-      errorMessage(e),
-    );
+    logFileCallFailure('listFolderEntries: failed', folderPath, errorMessage(e));
     throw e;
   }
 }
@@ -294,7 +290,7 @@ export async function statFiles(paths: string[]): Promise<FileStat[] | null> {
     perfEnd('io:stat', perfToken, {files: paths.length});
     return stats;
   } catch (e) {
-    logError('statFiles: failed', `${paths.length} paths`, errorMessage(e));
+    logFileCallFailure('statFiles: failed', `${paths.length} paths`, errorMessage(e));
     throw e;
   }
 }
@@ -367,10 +363,9 @@ export async function openPath(path: string, page = -1): Promise<void> {
     response = (await PluginFileAPI.openFile(path, page)) as typeof response;
   } catch (e) {
     rollback?.();
-    // Diagnostic - see getElements' own comment (above, this
-    // file) for why. A thrown (not just unsuccessful) openFile call gets
-    // its own entry too, same as the other two - errorMessage from
-    // whatever the exception itself carries.
+    forgetPermissionGrants();
+    // Diagnostic - see getElements' own comment (this file) for why. A thrown (not just
+    // unsuccessful) openFile call gets its own entry too, with the exception's own message.
     await recordDebugLogEntry('openPath', false, Date.now() - start, {
       path,
       page,
@@ -382,7 +377,7 @@ export async function openPath(path: string, page = -1): Promise<void> {
   if (!response || !response.success) {
     rollback?.();
     const message = response?.error?.message || 'Could not open this file.';
-    logError('openPath: failed', path, message);
+    logFileCallFailure('openPath: failed', path, message);
     await recordDebugLogEntry('openPath', false, durationMs, {path, page, errorMessage: message});
     throw new Error(message);
   }
@@ -434,7 +429,7 @@ export async function readTextFile(path: string): Promise<string | null> {
     log('readTextFile: done', path, content == null ? 'missing' : `${content.length} chars`);
     return content;
   } catch (e) {
-    logError('readTextFile: failed', path, errorMessage(e));
+    logFileCallFailure('readTextFile: failed', path, errorMessage(e));
     throw e;
   }
 }
@@ -459,7 +454,7 @@ export async function writeTextFile(path: string, content: string): Promise<void
     const how = await GtdParaFile.writeTextFile(path, content);
     (how === 'direct' ? logWarn : log)('writeTextFile: done', how, path);
   } catch (e) {
-    logError('writeTextFile: failed', path, errorMessage(e));
+    logFileCallFailure('writeTextFile: failed', path, errorMessage(e));
     throw e;
   }
 }
@@ -485,7 +480,7 @@ export async function ensureFolderExists(path: string): Promise<void> {
     await GtdParaFile.ensureFolder(path);
     log('ensureFolderExists: done', path);
   } catch (e) {
-    logError('ensureFolderExists: failed', path, errorMessage(e));
+    logFileCallFailure('ensureFolderExists: failed', path, errorMessage(e));
     throw e;
   }
 }
@@ -516,7 +511,7 @@ export async function writeBinaryFile(path: string, base64Content: string): Prom
     log('writeBinaryFile: done', path);
     notifyFolderChanged(parentFolder(path));
   } catch (e) {
-    logError('writeBinaryFile: failed', path, errorMessage(e));
+    logFileCallFailure('writeBinaryFile: failed', path, errorMessage(e));
     throw e;
   }
 }
@@ -547,7 +542,7 @@ export async function moveFolder(fromPath: string, toPath: string): Promise<void
     log('moveFolder: done', fromPath, '->', toPath);
     notifyFolderChanged(parentFolder(fromPath), parentFolder(toPath), fromPath);
   } catch (e) {
-    logError('moveFolder: failed', fromPath, '->', toPath, errorMessage(e));
+    logFileCallFailure('moveFolder: failed', fromPath, '->', toPath, errorMessage(e));
     throw e;
   }
 }
@@ -567,7 +562,7 @@ export async function moveFile(fromPath: string, toPath: string): Promise<void> 
     log('moveFile: done', fromPath, '->', toPath);
     notifyFolderChanged(parentFolder(fromPath), parentFolder(toPath));
   } catch (e) {
-    logError('moveFile: failed', fromPath, '->', toPath, errorMessage(e));
+    logFileCallFailure('moveFile: failed', fromPath, '->', toPath, errorMessage(e));
     throw e;
   }
 }
@@ -587,7 +582,7 @@ export async function moveFolderMerge(fromPath: string, toPath: string): Promise
     log('moveFolderMerge: done', fromPath, '->', toPath);
     notifyFolderChanged(parentFolder(fromPath), toPath, fromPath);
   } catch (e) {
-    logError('moveFolderMerge: failed', fromPath, '->', toPath, errorMessage(e));
+    logFileCallFailure('moveFolderMerge: failed', fromPath, '->', toPath, errorMessage(e));
     throw e;
   }
 }
@@ -681,7 +676,7 @@ export async function deleteEmptyFolder(path: string, reason: string): Promise<b
       logWarn('deleteEmptyFolder: folder is not empty, kept', path);
       return false;
     }
-    logError('deleteEmptyFolder: failed', path, errorMessage(e));
+    logFileCallFailure('deleteEmptyFolder: failed', path, errorMessage(e));
     throw e;
   }
 }
@@ -765,10 +760,12 @@ export async function writePerfTraceFile(fileName: string, content: string): Pro
   if (!GtdParaFile) throw new Error('GtdParaFile native module is not available on this build.');
   if (!(await ensureFileWritePermission())) throw new Error('File write permission was not granted.');
   if (!perfFolderEnsured) {
-    await GtdParaFile.ensureFolder(PERF_LOG_FOLDER);
+    // silent: forgetGrantsAndRethrow rethrows, unlogged (the caller reports it)
+    await GtdParaFile.ensureFolder(PERF_LOG_FOLDER).catch(forgetGrantsAndRethrow);
     perfFolderEnsured = true;
   }
-  await GtdParaFile.writeTextFile(`${PERF_LOG_FOLDER}/${fileName}`, content);
+  // silent: forgetGrantsAndRethrow rethrows, unlogged (the caller reports it)
+  await GtdParaFile.writeTextFile(`${PERF_LOG_FOLDER}/${fileName}`, content).catch(forgetGrantsAndRethrow);
 }
 
 /**
@@ -821,7 +818,7 @@ export async function createNote(
   const durationMs = Date.now() - start;
   if (!response || !response.success || response.result === false) {
     const hostMessage = response?.error?.message || 'Could not create the note.';
-    logError('createNote: failed', path, hostMessage);
+    logFileCallFailure('createNote: failed', path, hostMessage);
     await recordDebugLogEntry('createNote', false, durationMs, {notePath: path, template, isPortrait, errorMessage: hostMessage});
     // ensureFileWritePermission() above already succeeded by this point, so
     // every failure reaching here is the "granted != allowed" situation (a
@@ -878,7 +875,7 @@ export async function insertNotePage(path: string, page: number, template: strin
   )) as {success: boolean; result?: boolean; error?: {code: number; message: string} | null} | null | undefined;
   if (!response || !response.success || response.result === false) {
     const message = response?.error?.message || `Could not add page ${page + 1} to the note.`;
-    logError('insertNotePage: failed', path, `page=${page}`, message);
+    logFileCallFailure('insertNotePage: failed', path, `page=${page}`, message);
     throw new Error(message);
   }
   log('insertNotePage: done', path, `page=${page}`);
@@ -908,7 +905,7 @@ export async function insertKeyWord(path: string, page: number, keyword: string)
     | undefined;
   if (!response || !response.success || response.result === false) {
     const message = response?.error?.message || 'Could not add the keyword.';
-    logError('insertKeyWord: failed', path, keyword, message);
+    logFileCallFailure('insertKeyWord: failed', path, keyword, message);
     throw new Error(message);
   }
   log('insertKeyWord: done', path, keyword);
@@ -938,7 +935,7 @@ export async function getKeyWords(path: string, pageList: number[]): Promise<Key
     | undefined;
   if (!response || !response.success) {
     const message = response?.error?.message || 'Could not read this note\'s keywords.';
-    logError('getKeyWords: failed', path, message);
+    logFileCallFailure('getKeyWords: failed', path, message);
     throw new Error(message);
   }
   const result = response.result ?? [];
@@ -969,7 +966,7 @@ export async function deleteKeyWord(path: string, page: number, index: number): 
     | undefined;
   if (!response || !response.success || response.result === false) {
     const message = response?.error?.message || 'Could not remove the keyword.';
-    logError('deleteKeyWord: failed', path, `page=${page}`, message);
+    logFileCallFailure('deleteKeyWord: failed', path, `page=${page}`, message);
     throw new Error(message);
   }
   log('deleteKeyWord: done', path, `page=${page}`);
@@ -997,7 +994,7 @@ export async function getNoteTotalPageNum(path: string): Promise<number> {
     | undefined;
   if (!response || !response.success || response.result == null) {
     const message = response?.error?.message || 'Could not read this note\'s page count.';
-    logError('getNoteTotalPageNum: failed', path, message);
+    logFileCallFailure('getNoteTotalPageNum: failed', path, message);
     throw new Error(message);
   }
   log('getNoteTotalPageNum: done', path, `${response.result} pages`);
@@ -1152,7 +1149,7 @@ export async function getElements(page: number, path: string): Promise<Element[]
   const durationMs = Date.now() - start;
   if (!response || !response.success) {
     const message = response?.error?.message || 'Could not read this page\'s elements.';
-    logError('getElements: failed', path, message);
+    logFileCallFailure('getElements: failed', path, message);
     // Diagnostic (docs/dev/history/technical-design-shared-note-pages.md): logs BOTH
     // outcomes via recordDebugLogEntry, here and on insertElements/openPath
     // below, to localize which call fails with "File does not exist. Cannot
@@ -1189,7 +1186,7 @@ export async function insertElements(path: string, page: number, elements: Eleme
   const durationMs = Date.now() - start;
   if (!response || !response.success || response.result === false) {
     const message = response?.error?.message || 'Could not insert the elements.';
-    logError('insertElements: failed', path, message);
+    logFileCallFailure('insertElements: failed', path, message);
     // Diagnostic - see getElements' own comment above for why.
     await recordDebugLogEntry('insertElements', false, durationMs, {path, page, elementCount: elements.length, errorMessage: message});
     throw new Error(message);
@@ -1219,7 +1216,7 @@ export async function deleteElements(path: string, page: number, numsInPage: num
     | undefined;
   if (!response || !response.success || response.result === false) {
     const message = response?.error?.message || 'Could not delete the elements.';
-    logError('deleteElements: failed', path, message);
+    logFileCallFailure('deleteElements: failed', path, message);
     throw new Error(message);
   }
   log('deleteElements: done', path);
@@ -1235,7 +1232,8 @@ export async function appendDebugLogFile(fileName: string, content: string, maxB
   if (!GtdParaFile?.appendTextFile) throw new Error('appendTextFile is not available on this build.');
   // A refusal throws, and utils/logSink.ts then stops file logging for the session.
   if (!(await ensureFileWritePermission())) throw new Error('File write permission was not granted.');
-  return GtdParaFile.appendTextFile(`${DEBUG_LOG_FOLDER}/${fileName}`, content, maxBytes);
+  // silent: forgetGrantsAndRethrow rethrows, unlogged (the caller reports it)
+  return GtdParaFile.appendTextFile(`${DEBUG_LOG_FOLDER}/${fileName}`, content, maxBytes).catch(forgetGrantsAndRethrow);
 }
 
 /**

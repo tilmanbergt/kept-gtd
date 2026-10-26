@@ -72,3 +72,46 @@ describe('file sink', () => {
     expect(getRecentLogLines().some(l => l.includes('file logging stopped'))).toBe(true);
   });
 });
+
+// docs/dev/history/technical-design-perf-threads.md §6 scenario 8: no idle flush loop.
+describe('file sink when idle', () => {
+  it('a flush whose write logs nothing schedules no further flush', async () => {
+    jest.useFakeTimers();
+    try {
+      const writes: string[] = [];
+      configureLogFileSink(async (_name, content) => {
+        writes.push(content);
+        return content.length;
+      }, 'h');
+      setFileLogging(true);
+      recordLogLine('I', ['last action']);
+      await jest.advanceTimersByTimeAsync(5000);
+      expect(writes).toHaveLength(1);
+      await jest.advanceTimersByTimeAsync(30000);
+      expect(writes).toHaveLength(1);
+      expect(jest.getTimerCount()).toBe(0);
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+
+  it('a flush whose write logs a line schedules exactly one more (the loop a remembered grant ends)', async () => {
+    jest.useFakeTimers();
+    try {
+      const writes: string[] = [];
+      configureLogFileSink(async (_name, content) => {
+        writes.push(content);
+        if (writes.length === 1) recordLogLine('I', ['ensurePluginPermission: hasPermission']);
+        return content.length;
+      }, 'h');
+      setFileLogging(true);
+      await jest.advanceTimersByTimeAsync(5000);
+      await jest.advanceTimersByTimeAsync(5000);
+      await jest.advanceTimersByTimeAsync(30000);
+      expect(writes).toHaveLength(2);
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+});
+
