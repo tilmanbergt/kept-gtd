@@ -338,3 +338,14 @@ The Atruvia roster (≈ 180 ms) stays inside the first render.
   itself: the meeting draft's "follow `initialDate`" effect (`ui/quickAdd/useMeetingDraft.ts`) built a new draft
   on mount even when date and monthly were the same; it keeps the draft then. Per open after P2: Quick Add 1
   render (ItemDetail and ProjectDataPanel 3: those rounds no longer reach Quick Add).
+- **P3.** A cached item is in the first render of `ItemDetail` (its frontmatter state), `ProjectDataPanel` (no
+  "Loading…") and `ItemStatusPanel` (so it has its height in the first layout); their loads keep the same state
+  when the file text is the same. One more prop reached Quick Add after its mount: `noteFolderPath`, which
+  `ItemDetail` learned only from `FileBrowserPane`'s first location report; it now starts at the pane's first root
+  (the item's own folder) and keeps its state when the pane reports the same place. With that every part of the
+  page renders once per open (ItemDetail, ProjectDataPanel, Quick Add, ItemStatusPanel, TodosSection,
+  MeetingsSection, MarksCard), so the split of ProjectDataPanel into `useProjectItem`/`ProjectQuickAdd` and the
+  `React.memo` of the sections (§3.3) bring nothing more for the open and are left out; the item helpers live in
+  the two components (`resourceFolderStateOf`, `statusPanelStateOf`). `FileBrowserPane` and the Threads tab inside
+  it still render 3 times: its own mount state and the hidden listing (P6). The CHANGELOG line comes with this
+  step: from here on it is true.

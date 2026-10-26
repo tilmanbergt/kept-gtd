@@ -72,6 +72,7 @@ scenario('Opening an Area page renders each part a bounded number of times and r
       expect(w.renders.QuickAddWidget ?? 0).toBeLessThanOrEqual(LIMITS.quickAdd);
       expect(w.renders.ItemDetail ?? 0).toBeLessThanOrEqual(LIMITS.itemDetail);
       expect(w.renders.ProjectDataPanel ?? 0).toBeLessThanOrEqual(LIMITS.projectDataPanel);
+      for (const name of ONCE) expect([name, w.renders[name] ?? 0]).toEqual([name, 1]);
     }
   });
   and('the settings are read at most as often as recorded', () => {
@@ -84,5 +85,7 @@ scenario('Opening an Area page renders each part a bounded number of times and r
 /**
  * Before this work (P0, as on the device): Quick Add 6, ItemDetail 5, ProjectDataPanel 7 renders and 8 settings
  * reads per open. P1 (settings from the snapshot): 3, 3, 3 and none. P2 (stable Quick Add props): Quick Add 1.
+ * P3 (a cached item in the first render): every part of the page once.
  */
-const LIMITS = {quickAdd: 1, itemDetail: 3, projectDataPanel: 3, settingsReads: 0};
+const LIMITS = {quickAdd: 1, itemDetail: 1, projectDataPanel: 1, settingsReads: 0};
+const ONCE = ['ItemStatusPanel', 'TodosSection', 'MeetingsSection', 'MarksCard', 'QuickAddRows:task'];

@@ -184,7 +184,8 @@ export default function ProjectDataPanel({
 
   // The item as last loaded - used only while it isn't in the cache (no
   // cache built yet); otherwise the cached entry is shown and kept current.
-  const [loadedItem, setLoadedItem] = useState<CachedItem | null>(null);
+  // A cached item is shown in the first render (docs/dev/history/technical-design-perf-current-page.md §3.3).
+  const [loadedItem, setLoadedItem] = useState<CachedItem | null>(() => findCachedItem(path) ?? null);
   const cachedItem = useCachedItems().find(i => i.path === path);
   const item = cachedItem ?? loadedItem;
   const rawContent = item?.rawContent;
@@ -204,7 +205,7 @@ export default function ProjectDataPanel({
     // eslint-disable-next-line react-hooks/exhaustive-deps -- cached items are updated in place; rawContent changes with every write
     [item, rawContent, area],
   );
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(() => !findCachedItem(path));
   // Explicit e-ink refresh once this panel's own load actually lands - see
   // src/utils/screenRefresh.ts.
   useEinkRefreshOnLoad(loading);
@@ -242,8 +243,15 @@ export default function ProjectDataPanel({
   const paths: ResolvedParaPaths | null = useMemo(() => (settings ? resolvePaths(settings) : null), [settings]);
 
   const load = useCallback(async () => {
-    setLoading(true);
     setError(null);
+    // A cache hit needs no loading state: nothing changes, nothing renders again.
+    const hit = findCachedItem(path);
+    if (hit && !hit.loadError) {
+      setLoadedItem(hit);
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
     try {
       const loaded = await ensureItemCached(kind, name, path);
       if (loaded.loadError) throw new Error(loaded.loadError);
