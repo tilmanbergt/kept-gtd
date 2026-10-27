@@ -3,6 +3,8 @@
 //
 //   node scripts/code-health.mjs            report the findings, exit 0
 //   node scripts/code-health.mjs --strict   exit 1 when there is any finding (used by npm run check)
+//                                           rule test-areas: every file under __tests__/ and src/ and every
+//                                           help page belongs to a feature area (scripts/test-areas.json)
 //   node scripts/code-health.mjs --update-baseline
 //                                           lower the allowed length of long files to their current size
 //
@@ -12,9 +14,11 @@ import {existsSync, readdirSync, readFileSync, statSync, writeFileSync} from 'no
 import {dirname, join, relative, resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {brokenDocReferences, checkSourceFile, formatReport, isSourceFile} from './lib/codeHealth.mjs';
+import {areaFindings} from './lib/testAreas.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const BASELINE = join(ROOT, 'scripts', 'code-health-baseline.json');
+const AREAS = join(ROOT, 'scripts', 'test-areas.json');
 const SKIP_DIRS = new Set(['node_modules', '.git', 'build', 'android', 'generated', 'Claude outputs', '.idea']);
 
 function walk(dir, out = []) {
@@ -41,6 +45,9 @@ for (const f of files.filter(isSourceFile)) findings.push(...checkSourceFile(f, 
 const EXAMPLE_FILES = ['scripts/lib/codeHealth.mjs', 'scripts/test-code-health.mjs', 'scripts/test-scenario-catalog.mjs'];
 const referencing = files.filter(f => /\.(ts|tsx|js|mjs|md|ps1)$/.test(f) && !EXAMPLE_FILES.includes(f));
 for (const f of referencing) findings.push(...brokenDocReferences(f, read(f), docFiles));
+// Every test and source file and every help page belongs to a feature area (technical-design-test-tiers.md §3.1).
+const helpPages = files.filter(f => /^docs\/user\/[^/]+\.md$/.test(f)).map(f => f.slice('docs/user/'.length));
+findings.push(...areaFindings({files, helpPages, areas: JSON.parse(readFileSync(AREAS, 'utf8')).areas}));
 
 if (process.argv.includes('--update-baseline')) {
   const next = {};

@@ -165,8 +165,8 @@ Expected on screen (the scenarios assert these, shown and **not** shown):
    - and **not** shown:
      - "Draft homepage" (Next, but its project is in no focus);
      - "Repair the fence", "Someday idea", "Order seeds";
-   - the todos are grouped under Garden, Website and Inbox;
-   - the focus panel shows Garden with its D badge.
+   - the todos are grouped under Inbox, Garage, Garden and Website ("Sort tools" under its own project Garage);
+   - the focus panel lists Garden under Areas (Daily's panel has no D/W/M badges, see As built).
 3. **Week shows this week's meetings and weekly focus** (feature "Week and Month").
    - When I open Week:
    - then the grid shows Wednesday 14 "Neighbour chat" and "Dentist", Thursday 15 "Supplier call" and Friday 16
@@ -177,9 +177,9 @@ Expected on screen (the scenarios assert these, shown and **not** shown):
    - When I open Month:
    - then the 28th shows "Garden fair" and no other day shows a meeting (none is a highlight);
    - the monthly focus panel shows Garden with "Beds ready for winter";
-   - tapping the 14th lists all three meetings of that day on the right.
+   - tapping the 14th lists both meetings of that day (Neighbour chat, Dentist) on the right.
 5. **Quick Add from Daily** (feature "Quick Add").
-   - When I add the todo "Check gutters #next" on Daily,
+   - When I add the todo "Check gutters" with the Next chip on Daily,
    - then Inbox.txt has it and Daily lists it.
 6. **Tick a todo done on Daily** (feature "Daily").
    - When I tick "Water the lawn",
@@ -346,4 +346,87 @@ checklist).
 
 ## As built
 
-(Filled in during T1-T5.)
+### T1 - feature areas
+
+- **Area order** in `scripts/test-areas.json` is chosen for "first match wins", not the order of §3.1:
+  `integrations`, `planning`, `engage`, `close-out`, `lasso`, `agreements`, `loops`, `threads`, `review`,
+  `meetings`, `note-setups`, `quick-add`, `current-page`, `tags`, `files`, `settings`, `foundation`. So
+  `review/steps/GmailStep.tsx` belongs to `integrations`, `review/steps/TendingThreadsStep.tsx` to `threads`,
+  `meetingMoment` to `engage`, and the name globs of the later areas (`*note*`, `*tag*`) don't take files of the
+  earlier ones.
+- `planning`'s test glob is `*{daily,month,period,planning}*` plus `focusedItemRowAccessory` and the smoke files;
+  `*week*` and `*focus*` were left out because they took Review's `weekAhead` (Week ahead step) and nothing else.
+- `obsidian.md` (not in §3.1) belongs to `files`. `App.tsx` belongs to `foundation`.
+- Every file under `__tests__/` counts, including test data (`__golden__/*.json`); only `*.test.ts(x)` files are
+  test files for `--area` and the matrix.
+- The rule also reports a help page an area names that doesn't exist. Its pure part is `areaFindings()` in
+  `scripts/lib/testAreas.mjs`; `scripts/code-health.mjs` only reads the files.
+- Measured on `main` after 0.21.1 (4-core container): 202 test files and 468 source files (`src/` and `App.tsx`),
+  none unassigned. 0.21.1's files: `utils/einkFlush.ts` → `foundation`, `test-helpers/renderCounts.ts` is outside
+  `src/` and `__tests__/`, `ui/useSettings.ts` and its test → `settings`, `currentPageGolden`/`currentPagePerf` →
+  `current-page`.
+
+  | Area | Test files | Source files | Help pages |
+  |---|---:|---:|---|
+  | `integrations` | 1 | 15 | integrations.md |
+  | `planning` | 5 | 22 | daily.md, week-and-month.md |
+  | `engage` | 15 | 39 | engage.md |
+  | `close-out` | 4 | 31 | close-out.md |
+  | `lasso` | 13 | 20 | lasso.md |
+  | `agreements` | 8 | 9 | agreements.md |
+  | `loops` | 12 | 17 | loops.md |
+  | `threads` | 17 | 23 | threads.md |
+  | `review` | 7 | 23 | review.md |
+  | `meetings` | 9 | 14 | meetings.md |
+  | `note-setups` | 32 | 64 | note-setups.md |
+  | `quick-add` | 15 | 57 | quick-add.md |
+  | `current-page` | 6 | 16 | projects-and-areas.md |
+  | `tags` | 6 | 10 | tags.md |
+  | `files` | 20 | 26 | files-and-folders.md, obsidian.md |
+  | `settings` | 22 | 45 | settings.md, profiles-and-demo.md |
+  | `foundation` | 10 | 37 | - |
+
+### T2 - tiers in `check.mjs`
+
+- The pure part (flags, tier name, Jest plan) is `scripts/lib/checkTiers.mjs`, tested by
+  `scripts/test-check-tiers.mjs` (design scenarios 3 and 4), which is part of `test:scripts` and the quick tier.
+- **Order**: Jest runs last, after the script tests, the catalog check and code-health, so the cheap checks
+  fail first.
+- `--area` and `--smoke` run Jest with `--runTestsByPath <files>`; `--affected` runs one
+  `jest --findRelatedTests <changed files> <smoke and area test files>` (a test file relates to itself), so
+  smoke needs no second Jest start. Changed files count only when Jest can relate them (`.ts/.tsx/.js/.jsx`
+  outside `scripts/` and `src/generated/`) and still exist. Without `origin/main` (no merge base) `--affected`
+  says so and runs all of Jest.
+- `--coverage` does not combine with the smaller tiers (it always runs everything) and is refused with them.
+  Unknown flags are refused with the usage.
+- A file under `src/domain/` is imported, through `App.tsx`, by every scenario, so `--affected` for one domain file
+  runs most suites (125 of 202 for `domain/period.ts`).
+
+### T3 - smoke scenarios, fixed clock, catalog
+
+- `fixedClock(date)` (`test-helpers/scenario/clock.ts`) replaces five copies, not three: 0.21.1 added
+  `currentPageGolden` and `currentPagePerf` with the same setup.
+- The moved scenarios are pageSection's "Engage on a meeting's follow-up page: the meeting is passed on"
+  (`smoke/engagePage.test.tsx`) and "A todo captured on a meeting's follow-up page records the meeting"
+  (`smoke/captureTodo.test.tsx`). Both use pageSection's Area Sport, so that fixture moved too, unchanged, into
+  `test-helpers/scenario/sportArea.ts`, which `pageSection.test.tsx` now imports.
+- `readTexts()` and `textsBetween(from, to)` in `test-helpers/scenario/app.tsx`: the visible texts as the user
+  reads them (a row's title with its labels is one entry, e.g. `Water the lawn  #due 14.10.`) and the part of the
+  screen between two texts. `texts()` lists only plain strings, and a query by text returns only the innermost
+  match, so neither can say which label belongs to which row.
+- Smoke files are named so that the area globs place them: `daily`, `weekAndMonth` (`planning`), `appStarts`
+  (`foundation`), `areaPage` (`current-page`), `engagePage` (`engage`), `captureTodo` (`lasso`), `review`, `profiles`
+  (`settings`), `outsideEdits` (`files`). Scenarios 5 and 6 share `daily.test.tsx` with 2. 12 smoke scenarios in
+  9 files.
+- **Scenario 5** sets Next with the chip. A `#next` typed into Quick Add's text is dropped on + Add
+  (`composeTaskText` → `setFlowStateTag` removes every flow tag unless its chip is set), so "Check gutters #next"
+  is saved as "Check gutters" and doesn't show on Daily. Tilman: a bug, fixed on its own branch
+  `fix/quick-add-typed-flow-tags`; the row of §3.4 now names the chip.
+- **Scenario 8**: "Inbox to zero" counts the Inbox's meeting too (3 items: two todos and "Dentist").
+- **Three rows of §3.4 were wrong** (the app follows its help pages); corrected after Tilman's approval:
+  - Scenario 2: Daily's focus panel draws no D/W/M badges (`technical-design-monthly-view.md` §5.3 leaves
+    `DailyFocusPanel` without them), so "Garden with its D badge" can't hold; asserted: Garden in the panel's Areas.
+  - Scenario 2: "Sort tools" is in its own group Garage (a project's todos are grouped under the project), so the
+    groups are Inbox, Garage, Garden and Website.
+  - Scenario 4: the 14th has two meetings (Neighbour chat, Dentist), not three.
+- Timings (4-core container): `smoke/` alone 7 s in Jest (12 tests); `npm run check:smoke` 28 s.

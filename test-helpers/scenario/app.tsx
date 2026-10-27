@@ -6,7 +6,7 @@
  */
 import React from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {act, configure, fireEvent, render, screen} from '@testing-library/react-native';
+import {act, configure, fireEvent, isHiddenFromAccessibility, render, screen} from '@testing-library/react-native';
 import App from '../../App';
 import {DEFAULT_SETTINGS, GtdParaSettings} from '../../src/domain/settings';
 import {ENGAGE_BUTTON_ID} from '../../src/domain/buttonIds';
@@ -100,6 +100,44 @@ export function texts(): string[] {
   return screen
     .queryAllByText(/./)
     .map(t => [t.props.children].flat(Infinity).filter(c => typeof c === 'string' || typeof c === 'number').join(''));
+}
+
+type Rendered = {children: Array<string | Rendered>};
+
+/** The text a rendered element shows, nested texts and the texts of components inside it included. */
+function renderedText(node: Rendered): string {
+  return node.children.map(c => (typeof c === 'string' ? c : renderedText(c))).join('');
+}
+
+/**
+ * Every visible text as the user reads it, in screen order: a text with nested parts (a row's title with its
+ * labels, a day header with its count) is one entry, where texts() lists only the plain parts.
+ */
+export function readTexts(): string[] {
+  type Node = {type: unknown; parent: Node | null};
+  const isText = (n: Node) => n.type === 'Text';
+  const nested = (n: Node) => {
+    for (let p = n.parent; p; p = p.parent) if (isText(p)) return true;
+    return false;
+  };
+  return screen.UNSAFE_root.findAll(n => isText(n) && !nested(n) && !isHiddenFromAccessibility(n), {deep: true})
+    .map(n => renderedText(n as unknown as Rendered))
+    .filter(t => t.trim());
+}
+
+const matchesText = (text: string, label: string | RegExp) => (typeof label === 'string' ? text === label : label.test(text));
+
+/**
+ * The part of readTexts() after the first entry matching `from` and before the next one matching `to` (to the
+ * end without `to`): what one list, column or panel shows. Throws when `from` is not on screen.
+ */
+export function textsBetween(from: string | RegExp, to?: string | RegExp): string[] {
+  const all = readTexts();
+  const start = all.findIndex(t => matchesText(t, from));
+  if (start < 0) throw new Error(`no text ${String(from)}; the screen shows: ${describeScreen()}`);
+  const rest = all.slice(start + 1);
+  const end = to === undefined ? -1 : rest.findIndex(t => matchesText(t, to));
+  return end < 0 ? rest : rest.slice(0, end);
 }
 
 /** The visible texts joined, for failure messages and while writing a scenario. */
