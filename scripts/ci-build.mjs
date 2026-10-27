@@ -5,7 +5,9 @@
 //
 //   node scripts/ci-build.mjs next-beta               prints the next beta (0.22.0-beta.1); exit 1 without a nextVersion
 //   node scripts/ci-build.mjs verify [--beta]         exit 1 when the finished buildPlugin.ps1 run is not usable
-//   node scripts/ci-build.mjs notes <commit> <outfile> the beta's release text (tester note + CHANGELOG [Unreleased])
+//   node scripts/ci-build.mjs notes <commit> <outfile> ["<area>; <area>"]
+//                                                     the beta's release text (tester note, areas to look at,
+//                                                     CHANGELOG [Unreleased]); the areas come from scripts/test-notes.mjs
 //
 // In GitHub Actions the results also go to $GITHUB_OUTPUT (step outputs) and $GITHUB_STEP_SUMMARY.
 
@@ -73,21 +75,26 @@ function cmdVerify(beta) {
   );
 }
 
-function cmdNotes(commit, outfile) {
+function cmdNotes(commit, outfile, areaList = '') {
   if (!commit || !outfile) throw new Error('notes needs <commit> <outfile>');
   const t = target();
   const tags = execFileSync('git', ['tag', '-l'], {cwd: ROOT, encoding: 'utf8'}).split('\n').filter(Boolean);
   const {number} = nextBeta(t, tags);
-  const notes = betaNotes(read(join(ROOT, 'CHANGELOG.md')), {target: t, number, commit: commit.slice(0, 7)});
+  const notes = betaNotes(read(join(ROOT, 'CHANGELOG.md')), {
+    target: t,
+    number,
+    commit: commit.slice(0, 7),
+    areas: areaList.split(';').map(a => a.trim()).filter(Boolean),
+  });
   mkdirSync(dirname(resolve(outfile)), {recursive: true});
   writeFileSync(resolve(outfile), notes, 'utf8');
 }
 
 try {
-  const [cmd, a, b] = process.argv.slice(2);
+  const [cmd, a, b, c] = process.argv.slice(2);
   if (cmd === 'next-beta') cmdNextBeta();
   else if (cmd === 'verify') cmdVerify(a === '--beta');
-  else if (cmd === 'notes') cmdNotes(a, b);
+  else if (cmd === 'notes') cmdNotes(a, b, c);
   else throw new Error(`unknown command "${cmd ?? ''}" (next-beta, verify, notes)`);
 } catch (e) {
   console.log(`::error::ci-build: ${e.message}`);

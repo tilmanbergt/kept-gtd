@@ -260,6 +260,9 @@ A change is not done while the docs describe the old behavior.
       push); new logic has tests; changed flows have scenario tests and
       `docs/dev/test-scenarios.md` is regenerated; new files belong to a feature area - §7
 - [ ] Device test done, or explicitly listed as still open - §7
+- [ ] Every commit with an effect on the device ends its message with a **"Device test:" block**
+      (steps and expected results), or `Device test: none - <reason>`. The CI build shows these
+      blocks in its `TESTING.md` (format: `RELEASING.md` §3)
 - [ ] Ideas found on the way are on the backlog, not half-built - §1
 - [ ] Step-by-step guide for Tilman given (commit, build, test, push/merge, release?) - §10
 
@@ -296,7 +299,9 @@ Git, builds, installs and releases run on Tilman's computer and device. At the e
 change, build or release, Claude gives a short, numbered, copy-paste-ready guide: where we are
 (branch, what was verified, what still needs the device), what to commit with which message,
 whether and what to build and test, whether to push or merge, and whether a release is advisable
-now. Details: `docs/dev/RELEASING.md` §8.
+now. Details: `docs/dev/RELEASING.md` §8. A commit message with a body (and so every "Device test:"
+block) comes as a file to commit with `git commit -F <file>`; every implementation prompt for a
+cloud session names the "Device test:" convention.
 
 ## 11. Keeping this policy alive
 

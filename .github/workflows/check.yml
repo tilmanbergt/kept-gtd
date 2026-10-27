@@ -2,7 +2,8 @@
 # (DEVELOPMENT-POLICY §7, docs/dev/history/technical-design-test-tiers.md §3.3). Tags start no run: a release tag
 # points at the release commit, which ran here when it was pushed to main.
 # Job "build": after the checks, every branch push also builds the plugin and keeps the .snplg as an
-# artifact for 30 days (docs/dev/RELEASING.md §4, docs/dev/history/technical-design-ci-builds.md §2.1).
+# artifact for 30 days, with TESTING.md next to it (docs/dev/RELEASING.md §4,
+# docs/dev/history/technical-design-ci-builds.md §2.1, technical-design-build-test-notes.md).
 name: check
 
 on:
@@ -70,6 +71,10 @@ jobs:
       - name: Check the build
         id: verify
         run: node scripts/ci-build.mjs verify
+      - name: Test notes (TESTING.md)
+        # What the build contains and how to test it (technical-design-build-test-notes.md); never fails.
+        continue-on-error: true
+        run: node scripts/test-notes.mjs --out build/outputs/TESTING.md --branch "${{ github.ref_name }}" --before "${{ github.event.before }}" --label "${{ steps.verify.outputs.label }}"
       - name: Stop the Gradle daemon
         # Lets the Gradle cache be saved: a running daemon locks files, and tar then fails on Windows.
         if: always()
@@ -78,6 +83,8 @@ jobs:
       - uses: actions/upload-artifact@v7
         with:
           name: kept-gtd-${{ steps.verify.outputs.label }}
-          path: ${{ steps.verify.outputs.snplg }}
+          path: |
+            ${{ steps.verify.outputs.snplg }}
+            build/outputs/TESTING.md
           retention-days: 30
           if-no-files-found: error

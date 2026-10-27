@@ -56,14 +56,18 @@ jobs:
       - name: Which beta
         id: beta
         run: node scripts/ci-build.mjs next-beta
-      - name: Release text
-        run: node scripts/ci-build.mjs notes ${{ github.sha }} build/beta-notes.md
       - name: Build the plugin
         shell: powershell
         run: ./buildPlugin.ps1 -Stage beta
       - name: Check the build
         id: verify
         run: node scripts/ci-build.mjs verify --beta
+      - name: Test notes (TESTING.md, since the last release)
+        id: notes
+        continue-on-error: true
+        run: node scripts/test-notes.mjs --out build/outputs/TESTING.md --branch main --label "${{ steps.verify.outputs.label }}"
+      - name: Release text
+        run: node scripts/ci-build.mjs notes ${{ github.sha }} build/beta-notes.md "${{ steps.notes.outputs.areas }}"
       - name: Stop the Gradle daemon
         # Lets the Gradle cache be saved: a running daemon locks files, and tar then fails on Windows.
         if: always()
@@ -75,6 +79,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: >
           gh release create "${{ steps.beta.outputs.tag }}" "${{ steps.verify.outputs.snplg }}"
+          $(test -f build/outputs/TESTING.md && echo build/outputs/TESTING.md)
           --prerelease --target "${{ github.sha }}"
           --title "${{ steps.beta.outputs.title }}"
           --notes-file build/beta-notes.md

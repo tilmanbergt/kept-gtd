@@ -69,6 +69,12 @@ t('beta notes: tester note, then [Unreleased]', () => {
   assert.ok(notes.startsWith('**Beta 2 of Kept GTD 0.22.0** for testing, built from abc1234.'));
   assert.ok(notes.includes('\n\n### New\n- thing\n'));
   assert.ok(!notes.includes('old'));
+  assert.ok(!notes.includes('Please look at'));
+});
+
+t('beta notes: the touched areas before the changes', () => {
+  const notes = betaNotes(CL, {target: '0.22.0', number: 1, commit: 'abc1234', areas: ['Engage', 'Daily, Week and Month']});
+  assert.ok(notes.includes('\n\nPlease look at: Engage, Daily, Week and Month.\n\n### New'));
 });
 
 t('beta notes: empty [Unreleased] is refused', () => {
