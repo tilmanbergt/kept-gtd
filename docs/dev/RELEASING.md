@@ -105,6 +105,37 @@ npm run coverage               # everything with coverage: coverage/areas.md and
 - After changing `CHANGELOG.md` or `docs/user/` without building, `npm run gen` refreshes
   `src/generated/` for tests and type checks.
 
+### Test builds from GitHub
+
+Every push to any branch builds the plugin on GitHub too, once the checks of that push passed
+(job "build" in `.github/workflows/check.yml`, about 15 minutes after the push). The `.snplg` is
+labelled like a local build (`0.9.0-alpha+a1b2c3d`) and kept for 30 days:
+
+1. GitHub → **Actions** → the run of the push (branch and commit message are shown).
+2. At the bottom under **Artifacts**: `kept-gtd-<label>` - download, unzip.
+3. Install the `.snplg` over the existing plugin, as above.
+
+A newer push to the same branch cancels a build that is still running. GitHub and local builds
+replace each other on the device (same plugin, same signing key). A local build is only needed
+for something not pushed yet. `release.ps1` waits for the whole run, the build included: a
+failing build stops a release like a failing check.
+
+### Betas
+
+A beta is a test version of the release being worked on (`nextVersion`) that anyone can install.
+Make one when that release is feature-complete on `main`, before the release itself:
+
+1. `CHANGELOG.md` `[Unreleased]` reads well for testers (it becomes the beta's text) and is pushed.
+2. GitHub → **Actions** → **beta** → **Run workflow**, branch `main` → **Run workflow**
+   (works from the phone too).
+3. About 20 minutes later the Releases page has the **pre-release** "Kept GTD 0.9.0 beta 1" (tag
+   `v0.9.0-beta.1`) with the `.snplg`, labelled `0.9.0-beta+a1b2c3d`. The next run makes beta 2.
+
+The workflow refuses to run on another branch, without a `nextVersion` above the current version,
+with an empty `[Unreleased]`, or when the build has uncommitted changes. Pre-releases never become
+the "Latest" release, so users who don't look for them don't see them. They stay on the Releases
+page after the release; delete one there (and its tag) if it was a mistake.
+
 ## 5. Releases
 
 ### When

@@ -1,6 +1,8 @@
 # Runs every check and every test, with coverage, on every push to a branch and on pull requests
 # (DEVELOPMENT-POLICY §7, docs/dev/history/technical-design-test-tiers.md §3.3). Tags start no run: a release tag
 # points at the release commit, which ran here when it was pushed to main.
+# Job "build": after the checks, every branch push also builds the plugin and keeps the .snplg as an
+# artifact for 30 days (docs/dev/RELEASING.md §4, docs/dev/history/technical-design-ci-builds.md §2.1).
 name: check
 
 on:
@@ -36,3 +38,41 @@ jobs:
           path: coverage/
           retention-days: 14
           if-no-files-found: ignore
+
+  build:
+    needs: check
+    if: github.event_name == 'push'
+    # buildPlugin.ps1 is PowerShell and calls gradlew.bat; the Windows image has the Android SDK.
+    runs-on: windows-latest
+    timeout-minutes: 45
+    # A newer push to the same branch cancels a build that is still running.
+    concurrency:
+      group: build-${{ github.ref }}
+      cancel-in-progress: true
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # The build label needs the commit and the tags.
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: gradle
+      - run: npm ci --no-audit --no-fund
+      - name: Build the plugin
+        shell: powershell
+        run: ./buildPlugin.ps1
+      - name: Check the build
+        id: verify
+        run: node scripts/ci-build.mjs verify
+      - uses: actions/upload-artifact@v4
+        with:
+          name: kept-gtd-${{ steps.verify.outputs.label }}
+          path: ${{ steps.verify.outputs.snplg }}
+          retention-days: 30
+          if-no-files-found: error

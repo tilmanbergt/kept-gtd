@@ -1,0 +1,75 @@
+# A beta pre-release, started by hand: Actions -> beta -> Run workflow (branch main).
+# Builds main with -Stage beta and publishes it as GitHub pre-release v<nextVersion>-beta.<n> with the
+# .snplg and CHANGELOG [Unreleased] (docs/dev/RELEASING.md §4 "Betas", docs/dev/history/technical-design-ci-builds.md §2.2).
+# Pre-releases never become the "Latest" release.
+name: beta
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# One beta at a time, so two runs can't pick the same number.
+concurrency:
+  group: beta
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Only from main
+        if: github.ref != 'refs/heads/main'
+        run: |
+          echo "::error::Betas are built from main only - this run is on ${{ github.ref_name }}."
+          exit 1
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npm run check
+
+  beta:
+    needs: check
+    runs-on: windows-latest
+    timeout-minutes: 45
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: gradle
+      - run: npm ci --no-audit --no-fund
+      - name: Which beta
+        id: beta
+        run: node scripts/ci-build.mjs next-beta
+      - name: Release text
+        run: node scripts/ci-build.mjs notes ${{ github.sha }} build/beta-notes.md
+      - name: Build the plugin
+        shell: powershell
+        run: ./buildPlugin.ps1 -Stage beta
+      - name: Check the build
+        id: verify
+        run: node scripts/ci-build.mjs verify --beta
+      - name: Publish the pre-release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >
+          gh release create "${{ steps.beta.outputs.tag }}" "${{ steps.verify.outputs.snplg }}"
+          --prerelease --target "${{ github.sha }}"
+          --title "${{ steps.beta.outputs.title }}"
+          --notes-file build/beta-notes.md

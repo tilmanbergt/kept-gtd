@@ -208,7 +208,9 @@ A change is not done while the docs describe the old behavior.
   - a step of a change (cloud session): affected, plus `--area` for the areas the design names;
   - the end of a release's steps (checkpoint): full;
   - CI on every push to a branch and on pull requests: full + coverage, with the area table in the
-    job summary (`.github/workflows/check.yml`); tags start no run;
+    job summary (`.github/workflows/check.yml`); tags start no run. After that, every branch push
+    also builds the `.snplg` (job "build", `RELEASING.md` §4);
+  - a beta (`.github/workflows/beta.yml`, started by hand): full, then the beta build;
   - a test build (`buildPlugin.ps1 -Check`): smoke;
   - merging into `main`: nothing locally - CI on the `main` push is the gate;
   - release Prepare and `release.ps1 -DryRun`: quick, plus CI green on `main` (`release.ps1` looks

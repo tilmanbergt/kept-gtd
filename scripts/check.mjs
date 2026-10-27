@@ -51,6 +51,7 @@ const SCRIPT_TESTS = [
   ['test area tests', 'scripts/test-test-areas.mjs'],
   ['check tier tests', 'scripts/test-check-tiers.mjs'],
   ['coverage report tests', 'scripts/test-coverage-report.mjs'],
+  ['CI build tests', 'scripts/test-ci-build.mjs'],
 ];
 
 function fail(name, status) {
