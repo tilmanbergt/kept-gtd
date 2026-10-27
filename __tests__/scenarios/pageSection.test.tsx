@@ -1,101 +1,19 @@
-import {meetingKey} from '../../src/domain/provenance';
-import {NoteSetup, seedNoteSetupDefaults} from '../../src/domain/noteSetups';
-import {GtdParaSettings} from '../../src/domain/settings';
 import {resetMomentChoices} from '../../src/ui/meetingMomentStore';
-import {expectNotShows, expectShows, labelled, openApp, openEngage, tap, tapTab, texts} from '../../test-helpers/scenario/app';
+import {expectNotShows, expectShows, openApp, tap, tapTab, texts} from '../../test-helpers/scenario/app';
 import {areaDir, areaFile, dataFile, putFile, sectionLines} from '../../test-helpers/scenario/files';
-import {and, given, scenario, then, when} from '../../test-helpers/scenario/scenario';
-import {sparringSettings} from '../../test-helpers/scenario/setups';
+import {given, scenario, then, when} from '../../test-helpers/scenario/scenario';
 import {device} from '../../test-helpers/fakeDevice/device';
+import {engageOn, processSportMarks, sectionLine, settings, sport, SPORT, sportClock, sportMark} from '../../test-helpers/scenario/sportArea';
 
-// docs/dev/history/technical-design-engage-page-owner.md §6: Area Sport's home notebook "Sport 2026.note" is also
-// the note of its active loop #loop/marathon (Loop setup named "{name} {year}", main date in 2026). Pages below are
-// 1-based as in the design; the fake device counts from 0.
+// docs/dev/history/technical-design-engage-page-owner.md §6, on Area Sport (test-helpers/scenario/sportArea.ts).
+// Pages below are 1-based as in the design; the fake device counts from 0.
 const DESIGN = 'technical-design-engage-page-owner.md';
-const SPORT = areaDir('Sport');
-const NOTEBOOK = `${SPORT}/Sport 2026.note`;
-const COACH_DATE = '2026-10-24';
-const COACH_KEY = meetingKey({date: COACH_DATE, title: 'Coach call'});
-
-/** Only the clock is faked: timers stay real, so the app's settling works as everywhere else. */
-function clock(): void {
-  jest.useFakeTimers({
-    now: new Date(2026, 9, 25, 9, 0),
-    doNotFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'setImmediate', 'clearImmediate', 'nextTick', 'queueMicrotask', 'requestAnimationFrame', 'cancelAnimationFrame', 'requestIdleCallback', 'cancelIdleCallback', 'hrtime', 'performance'],
-  });
-}
 
 beforeEach(() => {
   resetMomentChoices();
-  clock();
+  sportClock();
 });
 afterEach(() => jest.useRealTimers());
-
-/** The Loop setup "Marathon" on `#loop`; its notes are named `name`. */
-function loopSetup(name: string): NoteSetup {
-  return {id: 'l1', name: 'Marathon', kind: 'loop', tags: ['loop'], enabled: true, notebook: {name, folder: ''}, pages: {}, tracking: {trackPrep: false, trackReview: false}};
-}
-
-/** Sparring threads, the Marathon loop setup and the seeded Default ("{name} {year}" home notebooks). */
-function settings(loopNoteName = '{name} {year}'): Partial<GtdParaSettings> {
-  const sparring = sparringSettings().noteSetups ?? [];
-  return {noteSetups: [...sparring, loopSetup(loopNoteName)], noteSetupDefaults: seedNoteSetupDefaults(), nextNoteSetupId: 3, noteSetupsMigrated: true};
-}
-
-/** A heading on a page: `typed` puts a textbox under it, otherwise it is handwritten. */
-function headingPage(page: number, typed: string | null): object {
-  const rect = {left: 100, top: 120, right: 900, bottom: 180};
-  const title = {page, X: 100, Y: 120, width: 800, height: 60, style: 3, controlTrailNums: typed ? [1] : []};
-  const textbox = {uuid: 'tb', type: 500, pageNum: page, layerNum: 0, numInPage: 1, textBox: {textContentFull: typed, textRect: rect}, link: null};
-  return {titles: [title], elements: typed ? [textbox] : []};
-}
-
-/**
- * Area Sport and its notebook: p1 Home, p2 free, p3 meeting "Coach call", p4 free, p5 todo "Plan long runs
- * #loop/marathon", p6 free, p7 typed heading "Training plan", p8 free, p9 handwritten heading, p10 todo "Buy shoes"
- * (keyword, no title), p11 free.
- */
-function sport(options: {loop?: 'active' | 'done'; shoes?: 'open' | 'cancelled'; coach?: 'held' | 'cancelled'; marks?: string[]} = {}): void {
-  const shoes = options.shoes === 'cancelled' ? '- [-] Buy shoes' : '- [ ] Buy shoes';
-  const coach = `- ${options.coach === 'cancelled' ? '[-] ' : ''}${COACH_DATE} 10:00-11:00 Coach call → [[Sport 2026.note#${COACH_DATE} Coach call]]`;
-  putFile(
-    areaFile('Sport'),
-    dataFile(
-      'area',
-      {
-        Scope: [],
-        Tasks: [
-          '- [ ] Plan long runs #loop/marathon → [[Sport 2026.note#Plan long runs #loop/marathon]]',
-          `${shoes} → [[Sport 2026.note#Buy shoes]]`,
-          `- [ ] Book physio [meeting:: ${COACH_KEY}]`,
-        ],
-        Meetings: [coach],
-        Loops: [`- loop/marathon: ${options.loop ?? 'active'}, 2026-11-15`],
-        ...(options.marks ? {Marks: options.marks} : {}),
-      },
-      ['abbrev: Sp'],
-    ),
-  );
-  const t = (p: object) => p as never;
-  device().sdk.putNote(NOTEBOOK, [
-    {keywords: ['home']},
-    {},
-    {keywords: [COACH_DATE, `${COACH_DATE} Coach call`]},
-    {},
-    {keywords: ['Plan long runs #loop/marathon']},
-    {},
-    t(headingPage(6, 'Training plan\nweek 1-4')),
-    {},
-    t(headingPage(8, null)),
-    {keywords: ['Buy shoes']},
-    {},
-  ]);
-}
-
-/** Engage on page `page` (1-based) of `note`. */
-const engageOn = (page: number, note = NOTEBOOK, loopNoteName?: string) => openEngage({fromNote: note, page: page - 1, settings: settings(loopNoteName)});
-
-const sectionLine = () => texts().filter(l => l.startsWith('Section: '));
 
 scenario('Engage on the Home page of a home notebook that is also a loop\'s note: the Area, not the loop', {feature: 'Engage', design: DESIGN}, () => {
   given('Sport 2026.note is Area Sport\'s home notebook and the note of loop marathon; page 1 is its Home page', () => sport());
@@ -115,19 +33,6 @@ scenario('Engage on a free page after the Home page: the Area, from p. 1', {feat
     expectShows('Area');
     expect(sectionLine()).toEqual(['Section: Sport · from p. 1']);
   });
-});
-
-scenario('Engage on a meeting\'s follow-up page: the meeting is passed on', {feature: 'Engage', design: DESIGN}, () => {
-  given('page 3 is the page of meeting "Coach call" (Sport, no loop tag), where "Book physio" was agreed; page 4 is handwritten without a title', () => sport());
-  when('I open Engage on page 4', () => engageOn(4));
-  then('the owner is Area Sport, the moment line shows Coach call with its moment, From offers its group', () => {
-    expectShows('Area');
-    expectShows('Coach call · Sat 24.10. 10:00–11:00');
-    expect(labelled('After')?.on).toBe(true);
-    expectShows('From meetings 1');
-    expectShows('Sat 24.10. · Coach call');
-  });
-  and('the line reads "Section: Coach call · 24.10. · from p. 3"', () => expect(sectionLine()).toEqual(['Section: Coach call · 24.10. · from p. 3']));
 });
 
 scenario('Engage on a loop todo\'s follow-up page: the loop, with that todo current', {feature: 'Engage', design: DESIGN}, () => {
@@ -256,27 +161,6 @@ scenario('The page index can\'t be read: the single-page lookup, and the panel o
 });
 
 // Capture (§6.2 16-19). The fake device has no lasso; marks go through the same capture panel and provenance.
-
-/** A mark in Sport 2026.note on page `page` (1-based) saying `text`. */
-const sportMark = (page: number, text: string) => `- 2026-10-25 09:00 [[Sport 2026.note]] p${page} ${text} ^m-20261025-0900${String(page).padStart(2, '0')}-000`;
-
-/** Sport's page, its marks to process. */
-async function processSportMarks(): Promise<void> {
-  await openApp({settings: settings()});
-  await tapTab('Areas');
-  await tap(/^Sport/);
-  await tap(/to process/);
-}
-
-scenario('A todo captured on a meeting\'s follow-up page records the meeting', {feature: 'Lasso', design: DESIGN}, () => {
-  given('page 4 follows the page of meeting "Coach call" and has a mark "Ask coach about intervals"', () => sport({marks: [sportMark(4, 'Ask coach about intervals')]}));
-  when('I process the mark', processSportMarks);
-  then('the panel shows "↳ from Coach call"', () => expectShows(/^↳ from Coach call/));
-  when('I save it as a todo', () => tap(/^Save & close/));
-  then('the todo ends with the meeting', () => {
-    expect(sectionLines(areaFile('Sport'), 'Tasks')).toContainEqual(expect.stringMatching(new RegExp(`^- \\[ \\] Ask coach about intervals .*\\[meeting:: ${COACH_KEY}\\]`)));
-  });
-});
 
 scenario('An agreement from a mark on a thread notebook\'s follow-up page: for the thread, with the sparring', {feature: 'Lasso', design: DESIGN}, () => {
   const kw = '2026-10-24 Sparring Mieke #sparring/mieke';

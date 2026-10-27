@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-87 scenarios.
+97 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -122,6 +122,29 @@ Test: `__tests__/scenarios/daily.test.tsx` · design: `docs/dev/history/technica
 - **Then** its card offers P, no +clip and no Reflect
 
 Test: `__tests__/scenarios/meetingReflection.test.tsx` · design: `docs/dev/history/technical-design-item-card.md`
+
+### Daily shows today's meetings, the todos that matter now and the focus (smoke)
+
+- **Given** the smoke space on Wednesday 14.10.2026
+- **When** I open Daily
+- **Then** the Today tab lists "Neighbour chat" and "Dentist"
+- **And** the todos are grouped under Inbox, Garage, Garden and Website, each with its label
+- **And** "Sort tools" shows because Garage is in weekly focus; "Draft homepage" doesn't, its project is in no focus
+- **And** Someday, Maybe and done todos don't show
+- **And** the focus panel shows Garden under Areas
+- **When** I tap Tomorrow
+- **Then** it lists "Supplier call"
+- **And** no error was logged
+
+Test: `__tests__/scenarios/smoke/daily.test.tsx`
+
+### Tick a todo done on Daily (smoke)
+
+- **Given** the smoke space and Daily open
+- **When** I tick "Water the lawn"
+- **Then** Garden's area.txt has it done with today's completion date
+
+Test: `__tests__/scenarios/smoke/daily.test.tsx`
 
 ## Engage
 
@@ -259,15 +282,6 @@ Test: `__tests__/scenarios/pageSection.test.tsx`
 
 Test: `__tests__/scenarios/pageSection.test.tsx`
 
-### Engage on a meeting's follow-up page: the meeting is passed on
-
-- **Given** page 3 is the page of meeting "Coach call" (Sport, no loop tag), where "Book physio" was agreed; page 4 is handwritten without a title
-- **When** I open Engage on page 4
-- **Then** the owner is Area Sport, the moment line shows Coach call with its moment, From offers its group
-- **And** the line reads "Section: Coach call · 24.10. · from p. 3"
-
-Test: `__tests__/scenarios/pageSection.test.tsx`
-
 ### Engage on a loop todo's follow-up page: the loop, with that todo current
 
 - **Given** page 5 is the page of the open todo "Plan long runs #loop/marathon", page 6 a follow-up
@@ -350,6 +364,15 @@ Test: `__tests__/scenarios/pageSection.test.tsx`
 
 Test: `__tests__/scenarios/pageSection.test.tsx`
 
+### Engage on a meeting's follow-up page: the meeting is passed on (smoke)
+
+- **Given** page 3 is the page of meeting "Coach call" (Sport, no loop tag), where "Book physio" was agreed; page 4 is handwritten without a title
+- **When** I open Engage on page 4
+- **Then** the owner is Area Sport, the moment line shows Coach call with its moment, From offers its group
+- **And** the line reads "Section: Coach call · 24.10. · from p. 3"
+
+Test: `__tests__/scenarios/smoke/engagePage.test.tsx`
+
 ## Inbox
 
 ### Refile a todo with its note from the Inbox to a project
@@ -396,16 +419,6 @@ Test: `__tests__/scenarios/interruptions.test.tsx` · design: `docs/dev/history/
 
 Test: `__tests__/scenarios/agreements.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md`
 
-### A todo captured on a meeting's follow-up page records the meeting
-
-- **Given** page 4 follows the page of meeting "Coach call" and has a mark "Ask coach about intervals"
-- **When** I process the mark
-- **Then** the panel shows "↳ from Coach call"
-- **When** I save it as a todo
-- **Then** the todo ends with the meeting
-
-Test: `__tests__/scenarios/pageSection.test.tsx`
-
 ### An agreement from a mark on a thread notebook's follow-up page: for the thread, with the sparring
 
 - **Given** Mieke's sparring notebook has the sparring's page and a follow-up page with a mark "Feedback only in our 1:1s"
@@ -435,6 +448,16 @@ Test: `__tests__/scenarios/pageSection.test.tsx`
 - **Then** no meeting is recorded
 
 Test: `__tests__/scenarios/pageSection.test.tsx`
+
+### A todo captured on a meeting's follow-up page records the meeting (smoke)
+
+- **Given** page 4 follows the page of meeting "Coach call" and has a mark "Ask coach about intervals"
+- **When** I process the mark
+- **Then** the panel shows "↳ from Coach call"
+- **When** I save it as a todo
+- **Then** the todo ends with the meeting
+
+Test: `__tests__/scenarios/smoke/captureTodo.test.tsx`
 
 ## Meetings
 
@@ -575,6 +598,17 @@ Test: `__tests__/scenarios/keptGtd.test.tsx`
 
 Test: `__tests__/scenarios/profiles.test.tsx` · design: `docs/dev/history/technical-design-profiles-demo-space.md`
 
+### Switch to the demo space and back (smoke)
+
+- **Given** the smoke space on Wednesday 14.10.2026
+- **When** I create the demo space in Settings → Advanced and switch to it
+- **Then** Daily shows the demo's content
+- **When** I switch back to Production
+- **Then** Daily shows the smoke space again
+- **And** no error was logged
+
+Test: `__tests__/scenarios/smoke/profiles.test.tsx`
+
 ## Projects and Areas
 
 ### The Current pages of the big data set show what was recorded before the performance work
@@ -616,6 +650,20 @@ Test: `__tests__/scenarios/currentPagePerf.test.tsx` · design: `docs/dev/histor
 - **And** after opening Zen and coming back, done todos are still hidden
 
 Test: `__tests__/scenarios/currentPagePerf.test.tsx` · design: `docs/dev/history/technical-design-perf-current-page.md`
+
+### The area page shows its todos, meetings and agreements, and its folder once Files is opened (smoke)
+
+- **Given** the smoke space on Wednesday 14.10.2026
+- **When** I open Garden from Areas
+- **Then** Todos list "Buy bulbs" and "Repair the fence", and Meetings list "Neighbour chat"
+- **And** Garden's folder is not listed
+- **When** I tap "◇ Agreements 1 ›"
+- **Then** the list shows "Water only in the morning"
+- **When** I tap Files
+- **Then** the folder is listed once and its entries show
+- **And** no error was logged
+
+Test: `__tests__/scenarios/smoke/areaPage.test.tsx`
 
 ## Quick Add
 
@@ -748,6 +796,15 @@ Test: `__tests__/scenarios/quickAdd.test.tsx` · design: `docs/dev/history/techn
 
 Test: `__tests__/scenarios/quickAdd.test.tsx` · design: `docs/dev/history/technical-design-item-card.md`
 
+### Quick Add a todo from Daily (smoke)
+
+- **Given** the smoke space and Daily open
+- **When** I type "Check gutters", tap the Next chip and + Add
+- **Then** Inbox.txt has it
+- **And** Daily lists it in the Inbox group
+
+Test: `__tests__/scenarios/smoke/daily.test.tsx`
+
 ## Settings
 
 ### Unreadable settings are never replaced by the defaults unasked
@@ -801,6 +858,17 @@ Test: `__tests__/scenarios/touchTest.test.tsx` · design: `docs/dev/history/tech
 
 Test: `__tests__/scenarios/touchTest.test.tsx` · design: `docs/dev/history/technical-design-touch-test.md`
 
+## Smoke
+
+### The app starts and every main tab shows (smoke)
+
+- **Given** the smoke space on Wednesday 14.10.2026
+- **When** I open the app and tap through Daily, Week, Month, Projects, Areas, Review, Settings and the help
+- **Then** each shows its main heading
+- **And** no error was logged
+
+Test: `__tests__/scenarios/smoke/appStarts.test.tsx`
+
 ## Threads
 
 ### Todo card: the meeting a todo was agreed in opens its thread
@@ -834,6 +902,33 @@ Test: `__tests__/scenarios/threadsBigArea.test.tsx` · design: `docs/dev/history
 
 Test: `__tests__/scenarios/threadsBigArea.test.tsx` · design: `docs/dev/history/technical-design-perf-threads.md`
 
+## Week and Month
+
+### Week shows this week's meetings and the weekly focus with its goals (smoke)
+
+- **Given** the smoke space on Wednesday 14.10.2026
+- **When** I open Week
+- **Then** the grid shows Wednesday 14 "Neighbour chat" and "Dentist", Thursday 15 "Supplier call" and Friday 16 "Delivery"
+- **And** not "Soil test", which is next week
+- **And** the weekly focus panel shows Garden with "Plant the bulbs" and Garage with "Clear the shelves"
+- **When** I tap ›
+- **Then** the grid shows Tuesday 20 "Soil test"
+- **And** no error was logged
+
+Test: `__tests__/scenarios/smoke/weekAndMonth.test.tsx`
+
+### Month shows the highlights and the monthly focus with its goal (smoke)
+
+- **Given** the smoke space on Wednesday 14.10.2026
+- **When** I open Month
+- **Then** the 28th shows "Garden fair" and no other day shows a meeting, since none is a highlight
+- **And** the monthly focus panel shows Garden with "Beds ready for winter"
+- **When** I tap the 14th
+- **Then** the right side lists both meetings of that day
+- **And** no error was logged
+
+Test: `__tests__/scenarios/smoke/weekAndMonth.test.tsx`
+
 ## Weekly Review
 
 ### Reflect from Review's "Meetings to close out" without ticking it reviewed
@@ -855,6 +950,17 @@ Test: `__tests__/scenarios/meetingReflection.test.tsx` · design: `docs/dev/hist
 - **Then** the overview says "2 inbox items cleared" and the Inbox step has nothing left to review
 
 Test: `__tests__/scenarios/review.test.tsx` · design: `docs/dev/history/technical-design-review-hub.md`
+
+### The Review hub lists its steps with counts, and the Inbox step shows the Inbox (smoke)
+
+- **Given** the smoke space on Wednesday 14.10.2026
+- **When** I open Review
+- **Then** the hub lists its steps with counts: the Inbox's two todos and its meeting, the one Next todo outside focus
+- **When** I open the step "Inbox to zero"
+- **Then** it shows "Call the plumber"
+- **And** no error was logged
+
+Test: `__tests__/scenarios/smoke/review.test.tsx`
 
 ## Your files
 
@@ -893,3 +999,12 @@ Test: `__tests__/scenarios/fileSafety.test.tsx` · design: `docs/dev/history/tec
 - **And** adding a todo keeps both and writes the file with plain line endings
 
 Test: `__tests__/scenarios/interruptions.test.tsx` · design: `docs/dev/history/technical-design-quality-hardening.md`
+
+### A file changed elsewhere is read again when the plugin opens (smoke)
+
+- **Given** the smoke space and Daily open
+- **When** Website/project.txt gets a new todo due today from outside and I reopen the plugin
+- **Then** Daily lists it
+- **And** no error was logged
+
+Test: `__tests__/scenarios/smoke/outsideEdits.test.tsx`

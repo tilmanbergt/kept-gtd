@@ -22,7 +22,7 @@
       "tests": [
         "__tests__/**/*{daily,month,period,planning}*",
         "__tests__/ui/focusedItemRowAccessory.test.tsx",
-        "__tests__/scenarios/smoke/{daily,week,month,weekAndMonth}*"
+        "__tests__/scenarios/smoke/weekAndMonth*"
       ],
       "sources": [
         "src/screens/{DailyView,WeekView,WeekPlanner,MonthView,usePlanningScreen}.ts*",
@@ -191,7 +191,8 @@
       "name": "Projects and Areas, status and the Current page",
       "help": ["projects-and-areas.md"],
       "tests": [
-        "__tests__/**/*{currentPage,areaProjects,itemsList,itemDetail,projectGlance,frontMatterStatus}*"
+        "__tests__/**/*{currentPage,areaProjects,itemsList,itemDetail,projectGlance,frontMatterStatus}*",
+        "__tests__/scenarios/smoke/areaPage*"
       ],
       "sources": [
         "src/screens/{ItemsList,ItemDetail,ProjectDataPanel}.tsx",
@@ -254,6 +255,7 @@
       "help": [],
       "tests": [
         "__tests__/fakeDevice/**",
+        "__tests__/scenarios/smoke/appStarts*",
         "__tests__/domain/dateFormat.test.ts",
         "__tests__/ui/{measuredHeightMemo,useActionError,useEditTarget,rowTapTargets,taskRow*,itemEntryRow}*"
       ],

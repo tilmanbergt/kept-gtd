@@ -39,4 +39,9 @@ assert.ok(md.includes("- **Given** Inbox.txt has 'Call Anna'"));
 assert.ok(md.includes('design: `docs/dev/history/technical-design-x.md`'));
 assert.ok(md.includes('2 scenarios.'));
 assert.ok(renderCatalog(parsed.slice(0, 1)).includes('1 scenario.'));
-console.log('scenario-catalog: 1 group passed');
+
+const withSmoke = renderCatalog([{...parsed[0], smoke: true}, parsed[1]]);
+assert.ok(withSmoke.includes('### Refile a todo (smoke)'), 'smoke scenarios are marked');
+assert.ok(withSmoke.includes('### Add a meeting\n'), 'others are not');
+assert.ok(withSmoke.includes('2 scenarios, 1 of them smoke'), 'the header counts the smoke scenarios');
+console.log('scenario-catalog: 2 groups passed');

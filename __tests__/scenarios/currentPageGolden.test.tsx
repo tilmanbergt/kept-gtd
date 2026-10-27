@@ -10,16 +10,11 @@ import {openApp, tap, tapTab, texts} from '../../test-helpers/scenario/app';
 import {putFile} from '../../test-helpers/scenario/files';
 import {given, scenario, then, when} from '../../test-helpers/scenario/scenario';
 import {BIG_NOW, bigScopeFiles, bigScopeSettings} from '../../test-helpers/bigScope';
+import {fixedClock} from '../../test-helpers/scenario/clock';
 
 const GOLDEN = path.join(__dirname, '__golden__', 'currentPage.json');
 
-/** Only the clock is faked: timers stay real, so the app's settling works as everywhere else. */
-function clock(): void {
-  jest.useFakeTimers({
-    now: BIG_NOW,
-    doNotFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'setImmediate', 'clearImmediate', 'nextTick', 'queueMicrotask', 'requestAnimationFrame', 'cancelAnimationFrame', 'requestIdleCallback', 'cancelIdleCallback', 'hrtime', 'performance'],
-  });
-}
+const clock = () => fixedClock(BIG_NOW);
 afterEach(() => jest.useRealTimers());
 
 /** A row as a list holds it: its own plain fields and the entry it shows, without object identity. */

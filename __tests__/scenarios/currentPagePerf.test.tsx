@@ -11,16 +11,11 @@ import {device} from '../../test-helpers/fakeDevice/device';
 import {and, given, scenario, then, when} from '../../test-helpers/scenario/scenario';
 import {BIG_NOW, bigScopeFiles, bigScopeSettings} from '../../test-helpers/bigScope';
 import {renderCounts, resetRenderCounts} from '../../test-helpers/renderCounts';
+import {fixedClock} from '../../test-helpers/scenario/clock';
 
 const SETTINGS_KEY = 'gtdpara:settings:v1';
 
-/** Only the clock is faked: timers stay real, so the app's settling works as everywhere else. */
-function clock(): void {
-  jest.useFakeTimers({
-    now: BIG_NOW,
-    doNotFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'setImmediate', 'clearImmediate', 'nextTick', 'queueMicrotask', 'requestAnimationFrame', 'cancelAnimationFrame', 'requestIdleCallback', 'cancelIdleCallback', 'hrtime', 'performance'],
-  });
-}
+const clock = () => fixedClock(BIG_NOW);
 afterEach(() => jest.useRealTimers());
 
 interface OpenWork {

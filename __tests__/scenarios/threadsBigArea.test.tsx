@@ -10,18 +10,13 @@ import {putFile, sectionLines} from '../../test-helpers/scenario/files';
 import {and, given, scenario, then, when} from '../../test-helpers/scenario/scenario';
 import {device} from '../../test-helpers/fakeDevice/device';
 import {BIG_NOW, BIG_SETUP_TAGS, bigDay, bigScopeFiles} from '../../test-helpers/bigScope';
+import {fixedClock} from '../../test-helpers/scenario/clock';
 
 // docs/dev/history/technical-design-perf-threads.md §6 scenarios 1, 6 and 7 on the fake device: the big
 // Area's Threads tab shows what the golden master recorded (same files, same clock), follows an edit,
 // and builds its roster once per open.
 
-/** Only the clock is faked: timers stay real, so the app's settling works as everywhere else. */
-function clock(): void {
-  jest.useFakeTimers({
-    now: BIG_NOW,
-    doNotFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'setImmediate', 'clearImmediate', 'nextTick', 'queueMicrotask', 'requestAnimationFrame', 'cancelAnimationFrame', 'requestIdleCallback', 'cancelIdleCallback', 'hrtime', 'performance'],
-  });
-}
+const clock = () => fixedClock(BIG_NOW);
 afterEach(() => jest.useRealTimers());
 
 function bigSettings(): Partial<GtdParaSettings> {

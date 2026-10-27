@@ -5,6 +5,7 @@ import {areaDir, areaFile, dataFile, INBOX_FILE, putFile, sectionLines} from '..
 import {and, given, scenario, then, when} from '../../test-helpers/scenario/scenario';
 import {sparringSettings} from '../../test-helpers/scenario/setups';
 import {device} from '../../test-helpers/fakeDevice/device';
+import {fixedClock} from '../../test-helpers/scenario/clock';
 
 // The design's demo-like data (docs/dev/history/technical-design-meetings-0.21.md §11), on a fixed day:
 // the clock is set per scenario, so Before, During and After hold whenever the suite runs.
@@ -17,12 +18,9 @@ const sparring = (date: string, extra = '') => `- ${date} 10:00-11:00 Sparring M
 const KEY_EARLIER = meetingKey({date: EARLIER, title: 'Sparring Mieke #sparring/mieke'});
 const KEY_TODAY = meetingKey({date: TODAY, title: 'Sparring Mieke #sparring/mieke'});
 
-/** Only the clock is faked: timers stay real, so the app's settling works as everywhere else. */
+/** The clock at `hour:minute` on October `day`, 2026. */
 function clock(hour: number, minute = 0, day = 24): void {
-  jest.useFakeTimers({
-    now: new Date(2026, 9, day, hour, minute),
-    doNotFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'setImmediate', 'clearImmediate', 'nextTick', 'queueMicrotask', 'requestAnimationFrame', 'cancelAnimationFrame', 'requestIdleCallback', 'cancelIdleCallback', 'hrtime', 'performance'],
-  });
+  fixedClock(new Date(2026, 9, day, hour, minute));
 }
 
 beforeEach(() => resetMomentChoices());

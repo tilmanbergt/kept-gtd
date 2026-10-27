@@ -165,8 +165,8 @@ Expected on screen (the scenarios assert these, shown and **not** shown):
    - and **not** shown:
      - "Draft homepage" (Next, but its project is in no focus);
      - "Repair the fence", "Someday idea", "Order seeds";
-   - the todos are grouped under Garden, Website and Inbox;
-   - the focus panel shows Garden with its D badge.
+   - the todos are grouped under Inbox, Garage, Garden and Website ("Sort tools" under its own project Garage);
+   - the focus panel lists Garden under Areas (Daily's panel has no D/W/M badges, see As built).
 3. **Week shows this week's meetings and weekly focus** (feature "Week and Month").
    - When I open Week:
    - then the grid shows Wednesday 14 "Neighbour chat" and "Dentist", Thursday 15 "Supplier call" and Friday 16
@@ -177,9 +177,9 @@ Expected on screen (the scenarios assert these, shown and **not** shown):
    - When I open Month:
    - then the 28th shows "Garden fair" and no other day shows a meeting (none is a highlight);
    - the monthly focus panel shows Garden with "Beds ready for winter";
-   - tapping the 14th lists all three meetings of that day on the right.
+   - tapping the 14th lists both meetings of that day (Neighbour chat, Dentist) on the right.
 5. **Quick Add from Daily** (feature "Quick Add").
-   - When I add the todo "Check gutters #next" on Daily,
+   - When I add the todo "Check gutters" with the Next chip on Daily,
    - then Inbox.txt has it and Daily lists it.
 6. **Tick a todo done on Daily** (feature "Daily").
    - When I tick "Water the lawn",
@@ -401,3 +401,32 @@ checklist).
   Unknown flags are refused with the usage.
 - A file under `src/domain/` is imported, through `App.tsx`, by every scenario, so `--affected` for one domain file
   runs most suites (125 of 202 for `domain/period.ts`).
+
+### T3 - smoke scenarios, fixed clock, catalog
+
+- `fixedClock(date)` (`test-helpers/scenario/clock.ts`) replaces five copies, not three: 0.21.1 added
+  `currentPageGolden` and `currentPagePerf` with the same setup.
+- The moved scenarios are pageSection's "Engage on a meeting's follow-up page: the meeting is passed on"
+  (`smoke/engagePage.test.tsx`) and "A todo captured on a meeting's follow-up page records the meeting"
+  (`smoke/captureTodo.test.tsx`). Both use pageSection's Area Sport, so that fixture moved too, unchanged, into
+  `test-helpers/scenario/sportArea.ts`, which `pageSection.test.tsx` now imports.
+- `readTexts()` and `textsBetween(from, to)` in `test-helpers/scenario/app.tsx`: the visible texts as the user
+  reads them (a row's title with its labels is one entry, e.g. `Water the lawn  #due 14.10.`) and the part of the
+  screen between two texts. `texts()` lists only plain strings, and a query by text returns only the innermost
+  match, so neither can say which label belongs to which row.
+- Smoke files are named so that the area globs place them: `daily`, `weekAndMonth` (`planning`), `appStarts`
+  (`foundation`), `areaPage` (`current-page`), `engagePage` (`engage`), `captureTodo` (`lasso`), `review`, `profiles`
+  (`settings`), `outsideEdits` (`files`). Scenarios 5 and 6 share `daily.test.tsx` with 2. 12 smoke scenarios in
+  9 files.
+- **Scenario 5** sets Next with the chip. A `#next` typed into Quick Add's text is dropped on + Add
+  (`composeTaskText` → `setFlowStateTag` removes every flow tag unless its chip is set), so "Check gutters #next"
+  is saved as "Check gutters" and doesn't show on Daily. Tilman: a bug, fixed on its own branch
+  `fix/quick-add-typed-flow-tags`; the row of §3.4 now names the chip.
+- **Scenario 8**: "Inbox to zero" counts the Inbox's meeting too (3 items: two todos and "Dentist").
+- **Three rows of §3.4 were wrong** (the app follows its help pages); corrected after Tilman's approval:
+  - Scenario 2: Daily's focus panel draws no D/W/M badges (`technical-design-monthly-view.md` §5.3 leaves
+    `DailyFocusPanel` without them), so "Garden with its D badge" can't hold; asserted: Garden in the panel's Areas.
+  - Scenario 2: "Sort tools" is in its own group Garage (a project's todos are grouped under the project), so the
+    groups are Inbox, Garage, Garden and Website.
+  - Scenario 4: the 14th has two meetings (Neighbour chat, Dentist), not three.
+- Timings (4-core container): `smoke/` alone 7 s in Jest (12 tests); `npm run check:smoke` 28 s.

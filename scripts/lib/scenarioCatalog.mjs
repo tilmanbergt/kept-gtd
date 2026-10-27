@@ -1,6 +1,6 @@
 // Pure parts of scripts/scenario-catalog.mjs: read the scenarios and their steps from the test
 // sources, render the catalog. No I/O here, so scripts/test-scenario-catalog.mjs can test them.
-// Design: docs/dev/history/technical-design-quality-hardening.md §4.4.
+// Design: docs/dev/history/technical-design-quality-hardening.md §4.4; smoke mark: technical-design-test-tiers.md §3.6.
 
 const STRING = String.raw`'((?:[^'\\]|\\.)*)'`;
 const SCENARIO_RE = new RegExp(String.raw`\bscenario\(\s*${STRING}\s*,\s*\{([^}]*)\}`, 'g');
@@ -23,8 +23,13 @@ export function parseScenarios(source, file) {
   });
 }
 
-/** The catalog: scenarios grouped by feature (sorted), each in source order. */
+/**
+ * The catalog: scenarios grouped by feature (sorted), each in source order. A scenario with `smoke: true`
+ * (its test file is in the smoke folder) gets "(smoke)" after its title.
+ */
 export function renderCatalog(scenarios) {
+  const smoke = scenarios.filter(s => s.smoke).length;
+  const count = `${scenarios.length} ${scenarios.length === 1 ? 'scenario' : 'scenarios'}`;
   const lines = [
     '# Tested scenarios',
     '',
@@ -33,13 +38,13 @@ export function renderCatalog(scenarios) {
     '> `npm run check`; a change to this file shows which tested behavior a change adds or alters.',
     '> What the fake device cannot show is tested on the device instead (`RELEASING.md`).',
     '',
-    `${scenarios.length} ${scenarios.length === 1 ? 'scenario' : 'scenarios'}.`,
+    smoke ? `${count}, ${smoke} of them smoke (\`npm run check -- --smoke\`).` : `${count}.`,
   ];
   const features = [...new Set(scenarios.map(s => s.feature))].sort((a, b) => a.localeCompare(b));
   for (const feature of features) {
     lines.push('', `## ${feature}`);
     for (const s of scenarios.filter(x => x.feature === feature)) {
-      lines.push('', `### ${s.title}`, '');
+      lines.push('', `### ${s.title}${s.smoke ? ' (smoke)' : ''}`, '');
       for (const step of s.steps) lines.push(`- **${step.kind}** ${step.text}`);
       lines.push('', `Test: \`${s.file}\`${s.design ? ` · design: \`docs/dev/history/${s.design}\`` : ''}`);
     }
