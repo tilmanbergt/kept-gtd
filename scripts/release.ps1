@@ -31,7 +31,10 @@ function Write-Info([string]$msg) { Write-Host $msg -ForegroundColor Gray }
 function Show-Undo {
     if ($tagged) { Write-Host "  git tag -d v$newVersion" -ForegroundColor Yellow }
     if ($committed) { Write-Host '  git reset --hard HEAD~1' -ForegroundColor Yellow }
-    elseif (-not $DryRun) { Write-Host '  git checkout -- package.json package-lock.json PluginConfig.json CHANGELOG.md' -ForegroundColor Yellow }
+    elseif (-not $DryRun) {
+        Write-Host '  git checkout -- package.json package-lock.json PluginConfig.json CHANGELOG.md' -ForegroundColor Yellow
+        if ($script:coverageCopy) { Write-Host "  git rm --cached --quiet $($script:coverageCopy); Remove-Item $($script:coverageCopy)" -ForegroundColor Yellow }
+    }
 }
 
 function Stop-Release([string]$msg) {
@@ -50,6 +53,7 @@ function Confirm-Yes([string]$question) {
 }
 
 $script:changedFiles = $false
+$script:coverageCopy = ''
 
 # ---------------------------------------------------------------- 1. checks
 Write-Step '1. Checks'
@@ -99,6 +103,25 @@ if (Get-Command gh -ErrorAction SilentlyContinue) {
     Write-Host 'GitHub CLI (gh) not found - publishing will be manual. Install: winget install GitHub.cli' -ForegroundColor Yellow
 }
 
+# Every check and every test ran green in CI on this exact commit of main (technical-design-test-tiers.md 3.3).
+$head = "$(git rev-parse HEAD)".Trim()
+$short = $head.Substring(0, 7)
+if ($ghOk) {
+    $json = (gh run list --branch main --workflow check.yml --limit 20 --json headSha,status,conclusion,url) -join "`n"
+    if ($LASTEXITCODE -ne 0) { Stop-Release 'gh run list failed - see above' }
+    # ConvertFrom-Json as a parameter, not in a pipeline: Windows PowerShell 5.1 passes a parsed array on as one item.
+    $run = $null
+    foreach ($r in (ConvertFrom-Json $json)) { if ($r.headSha -eq $head) { $run = $r; break } }
+    if (-not $run) { Stop-Release "no CI run found for main at $short - push main and wait for CI" }
+    if ($run.status -ne 'completed') { Stop-Release "CI for main at $short is still running ($($run.url)) - wait for it" }
+    if ($run.conclusion -ne 'success') { Stop-Release "CI for main at $short is $($run.conclusion): $($run.url)" }
+    Write-Host "CI on main is green for $short." -ForegroundColor Green
+} else {
+    Write-Host "Without a logged-in GitHub CLI the CI result for main at $short cannot be looked up." -ForegroundColor Yellow
+    Write-Host 'Look at https://github.com/tilmanbergt/kept-gtd/actions?query=branch%3Amain' -ForegroundColor Yellow
+    if (-not (Confirm-Yes "Is the CI run for main at $short green?")) { Stop-Release 'CI on main is not confirmed green' }
+}
+
 Write-Host "Releasing Kept GTD $newVersion" -ForegroundColor Green
 if ($DryRun) { Write-Host 'DRY RUN - nothing will be changed.' -ForegroundColor Yellow }
 
@@ -117,15 +140,33 @@ if ($DryRun) {
 }
 
 # ---------------------------------------------------------------- 4. code checks
-Write-Step '3. Checks (npm run check)'
-Write-Info 'Runs tsc, lint, the Jest tests, the script tests and the code-health rules.'
-Write-Info 'Log lines or warnings printed while tests run are normal (some tests simulate errors on purpose).'
-& node (Join-Path $root 'scripts\check.mjs')
-if ($LASTEXITCODE -ne 0) {
-    Write-Host 'Checks FAILED - see the first failing check above. Do not publish a release with failing checks.' -ForegroundColor Red
-    if (-not (Confirm-Yes 'Checks failed. Continue anyway?')) { Stop-Release 'checks failed' }
+# The real run checks the exact release commit once: every check and every test, with coverage, after the
+# version is stamped. Red stops the release; there is no way past it (technical-design-test-tiers.md 3.3).
+if ($DryRun) {
+    Write-Step '3. Checks (quick tier: npm run check:quick)'
+    Write-Info 'A dry run runs the static checks only; the real run runs every test with coverage.'
+    & node (Join-Path $root 'scripts\check.mjs') --quick
 } else {
-    Write-Host 'All checks passed.' -ForegroundColor Green
+    Write-Step '3. Checks (every check and test, with coverage: npm run coverage)'
+    Write-Info 'Log lines or warnings printed while tests run are normal (some tests simulate errors on purpose).'
+    & node (Join-Path $root 'scripts\check.mjs') --coverage
+}
+if ($LASTEXITCODE -ne 0) { Stop-Release 'checks failed - see the first failing check above' }
+Write-Host 'All checks passed.' -ForegroundColor Green
+
+# The coverage table of this release goes into the release commit (one file per release: the trend).
+$coverageDoc = "docs/dev/history/test-coverage-$newVersion.md"
+if ($DryRun) {
+    Write-Info "[dry run] would copy coverage/areas.md to $coverageDoc"
+} else {
+    $areas = Join-Path $root 'coverage\areas.md'
+    if (-not (Test-Path $areas)) { Stop-Release 'coverage/areas.md missing - the coverage report did not run' }
+    $lines = @(Get-Content $areas -Encoding UTF8)
+    $lines[0] = "# Test coverage by feature area - Kept GTD $newVersion"
+    [IO.File]::WriteAllText((Join-Path $root $coverageDoc), (($lines -join "`n") + "`n"), (New-Object Text.UTF8Encoding $false))
+    $script:coverageCopy = $coverageDoc
+    git add -- $coverageDoc
+    if ($LASTEXITCODE -ne 0) { Stop-Release "git add $coverageDoc failed" }
 }
 
 # ---------------------------------------------------------------- 5. commit + tag

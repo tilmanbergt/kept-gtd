@@ -3,7 +3,7 @@
 # Kept GTD usage (docs/dev/RELEASING.md section 4):
 #   ./buildPlugin.ps1                 test build, labelled for package.json's nextVersion, e.g. 0.9.0-alpha+a1b2c3d
 #   ./buildPlugin.ps1 -Stage beta     same, labelled 0.9.0-beta+a1b2c3d (release is feature-complete, final device test)
-#   ./buildPlugin.ps1 -Check          runs `npm run check` first and stops if it fails
+#   ./buildPlugin.ps1 -Check          runs the smoke tier (`npm run check:smoke`) first and stops if it fails
 param(
     [ValidateSet('alpha', 'beta')]
     [string]$Stage = 'alpha',
@@ -1175,8 +1175,8 @@ function Main {
     
     # Step 1a (gtdpara): optional local checks (tsc, lint, tests, code health) before building.
     if ($Check) {
-        Write-ColorOutput '=== Step 1a: npm run check ===' 'Blue'
-        & node (Join-Path $projectRoot 'scripts\check.mjs')
+        Write-ColorOutput '=== Step 1a: npm run check:smoke ===' 'Blue'
+        & node (Join-Path $projectRoot 'scripts\check.mjs') --smoke
         if ($LASTEXITCODE -ne 0) {
             Write-ColorOutput 'Checks failed, script terminated (build without -Check to skip them)' 'Red'
             return

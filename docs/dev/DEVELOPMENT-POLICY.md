@@ -190,8 +190,31 @@ A change is not done while the docs describe the old behavior.
 
 ## 7. Testing
 
-- **Automated, every change: `npm run check`** - stops at the first failure. GitHub Actions runs
-  it on every push and pull request (`.github/workflows/check.yml`):
+- **The rule: every check and every test runs green on the exact release commit (`release.ps1`)
+  and on every push (CI). Other moments run the smallest tier that covers the change.**
+- **Tiers** (`scripts/check.mjs`, `docs/dev/README.md` "Checking your changes"); each stops at the
+  first failure and its last line names the tier:
+  - **quick** (`npm run check:quick`): generated content, tsc and ESLint, script tests, scenario
+    catalog, code health;
+  - **smoke** (`npm run check:smoke`): quick + one fast scenario per main flow
+    (`__tests__/scenarios/smoke/`). Smoke stays at or below 60 s; a new smoke scenario that would
+    break that budget is merged into an existing one;
+  - **area** (`npm run check -- --area planning,threads`): quick + every test of those feature areas;
+  - **affected** (`npm run check:affected`): quick + the tests related to the files changed
+    against `origin/main` + smoke;
+  - **full** (`npm run check`): everything; **full + coverage** (`npm run coverage`): full plus the
+    coverage table per area and its ratchet (see below).
+- **Who runs which tier:**
+  - a step of a change (cloud session): affected, plus `--area` for the areas the design names;
+  - the end of a release's steps (checkpoint): full;
+  - CI on every push to a branch and on pull requests: full + coverage, with the area table in the
+    job summary (`.github/workflows/check.yml`); tags start no run;
+  - a test build (`buildPlugin.ps1 -Check`): smoke;
+  - merging into `main`: nothing locally - CI on the `main` push is the gate;
+  - release Prepare and `release.ps1 -DryRun`: quick, plus CI green on `main` (`release.ps1` looks
+    it up);
+  - `release.ps1`: full + coverage once, after the version is stamped; red stops the release.
+- **What the checks contain:**
   - `tsc --noEmit` with zero errors; ESLint with zero errors, including the layer rules in
     `.eslintrc.js` (which folder may import which);
   - all Jest tests pass. New pure logic in `domain/` (and testable parts of `storage/`) gets Jest
@@ -203,9 +226,17 @@ A change is not done while the docs describe the old behavior.
   - **Scenario tests** (`__tests__/scenarios/`): the whole app on the fake device
     (`test-helpers/fakeDevice/`), tapped through like a user, with the files checked afterwards.
     Every feature's design scenarios become scenario tests; every flow that changes files has at
-    least one. `npm run scenarios` regenerates `docs/dev/test-scenarios.md`, and `npm run check`
+    least one. `npm run scenarios` regenerates `docs/dev/test-scenarios.md`, and every tier
     fails when it is out of date - its diff in a change is what Tilman reviews. How to write one:
     `docs/dev/README.md` "Writing scenarios".
+  - **Feature areas** (`scripts/test-areas.json`): every test file, source file and help page
+    belongs to one area, following the help pages; code-health fails on one that doesn't. A new
+    file is usually covered by an area's globs; otherwise add it there.
+  - **Coverage ratchet** (`npm run coverage`, `scripts/coverage-baseline.json`): an area's line or
+    branch coverage may not fall more than 2 points below its baseline. `node
+    scripts/coverage-report.mjs --update-baseline` raises the baseline after coverage grew; lowering
+    it is a hand edit, explained in the commit. Each release keeps its table in
+    `docs/dev/history/test-coverage-<version>.md`.
 - **On the device**, for every change that touches UI, files or device APIs, test what the fake
   device cannot show: how it looks on e-ink (layout, the A5 X budget, refreshes), lasso and
   handwriting, real notes and the real SDK, speed, firmware differences:
@@ -223,8 +254,9 @@ A change is not done while the docs describe the old behavior.
 - [ ] UI rules kept; checked against the A5 X budget - §4
 - [ ] Errors and key steps logged; debug bundle extended if needed - §5
 - [ ] Help pages, CHANGELOG `[Unreleased]`, README, PRIVACY, dev docs updated as needed - §6
-- [ ] `npm run check` passes; new logic has tests; changed flows have scenario tests and
-      `docs/dev/test-scenarios.md` is regenerated - §7
+- [ ] The tier for the moment passes (§7: affected per step, full at the end, CI green after the
+      push); new logic has tests; changed flows have scenario tests and
+      `docs/dev/test-scenarios.md` is regenerated; new files belong to a feature area - §7
 - [ ] Device test done, or explicitly listed as still open - §7
 - [ ] Ideas found on the way are on the backlog, not half-built - §1
 - [ ] Step-by-step guide for Tilman given (commit, build, test, push/merge, release?) - §10
@@ -246,7 +278,9 @@ Before running `scripts/release.ps1`:
 - [ ] **Experimental**: anything not reliable enough is behind a switch and listed under
       Experimental.
 - [ ] **Logging**: no debug-only noise left in hot paths; no secrets or excessive content logged.
-- [ ] `npm run check` passes on a clean tree (`release.ps1` runs it too).
+- [ ] CI is green on `main` for the commit to release; `npm run check:quick` passes on a clean tree
+      (`release.ps1` checks CI and then runs every check and test once, with coverage, on the
+      release commit; red stops it).
 - [ ] **Tested scenarios**: the diff of `docs/dev/test-scenarios.md` since the last release read
       once - is anything missing for what this release changes?
 - [ ] Device checklist in RELEASING.md: install **over the previous release**, settings kept,

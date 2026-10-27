@@ -20,8 +20,11 @@ Short version:
   to the internal backlog `claude/next-improvements.md`, never into repo docs.
 - User-visible change = help page (`docs/user/`, device-safe markdown) + a line under
   `## [Unreleased]` in `CHANGELOG.md`, in the same change.
-- Checks: `npm run check` (tsc, lint, unit and scenario tests, scenario catalog, code health); a
-  design's test scenarios become scenario tests (`__tests__/scenarios/`). Then a device test with a build
+- Checks in tiers (`DEVELOPMENT-POLICY.md` §7): each cloud step runs `npm run check:affected` (plus
+  `-- --area <ids>` for the areas the design names), the end of a release's steps runs the full
+  `npm run check`; CI runs everything with coverage on every push, `release.ps1` once on the release
+  commit. A design's test scenarios become scenario tests (`__tests__/scenarios/`); new files belong to
+  a feature area (`scripts/test-areas.json`). Then a device test with a build
   labelled for the release being worked on (`./buildPlugin.ps1`, `RELEASING.md` §4).
 - Branches: `main` is always releasable; features on `feature/<name>`, merged with `--no-ff`.
   Releases only via `scripts/release.ps1` from `main` (`docs/dev/RELEASING.md`).

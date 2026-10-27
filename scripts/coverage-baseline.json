@@ -1,0 +1,73 @@
+{
+  "about": "Line and branch coverage % per feature area that npm run coverage may not fall more than 2 points below (scripts/coverage-report.mjs). Raised by --update-baseline; lowered only by hand, explained in the commit.",
+  "areas": {
+    "integrations": {
+      "lines": 15.9,
+      "branches": 8.8
+    },
+    "planning": {
+      "lines": 66.2,
+      "branches": 50.2
+    },
+    "engage": {
+      "lines": 96.4,
+      "branches": 90
+    },
+    "close-out": {
+      "lines": 67.1,
+      "branches": 45.9
+    },
+    "lasso": {
+      "lines": 68.9,
+      "branches": 63.7
+    },
+    "agreements": {
+      "lines": 95.8,
+      "branches": 89.4
+    },
+    "loops": {
+      "lines": 91.4,
+      "branches": 80.3
+    },
+    "threads": {
+      "lines": 88.9,
+      "branches": 78.8
+    },
+    "review": {
+      "lines": 59.2,
+      "branches": 46.4
+    },
+    "meetings": {
+      "lines": 79.8,
+      "branches": 69.7
+    },
+    "note-setups": {
+      "lines": 86.5,
+      "branches": 78.1
+    },
+    "quick-add": {
+      "lines": 80.5,
+      "branches": 75.4
+    },
+    "current-page": {
+      "lines": 59.7,
+      "branches": 52.6
+    },
+    "tags": {
+      "lines": 92.1,
+      "branches": 87.9
+    },
+    "files": {
+      "lines": 82.7,
+      "branches": 72.1
+    },
+    "settings": {
+      "lines": 82.5,
+      "branches": 71.1
+    },
+    "foundation": {
+      "lines": 81.9,
+      "branches": 71.6
+    }
+  }
+}
