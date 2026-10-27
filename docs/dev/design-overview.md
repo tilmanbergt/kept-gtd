@@ -1324,8 +1324,8 @@ place it happens.
 - A new source file stays at or below 1,000 lines. Longer existing files are listed in
   `scripts/code-health-baseline.json` and may only shrink (`--update-baseline` ratchets them
   down).
-- Pure logic gets Jest tests in `__tests__/`. Run `npm run check` (generated content, tsc, eslint,
-  Jest, script tests, code health) before committing.
+- Pure logic gets Jest tests in `__tests__/`. Before committing, run the tier that covers the
+  change (`DEVELOPMENT-POLICY.md` §7; `npm run check` runs everything).
 
 ---
 

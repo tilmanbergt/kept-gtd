@@ -469,3 +469,34 @@ checklist).
 
   Daily/Week/Month went from 49 % lines (analysis, before the smoke scenarios) to 66.2 %. `npm run coverage` takes
   152 s.
+
+### T5 - release script, test builds, docs
+
+- `release.ps1`:
+  - looks up CI for the exact commit of `main` it releases (`gh run list --workflow check.yml`, matched by
+    `headSha`) and stops when there is no run, it is still running or it isn't green; without a logged-in `gh`
+    it says so, names the Actions page and asks. This is the "CI green" of Prepare (§3.3), done by the script
+    for the dry run and the real run alike;
+  - dry run: quick tier; real run: `check.mjs --coverage` once, after the version is stamped. Red stops
+    with the undo hints; the "Continue anyway?" prompt is gone;
+  - copies `coverage/areas.md` to `docs/dev/history/test-coverage-<version>.md` (first line names the version)
+    and `git add`s it, since `git commit -am` takes no new files; the undo hints name it too.
+  - stays ASCII-only. It could not be run here (no PowerShell in the container): §6's manual checks cover it.
+- `buildPlugin.ps1 -Check` runs `check.mjs --smoke`.
+- Docs: DEVELOPMENT-POLICY §7 (the rule, the tiers, who runs which, smoke ≤ 60 s, areas, ratchet), §8, §9;
+  RELEASING §2 (merge without local tests, CI on `main` is the gate), §4 (tiers), §5 (Prepare = quick + CI green,
+  what `release.ps1` checks); README "Checking your changes" and "Writing scenarios"; `design-overview.md`'s
+  testing line; CLAUDE.md's Checks line.
+- **Timings** (4-core container, Jest cache warm):
+
+  | Tier | Time |
+  |---|---|
+  | quick | 16 s |
+  | smoke | 27 s (`smoke/` alone 7 s) |
+  | affected, one changed domain file (`domain/period.ts`, measured in T2) | 61 s |
+  | full | 59 s |
+  | full + coverage | 79 s (152 s with a cold Jest cache) |
+
+  §8's estimates were made on 2 cores; on 4 cores full and affected are close, because one domain file reaches
+  most scenarios through `App.tsx`. Affected pays off for changes in `ui/` and `screens/` and in scripts and docs
+  (smoke only).

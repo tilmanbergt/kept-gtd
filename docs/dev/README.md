@@ -47,11 +47,22 @@ Releases: see `RELEASING.md`.
 
 ## Checking your changes
 
-- Everything at once: `npm run check` (add `-- --quick` to skip Jest). It runs, in order:
-  `npx tsc --noEmit`, ESLint, `npm test` (Jest), `npm run test:scripts` and
-  `npm run code-health` (the rules are in `scripts/lib/codeHealth.mjs`; long existing files are
-  listed in `scripts/code-health-baseline.json` and may only shrink). GitHub Actions runs the
-  same `npm run check` on every push and pull request (`.github/workflows/check.yml`).
+- `npm run check` runs everything: `src/generated/`, `npx tsc --noEmit` and ESLint (at the same
+  time), `npm run test:scripts`, the scenario catalog check, `npm run code-health` (the rules are in
+  `scripts/lib/codeHealth.mjs`; long existing files are listed in `scripts/code-health-baseline.json`
+  and may only shrink; every file belongs to a feature area of `scripts/test-areas.json`), then
+  Jest. Smaller tiers (which moment runs which: `DEVELOPMENT-POLICY.md` §7):
+  - `npm run check:quick`: everything but Jest;
+  - `npm run check:smoke`: quick + `__tests__/scenarios/smoke/`;
+  - `npm run check -- --area planning,threads`: quick + the tests of those feature areas;
+  - `npm run check:affected`: quick + `jest --findRelatedTests` on the files changed against
+    `origin/main` (committed or not) + smoke;
+  - flags combine, e.g. `npm run check -- --area planning --smoke`.
+- `npm run coverage`: the full check with coverage, then `coverage/areas.md` - per feature area the
+  unit, UI, scenario and smoke tests, catalogued scenarios, source lines and line/branch coverage -
+  and the ratchet against `scripts/coverage-baseline.json` (`scripts/coverage-report.mjs`). GitHub
+  Actions runs it on every branch push and pull request (`.github/workflows/check.yml`), shows the
+  table in the job summary and keeps `coverage/` as an artifact for 14 days.
 - `npm run scenarios` runs only the scenario tests and writes `docs/dev/test-scenarios.md`
   (see "Writing scenarios" below).
 - A useful smoke test mounts `<App />` with `react-test-renderer`.
@@ -87,6 +98,17 @@ afterwards:
   `pageTexts` (what Kept wrote on a page) and `pageHeadings`.
 - `test-helpers/scenario/setups.ts`: ready-made Note setups for `openApp({settings})`, e.g.
   `sparringSettings()`.
+- `test-helpers/scenario/clock.ts`: `fixedClock(date)` for a scenario whose expectations depend on
+  the date (only the clock is faked; restore it with `afterEach(() => jest.useRealTimers())`).
+- `readTexts()` and `textsBetween(from, to)` (`app.tsx`): the visible texts as the user reads them -
+  a row's title with its labels is one entry, e.g. `Water the lawn  #due 14.10.` - and the part of
+  the screen between two texts (one list, column or panel), to check what a list shows in order.
+- **Smoke scenarios** (`__tests__/scenarios/smoke/`, `npm run check:smoke`): one fast scenario per
+  main flow, marked "(smoke)" in the catalog. Most use the smoke space
+  (`test-helpers/scenario/smokeSpace.ts`: `putSmokeSpace()`, `smokeClock()` - Wednesday
+  14.10.2026, 10:00). Each opens the app once; the folder stays at or below 60 s.
+- Every test file belongs to a feature area (`scripts/test-areas.json`, first matching area wins);
+  name a new file so an area's globs place it, or add it to the area.
 
 What the fake device cannot show - layout and row heights, e-ink refreshes, lasso, recognition,
 PNG rendering, real SDK behavior - stays on the device checklist. A call the fake SDK doesn't
