@@ -115,6 +115,7 @@ t('area stats and matrix', () => {
   const md = renderMatrix(stats, {planning: {lines: 77, branches: 70}});
   assert.match(md, /\| Daily, Week and Month \(`planning`\) \| 4 \| 0 \| 2 \| 2 \| 2 \| 200 \| 75\.0 \| 70\.0 \| -2\.0 \/ \+0\.0 \|/);
   assert.match(md, /\| Foundation \(`foundation`\) \| 0 \| 0 \| 0 \| 0 \| 0 \| 0 \| - \| - \| {2}\|/);
+  assert.match(renderMatrix(stats, {planning: {lines: 75.04, branches: 70}}), /\| 75\.0 \| 70\.0 \| \+0\.0 \/ \+0\.0 \|/, 'no -0.0');
   assert.match(md, /\| \*\*All\*\* \| 4 \| 3 \| 2 \| 2 \| 2 \| 200 \| 75\.0 \| 70\.0 \| \|/);
 });
 

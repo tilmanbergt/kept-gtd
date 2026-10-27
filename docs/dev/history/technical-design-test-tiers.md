@@ -430,3 +430,42 @@ checklist).
     groups are Inbox, Garage, Garden and Website.
   - Scenario 4: the 14th has two meetings (Neighbour chat, Dentist), not three.
 - Timings (4-core container): `smoke/` alone 7 s in Jest (12 tests); `npm run check:smoke` 28 s.
+
+### T4 - coverage overview and ratchet
+
+- The ratchet and the reading of Jest's output are pure functions in `scripts/lib/coverageReport.mjs`, tested by
+  `scripts/test-coverage-report.mjs` (design scenarios 5 and 6); `scripts/coverage-report.mjs` only reads and
+  writes files. `renderMatrix` and `areaStats` stay in `scripts/lib/testAreas.mjs`.
+- `jest.config.js` also gets `collectCoverageFrom` (`App.tsx` and `src/`, without `src/generated/`): every source
+  file counts, also those no test loads, so an area's % can't look better because a file is never imported.
+- The matrix has a column **Scenarios** (catalogued scenarios of the area's test files) next to **Scenario** (tests
+  under `__tests__/scenarios/`); they are equal today, one test per scenario. Areas are named with their id.
+- `scripts/coverage-baseline.json` is `{"about": …, "areas": {id: {lines, branches}}}`, one decimal, from the run
+  below. An area with no baseline is not checked; `--update-baseline` adds it.
+- CI runs `npm run coverage` (timeout 20 min), appends `coverage/areas.md` to the job summary (also when a check
+  failed, saying so when there is no table) and uploads `coverage/` as the artifact "coverage" for 14 days.
+- Measured on `feature/test-tiers` after T3 (4-core container), the baseline:
+
+  | Area | Unit | UI | Scenario | Smoke | Src lines | Line % | Branch % |
+  |---|---:|---:|---:|---:|---:|---:|---:|
+  | integrations | 5 | 0 | 0 | 0 | 988 | 15.9 | 8.8 |
+  | planning | 13 | 2 | 6 | 5 | 1043 | 66.2 | 50.2 |
+  | engage | 152 | 28 | 11 | 1 | 897 | 96.4 | 90.0 |
+  | close-out | 13 | 0 | 1 | 0 | 1245 | 67.1 | 45.9 |
+  | lasso | 86 | 19 | 1 | 1 | 1121 | 68.9 | 63.7 |
+  | agreements | 56 | 3 | 8 | 0 | 261 | 95.8 | 89.4 |
+  | loops | 59 | 9 | 0 | 0 | 538 | 91.4 | 80.3 |
+  | threads | 121 | 23 | 2 | 0 | 907 | 88.9 | 78.8 |
+  | review | 26 | 7 | 2 | 1 | 1187 | 59.2 | 46.4 |
+  | meetings | 36 | 7 | 8 | 0 | 515 | 79.8 | 69.7 |
+  | note-setups | 287 | 24 | 15 | 0 | 1916 | 86.5 | 78.1 |
+  | quick-add | 38 | 37 | 18 | 0 | 1711 | 80.5 | 75.4 |
+  | current-page | 13 | 4 | 5 | 1 | 883 | 59.7 | 52.6 |
+  | tags | 44 | 9 | 0 | 0 | 305 | 92.1 | 87.9 |
+  | files | 145 | 17 | 8 | 1 | 1912 | 82.7 | 72.1 |
+  | settings | 147 | 11 | 11 | 1 | 1370 | 82.5 | 71.1 |
+  | foundation | 17 | 34 | 1 | 1 | 947 | 81.9 | 71.6 |
+  | **all** | 1258 | 234 | 97 | 12 | 17746 | 75.0 | 66.2 |
+
+  Daily/Week/Month went from 49 % lines (analysis, before the smoke scenarios) to 66.2 %. `npm run coverage` takes
+  152 s.

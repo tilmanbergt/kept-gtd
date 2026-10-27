@@ -1,9 +1,11 @@
-# Runs the same checks as `npm run check` on every push and pull request
-# (DEVELOPMENT-POLICY §7, docs/dev/history/technical-design-quality-hardening.md §7 D1).
+# Runs every check and every test, with coverage, on every push to a branch and on pull requests
+# (DEVELOPMENT-POLICY §7, docs/dev/history/technical-design-test-tiers.md §3.3). Tags start no run: a release tag
+# points at the release commit, which ran here when it was pushed to main.
 name: check
 
 on:
   push:
+    tags-ignore: ['**']
   pull_request:
 
 permissions:
@@ -12,7 +14,7 @@ permissions:
 jobs:
   check:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -20,4 +22,15 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci --no-audit --no-fund
-      - run: npm run check
+      - run: npm run coverage
+      - name: Coverage by feature area in the job summary
+        if: always()
+        run: |
+          if [ -f coverage/areas.md ]; then cat coverage/areas.md >> "$GITHUB_STEP_SUMMARY"; else echo "No coverage/areas.md - the checks stopped before the coverage report." >> "$GITHUB_STEP_SUMMARY"; fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage
+          path: coverage/
+          retention-days: 14
+          if-no-files-found: ignore

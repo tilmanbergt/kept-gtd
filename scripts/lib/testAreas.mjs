@@ -132,7 +132,8 @@ export function testFilesOf(ids, areas, paths) {
 const pct = n => (n === null || n === undefined ? '-' : n.toFixed(1));
 const delta = (now, base) => {
   if (now === null || base === undefined) return '';
-  const d = now - base;
+  // Rounded first, so 66.17 against 66.2 reads +0.0, not -0.0.
+  const d = Math.round((now - base) * 10) / 10 || 0;
   return `${d >= 0 ? '+' : ''}${d.toFixed(1)}`;
 };
 
