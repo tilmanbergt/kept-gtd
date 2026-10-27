@@ -4,7 +4,7 @@ A **context** is a place you work in - Work, Home, a café with only the Superno
 
 ## Choosing one
 
-The chip in the tab bar, left of ✕, names the active context (**Everything** when none is chosen). Tap it: the menu lists your contexts with a one-line summary and how many next todos each shows, and **Everything**. Tap one to switch; the status line confirms it ("Context: Home"). **Edit contexts ›** opens Settings → Contexts.
+The chip in the tab bar, left of ✕, names the active context (**Everything** when none is chosen). Tap it to open **Settings → Contexts**: **Everything** and your contexts, each with how many next todos it shows and a one-line summary. Tap the **○** in front of one to make it active (●); the status line confirms it ("Context: Home"). Then go back to the tab you were on.
 
 The context stays until you choose another, also after closing Kept GTD. Each profile has its own contexts.
 
@@ -41,6 +41,6 @@ When Quick Add files a todo where the active context doesn't show it, the status
 
 ## Setting up contexts
 
-In **Settings → Contexts**, tap **+ New context**, give it a name, then tap areas, projects and tags under **Shows**; switch to **Hides** for what to leave out. **Meetings outside this context**: Dimmed or Shown as usual. The preview counts how many next todos it shows. **Save** stores it at once; **Delete** removes it (your files are not touched).
+In **Settings → Contexts**, tap **+ New context** and type its name; **Save** and **Delete** sit right next to the name. Under **Shows**, tap the areas the context is about - usually that is all it needs, an area brings its projects. **Projects** and **Tags** switch the list below to projects or to tags, for the rarer cases; loop and thread tags are not offered there. Switch to **Hides** for what to leave out. **Meetings outside this context**: Dimmed or Shown as usual. The preview counts how many next todos it shows. **Save** stores it at once; **Delete** removes it (your files are not touched).
 
 When you rename a project's or area's folder and Kept GTD offers to rename its home notebook, its contexts follow the new name. Otherwise **Run Integrity Check** (Settings → Advanced) lists contexts that name a project or area that isn't there any more.

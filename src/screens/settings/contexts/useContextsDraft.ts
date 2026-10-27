@@ -2,15 +2,17 @@
  * Settings → Contexts' state (docs/dev/history/technical-design-time-and-place.md
  * §3.3): which context is open in the editor, its draft, and Save / Delete,
  * which write `contexts` at once (and mirror it into the Settings draft, so a
- * later Save on another tab keeps it) - the Note setups pattern.
+ * later Save on another tab keeps it) - the Note setups pattern - and
+ * `handleActivate`, which makes a context (or Everything, '') the active one.
  */
 import {useState} from 'react';
-import {ContextDef, ContextEntry, newContext, toggleEntry} from '../../../domain/contexts';
+import {ContextDef, ContextEntry, EVERYTHING_LABEL, newContext, toggleEntry} from '../../../domain/contexts';
 import {GtdParaSettings} from '../../../domain/settings';
 import {patchSettings} from '../../../storage/settingsStorage';
 import {useStatusApi} from '../../../ui/status/StatusProvider';
 import {errorMessage} from '../../../utils/errorMessage';
 import {log, logError} from '../../../utils/log';
+import {requestEinkRefresh} from '../../../utils/screenRefresh';
 
 export type ContextListSide = 'shows' | 'hides';
 
@@ -28,6 +30,8 @@ export interface ContextsDraft {
   handleSave: () => void;
   handleDelete: () => void;
   handleCancel: () => void;
+  /** Makes `id` the active context ('' = Everything), written at once. */
+  handleActivate: (id: string) => void;
 }
 
 export function useContextsDraft(values: GtdParaSettings, setValues: (update: (v: GtdParaSettings) => GtdParaSettings) => void): ContextsDraft {
@@ -85,5 +89,18 @@ export function useContextsDraft(values: GtdParaSettings, setValues: (update: (v
       setDraft(null);
     },
     handleCancel: () => setDraft(null),
+    handleActivate: id => {
+      if (id === (values.activeContextId ?? '')) return;
+      const name = contexts.find(c => c.id === id)?.name || EVERYTHING_LABEL;
+      setValues(v => ({...v, activeContextId: id}));
+      patchSettings({activeContextId: id})
+        .then(() => {
+          log('Context: switched', `${contexts.length} contexts`);
+          const statusId = 'Settings.contextActive';
+          statusApi.show(statusId, {kind: 'success', text: `Context: ${name}`, scope: 'global', onDismiss: () => statusApi.clear(statusId)});
+          requestEinkRefresh();
+        })
+        .catch(e => logError('Settings: switching the context failed', errorMessage(e)));
+    },
   };
 }

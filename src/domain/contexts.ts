@@ -196,3 +196,18 @@ export function unknownContextEntries(contexts: readonly ContextDef[], items: re
   }
   return out;
 }
+
+/** Open `#next` todos of the Active Projects and Areas `ctx` shows (Everything: all of them): the count next to each context. */
+export function nextCountOf(
+  ctx: ContextDef | null,
+  items: ReadonlyArray<ContextItem & {status: string; loadError?: string; tasks: ReadonlyArray<Pick<Task, 'tags' | 'dueDate' | 'done' | 'cancelled' | 'flowState'>>}>,
+  today: string,
+): number {
+  const matcher = contextMatcher(ctx);
+  let n = 0;
+  for (const item of items) {
+    if (item.loadError || item.status !== 'active') continue;
+    for (const task of item.tasks) if (!task.done && !task.cancelled && task.flowState === 'next' && matcher.taskShown(item, task, today)) n++;
+  }
+  return n;
+}

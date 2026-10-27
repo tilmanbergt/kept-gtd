@@ -751,8 +751,8 @@ tags; `contextMatcher(ctx)` answers `itemShown`, `taskShown` (the Inbox and todo
 earlier always pass) and `meetingState` (`shown` or `dimmed`, never hidden). Screens read it
 through `ui/context/useContextMatcher.ts` (`ContextFilter`: matcher, kinds, a per-tab **Show**,
 the hidden line's text); `ui/context/HiddenLine.tsx` ends every filtered list ("Hidden by Home:
-4 todos · Show"). The chip is in `ui/TabBar.tsx`, its menu (`ui/context/ContextMenu.tsx`) an
-overlay of `screens/useAppOverlays.tsx`; Quick Add warns when a new entry lands outside the
+4 todos · Show"). The chip is in `ui/TabBar.tsx`; a tap opens Settings → Contexts, where each row's
+radio makes a context active (`useContextsDraft.handleActivate`); Quick Add warns when a new entry lands outside the
 context (`ui/context/useHiddenAddNotice.ts`). Settings → Contexts edits them
 (`screens/settings/contexts/`). The Review filters its aggregate (`filterReviewAggregate`) and
 counts the rest per step as "+n in other contexts"; Reviewed and overdue stay global. Detail:

@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-121 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+122 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -109,7 +109,7 @@ Test: `__tests__/scenarios/keptGtd.test.tsx`
 ### A context filters Daily: hidden todos, dimmed meetings, the hidden line and Show
 
 - **Given** contexts Work (Area Atruvia) and Home (Area Garden)
-- **When** I open Daily and choose Home from the chip in the tab bar
+- **When** I open Daily, tap the chip in the tab bar, choose Home in Settings → Contexts and go back to Daily
 - **Then** the chip names Home, and the status line says so
 - **And** Atruvia's next todos are hidden, Garden's, the Inbox and an overdue Atruvia todo show
 - **And** Atruvia's meeting is still listed (dimmed), and the hidden line counts the hidden todos
@@ -145,12 +145,22 @@ Test: `__tests__/scenarios/contexts.test.tsx`
 ### Settings → Contexts: create Café, then choose it from the chip
 
 - **Given** a space with todos tagged #reading and #computer
-- **When** I create the context "Café" with Shows #reading and Hides #computer
+- **When** I create the context "Café" with Shows #reading and Hides #computer (its Tags list)
 - **Then** the preview counts what it shows
-- **When** I save and open the chip's menu
-- **Then** Café is listed with its summary and count
-- **When** I choose it
+- **When** I save
+- **Then** Café is listed with its count and summary
+- **When** I tap its radio
 - **Then** the chip names Café
+
+Test: `__tests__/scenarios/contexts.test.tsx`
+
+### Settings → Contexts: a context that shows one Area, named and saved from the top row
+
+- **Given** the areas Home and Atruvia, each with a next todo
+- **When** I create "Home" with Shows on the Area Home and tap Save
+- **Then** the Areas list counts the choice and the context is listed
+- **When** I tap its radio and open Daily
+- **Then** Daily shows Home's todo and hides Atruvia's
 
 Test: `__tests__/scenarios/contexts.test.tsx`
 
@@ -744,7 +754,7 @@ Test: `__tests__/scenarios/keptGtd.test.tsx`
 - **Given** my real PARA folder has project "Website" and an empty Inbox
 - **When** I create the demo space in Settings → Advanced and switch to it
 - **Then** the tab bar shows the boxed D and Projects shows the demo projects, not "Website"
-- **And** the demo has the contexts Work and Home in the chip's menu, and Garden renovation's focus block today
+- **And** the chip opens Settings → Contexts with Work and Home; Daily has Garden renovation's focus block today
 - **When** I add the todo "Try the demo" in the Inbox
 - **Then** it is in the demo space's Inbox.txt, and my real Inbox.txt is untouched
 - **When** I tap the D in the tab bar and switch back to Production

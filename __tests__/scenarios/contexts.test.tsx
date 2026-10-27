@@ -34,20 +34,22 @@ function space(): void {
   putFile(INBOX_FILE, dataFile('inbox', {Tasks: ['- [ ] Call the plumber #next'], Meetings: []}));
 }
 
-async function chooseContext(name: string): Promise<void> {
+/** The chip opens Settings → Contexts; the radio in front of `name` makes it active; then back to `tab`. */
+async function chooseContext(name: string, tab = 'Daily'): Promise<void> {
   await tapLabel('Context');
-  await tap(name);
+  await tapLabel(`Use ${name}`);
+  await tapTab(tab);
 }
 
 scenario('A context filters Daily: hidden todos, dimmed meetings, the hidden line and Show', {feature: 'Contexts', design: DESIGN}, () => {
   given('contexts Work (Area Atruvia) and Home (Area Garden)', space);
-  when('I open Daily and choose Home from the chip in the tab bar', async () => {
+  when('I open Daily, tap the chip in the tab bar, choose Home in Settings → Contexts and go back to Daily', async () => {
     await openApp({settings: SETTINGS});
     await tapTab('Daily');
     await chooseContext('Home');
   });
   then('the chip names Home, and the status line says so', () => {
-    expectShows('Home ▾');
+    expectShows('Home ›');
     expectShows('Context: Home');
   });
   and('Atruvia\'s next todos are hidden, Garden\'s, the Inbox and an overdue Atruvia todo show', () => {
@@ -98,7 +100,6 @@ scenario('A context filters Areas, Projects and Review; Reviewed stays global', 
   when('I mark it Reviewed, choose Everything and open Review\'s overview again', async () => {
     await tap('Reviewed ›');
     await chooseContext('Everything');
-    await tapTab('Daily');
     await tapTab('Review');
     await tap('Overview');
   });
@@ -128,30 +129,56 @@ scenario('Settings → Contexts: create Café, then choose it from the chip', {f
     smokeClock();
     putFile(areaFile('Home'), dataFile('area', {Scope: [], Tasks: ['- [ ] Novel #reading #next', '- [ ] Backup #computer #reading #next', '- [ ] Laundry #next'], Meetings: []}, ['dailyFocus: true']));
   });
-  when('I create the context "Café" with Shows #reading and Hides #computer', async () => {
+  when('I create the context "Café" with Shows #reading and Hides #computer (its Tags list)', async () => {
     await openApp();
     await tapTab('Daily');
     await tapTab('Settings');
     await tap('Contexts');
     await tap('+ New context');
     await type('e.g. Work, Home, Café', 'Café');
+    await tap('Tags');
     await tap('#reading');
     await tap('Hides');
     await tap('#computer');
   });
   then('the preview counts what it shows', () => expectShows('Preview: shows 1 of 3 next todos. The Inbox and todos due today or earlier always show.'));
-  when('I save and open the chip\'s menu', async () => {
-    await tap('Save');
-    await tapLabel('Context');
-  });
-  then('Café is listed with its summary and count', () => {
+  when('I save', () => tap('Save'));
+  then('Café is listed with its count and summary', () => {
     expectShows('Café');
-    expectShows('Shows #reading · hides #computer');
-    expectShows('1 next');
+    expectShows('1 next · Shows #reading · hides #computer');
   });
-  when('I choose it', () => tap('Café', 1));
+  when('I tap its radio', () => tapLabel('Use Café'));
   then('the chip names Café', () => {
-    expectShows('Café ▾');
+    expectShows('Café ›');
     expect(labelled('Context')).not.toBeNull();
+  });
+});
+
+scenario('Settings → Contexts: a context that shows one Area, named and saved from the top row', {feature: 'Contexts', design: DESIGN}, () => {
+  given('the areas Home and Atruvia, each with a next todo', () => {
+    smokeClock();
+    putFile(areaFile('Home'), dataFile('area', {Scope: [], Tasks: ['- [ ] Laundry #next'], Meetings: []}));
+    putFile(areaFile('Atruvia'), dataFile('area', {Scope: [], Tasks: ['- [ ] Prepare offer #next'], Meetings: []}));
+  });
+  when('I create "Home" with Shows on the Area Home and tap Save', async () => {
+    await openApp();
+    await tapTab('Settings');
+    await tap('Contexts');
+    await tap('+ New context');
+    await type('e.g. Work, Home, Café', 'Home');
+    await tap('Home');
+    await tap('Save');
+  });
+  then('the Areas list counts the choice and the context is listed', () => {
+    expectShows('Areas 1');
+    expectShows(/^Home/);
+  });
+  when('I tap its radio and open Daily', async () => {
+    await tapLabel('Use Home');
+    await tapTab('Daily');
+  });
+  then('Daily shows Home\'s todo and hides Atruvia\'s', () => {
+    expectShows(/^Laundry/);
+    expectNotShows(/^Prepare offer/);
   });
 });

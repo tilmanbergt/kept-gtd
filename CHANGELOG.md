@@ -12,7 +12,8 @@ or your project/area files are stored.
 
 ### New
 - **Contexts**: Work, Home, Café - set them up in **Settings → Contexts** (areas, projects and tags
-  the context shows or hides) and switch with the chip in the tab bar. A context filters Daily, Week,
+  the context shows or hides; usually just a few areas) and switch there: the chip in the tab bar names
+  the active context and opens Settings → Contexts, where ○ makes another one active. A context filters Daily, Week,
   Month, Projects, Areas and the Weekly Review; the Inbox and todos due today or earlier always show,
   meetings outside it are dimmed, never hidden. Every filtered tab ends with "Hidden by Work: 9 todos
   · Show". The Review's overview adds "+2 in other contexts"; Reviewed counts for every context.

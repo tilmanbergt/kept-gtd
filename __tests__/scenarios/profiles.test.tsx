@@ -26,11 +26,10 @@ scenario('Try things in the demo space without touching the real files, then swi
     expectShows(/Garden renovation/);
     expectNotShows(/^Website +#WEB/);
   });
-  and('the demo has the contexts Work and Home in the chip\'s menu, and Garden renovation\'s focus block today', async () => {
-    await tap('Everything ▾');
-    expectShows(/^Work/);
-    expectShows(/^Home/);
-    await tap('Everything ▾');
+  and('the chip opens Settings → Contexts with Work and Home; Daily has Garden renovation\'s focus block today', async () => {
+    await tap('Everything ›');
+    expect(labelled('Use Work')).not.toBeNull();
+    expect(labelled('Use Home')).not.toBeNull();
     await tapTab('Daily');
     expectShows(/Plan the beds/);
   });

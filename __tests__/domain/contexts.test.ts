@@ -7,6 +7,7 @@ import {
   hiddenAddText,
   hiddenLineText,
   newContext,
+  nextCountOf,
   renameItemInContexts,
   tallyHidden,
   toggleEntry,
@@ -121,5 +122,16 @@ describe('editing contexts', () => {
     const findings = checkUnknownContextEntries([work], [{itemKind: 'area', itemPath: '/a/Garden', itemName: 'Garden', inArchive: false, area: null, abbrev: null}]);
     expect(findings.map(f => f.checkId)).toEqual(['unknownContextEntry']);
     expect(findings[0].message).toContain('Area "Atruvia"');
+  });
+});
+
+describe('nextCountOf', () => {
+  const gardenItem = {kind: 'area' as const, name: 'Garden', area: null, status: 'active', tasks: [task('Buy bulbs #next'), task('Weed'), task('Old #next', {done: true})]};
+  const office = {kind: 'area' as const, name: 'Office', area: null, status: 'active', tasks: [task('Send offer #next')]};
+  const paused = {kind: 'area' as const, name: 'Paused', area: null, status: 'on-hold', tasks: [task('Later #next')]};
+  const home: ContextDef = {id: 'h', name: 'Home', shows: [{kind: 'item', itemKind: 'area', name: 'Garden'}], hides: [], outsideMeetings: 'dim'};
+  it('counts the open #next todos of the Active items a context shows; Everything counts all', () => {
+    expect(nextCountOf(home, [gardenItem, office, paused], TODAY)).toBe(1);
+    expect(nextCountOf(null, [gardenItem, office, paused], TODAY)).toBe(2);
   });
 });

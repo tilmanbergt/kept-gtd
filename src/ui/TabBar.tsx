@@ -32,7 +32,7 @@
  *
  * Context chip (docs/dev/history/technical-design-time-and-place.md §3.3,
  * D21): the active context's name ("Everything" without one), left of ✕;
- * a tap opens its menu (ui/context/ContextMenu.tsx). While the demo space is
+ * a tap opens Settings → Contexts, where a context is made active. While the demo space is
  * open (D27) the whole bar is inverted - black, white labels - with a boxed
  * "D" left of ✕; another non-default profile shows its id there.
 
@@ -78,7 +78,6 @@ interface Props {
   /** The active context's name, or "Everything"; absent = no chip. */
   contextLabel?: string | null;
   onContextPress?: () => void;
-  contextOpen?: boolean;
   /** The demo space is open: inverted bar and a boxed D (D27). */
   demo?: boolean;
   /** In-app help (docs/dev/history/technical-design-in-app-help.md §3.3): "?" toggles it; drawn active while open. */
@@ -97,7 +96,6 @@ export default function TabBar({
   onHelpPress,
   contextLabel,
   onContextPress,
-  contextOpen,
   demo,
 }: Props): React.JSX.Element {
   usePerfRender('TabBar');
@@ -146,9 +144,9 @@ export default function TabBar({
           hitSlop={8}
           accessibilityRole="button"
           accessibilityLabel="Context"
-          style={[styles.contextChip, {borderColor: textColor}, contextOpen && {backgroundColor: textColor}]}>
-          <Text style={[styles.contextChipText, {color: contextOpen ? (demo ? COLORS.accent : COLORS.accentText) : textColor}]} numberOfLines={1}>
-            {contextLabel} ▾
+          style={[styles.contextChip, {borderColor: textColor}]}>
+          <Text style={[styles.contextChipText, {color: textColor}]} numberOfLines={1}>
+            {contextLabel} ›
           </Text>
         </Pressable>
       ) : null}

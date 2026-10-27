@@ -208,10 +208,14 @@ function AppShell({onProfileSwitched}: {onProfileSwitched: () => void}): React.J
   const [settingsTab, setSettingsTab] = useState<SettingsTab>('folders');
 
   // Help and the other overlays over the tab body (screens/useAppOverlays.tsx).
-  const overlays = useAppOverlays(mode === 'tabs', activeTab, () => {
+  const overlays = useAppOverlays(mode === 'tabs', activeTab);
+  // The tab bar's context chip opens Settings → Contexts, where any context is made active
+  // (docs/dev/history/technical-design-time-and-place.md §3.3, As built).
+  const openSettingsContexts = () => {
+    overlays.closeOverlays();
     setSettingsTab('contexts');
     setActiveTab('settings');
-  });
+  };
   // The tab bar's context chip and demo marker follow the settings snapshot (a switch shows at once).
   const liveSettings = useSettings();
   const activeCtx = liveSettings ? activeContext(liveSettings) : null;
@@ -795,8 +799,7 @@ function AppShell({onProfileSwitched}: {onProfileSwitched: () => void}): React.J
         }
         demo={settings?.activeProfileId === DEMO_PROFILE_ID}
         contextLabel={activeCtx ? activeCtx.name || 'Unnamed' : EVERYTHING_LABEL}
-        onContextPress={overlays.toggleContext}
-        contextOpen={overlays.contextOpen}
+        onContextPress={openSettingsContexts}
         onProfilePress={openSettingsAdvanced}
         helpOpen={overlays.helpOpen}
         onHelpPress={overlays.toggleHelp}

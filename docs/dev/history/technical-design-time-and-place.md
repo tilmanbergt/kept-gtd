@@ -580,3 +580,15 @@ tests were deleted with its code, lower that baseline by hand in S6 with the rea
 - Coverage: no area fell; baselines raised with `--update-baseline`, `contexts` added. Smoke tier about 8 s.
 - Device budget: the Settings strip has 8 tabs as designed; the tab bar holds 9 tabs, "?", the context chip
   (max 150 dp) and, in the demo, the boxed D - both are on the device test list.
+
+### After the first device test (Settings → Contexts, the chip)
+
+- The editor overflowed its column on the device: the name field was squeezed to no height and Save was pushed
+  off the screen. Now the name, **Save** and **Delete** share the top row; Shows/Hides; one chip list at a time
+  (Areas | Projects | Tags, Areas first - an Area brings its Projects, the usual case); only the chip list
+  shrinks. Tags lists plain tags only; a loop or thread tag appears only once a context names it.
+- The chip's overlay menu (`ui/context/ContextMenu.tsx`) is gone: it was easily covered again on tapping. The
+  chip ("Home ›") opens Settings → Contexts, where every row (Everything included) starts with a radio that
+  makes it active at once (`useContextsDraft.handleActivate`), with its next-todo count; `nextCountOf` moved to
+  `domain/contexts.ts`. D21 still holds: the chip names the context and leads to the switch.
+
