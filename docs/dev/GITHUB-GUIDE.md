@@ -82,8 +82,13 @@ Details: `RELEASING.md` §4 "Betas".
 
 ### ... set the version being worked on
 
-*(coming: workflow **next version**: Actions → next version → Run workflow, enter e.g. `0.23.0`.)*
-Today, locally: `npm run next-version -- 0.23.0`, commit, push (`RELEASING.md` §4).
+When work on the next release starts (usually right after a release):
+**Actions** → **next version** → **Run workflow** (branch `main`), enter e.g. `0.23.0` → Run
+workflow. Within a minute `main` has the commit "Set next version 0.23.0"; from then on test builds
+are labelled `0.23.0-alpha+…` and the beta workflow makes betas of 0.23.0. It refuses a version that
+is not above the current one. Locally the same is `npm run next-version -- 0.23.0` (`RELEASING.md` §4).
+
+A cloud session working on a branch picks up the new `nextVersion` the next time it merges `main`.
 
 ### ... release
 
@@ -103,6 +108,25 @@ commit.)* Today: answer `N` in `release.ps1` and run the two undo commands it pr
 The fix's commit or pull request says `Fixes #<number>`; GitHub closes the issue when it reaches
 `main`.
 
+## One-time setup
+
+The workflows that write to `main` (next version; *coming:* release, discard release) push with a
+**deploy key**, an SSH key that belongs only to this repository. GitHub's own workflow token may not
+write to a protected `main`; the deploy key can be made an exception. Set it up once:
+
+1. In PowerShell, make the key (press Enter twice when asked for a passphrase - it must be empty):
+   ```powershell
+   ssh-keygen -t ed25519 -C "kept-gtd release workflows" -f "$env:TEMP\kept-gtd-release"
+   ```
+2. Public key to the clipboard: `Get-Content "$env:TEMP\kept-gtd-release.pub" | Set-Clipboard`.
+   GitHub → repository **Settings** → **Deploy keys** → **Add deploy key**: title
+   `release workflows`, paste, tick **Allow write access** → Add key.
+3. Private key to the clipboard: `Get-Content "$env:TEMP\kept-gtd-release" -Raw | Set-Clipboard`.
+   **Settings** → **Secrets and variables** → **Actions** → **New repository secret**: name
+   `RELEASE_DEPLOY_KEY`, paste (including the BEGIN and END lines) → Add secret.
+4. Delete both files: `Remove-Item "$env:TEMP\kept-gtd-release*"`. GitHub keeps the only copy;
+   if it is ever lost, make a new pair and replace both.
+
 ## What runs by itself
 
 | When | Workflow | What it does |
@@ -110,6 +134,7 @@ The fix's commit or pull request says `Fixes #<number>`; GitHub closes the issue
 | every push to a branch, every pull request | **check**, job `check` | all checks and tests with coverage; the coverage table by feature area in the summary |
 | after that, on a push | **check**, job `build` | builds the `.snplg` (Windows), "what to test" in the summary, artifact for 30 days |
 | a tag is pushed | nothing | the release commit was already checked when it reached `main` |
+| a workflow pushes to `main` (e.g. next version) | **check** | like any push: checks and a test build |
 
 ## Words
 
@@ -118,6 +143,7 @@ The fix's commit or pull request says `Fixes #<number>`; GitHub closes the issue
 - **Merge commit**: how a branch joins `main` here; keeps all its commits as they are.
 - **Pre-release** (beta): a release on the Releases page that never becomes "Latest".
 - **Draft**: a release only you can see, until you publish it.
+- **Deploy key**: an SSH key with access to this one repository; the writing workflows use it.
 - **Tag**: a fixed name for one commit, e.g. `v0.22.0` (release) or `v0.22.0-beta.1` (beta).
 - **Label** of a build: the version the app shows, e.g. `0.22.0-alpha+a1b2c3d` (test build),
   `0.22.0-beta+…` (beta), `0.22.0` (release).
