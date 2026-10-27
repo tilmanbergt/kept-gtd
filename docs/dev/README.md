@@ -62,7 +62,10 @@ Releases: see `RELEASING.md`.
   unit, UI, scenario and smoke tests, catalogued scenarios, source lines and line/branch coverage -
   and the ratchet against `scripts/coverage-baseline.json` (`scripts/coverage-report.mjs`). GitHub
   Actions runs it on every branch push and pull request (`.github/workflows/check.yml`), shows the
-  table in the job summary and keeps `coverage/` as an artifact for 14 days.
+  table in the job summary and keeps `coverage/` as an artifact for 14 days. On a branch push the
+  same workflow then builds the plugin on Windows (`buildPlugin.ps1`, checked by
+  `scripts/ci-build.mjs verify`) and keeps the `.snplg` for 30 days; betas come from
+  `.github/workflows/beta.yml` (`RELEASING.md` §4).
 - `npm run scenarios` runs only the scenario tests and writes `docs/dev/test-scenarios.md`
   (see "Writing scenarios" below).
 - A useful smoke test mounts `<App />` with `react-test-renderer`.
