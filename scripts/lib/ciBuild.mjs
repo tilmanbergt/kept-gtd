@@ -61,8 +61,11 @@ export function checkBuild({info, config, has, beta = false}) {
   return {errors, warnings};
 }
 
-/** The text of a beta pre-release: a short note for testers, then CHANGELOG [Unreleased]. */
-export function betaNotes(changelogText, {target, number, commit}) {
+/**
+ * The text of a beta pre-release: a short note for testers, the feature areas to look at (from the
+ * test notes, scripts/test-notes.mjs), then CHANGELOG [Unreleased].
+ */
+export function betaNotes(changelogText, {target, number, commit, areas = []}) {
   const changes = releaseNotes(changelogText, 'Unreleased');
   if (!changes) throw new Error('CHANGELOG.md: the [Unreleased] section is empty - nothing to test in a beta');
   return [
@@ -70,6 +73,7 @@ export function betaNotes(changelogText, {target, number, commit}) {
       'Install the `.snplg` over your current version (Settings and files are kept). ' +
       'It may still contain bugs - please report them on GitHub with the version from Settings → About.',
     '',
+    ...(areas.length ? [`Please look at: ${areas.join(', ')}.`, ''] : []),
     changes,
     '',
   ].join('\n');
