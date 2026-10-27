@@ -1,6 +1,6 @@
 # Profiles and the demo space
 
-A **profile** is a complete configuration: which folders Kept GTD uses, your focus counts, Note setups, review dates, the calendar and Gmail setup and the experimental switches. You can keep several and switch between them - for example your real setup and a demo setup for trying things out.
+A **profile** is a complete configuration: which folders Kept GTD uses, your contexts, Note setups, review dates, the calendar and Gmail setup and the experimental switches. You can keep several and switch between them - for example your real setup and a demo setup for trying things out.
 
 ## Profiles
 
@@ -15,7 +15,7 @@ The first time you open the list, your current setup is saved as `production.jso
 
 ## What switches and what doesn't
 
-Switches with the profile: folders, focus counts, Note setups, review state, focus mode, calendar and Gmail setup, experimental switches, recent tags.
+Switches with the profile: folders, contexts and the active context, Note setups, review state, calendar and Gmail setup, experimental switches, recent tags.
 
 Stays the same for all profiles: keep tabs in memory, performance tracing, debug logging.
 
@@ -29,7 +29,7 @@ The Gmail app password and the calendar link are never written into these files.
 
 ## The demo space
 
-**Create demo space** writes a small fictional setup to `Note/kept-gtd-demo`: five projects (one on hold, one done), five areas and an Inbox (in `2 Areas/0 Inbox`), with todos, meetings, tags, focus and goals. Dates are set relative to today, so it always looks current. It also adds the profile "Demo" that points to these folders. In the demo, every note of a project or area goes into its home notebook ([Projects and Areas](projects-and-areas.md)) - create one with the notebook icon on "Garden renovation" to see its Home page. The area "Coaching" has a sparring thread with Mieke (past meetings, agreed todos) and a loop with a meeting today, to try [Engage](engage.md). The area "Sport" has a loop `#race/marathon` whose note is Sport's home notebook, and yesterday's "Coach call": open its note, add a page after it and write a heading to see which section a page belongs to ("Which owner a page belongs to" in [Engage](engage.md)). A demo profile from an earlier version keeps its Note setups: there, add a Loop setup on the tag `race` with the notebook name `{name} {year}` in Settings → Note setups.
+**Create demo space** writes a small fictional setup to `Note/kept-gtd-demo`: five projects (one on hold, one done), five areas and an Inbox (in `2 Areas/0 Inbox`), with todos, meetings, focus blocks, tags and two contexts, **Work** and **Home** (the chip starts at Everything). Dates are set relative to today, so it always looks current. It also adds the profile "Demo" that points to these folders. In the demo, every note of a project or area goes into its home notebook ([Projects and Areas](projects-and-areas.md)) - create one with the notebook icon on "Garden renovation" to see its Home page. The area "Coaching" has a sparring thread with Mieke (past meetings, agreed todos) and a loop with a meeting today, to try [Engage](engage.md). The area "Sport" has a loop `#race/marathon` whose note is Sport's home notebook, and yesterday's "Coach call": open its note, add a page after it and write a heading to see which section a page belongs to ("Which owner a page belongs to" in [Engage](engage.md)). A demo profile from an earlier version keeps its Note setups: there, add a Loop setup on the tag `race` with the notebook name `{name} {year}` in Settings → Note setups.
 
 Existing files are never overwritten. To start the demo from scratch, delete the `Note/kept-gtd-demo` folder and create it again.
 

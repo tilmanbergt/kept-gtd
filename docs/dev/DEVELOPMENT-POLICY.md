@@ -37,7 +37,7 @@ Details: `docs/dev/design-philosophy.md` and `docs/user/philosophy.md`.
   store for content, nothing that only the plugin can read.
 - **Calm and made for e-ink.** Paged, not scrolled. No notifications, timers or streaks.
   Nothing is suggested unasked: next options appear only when you ask for them, or right after
-  you finish something, and only from what you already chose (the same owner, your focus).
+  you finish something, and only from what you already chose (the same owner, your schedule).
   Nothing is chosen for you.
 - **Built on Supernote features**: notes, templates, keywords, links, lasso - before building
   something of our own.

@@ -42,7 +42,8 @@ or your project/area files are stored.
   directly from its page and from the Weekly Review, without the checklist and the PDF.
 
 ### Changed
-- The demo space is now marked by a boxed **D** and an inverted (black) tab bar.
+- The demo space is now marked by a boxed **D** and an inverted (black) tab bar. It has two contexts, **Work** and
+  **Home**, and three focus blocks, and no longer sets focus or goals.
 - "Using Kept GTD with Obsidian" is now part of the help page "Your files, folders and Obsidian".
 - **Week**: tapping a meeting in the grid shows its card and context panel with "‹ Back to Week 42 ·
   Thu 15.10. · 2 meetings ›" instead of opening its day; tapping the day's header still opens the

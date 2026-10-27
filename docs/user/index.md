@@ -12,7 +12,7 @@ Kept GTD is a calm GTD and PARA workspace for the Supernote. Your projects, area
 
 ## Daily use
 
-- [Daily and focus mode](daily.md)
+- [Daily](daily.md)
 - [Engage](engage.md): your next action, over the note you work in
 - [Week and Month](week-and-month.md)
 - [Contexts](contexts.md): Work, Home, Café - what fits where you are

@@ -8,7 +8,7 @@ Every project and area is a folder, and its todos and meetings live in one small
 
 ## Calm and made for e-ink
 
-A screen full of tasks says, without words, that all of it needs doing soon. Kept tries to show less: only what matters today on Daily, only your `#now` todos in focus mode. Lists are paged instead of scrolled, which also suits e-ink.
+A screen full of tasks says, without words, that all of it needs doing soon. Kept tries to show less: only what matters today on Daily, only what belongs to where you are - Work, Home - when you choose a [context](contexts.md). Lists are paged instead of scrolled, which also suits e-ink.
 
 ## Built on what the Supernote already does
 
@@ -30,9 +30,9 @@ Kept is inspired by Werner Erhard's and Michael Jensen's work on integrity, in p
 
 For a task list, integrity is the most practical of the four: your word is whole when you either keep what you said you would do, or consciously renegotiate it. What breaks integrity is the silent slip - something that quietly stopped being true without you owning it.
 
-That is why Kept asks you to say clearly what is **next**, what is in **focus**, and what you are doing **now**. A list of things you might get to is not your word about anything. A few clearly chosen next steps are.
+That is why Kept asks you to say clearly what is **next**, and to give your time to it on purpose: a focus block in your schedule is a promise to yourself, and **Given time** on Week and Month shows honestly where your time went. A list of things you might get to is not your word about anything. A few clearly chosen next steps are.
 
-Changing a commitment - moving a due date, taking a project out of focus, putting it on hold - is a real decision, not a typo fix. Kept makes these separate, visible actions.
+Changing a commitment - moving a due date, putting a project on hold, setting a thread inactive - is a real decision, not a typo fix. Kept makes these separate, visible actions.
 
 Most of your word is given to someone: in a 1:1, a retro, a coaching session, a quick "I'll send it to you". Threads make this concrete. A todo agreed in a meeting remembers that meeting, so the next time you meet you can see what you said you would do and what is still open, and what you are waiting for from the other side. Once a week the Review asks whether each person and series is still one you tend. Saying "not any more" is allowed; it is a decision you make, going through the open todos one by one, rather than something that quietly fades. See [Threads](threads.md).
 
@@ -42,4 +42,4 @@ There are no recurring meetings and no repeating todos, on purpose. Every meetin
 
 ## Room for rest
 
-There are no notifications, no timers and no streaks. When you finish your `#now` todos, nothing suggests the next set. The pause after finishing something is yours. Rest and non-doing are part of a good week, not a gap in it.
+There are no notifications, no timers and no streaks. When you finish what you meant to do, nothing pushes the next thing at you; Engage only offers what you already chose - the same owner, your schedule. The pause after finishing something is yours. Rest and non-doing are part of a good week, not a gap in it.

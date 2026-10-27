@@ -25,9 +25,7 @@ Tap a step to open it. Inside a step:
 - **Done awaiting review**: projects marked Done - close them out or archive them
 - **On Hold reconsideration**: paused projects and areas - keep them paused or reactivate them
 - **Neglected areas**: the same for areas - no next action and nothing you wait for
-- **Unfocused next items**: projects and areas with a `#next` todo (without due date) but no daily, weekly or monthly focus. Add them to focus, or park the todo: **Remove #next** puts it back into the plan, **Someday** and **Maybe** shelve it.
 - **Someday / Maybe**: the open Someday and Maybe todos of your active and paused projects and areas, see below
-- **Focus reset**: choose weekly and monthly focus and goals. Switch between **Week** and **Month** at the top; each shows the same focus panel as the Week and Month tabs (tap an empty slot, then pick a project or area)
 
 Steps that list several projects show them on the left; tap one to work on it on the right.
 
@@ -71,7 +69,7 @@ Opened from an overview's **n someday ›** or from Engage's **Also here**, the 
 
 ## The recap
 
-Each step remembers what you did in it (items filed, todos done, focus changed). The overview shows the total of your last visits.
+Each step remembers what you did in it (items filed, todos done, loops closed). The overview shows the total of your last visits.
 
 ## Open loops
 

@@ -1,13 +1,35 @@
 # Meetings
 
-A meeting has a date, an optional time or length, and a title that can carry tags. Meetings live in the file of their project or area, or in the Inbox.
+A meeting has a date, an optional time or length, and a title that can carry tags. Meetings live in the file of their project or area, or in the Inbox. Lists of meetings and focus blocks are called **Schedule**.
 
 ## Where meetings show up
 
 - **Daily**: today and tomorrow
 - **Week**: the week grid; tap a day for the full list
-- **Month**: only monthly highlights (the **M** mark); tap a day for all its meetings
+- **Month**: only monthly highlights (the **M** mark) and an **F** for days with focus blocks; tap a day for all its meetings
 - **Current**: all meetings of that project or area, upcoming and past
+
+## Focus blocks
+
+A focus block is time you give yourself for a loop, a thread, a project or an area - writing, preparing, thinking. Switch on **F** next to **M** in Quick Add's Meeting form, or on a meeting's card. The line gets the tag `#focusblock`, so in your files it stays an ordinary meeting, for example `- 2026-10-15 09:00-11:00 Draft chapter #writing/novel #focusblock`.
+
+- Focus blocks show a filled **F** wherever meetings show; a day's line counts both: "Thu 15.10. · 2 meetings · 1 focus".
+- The card says **Focus** instead of **Meeting** and links its loop or thread (for example `writing novel ›`).
+- Focus blocks have no prep or review mark, no Reflection page, and never appear in "Meetings to close out".
+- Their note follows a Note setup that matches their tags. Without one, the note button opens the project's or area's home notebook instead of creating a note.
+- They count in **Given time** on Week and Month, see [Week and Month](week-and-month.md).
+
+## The context panel
+
+Tap a meeting or focus block on Daily, Week or Month: its card shows, and below it the **context panel** with everything around it.
+
+- A thread's meeting: **I owe**, **Next**, **Waiting for** and **Agreed last time**.
+- A loop's meeting or block: what is next and what came out of its meetings.
+- A plain meeting: what is linked to it, or - with nothing linked - its project's or area's next todos ("Nothing linked to this meeting yet · showing its project").
+
+Tick a todo there, open its note or its file. **+ Quick Add to meeting** (**+ Quick Add to block**) opens Quick Add for it: before the meeting the todo gets the thread's or loop's tag; during and after it also records the meeting, as in [Engage](engage.md). **‹ Back to the card** returns.
+
+On Week the panel has a line on top, for example "‹ Back to Week 42 · Thu 15.10. · 2 meetings ›": the left part closes it, the right part opens that day.
 
 ## The meeting row and its card
 
@@ -19,7 +41,7 @@ The card shows:
 
 - First row: **Meeting** and whether it is ahead, today, over or cancelled; the meeting's thread (for example `#sparring/mieke ›`), which opens the thread overview; ✕ and **Edit**.
 - Second row: the title with its tags, and when.
-- Third row: **P** before the meeting or **R** after it, when the meeting's Note setup tracks that (see below) - tap to tick, filled means done, tap again to undo; **M** for a monthly highlight; the note icon; once the meeting is over, the **Reflect** icon (a loop turning back with a question mark; filled once the reflection page exists, see below); the linked file's name (tap it to open it, ✕ removes the link), or **+** and the clip to link a file where a Files pane is there to pick from (a project's or area's page, the Inbox).
+- Third row: **P** before the meeting or **R** after it, when the meeting's Note setup tracks that (see below) - tap to tick, filled means done, tap again to undo; **M** for a monthly highlight; **F** for a focus block; the note icon; once the meeting is over, the **Reflect** icon (a loop turning back with a question mark; filled once the reflection page exists, see below); the linked file's name (tap it to open it, ✕ removes the link), or **+** and the clip to link a file where a Files pane is there to pick from (a project's or area's page, the Inbox).
 - Fourth row: where the meeting lives (tap the name to open it; where a Files pane is there, the arrow next to it moves the meeting to another project or area), **New from this** (two pages: a new meeting with the same title, date and time, for example the next session of a series) and **Cancel meeting** (a calendar with a cross; it asks first, and the meeting stays in the file, marked as cancelled).
 
 2-line rows show a monthly highlight as a small M.

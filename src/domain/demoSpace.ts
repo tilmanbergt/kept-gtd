@@ -1,16 +1,16 @@
 /**
  * Content of the demo space (docs/dev/history/technical-design-profiles-demo-space.md
- * §3.5): a small, fictional PARA setup with todos, meetings, tags, goals and
- * focus, dated relative to `today` so it always looks current. Pure - the
+ * §3.5, docs/dev/history/technical-design-time-and-place.md §3.8): a small,
+ * fictional PARA setup with todos, meetings, focus blocks, tags and two
+ * contexts (Work, Home), dated relative to `today` so it always looks current. Pure - the
  * files are written by storage/demoSpace.ts. Everything here is written in
  * the normal project-file format, so it is also a readable example of it.
  */
+import {ContextDef} from './contexts';
 import {createNoteSetup, DEFAULT_HOME_NOTEBOOK, seedNoteSetupDefaults} from './noteSetups';
 import {meetingKey} from './provenance';
-import {monthKeyOf} from './period';
 import {DEFAULT_SETTINGS, GtdParaSettings} from './settings';
 import {INBOX_FILE_NAME} from './types';
-import {isoWeekKey} from './weekDate';
 
 export const DEMO_PROFILE_ID = 'demo';
 export const DEMO_PROFILE_NAME = 'Demo';
@@ -39,31 +39,21 @@ function toWeekday(today: Date, weekday: number): number {
 interface ItemSpec {
   kind: 'project' | 'area';
   status?: 'active' | 'on-hold' | 'done';
-  dailyFocus?: boolean;
-  weeklyFocus?: boolean;
-  monthlyFocus?: boolean;
   area?: string;
   abbrev: string;
   scope: string;
   tasks: string[];
   meetings: string[];
-  weeklyGoal?: string;
-  monthlyGoal?: string;
   /** Further sections as written, e.g. `## Threads` and `## Loops`. */
   sections?: string[];
 }
 
 /** `name:` is the item's name as gtdpara knows it, so renaming a demo folder shows the rename offer (docs/dev/history/technical-design-home-notebooks.md §3.7). */
-function itemFile(name: string, spec: ItemSpec, today: Date): string {
+function itemFile(name: string, spec: ItemSpec): string {
   const fm = [`kind: ${spec.kind}`, `name: ${name}`, `status: ${spec.status ?? 'active'}`];
-  if (spec.dailyFocus) {fm.push('dailyFocus: true');}
-  if (spec.weeklyFocus) {fm.push('weeklyFocus: true');}
-  if (spec.monthlyFocus) {fm.push('monthlyFocus: true');}
   if (spec.area) {fm.push(`area: ${spec.area}`);}
   fm.push(`abbrev: ${spec.abbrev}`);
   const parts = ['---', ...fm, '---', '', '## Scope', '', spec.scope, '', '## Tasks', '', ...spec.tasks, '', '## Meetings', '', ...spec.meetings, ''];
-  if (spec.weeklyGoal) {parts.push('## Weekly Goals', '', `- ${isoWeekKey(today)}: ${spec.weeklyGoal}`, '');}
-  if (spec.monthlyGoal) {parts.push('## Monthly Goals', '', `- ${monthKeyOf(today)}: ${spec.monthlyGoal}`, '');}
   if (spec.sections) {parts.push(...spec.sections);}
   return parts.join('\n');
 }
@@ -74,15 +64,13 @@ export function buildDemoFiles(today: Date): DemoFile[] {
   const monday = toWeekday(today, 1);
   const files: DemoFile[] = [];
   const project = (name: string, spec: Omit<ItemSpec, 'kind'>) =>
-    files.push({path: `1 Projects/${name}/project.txt`, content: itemFile(name, {...spec, kind: 'project'}, today)});
+    files.push({path: `1 Projects/${name}/project.txt`, content: itemFile(name, {...spec, kind: 'project'})});
   const area = (name: string, spec: Omit<ItemSpec, 'kind'>) =>
-    files.push({path: `2 Areas/${name}/area.txt`, content: itemFile(name, {...spec, kind: 'area'}, today)});
+    files.push({path: `2 Areas/${name}/area.txt`, content: itemFile(name, {...spec, kind: 'area'})});
 
   project('Garden renovation', {
     area: 'Home',
     abbrev: 'GR',
-    dailyFocus: true,
-    weeklyFocus: true,
     scope: 'Turn the back garden into a low-maintenance vegetable and herb garden before winter.',
     tasks: [
       '- [x] Sketch the new layout',
@@ -91,15 +79,11 @@ export function buildDemoFiles(today: Date): DemoFile[] {
       '- [ ] Get a quote from the landscaper #wf/marco',
       '- [ ] Build a small greenhouse #someday',
     ],
-    meetings: [`- ${d(3)} 10:00-11:00 Site visit with Marco #marco`],
-    weeklyGoal: 'Beds measured and soil ordered',
-    monthlyGoal: 'Raised beds built and planted',
+    meetings: [`- ${d(3)} 10:00-11:00 Site visit with Marco #marco`, `- ${d(0)} 14:00-15:30 Plan the beds #focusblock`],
   });
   project('Team offsite', {
     area: 'Team',
     abbrev: 'TO',
-    weeklyFocus: true,
-    monthlyFocus: true,
     scope: 'Two calm days away with the team: look back, choose three priorities for next quarter.',
     tasks: [
       '- [ ] Collect agenda topics from the team #next #lena',
@@ -112,8 +96,6 @@ export function buildDemoFiles(today: Date): DemoFile[] {
       `- ${d(1)} 14:00-14:30 Offsite prep with Lena #lena #1on1`,
       `- ${d(20)} 2d Team offsite #monthly`,
     ],
-    weeklyGoal: 'Agenda topics collected',
-    monthlyGoal: 'Offsite happens and three priorities are agreed',
   });
   project('Learn Spanish', {
     abbrev: 'LS',
@@ -140,7 +122,6 @@ export function buildDemoFiles(today: Date): DemoFile[] {
 
   area('Health', {
     abbrev: 'HE',
-    dailyFocus: true,
     scope: 'Sleep, movement and check-ups - the basis for everything else.',
     tasks: [`- [ ] Book the dentist appointment #next [due:: ${d(0)}]`, '- [ ] Try the new yoga class #someday'],
     meetings: [`- ${d(2)} 07:00-08:00 Running with Sam #sam`],
@@ -158,7 +139,6 @@ export function buildDemoFiles(today: Date): DemoFile[] {
   const planning = 'Offsite planning #workshop/offsite';
   area('Coaching', {
     abbrev: 'CO',
-    dailyFocus: true,
     scope: 'Sparring and workshops: people grow, agreements are kept.',
     tasks: [
       `- [ ] Send Mieke the role canvas #next ${agreed(-7)}`,
@@ -176,6 +156,8 @@ export function buildDemoFiles(today: Date): DemoFile[] {
       `- ${d(-7)} 10:00-11:00 ${sparring}`,
       `- ${d(7)} 10:00-11:00 ${sparring}`,
       `- ${d(0)} 11:00-12:00 ${planning}`,
+      `- ${d(1)} 09:00-10:30 Prepare the workshop #workshop/offsite #focusblock`,
+      `- ${d(6)} 16:00-16:45 Think through the sparring #sparring/mieke #focusblock`,
     ],
     sections: ['## Threads', '', '- mieke: active', '', '## Loops', '', `- workshop/offsite: active, ${d(14)}`, ''],
   });
@@ -196,7 +178,6 @@ export function buildDemoFiles(today: Date): DemoFile[] {
   });
   area('Team', {
     abbrev: 'TM',
-    weeklyFocus: true,
     scope: 'Leading a small team well: clear priorities, regular 1:1s, room to think.',
     tasks: ['- [ ] Prepare the quarterly check-in #next', '- [ ] Update the onboarding checklist #someday'],
     meetings: [
@@ -233,8 +214,34 @@ export function buildDemoFiles(today: Date): DemoFile[] {
   return files;
 }
 
+/** The demo's two contexts (docs/dev/history/technical-design-time-and-place.md §3.3): Work and Home. */
+export const DEMO_CONTEXTS: ContextDef[] = [
+  {
+    id: 'work',
+    name: 'Work',
+    shows: [
+      {kind: 'item', itemKind: 'area', name: 'Team'},
+      {kind: 'item', itemKind: 'area', name: 'Coaching'},
+    ],
+    hides: [],
+    outsideMeetings: 'dim',
+  },
+  {
+    id: 'home',
+    name: 'Home',
+    shows: [
+      {kind: 'item', itemKind: 'area', name: 'Home'},
+      {kind: 'item', itemKind: 'area', name: 'Health'},
+      {kind: 'item', itemKind: 'area', name: 'Sport'},
+      {kind: 'item', itemKind: 'project', name: 'Learn Spanish'},
+    ],
+    hides: [],
+    outsideMeetings: 'dim',
+  },
+];
+
 /**
- * Per-profile settings of the demo profile: the demo folders, the Note setups
+ * Per-profile settings of the demo profile: the demo folders, the contexts (Everything active), the Note setups
  * (1:1 meetings, tracked; Sparring threads; Workshops and Races loops), integrations off. The Default, the
  * thread setups and Races put their notes into the same file, each Project's and Area's home notebook.
  */
@@ -256,6 +263,8 @@ export function demoProfileSettings(): GtdParaSettings {
     noteSetupDefaults: seedNoteSetupDefaults(),
     nextNoteSetupId: 5,
     noteSetupsMigrated: true,
+    contexts: DEMO_CONTEXTS,
+    activeContextId: '',
     experimentalGoogleCalendar: false,
     experimentalGmail: false,
     activeProfileId: DEMO_PROFILE_ID,

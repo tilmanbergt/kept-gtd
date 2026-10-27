@@ -29,7 +29,8 @@ describe('demo space', () => {
     }
     const garden = byPath('1 Projects/Garden renovation/project.txt');
     const fm = parseFrontMatter(garden);
-    expect(fm).toMatchObject({status: 'active', dailyFocus: true, weeklyFocus: true, area: 'Home', abbrev: 'GR'});
+    expect(fm).toMatchObject({status: 'active', dailyFocus: false, weeklyFocus: false, monthlyFocus: false, area: 'Home', abbrev: 'GR'});
+    expect(files.some(f => /## (Weekly|Monthly) Goals/.test(f.content))).toBe(false);
     const tasks = parseTasksSpan(garden).tasks;
     expect(tasks).toHaveLength(5);
     expect(tasks.find(t => t.text.startsWith('Order soil'))!.dueDate).toBe('2026-10-03');
@@ -87,5 +88,19 @@ describe('demo space', () => {
     expect(s.noteSetupDefaults.notebook).toEqual({name: '{name} {year}', folder: ''});
     expect(s.noteSetups.map(x => x.notebook)).toEqual([{name: '{name} {year}', folder: ''}, {name: '{name} {year}', folder: ''}, {name: '{year}-{month} {tag} {subtag}', folder: ''}, {name: '{name} {year}', folder: ''}]);
     expect(sanitizeProfileSettings(profileSettingsOf(s))).toEqual(profileSettingsOf(s));
+  });
+});
+
+describe('demo space: contexts and focus blocks (docs/dev/history/technical-design-time-and-place.md §3.8)', () => {
+  const files = buildDemoFiles(today);
+  it('has three focus blocks: a project\'s, a loop\'s and a thread\'s', () => {
+    const blocks = files.flatMap(f => parseMeetingsSpan(f.content).meetings).filter(m => m.tags.includes('focusblock'));
+    expect(blocks.map(m => m.tags.filter(t => t !== 'focusblock'))).toEqual([[], ['workshop/offsite'], ['sparring/mieke']]);
+  });
+  it('the demo profile has the contexts Work and Home, with Everything active', () => {
+    const settings = demoProfileSettings();
+    expect(settings.contexts.map(c => c.name)).toEqual(['Work', 'Home']);
+    expect(settings.activeContextId).toBe('');
+    expect(sanitizeProfileSettings(profileSettingsOf(settings)).contexts).toEqual(settings.contexts);
   });
 });

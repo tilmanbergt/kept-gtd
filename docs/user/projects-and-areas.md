@@ -27,7 +27,7 @@ Every row on the Projects and Areas tabs ends with the notebook icon of its home
 - **Done** (projects only): finished. The Review step "Done awaiting review" collects these for closing out.
 - **Archived**: moved to the Archive folder.
 
-On Hold and Done take the project or area out of focus. Putting an area on hold also puts its active projects on hold.
+Putting an area on hold also puts its active projects on hold.
 
 ## Assigning a project to an area
 
@@ -83,7 +83,7 @@ The home notebook exists only while the Default uses **One notebook** (Settings 
 
 ### The notebook icon
 
-A small notebook icon sits at the end of every row on the **Projects** and **Areas** tabs, on the focus rows of **Daily**, on the focus cards of **Week** and **Month**, and as **Notebook** at the top of a project's or area's page.
+A small notebook icon sits at the end of every row on the **Projects** and **Areas** tabs, and as **Notebook** at the top of a project's or area's page.
 
 - **Plain notebook**: the notebook exists. A tap opens it on the page you last looked at in Supernote.
 - **Notebook with +**: it doesn't exist yet. A tap asks first - "new file Garden renovation 2026.note" with **Create** - then creates it and opens its first page. Afterwards the status line names the new file and its folder.
@@ -93,11 +93,11 @@ Creating a note only works when Kept was opened from a note (a limit of the Supe
 
 ### The Home page
 
-A new home notebook starts with a **Home page**: the project's or area's name as a heading, its **Scope**, and its latest monthly and weekly goal ("October 2026: …", "Week 43: …"). It is written once, when the notebook is created; after that it is your page. The Home page always stays page 1: the pages of todos and meetings go after it.
+A new home notebook starts with a **Home page**: the project's or area's name as a heading and its **Scope**. It is written once, when the notebook is created; after that it is your page. The Home page always stays page 1: the pages of todos and meetings go after it.
 
 A todo's or meeting's note that is the first one in the Default notebook creates the notebook in the same way, with the Home page first and the todo's or meeting's page after it. A note setup whose notebook has the same name and folder as the Default's puts its pages into the same file.
 
-You can change the Home page's layout in Settings → Note setups → Default → **Home page**. Besides Title and static texts it offers **Scope** and **Latest goals**.
+You can change the Home page's layout in Settings → Note setups → Default → **Home page**. Besides Title and static texts it offers **Scope**. A **Latest goals** piece placed by an earlier version stays in the layout and prints nothing.
 
 ### The Notebook tab
 

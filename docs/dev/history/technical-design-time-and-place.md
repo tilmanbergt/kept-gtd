@@ -563,3 +563,20 @@ tests were deleted with its code, lower that baseline by hand in S6 with the rea
   scenarios, Daily slim T3 (focus mode) removed; periodFocusCards and focusedItemRowAccessory deleted with their code.
   Scenario 15 (Engage fallback) is in `focusBlocks.test.tsx`.
 - Help pages are rewritten in S6 (design §3.8); the demo space keeps its focus data until S6.
+
+### S6 - Docs, demo space, coverage
+
+- Help: `daily.md` rewritten ("Daily", no focus mode); `meetings.md` gained Focus blocks, the context panel
+  and Schedule; `engage.md` (Today's schedule), `settings.md` (Contexts, no Focus), `quick-add.md` (F, hidden
+  notice), `review.md`, `projects-and-areas.md`, `week-and-month.md`, `tags.md` (`#now`), `getting-started.md`,
+  `philosophy.md`, `profiles-and-demo.md`, `files-and-folders.md`, `close-out.md`, `lasso.md`, `loops.md`;
+  `index.md` links "Daily". README "Why" and "Features at a glance"; DEVELOPMENT-POLICY §2 ("the same owner,
+  your schedule"); design-overview §2.1-§2.12 as built (contexts, focus blocks, context panel and Given time in
+  §2.7) and §3 "Retired features leave rollback shims"; design-device-rendering §5.2 rows and a new §5.6
+  (contexts, context panel, Given time; Engage moved to §5.7).
+- Demo space: `DEMO_CONTEXTS` (Work: Team, Coaching; Home: Home, Health, Sport, Learn Spanish), Everything
+  active; focus blocks today in Garden renovation, tomorrow for the loop `workshop/offsite`, in six days for the
+  thread `sparring/mieke`; no focus flags, no goals.
+- Coverage: no area fell; baselines raised with `--update-baseline`, `contexts` added. Smoke tier about 8 s.
+- Device budget: the Settings strip has 8 tabs as designed; the tab bar holds 9 tabs, "?", the context chip
+  (max 150 dp) and, in the demo, the boxed D - both are on the device test list.

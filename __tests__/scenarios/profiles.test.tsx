@@ -26,6 +26,14 @@ scenario('Try things in the demo space without touching the real files, then swi
     expectShows(/Garden renovation/);
     expectNotShows(/^Website +#WEB/);
   });
+  and('the demo has the contexts Work and Home in the chip\'s menu, and Garden renovation\'s focus block today', async () => {
+    await tap('Everything ▾');
+    expectShows(/^Work/);
+    expectShows(/^Home/);
+    await tap('Everything ▾');
+    await tapTab('Daily');
+    expectShows(/Plan the beds/);
+  });
   when('I add the todo "Try the demo" in the Inbox', async () => {
     await tapTab('Inbox');
     await type('New task', 'Try the demo');

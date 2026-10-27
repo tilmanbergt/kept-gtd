@@ -4,13 +4,13 @@ Settings has these tabs:
 
 ## Folders
 
-The base folder and the names of the Projects, Areas, Resources and Archive folders, and of the **Inbox folder** inside Areas. Below each field you see the full path. Tap **Save** at the bottom after changing something (the same on the Focus, Calendar and Gmail tabs).
+The base folder and the names of the Projects, Areas, Resources and Archive folders, and of the **Inbox folder** inside Areas. Below each field you see the full path. Tap **Save** at the bottom after changing something (the same on the Calendar and Gmail tabs).
 
 Changing a folder name only changes where Kept GTD looks; move the folder yourself. The Inbox folder is the exception: a new name renames the folder on Save. Save refuses a name that another folder in Areas already has.
 
-## Focus
+## Contexts
 
-How many projects and areas fit into daily, weekly and monthly focus. Lowering a number never removes anything from focus; it only prevents adding more.
+Your contexts - Work, Home, Café: for each one the areas, projects and tags it shows and hides, and whether meetings outside it are dimmed. A context saves itself; switch between them with the chip in the tab bar. See [Contexts](contexts.md).
 
 ## Calendar and Gmail
 

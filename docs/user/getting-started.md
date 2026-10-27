@@ -24,12 +24,14 @@ Want to look around first without touching your own files? Go to **Settings → 
 ## The tabs
 
 - **Projects** and **Areas**: all your projects and areas, create new ones
-- **Daily**: today and tomorrow - meetings, the todos that matter now, your daily focus
-- **Week** and **Month**: plan the week and the month, set focus and goals
+- **Daily**: today and tomorrow - your schedule and the todos that matter now
+- **Week** and **Month**: plan the week and the month, and see where your time went (Given time)
 - **Inbox**: everything captured but not yet filed
 - **Current**: the project or area you opened last, with its todos, meetings, files and notes
 - **Review**: the Weekly Review, one step at a time
-- **Settings**: folders, focus counts, Note setups, advanced options, About
+- **Settings**: folders, contexts, Note setups, features, advanced options, About
+
+The chip next to **?** shows the current context (Everything, Work, Home …); tap it to switch, see [Contexts](contexts.md).
 
 **?** opens this help, starting at the page for the tab you are on. **✕ Close** in the help closes it again; the tab behind it stays exactly as it was. ✕ closes the plugin. When you open Kept, it reads the files you changed outside it again. To read all files again, use **Reload all files** in Settings → Advanced.
 
@@ -41,7 +43,7 @@ When you open Kept from a note that belongs to a project or area, it opens that 
 
 1. Create one or two projects on the **Projects** tab.
 2. Open a project and add a few todos with Quick Add. Mark the next step with the **Next** chip.
-3. On **Daily**, pick the project into your daily focus. Its next steps now appear there.
+3. Open **Daily**: the project's next steps appear there. Block time for it with a focus block (**F** in Quick Add's Meeting form).
 4. At the end of the week, walk through the **Review** tab.
 
 ## Keeping your word with people

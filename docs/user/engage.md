@@ -14,7 +14,7 @@ The panel is about one **owner** at a time: a Project, an Area, a loop or a thre
 - The Engage button on a meeting's note or page: the meeting's thread, or else its loop or its Project or Area. When something came out of the thread's meetings, Engage opens on **From Thread** (below). The meeting's Reflection page counts as its page ([Meetings](meetings.md)).
 - On a loop note: the loop. On a Project's or Area's home notebook - this year's or an earlier one - that Project or Area, even when a loop's note has the same name. On any other note in a Project's or Area's folder: that Project or Area.
 - On a note that belongs to none of them: the owner of the todo you were last working on.
-- Nothing fits: Engage shows today's focus to choose from (or this week's, when nothing is in today's focus).
+- Nothing fits: Engage shows **Today's schedule** to choose from - the owners of today's meetings and focus blocks that are not over yet.
 
 When Engage shows another owner than the one of the todo you were working on, a line at the bottom, above **Open Kept GTD** and **Close**, offers the way back, for example **Continue with Measure the beds**. Tap it to return to that todo. It is offered once: if you close the panel without it, what the panel showed - the new place's next action - is the one you are working on from then on (with no next action there, nothing is). Choosing a todo in the new place does the same at once. After **Engage ›** there is no such line: you chose the owner yourself.
 
@@ -105,13 +105,11 @@ With no open todo and no meeting ahead, Engage says **Nothing left in** the owne
 
 - A loop offers **Close loop…** (Done or Dropped, as in the loop overview).
 - **+ Add todo** opens Quick Add for the owner.
-- **Select next focus ›** shows today's focus.
-
-When nothing is left in today's focus at all, Engage says **All done in today's focus.** and offers **Select new focus ›** with this week's focus.
+- **Today's schedule ›** shows today's schedule.
 
 ## Choosing another owner
 
-Engage never moves on to another owner by itself. **Select next focus ›** lists today's focus, **Select new focus ›** this week's: a line per loop, tended thread and Project or Area that has something to pick, with how many next actions it has or "pick next". The ones closest to what you just did come first. Tap a line to work on that owner; **‹ Back** returns.
+Engage never moves on to another owner by itself. **Today's schedule ›** lists the owners of today's meetings and focus blocks that are not over yet, in time order: a line per loop, thread, Project or Area, with how many next actions it has or "pick next". The meetings of the Inbox have no owner and no line. With nothing scheduled, it says **Nothing scheduled today.** Tap a line to work on that owner; **‹ Back** returns.
 
 ## Quick Add, marks and leaving
 
@@ -123,5 +121,3 @@ Engage never moves on to another owner by itself. **Select next focus ›** list
 ## After Done elsewhere
 
 When you tick off a todo on Daily, the Current tab or a thread or loop overview, and it was the last `#next` of its owner, the status line asks: "… has no next action. Pick one:" with up to three todos of the plan, and **Later**. Picking one gives it `#next`. Nothing is suggested at any other time.
-
-Focus mode and `#now` stay as they are; see [Daily and focus mode](daily.md).

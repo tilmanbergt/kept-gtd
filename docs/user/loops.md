@@ -15,7 +15,7 @@ A loop is named by a nested tag, `#<kind>/<name>`, for example `#workshop/teamof
 
 Type only the loop's tag into Quick Add, for example `#workshop/teamoffsite`. The button turns into **+ Add loop**, and the date field becomes the loop's **main date**: the day it is all about, like the workshop day. A file you attach becomes the loop's linked file. After the tap, the status line says the loop has started.
 
-- `#next` or `#now` don't change this: a todo that is only a loop tag is the loop.
+- `#next` doesn't change this: a todo that is only a loop tag is the loop.
 - With `#someday` or `#maybe`, it stays a todo: a **loop idea**, such as `#read/oldshatterhand #someday`. When you take someday or maybe off - in Quick Add or in the Weekly Review - it becomes the loop.
 - A todo with words and a loop tag, like `Book room #workshop/teamoffsite`, is a todo of that loop.
 - A todo you already have can become a loop: edit it and replace its text with the loop's tag. **Save** turns into **Make loop**; its due date becomes the main date, and its own note and linked file come along.

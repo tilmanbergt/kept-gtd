@@ -20,7 +20,7 @@ The names of files Kept creates leave out `\ / : * ? " < > |` (not allowed in fi
 
 ## The Inbox folder
 
-The Inbox has its own folder inside the Areas folder, so the `Note` folder holds only your PARA folders. Kept doesn't treat it as an area: it isn't listed on the Areas tab or in focus and refile. You can change its name in Settings, see [Settings](settings.md).
+The Inbox has its own folder inside the Areas folder, so the `Note` folder holds only your PARA folders. Kept doesn't treat it as an area: it isn't listed on the Areas tab or in refile. You can change its name in Settings, see [Settings](settings.md).
 
 Up to version 0.1.0 the Inbox lived directly in `Note` (`Inbox.txt` plus `Todos` and `Meetings` folders). Versions 0.2 to 0.8 moved these into the Inbox folder on their first start; from 0.9.0 on Kept no longer does. If you still have them in `Note`, move them into the Inbox folder by hand; **Run Integrity Check** in Settings → Advanced points them out.
 
@@ -32,7 +32,6 @@ A project file is plain text in three parts: a short header, then sections.
 ---
 kind: project
 status: active
-dailyFocus: true
 area: Home
 abbrev: GR
 ---
@@ -52,10 +51,7 @@ Turn the back garden into a vegetable garden before winter.
 
 - 2026-10-04 10:00-11:00 Site visit with Marco #marco
 - 2026-10-21 2d Team offsite #monthly
-
-## Weekly Goals
-
-- 2026-W40: Beds measured and soil ordered
+- 2026-10-15 09:00-11:00 Plan the beds #focusblock
 ```
 
 - `- [ ]` is an open todo, `- [x]` a done one, `- [-]` a cancelled one.
@@ -66,6 +62,7 @@ Turn the back garden into a vegetable garden before winter.
 - Older lines with `#due:2026-10-03` or `#waiting-for:marco` are read as before. A line gets the new form only when you edit that todo; nothing is converted on its own.
 - A `## Marks` section lists open lasso marks, one per line, see [Lasso](lasso.md).
 - A `## Threads` section in `area.txt` (or in `project.txt` of a project without an area) holds the counterparts you confirmed, one per line: `- mieke: active` or `- sven: inactive`. Text after a comma is kept. See [Threads](threads.md).
+- Files written by earlier versions may have `dailyFocus: true` (and weekly or monthly) in the header and `## Weekly Goals` or `## Monthly Goals` sections. Kept no longer uses them and leaves them exactly as they are.
 - Lines Kept doesn't understand are kept as they are.
 
 ## Editing by hand

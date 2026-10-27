@@ -41,9 +41,8 @@ shell with no state carried over (§2.12). A "Mark for later" result screen
 
 **Mode and tabs.** Navigation is three independent pieces of state, with no back stack:
 
-- `mode`: `'loading' | 'tabs' | 'capture' | 'focus' | 'engage'`. `capture` shows `CaptureScreen`
-  (§2.10) instead of the tab shell; `focus` shows Daily's one-column focus mode (§2.7) without a
-  TabBar; `engage` shows the Engage panel (§2.7) over the note.
+- `mode`: `'loading' | 'tabs' | 'capture' | 'engage'`. `capture` shows `CaptureScreen`
+  (§2.10) instead of the tab shell; `engage` shows the Engage panel (§2.7) over the note.
 - `activeTab`: one of the nine tabs in `ui/TabBar.tsx` — **Projects, Areas, Daily, Week,
   Month, Inbox, Current, Review, Settings**.
 - `currentItem`: the Project or Area the **Current** tab shows. Tab switches leave it alone;
@@ -69,15 +68,15 @@ the thread overview otherwise.
 **Screens.**
 
 - **Projects / Areas** — `screens/ItemsList.tsx` (one component, `kind` prop): Active on the
-  left (focused items first, marked ★, abbreviation after the name), On Hold and (Projects only)
+  left (folder order, abbreviation after the name, filtered by the active context, §2.7), On Hold and (Projects only)
   "Done — awaiting review" on the right, each a fixed-height `PagedSection`. A "Create
   Project/Area" row creates the folder and its data file (`storage/createItem.ts`). Resources and
   Archive are neither listed nor scanned.
 - **Daily, Week, Month** — the planning screens (§2.7).
 - **Inbox** — `screens/InboxScreen.tsx`: Files pane on the left (Resources and Browse), Tasks
   above Meetings on the right, everything unfiltered.
-- **Current** — `screens/ItemDetail.tsx`: left pane `ui/ItemFocusPanel.tsx` (Scope, focus
-  checkboxes, goals) on top, the Files pane (`ui/FileBrowserPane.tsx`) in the middle and
+- **Current** — `screens/ItemDetail.tsx`: left pane `ui/ItemScopePanel.tsx` (Scope and the
+  Given time line `ui/GivenTimeLine.tsx`) on top, the Files pane (`ui/FileBrowserPane.tsx`) in the middle and
   `ui/ItemStatusPanel.tsx` (status, close-out/archive, Assign to Area) at the bottom; right pane
   `screens/ProjectDataPanel.tsx` with Quick Add, Todos and Meetings (the two lists in
   `screens/projectData/`). The header shows the kind and the editable abbreviation pill. The Files
@@ -144,14 +143,13 @@ plugin on any open note or document. The JS instance stays alive while the plugi
 incremental cache refresh (§2.3, not awaited) and asks the pure `domain/returnContext.ts`'s
 `decideLanding` where to land, in this order:
 
-1. **focus mode** when `settings.focusModeActive` is set;
-2. **resume** when the open note is the one Kept itself opened last (recorded by
+1. **resume** when the open note is the one Kept itself opened last (recorded by
    `supernote/fileSystem.ts`'s `openPath` into the memory-only `storage/returnRecord.ts`, valid
    for 12 hours): the tab shell stays exactly as it was; Current is pointed at the note's item
    unless Current is on screen;
-3. the open note's **enclosing Project/Area** (`domain/settings.ts`'s `findEnclosingItem`, which
+2. the open note's **enclosing Project/Area** (`domain/settings.ts`'s `findEnclosingItem`, which
    walks up through subfolders such as `Meetings/`): Current;
-4. otherwise **Daily**.
+3. otherwise **Daily**.
 
 A record that no longer matches is cleared. Detail:
 `docs/dev/history/technical-design-return-to-origin.md`.
@@ -195,7 +193,6 @@ if it is missing. Everything else in the file passes through untouched.
 ---
 kind: project
 status: active
-dailyFocus: true
 area: Coaching
 abbrev: AT
 ---
@@ -214,21 +211,16 @@ Ship the tender by end of quarter.
 - 2026-11-03 10:00-11:30 Kickoff Call #prepped → [[Meetings/2026-11-03 - Kickoff Call.note]]
 - 2026-11-07 3d Offsite (Off) #monthly
 - 2026-11-10 1d Planning day +[[3 Resources/Templates/plan.pdf]]
-
-## Weekly Goals
-- 2026-W45: Ship the technical design doc
-
-## Monthly Goals
-- 2026-11: Finish module 2 outline
+- 2026-11-12 09:00-11:00 Draft the outline #focusblock
 ```
 
 | Section | Content | Parsed by |
 |---|---|---|
-| frontmatter | `status`, `dailyFocus`/`weeklyFocus`/`monthlyFocus`, `defaultResourceFolder`, `area`, `abbrev`; `kind`, `doneAt`, `archivedAt` and any hand-written key kept as extra lines | `parseFrontMatter` / `writeFrontMatterIntoContent` |
+| frontmatter | `status`, `defaultResourceFolder`, `area`, `abbrev`; the retired focus flags `dailyFocus`/`weeklyFocus`/`monthlyFocus` (read and written back only, §3); `kind`, `doneAt`, `archivedAt` and any hand-written key kept as extra lines | `parseFrontMatter` / `writeFrontMatterIntoContent` |
 | `## Scope` | free text, the whole span is the value | `parseScopeSpan` / `writeScopeIntoContent` |
 | `## Tasks` | one task per line | `parseTasksSpan` / `writeTasksIntoContent` |
 | `## Meetings` | one meeting per line | `parseMeetingsSpan` / `writeMeetingsIntoContent` |
-| `## Weekly Goals`, `## Monthly Goals` | `- 2026-W45: text`, `- 2026-11: text` | `parse*GoalsSpan` / `setGoalForWeek` / `setGoalForMonth` |
+| `## Weekly Goals`, `## Monthly Goals` | retired goals of earlier versions | not parsed; no save owns them, so they stay byte for byte (§3) |
 | `## Marks` | open "Mark for later" lines (§2.10) | `parseMarksSpan`, `domain/marks.ts` |
 | `## Threads` | counterpart status lines `- mieke: active` (§2.6); `area.txt`, or `project.txt` of a Project without an Area, never `Inbox.txt` | `domain/threadsSection.ts` (`parseThreadsSpan` / `writeThreadsIntoContent`) |
 | `## Loops` | loop status lines `- workshop/offsite: active, 2026-11-14, [[file]]` (§2.6) | `domain/loopsSection.ts` (`parseLoopsSpan` / `writeLoopsIntoContent`) |
@@ -237,7 +229,7 @@ Ship the tender by end of quarter.
 
 `ensureSkeleton` writes a new file as frontmatter (`kind`, `status: active`) plus empty
 `## Scope`, `## Tasks` and `## Meetings`; other sections appear the first time they are written.
-Focus flags are written only when true; `status` is always written and reads as `active` when
+The retired focus flags are written back as they were read (only when true); `status` is always written and reads as `active` when
 missing or unknown. Frontmatter is written as its extra lines first, then the recognized fields.
 Every frontmatter save takes one `FrontMatterFields` object built as
 `{...frontMatterOf(item), <change>}` (`storage/dataCache.ts`), so a save can never clear a field
@@ -298,8 +290,10 @@ repeated known key or one without a value is kept as an unknown field. Dates are
 - **due date** is the `[due:: YYYY-MM-DD]` field, not a tag (`setDueInLine` on a composed line,
   `withTaskDue` on a Task); for a Waiting For task it is the follow-up date. An older
   `#due:YYYY-MM-DD` tag is still read; a Quick Add edit or `withTaskDue` removes it.
-- **bare state tags** (`RESERVED_BARE_TAGS`): `#now` (focus mode), `#prepped`/`#reviewed`
-  (meeting tracking, §2.6), `#monthly` (Month highlight, §2.7).
+- **bare state tags** (`RESERVED_BARE_TAGS`): `#prepped`/`#reviewed` (meeting tracking, §2.6),
+  `#monthly` (Month highlight, §2.7), `#focusblock` (focus block, §2.7) and the retired `#now`, which
+  `deriveFlowState` reads as `next` when no other flow word is set (`withoutNow` drops it when the
+  user moves the todo off Next).
 - **context tags**: everything else (`isContextTag`), including nested tags `#coaching/sabina`
   (segments after `/`) and Project/Area abbreviations such as `#AT`. A nested tag is also a
   **thread** (`domain/threads.ts`): type `coaching`, counterpart `sabina`; the plain leaf
@@ -328,8 +322,8 @@ relative to recognized lines does not.
 
 `storage/dataCache.ts` holds one module-level `DataCache {scannedAt, paths, items}` with one
 `CachedItem` per Project/Area folder: the raw file text plus every parsed span and frontmatter
-field as flat fields (`tasks`, `meetings`, `scope`, `weeklyGoals`, `monthlyGoals`, `marks`, `threads`,
-`status`, focus flags, `area`, `abbrev`, `defaultResourceFolder`, their extra lines and an
+field as flat fields (`tasks`, `meetings`, `scope`, `marks`, `threads`, `loops`, `agreements`,
+`status`, `focusFlags` (write-only, §3), `area`, `abbrev`, `defaultResourceFolder`, their extra lines and an
 optional `loadError`). It is disposable: a full rebuild always reproduces it from the files.
 
 **Shared Inbox.** `Inbox.txt` is not an item, but the cache keeps it next to them:
@@ -352,7 +346,7 @@ Screens read it through `ui/useCachedInbox.ts`; a write anywhere is seen everywh
    Requests are de-duplicated. A sync tool that keeps both time and size the same is missed
    until "Reload all files".
 3. **Write-through** (`updateItemTasks`, `updateItemMeetings`, `updateItemFrontMatter`,
-   `updateItemScope`, `updateItemThreads`, `updateItemWeeklyGoals`, `updateItemMonthlyGoals`, `updateItemRawContent`,
+   `updateItemScope`, `updateItemThreads`, `updateItemRawContent`,
    `removeCachedItem`): every plugin save writes the file first, then updates the cache entry.
    A write-through whose text came from a write that kept an outside edit (below) parses the
    whole text instead of trusting the caller's fields.
@@ -365,7 +359,7 @@ Screens read it through `ui/useCachedInbox.ts`; a write anywhere is seen everywh
 `ensureItemCached(kind, name, path)` loads one item on demand when it is not cached yet;
 `findCachedItem(path)` reads one. Cross-project views are pure, synchronous transforms over the
 warm cache (`storage/dailyAggregate.ts`, `weeklyAggregate.ts`, `monthlyAggregate.ts`,
-`reviewAggregate.ts`, `periodFocusCards.ts`, `threadAggregate.ts`, `tendingRoster.ts`,
+`reviewAggregate.ts`, `threadAggregate.ts`, `tendingRoster.ts`,
 `sinceLast.ts`, `projectGlance.ts`), never their own filesystem scans.
 
 **Writing a data file.** Every save of `project.txt`, `area.txt` or `Inbox.txt` goes through
@@ -457,8 +451,8 @@ the screens go through `domain/taskEdit.ts`.
 
 **Rows.** `ui/TaskRow.tsx` and `ui/MeetingRow.tsx` are the only row components. A task row shows
 labels after its title (`domain/taskLabels.ts`, `ui/TaskLabels.tsx`, layout in
-`ui/taskRowLayout.ts`: `#next`/`#now`, `#w/f Name`, `#due 5.10.`, overdue `!`), wrapped and
-clamped together with the title; a double tap on the `#next`/`#now` label toggles `#now`. Tags in
+`ui/taskRowLayout.ts`: `#next`, `#w/f Name`, `#due 5.10.`, overdue `!`), wrapped and
+clamped together with the title; only the `#w/f Name` label reacts to touch. Tags in
 a row's title go through `ui/TaggableText.tsx`: a nested context tag always opens the thread
 overview with the row's item as owner (rows get `ownerPath`; Inbox lists pass the Inbox folder),
 a plain context tag is tappable only where the screen passes a handler (Daily's context filter);
@@ -473,16 +467,17 @@ clip of a linked file; the prep/review icon and the read-only M (2-line rows) si
 tap target, which selects the meeting. A row's tap targets carry its vertical padding, so they
 span the row's full height (the row itself has none). Everything else acts on the selected item
 through its **item card** in Quick Add's place: `ui/useEditTarget.ts` holds the selection in mode `card`
-(first tap) or `edit` (the card's Edit or a second tap; Save returns to `card`); every screen
+(first tap), `edit` (the card's Edit or a second tap; Save returns to `card`) or `add` (Quick Add
+for the selected meeting, from its context panel, §2.7); every screen
 with Quick Add builds the card with `ui/itemCard/useMeetingCard.ts` from its selection and its
 own write path (`updateMeeting` changes the current stored copy) and passes it as
 `QuickAddWidget`'s `meetingCard`. `ui/itemCard/MeetingCard.tsx` lays it out in the box's four
-rows; what shows (phase, thread link, P/R, M, note, Reflect, file or +clip where a Files pane
+rows; what shows (phase, Meeting or Focus, thread or loop link, P/R, M, F, note, Reflect, file or +clip where a Files pane
 exists, area chip with refile arrow, New from this, Cancel meeting) is `domain/itemCard.ts`'s
 `meetingCardModel`. Todos work the same way: `ui/itemCard/useTodoCard.ts` (`updateTask` changes
-the current stored copy; done and Now go through the screen's own row handlers so the Engage
-prompt and focus mode react as on the row), `TodoCard.tsx`, `todoCardModel` (state heading, the
-meeting it was agreed in with its thread link, done, flow chips, Now with Next only, note, area
+the current stored copy; done goes through the screen's own row handler so the Engage
+prompt reacts as on the row), `TodoCard.tsx`, `todoCardModel` (state heading, the
+meeting it was agreed in with its thread link, done, flow chips, note, area
 chip with refile arrow, file or +clip, delete) - passed as `QuickAddWidget`'s `todoCard`. Shared
 parts (`SquareButton`, `CardRow1`, `AreaChip`, `FileSlot`) are `ui/itemCard/parts.tsx`. Detail:
 `docs/dev/history/technical-design-unified-quickadd.md`,
@@ -700,12 +695,12 @@ placement uses too); without a Default notebook the feature is hidden, the Inbox
 `storage/homeNotebooks.ts`'s `homeNotebookOf(item, settings)` is the building block: folder,
 file, and whether it exists from an in-memory state cache filled by one `statFiles` per item set
 (`ui/useHomeNotebooks.ts`; refreshed on cache, folder and files-checked events). The notebook
-icon (`ui/HomeNotebookButton.tsx`) sits on the Projects/Areas rows, Daily's focus rows, the
-Week/Month focus cards and the page header; a tap (`ui/useHomeNotebookTap.ts`, decided by
+icon (`ui/HomeNotebookButton.tsx`) sits on the Projects/Areas rows and the page header (and a
+focus block's card opens it when no Note setup places the block, §2.7); a tap (`ui/useHomeNotebookTap.ts`, decided by
 `planHomeNotebookTap`) opens on the last viewed page (`openPath(path, -1)`), creates after the
 note confirm, or offers Create <year> · Open <last year>. A new home notebook gets the `home`
-keyword on page 1 and the Default's **Home page** (PageKind `home`: Title, `scope`, `goals` -
-latest monthly and weekly goal), written once, from the icon (`storage/homeNotebookCreate.ts`)
+keyword on page 1 and the Default's **Home page** (PageKind `home`: Title, `scope`; the retired
+`goals` piece stays a valid type that renders nothing), written once, from the icon (`storage/homeNotebookCreate.ts`)
 or from a todo's or meeting's first note into that file (`itemNotePlan` → `fillHomePage`); the
 page order pins it first. The Notebook tab lists the years and the experimental **Contents**
 (`domain/notebookContents.ts` / `storage/notebookContents.ts`: Kept's pages titled from their
@@ -750,40 +745,54 @@ Detail: `docs/dev/history/technical-design-note-setups.md`,
 
 ### 2.7 Daily, Week and Month
 
-**Focus.** Each Project/Area can be in daily, weekly and monthly focus (frontmatter flags).
-`storage/focusSlots.ts` is table-driven (`FOCUS_SCOPES`): limits per kind and scope from
-settings (defaults daily 3/2, weekly 5/3, monthly 2/3 Projects/Areas), `focusBlockedReason`
-blocks only adding, and `setItemFocus`/`toggleItemFocus` write through. Only Active items can be
-focused; a status change away from Active clears all flags (§2.9). `domain/destination.ts`'s
-`isFocused` (any of the three) decides "focused" everywhere. Goals for a week or month are
-read and written through `storage/periodGoals.ts`; `domain/period.ts`'s `canEditPeriod` allows
-the current period plus the next week from Friday and the next month in its last 7 days.
+**Contexts** (`domain/contexts.ts`, settings `contexts` and `activeContextId`, '' = Everything,
+both per profile). A context shows and hides Areas, Projects (a Project also through its Area) and
+tags; `contextMatcher(ctx)` answers `itemShown`, `taskShown` (the Inbox and todos due today or
+earlier always pass) and `meetingState` (`shown` or `dimmed`, never hidden). Screens read it
+through `ui/context/useContextMatcher.ts` (`ContextFilter`: matcher, kinds, a per-tab **Show**,
+the hidden line's text); `ui/context/HiddenLine.tsx` ends every filtered list ("Hidden by Home:
+4 todos · Show"). The chip is in `ui/TabBar.tsx`, its menu (`ui/context/ContextMenu.tsx`) an
+overlay of `screens/useAppOverlays.tsx`; Quick Add warns when a new entry lands outside the
+context (`ui/context/useHiddenAddNotice.ts`). Settings → Contexts edits them
+(`screens/settings/contexts/`). The Review filters its aggregate (`filterReviewAggregate`) and
+counts the rest per step as "+n in other contexts"; Reviewed and overdue stay global. Detail:
+`docs/dev/history/technical-design-time-and-place.md` §3.3.
+
+**Focus blocks** (`domain/focusBlock.ts`): a meeting tagged `#focusblock` (the F toggle in Quick
+Add and on the card). No prep/review tracking, no Reflection page, never in "Meetings to close
+out"; its note follows a matching Note setup, else the card opens the owner's home notebook
+(`focusBlockNoteTarget`). Rows show a filled F, chips "F …", the Month row F/F<n>; lists of
+meetings and focus blocks are titled **Schedule** (`domain/meetingDisplay.ts`'s `SCHEDULE_LABEL`,
+`scheduleCountText`).
+
+**The context panel** (`domain/meetingContext.ts`, `ui/meetingContext/`): a selected meeting or
+block on Daily, Week or Month shows, below its card, its owner's I owe / Next / Waiting for /
+Agreed last time (a thread), what came out of its meetings (a loop), or what is linked to a plain
+meeting with its owner's next todos as a fallback. "+ Quick Add to meeting" switches the card's
+slot to Quick Add (`useEditTarget` mode `add`) with the parts Engage would use
+(`domain/meetingQuickAdd.ts`, shared with `useEngageQuickAdd`). `useMeetingContextSlot` holds the
+per-screen wiring.
 
 **Daily** (`screens/DailyView.tsx`, aggregate `storage/dailyAggregate.ts`; data from
 `screens/daily/useDailyData.ts`: the cache at mount without a loading pass when it is ready, a
 `daily:firstContent` perf span; every write through `ui/useEntryActions.ts`, the overviews' write
-path; the right column `screens/daily/DailyTodosColumn.tsx`, the tag-filter pill and Focus mode
-button `screens/daily/DailyModeRow.tsx`). Left column: the day
-panel (`ui/DayMeetingsPanel.tsx`, Today | Tomorrow | Google) and below it `ui/DailyFocusPanel.tsx`
-(Focus | Projects | Areas; an empty focus slot arms the matching list as a picker). Right column:
-Quick Add (always to the Inbox) above the Open tasks, grouped by source item, focused items
-first. A task shows when it is open and
+path; the right column `screens/daily/DailyTodosColumn.tsx`, the tag-filter pill
+`screens/daily/DailyModeRow.tsx`). Left column: the day panel (`ui/DayMeetingsPanel.tsx`,
+Today | Tomorrow | Google), full height. Right column: Quick Add (always to the Inbox) or the
+selected row's card, above the Next todos grouped by source item (the Inbox first, then cache
+order) or the selected meeting's context panel; the hidden line last. A task shows when it is
+open, the active context shows it, and
 
 - due today, tomorrow or overdue (`dueDate <= tomorrow`), or
-- `#next` in a focused item (any scope) or in the Inbox, or
-- Waiting For with no date or a date today or earlier (any item, focused or not).
+- `#next` (a retired `#now` included), or
+- Waiting For with no date or a date today or earlier.
 
 Someday and Maybe never show; Waiting For sorts last in its group. Meetings: today and
 tomorrow, multi-day meetings on every covered day (`domain/meetingSpan.ts`). Tapping a saved tag
 sets a **context filter**: only tasks and meetings with that tag show (any flow state except
 Maybe), and when the tag is a Project/Area abbreviation, also everything belonging to that item.
 
-**Focus mode** (`mode: 'focus'`, `settings.focusModeActive`, `screens/daily/FocusModeScreen.tsx`):
-a one-column, no-TabBar screen around the `#now` tasks; reopening the plugin lands back in it until it is left. Detail:
-`docs/dev/history/technical-design-now-focus-mode.md`.
-
-**Engage** (`mode: 'engage'`, `screens/engage/`) is the doing step over the note, next to focus
-mode and independent of it (`#now` is untouched). One owner at a time - a Project/Area, a loop or
+**Engage** (`mode: 'engage'`, `screens/engage/`) is the doing step over the note. One owner at a time - a Project/Area, a loop or
 a thread (`domain/engageOwner.ts`) - holding what its overview holds: a thread the thread lens
 (`domain/threadLens.ts`), a loop `isLoopMember`, a Project/Area everything but its active loops'
 members; each todo carries its relation (owe / waiting / relevant) and the meeting it was agreed
@@ -806,8 +815,9 @@ Review's "Someday / Maybe" and to the overview) and, above the footer, "Today ne
 timed meeting today anywhere, computed with the data, never by a timer; merged into Next here
 when it is the same meeting). Engage's Quick Add records the page's meeting during and after it,
 and shows the owner's tag in its grey line (`screens/engage/useEngageQuickAdd.ts`). One reducer
-(`domain/engageFlow.ts`) decides every screen and tab: options, owner empty, select focus
-(today's or this week's owners in ring order), all done in today's focus, Quick Add; the note
+(`domain/engageFlow.ts`) decides every screen and tab: options, owner empty, the schedule
+(`scheduleOwnerLines`: the owners of today's meetings and focus blocks that are not over, in time
+order, one line each), Quick Add; the note
 page's meeting (`pageMeeting`) opens From when it has rows and belongs to the note's owner only.
 Writes go through `ui/useEntryActions.ts` (`setTaskFlow`, `completeTask`, `undoTask`,
 `toggleTracking`), agreements through `ui/useAgreementActions.ts`; the current todo is
@@ -823,14 +833,22 @@ the owner's plan in the status slot when its last `#next` was done. Detail:
 `docs/dev/history/technical-design-engage-in-context.md`,
 `docs/dev/history/technical-design-meetings-0.21.md`.
 
-**Week and Month** share `screens/usePlanningScreen.ts` (loading and every meeting, focus and
-goal action). Both have Quick Add (to the Inbox) on the right, then either the shared day panel
-(after tapping a day) or the period focus panel (`ui/PeriodFocusPanel.tsx`, editable periods) or
-the goal history (`ui/PeriodGoalsHistoryPanel.tsx`).
+**Week and Month** share `screens/usePlanningScreen.ts` (loading, every meeting action, the
+selection with its context panel and back row, the context's dimming). Both have Quick Add (to
+the Inbox) or the selected meeting's card on the right, then the shared day panel (after tapping a
+day), the context panel (after tapping a meeting) or **Given time**
+(`ui/period/GivenTimePanel.tsx`, `domain/givenTime.ts`): the owners of the displayed week or
+month by scheduled time (timed: end - start, 60 min without an end; all-day: 8 h a day for
+sorting, shown as days), each with blocks, meetings, todos done and the next todo; "Worked on"
+for owners with todos done and nothing scheduled; the Tend line (threads and loops with nothing
+planned in 14 days, opening Review → Tending threads); the hidden line. The Project/Area page shows
+`ui/GivenTimeLine.tsx` (this week, this month; the item's and an Area's Projects' meetings,
+never filtered by the context).
 
 - **Week** (`screens/WeekView.tsx` header and navigation, body `screens/WeekPlanner.tsx`): left a
   chip grid (`ui/WeekGrid.tsx`, 4 × 2 chips per weekday, 2 × 2 per weekend day) or Google.
-  Review's "Week ahead" step shows the same `WeekPlanner`.
+  A chip shows the meeting's card and context panel; a day header opens the day panel. Review's
+  "Week ahead" step shows the same `WeekPlanner` with `rightSide="schedule-only"`.
 - **Month** (`screens/MonthView.tsx`): left one row per day (`ui/MonthDaysColumn.tsx`) with only
   the hand-picked **highlights**, meetings tagged `#monthly` (the M toggle, shown as an M mark on
   two-line rows); a trailing bracket in the title is its short form (`domain/monthHighlight.ts`).
@@ -840,7 +858,8 @@ the goal history (`ui/PeriodGoalsHistoryPanel.tsx`).
 Week and month offsets are plain state: every visit starts on the current period. Detail:
 `docs/dev/history/technical-design-daily-todo-filter.md`,
 `docs/dev/history/technical-design-weekly-view.md`,
-`docs/dev/history/technical-design-monthly-view.md`.
+`docs/dev/history/technical-design-monthly-view.md`,
+`docs/dev/history/technical-design-time-and-place.md`.
 
 ### 2.8 Weekly Review
 
@@ -851,22 +870,21 @@ with its count and last-reviewed date, and the steps themselves, one component e
 
 | Step | Kind | Component |
 |---|---|---|
-| Week ahead | ritual | `WeekAheadStep` (the Week screen, next week from Friday) |
+| Week ahead | ritual | `WeekAheadStep` (the Week screen with `rightSide="schedule-only"`, next week from Friday) |
 | Meetings to close out | backlog | `MeetingsCloseOutStep` |
-| Tending threads | ritual | `TendingThreadsStep` (the roster per scope, New block on top; detail: Quick Add above `screens/thread/ThreadSummary.tsx`) |
+| Tending threads | ritual | `TendingThreadsStep` (the roster per scope, New block on top, "nothing planned" without a meeting in 14 days; detail: Quick Add above `screens/thread/ThreadSummary.tsx`) |
 | Agreements | backlog | `AgreementsStep` (`domain/agreementReview.ts`: active agreements past valid-till, of an inactive counterpart, of a non-active loop, in a done/on-hold item; Keep / Change / End through `storage/agreements.ts`). Hidden from hub and walk-through while empty (`visibleReviewSteps`), still empty-stamped |
 | Gmail inbox (experimental) | backlog | `GmailStep` |
 | Inbox to zero | backlog | `InboxStep` (Files pane, Refile, quick-file, marks card) |
 | Stalled projects, Done awaiting review, On Hold reconsideration, Neglected areas | backlog | `ItemListStep` + `ItemDetails` (master/detail, `ui/ReviewMasterDetail.tsx`) |
-| Open loops (after Stalled projects) | backlog | `OpenLoopsStep` (`storage/loopRoster.ts`; counts loops without a next action or past their main date; Close loop via `ui/useCloseLoop.ts`) |
-| Unfocused next items | backlog | `UnfocusedNextStep` |
+| Open loops (after Stalled projects) | backlog | `OpenLoopsStep` (`storage/loopRoster.ts`; counts loops without a next action or past their main date; "nothing planned"; + F block seeds Quick Add's Meeting tab; Close loop via `ui/useCloseLoop.ts`) |
 | Someday / Maybe | ritual | `SomedayStep` (open Someday/Maybe todos of active and on-hold items; #next / To plan / Done / Cancel) |
-| Focus reset | ritual | `FocusResetStep` (monthly and weekly slots) |
+
+The retired steps `unfocusedNext` and `weeklyFocus` keep their stored records in `settings.reviewSteps`; no step reads them.
 
 `storage/reviewAggregate.ts` builds the lists from the cache: stalled projects and neglected
-areas are Active items with no open next action (`#next`/`#now`) and no open Waiting For - a plan
-todo alone is no next action - with their Plan, Someday and Maybe todos offered for promotion; unfocused next items are Active items in no focus at all
-with an open `#next` task that has no due date; meetings to close out come from
+areas are Active items with no open next action (`#next`) and no open Waiting For - a plan
+todo alone is no next action - with their Plan, Someday and Maybe todos offered for promotion; meetings to close out come from
 `isReviewOutstanding`.
 
 - **Data** (`useReviewData.ts`): settings, live items, shared Inbox, paths, and an aggregate
@@ -894,8 +912,8 @@ the filter lists entry keys and is cleared when the step is left). Detail: `docs
 
 **Status.** `ItemStatus = 'active' | 'on-hold' | 'done' | 'archived'`. Projects offer Active /
 On Hold / Done, Areas Active / On Hold; the parser accepts any value for either kind.
-`storage/statusControl.ts`'s `setItemStatus` writes the plain statuses: leaving Active clears all
-focus flags; Done stamps `doneAt` (cleared again on Active; editable with `setDoneDate`); an Area
+`storage/statusControl.ts`'s `setItemStatus` writes the plain statuses (the retired focus flags
+pass through unchanged); Done stamps `doneAt` (cleared again on Active; editable with `setDoneDate`); an Area
 going On Hold puts its Active assigned Projects on hold too (one direction only). `'archived'` is
 written only by archiving.
 
@@ -1020,8 +1038,8 @@ at its old place with an error. Credentials: `gmailEmail`, `gmailAppPassword` (s
 
 ### 2.12 Settings, profiles and diagnostics
 
-**Settings screen** (`screens/settings/`): mini-tabs Folders, Focus, Calendar, Gmail (the last
-two only while switched on), Note setups, Features, Advanced, About. Folders, Focus, Calendar and Gmail edit
+**Settings screen** (`screens/settings/`): mini-tabs Folders, Contexts, Calendar, Gmail (the last
+two only while switched on), Note setups, Features, Advanced, About. Folders, Calendar and Gmail edit
 one draft (`useSettingsDraft.ts`) that only Save writes; every Save clears the cache (the next
 screen builds it again) and the Gmail list, and a changed Inbox folder name moves the folder first (`storage/inboxFolder.ts`, refused
 when the target exists, not moved when Base or Areas change in the same save). Note setups save
@@ -1148,7 +1166,7 @@ current page across data changes, and supports `resetKey` and `jumpTo`. `PAGE_SI
 tuned on the device. Sizes and the element budget: `design-device-rendering.md`.
 
 **Central status slot** (`ui/status/`). One 36 px strip, always reserved, under the TabBar and at
-the top of capture and focus mode (`StatusFrame`). Publishers use `useStatus(id, msg)`,
+the top of capture and Engage (`StatusFrame`). Publishers use `useStatus(id, msg)`,
 `useErrorStatus(name, error, onDismiss)` or `useStatusApi()`; kinds by priority confirm > modal >
 error > warning > success > info; one message shows, `‹ n/m ›` pages through the rest.
 Screen-scoped messages clear on unmount or when a kept tab hides; `scope: 'global'` ones stay. No
@@ -1184,17 +1202,25 @@ place it happens.
 
 **Files and data**
 
-- **Files are the single source of truth.** Task, Meeting, focus, goal, scope and mark content
+- **Files are the single source of truth.** Task, Meeting, scope and mark content
   lives in the data files; AsyncStorage holds configuration and per-profile UI conveniences only.
 - **Identity is the folder.** No synthetic ids; a Project/Area is referenced by its folder name
   (`area:`) or path. The data files stay `.txt` with Obsidian-flavored Markdown content.
 - **One tag mechanism, one field mechanism.** Typed meanings are `#tags` in the text: flow
-  state, waiting-on, `#now`, meeting tracking, highlights, context and abbreviations. A new typed
+  state, waiting-on, meeting tracking, highlights, focus blocks, context and abbreviations. A new typed
   meaning is a new reserved word or a nested `type/…` form (and an entry in `RESERVED_BARE_TAGS`
   or `isContextTag`). Data Kept records about an entry (due, created, completion, provenance)
   are trailing `[key:: value]` fields, parsed like links. Never a second syntax for the same
   meaning. Derived fields are recomputed from the text and fields (`domain/taskEdit.ts`,
   `deriveMeetingFields`), never edited on their own.
+- **Retired features leave rollback shims.** When a feature is retired, what an older version
+  reads stays where it was: its frontmatter lines are parsed and written back byte for byte (the
+  focus flags, `RetainedFocus` in `storage/projectFile.ts`), its sections are owned by no save
+  (`## Weekly Goals`/`## Monthly Goals`), its tags keep a meaning without being rewritten (`#now`
+  reads as `#next`), its settings stay in `DEFAULT_SETTINGS` marked `@deprecated` so settings and
+  profile files keep them, its stored layout pieces stay valid types (`goals`), and stored review
+  records stay. Nothing is written by an update itself. Round-trip tests
+  (`__tests__/domain/rollbackShims.test.ts`, `__tests__/scenarios/rollback.test.tsx`) guard this.
 - **Span-scoped writes.** New file content is its own `## ` section (or frontmatter key) read and
   written with `getSpan`/`setSpan` (`readSectionLines`/`writeSectionLines` for a section a feature
   parses itself). Never parse and regenerate a whole file.
@@ -1339,8 +1365,7 @@ place it happens.
 ## 4. Why it is built this way
 
 **Files as the source of truth.** The user's data must outlive the plugin and stay readable in
-Obsidian or any editor. That is why every piece of PARA content, including focus flags, goals,
-scope, marks and the close-out plan, lives in the data files rather than in AsyncStorage, and
+Obsidian or any editor. That is why every piece of PARA content, including scope, marks and the close-out plan, lives in the data files rather than in AsyncStorage, and
 why the identity of an item is its folder. Renaming an Area does not update Projects that name
 it; that is accepted, because there is no hidden id to reconcile.
 
@@ -1377,9 +1402,9 @@ handwriting panel; refreshes are requested explicitly when content changes witho
 
 **Few, deliberate choices.** Every entry is a conscious choice (`design-philosophy.md`): no
 recurring meetings, no automatic filing, abbreviation tags only *offer* a destination, focus
-slots are capped, and Done is a status someone sets. Focus filters what Daily shows to `#next`
-tasks of focused items, so a busy project cannot flood the day; what falls out resurfaces in the
-Review instead of disappearing.
+blocks are entered by hand, and Done is a status someone sets. Contexts, not a separate focus
+choice, decide what Daily shows: a busy project cannot flood a context it is not part of, and
+the hidden line always says how much is left out.
 
 **Review as a walk, not a report.** The Weekly Review fixes things where they are found. Lists
 freeze while a step is open, so rows don't vanish under the user; each step keeps its own record,

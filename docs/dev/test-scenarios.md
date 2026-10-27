@@ -744,6 +744,7 @@ Test: `__tests__/scenarios/keptGtd.test.tsx`
 - **Given** my real PARA folder has project "Website" and an empty Inbox
 - **When** I create the demo space in Settings → Advanced and switch to it
 - **Then** the tab bar shows the boxed D and Projects shows the demo projects, not "Website"
+- **And** the demo has the contexts Work and Home in the chip's menu, and Garden renovation's focus block today
 - **When** I add the todo "Try the demo" in the Inbox
 - **Then** it is in the demo space's Inbox.txt, and my real Inbox.txt is untouched
 - **When** I tap the D in the tab bar and switch back to Production
