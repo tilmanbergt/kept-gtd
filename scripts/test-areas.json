@@ -34,6 +34,13 @@
       ]
     },
     {
+      "id": "contexts",
+      "name": "Contexts",
+      "help": ["contexts.md"],
+      "tests": ["__tests__/domain/contexts.test.ts", "__tests__/scenarios/contexts.test.tsx"],
+      "sources": ["src/domain/contexts.ts", "src/ui/context/**", "src/screens/settings/contexts/**"]
+    },
+    {
       "id": "engage",
       "name": "Engage",
       "help": ["engage.md"],
@@ -222,7 +229,7 @@
     {
       "id": "files",
       "name": "Your files: cache, writes, safety, integrity",
-      "help": ["files-and-folders.md", "obsidian.md"],
+      "help": ["files-and-folders.md"],
       "tests": [
         "__tests__/**/*{dataFileWrite,writeConflicts,writeGuard,writeLeftovers,fileName,fileChangeText,oddFiles,outsideEdits,refreshCache,legacyInbox,noteMissing,meetingsRoundTrip,markdownMarks,taskLine,taskEdit,fileBrowser,fileSafety,interruptions,pluginPermissions}*"
       ],

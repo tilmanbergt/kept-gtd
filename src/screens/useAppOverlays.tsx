@@ -1,13 +1,13 @@
 /**
  * The overlays App.tsx draws over the tab body (design-overview.md §2.1): the
- * in-app help (docs/dev/history/technical-design-in-app-help.md §3.3) and the
+ * in-app help (docs/dev/history/technical-design-in-app-help.md §3.3), the
  * thread overview (docs/dev/history/technical-design-tending-threads.md §3.5)
- * or the loop overview (docs/dev/history/technical-design-loops.md §4.5).
+ * or the loop overview (docs/dev/history/technical-design-loops.md §4.5), and
+ * the context chip's menu (docs/dev/history/technical-design-time-and-place.md §3.3).
  * An overlay sits inside StatusFrame, so the TabBar and the status slot stay
  * visible and the tab screens stay mounted underneath, exactly as they were.
  *
- * At most one overlay is open: opening the help closes the overview and vice
- * versa. Any change of tab and leaving the tab shell (capture, focus mode)
+ * At most one overlay is open: opening one closes the others. Any change of tab and leaving the tab shell (capture, focus mode)
  * close both; an overview requested outside the tab shell is dropped. Closing
  * an overlay requests an e-ink refresh, because the screen behind reappears
  * without a load edge of its own.
@@ -23,6 +23,8 @@ import LoopOverview, {LoopOverviewRequest} from './loop/LoopOverview';
 import ThreadOverview from './thread/ThreadOverview';
 import {requestEinkRefresh} from '../utils/screenRefresh';
 import HelpOverlay from '../ui/HelpOverlay';
+import ContextMenu from '../ui/context/ContextMenu';
+import {useThemeColors} from '../ui/theme';
 import {AppTab, tabLabel} from '../ui/TabBar';
 import {closeOverview, OverviewRequest, useOverview} from '../ui/overviewStore';
 
@@ -30,6 +32,9 @@ export interface AppOverlays {
   helpOpen: boolean;
   /** The TabBar's "?" button: opens the help at the page for `activeTab`, or closes it. */
   toggleHelp: () => void;
+  contextOpen: boolean;
+  /** The TabBar's context chip: opens its menu, or closes it. */
+  toggleContext: () => void;
   /** Closes whatever overlay is open (a TabBar tap). */
   closeOverlays: () => void;
   /** The open overlay's element, or null - rendered last inside the tab body. */
@@ -50,7 +55,9 @@ function loopRequestOf(request: OverviewRequest): LoopOverviewRequest | null {
   return {tag: loop.tag, ownerPath: owner?.path ?? rowItem.path};
 }
 
-export function useAppOverlays(inTabs: boolean, activeTab: AppTab): AppOverlays {
+export function useAppOverlays(inTabs: boolean, activeTab: AppTab, onEditContexts: () => void = () => {}): AppOverlays {
+  const [contextOpen, setContextOpen] = useState(false);
+  const {textColor, borderColor} = useThemeColors();
   // The page shown in the help overlay, or null while it's closed. The last
   // page read per tab is remembered for this session only.
   const [helpPage, setHelpPage] = useState<string | null>(null);
@@ -65,12 +72,24 @@ export function useAppOverlays(inTabs: boolean, activeTab: AppTab): AppOverlays 
   }, [inTabs, thread]);
   useEffect(() => {
     setHelpPage(null);
+    setContextOpen(false);
     closeOverview();
   }, [activeTab]);
-  // An overview opened while the help shows replaces it.
   useEffect(() => {
-    if (thread) setHelpPage(null);
+    if (!inTabs) setContextOpen(false);
+  }, [inTabs]);
+  // An overview opened while the help or the menu shows replaces it.
+  useEffect(() => {
+    if (thread) {
+      setHelpPage(null);
+      setContextOpen(false);
+    }
   }, [thread]);
+  const closeContext = () => {
+    if (!contextOpen) return;
+    setContextOpen(false);
+    requestEinkRefresh();
+  };
 
   const closeHelp = () => {
     if (helpPage === null) return;
@@ -88,6 +107,7 @@ export function useAppOverlays(inTabs: boolean, activeTab: AppTab): AppOverlays 
       closeHelp();
       return;
     }
+    setContextOpen(false);
     closeOverview();
     const page = helpStartPage(activeTab, lastHelpRef.current, new Set(Object.keys(USER_DOCS.pages)));
     lastHelpRef.current = {tab: activeTab, pageId: page};
@@ -99,7 +119,9 @@ export function useAppOverlays(inTabs: boolean, activeTab: AppTab): AppOverlays 
   };
 
   let overlay: React.ReactNode = null;
-  if (helpPage !== null) {
+  if (contextOpen && inTabs) {
+    overlay = <ContextMenu onClose={closeContext} onEditContexts={onEditContexts} textColor={textColor} borderColor={borderColor} />;
+  } else if (helpPage !== null) {
     overlay = <HelpOverlay pageId={helpPage} onSelectPage={selectHelpPage} onClose={closeHelp} />;
   } else if (thread && inTabs) {
     const backLabel = `‹ ${tabLabel(activeTab)}`;
@@ -115,9 +137,20 @@ export function useAppOverlays(inTabs: boolean, activeTab: AppTab): AppOverlays 
   return {
     helpOpen: helpPage !== null,
     toggleHelp,
+    contextOpen,
+    toggleContext: () => {
+      if (contextOpen) {
+        closeContext();
+        return;
+      }
+      setHelpPage(null);
+      closeOverview();
+      setContextOpen(true);
+    },
     closeOverlays: () => {
       closeHelp();
       closeThread();
+      closeContext();
     },
     overlay,
   };

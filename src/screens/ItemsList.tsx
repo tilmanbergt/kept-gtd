@@ -47,6 +47,9 @@
  * weight instead (docs/dev/history/technical-design-flex-weight-stacking.md §3.2) -
  * see `columnRight`'s own render comment.
  */
+import {NO_HIDDEN} from '../domain/contexts';
+import HiddenLine from '../ui/context/HiddenLine';
+import {useContextMatcher} from '../ui/context/useContextMatcher';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {StyleSheet, Pressable, Text, View} from 'react-native';
 import {isFocused} from '../domain/destination';
@@ -262,7 +265,11 @@ export default function ItemsList({kind, onOpenItem}: Props): React.JSX.Element 
   }, [kind, newName, creating]);
 
   const pathKey = PATH_KEYS[kind];
-  const entries = cache ? cache.items.filter(item => item.kind === kind) : [];
+  // The active context lists only its Projects/Areas (docs/dev/history/technical-design-time-and-place.md §3.3); the hidden line counts the rest.
+  const contextFilter = useContextMatcher();
+  const allEntries = cache ? cache.items.filter(item => item.kind === kind) : [];
+  const entries = allEntries.filter(item => contextFilter.matcher.itemShown(item));
+  const hiddenText = contextFilter.lineText({...NO_HIDDEN, items: allEntries.length - entries.length}, kind === 'project' ? {one: 'project', many: 'projects'} : {one: 'area', many: 'areas'});
   const groups = groupByStatus(kind, entries);
   const homes = useHomeNotebooks(entries);
   const tapHome = useHomeNotebookTap('ItemsList');
@@ -329,13 +336,13 @@ export default function ItemsList({kind, onOpenItem}: Props): React.JSX.Element 
         </Text>
       )}
 
-      {cache && entries.length === 0 && (
+      {cache && allEntries.length === 0 && (
         <Text style={[styles.empty, {color: textColor}]}>
           No folders found under {cache.paths[pathKey]}
         </Text>
       )}
 
-      {cache && entries.length > 0 && (
+      {cache && allEntries.length > 0 && (
         <View style={styles.twoColumn}>
           <View style={styles.columnLeft}>
             {/* Self-measured - `viewportHeight` deliberately omitted: this is the only thing
@@ -354,6 +361,7 @@ export default function ItemsList({kind, onOpenItem}: Props): React.JSX.Element 
               textColor={textColor}
               borderColor={borderColor}
             />
+            <HiddenLine text={hiddenText} onShow={contextFilter.show} textColor={textColor} />
           </View>
           <View style={styles.columnRight}>
             {kind === 'project' ? (

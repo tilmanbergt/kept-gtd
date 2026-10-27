@@ -96,6 +96,8 @@ export interface MeetingRowProps {
   /** Tap on the title or the status icon: select for editing (most lists) or select (Review close-out). */
   onPress?: () => void;
   state?: 'editing' | 'arming' | 'selected' | 'done';
+  /** Outside the active context (domain/contexts.ts): drawn faint, still tappable. */
+  dimmed?: boolean;
   /** Daily's context filter - see ui/TaskRow.tsx's identical props. */
   contextTag?: string | null;
   onToggleContext?: (tag: string) => void;
@@ -117,6 +119,7 @@ function MeetingRowV2({
   file,
   onPress,
   state,
+  dimmed,
   contextTag,
   onToggleContext,
   ownerPath,
@@ -165,6 +168,7 @@ function MeetingRowV2({
         (state === 'editing' || state === 'arming' || state === 'selected') && v2.rowMarked,
         state === 'selected' && v2.rowSelected,
         done && v2.rowDone,
+        dimmed && v2.rowDimmed,
       ]}>
       <Pressable onPress={onPress} disabled={!onPress} style={v2.main} {...(onPress ? probePressable(probe, 'row') : {})}>
         <View style={[v2.timeCol, {width: TIME_COLUMN_DP[time][layout]}]}>
@@ -244,6 +248,7 @@ const v2 = StyleSheet.create({
   },
   rowSelected: {backgroundColor: '#e8e8e8'},
   rowDone: {opacity: 0.5},
+  rowDimmed: {opacity: 0.4},
   main: {
     flex: 1,
     flexDirection: 'row',

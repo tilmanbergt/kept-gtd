@@ -1,12 +1,12 @@
 /**
- * Settings: one screen with sub-tabs (Folders, Focus, Calendar, Gmail, Note
- * setups, Features, Advanced, About). Calendar and Gmail show only while their
+ * Settings: one screen with sub-tabs (Folders, Focus, Contexts, Calendar,
+ * Gmail, Note setups, Features, Advanced, About). Calendar and Gmail show only while their
  * experimental switch is on.
  *
  * Folders, Focus, Calendar and Gmail edit one shared draft
  * (useSettingsDraft.ts) that only the Save button at the bottom writes.
  * Everything else takes effect at once: Note setups saves each setup itself
- * (noteSetups/), and the switches on Features, Advanced and About write immediately and
+ * (noteSetups/), Contexts saves each context itself, and the switches on Features, Advanced and About write immediately and
  * update the draft too, so a later Save can't write an old value back.
  *
  * `initialTab` lets another screen land on a tab (e.g. a Google Calendar
@@ -36,6 +36,8 @@ import {requestEinkRefresh} from '../../utils/screenRefresh';
 import AboutTab from './AboutTab';
 import AdvancedTab from './AdvancedTab';
 import FeaturesTab from './FeaturesTab';
+import ContextsTab from './contexts/ContextsTab';
+import {useContextsDraft} from './contexts/useContextsDraft';
 import {CalendarTab, FocusTab, FoldersTab, GmailTab} from './DraftTabs';
 import {styles} from './settingsStyles';
 import TouchTestScreen from './TouchTestScreen';
@@ -44,10 +46,11 @@ import {useMyStylePngs} from './noteSetups/useMyStylePngs';
 import {useNoteSetupDraft} from './noteSetups/useNoteSetupDraft';
 import {useSettingsDraft} from './useSettingsDraft';
 
-export type SettingsTab = 'folders' | 'focus' | 'calendar' | 'gmail' | 'templates' | 'features' | 'advanced' | 'about';
+export type SettingsTab = 'folders' | 'focus' | 'contexts' | 'calendar' | 'gmail' | 'templates' | 'features' | 'advanced' | 'about';
 const SETTINGS_TABS: MiniTabDef<SettingsTab>[] = [
   {key: 'folders', label: 'Folders'},
   {key: 'focus', label: 'Focus'},
+  {key: 'contexts', label: 'Contexts'},
   {key: 'calendar', label: 'Calendar'},
   {key: 'gmail', label: 'Gmail'},
   {key: 'templates', label: 'Note setups'},
@@ -82,6 +85,7 @@ export default function Settings({initialTab, onSwitchProfile}: Props): React.JS
   const draft = useSettingsDraft();
   const {values, setValues, setSaveError} = draft;
   const noteSetups = useNoteSetupDraft(values, setValues);
+  const contextsDraft = useContextsDraft(values, setValues);
   const myStyle = useMyStylePngs();
 
   // Integrity Check and Fix file names (Advanced) - result and its action in the status slot.
@@ -241,6 +245,7 @@ export default function Settings({initialTab, onSwitchProfile}: Props): React.JS
         <View style={styles.tabBody}>
           {activeTab === 'folders' && <FoldersTab draft={draft} {...tabProps} />}
           {activeTab === 'focus' && <FocusTab draft={draft} {...tabProps} />}
+          {activeTab === 'contexts' && <ContextsTab draft={contextsDraft} values={values} {...tabProps} />}
           {activeTab === 'calendar' && <CalendarTab draft={draft} {...tabProps} />}
           {activeTab === 'gmail' && <GmailTab draft={draft} {...tabProps} />}
           {activeTab === 'templates' && (

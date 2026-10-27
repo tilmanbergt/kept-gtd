@@ -57,6 +57,9 @@ import {useEntryActions} from '../ui/useEntryActions';
 import {cardOrEdit} from '../ui/useEditTarget';
 import MeetingContextPanel from '../ui/meetingContext/MeetingContextPanel';
 import {useMeetingContextSlot} from '../ui/meetingContext/useMeetingContextSlot';
+import {tallyHidden} from '../domain/contexts';
+import HiddenLine from '../ui/context/HiddenLine';
+import {useContextMatcher} from '../ui/context/useContextMatcher';
 import {useMeetingCard} from '../ui/itemCard/useMeetingCard';
 import {useTodoCard} from '../ui/itemCard/useTodoCard';
 import DailyModeRow from './daily/DailyModeRow';
@@ -91,7 +94,7 @@ export default function DailyView({onOpenItem, onOpenInbox, onOpenCalendarSettin
   const {textColor, borderColor, placeholderColor} = useThemeColors();
   const data = useDailyData('DailyView');
   const {items, inbox, inboxPath, paths, settings, todayDate, tomorrowDate} = data;
-  const actions = useEntryActions('DailyView');
+  const actions = useEntryActions('DailyView', {hiddenNotice: true});
   const {target: editTarget, mode: editMode, select: selectEditTarget, cancel: cancelEditTarget, flushEditRef} = actions.edit;
   const cardMode = cardOrEdit(editMode);
   const features = useFeatures();
@@ -125,17 +128,21 @@ export default function DailyView({onOpenItem, onOpenInbox, onOpenCalendarSettin
   );
 
   const inboxInput = inbox ? {tasks: inbox.tasks, meetings: inbox.meetings} : null;
+  // The active context hides todos and dims meetings (docs/dev/history/technical-design-time-and-place.md §3.3); the tag filter applies on top.
+  const contextFilter = useContextMatcher();
+  const {matcher} = contextFilter;
   // Recomputed after midnight through todayDate (render-perf-ab §3 B4).
   const aggregate: DailyAggregate | null = useMemo(
-    () => (inboxPath !== null ? buildDailyAggregate(items, inboxInput, inboxPath) : null),
+    () => (inboxPath !== null ? buildDailyAggregate(items, inboxInput, inboxPath, new Date(), null, matcher) : null),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- todayDate: recompute after midnight
-    [items, inbox, inboxPath, todayDate],
+    [items, inbox, inboxPath, todayDate, matcher],
   );
   const displayAggregate: DailyAggregate = useMemo(
-    () => (tagFilter ? buildDailyAggregate(items, inboxInput, inboxPath ?? '', new Date(), tagFilter) : aggregate ?? EMPTY_DAILY_AGGREGATE),
+    () => (tagFilter ? buildDailyAggregate(items, inboxInput, inboxPath ?? '', new Date(), tagFilter, matcher) : aggregate ?? EMPTY_DAILY_AGGREGATE),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- todayDate: recompute after midnight
-    [tagFilter, items, inbox, inboxPath, aggregate, todayDate],
+    [tagFilter, items, inbox, inboxPath, aggregate, todayDate, matcher],
   );
+  const hiddenText = contextFilter.lineText(tallyHidden(displayAggregate.hiddenTasks ?? [], contextFilter.kinds));
 
   // dailyEntryDate: a multi-day meeting is listed on each day it covers.
   const meetingsToday = displayAggregate.meetings.filter(entry => dailyEntryDate(entry) === todayDate);
@@ -229,6 +236,7 @@ export default function DailyView({onOpenItem, onOpenInbox, onOpenCalendarSettin
         note={{onOpen: () => actions.meetingNote(entry), onCreate: () => actions.meetingNote(entry)}}
         file={{linkedFile: entry.meeting.linkedFile, onOpen: actions.openFile}}
         onPress={() => selectEditTarget({type: 'meeting', key})}
+        dimmed={entry.contextState === 'dimmed'}
         state={editTarget?.type === 'meeting' && editTarget.key === key ? (cardMode === 'card' ? 'selected' : 'editing') : undefined}
         contextTag={tagFilter}
         onToggleContext={toggleTagFilter}
@@ -373,6 +381,7 @@ export default function DailyView({onOpenItem, onOpenInbox, onOpenCalendarSettin
                 onOpenItem={openItem}
                 tagFilter={tagFilter}
                 failedItemNames={displayAggregate.failedItems.map(f => f.item.name)}
+                footer={context.model ? undefined : <HiddenLine text={hiddenText} onShow={contextFilter.show} textColor={textColor} />}
                 textColor={textColor}
                 borderColor={borderColor}
               />

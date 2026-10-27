@@ -23,11 +23,13 @@ interface Props {
   onOpenItem: (item: DailyItemRef) => void;
   tagFilter: string | null;
   failedItemNames: string[];
+  /** The hidden line (ui/context/HiddenLine.tsx) under the list. */
+  footer?: React.ReactNode;
   textColor: string;
   borderColor: string;
 }
 
-export default function DailyTodosColumn({quickAdd, panel, rows, renderEntry, onOpenItem, tagFilter, failedItemNames, textColor, borderColor}: Props): React.JSX.Element {
+export default function DailyTodosColumn({quickAdd, panel, rows, renderEntry, onOpenItem, tagFilter, failedItemNames, footer, textColor, borderColor}: Props): React.JSX.Element {
   const rowHeight = (row: FlatTaskRow) => (row.kind === 'header' ? GROUP_HEADER_ROW_PX : taskRowHeight(row.entry.task, COLUMN_WIDTH_PX, 'flat', tagFilter != null));
   const renderRow = (row: FlatTaskRow) => {
     if (row.kind === 'header') {
@@ -60,6 +62,7 @@ export default function DailyTodosColumn({quickAdd, panel, rows, renderEntry, on
         borderColor={borderColor}
       />
       )}
+      {footer}
       {failedItemNames.length > 0 && (
         <Text style={[common.error, common.sectionSpacingSmall, {color: textColor}]}>
           ⚠ Couldn't read {failedItemNames.length} item(s): {failedItemNames.join(', ')}

@@ -15,6 +15,7 @@ Kept GTD is a calm GTD and PARA workspace for the Supernote. Your projects, area
 - [Daily and focus mode](daily.md)
 - [Engage](engage.md): your next action, over the note you work in
 - [Week and Month](week-and-month.md)
+- [Contexts](contexts.md): Work, Home, Café - what fits where you are
 - [Quick Add and capture](quick-add.md)
 - [Lasso: capture and mark for later](lasso.md)
 - [Tags](tags.md)
@@ -26,12 +27,11 @@ Kept GTD is a calm GTD and PARA workspace for the Supernote. Your projects, area
 - [Closing out a project](close-out.md)
 - [Weekly Review](review.md)
 - [Note setups](note-setups.md)
-- [Your files and folders](files-and-folders.md)
+- [Your files, folders and Obsidian](files-and-folders.md)
 
 ## Setup and help
 
 - [Settings](settings.md)
 - [Features and integrations](features.md): switch parts on or off, Google Calendar and Gmail (experimental)
 - [Profiles and the demo space](profiles-and-demo.md)
-- [Using Kept GTD with Obsidian](obsidian.md)
 - [Troubleshooting and reporting problems](troubleshooting.md)

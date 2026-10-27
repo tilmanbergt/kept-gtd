@@ -205,6 +205,7 @@ export default function WeekPlanner({
                 keyOf={meetingKey}
                 onPressChip={planning.openMeetingFromGrid}
                 onPressDay={planning.selectDay}
+                isDimmed={planning.isDimmed}
                 textColor={textColor}
                 borderColor={borderColor}
               />

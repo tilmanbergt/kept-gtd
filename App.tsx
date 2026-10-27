@@ -53,6 +53,9 @@ import {clearCachedGmailInbox} from './src/storage/gmailInboxCache';
 import {setActiveProfileId} from './src/storage/profileKeys';
 import {switchProfile} from './src/storage/profiles';
 import {DEFAULT_PROFILE_ID} from './src/domain/profiles';
+import {DEMO_PROFILE_ID} from './src/domain/demoSpace';
+import {activeContext, EVERYTHING_LABEL} from './src/domain/contexts';
+import {useSettings} from './src/ui/useSettings';
 import {clearReturnRecord, getReturnRecord, recordPluginOpen} from './src/storage/returnRecord';
 import {loadSettings, saveSettings} from './src/storage/settingsStorage';
 import {
@@ -208,7 +211,13 @@ function AppShell({onProfileSwitched}: {onProfileSwitched: () => void}): React.J
   const [settingsTab, setSettingsTab] = useState<SettingsTab>('folders');
 
   // Help and the other overlays over the tab body (screens/useAppOverlays.tsx).
-  const overlays = useAppOverlays(mode === 'tabs', activeTab);
+  const overlays = useAppOverlays(mode === 'tabs', activeTab, () => {
+    setSettingsTab('contexts');
+    setActiveTab('settings');
+  });
+  // The tab bar's context chip and demo marker follow the settings snapshot (a switch shows at once).
+  const liveSettings = useSettings();
+  const activeCtx = liveSettings ? activeContext(liveSettings) : null;
   // A Review step asked for from an overview or Engage (screens/review/reviewNav.ts).
   useReviewStepNav(() => {
     overlays.closeOverlays();
@@ -853,6 +862,10 @@ function AppShell({onProfileSwitched}: {onProfileSwitched: () => void}): React.J
         profileLabel={
           settings && settings.activeProfileId !== DEFAULT_PROFILE_ID ? settings.activeProfileId.toUpperCase() : null
         }
+        demo={settings?.activeProfileId === DEMO_PROFILE_ID}
+        contextLabel={activeCtx ? activeCtx.name || 'Unnamed' : EVERYTHING_LABEL}
+        onContextPress={overlays.toggleContext}
+        contextOpen={overlays.contextOpen}
         onProfilePress={openSettingsAdvanced}
         helpOpen={overlays.helpOpen}
         onHelpPress={overlays.toggleHelp}

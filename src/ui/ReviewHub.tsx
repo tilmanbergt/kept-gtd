@@ -139,6 +139,7 @@ function ReviewStepRow({
       </Text>
       <Text style={[styles.rowCount, {color: textColor}]} numberOfLines={1}>
         {state.kind === 'empty' ? 'nothing to review' : countText(def.id, count)}
+        {count.elsewhere ? ` · +${count.elsewhere} in other contexts` : ''}
       </Text>
       <Text style={[styles.rowLast, {color: textColor}, alarm && styles.rowLastAlarm]} numberOfLines={1}>
         {alarm ? '● ' : ''}

@@ -27,18 +27,20 @@ interface Props {
   meeting: Meeting;
   span?: MeetingSpanDay;
   editing?: boolean;
+  /** Outside the active context: drawn faint, still tappable. */
+  dimmed?: boolean;
   onPress: () => void;
   textColor: string;
   borderColor: string;
 }
 
-export default function MeetingChip({meeting, span, editing, onPress, textColor, borderColor}: Props): React.JSX.Element {
+export default function MeetingChip({meeting, span, editing, dimmed, onPress, textColor, borderColor}: Props): React.JSX.Element {
   perfCount('row:meetingChip');
   const fg = editing ? inverse(textColor) : textColor;
   return (
     <Pressable
       onPress={onPress}
-      style={[styles.chip, {borderBottomColor: borderColor}, editing && {backgroundColor: textColor}]}>
+      style={[styles.chip, {borderBottomColor: borderColor}, editing && {backgroundColor: textColor}, dimmed && styles.dimmed]}>
       <Text style={[styles.time, {color: fg}]} numberOfLines={1}>
         {meetingTimeCell(meeting, span, 'time').oneLine}
       </Text>
@@ -71,4 +73,5 @@ const styles = StyleSheet.create({
   },
   labelHighlight: {fontWeight: '700'},
   focusMark: {fontWeight: '700'},
+  dimmed: {opacity: 0.4},
 });

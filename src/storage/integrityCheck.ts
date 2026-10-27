@@ -27,6 +27,7 @@
  */
 import {
   checkLegacyInboxLeftovers,
+  checkUnknownContextEntries,
   checkWriteLeftovers,
   formatIntegrityReport,
   IntegrityCheckIO,
@@ -290,6 +291,7 @@ export async function runIntegrityCheck(settings: GtdParaSettings): Promise<Inte
     ...wholeRunFindings,
     ...leftoverFindings,
     ...checkWriteLeftovers(writeLeftovers),
+    ...checkUnknownContextEntries(settings.contexts ?? [], summaries),
     ...fileNameFindings(fixes, reportOnly, folders),
   ];
 

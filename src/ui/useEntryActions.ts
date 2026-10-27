@@ -51,6 +51,7 @@ import {useEngagePrompt} from './useEngagePrompt';
 import {useEntryMoveUi} from './useEntryMoveUi';
 import {useNoteCreateConfirm} from './useNoteCreateConfirm';
 import {useSettings} from './useSettings';
+import {useHiddenAddNotice} from './context/useHiddenAddNotice';
 import {MeetingCardOptions} from './itemCard/useMeetingCard';
 import {TodoCardOptions} from './itemCard/useTodoCard';
 import {openOrCreateReflectionPage} from '../storage/reflectionPage';
@@ -68,8 +69,12 @@ export interface EntryEditKey {
 export const taskEntryKey = (e: ThreadTaskEntry) => `${e.item.path}#${e.taskIndex}`;
 export const meetingEntryKey = (e: ThreadMeetingEntry) => `${e.item.path}#${e.meetingIndex}`;
 
-/** `name`: the log prefix and status-slot id prefix of the screen using it. */
-export function useEntryActions(name = 'ThreadOverview') {
+/**
+ * `name`: the log prefix and status-slot id prefix of the screen using it.
+ * `hiddenNotice`: a screen the active context filters (Daily) says when an add
+ * lands outside it (ui/context/useHiddenAddNotice.ts).
+ */
+export function useEntryActions(name = 'ThreadOverview', options: {hiddenNotice?: boolean} = {}) {
   const LOG = name;
   const inbox = useCachedInbox();
   const paths = getCachedData()?.paths ?? null;
@@ -82,6 +87,7 @@ export function useEntryActions(name = 'ThreadOverview') {
   const rowAction = useActionError(`${LOG}.rowError`, `${LOG}: row action failed`);
   const engagePrompt = useEngagePrompt(LOG);
   const ctx = {inbox, inboxPath};
+  const hiddenNotice = useHiddenAddNotice(LOG);
 
   /**
    * Writes one entry's tasks. Returns the written Inbox for an Inbox entry
@@ -105,14 +111,18 @@ export function useEntryActions(name = 'ThreadOverview') {
   const currentSettings = async () => settings ?? (await loadSettings());
 
   const addTask = async (line: string, destination: Destination): Promise<void> => {
-    const {nextInbox} = await addTaskToDestination(buildTask(line), destination, ctx);
+    const task = buildTask(line);
+    const {nextInbox} = await addTaskToDestination(task, destination, ctx);
     if (nextInbox) setCachedInbox(nextInbox);
     log(`${LOG}: added task`, destinationLabel(destination));
+    if (options.hiddenNotice) hiddenNotice(destination, {kind: 'task', tags: task.tags});
   };
   const addMeeting = async (fields: MeetingQuickAddFields, destination: Destination): Promise<void> => {
-    const {nextInbox} = await addMeetingToDestination(buildMeeting(fields), destination, ctx);
+    const meeting = buildMeeting(fields);
+    const {nextInbox} = await addMeetingToDestination(meeting, destination, ctx);
     if (nextInbox) setCachedInbox(nextInbox);
     log(`${LOG}: added meeting`, destinationLabel(destination));
+    if (options.hiddenNotice) hiddenNotice(destination, {kind: 'meeting', tags: meeting.tags});
   };
 
   const toggleDone = (entry: ThreadTaskEntry) =>

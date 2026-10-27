@@ -41,7 +41,7 @@ const entryKey = (e: LoopRosterEntry) => `${e.owner.path}|${e.glance.line.tag}`;
 /** The live roster of open loops. */
 export function useLoopRoster(data: ReviewData): LoopRosterScope[] {
   const {kinds} = useLoopKinds();
-  const {items} = data;
+  const {contextItems: items} = data;
   return useMemo(() => buildLoopRoster(items, kinds, todayIso()), [items, kinds]);
 }
 

@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-112 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+116 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -103,6 +103,56 @@ Test: `__tests__/scenarios/closeOut.test.tsx` · design: `docs/dev/history/techn
 - **Then** the PDF's footer line says "Created by Kept GTD"
 
 Test: `__tests__/scenarios/keptGtd.test.tsx`
+
+## Contexts
+
+### A context filters Daily: hidden todos, dimmed meetings, the hidden line and Show
+
+- **Given** contexts Work (Area Atruvia) and Home (Area Garden)
+- **When** I open Daily and choose Home from the chip in the tab bar
+- **Then** the chip names Home, and the status line says so
+- **And** Atruvia's next todos are hidden, Garden's, the Inbox and an overdue Atruvia todo show
+- **And** Atruvia's meeting is still listed (dimmed), and the hidden line counts the hidden todos
+- **When** I tap Show
+- **Then** everything shows
+- **When** I switch to Week and back to Daily
+- **Then** Home filters again
+
+Test: `__tests__/scenarios/contexts.test.tsx`
+
+### A context filters Areas, Projects and Review; Reviewed stays global
+
+- **Given** contexts Work and Home, Home active
+- **When** I open Areas
+- **Then** only Garden is listed, and the hidden line counts Atruvia
+- **When** I open Review
+- **Then** Stalled projects counts Home's project and "+1 in other contexts"
+- **When** I open the step
+- **Then** it lists Shed and not Tender
+- **When** I mark it Reviewed, choose Everything and open Review's overview again
+- **Then** Stalled projects counts both and shows today's review: the mark is global
+
+Test: `__tests__/scenarios/contexts.test.tsx`
+
+### Quick Add says when the entry lands outside the context
+
+- **Given** Home is active and Atruvia has the abbreviation AT
+- **When** I add "Prepare offer #AT" on Daily
+- **Then** it is in Atruvia's file, and the status line says "Saved to Atruvia · hidden by Home"
+
+Test: `__tests__/scenarios/contexts.test.tsx`
+
+### Settings → Contexts: create Café, then choose it from the chip
+
+- **Given** a space with todos tagged #reading and #computer
+- **When** I create the context "Café" with Shows #reading and Hides #computer
+- **Then** the preview counts what it shows
+- **When** I save and open the chip's menu
+- **Then** Café is listed with its summary and count
+- **When** I choose it
+- **Then** the chip names Café
+
+Test: `__tests__/scenarios/contexts.test.tsx`
 
 ## Daily
 
@@ -684,10 +734,10 @@ Test: `__tests__/scenarios/keptGtd.test.tsx`
 
 - **Given** my real PARA folder has project "Website" and an empty Inbox
 - **When** I create the demo space in Settings → Advanced and switch to it
-- **Then** the tab bar says DEMO and Projects shows the demo projects, not "Website"
+- **Then** the tab bar shows the boxed D and Projects shows the demo projects, not "Website"
 - **When** I add the todo "Try the demo" in the Inbox
 - **Then** it is in the demo space's Inbox.txt, and my real Inbox.txt is untouched
-- **When** I tap DEMO in the tab bar and switch back to Production
+- **When** I tap the D in the tab bar and switch back to Production
 - **Then** "Website" is back, and the demo todo is not in my Inbox
 - **And** both profiles are saved as files in EXPORT/kept-gtd/profiles
 
@@ -697,7 +747,7 @@ Test: `__tests__/scenarios/profiles.test.tsx` · design: `docs/dev/history/techn
 
 - **Given** the smoke space on Wednesday 14.10.2026
 - **When** I create the demo space in Settings → Advanced and switch to it
-- **Then** Daily shows the demo's content
+- **Then** Daily shows the demo's content under the inverted tab bar with its D
 - **When** I switch back to Production
 - **Then** Daily shows the smoke space again
 - **And** no error was logged

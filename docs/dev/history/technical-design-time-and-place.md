@@ -467,3 +467,35 @@ tests were deleted with its code, lower that baseline by hand in S6 with the rea
   a day without toggling. Month's back row: left = close the day panel, right = back to the day panel. Review's
   Week ahead gets all of this through `WeekPlanner`; `rightSide="schedule-only"` comes with Given time in S4.
 
+### S3 - Contexts
+
+- Domain as designed in `domain/contexts.ts` (`contextMatcher`, `activeContext`, `tallyHidden`, texts,
+  `renameItemInContexts`, `unknownContextEntries`). `contextMatcher(ctx)` needs no item list: an item entry is
+  matched by kind + folder name and a Project's `area:`; `meetingState` returns only `shown`/`dimmed` (never
+  hidden, rule 6).
+- **`activeContextId` is a string, '' = Everything** (not `string | null`): profile files keep a key only when its
+  value has the default's kind (`sanitizeProfileSettings`), and `null` would drop every chosen id on a profile
+  switch. `contexts` and `activeContextId` are per profile through `PROFILE_KEYS`.
+- Applied: `dailyAggregate` (`matcher` parameter; `hiddenTasks`, meeting `contextState`), Week chips and the day
+  panels (`usePlanningScreen.isDimmed`), `ItemsList`, Review (`filterReviewAggregate` over the aggregate,
+  `contextItems` for the tending/loop rosters and Agreements; the hub's `withElsewhere` adds `elsewhere`). The
+  Review's empty stamps and its hide-when-empty rule use the unfiltered counts, so Reviewed and overdue stay
+  global (Q2). Month's day rows (highlight labels) are not dimmed; its day panel is.
+- Week/Month have no hidden line until Given time (S4): meetings are dimmed, nothing is hidden.
+- `ui/context/{ContextMenu,HiddenLine,useContextMatcher,useHiddenAddNotice}`; the chip is in `TabBar` (props
+  `contextLabel`, `demo`); the menu is an overlay in `useAppOverlays`. The menu's count is the open `#next` todos
+  of active items the context shows. The hidden-add notice is a `warning`, so it shows over Quick Add's own
+  "Added …" success line.
+- Settings → Contexts (`screens/settings/contexts/`): list left, editor right; chips through `TagChipGrid` for
+  Areas, Projects and tags (recent tags plus the context tags found in open todos and meetings) instead of
+  `DestinationPicker`/`SetupTagPicker` - one chip control for all three kinds. Until S5 removes the Focus tab the
+  strip has 9 tabs (Folders, Focus, Contexts, Calendar, Gmail, Note setups, Features, Advanced, About).
+- Item rename: the contexts follow the home notebook rename (`ui/useHomeNotebookRenameOffer.ts`, after
+  `renameHomeNotebook`; storage stays free of settings writes there); other renames are reported by the
+  Integrity Check (`unknownContextEntry`).
+- DEMO: `demo` inverts the bar (`COLORS.accent` background, `accentText` labels and underline) with a boxed "D"
+  (accessibility label "Demo space"); other non-default profiles keep their id there. Changed tests: the smoke and
+  full profile scenarios look for the D instead of "DEMO"; the current-page golden gains the chip.
+- Help: `contexts.md` (area `contexts`). The 27-row help list made room by folding `obsidian.md` into
+  `files-and-folders.md` ("Your files, folders and Obsidian", same area).
+

@@ -52,6 +52,8 @@ import {useActionError} from '../ui/useActionError';
 import {errorMessage} from '../utils/errorMessage';
 import {useCachedInbox} from '../ui/useCachedInbox';
 import {MeetingCardOptions} from '../ui/itemCard/useMeetingCard';
+import {useContextMatcher} from '../ui/context/useContextMatcher';
+import {useHiddenAddNotice} from '../ui/context/useHiddenAddNotice';
 
 /** Stable identity of one listed meeting (source file + index) - what `editingKey` holds. */
 export const meetingKey = (entry: WeeklyMeetingEntry) => `${entry.item.path}#${entry.meetingIndex}`;
@@ -171,16 +173,21 @@ export function usePlanningScreen({logTag}: Options) {
     if (nextInbox) setCachedInbox(nextInbox);
   };
 
+  const hiddenNotice = useHiddenAddNotice(logTag);
   const handleAddTask = async (text: string, destination: Destination): Promise<void> => {
-    const {nextInbox} = await addTaskToDestination(buildTask(text), destination, {inbox, inboxPath});
+    const task = buildTask(text);
+    const {nextInbox} = await addTaskToDestination(task, destination, {inbox, inboxPath});
     if (nextInbox) setCachedInbox(nextInbox);
     log(`${logTag}: added task`, destinationLabel(destination));
+    hiddenNotice(destination, {kind: 'task', tags: task.tags});
   };
 
   const handleAddMeeting = async (fields: MeetingQuickAddFields, destination: Destination): Promise<void> => {
-    const {nextInbox} = await addMeetingToDestination(buildMeeting(fields), destination, {inbox, inboxPath});
+    const meeting = buildMeeting(fields);
+    const {nextInbox} = await addMeetingToDestination(meeting, destination, {inbox, inboxPath});
     if (nextInbox) setCachedInbox(nextInbox);
     log(`${logTag}: added meeting`, destinationLabel(destination));
+    hiddenNotice(destination, {kind: 'meeting', tags: meeting.tags});
   };
 
   // Save-then-switch: every change of the selection first saves the
@@ -268,6 +275,14 @@ export function usePlanningScreen({logTag}: Options) {
 
   const trackingFor = (): MeetingTrackingConfig => ({setups: trackingSetups(settings)});
 
+  // The active context dims meetings outside it, never hides them (docs/dev/history/technical-design-time-and-place.md §3.3).
+  const contextFilter = useContextMatcher();
+  const isDimmed = (entry: WeeklyMeetingEntry): boolean => {
+    if (!contextFilter.context || contextFilter.showAll) return false;
+    const owner = entry.item.kind === 'inbox' ? 'inbox' : items.find(i => i.path === entry.item.path);
+    return !!owner && contextFilter.matcher.meetingState(owner, entry.meeting) === 'dimmed';
+  };
+
   /**
    * The selected meeting's card (docs/dev/history/technical-design-item-card.md
    * §6) - pass to ui/itemCard/useMeetingCard.ts. No Files pane here: no
@@ -341,6 +356,7 @@ export function usePlanningScreen({logTag}: Options) {
     note: {onOpen: () => handleMeetingNote(entry), onCreate: () => handleMeetingNote(entry)},
     file: {linkedFile: entry.meeting.linkedFile, onOpen: onOpenLinkedFile},
     onPress: () => selectMeeting(entry),
+    dimmed: isDimmed(entry),
     state: editingKey === meetingKey(entry) ? (editMode === 'edit' ? 'editing' : 'selected') : undefined,
     ownerPath: entry.item.path,
     textColor: opts.textColor,
@@ -391,6 +407,8 @@ export function usePlanningScreen({logTag}: Options) {
     openDay,
     closeDayPanel,
     dayRowProps,
+    isDimmed,
+    contextFilter,
     flushEditRef,
   };
 }

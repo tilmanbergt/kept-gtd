@@ -8,6 +8,8 @@
  * (both files exist) is left to the Integrity Check; an outdated name with
  * nothing to move is brought up to date quietly.
  */
+import {renameItemInContexts} from '../domain/contexts';
+import {patchSettings} from '../storage/settingsStorage';
 import {useEffect, useRef} from 'react';
 import {renameDoneText, renameOfferText} from '../domain/homeNotebook';
 import {findCachedItem} from '../storage/dataCache';
@@ -15,7 +17,7 @@ import {detectHomeNotebookRename, rememberItemName, renameHomeNotebook} from '..
 import {loadSettings} from '../storage/settingsStorage';
 import {peekSettings} from '../storage/settingsSnapshot';
 import {errorMessage} from '../utils/errorMessage';
-import {logWarn} from '../utils/log';
+import {log, logWarn} from '../utils/log';
 import {useActionError} from './useActionError';
 import {useStatusChoice} from './useStatusChoice';
 import {useStatusApi} from './status/StatusProvider';
@@ -47,6 +49,12 @@ export function useHomeNotebookRenameOffer(name: string, itemPath: string, enabl
       if (choice !== 0) return;
       await run(async () => {
         const result = await renameHomeNotebook(item, offer, settings);
+        // Contexts name items by folder (docs/dev/history/technical-design-time-and-place.md §3.3): they follow the rename.
+        const contexts = renameItemInContexts(settings.contexts ?? [], item.kind, offer.move.from, offer.move.to);
+        if (contexts !== settings.contexts) {
+          await patchSettings({contexts: [...contexts]});
+          log('useHomeNotebookRenameOffer: contexts updated');
+        }
         statusApi.show(doneId, {
           kind: result.failed > 0 ? 'warning' : 'success',
           text: renameDoneText(offer.move.toFile, result.linksUpdated, result.failed),

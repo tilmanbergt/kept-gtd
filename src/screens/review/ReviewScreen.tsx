@@ -40,7 +40,7 @@ import {getCachedData, setCachedInbox} from '../../storage/dataCache';
 import {getCachedGmailInbox} from '../../storage/gmailInboxCache';
 import {addTaskToDestination, buildTask} from '../../storage/itemMutations';
 import {loadProjectFile} from '../../storage/projectFile';
-import {buildReviewStepCounts, isActionableOpenTask, ReviewItemRef, ReviewProjectEntry} from '../../storage/reviewAggregate';
+import {buildReviewStepCounts, isActionableOpenTask, ReviewItemRef, ReviewProjectEntry, withElsewhere} from '../../storage/reviewAggregate';
 import {loadSettings, updateReviewSteps} from '../../storage/settingsStorage';
 import {FolderEntry} from '../../supernote/fileSystem';
 import {common} from '../../ui/commonStyles';
@@ -221,30 +221,42 @@ export default function ReviewScreen({onOpenItem, onReviewRecorded, onOpenCalend
   const tendingRoster = useTendingRoster(data);
   const loopRoster = useLoopRoster(data);
   const agreementReview = useAgreementReview(data);
+  // The same without the active context: the hub's "+n in other contexts" and the global empty stamps (Q2).
+  const allData = {...data, contextItems: data.items};
+  const tendingRosterAll = useTendingRoster(allData);
+  const loopRosterAll = useLoopRoster(allData);
+  const agreementReviewAll = useAgreementReview(allData);
   // The hub's per-step numbers, from the same aggregate the steps read.
   const inboxEntries = inboxStepEntries(inbox);
   const week = weekAheadRangeIso();
-  const stepCounts =
-    aggregate && settings
+  const countsOf = (
+    agg: typeof aggregate,
+    rosters: {tending: typeof tendingRoster; loops: typeof loopRoster; agreements: typeof agreementReview},
+  ) =>
+    agg && settings
       ? buildReviewStepCounts(
-          aggregate,
+          agg,
           inboxEntries.openTasks.length + inboxEntries.openMeetings.length + openMarkCount,
           items,
           settings,
           getCachedGmailInbox()?.length ?? 0,
           countMeetingsInRange(inbox?.meetings ?? [], week.start, week.end),
-          tendingCount(tendingRoster),
-          openLoopsCount(loopRoster),
-          agreementsStepCount(agreementReview),
+          tendingCount(rosters.tending),
+          openLoopsCount(rosters.loops),
+          agreementsStepCount(rosters.agreements),
         )
       : null;
+  const countsAll = countsOf(data.aggregateAll, {tending: tendingRosterAll, loops: loopRosterAll, agreements: agreementReviewAll});
+  const countsShown = countsOf(aggregate, {tending: tendingRoster, loops: loopRoster, agreements: agreementReview});
+  const stepCounts = countsShown && countsAll ? withElsewhere(countsShown, countsAll) : null;
   // What the hub and the walk-through show: a hide-when-empty step (Agreements) only while it lists
-  // something, or while it is the step shown. Empty stamps go over every step (the tab badge).
-  const activeSteps = visibleReviewSteps(allSteps, stepCounts, view.kind === 'step' ? view.id : null);
+  // something anywhere, or while it is the step shown. Empty stamps go over every step (the tab badge)
+  // and count every context: Reviewed marks and the overdue date are global (Q2).
+  const activeSteps = visibleReviewSteps(allSteps, countsAll, view.kind === 'step' ? view.id : null);
   // Backlog steps with nothing in them, as a string so the effect below only runs when that set changes.
-  const emptyBacklogKey = stepCounts
+  const emptyBacklogKey = countsAll
     ? allSteps
-        .filter(def => def.kind === 'backlog' && stepCounts[def.id].n === 0)
+        .filter(def => def.kind === 'backlog' && countsAll[def.id].n === 0)
         .map(def => def.id)
         .join(',')
     : null;

@@ -11,6 +11,12 @@ or your project/area files are stored.
 ## [Unreleased]
 
 ### New
+- **Contexts**: Work, Home, Café - set them up in **Settings → Contexts** (areas, projects and tags
+  the context shows or hides) and switch with the chip in the tab bar. A context filters Daily, Week,
+  Month, Projects, Areas and the Weekly Review; the Inbox and todos due today or earlier always show,
+  meetings outside it are dimmed, never hidden. Every filtered tab ends with "Hidden by Work: 9 todos
+  · Show". The Review's overview adds "+2 in other contexts"; Reviewed counts for every context.
+  Quick Add says when a new todo lands outside the context: "Saved to Atruvia · hidden by Home".
 - **Focus blocks**: time for yourself with a loop, thread, project or area. Switch on **F** next to
   **M** in Quick Add's Meeting form (or on a meeting's card); the line gets the tag `#focusblock`,
   so it stays an ordinary meeting in your files. Focus blocks show a filled **F** wherever meetings
@@ -27,6 +33,8 @@ or your project/area files are stored.
   directly from its page and from the Weekly Review, without the checklist and the PDF.
 
 ### Changed
+- The demo space is now marked by a boxed **D** and an inverted (black) tab bar.
+- "Using Kept GTD with Obsidian" is now part of the help page "Your files, folders and Obsidian".
 - **Week**: tapping a meeting in the grid shows its card and context panel with "‹ Back to Week 42 ·
   Thu 15.10. · 2 meetings ›" instead of opening its day; tapping the day's header still opens the
   day. **Month**: a meeting in the day panel opens the same way, with "‹ Back to October".
@@ -38,6 +46,8 @@ or your project/area files are stored.
 - Daily opens a little faster the first time.
 
 ### Upgrade notes
+- New settings for contexts (stored per profile). After the update the context is **Everything**, so
+  every tab shows what it showed before.
 - Google Calendar, Gmail and Notebook contents keep their setting and are now in Settings → Features.
   Project close-out is on, as before.
 

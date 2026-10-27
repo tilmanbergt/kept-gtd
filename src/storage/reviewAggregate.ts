@@ -68,13 +68,14 @@
  *   §2.10): active and on-hold Projects/Areas with open Someday/Maybe todos,
  *   for the "Someday / Maybe" step; archived items are never in the cache.
  */
+import {ContextMatcher} from '../domain/contexts';
 import {AgreementReviewGroup, agreementsToReview as reviewAgreements} from '../domain/agreementReview';
 import {NoteSetup} from '../domain/noteSetups';
 import {engageSourceOf} from './engageAggregate';
 import {isFocused} from '../domain/destination';
 import {isSomedayMaybe} from '../domain/flowState';
 import {countMeetingsInRange} from '../domain/meetingSpan';
-import {meetingTimestampMs, splitAndSortMeetings} from '../domain/meetingTime';
+import {meetingTimestampMs, splitAndSortMeetings, todayIso} from '../domain/meetingTime';
 import {isReviewOutstanding} from '../domain/meetingTracking';
 import {EMPTY_NOTE_SETUP_CONFIG, NoteSetupConfig} from '../domain/noteSetups';
 import {ReviewStepId} from '../domain/reviewSteps';
@@ -299,6 +300,53 @@ export function buildReviewAggregate(
 export interface ReviewStepCount {
   n: number;
   of?: number;
+  /** What the active context leaves out of the step: the hub's "+n in other contexts" (Q2). */
+  elsewhere?: number;
+}
+
+/**
+ * The aggregate under the active context (docs/dev/history/technical-design-time-and-place.md
+ * §3.3, Q2): each step lists the context's items and todos; meetings to close
+ * out keep the ones the context shows. Week ahead keeps every meeting (the
+ * Week view dims, never hides). Everything (`matcher.context` null) returns
+ * the aggregate itself.
+ */
+export function filterReviewAggregate(aggregate: ReviewAggregate, matcher: ContextMatcher, items: readonly CachedItem[], now: Date = new Date()): ReviewAggregate {
+  if (!matcher.context) return aggregate;
+  const byPath = new Map(items.map(i => [i.path, i] as const));
+  const shown = (ref: ReviewItemRef) => {
+    const item = byPath.get(ref.path);
+    return !item || matcher.itemShown(item);
+  };
+  const today = todayIso(now);
+  return {
+    ...aggregate,
+    stalledProjects: aggregate.stalledProjects.filter(e => shown(e.item)),
+    doneProjects: aggregate.doneProjects.filter(shown),
+    onHoldItems: aggregate.onHoldItems.filter(shown),
+    neglectedAreas: aggregate.neglectedAreas.filter(e => shown(e.item)),
+    unfocusedNextItems: aggregate.unfocusedNextItems.filter(e => shown(e.item)),
+    somedayItems: aggregate.somedayItems
+      .map(e => {
+        const item = byPath.get(e.item.path);
+        return item ? {...e, tasks: e.tasks.filter(t => matcher.taskShown(item, t.task, today))} : e;
+      })
+      .filter(e => e.tasks.length > 0),
+    meetingsToClose: aggregate.meetingsToClose.filter(e => {
+      const item = byPath.get(e.item.path);
+      return !item || matcher.meetingState(item, e.meeting) === 'shown';
+    }),
+  };
+}
+
+/** `counts` with each step's `elsewhere` set from the counts without the context (`all`). */
+export function withElsewhere(counts: Record<ReviewStepId, ReviewStepCount>, all: Record<ReviewStepId, ReviewStepCount>): Record<ReviewStepId, ReviewStepCount> {
+  const out = {...counts};
+  for (const id of Object.keys(counts) as ReviewStepId[]) {
+    const elsewhere = all[id].n - counts[id].n;
+    if (elsewhere > 0) out[id] = {...counts[id], elsewhere};
+  }
+  return out;
 }
 
 /**

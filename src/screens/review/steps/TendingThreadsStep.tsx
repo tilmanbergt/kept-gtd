@@ -50,7 +50,7 @@ const entryKey = (e: RosterEntry) => `${e.owner.path}|${e.counterpart.leaf}`;
 
 /** The live roster of every scope, or null until settings (the Note setups) are loaded. */
 export function useTendingRoster(data: ReviewData): RosterScope[] | null {
-  const {items, inbox, inboxPath, settings} = data;
+  const {contextItems: items, inbox, inboxPath, settings} = data;
   return useMemo(() => {
     if (!settings) return null;
     const inboxInput = inbox && inboxPath ? {path: inboxPath, tasks: inbox.tasks, meetings: inbox.meetings} : null;

@@ -10,6 +10,7 @@ import type {EngageOwner, EngageTodoKey} from './engageOwner';
 import type {NoteSetup, NoteSetupDefaults} from './noteSetups';
 import {ReviewStepsMap} from './reviewSteps';
 import {DEFAULT_MODULES, Modules} from './features';
+import type {ContextDef} from './contexts';
 
 export interface GtdParaSettings {
   baseRoot: string;
@@ -188,6 +189,14 @@ export interface GtdParaSettings {
    * key from its default, so stored settings without the map need no migration.
    */
   modules: Modules;
+  /**
+   * Contexts (docs/dev/history/technical-design-time-and-place.md §3.3,
+   * domain/contexts.ts): Work, Home, Café - what Daily, Week, Month, Projects,
+   * Areas and Review show. Per profile; edited in Settings → Contexts.
+   */
+  contexts: ContextDef[];
+  /** The active context's id; '' = Everything. Per profile; chosen from the tab bar's chip. */
+  activeContextId: string;
   /** Debug logging: also append every log line to a rotating file in the debug folder (utils/logSink.ts). */
   debugLogging: boolean;
   /**
@@ -248,6 +257,8 @@ export const DEFAULT_SETTINGS: GtdParaSettings = {
   experimentalGoogleCalendar: false,
   experimentalGmail: false,
   modules: DEFAULT_MODULES,
+  contexts: [],
+  activeContextId: '',
   debugLogging: false,
   notebookContentsEnabled: true,
   lastSeenVersion: '',

@@ -40,6 +40,8 @@ interface Props {
   keyOf: (entry: WeeklyMeetingEntry) => string;
   onPressChip: (entry: WeeklyMeetingEntry) => void;
   onPressDay: (date: string) => void;
+  /** Outside the active context (domain/contexts.ts): the chip is drawn faint. */
+  isDimmed?: (entry: WeeklyMeetingEntry) => boolean;
   textColor: string;
   borderColor: string;
 }
@@ -77,6 +79,7 @@ function WeekDayBlock({
   keyOf,
   onPressChip,
   onPressDay,
+  isDimmed,
   textColor,
   borderColor,
 }: Props & {label: string; date: string; rows: number; weekend: boolean; entries: WeeklyMeetingEntry[]}): React.JSX.Element {
@@ -127,6 +130,7 @@ function WeekDayBlock({
                 meeting={entry.meeting}
                 span={entry.span}
                 editing={editingKey === keyOf(entry)}
+                dimmed={isDimmed?.(entry)}
                 onPress={() => onPressChip(entry)}
                 textColor={textColor}
                 borderColor={borderColor}

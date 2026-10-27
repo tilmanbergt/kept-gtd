@@ -53,6 +53,12 @@
  * not tagged `#AT` itself. When `contextTag` matches no abbrev, the tag-only
  * behavior above applies. Never reaches the synthetic Inbox item - Inbox has
  * no abbrev, so `contextItemPath` can never equal `inboxPath`.
+ *
+ * The active context (docs/dev/history/technical-design-time-and-place.md
+ * §3.3, domain/contexts.ts) applies on top, as `matcher`: a todo the rule
+ * above lets through but the context hides goes to `hiddenTasks` (the
+ * hidden line counts them); the Inbox and todos due today or earlier always
+ * pass. Meetings are never hidden, only marked `contextState: 'dimmed'`.
  */
 import {entriesInRange, entryDate, MeetingSpanDay} from '../domain/meetingSpan';
 import {resolveAbbrevPath} from '../domain/abbrev';
@@ -60,6 +66,7 @@ import {isFocused} from '../domain/destination';
 import {isWaitingForShownOnDaily} from '../domain/flowState';
 import {isoDateOffset, meetingTimestampMs, todayIso} from '../domain/meetingTime';
 import {GtdParaKind, Meeting, Task} from '../domain/types';
+import {ContextItem, ContextMatcher, MeetingContextState} from '../domain/contexts';
 import {CachedItem} from './dataCache';
 import {perfTime} from '../utils/perf';
 
@@ -93,6 +100,8 @@ export interface DailyMeetingEntry {
   meeting: Meeting;
   /** Set only for a multi-day meeting - which covered day (today or tomorrow) this entry stands for; see storage/weeklyAggregate.ts's entriesInRange. */
   span?: MeetingSpanDay;
+  /** 'dimmed' when the active context leaves the meeting out (domain/contexts.ts); absent = shown. */
+  contextState?: MeetingContextState;
 }
 
 export interface DailyAggregate {
@@ -102,6 +111,8 @@ export interface DailyAggregate {
   meetings: DailyMeetingEntry[];
   /** Items whose data file failed to load on the last cache build - reported, not silently dropped from the rest of the aggregate. */
   failedItems: Array<{item: DailyItemRef; error: string}>;
+  /** Todos the rule shows but the active context hides (empty without a matcher). */
+  hiddenTasks?: DailyTaskEntry[];
 }
 
 /** Just the two arrays buildDailyAggregate needs from Inbox.txt - storage/projectFile.ts's ProjectFileState carries more than this, callers pass just these two fields. `null` when Inbox hasn't loaded yet (same "not loaded yet" gap DailyView's own handlers already guard against elsewhere). */
@@ -117,15 +128,29 @@ function buildDailyAggregateImpl(
   inboxPath: string,
   now: Date = new Date(),
   contextTag: string | null = null,
+  matcher: ContextMatcher | null = null,
 ): DailyAggregate {
   const todayDate = todayIso(now);
   const tomorrowDate = isoDateOffset(1, now);
   // See the module doc comment's "Project/Area-aware" note.
   const contextItemPath = contextTag ? resolveAbbrevPath(contextTag, items) : null;
 
-  const tasks: DailyTaskEntry[] = [];
+  const shownTasks: DailyTaskEntry[] = [];
+  const hiddenTasks: DailyTaskEntry[] = [];
   const meetings: DailyMeetingEntry[] = [];
   const failedItems: DailyAggregate['failedItems'] = [];
+  // Every todo the rule lets through passes the context here.
+  const tasks = {
+    push(entry: DailyTaskEntry) {
+      const owner = !matcher ? null : entry.item.kind === 'inbox' ? 'inbox' : contextItemOf(items, entry.item.path);
+      if (!matcher || owner === null || matcher.taskShown(owner, entry.task, todayDate)) shownTasks.push(entry);
+      else hiddenTasks.push(entry);
+    },
+  };
+  const withState = (entries: DailyMeetingEntry[], owner: ContextItem | 'inbox'): DailyMeetingEntry[] => {
+    if (!matcher) return entries;
+    return entries.map(e => (matcher.meetingState(owner, e.meeting) === 'dimmed' ? {...e, contextState: 'dimmed' as const} : e));
+  };
 
   for (const cachedItem of items) {
     const item: DailyItemRef = {
@@ -175,7 +200,7 @@ function buildDailyAggregateImpl(
     cachedItem.meetings.forEach((meeting, meetingIndex) => {
       if (contextTag && !meeting.tags.includes(contextTag) && !inContextItem) return;
       // Multi-day meetings show on every covered day (one entry per day).
-      if (!meeting.cancelled) meetings.push(...entriesInRange({item, meetingIndex, meeting}, todayDate, tomorrowDate));
+      if (!meeting.cancelled) meetings.push(...withState(entriesInRange({item, meetingIndex, meeting}, todayDate, tomorrowDate), cachedItem));
     });
   }
 
@@ -211,7 +236,12 @@ function buildDailyAggregateImpl(
 
   meetings.sort((a, b) => meetingTimestampMs(a.meeting, now) - meetingTimestampMs(b.meeting, now));
 
-  return {tasks, meetings, failedItems};
+  return {tasks: shownTasks, meetings, failedItems, hiddenTasks};
+}
+
+/** The Project or Area at `path` as the context matcher reads it. */
+function contextItemOf(items: readonly CachedItem[], path: string): ContextItem | null {
+  return items.find(i => i.path === path) ?? null;
 }
 
 /** The day a Daily meeting entry is listed under - its covered day for a multi-day meeting, else its date. */
