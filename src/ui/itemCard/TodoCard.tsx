@@ -49,11 +49,6 @@ export default function TodoCard({card, textColor, borderColor}: Props): React.J
           {letter(model.done ? '✓' : '☐')}
         </SquareButton>
         <FlowStateChips value={model.flowState} onChange={card.onFlow} compact textColor={textColor} borderColor={borderColor} />
-        {model.nowOffered ? (
-          <SquareButton label="Now" on={model.now} onPress={card.onToggleNow} {...colors}>
-            {letter('Now')}
-          </SquareButton>
-        ) : null}
         <SquareButton label={model.note === 'open' ? 'Open note' : 'Create note'} onPress={card.onNote} {...colors}>
           {color => <NotebookIcon size={20} color={color} plus={model.note === 'create'} />}
         </SquareButton>

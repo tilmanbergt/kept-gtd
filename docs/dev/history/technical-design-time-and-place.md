@@ -524,3 +524,42 @@ tests were deleted with its code, lower that baseline by hand in S6 with the rea
   as 1 day; Month counts all of Garden's meetings, highlight or not), the area page shows its Given time line. The
   smoke space keeps its focus flags and goals until S5 (Daily's smoke still reads daily focus).
 - Scenarios 13 and 14 plus "+ F block" in `__tests__/scenarios/givenTime.test.tsx`.
+
+### S5 - Retire
+
+- **Round-trips first**: `__tests__/domain/rollbackShims.test.ts` (retired settings in DEFAULT_SETTINGS, PROFILE_KEYS,
+  profile save/load/switch; a stored Home layout with a `goals` piece; focus lines byte for byte; `#now`) and
+  `__tests__/scenarios/rollback.test.tsx` (a 0.21 project file through a todo tick, a meeting add and a status
+  change; scenario 16, Upgrade).
+- **Focus flags shim**: `FrontMatterFields` keeps the three flags (the file format); `ProjectFileState` and
+  `CachedItem` carry them as one write-only field `focusFlags: RetainedFocus` (`storage/projectFile.ts`) that
+  `frontMatterOf` spreads back, so no reader can use them. A status change keeps them (0.21 cleared them on hold or
+  done); archiving still clears them, as 0.21 did - an archived item had no focus there either.
+- **`#now`**: `deriveFlowState` reads a bare `#now` as `next`; `Task.now`, `deriveNow`, `setNowTag`, the card's Now
+  chip, the double tap and `toggleNow` are gone. The one rewrite kept: when the user moves such a todo off Next
+  (Someday, Remove #next, a flow chip), `withoutNow` drops `#now` with the old flow tag - otherwise the change
+  would not stick. The display hides `#now` wherever `#next` is conveyed.
+- **Focus readers** deleted as designed, plus some the design did not list: the ★ and focus-first sorting on the
+  Projects/Areas tabs (`ItemsList`, `itemEntryRow`) and in `destinationCandidates`, the focused leg of the capture
+  "File to" short list, the focus counters and the "N of M slots" count of the Review hub, the goal row of
+  Review's item context block (`ItemGoalRow`), the close-out checklist's goals finding (`periodRefs`), the focus
+  part of the debug bundle's settings line, `pagination`'s two focus-panel budgets, `Celebration.tsx` (S10).
+- **Engage fallback** (D28): `scheduleOwnerLines(source, nowMs, current)`; the screen kind is `schedule` (was
+  `selectFocus` with a ring), `focusDone`/S10 and "Select new focus" are gone, the footer button reads
+  "Today's schedule ›". An owner with nothing to pick still gets its line (`pick next`): choosing it shows the
+  owner's empty screen with Quick Add, useful before a meeting.
+- **R7 line**: not inside the What's-new notice - that one shows in release builds only, so a beta never shows it.
+  A separate one-time info line `app.focusRetired` (`ui/useWhatsNewNotice.ts`) shows while `lastSeenVersion` is a
+  release before 0.22.0 and `focusRetiredNoticeSeen` (new, device-wide, default false) is not set; ✕ sets it.
+  Scenario settings store it as seen, like What's new.
+- **Settings**: the deprecated block as designed; `focusModeActive` keeps its key, nothing reads it (App's
+  landing no longer has a focus case). Settings → Focus is gone: 8 tabs, as designed.
+- **Smoke space** without focus flags and goals, with one focus block (Garden, Thu 13-14) and one context (Home,
+  `smokeSettings()`); smoke Daily runs under Home (hidden line, Show), Week/Month/area page count the block.
+- Changed tests (removed behaviour): the focus parts of engageFlow/engageOptions/engageMembership/engageSection,
+  reviewSteps, reviewAggregate (step counts' signature), dailyAggregate/dailyGrouping, destination, captureFileTo,
+  homeNotebook, itemCard, taskLabels, todoCard, taskRowRender, quickAddFrame, settingsTabs, oddFiles, writeGuard,
+  demoSpace (goals), close-out readiness inputs, appEngage, engageOverlay (S9/S10 → schedule), itemCard and review
+  scenarios, Daily slim T3 (focus mode) removed; periodFocusCards and focusedItemRowAccessory deleted with their code.
+  Scenario 15 (Engage fallback) is in `focusBlocks.test.tsx`.
+- Help pages are rewritten in S6 (design §3.8); the demo space keeps its focus data until S6.

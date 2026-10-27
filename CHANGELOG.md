@@ -57,11 +57,31 @@ or your project/area files are stored.
   place. A project's or area's page shows Given time instead of its focus switches. The Review's
   **Week ahead** shows only the schedule.
 
+### Removed
+- **Focus** (daily, weekly and monthly), **weekly and monthly goals** and **focus mode** are retired.
+  **Daily** now shows every `#next` todo of the current context, plus what is due; its left column is
+  the day's schedule. The Projects and Areas tabs no longer mark focused items with ★, and pickers
+  list them in folder order.
+- A `#now` left from focus mode now reads as `#next` (its text stays); the card's **Now** and the
+  double tap on `#next` are gone.
+- Review: the steps **Unfocused next items** and **Focus reset** are gone, and so is the close-out
+  checklist's goals line. **Settings → Focus** is gone. The Home page's **Latest goals** piece is no
+  longer offered (a placed one prints nothing).
+- **Engage**: on a note without an owner it offers **Today's schedule** - the owners of today's
+  remaining meetings and focus blocks - instead of today's focus; **Today's schedule ›** replaces
+  "Select next focus ›".
+
 ### Upgrade notes
 - New settings for contexts (stored per profile). After the update the context is **Everything**, so
   every tab shows what it showed before.
 - Google Calendar, Gmail and Notebook contents keep their setting and are now in Settings → Features.
   Project close-out is on, as before.
+- Focus, weekly/monthly goals and focus mode are retired. Your files keep them; nothing was deleted.
+  Daily now shows all next todos of the current context - set up contexts in Settings → Contexts. New:
+  focus blocks (F) and the context panel when you tap a meeting. The first start says once: "Focus is
+  retired. Contexts decide what Daily shows: Settings → Contexts."
+- Going back to 0.21.1 is safe: the focus marks, goals, `#now` and the focus settings are still in your
+  files and settings, and 0.21.1 finds them again.
 
 ## [0.21.1] — 2026-10-26
 

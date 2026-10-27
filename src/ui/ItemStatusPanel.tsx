@@ -33,6 +33,7 @@
  * mutation also builds the callback" convention ProjectDataPanel's own
  * armTarget/onPick follows.
  */
+import {RetainedFocus} from '../storage/projectFile';
 import React, {useCallback, useEffect, useState} from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
 import {ItemStatus} from '../domain/types';
@@ -78,9 +79,7 @@ interface Props {
 interface StatusPanelState {
   rawContent: string;
   status: ItemStatus;
-  dailyFocus: boolean;
-  weeklyFocus: boolean;
-  monthlyFocus: boolean;
+  focusFlags: RetainedFocus;
   frontMatterExtraLines: string[];
   defaultResourceFolder: string | null;
   /** The Area this Project supports, by bare folder name, or null - always null for Areas. */
@@ -106,9 +105,7 @@ function statusPanelStateOf(item: CachedItem): StatusPanelState {
   return {
     rawContent: item.rawContent,
     status: item.status,
-    dailyFocus: item.dailyFocus,
-    weeklyFocus: item.weeklyFocus,
-    monthlyFocus: item.monthlyFocus,
+    focusFlags: item.focusFlags,
     frontMatterExtraLines: item.frontMatterExtraLines,
     defaultResourceFolder: item.defaultResourceFolder,
     area: item.area,
@@ -204,7 +201,7 @@ export default function ItemStatusPanel({
     if (item && state && item.rawContent !== state.rawContent) load();
   });
 
-  /** Active/On Hold/Done - never 'archived', see storage/statusControl.ts. Moving off Active clears both focus flags in the same write; moving an Area to On Hold also cascades to its assigned Active projects (statusControl.ts). `area` is carried through unchanged - a status change must never clear a Project's Area assignment. */
+  /** Active/On Hold/Done - never 'archived', see storage/statusControl.ts. Moving an Area to On Hold also cascades to its assigned Active projects (statusControl.ts). `area` is carried through unchanged - a status change must never clear a Project's Area assignment. */
   const changeStatus = useCallback(
     async (next: SettableStatus) => {
       if (!state) return;
@@ -218,9 +215,6 @@ export default function ItemStatusPanel({
               ...prev,
               rawContent: result.rawContent,
               status: result.status,
-              dailyFocus: result.dailyFocus,
-              weeklyFocus: result.weeklyFocus,
-              monthlyFocus: result.monthlyFocus,
               frontMatterExtraLines: result.frontMatterExtraLines,
             }
           : prev,

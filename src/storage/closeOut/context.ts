@@ -17,10 +17,8 @@ import {agreementPlainText} from '../../domain/agreementText';
 import {outcomeFolder} from '../../domain/closeOut/archiveOps';
 import {fileNameOf, resolveMarkPath} from '../../domain/marks';
 import {isoDate, readLifecycleDate} from '../../domain/lifecycleDates';
-import {monthKeyOf} from '../../domain/period';
 import {noteSetupConfig} from '../../domain/noteSetups';
 import {GtdParaSettings, ResolvedParaPaths, resolvePaths} from '../../domain/settings';
-import {isoWeekKey} from '../../domain/weekDate';
 import {fileExists, folderExists, getRememberedLaunchNotePath} from '../../supernote/fileSystem';
 import {archiveTargetsFor} from '../archive';
 import {CachedItem, findCachedItem, getCachedData} from '../dataCache';
@@ -130,10 +128,6 @@ export async function refreshCloseOutContext(args: {
     projectPath,
     tasks: item.tasks,
     meetings: item.meetings,
-    weeklyGoalKeys: item.weeklyGoals.map(g => g.weekKey),
-    monthlyGoalKeys: item.monthlyGoals.map(g => g.monthKey),
-    currentWeekKey: isoWeekKey(now),
-    currentMonthKey: monthKeyOf(now),
     today: isoDate(now),
     now,
     noteSetups: noteSetupConfig(settings),

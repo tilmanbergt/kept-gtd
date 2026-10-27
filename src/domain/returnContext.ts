@@ -59,8 +59,6 @@ export function isRecordValid(
 }
 
 export type Landing =
-  /** Focus mode is on: always lands back on it (technical-design-now-focus-mode.md §4). Record untouched. */
-  | {kind: 'focus'}
   /**
    * Leave the tab shell exactly as it is. `enclosing` is the current note's
    * Project/Area (null if it isn't inside one): App.tsx uses it to point the
@@ -74,7 +72,6 @@ export type Landing =
   | {kind: 'daily'; clearRecord: boolean};
 
 export interface LandingInput {
-  focusModeActive: boolean;
   /** Result of getCurrentNotePath(): the note/doc open right now, or null. */
   currentPath: string | null;
   record: ReturnRecord | null;
@@ -84,15 +81,13 @@ export interface LandingInput {
 
 /**
  * Landing priority (Lasso capture is handled before this is ever called):
- * focus mode > resume > enclosing Project/Area > Daily. `clearRecord` is true
+ * resume > enclosing Project/Area > Daily. `clearRecord` is true
  * exactly when a record existed but did not match (different note, or
  * expired) - that is what makes "navigated elsewhere manually" permanent, so
  * returning to the old note by hand later does not resurrect it.
  */
 export function decideLanding(input: LandingInput): Landing {
-  const {focusModeActive, currentPath, record, paths, nowMs} = input;
-  if (focusModeActive) return {kind: 'focus'};
-
+  const {currentPath, record, paths, nowMs} = input;
   const enclosing = currentPath ? findEnclosingItem(paths, currentPath) : null;
   if (isRecordValid(record, currentPath, nowMs)) return {kind: 'resume', enclosing};
 

@@ -64,11 +64,8 @@ function countText(id: ReviewStepId, count: ReviewStepCount): string {
       return pluralize(count.n, 'loop');
     case 'neglected':
       return pluralize(count.n, 'area');
-    case 'unfocusedNext':
     case 'somedayMaybe':
       return pluralize(count.n, 'task');
-    case 'weeklyFocus':
-      return `${count.n} of ${count.of ?? 0} slots filled`;
   }
 }
 

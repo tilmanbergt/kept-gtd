@@ -127,11 +127,9 @@ export interface TodoCardModel {
   /** R2: the title without the tags its labels show, and the labels (`#next`, `#due 24.10.`). */
   title: string;
   labels: string[];
-  /** R3: the checkbox, the flow chips' value, and Now (offered only with Next). */
+  /** R3: the checkbox and the flow chips' value. */
   done: boolean;
   flowState: FlowState;
-  now: boolean;
-  nowOffered: boolean;
   note: 'open' | 'create';
   /** R4: the area chip, the linked file or +clip, delete unless already deleted. */
   owner: {name: string; canRefile: boolean};
@@ -180,8 +178,6 @@ export function todoCardModel(input: TodoCardInput): TodoCardModel {
     labels: taskLabels(task, 'flat', today).map(label => label.text),
     done: task.done,
     flowState: task.flowState,
-    now: task.now,
-    nowOffered: task.flowState === 'next',
     note: task.notePath ? 'open' : 'create',
     owner: {name: input.ownerName, canRefile: input.canRefile},
     file: task.linkedFile

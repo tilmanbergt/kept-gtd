@@ -1,7 +1,6 @@
 import React, {useEffect} from 'react';
 import {setFlowStateTag} from '../../../domain/flowState';
 import {withTaskText} from '../../../domain/taskEdit';
-import {isoWeekKey} from '../../../domain/weekDate';
 import {archiveItem, archiveLeavesEmptyFolder, archiveTargetsFor} from '../../../storage/archive';
 import {archiveDoneText, emptyFolderConfirmNote} from '../../../domain/fileChangeText';
 import {findCachedItem} from '../../../storage/dataCache';
@@ -107,8 +106,6 @@ export default function ItemListStep({
   const statusApi = useStatusApi();
   const confirmArchive = useStatusConfirm('ReviewScreen.archiveConfirm');
   const text = TEXT[step];
-  // Every render agrees on "now" for the goal rows (ui/ItemContextBlock.tsx).
-  const currentWeekKey = isoWeekKey(new Date());
 
   // Stalled/Neglected: leaving the step counts how many picked up a next task.
   useEffect(() => {
@@ -189,7 +186,6 @@ export default function ItemListStep({
           hint="No open tasks."
           statusOptions={step === 'stalled' ? ['active', 'on-hold', 'done'] : ['active', 'on-hold']}
           items={items}
-          currentWeekKey={currentWeekKey}
           onOpenItem={onOpenItem}
           onAddTask={onAddTask}
           onStatusChange={changeStatus}
@@ -212,7 +208,6 @@ export default function ItemListStep({
             : undefined
         }
         items={items}
-        currentWeekKey={currentWeekKey}
         onOpenItem={onOpenItem}
         onReactivate={i => changeStatus(i, 'active')}
         onMarkDone={i => changeStatus(i, 'done')}

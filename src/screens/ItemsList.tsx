@@ -22,13 +22,8 @@
  * re-reads everything (docs/dev/history/technical-design-cleanup-0.5.md S8).
  *
  * Grouped by status (technical-design-status-archive.md §7): Active, then
- * On Hold, then - Projects only - "Done — awaiting review". Within Active,
- * items currently in daily or weekly focus float to the top (★ prefix) -
- * domain/destination.ts's exported `isFocused`, the same "focused floats to
- * the top" rule destinationCandidates applies to the create-menus'
- * destination pickers, applied here too for consistency rather than as a
- * picker-only special case. On Hold/Done need no such sort (nothing there
- * can be focused - see storage/statusControl.ts). Archived items simply
+ * On Hold, then - Projects only - "Done — awaiting review", each in the
+ * native folder listing's order. Archived items simply
  * aren't in `cache.items` at all - their folder isn't under Projects/Areas
  * any more once storage/archive.ts has moved it.
  *
@@ -52,7 +47,6 @@ import HiddenLine from '../ui/context/HiddenLine';
 import {useContextMatcher} from '../ui/context/useContextMatcher';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {StyleSheet, Pressable, Text, View} from 'react-native';
-import {isFocused} from '../domain/destination';
 import {FolderEntry} from '../supernote/fileSystem';
 import {CachedItem, DataCache, getCacheVersion, getCachedData, rebuildCache} from '../storage/dataCache';
 import {useOnScreenShow} from '../ui/screenActivity';
@@ -159,16 +153,12 @@ interface StatusGroups {
  * this screen renders, each its own `PagedSection` (§3.5). Empty groups are
  * kept, since every group's box shows unconditionally (its own `emptyHint`
  * fills an empty one). Areas get no
- * "Done" group - see domain/types.ts's ItemStatus doc comment. Active items
- * currently focused sort first; Array.prototype.sort is stable, so the
- * rest keep whatever order they arrived in (the native folder listing's own
+ * "Done" group - see domain/types.ts's ItemStatus doc comment. Every group
+ * keeps the order the items arrived in (the native folder listing's own
  * case-insensitive alphabetical order).
  */
 function groupByStatus(kind: 'project' | 'area', entries: CachedItem[]): StatusGroups {
-  const active = entries
-    .filter(item => item.status === 'active')
-    .slice()
-    .sort((a, b) => Number(isFocused(b)) - Number(isFocused(a)));
+  const active = entries.filter(item => item.status === 'active');
   const onHold = entries.filter(item => item.status === 'on-hold');
   const done = kind === 'project' ? entries.filter(item => item.status === 'done') : [];
   return {active, onHold, done};
@@ -293,7 +283,6 @@ export default function ItemsList({kind, onOpenItem}: Props): React.JSX.Element 
           <Text
             style={[styles.entry, styles.entryLink, {color: textColor}]}
             numberOfLines={itemEntryLines(item, textWidth(withIcon), ENTRY_OPTS)}>
-            {isFocused(item) ? '★ ' : ''}
             {item.name}
             {abbrev ? ABBREV_GAP : ''}
             {abbrev ? <Text style={styles.entryAbbrev}>{abbrev}</Text> : null} ›

@@ -25,9 +25,11 @@ scenario('The Review hub lists its steps with counts, and the Inbox step shows t
     await openApp();
     await tapTab('Review');
   });
-  then('the hub lists its steps with counts: the Inbox\'s two todos and its meeting, the one Next todo outside focus', () => {
+  then('the hub lists its steps with counts: the week\'s schedule (focus block included), the Inbox\'s two todos and its meeting; no focus steps', () => {
+    expect(stepCount('Week ahead')).toBe('5 meetings');
     expect(stepCount('Inbox to zero')).toBe('3 items');
-    expect(stepCount('Unfocused next items')).toBe('1 task');
+    expect(readTexts()).not.toContain('Unfocused next items');
+    expect(readTexts()).not.toContain('Focus reset');
   });
   when('I open the step "Inbox to zero"', () => tap('Inbox to zero'));
   then('it shows "Call the plumber"', () => expectShows(/^Call the plumber/));

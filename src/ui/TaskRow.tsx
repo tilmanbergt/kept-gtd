@@ -107,8 +107,6 @@ interface Props {
   onOpenLinkedFile?: (linkedFile: string) => void;
   /** Only passed by callers that support starting a link from this row (Current tab, Inbox) - its absence (Daily, Review) is what makes the clip read-only there. */
   onArmLink?: () => void;
-  /** Double-tapping the `#next`/`#now` label flips #now (ui/TaskLabels.tsx, docs/dev/history/technical-design-now-focus-mode.md §3). Only passed where that's meaningful (Daily, both normal and focus mode); without it the label doesn't react to touch. */
-  onToggleNow?: () => void;
   /** The active Daily context filter tag, if any - a matching tag segment renders filled/selected. Only meaningful together with onToggleContext (see the module doc comment); pass null (not omit) when Daily's context is off but rows should still render tags as tappable-but-unselected. */
   contextTag?: string | null;
   /** Set only by Daily's own instances - present, every context tag in this row's text becomes its own tap target that calls this instead of onStartEdit; absent, tags render as plain text. */
@@ -141,7 +139,6 @@ export default function TaskRow({
   linkedFile,
   onOpenLinkedFile,
   onArmLink,
-  onToggleNow,
   contextTag,
   onToggleContext,
   ownerPath,
@@ -190,7 +187,6 @@ export default function TaskRow({
               {renderTaggableText(layout.title, {contextTag, onToggleContext, ownerPath, probe})}
               <TaskLabels
                 labels={layout.labels}
-                onToggleNow={onToggleNow}
                 onOpenWaitingFor={
                   !task.waitingOn
                     ? undefined

@@ -27,7 +27,7 @@ import {noopAddMeeting, reviewCurrentItem, statusLabel} from '../shared';
 
 /**
  * Stalled-project/neglected-area detail panel (Steps: Stalled projects,
- * Neglected areas) - `ui/ItemContextBlock.tsx` (Area/Scope/Last goal) up
+ * Neglected areas) - `ui/ItemContextBlock.tsx` (Area/Scope) up
  * top, then (docs/dev/history/technical-design-review-master-detail.md §5.2): a
  * quick-add task fixed to this item, its open tasks, up to 2 upcoming
  * meetings, shelved Someday/Maybe tasks with a one-tap "→ Next" promotion,
@@ -49,7 +49,6 @@ export function ReviewItemDetail({
   hint,
   statusOptions,
   items,
-  currentWeekKey,
   onOpenItem,
   onAddTask,
   onStatusChange,
@@ -64,7 +63,6 @@ export function ReviewItemDetail({
   hint: string;
   statusOptions: SettableStatus[];
   items: CachedItem[];
-  currentWeekKey: string;
   onOpenItem: (item: ReviewItemRef) => void;
   onAddTask: (text: string, destination: Destination) => Promise<void>;
   onStatusChange: (item: ReviewItemRef, status: SettableStatus) => Promise<void>;
@@ -108,7 +106,6 @@ export function ReviewItemDetail({
       </Pressable>
       <ItemContextBlock
         item={current}
-        currentWeekKey={currentWeekKey}
         onChanged={onContextChanged}
         textColor={textColor}
         borderColor={borderColor}
@@ -216,7 +213,6 @@ export function DoneOnHoldDetail({
   itemRef,
   showMarkDone,
   items,
-  currentWeekKey,
   onOpenItem,
   onReactivate,
   onMarkDone,
@@ -232,7 +228,6 @@ export function DoneOnHoldDetail({
   /** Done step only (docs/dev/history/technical-design-project-close-out.md §6.1): replaces Archive with "Close out…" / "Quick archive…" and shows the close-out status. */
   closeOut?: {onFull: () => void; onQuick: () => void};
   items: CachedItem[];
-  currentWeekKey: string;
   onOpenItem: (item: ReviewItemRef) => void;
   onReactivate: (item: ReviewItemRef) => Promise<void>;
   onMarkDone: (item: ReviewItemRef) => Promise<void>;
@@ -266,7 +261,6 @@ export function DoneOnHoldDetail({
       </Pressable>
       <ItemContextBlock
         item={current}
-        currentWeekKey={currentWeekKey}
         onChanged={onContextChanged}
         textColor={textColor}
         borderColor={borderColor}

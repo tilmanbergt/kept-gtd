@@ -37,7 +37,7 @@ import {EMPTY_NOTE_SETUP_CONFIG} from '../../src/domain/noteSetups';
 import {MeetingCardData} from '../../src/ui/itemCard/useMeetingCard';
 import {TodoCardData} from '../../src/ui/itemCard/useTodoCard';
 
-const task = {text: 'Call Tom #tag1', done: false, cancelled: false, tags: [], dueDate: null, flowState: null, waitingOn: null, now: false, notePath: '', linkedFile: 'Docs/plan.pdf', fields: {meeting: null}} as unknown as Task;
+const task = {text: 'Call Tom #tag1', done: false, cancelled: false, tags: [], dueDate: null, flowState: null, waitingOn: null, notePath: '', linkedFile: 'Docs/plan.pdf', fields: {meeting: null}} as unknown as Task;
 const meeting: Meeting = {title: 'Sync', date: '2026-10-22', time: '10:00', endTime: '', days: 1, tags: [], cancelled: false, notePath: '', linkedFile: 'Docs/a.pdf'};
 
 interface Setup {
@@ -174,7 +174,7 @@ describe('Quick Add box height', () => {
       const model = todoCardModel({task, today: '2026-10-21', ownerName: 'Garden renovation', canLink: true, canRefile: true});
       const fn = () => jest.fn();
       const data: TodoCardData = {
-        task, model, onEdit: fn(), onClose: fn(), onToggleDone: fn(), onFlow: fn(), onToggleNow: fn(), onNote: fn(), onUnlink: fn(), onDelete: fn(),
+        task, model, onEdit: fn(), onClose: fn(), onToggleDone: fn(), onFlow: fn(), onNote: fn(), onUnlink: fn(), onDelete: fn(),
       };
       return render({editTarget: editTargetFor('task:1', {task}, 'card'), todoCard: data});
     }],

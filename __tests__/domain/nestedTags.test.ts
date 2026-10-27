@@ -6,7 +6,7 @@ import {
   splitTextWithTags,
   stripAllTags,
 } from '../../src/domain/markdown';
-import {setBareTag, setNowTag, stripBareTags} from '../../src/domain/flowState';
+import {setBareTag, stripBareTags, withoutNow} from '../../src/domain/flowState';
 import {createNoteSetup, matchingSetups, NoteSetup, setupSubtag, tagMatchesSetupTag} from '../../src/domain/noteSetups';
 
 // docs/dev/history/technical-design-split-by-tag.md §3.1 / §3.2
@@ -67,7 +67,7 @@ describe('nested tags - whole-tag guards', () => {
 
   it('bare-tag helpers leave #now/x alone', () => {
     expect(stripBareTags('Do it #now/later', ['now'])).toBe('Do it #now/later');
-    expect(setNowTag('Do it #now/later', false)).toBe('Do it #now/later');
+    expect(withoutNow('Do it #now/later')).toBe('Do it #now/later');
     expect(setBareTag('Do it #now', 'now', false)).toBe('Do it');
   });
 });

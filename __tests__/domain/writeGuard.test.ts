@@ -17,7 +17,7 @@ describe('dataFilePartText', () => {
   it('reads a section, the frontmatter, and null for a missing part', () => {
     expect(dataFilePartText(BASE, DATA_FILE_HEADINGS.scope)).toBe('Old scope\n');
     expect(dataFilePartText(BASE, FRONT_MATTER_PART)).toBe('kind: project\nstatus: active');
-    expect(dataFilePartText(BASE, DATA_FILE_HEADINGS.weeklyGoals)).toBeNull();
+    expect(dataFilePartText(BASE, '## Weekly Goals')).toBeNull();
     expect(dataFilePartText('no frontmatter', FRONT_MATTER_PART)).toBeNull();
   });
 });
@@ -54,7 +54,7 @@ describe('decideWrite', () => {
 
   it('reports a file deleted outside as gone, whatever part the save writes', () => {
     expect(decideWrite('project', BASE, '', tasksChange(['- [ ] One']))).toEqual({kind: 'gone'});
-    const goals: DataFileChange = {parts: [DATA_FILE_HEADINGS.weeklyGoals], apply: c => c};
+    const goals: DataFileChange = {parts: [DATA_FILE_HEADINGS.scope], apply: c => c};
     expect(decideWrite('project', BASE, '', goals)).toEqual({kind: 'gone'});
   });
 

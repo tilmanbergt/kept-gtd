@@ -20,7 +20,6 @@ import {UndoRecord} from '../domain/engageFlow';
 import {ENGAGE_NOTICE} from '../domain/engageText';
 import {todayIso} from '../domain/meetingTime';
 import {MeetingTrackingKind, toggleMeetingTrackingAt} from '../domain/meetingTracking';
-import {setNowTag} from '../domain/flowState';
 import {withTaskCancelled, withTaskDone, withTaskText} from '../domain/taskEdit';
 import {Meeting, Task} from '../domain/types';
 import {ProjectFileState} from '../storage/projectFile';
@@ -133,17 +132,6 @@ export function useEntryActions(name = 'ThreadOverview', options: {hiddenNotice?
       });
       if (!entry.task.done) engagePrompt.afterDone(entry.item.path, entry.task);
       requestEinkRefresh();
-    });
-
-  /** The `#next`/`#now` label's double tap: flips `#now` on the todo (docs/dev/history/technical-design-now-focus-mode.md §3). */
-  const toggleNow = (entry: ThreadTaskEntry) =>
-    rowAction.run(async () => {
-      await saveTasks(entry, tasks => {
-        const task = tasks[entry.taskIndex];
-        tasks[entry.taskIndex] = withTaskText(task, setNowTag(task.text, !task.now));
-        return tasks;
-      });
-      log(`${LOG}: toggled #now`);
     });
 
   /** Changes one task through the write path and returns what Undo needs, or null when the write failed. */
@@ -369,7 +357,6 @@ export function useEntryActions(name = 'ThreadOverview', options: {hiddenNotice?
     saveMeetings,
     /** Runs a screen's own row action with this hook's error slot (focus mode's session tick). */
     rowRun: rowAction.run,
-    toggleNow,
     addTask,
     addMeeting,
     toggleDone,

@@ -26,15 +26,15 @@ async function openTab(tab: string): Promise<void> {
 scenario('Week shows this week\'s meetings and the time given to each owner', {feature: 'Week and Month', design: DESIGN}, () => {
   given('the smoke space on Wednesday 14.10.2026', () => undefined);
   when('I open Week', () => openTab('Week'));
-  then('the grid shows Wednesday 14 "Neighbour chat" and "Dentist", Thursday 15 "Supplier call" and Friday 16 "Delivery"', () => {
+  then('the grid shows Wednesday 14 "Neighbour chat" and "Dentist", Thursday 15 "Supplier call" and the focus block, Friday 16 "Delivery"', () => {
     expect(weekDay('We 14.10.')).toEqual(['14:00', 'Neighbour chat', '16:00', 'Dentist']);
-    expect(weekDay('Th 15.10.')).toEqual(['9:00', 'Supplier call']);
+    expect(weekDay('Th 15.10.')).toEqual(['9:00', 'Supplier call', '13:00', 'F Plan the beds']);
     expect(weekDay('Fr 16.10.')).toEqual(['all day', 'Delivery']);
   });
   and('not "Soil test", which is next week', () => expectNotShows('Soil test'));
-  and('Given time lists Garden first with "Delivery" as 1 day and its two timed meetings, then the Inbox\'s Dentist', () => {
+  and('Given time lists Garden first with "Delivery" as 1 day, its two timed meetings and its focus block, then the Inbox\'s Dentist', () => {
     const panel = textsBetween('Given time this week');
-    expect(panel.slice(0, 6)).toEqual(['Garden  Area', '1 day · 2 h', '3 meetings · next: Buy bulbs', 'Inbox  Inbox', '1 h', '1 meeting · next: Call the plumber']);
+    expect(panel.slice(0, 6)).toEqual(['Garden  Area', '1 day · 3 h', '1 block · 3 meetings · next: Buy bulbs', 'Inbox  Inbox', '1 h', '1 meeting · next: Call the plumber']);
   });
   when('I tap ›', () => tap('›'));
   then('the grid shows Tuesday 20 "Soil test"', () => expect(weekDay('Tu 20.10.')).toEqual(['11:00', 'Soil test']));
@@ -44,14 +44,15 @@ scenario('Week shows this week\'s meetings and the time given to each owner', {f
 scenario('Month shows the highlights and the time given this month', {feature: 'Week and Month', design: DESIGN}, () => {
   given('the smoke space on Wednesday 14.10.2026', () => undefined);
   when('I open Month', () => openTab('Month'));
-  then('the 28th shows "Garden fair" and no other day shows a meeting, since none is a highlight', () => {
+  then('the 28th shows "Garden fair", the 15th the F of its focus block, and no other day shows a meeting, since none is a highlight', () => {
     const days = textsBetween(/^Th 01/, 'Todo');
-    expect(days.filter(t => !MONTH_LABEL.test(t))).toEqual(['Garden fair']);
+    expect(days.filter(t => !MONTH_LABEL.test(t))).toEqual(['F', 'Garden fair']);
     expect(days[days.indexOf('Garden fair') - 1]).toBe('We 28');
+    expect(days[days.indexOf('F') - 1]).toBe('Th 15');
   });
   and('Given time counts all of Garden\'s meetings, highlight or not, and its todo done this month', () => {
     const panel = textsBetween('Given time this month');
-    expect(panel.slice(0, 3)).toEqual(['Garden  Area', '2 days · 3 h', '5 meetings · 1 done · next: Buy bulbs']);
+    expect(panel.slice(0, 3)).toEqual(['Garden  Area', '2 days · 4 h', '1 block · 5 meetings · 1 done · next: Buy bulbs']);
   });
   when('I tap the 14th', () => tap(/^We 14/));
   then('the right side lists both meetings of that day', () => {

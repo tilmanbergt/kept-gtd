@@ -41,9 +41,6 @@ export const styles = StyleSheet.create({
     paddingVertical: 8,
     fontSize: FONT.medium,
   },
-  countInput: {
-    width: 80,
-  },
   pathPreview: {
     fontSize: FONT.small,
     opacity: 0.6,

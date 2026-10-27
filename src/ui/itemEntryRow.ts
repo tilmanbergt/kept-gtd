@@ -11,7 +11,6 @@
  * Review's 50/50 master-detail split reuse this same constant.
  */
 import {CachedItem} from '../storage/dataCache';
-import {isFocused} from '../domain/destination';
 import {activeLineEstimator} from '../domain/textLineEstimator';
 import {FONT} from './theme';
 
@@ -47,7 +46,7 @@ export function itemEntryAbbrevLabel(item: CachedItem, opts: ItemEntryOptions = 
 
 export function itemEntryDisplayText(item: CachedItem, opts: ItemEntryOptions = {}): string {
   const abbrev = itemEntryAbbrevLabel(item, opts);
-  return `${isFocused(item) ? '★ ' : ''}${item.name}${abbrev ? ABBREV_GAP + abbrev : ''} ›`;
+  return `${item.name}${abbrev ? ABBREV_GAP + abbrev : ''} ›`;
 }
 
 export function itemEntryLines(item: CachedItem, columnWidthPx: number, opts: ItemEntryOptions = {}): number {

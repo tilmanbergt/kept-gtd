@@ -62,7 +62,6 @@ beforeAll(() => setFeatures({googleCalendar: true, gmail: true, closeOut: true})
 describe('Settings tabs', () => {
   it.each<[SettingsTab, string]>([
     ['folders', 'Projects folder'],
-    ['focus', 'Daily focus — Projects'],
     ['calendar', 'Google Calendar ICS link'],
     ['gmail', 'Gmail address'],
     ['templates', '+ New note setup'],

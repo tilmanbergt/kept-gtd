@@ -337,37 +337,38 @@ describe('EngageOverlay screens', () => {
     act(() => third.r.unmount());
   });
 
-  it('S8: an empty owner → "Nothing left", Select next focus and Close as main action', async () => {
+  it('S8: an empty owner → "Nothing left", Today\'s schedule and Close as main action', async () => {
     area('Coaching', ['## Tasks', '- [x] Old one']);
     const {r} = await open({via: 'ownerPage', owner: {kind: 'item', itemPath: COACHING}});
     expect(texts(r)).toContain('Nothing left in Coaching.');
     expect(texts(r)).toContain('+ Add todo');
-    expect(texts(r)).toContain('Select next focus ›');
+    expect(texts(r)).toContain("Today's schedule ›");
     const close = r.root.findAll(n => n.props.label === 'Close' && typeof n.props.onPress === 'function')[0];
     expect(close.props.primary).toBe(true);
     act(() => r.unmount());
   });
 
-  it('S9: no owner from the note → today\'s focus as owner lines; a tap makes it the owner', async () => {
-    area('Coaching', ['## Tasks', '- [ ] Draft agenda #next'], ['dailyFocus: true']);
-    area('Writing', ['## Tasks', '- [ ] Outline'], ['dailyFocus: true']);
+  it('S9: no owner from the note → the owners of today\'s schedule; a tap makes it the owner (D28)', async () => {
+    const d = new Date();
+    const today = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    area('Coaching', ['## Tasks', '- [ ] Draft agenda #next', '', '## Meetings', `- ${today} Coaching day`]);
+    area('Writing', ['## Tasks', '- [ ] Outline', '', '## Meetings', `- ${today} Writing day #focusblock`]);
+    area('Quiet', ['## Tasks', '- [ ] Nothing today #next']);
     mockNote.path = '/storage/emulated/0/Note/Elsewhere.note';
     const {r} = await open({via: 'button'});
-    expect(texts(r)).toContain("Today's focus");
+    expect(texts(r)).toContain("Today's schedule");
     expect(texts(r)).toEqual(expect.arrayContaining(['Area · Coaching · 1 next ›', 'Area · Writing · pick next ›']));
+    expect(texts(r).some(t => t.includes('Quiet'))).toBe(false);
     await press(r, 'Area · Writing · pick next ›');
     expect(texts(r)).toEqual(expect.arrayContaining(['Next 0', 'Plan 1']));
     act(() => r.unmount());
   });
 
-  it('S10: nothing left in today\'s focus → the celebration and Select new focus', async () => {
-    area('Coaching', ['## Tasks', '- [x] Done one'], ['dailyFocus: true']);
+  it('S9: nothing scheduled today → the empty schedule', async () => {
+    area('Coaching', ['## Tasks', '- [ ] Draft agenda #next']);
+    mockNote.path = '/storage/emulated/0/Note/Elsewhere.note';
     const {r} = await open({via: 'button'});
-    expect(texts(r)).toContain("✓  All done in today's focus.");
-    expect(texts(r)).toContain('Coaching');
-    await press(r, 'Select new focus ›');
-    expect(texts(r)).toContain("This week's focus");
-    expect(texts(r)).toContain("Anything beyond this week's focus: Open Kept GTD.");
+    expect(texts(r)).toEqual(expect.arrayContaining(["Today's schedule", 'Nothing scheduled today.']));
     act(() => r.unmount());
   });
 

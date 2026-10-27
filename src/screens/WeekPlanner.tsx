@@ -100,7 +100,7 @@ export default function WeekPlanner({
 
   const shiftedNow = shiftPeriod('weekly', new Date(), weekOffset);
   const period = periodOf('weekly', shiftedNow);
-  const {start: weekStart, end: weekEnd, key: weekKey} = period;
+  const {start: weekStart, end: weekEnd} = period;
   const isCurrentWeek = weekOffset === 0;
   const weekRange = useMemo(() => ({start: weekStart, end: weekEnd}), [weekStart, weekEnd]);
 
@@ -115,10 +115,9 @@ export default function WeekPlanner({
         inboxPath ?? '',
         weekStart,
         weekEnd,
-        weekKey,
       ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [items, inbox, inboxPath, weekStart, weekEnd, weekKey, todayDate],
+    [items, inbox, inboxPath, weekStart, weekEnd, todayDate],
   );
   const dayRows = useMemo(
     () =>

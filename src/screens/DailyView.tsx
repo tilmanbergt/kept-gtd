@@ -2,8 +2,8 @@
  * Daily (design-overview.md §2.7, docs/dev/history/technical-design-daily-slim.md §3.1):
  * two columns under the display-mode row (screens/daily/DailyModeRow.tsx).
  *
- * - Left: the day panel (ui/DayMeetingsPanel.tsx: Today | Tomorrow | Google)
- *   above the Focus panel (ui/DailyFocusPanel.tsx).
+ * - Left: the day panel (ui/DayMeetingsPanel.tsx: Today | Tomorrow | Google),
+ *   the whole column.
  * - Right (screens/daily/DailyTodosColumn.tsx): one Quick Add, always to the
  *   Inbox (docs/dev/history/technical-design-filing-unification.md §6), above
  *   the Next todos grouped by owner. A selected row's card takes Quick Add's
@@ -17,10 +17,9 @@
  * ui/useEntryActions.ts, the path the overviews use too; rows can belong to
  * different Projects/Areas or the Inbox, so each action re-reads its entry's
  * own source. The tag filter (technical-design-context-tags.md §6) is set by
- * tapping a plain tag in a row and is screen state only. Focus mode is its
- * own screen (screens/daily/FocusModeScreen.tsx).
+ * tapping a plain tag in a row and is screen state only.
  */
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {ActivityIndicator, Keyboard, StyleSheet, View} from 'react-native';
 import {AbbrevFileMatch} from '../domain/abbrev';
 import {Destination} from '../domain/destination';
@@ -34,14 +33,9 @@ import {
   DailyTaskEntry,
   groupDailyTasksByItem,
 } from '../storage/dailyAggregate';
-import {CachedItem} from '../storage/dataCache';
-import {focusBlockedReason, setItemFocus} from '../storage/focusSlots';
 import {linkedFileStatus} from '../storage/linkedFiles';
-import {loadSettings} from '../storage/settingsStorage';
 import {FolderEntry} from '../supernote/fileSystem';
-import {log} from '../utils/log';
 import {usePerfRender} from '../utils/perf';
-import DailyFocusPanel from '../ui/DailyFocusPanel';
 import GoogleCalendarPanel from '../ui/GoogleCalendarPanel';
 import {useFeatures} from '../ui/featureStore';
 import MeetingRow, {MeetingRowLayout} from '../ui/MeetingRow';
@@ -73,8 +67,6 @@ interface Props {
   onOpenInbox?: () => void;
   /** Switches to Settings → Calendar (the Google tab's empty state). */
   onOpenCalendarSettings?: () => void;
-  /** The Focus mode button (App.tsx's onEnterFocusMode). */
-  onEnterFocusMode?: () => void;
 }
 
 const FIXED_INBOX_DESTINATION: Destination = {type: 'inbox'};
@@ -89,7 +81,7 @@ const CALENDAR_TABS: MiniTabDef<CalendarTab>[] = [
 /** Stable empty fallback (docs/dev/history/technical-design-render-perf-ab.md §3 B4). */
 const EMPTY_DAILY_AGGREGATE: DailyAggregate = {tasks: [], meetings: [], failedItems: []};
 
-export default function DailyView({onOpenItem, onOpenInbox, onOpenCalendarSettings, onEnterFocusMode}: Props): React.JSX.Element {
+export default function DailyView({onOpenItem, onOpenInbox, onOpenCalendarSettings}: Props): React.JSX.Element {
   usePerfRender('DailyView');
   const {textColor, borderColor, placeholderColor} = useThemeColors();
   const data = useDailyData('DailyView');
@@ -109,23 +101,6 @@ export default function DailyView({onOpenItem, onOpenInbox, onOpenCalendarSettin
     }
     onOpenItem(item.kind, {name: item.name, path: item.path, isFolder: true});
   };
-
-  /**
-   * Adds or removes `item` from daily focus; adding is refused with a message
-   * when that kind's daily slots are full (storage/focusSlots.ts, the rule the
-   * Current page uses).
-   */
-  const handleToggleItemFocus = useCallback(
-    async (item: CachedItem, value: boolean): Promise<void> => {
-      if (value) {
-        const reason = focusBlockedReason(items, item.kind, 'daily', settings ?? (await loadSettings()));
-        if (reason) throw new Error(reason);
-      }
-      await setItemFocus(item, 'daily', value);
-      log('DailyView: daily focus toggled', item.path, value);
-    },
-    [items, settings],
-  );
 
   const inboxInput = inbox ? {tasks: inbox.tasks, meetings: inbox.meetings} : null;
   // The active context hides todos and dims meetings (docs/dev/history/technical-design-time-and-place.md §3.3); the tag filter applies on top.
@@ -161,9 +136,6 @@ export default function DailyView({onOpenItem, onOpenInbox, onOpenCalendarSettin
 
   const todoCard = useTodoCard(
     actions.todoCardOptions(editingTaskEntry, {
-      onToggleNow: () => {
-        if (editingTaskEntry) actions.toggleNow(editingTaskEntry);
-      },
       onOpenOwner: () => {
         if (editingTaskEntry) openItem(editingTaskEntry.item);
       },
@@ -207,7 +179,6 @@ export default function DailyView({onOpenItem, onOpenInbox, onOpenCalendarSettin
         onOpenNote={() => actions.taskNote(entry)}
         linkedFile={entry.task.linkedFile}
         onOpenLinkedFile={actions.openFile}
-        onToggleNow={() => actions.toggleNow(entry)}
         contextTag={tagFilter}
         onToggleContext={toggleTagFilter}
         ownerPath={entry.item.path}
@@ -305,7 +276,6 @@ export default function DailyView({onOpenItem, onOpenInbox, onOpenCalendarSettin
           <DailyModeRow
             tagFilter={tagFilter}
             onClearTagFilter={() => setTagFilter(null)}
-            onEnterFocusMode={onEnterFocusMode}
             textColor={textColor}
             borderColor={borderColor}
           />
@@ -339,21 +309,6 @@ export default function DailyView({onOpenItem, onOpenInbox, onOpenCalendarSettin
                   textColor={textColor}
                   borderColor={borderColor}
                 />
-              </View>
-              <View style={common.spacer}>
-                {paths && (
-                  <DailyFocusPanel
-                    items={items}
-                    projectsPath={paths.projects}
-                    areasPath={paths.areas}
-                    dailyFocusProjectCount={settings?.dailyFocusProjectCount ?? 0}
-                    dailyFocusAreaCount={settings?.dailyFocusAreaCount ?? 0}
-                    onOpenItem={onOpenItem}
-                    onToggle={handleToggleItemFocus}
-                    textColor={textColor}
-                    borderColor={borderColor}
-                  />
-                )}
               </View>
             </View>
             <View style={common.column}>

@@ -41,12 +41,6 @@ export interface ReviewSummaryCounts {
   onHold: number;
   markedDone: number;
   archived: number;
-  /** "Add to Weekly focus" (docs/dev/history/technical-design-daily-todo-filter.md) - kept separate from dailyFocusAdded below so the recap's line text stays accurate about which focus scope was touched. A saved blob that lacks this key reads it as undefined, which every consumer here treats as 0 (this recap is deliberately coarse/non-audited). */
-  weeklyFocusAdded: number;
-  /** "Add to Daily focus" from the Unfocused-next-items review step (docs/dev/history/technical-design-daily-todo-filter.md) - kept separate from weeklyFocusAdded above so the recap's line text stays accurate about which focus scope was touched. */
-  dailyFocusAdded: number;
-  /** "Add to Monthly focus" (Unfocused next items) and monthly slots filled in Focus reset (docs/dev/history/technical-design-review-monthly-focus.md §3). May be absent in saved stats - every reader uses `?? 0`. */
-  monthlyFocusAdded: number;
   /** "Meetings to close out" step (docs/dev/history/technical-design-meeting-tracking.md): meetings ticked `#reviewed` during the visit. */
   meetingsClosedOut: number;
   /**
@@ -90,9 +84,6 @@ export const ZERO_REVIEW_SUMMARY: ReviewSummaryCounts = {
   onHold: 0,
   markedDone: 0,
   archived: 0,
-  weeklyFocusAdded: 0,
-  dailyFocusAdded: 0,
-  monthlyFocusAdded: 0,
   meetingsClosedOut: 0,
   gmailItemsCreated: 0,
   gmailArchived: 0,
@@ -118,17 +109,14 @@ export type ReviewStepId =
   | 'done'
   | 'onHold'
   | 'neglected'
-  | 'unfocusedNext'
-  | 'somedayMaybe'
-  | 'weeklyFocus';
+  | 'somedayMaybe';
 
 /**
  * - 'backlog': has a count that can reach 0, and 0 means "nothing to review"
  *   - such a step counts as reviewed automatically while it is empty and
  *   never holds the "last review" date back.
- * - 'ritual': always worth a look whatever the number says (an empty week or
- *   0 of 8 focus slots filled is exactly what those steps exist to fix), so
- *   it is never auto-empty.
+ * - 'ritual': always worth a look whatever the number says (an empty week is
+ *   exactly what Week ahead exists to fix), so it is never auto-empty.
  */
 export type ReviewStepKind = 'backlog' | 'ritual';
 
@@ -164,15 +152,13 @@ export const REVIEW_STEPS: ReviewStepDef[] = [
   {id: 'done', title: 'Done awaiting review', kind: 'backlog'},
   {id: 'onHold', title: 'On Hold reconsideration', kind: 'backlog'},
   {id: 'neglected', title: 'Neglected areas', kind: 'backlog'},
-  {id: 'unfocusedNext', title: 'Unfocused next items', kind: 'backlog'},
   // Parked todos come back to life only here, in the weekly look
   // (docs/dev/history/technical-design-engage-in-context.md E12).
   {id: 'somedayMaybe', title: 'Someday / Maybe', kind: 'ritual'},
-  // The step sets weekly AND monthly focus (docs/technical-design-review-
-  // monthly-focus.md §3). The id stays 'weeklyFocus' on purpose: it is the
-  // persisted key of this step's last-reviewed date and stats.
-  {id: 'weeklyFocus', title: 'Focus reset', kind: 'ritual'},
 ];
+// 'unfocusedNext' and 'weeklyFocus' (Focus reset) are retired
+// (docs/dev/history/technical-design-time-and-place.md §3.6): their stored
+// records stay in settings.reviewSteps, unread, so 0.21.1 finds them again.
 
 /**
  * The steps actually shown (docs/dev/history/technical-design-about-debug-experimental.md
@@ -418,9 +404,6 @@ export function summaryLines(counts: ReviewSummaryCounts): string[] {
   if (counts.onHold > 0) lines.push(`${pluralize(counts.onHold, 'item')} put on hold`);
   if (counts.markedDone > 0) lines.push(`${pluralize(counts.markedDone, 'item')} marked done`);
   if (counts.archived > 0) lines.push(`${pluralize(counts.archived, 'item')} archived`);
-  if (counts.weeklyFocusAdded > 0) lines.push(`${pluralize(counts.weeklyFocusAdded, 'item')} added to weekly focus`);
-  if (counts.dailyFocusAdded > 0) lines.push(`${pluralize(counts.dailyFocusAdded, 'item')} added to daily focus`);
-  if ((counts.monthlyFocusAdded ?? 0) > 0) lines.push(`${pluralize(counts.monthlyFocusAdded, 'item')} added to monthly focus`);
   if ((counts.somedayActivated ?? 0) > 0) lines.push(`${pluralize(counts.somedayActivated, 'someday todo')} made #next`);
   return lines;
 }

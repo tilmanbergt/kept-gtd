@@ -37,7 +37,7 @@ const TODAY = '2026-10-21';
 function card(t: Task, extra: Partial<TodoCardInput> = {}, handlers: Partial<TodoCardData> = {}): TodoCardData {
   const model = todoCardModel({task: t, today: TODAY, ownerName: 'Garden renovation', canLink: false, canRefile: false, ...extra});
   return {
-    task: t, model, onEdit: jest.fn(), onClose: jest.fn(), onToggleDone: jest.fn(), onFlow: jest.fn(), onToggleNow: jest.fn(),
+    task: t, model, onEdit: jest.fn(), onClose: jest.fn(), onToggleDone: jest.fn(), onFlow: jest.fn(),
     onNote: jest.fn(), onUnlink: jest.fn(), onDelete: jest.fn(), ...handlers,
   };
 }
@@ -74,20 +74,20 @@ const cardChips = (r: TestRenderer.ReactTestRenderer) => r.root.findAllByType(Fl
 const texts = (r: TestRenderer.ReactTestRenderer) => r.root.findAllByType(Text).map(t => [t.props.children].flat().join(''));
 
 describe('TodoCard', () => {
-  it('a Next todo with a due date: heading, title and labels, Done, flow chips, Now, note, area chip, delete', () => {
+  it('a Next todo with a due date: heading, title and labels, Done, flow chips, note, area chip, delete; no Now', () => {
     const t = task('Order soil #next', {dueDate: '2026-10-24'});
     const r = render(t, card(t));
-    expect(texts(r)).toEqual(expect.arrayContaining(['Todo · due 24.10.', 'Order soil', '#next  #due 24.10.', 'Garden renovation', 'Edit', 'Now']));
-    expect(labels(r)).toEqual(expect.arrayContaining(['Close', 'Done', 'Now', 'Create note', 'Delete']));
+    expect(texts(r)).toEqual(expect.arrayContaining(['Todo · due 24.10.', 'Order soil', '#next  #due 24.10.', 'Garden renovation', 'Edit']));
+    expect(labels(r)).toEqual(expect.arrayContaining(['Close', 'Done', 'Create note', 'Delete']));
+    expect(labels(r)).not.toContain('Now');
     expect(cardChips(r).props.value).toBe('next');
     expect(labels(r)).not.toContain('Link file');
     expect(labels(r)).not.toContain('Refile');
   });
 
-  it('no Now without Next; no delete once deleted; +clip and refile where the screen can', () => {
+  it('no delete once deleted; +clip and refile where the screen can', () => {
     const someday = task('Learn Spanish #someday');
     const r = render(someday, card(someday, {canLink: true, canRefile: true}, {onLink: jest.fn(), onRefile: jest.fn()}));
-    expect(labels(r)).not.toContain('Now');
     expect(labels(r)).toEqual(expect.arrayContaining(['Link file', 'Refile']));
     const deleted = task('Old idea', {cancelled: true});
     expect(labels(render(deleted, card(deleted)))).not.toContain('Delete');
@@ -108,14 +108,13 @@ describe('TodoCard', () => {
     pressText(r, 'Edit');
     press(r, 'Close');
     press(r, 'Done');
-    press(r, 'Now');
     press(r, 'Create note');
     press(r, 'Delete');
     press(r, 'Unlink');
     press(r, 'Open linked file');
     press(r, 'Open Garden renovation');
     act(() => cardChips(r).props.onChange('someday'));
-    for (const h of [data.onEdit, data.onClose, data.onToggleDone, data.onToggleNow, data.onNote, data.onDelete, data.onUnlink, data.onOpenFile, data.onOpenOwner]) {
+    for (const h of [data.onEdit, data.onClose, data.onToggleDone, data.onNote, data.onDelete, data.onUnlink, data.onOpenFile, data.onOpenOwner]) {
       expect(h).toHaveBeenCalledTimes(1);
     }
     expect(data.onFlow).toHaveBeenCalledWith('someday');

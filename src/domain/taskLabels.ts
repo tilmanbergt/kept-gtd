@@ -17,13 +17,13 @@
  * changed - this is display only.
  */
 import {formatDate} from './dateFormat';
-import {setFlowStateTag, setNowTag, titleCaseSlug} from './flowState';
+import {setFlowStateTag, titleCaseSlug, withoutNow} from './flowState';
 import {setDueInLine} from './markdown';
 import {Task} from './types';
 
 export type TaskLabelContext = 'flat' | 'grouped';
 
-export type TaskLabelKind = 'next' | 'now' | 'waiting' | 'someday' | 'due' | 'overdue';
+export type TaskLabelKind = 'next' | 'waiting' | 'someday' | 'due' | 'overdue';
 
 export interface TaskLabel {
   kind: TaskLabelKind;
@@ -48,7 +48,7 @@ function waitingLabel(task: Task): string {
 export function taskLabels(task: Task, context: TaskLabelContext, today: string, contextActive = false): TaskLabel[] {
   const labels: TaskLabel[] = [];
   if (context === 'flat') {
-    if (task.flowState === 'next') labels.push(task.now ? {kind: 'now', text: '#now'} : {kind: 'next', text: '#next'});
+    if (task.flowState === 'next') labels.push({kind: 'next', text: '#next'});
     if (task.flowState === 'waiting-for') labels.push({kind: 'waiting', text: waitingLabel(task)});
     if (task.flowState === 'someday' && contextActive) labels.push({kind: 'someday', text: '#someday'});
   } else if (task.flowState === 'waiting-for' && task.waitingOn) {
@@ -82,14 +82,14 @@ export function isFlowStateConveyed(task: Task, context: TaskLabelContext, conte
 
 /**
  * `task.text` without the tags its labels (or heading) already show: the due
- * tag always (its label always shows), the flow-state tag when conveyed, and
- * `#now` when the `#next`/`#now` label shows (flat context, Next).
+ * tag always (its label always shows), the flow-state tag when conveyed -
+ * for Next also a retired `#now`, which reads as `#next`.
  */
 export function displayTaskText(task: Task, context: TaskLabelContext, contextActive = false): string {
   const withoutDue = task.dueDate ? setDueInLine(task.text, null) : task.text;
   const withoutFlowState = isFlowStateConveyed(task, context, contextActive)
     ? setFlowStateTag(withoutDue, null)
     : withoutDue;
-  const nowConveyed = context === 'flat' && task.flowState === 'next';
-  return nowConveyed ? setNowTag(withoutFlowState, false) : withoutFlowState;
+  const nextConveyed = task.flowState === 'next' && isFlowStateConveyed(task, context, contextActive);
+  return nextConveyed ? withoutNow(withoutFlowState) : withoutFlowState;
 }

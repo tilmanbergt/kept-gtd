@@ -187,7 +187,7 @@ export function closeBlockedText(openTodos: number, upcomingMeetings: number): s
 
 /** Whether a todo is active enough to offer its loop under "New": `#next`, `#now` or a due date, open. */
 function isActiveTodo(task: Task): boolean {
-  return !task.done && !task.cancelled && (task.flowState === 'next' || task.now || task.dueDate !== null);
+  return !task.done && !task.cancelled && (task.flowState === 'next' || task.dueDate !== null);
 }
 
 /**

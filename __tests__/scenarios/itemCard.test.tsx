@@ -261,9 +261,9 @@ scenario('Link a file from the card on an Area page, and unlink it', {feature: '
   });
 });
 
-scenario('Todo card: Now, a flow chip, done and delete act at once', {feature: 'Quick Add', design: 'technical-design-item-card.md'}, () => {
-  given('project "Garden renovation" has the todos "Order soil #next" and "Fix the fence"', () => {
-    putFile(projectFile('Garden renovation'), dataFile('project', {Scope: [], Tasks: ['- [ ] Order soil #next', '- [ ] Fix the fence'], Meetings: []}));
+scenario('Todo card: a flow chip, done and delete act at once; a retired #now leaves with Next', {feature: 'Quick Add', design: 'technical-design-item-card.md'}, () => {
+  given('project "Garden renovation" has the todos "Order soil #next #now" (left from focus mode) and "Fix the fence"', () => {
+    putFile(projectFile('Garden renovation'), dataFile('project', {Scope: [], Tasks: ['- [ ] Order soil #next #now', '- [ ] Fix the fence'], Meetings: []}));
   });
   when('I tap "Order soil" on the project page', async () => {
     await openApp();
@@ -271,16 +271,12 @@ scenario('Todo card: Now, a flow chip, done and delete act at once', {feature: '
     await tap(/^Garden renovation/);
     await tap('Order soil');
   });
-  then('its card shows it as Next, with Now offered', () => {
+  then('its card shows it as Next, with no Now', () => {
     expectShows('Todo · next');
-    expect(labelled('Now')).toEqual({on: false, disabled: false});
-  });
-  when('I tap Now', () => tapLabel('Now'));
-  then('the todo gets #now', () => {
-    expect(sectionLines(projectFile('Garden renovation'), 'Tasks')[0]).toBe('- [ ] Order soil #next #now');
+    expect(labelled('Now')).toBeNull();
   });
   when('I tap Someday on the card', () => tap('Someday'));
-  then('it is Someday, and Now went with Next', () => {
+  then('it is Someday, and #now went with Next', () => {
     expect(sectionLines(projectFile('Garden renovation'), 'Tasks')[0]).toBe('- [ ] Order soil #someday');
     expectShows('Todo · someday');
   });

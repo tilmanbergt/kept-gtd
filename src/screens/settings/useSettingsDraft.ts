@@ -18,7 +18,7 @@ import {useEinkRefreshOnLoad} from '../../utils/screenRefresh';
 
 type PathKey = 'projects' | 'areas' | 'inboxFolder' | 'resources' | 'archive';
 
-/** The string-valued settings fields this section edits - deliberately narrower than `keyof GtdParaSettings` now that the type also has the four numeric focus-count fields (edited separately below, see FOCUS_COUNT_FIELDS), so `values[field.key]` stays a plain string for the TextInput `value` prop. */
+/** The string-valued settings fields this section edits - narrower than `keyof GtdParaSettings`, so `values[field.key]` stays a plain string for the TextInput `value` prop. */
 export type StringSettingKey = 'baseRoot' | 'projectsFolder' | 'areasFolder' | 'inboxFolder' | 'resourcesFolder' | 'archiveFolder' | 'gmailEmail' | 'gmailAppPassword' | 'gmailImapHost';
 
 export const FIELDS: Array<{
@@ -61,49 +61,8 @@ export const FIELDS: Array<{
   },
 ];
 
-export type FocusCountKey =
-  | 'dailyFocusProjectCount'
-  | 'dailyFocusAreaCount'
-  | 'weeklyFocusProjectCount'
-  | 'weeklyFocusAreaCount'
-  | 'monthlyFocusProjectCount'
-  | 'monthlyFocusAreaCount';
-
-export const FOCUS_COUNT_FIELDS: Array<{key: FocusCountKey; label: string}> = [
-  {key: 'dailyFocusProjectCount', label: 'Daily focus — Projects'},
-  {key: 'dailyFocusAreaCount', label: 'Daily focus — Areas'},
-  {key: 'weeklyFocusProjectCount', label: 'Weekly focus — Projects'},
-  {key: 'weeklyFocusAreaCount', label: 'Weekly focus — Areas'},
-  {key: 'monthlyFocusProjectCount', label: 'Monthly focus — Projects'},
-  {key: 'monthlyFocusAreaCount', label: 'Monthly focus — Areas'},
-];
-
-/**
- * Edited as free text (so e.g. clearing the field to retype doesn't fight
- * the input); parsed back to a non-negative integer on save, falling back
- * to `fallback` for anything blank/invalid - same "never resolve to
- * something broken" spirit as the folder-name fields' trim()||default.
- * Used by FOCUS_COUNT_FIELDS.
- */
-function parseNonNegativeInt(text: string, fallback: number): number {
-  const n = Number(text.trim());
-  return Number.isInteger(n) && n >= 0 ? n : fallback;
-}
-
-function focusCountsToText(settings: GtdParaSettings): Record<FocusCountKey, string> {
-  return {
-    dailyFocusProjectCount: String(settings.dailyFocusProjectCount),
-    dailyFocusAreaCount: String(settings.dailyFocusAreaCount),
-    weeklyFocusProjectCount: String(settings.weeklyFocusProjectCount),
-    weeklyFocusAreaCount: String(settings.weeklyFocusAreaCount),
-    monthlyFocusProjectCount: String(settings.monthlyFocusProjectCount),
-    monthlyFocusAreaCount: String(settings.monthlyFocusAreaCount),
-  };
-}
-
 export function useSettingsDraft() {
   const [values, setValues] = useState<GtdParaSettings>(DEFAULT_SETTINGS);
-  const [focusCountText, setFocusCountText] = useState<Record<FocusCountKey, string>>(focusCountsToText(DEFAULT_SETTINGS));
   const [loading, setLoading] = useState(true);
   const [saved, setSaved] = useState(false);
   // Extra sentence for the saved message, e.g. after the Inbox folder was renamed.
@@ -121,7 +80,6 @@ export function useSettingsDraft() {
       .then(loaded => {
         if (cancelled) return;
         setValues(loaded);
-        setFocusCountText(focusCountsToText(loaded));
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -136,10 +94,6 @@ export function useSettingsDraft() {
     setValues(prev => ({...prev, ...next}));
   };
   const update = (key: StringSettingKey, text: string) => patch({[key]: text});
-  const updateFocusCount = (key: FocusCountKey, text: string) => {
-    setSaved(false);
-    setFocusCountText(prev => ({...prev, [key]: text}));
-  };
 
   /** Puts the clipboard's text (trimmed) into a field - the Calendar link and the Gmail app password are pasted, not typed. */
   const pasteInto = async (apply: (text: string) => void) => {
@@ -156,7 +110,7 @@ export function useSettingsDraft() {
     try {
       // Spread `values` first, then override only the fields this screen
       // edits/parses, so settings edited elsewhere (hideDoneProjectTasks,
-      // focusModeActive, ...) keep their value on Save. Blank fields fall
+      // the retired focus counts, ...) keep their value on Save. Blank fields fall
       // back to the default rather than resolving to a broken/empty path
       // segment.
       // Written elsewhere while this screen may be open (the What's-new
@@ -182,30 +136,6 @@ export function useSettingsDraft() {
         gmailEmail: values.gmailEmail.trim(),
         gmailAppPassword: values.gmailAppPassword.trim(),
         gmailImapHost: values.gmailImapHost.trim() || DEFAULT_SETTINGS.gmailImapHost,
-        dailyFocusProjectCount: parseNonNegativeInt(
-          focusCountText.dailyFocusProjectCount,
-          DEFAULT_SETTINGS.dailyFocusProjectCount,
-        ),
-        dailyFocusAreaCount: parseNonNegativeInt(
-          focusCountText.dailyFocusAreaCount,
-          DEFAULT_SETTINGS.dailyFocusAreaCount,
-        ),
-        weeklyFocusProjectCount: parseNonNegativeInt(
-          focusCountText.weeklyFocusProjectCount,
-          DEFAULT_SETTINGS.weeklyFocusProjectCount,
-        ),
-        weeklyFocusAreaCount: parseNonNegativeInt(
-          focusCountText.weeklyFocusAreaCount,
-          DEFAULT_SETTINGS.weeklyFocusAreaCount,
-        ),
-        monthlyFocusProjectCount: parseNonNegativeInt(
-          focusCountText.monthlyFocusProjectCount,
-          DEFAULT_SETTINGS.monthlyFocusProjectCount,
-        ),
-        monthlyFocusAreaCount: parseNonNegativeInt(
-          focusCountText.monthlyFocusAreaCount,
-          DEFAULT_SETTINGS.monthlyFocusAreaCount,
-        ),
       };
       // A new Inbox folder name moves the folder first; a problem throws and nothing is saved.
       const inboxRename = await renameInboxFolderForSave(storedNow, cleaned);
@@ -237,7 +167,6 @@ export function useSettingsDraft() {
       // fell back to its default) rather than leaving stale/invalid text
       // sitting in the field - same normalize-after-save the folder-name
       // fields already get via setValues(cleaned).
-      setFocusCountText(focusCountsToText(cleaned));
       setSaved(true);
     } catch (e) {
       // Show a failed AsyncStorage write, so the button never looks like it
@@ -248,12 +177,11 @@ export function useSettingsDraft() {
 
   const handleResetDefaults = () => {
     setValues(DEFAULT_SETTINGS);
-    setFocusCountText(focusCountsToText(DEFAULT_SETTINGS));
     setSaved(false);
     setSaveError(null);
   };
 
-  return {values, setValues, focusCountText, loading, patch, update, updateFocusCount, pasteInto, handleSave, handleResetDefaults, setSaveError};
+  return {values, setValues, loading, patch, update, pasteInto, handleSave, handleResetDefaults, setSaveError};
 }
 
 export type SettingsDraft = ReturnType<typeof useSettingsDraft>;

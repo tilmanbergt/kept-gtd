@@ -1,9 +1,10 @@
-import {expectNotShows, expectShows, openApp, readTexts, tap, tapTab, textsBetween, type} from '../../test-helpers/scenario/app';
+import {expectNotShows, expectShows, openApp, tap, tapTab, type} from '../../test-helpers/scenario/app';
 import {areaFile, dataFile, INBOX_FILE, loggedErrors, projectFile, putFile, sectionLines} from '../../test-helpers/scenario/files';
-import {and, given, scenario, then, when} from '../../test-helpers/scenario/scenario';
+import {given, scenario, then, when} from '../../test-helpers/scenario/scenario';
 import {putSmokeSpace, smokeClock} from '../../test-helpers/scenario/smokeSpace';
 
-// Daily slim's scenarios T1, T3, T4 and T5 (docs/dev/history/technical-design-daily-slim.md §5): Daily on the
+// Daily slim's scenarios T1, T4 and T5 (docs/dev/history/technical-design-daily-slim.md §5; T3 tested the retired
+// focus mode): Daily on the
 // shared entry actions behaves as before.
 const DESIGN = 'technical-design-daily-slim.md';
 
@@ -14,14 +15,6 @@ async function openDaily(): Promise<void> {
   putSmokeSpace();
   await openApp();
   await tapTab('Daily');
-}
-
-/** The index among the "☐" on screen of the checkbox in front of the row starting with `title`. */
-function checkboxOf(title: string): number {
-  const all = readTexts();
-  const at = all.findIndex(t => t.startsWith(title));
-  if (at < 0) throw new Error(`no row "${title}"; the screen shows: ${all.join(' | ')}`);
-  return all.slice(0, at).filter(t => t === '☐').length - 1;
 }
 
 scenario('Daily: a todo\'s card, then its edit, saved into its own file', {feature: 'Daily', design: DESIGN}, () => {
@@ -39,38 +32,6 @@ scenario('Daily: a todo\'s card, then its edit, saved into its own file', {featu
   then('Garden\'s area.txt has the new text and the card shows again', () => {
     expect(sectionLines(areaFile('Garden'), 'Tasks')).toContainEqual(expect.stringMatching(/^- \[ \] Water the lawn early \[due:: 2026-10-14\]$/));
     expectNotShows('+ Add');
-    expect(loggedErrors()).toEqual([]);
-  });
-});
-
-scenario('Focus session with two Inbox todos: both done, #now cleared from both', {feature: 'Daily', design: DESIGN}, () => {
-  given('the Inbox has "Call the plumber" and "Pay the invoice", both #now', () => {
-    smokeClock();
-    putSmokeSpace();
-    putFile(INBOX_FILE, dataFile('inbox', {Tasks: ['- [ ] Call the plumber #next #now', '- [ ] Pay the invoice #next #now'], Meetings: []}));
-  });
-  when('I open focus mode from Daily', async () => {
-    await openApp();
-    await tapTab('Daily');
-    await tap('Focus mode');
-  });
-  then('the running session lists both', () => {
-    expectShows(/^Call the plumber/);
-    expectShows(/^Pay the invoice/);
-    expectNotShows('Start focus session');
-  });
-  when('I tick both', async () => {
-    await tap('☐', checkboxOf('Call the plumber'));
-    await tap('☐', checkboxOf('Pay the invoice'));
-  });
-  then('"Congratulations: All tasks done!" lists both', () => {
-    expect(textsBetween('Congratulations: All tasks done!', 'Create new session')).toEqual(
-      expect.arrayContaining([expect.stringMatching(/^Call the plumber/), expect.stringMatching(/^Pay the invoice/)]),
-    );
-  });
-  and('Inbox.txt has both done, neither with #now', () => {
-    const lines = sectionLines(INBOX_FILE, 'Tasks');
-    expect(lines).toEqual([expect.stringMatching(/^- \[x\] Call the plumber #next \[completion:: 2026-10-14\]$/), expect.stringMatching(/^- \[x\] Pay the invoice #next \[completion:: 2026-10-14\]$/)]);
     expect(loggedErrors()).toEqual([]);
   });
 });

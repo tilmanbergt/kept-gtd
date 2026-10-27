@@ -8,7 +8,7 @@
  * the row. Returns what QuickAddWidget's `todoCard` prop takes.
  */
 import {todoCardModel, TodoCardModel} from '../../domain/itemCard';
-import {setFlowStateTag, setNowTag} from '../../domain/flowState';
+import {setFlowStateTag, withoutNow} from '../../domain/flowState';
 import {todayIso} from '../../domain/meetingTime';
 import {displayTaskText} from '../../domain/taskLabels';
 import {withTaskCancelled, withTaskDone, withTaskText} from '../../domain/taskEdit';
@@ -36,8 +36,6 @@ export interface TodoCardOptions {
   updateTask: (change: (task: Task) => Task) => Promise<void>;
   /** The row's own done handler; absent: the card ticks through `updateTask`. */
   onToggleDone?: () => void;
-  /** The row's own Now handler; absent: the card switches `#now` through `updateTask`. */
-  onToggleNow?: () => void;
   /** Opens the todo's note, creating it first when there is none. */
   onNote: () => void;
   onOpenFile?: (linkedFile: string) => void;
@@ -58,7 +56,6 @@ export interface TodoCardData {
   onClose: () => void;
   onToggleDone: () => void;
   onFlow: (next: FlowState) => void;
-  onToggleNow: () => void;
   onNote: () => void;
   onOpenFile?: () => void;
   onUnlink: () => void;
@@ -117,15 +114,14 @@ export function useTodoCard(options: TodoCardOptions): TodoCardData | null {
     onEdit: options.onEdit,
     onClose: options.onClose,
     onToggleDone: options.onToggleDone ?? (() => write('ticked done', t => withTaskDone(t, !t.done, todayIso()))),
-    // Tapping the chip that is on clears it, as on the row's chips. Now
-    // exists only with Next, so leaving Next drops it.
+    // Tapping the chip that is on clears it, as on the row's chips. Leaving
+    // Next drops a retired `#now`, which would keep it there.
     onFlow: next =>
       write(`set flow ${next ?? 'none'}`, t => {
         const flow = next === t.flowState ? null : next;
         const text = setFlowStateTag(t.text, flow, flow === 'waiting-for' ? t.waitingOn ?? undefined : undefined);
-        return withTaskText(t, flow === 'next' ? text : setNowTag(text, false));
+        return withTaskText(t, flow === 'next' ? text : withoutNow(text));
       }),
-    onToggleNow: options.onToggleNow ?? (() => write('switched now', t => withTaskText(t, setNowTag(t.text, !t.now)))),
     onNote: options.onNote,
     onOpenFile: linkedFile && options.onOpenFile ? () => options.onOpenFile?.(linkedFile) : undefined,
     onUnlink: () => write('unlinked the file', t => ({...t, linkedFile: ''})),

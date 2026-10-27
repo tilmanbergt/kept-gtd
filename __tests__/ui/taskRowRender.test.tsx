@@ -13,7 +13,7 @@ import TaskRow, {ReadOnlyTaskRow} from '../../src/ui/TaskRow';
 import {task} from '../../test-helpers/fixtures';
 
 const noop = () => {};
-function renderRow(text: string, onToggleNow?: () => void) {
+function renderRow(text: string) {
   let r!: TestRenderer.ReactTestRenderer;
   act(() => {
     r = TestRenderer.create(
@@ -25,7 +25,6 @@ function renderRow(text: string, onToggleNow?: () => void) {
         onCreateNote={noop}
         onOpenNote={noop}
         linkedFile=""
-        onToggleNow={onToggleNow}
         context="flat"
         textColor="#000"
         borderColor="#000"
@@ -59,18 +58,17 @@ describe('TaskRow labels', () => {
     expect(insideTitle).toBe(true);
   });
 
-  it('double-tap on #next calls onToggleNow, a single tap does not', () => {
-    const toggle = jest.fn();
-    const r = renderRow('Draft offer #next', toggle);
+  it('#next has no tap handler; a retired #now shows as #next', () => {
+    const r = renderRow('Draft offer #next');
     const label = r.root.findAllByType(Text).find(t => t.props.children === '#next')!;
-    act(() => label.props.onPress());
-    expect(toggle).not.toHaveBeenCalled();
-    act(() => label.props.onPress());
-    expect(toggle).toHaveBeenCalledTimes(1);
+    expect(label.props.onPress).toBeUndefined();
+    const now = renderRow('Draft offer #now');
+    expect(now.root.findAllByType(Text).some(t => t.props.children === '#next')).toBe(true);
+    expect(now.root.findAllByType(Text).some(t => t.props.children === '#now')).toBe(false);
   });
 
   it('other labels have no own tap handler', () => {
-    const r = renderRow('Price sheet #due:2026-01-05', jest.fn());
+    const r = renderRow('Price sheet #due:2026-01-05');
     const due = r.root.findAllByType(Text).find(t => typeof t.props.children === 'string' && t.props.children.startsWith('#due'))!;
     expect(due.props.onPress).toBeUndefined();
   });

@@ -5,13 +5,13 @@ import {item, task} from '../../test-helpers/fixtures';
 const NOW = new Date(2026, 9, 4, 12, 0, 0);
 const INBOX = '/Note/2 Areas/0 Inbox';
 
-const shown = (texts: string[], opts: {focused?: boolean; contextTag?: string} = {}) => {
-  const p = item('project', 'P', {tasks: texts.map(t => task(t)), dailyFocus: !!opts.focused});
+const shown = (texts: string[], opts: {contextTag?: string} = {}) => {
+  const p = item('project', 'P', {tasks: texts.map(t => task(t))});
   return buildDailyAggregate([p], null, INBOX, NOW, opts.contextTag ?? null).tasks.map(e => e.task.text);
 };
 
 describe('buildDailyAggregate - Waiting For (0.7.0 W1)', () => {
-  it('shows a Waiting For without date from an unfocused project', () => {
+  it('shows a Waiting For without date', () => {
     expect(shown(['NDA #waiting-for:meier'])).toEqual(['NDA #waiting-for:meier']);
   });
   it('shows it when its date is today or overdue', () => {
@@ -21,11 +21,10 @@ describe('buildDailyAggregate - Waiting For (0.7.0 W1)', () => {
     expect(shown(['a #waiting-for #due:2026-10-05', 'b #waiting-for #due:2026-11-01'])).toEqual([]);
   });
   it('still hides Someday and Maybe, even when due', () => {
-    expect(shown(['a #someday #due:2026-10-04', 'b #maybe'], {focused: true})).toEqual([]);
+    expect(shown(['a #someday #due:2026-10-04', 'b #maybe'])).toEqual([]);
   });
-  it('leaves the other rules alone', () => {
-    expect(shown(['n #next'])).toEqual([]);
-    expect(shown(['n #next'], {focused: true})).toEqual(['n #next']);
+  it('leaves the other rules alone: every #next (a retired #now too) and the due ones', () => {
+    expect(shown(['n #next', 'w #now'])).toEqual(['n #next', 'w #now']);
     expect(shown(['d #due:2026-10-05'])).toEqual(['d #due:2026-10-05']);
   });
   it('skips done and cancelled Waiting For', () => {

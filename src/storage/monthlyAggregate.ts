@@ -8,8 +8,6 @@
  *   date-only meeting (`3d`) covers every one of its days, including ones
  *   that spill in from a meeting starting before the month (up to
  *   MAX_MEETING_DAYS back) - `part` says where in its run a day sits.
- * - `focusCards` / `historicalGoals`: the shared period helpers
- *   (storage/periodFocusCards.ts, storage/periodGoals.ts), monthly scope.
  * - `meetingsOnDay`: EVERY meeting (highlighted or not) covering one date -
  *   the Month view's day panel, where highlights are picked.
  */
@@ -20,8 +18,6 @@ import {isHighlight, monthLabel} from '../domain/monthHighlight';
 import {addDaysIso, isoWeekNumberOf, Period} from '../domain/period';
 import {CachedItem} from './dataCache';
 import {DailyInboxInput, DailyItemRef, inboxItemRef} from './dailyAggregate';
-import {buildPeriodFocusCards, PeriodFocusCardData} from './periodFocusCards';
-import {findGoalsForPeriod, GoalHistoryEntry} from './periodGoals';
 import {WeeklyMeetingEntry} from './weeklyAggregate';
 import {perfTime} from '../utils/perf';
 
@@ -53,8 +49,6 @@ export interface MonthlyAggregate {
   days: MonthDay[];
   /** Distinct highlighted meetings touching the month (a 3-day one counts once). */
   highlightCount: number;
-  focusCards: PeriodFocusCardData[];
-  historicalGoals: GoalHistoryEntry[];
 }
 
 function itemRefOf(cachedItem: CachedItem): DailyItemRef {
@@ -62,9 +56,6 @@ function itemRefOf(cachedItem: CachedItem): DailyItemRef {
     kind: cachedItem.kind,
     name: cachedItem.name,
     path: cachedItem.path,
-    dailyFocus: cachedItem.dailyFocus,
-    weeklyFocus: cachedItem.weeklyFocus,
-    monthlyFocus: cachedItem.monthlyFocus,
     abbrev: cachedItem.abbrev,
   };
 }
@@ -101,7 +92,6 @@ function buildMonthlyAggregateImpl(
   inbox: DailyInboxInput | null,
   inboxPath: string,
   period: Period,
-  today: Date = new Date(),
 ): MonthlyAggregate {
   // Candidates: highlights that start inside the month, or up to
   // MAX_MEETING_DAYS before it (a long run spilling into the month).
@@ -130,8 +120,6 @@ function buildMonthlyAggregateImpl(
   return {
     days,
     highlightCount: touched.size,
-    focusCards: buildPeriodFocusCards(items, period, today),
-    historicalGoals: findGoalsForPeriod(items, 'monthly', period.key),
   };
 }
 

@@ -27,7 +27,7 @@ export function nextCountOf(ctx: ContextDef | null, items: readonly CachedItem[]
   for (const item of items) {
     if (item.loadError || item.status !== 'active') continue;
     for (const task of item.tasks) {
-      if (!task.done && !task.cancelled && (task.flowState === 'next' || task.now) && matcher.taskShown(item, task, today)) n++;
+      if (!task.done && !task.cancelled && task.flowState === 'next' && matcher.taskShown(item, task, today)) n++;
     }
   }
   return n;

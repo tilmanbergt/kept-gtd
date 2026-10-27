@@ -109,6 +109,7 @@
  * remount this screen, which loads the item again; FileBrowserPane scans its
  * open folder itself whenever it (re)mounts or drills.
  */
+import {RetainedFocus} from '../storage/projectFile';
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
 import {ItemStatus} from '../domain/types';
@@ -184,9 +185,7 @@ interface Props {
 interface ResourceFolderState {
   rawContent: string;
   status: ItemStatus;
-  dailyFocus: boolean;
-  weeklyFocus: boolean;
-  monthlyFocus: boolean;
+  focusFlags: RetainedFocus;
   frontMatterExtraLines: string[];
   defaultResourceFolder: string | null;
   area: string | null;
@@ -199,9 +198,7 @@ function resourceFolderStateOf(item: CachedItem): ResourceFolderState {
   return {
     rawContent: item.rawContent,
     status: item.status,
-    dailyFocus: item.dailyFocus,
-    weeklyFocus: item.weeklyFocus,
-    monthlyFocus: item.monthlyFocus,
+    focusFlags: item.focusFlags,
     frontMatterExtraLines: item.frontMatterExtraLines,
     defaultResourceFolder: item.defaultResourceFolder,
     area: item.area,

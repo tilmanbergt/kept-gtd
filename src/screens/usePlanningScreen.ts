@@ -4,8 +4,7 @@
  * and screens/MonthView.tsx don't carry two copies:
  * loading settings/cache/Inbox and every
  * meeting action a planning screen offers (add, edit, cancel, quick-file,
- * prep/review tick, note, linked file, Month highlight + short form) plus
- * the focus toggle and goal save for either period scope.
+ * prep/review tick, note, linked file, Month highlight + short form).
  *
  * Deliberately screen-agnostic about WHICH meetings are listed: actions take
  * the entry they act on (`WeeklyMeetingEntry` - source item + index +
@@ -15,11 +14,9 @@
 import {useCallback, useEffect, useState} from 'react';
 import {AbbrevFileMatch} from '../domain/abbrev';
 import {Destination, destinationLabel} from '../domain/destination';
-import {PeriodScope} from '../domain/period';
 import {GtdParaSettings, ResolvedParaPaths} from '../domain/settings';
 import {Meeting} from '../domain/types';
-import {CachedItem, getCachedData, getCachedInbox, rebuildCache, setCachedInbox} from '../storage/dataCache';
-import {FocusScope, toggleItemFocus} from '../storage/focusSlots';
+import {getCachedData, getCachedInbox, rebuildCache, setCachedInbox} from '../storage/dataCache';
 import {itemTarget, moveMeeting} from '../storage/entryMove';
 import {useEntryMoveUi} from '../ui/useEntryMoveUi';
 import {
@@ -34,7 +31,6 @@ import {
 import {linkedFileStatus, openLinkedFile} from '../storage/linkedFiles';
 import {openOrCreateMeetingNote} from '../storage/meetingNoteContent';
 import {useNoteCreateConfirm} from '../ui/useNoteCreateConfirm';
-import {saveItemGoal} from '../storage/periodGoals';
 import {loadProjectFile} from '../storage/projectFile';
 import {loadSettings} from '../storage/settingsStorage';
 import {WeeklyMeetingEntry} from '../storage/weeklyAggregate';
@@ -254,25 +250,6 @@ export function usePlanningScreen({logTag}: Options) {
     );
   };
 
-  /** Adds/removes `item` from `scope` focus - storage/focusSlots.ts's toggleItemFocus (limit check included). */
-  const toggleFocus = useCallback(
-    async (item: CachedItem, scope: FocusScope, value: boolean): Promise<void> => {
-      const currentSettings = settings ?? (await loadSettings());
-      await toggleItemFocus(items, item, scope, value, currentSettings);
-      log(`${logTag}: ${scope} focus toggled`, item.path, value);
-    },
-    [items, settings, logTag],
-  );
-
-  /** Sets (or, for empty `text`, clears) `item`'s goal for period `key` - storage/periodGoals.ts's saveItemGoal. */
-  const saveGoal = useCallback(
-    async (item: CachedItem, scope: PeriodScope, key: string, text: string): Promise<void> => {
-      await saveItemGoal(item, scope, key, text);
-      log(`${logTag}: ${scope} goal saved`, item.path, key);
-    },
-    [logTag],
-  );
-
   const trackingFor = (): MeetingTrackingConfig => ({setups: trackingSetups(settings)});
 
   // The active context dims meetings outside it, never hides them (docs/dev/history/technical-design-time-and-place.md §3.3).
@@ -308,7 +285,7 @@ export function usePlanningScreen({logTag}: Options) {
 
   // --- Day panel (docs/dev/history/technical-design-meeting-lists.md §2.8) -------------
   // Shared by Week, Month and Review's week ahead: which day's panel is open
-  // on the right (null = the focus panel), plus the three ways to get there.
+  // on the right (null = Given time), plus the three ways to get there.
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   /** Day header / day row tapped: toggles that day's panel; cancels any edit. */
   const selectDay = (date: string) =>
@@ -386,7 +363,7 @@ export function usePlanningScreen({logTag}: Options) {
     widgetError,
     meetingsActionError,
     // Stable identities (docs/dev/history/technical-design-render-perf-ab.md §3 B2) -
-    // these reach the React.memo'd QuickAddWidget/PeriodFocusPanel and are
+    // these reach the React.memo'd QuickAddWidget and are
     // only ever called from event handlers; each call runs the latest version.
     handleAddTask: stableAddTask,
     handleAddMeeting: stableAddMeeting,
@@ -397,8 +374,6 @@ export function usePlanningScreen({logTag}: Options) {
     handleQuickFileEdit: stableQuickFileEdit,
     handleMeetingNote,
     onOpenLinkedFile,
-    toggleFocus,
-    saveGoal,
     trackingFor,
     cardOptions,
     selectedDate,

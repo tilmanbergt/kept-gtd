@@ -2,10 +2,8 @@ import {buildDemoFiles, demoProfileSettings, DEMO_BASE_ROOT} from '../../src/dom
 import {
   parseFrontMatter,
   parseMeetingsSpan,
-  parseMonthlyGoalsSpan,
   parseScopeSpan,
   parseTasksSpan,
-  parseWeeklyGoalsSpan,
 } from '../../src/domain/markdown';
 import {profileSettingsOf, sanitizeProfileSettings} from '../../src/domain/profiles';
 
@@ -37,9 +35,7 @@ describe('demo space', () => {
     expect(tasks.find(t => t.text.startsWith('Order soil'))!.dueDate).toBe('2026-10-03');
     expect(tasks.find(t => t.text.startsWith('Get a quote'))!.waitingOn).toBe('marco');
     expect(parseScopeSpan(garden)).toContain('vegetable');
-    expect(parseWeeklyGoalsSpan(garden).goals).toEqual([{weekKey: '2026-W40', text: 'Beds measured and soil ordered'}]);
     const offsite = byPath('1 Projects/Team offsite/project.txt');
-    expect(parseMonthlyGoalsSpan(offsite).goals[0].monthKey).toBe('2026-10');
     const meetings = parseMeetingsSpan(offsite).meetings;
     expect(meetings.map(m => m.date)).toEqual(['2026-09-30', '2026-10-02', '2026-10-21']);
     expect(meetings[2].days).toBe(2);

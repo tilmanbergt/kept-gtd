@@ -1,9 +1,9 @@
 /**
- * Settings: one screen with sub-tabs (Folders, Focus, Contexts, Calendar,
- * Gmail, Note setups, Features, Advanced, About). Calendar and Gmail show only while their
- * experimental switch is on.
+ * Settings: one screen with sub-tabs (Folders, Contexts, Calendar, Gmail,
+ * Note setups, Features, Advanced, About). Calendar and Gmail show only while
+ * their experimental switch is on.
  *
- * Folders, Focus, Calendar and Gmail edit one shared draft
+ * Folders, Calendar and Gmail edit one shared draft
  * (useSettingsDraft.ts) that only the Save button at the bottom writes.
  * Everything else takes effect at once: Note setups saves each setup itself
  * (noteSetups/), Contexts saves each context itself, and the switches on Features, Advanced and About write immediately and
@@ -38,7 +38,7 @@ import AdvancedTab from './AdvancedTab';
 import FeaturesTab from './FeaturesTab';
 import ContextsTab from './contexts/ContextsTab';
 import {useContextsDraft} from './contexts/useContextsDraft';
-import {CalendarTab, FocusTab, FoldersTab, GmailTab} from './DraftTabs';
+import {CalendarTab, FoldersTab, GmailTab} from './DraftTabs';
 import {styles} from './settingsStyles';
 import TouchTestScreen from './TouchTestScreen';
 import NoteSetupsTab from './noteSetups/NoteSetupsTab';
@@ -46,10 +46,9 @@ import {useMyStylePngs} from './noteSetups/useMyStylePngs';
 import {useNoteSetupDraft} from './noteSetups/useNoteSetupDraft';
 import {useSettingsDraft} from './useSettingsDraft';
 
-export type SettingsTab = 'folders' | 'focus' | 'contexts' | 'calendar' | 'gmail' | 'templates' | 'features' | 'advanced' | 'about';
+export type SettingsTab = 'folders' | 'contexts' | 'calendar' | 'gmail' | 'templates' | 'features' | 'advanced' | 'about';
 const SETTINGS_TABS: MiniTabDef<SettingsTab>[] = [
   {key: 'folders', label: 'Folders'},
-  {key: 'focus', label: 'Focus'},
   {key: 'contexts', label: 'Contexts'},
   {key: 'calendar', label: 'Calendar'},
   {key: 'gmail', label: 'Gmail'},
@@ -60,7 +59,7 @@ const SETTINGS_TABS: MiniTabDef<SettingsTab>[] = [
 ];
 
 /** Tabs whose edits wait for the Save button. */
-const DRAFT_TABS: SettingsTab[] = ['folders', 'focus', 'calendar', 'gmail'];
+const DRAFT_TABS: SettingsTab[] = ['folders', 'calendar', 'gmail'];
 
 type Result = {kind: 'success' | 'warning' | 'error'; text: string};
 
@@ -244,7 +243,6 @@ export default function Settings({initialTab, onSwitchProfile}: Props): React.JS
 
         <View style={styles.tabBody}>
           {activeTab === 'folders' && <FoldersTab draft={draft} {...tabProps} />}
-          {activeTab === 'focus' && <FocusTab draft={draft} {...tabProps} />}
           {activeTab === 'contexts' && <ContextsTab draft={contextsDraft} values={values} {...tabProps} />}
           {activeTab === 'calendar' && <CalendarTab draft={draft} {...tabProps} />}
           {activeTab === 'gmail' && <GmailTab draft={draft} {...tabProps} />}

@@ -7,10 +7,8 @@
  * `archiveItem`, which couples the frontmatter write to the physical folder
  * move so the two can never disagree (see that module's doc comment).
  *
- * Same "write the file, then update the cache, in that order" shape as
- * storage/focusSlots.ts's setItemFocus, and the same one-file-write
- * discipline: a status change and its auto-unfocus (below) are saved
- * together, never as two separate writes.
+ * "Write the file, then update the cache, in that order", one file write
+ * per status change.
  */
 import {assignedProjects} from './areaAssignment';
 import {CachedItem, FrontMatterSource, findCachedItem, frontMatterOf, updateItemFrontMatter} from './dataCache';
@@ -22,12 +20,8 @@ export type SettableStatus = 'active' | 'on-hold' | 'done';
 type StatusItem = Pick<CachedItem, 'kind' | 'name' | 'path' | 'rawContent'> & FrontMatterSource;
 
 /**
- * Moving to On Hold *or* Done clears both focus flags in the same write -
- * on hold, this was the very first decision (a deliberate signal stronger
- * than just running low on slots); Done was confirmed to follow the same
- * rule rather than keep a finished project occupying a focus slot. Moving
- * back to Active never re-focuses anything - both flags are already false
- * by the time that's possible, since focus only ever clears on the way out.
+ * The retired focus flags travel through unchanged (storage/projectFile.ts's
+ * RetainedFocus): a status change keeps them as they are.
  *
  * `area` is carried through unchanged on every write (added alongside
  * `defaultResourceFolder` - technical-design-project-area-assignment.md
@@ -37,19 +31,14 @@ type StatusItem = Pick<CachedItem, 'kind' | 'name' | 'path' | 'rawContent'> & Fr
  * **Area → On Hold cascade** (technical-design-project-area-assignment.md
  * §3.2, §5): when `item.kind === 'area'` and `nextStatus === 'on-hold'`,
  * every currently-Active Project in `assignedProjects(item.name)` is also
- * moved to On Hold, via this same function (so each one's own focus
- * auto-clear fires too, unchanged). Deliberately **not** symmetric - Area
- * On Hold → Active never reactivates those projects, the same
- * one-directional posture the focus-flag auto-clear above already has
- * ("moving back to Active never re-focuses anything"). Areas never reach
+ * moved to On Hold, via this same function. Deliberately **not** symmetric -
+ * Area On Hold → Active never reactivates those projects. Areas never reach
  * `done` (2-way picker), so there is no Done-cascade to design here.
  */
 export async function setItemStatus(
   item: StatusItem,
   nextStatus: SettableStatus,
-): Promise<{rawContent: string; status: SettableStatus; dailyFocus: boolean; weeklyFocus: boolean; monthlyFocus: boolean; frontMatterExtraLines: string[]}> {
-  // All three focus levels clear together (docs/dev/history/technical-design-monthly-view.md §2.1).
-  const clearsFocus = nextStatus !== 'active';
+): Promise<{rawContent: string; status: SettableStatus; frontMatterExtraLines: string[]}> {
   // doneAt (docs/dev/history/technical-design-project-close-out.md §4.1): stamped the
   // first time a Project becomes Done (an existing date is kept - e.g. Done
   // -> On Hold -> Done keeps the original), cleared on reactivation. It
@@ -61,13 +50,9 @@ export async function setItemStatus(
     ...frontMatterOf(item),
     extraLines: writeLifecycleDate(item.frontMatterExtraLines, 'doneAt', nextDoneAt),
     status: nextStatus,
-    dailyFocus: clearsFocus ? false : item.dailyFocus,
-    weeklyFocus: clearsFocus ? false : item.weeklyFocus,
-    monthlyFocus: clearsFocus ? false : item.monthlyFocus,
   };
   const rawContent = await saveFrontMatter(item.kind, item.path, item.rawContent, fm);
   updateItemFrontMatter(item.path, rawContent, fm);
-  const {dailyFocus, weeklyFocus, monthlyFocus} = fm;
 
   if (item.kind === 'area' && nextStatus === 'on-hold') {
     const toCascade = assignedProjects(item.name).filter(p => p.status === 'active');
@@ -76,7 +61,7 @@ export async function setItemStatus(
     }
   }
 
-  return {rawContent, status: nextStatus, dailyFocus, weeklyFocus, monthlyFocus, frontMatterExtraLines: fm.extraLines};
+  return {rawContent, status: nextStatus, frontMatterExtraLines: fm.extraLines};
 }
 
 /**

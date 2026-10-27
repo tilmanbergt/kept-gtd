@@ -42,9 +42,11 @@ export type PageKind = 'meeting' | 'todo' | 'first' | 'home' | 'review';
  * switched off. Meeting pages, and a loop note's first page (main date + loop
  * name; the name alone without a main date).
  *
- * `scope` and `goals` (docs/dev/history/technical-design-home-notebooks.md
- * §3.2): Home page only - the Project's or Area's Scope, and its latest
- * monthly and weekly goal.
+ * `scope` (docs/dev/history/technical-design-home-notebooks.md §3.2): Home
+ * page only - the Project's or Area's Scope. `goals` (its latest goals) is
+ * retired with goals (docs/dev/history/technical-design-time-and-place.md
+ * §3.7): kept as a type so stored layouts stay valid, offered nowhere and
+ * rendered as nothing.
  */
 export type PieceType = 'title' | 'date' | 'time' | 'text' | 'related' | 'link' | 'sinceLast' | 'dateTitle' | 'scope' | 'goals';
 
@@ -124,7 +126,7 @@ export const PIECE_PAGES: Record<PieceType, PageKind[]> = {
   sinceLast: ['meeting'],
   dateTitle: ['meeting', 'first', 'review'],
   scope: ['home'],
-  goals: ['home'],
+  goals: [],
 };
 
 /**
@@ -139,7 +141,7 @@ export const DEFAULT_PIECE_TYPES: Record<PageKind, PieceType[]> = {
   meeting: ['dateTitle', 'time', 'link'],
   todo: ['title', 'link'],
   first: ['dateTitle', 'link'],
-  home: ['title', 'scope', 'goals'],
+  home: ['title', 'scope'],
   review: ['dateTitle'],
 };
 
@@ -382,8 +384,6 @@ export interface PieceRenderContext {
   dateTitle?: string;
   /** Home page only - the item's Scope text; empty or unset skips the piece. */
   scope?: string;
-  /** Home page only - the latest monthly and weekly goal, one line each (domain/homeNotebook.ts's `homeGoalsText`); empty or unset skips the piece. */
-  goals?: string;
   /** Bare file name of the item's `linkedFile`, set by the caller ONLY when that file actually exists (missing file -> unset -> the `link` piece is skipped, docs/dev/history/technical-design-linked-file-piece.md §1.4). */
   linkedFileName?: string;
 }
@@ -425,8 +425,6 @@ export function renderPieceText(piece: NotePiece, ctx: PieceRenderContext): stri
       return ctx.dateTitle ?? '';
     case 'scope':
       return ctx.scope?.trim() ?? '';
-    case 'goals':
-      return ctx.goals ?? '';
     default:
       return '';
   }

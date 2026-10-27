@@ -17,7 +17,7 @@ import {PANEL_ROW_HEIGHT, setupStyles} from './noteSetupsStyles';
 import {LayoutDraft} from './useLayoutDraft';
 
 /** The predefined pieces in list order; PIECE_PAGES decides which a page offers. */
-const PREDEFINED: PieceType[] = ['title', 'dateTitle', 'date', 'time', 'related', 'link', 'sinceLast', 'scope', 'goals'];
+const PREDEFINED: PieceType[] = ['title', 'dateTitle', 'date', 'time', 'related', 'link', 'sinceLast', 'scope'];
 
 type Row = {kind: 'type'; type: PieceType} | {kind: 'text'; item: NoteTextItem};
 

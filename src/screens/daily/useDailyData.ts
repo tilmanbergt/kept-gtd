@@ -1,5 +1,5 @@
 /**
- * What Daily and focus mode load (docs/dev/history/technical-design-daily-slim.md §3.3):
+ * What Daily loads (docs/dev/history/technical-design-daily-slim.md §3.3):
  * the live items and Inbox from the cache, the folders, the settings snapshot
  * and today's and tomorrow's dates.
  *

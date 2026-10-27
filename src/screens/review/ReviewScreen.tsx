@@ -57,7 +57,6 @@ import {styles} from './reviewStyles';
 import {clearReviewStepFilter, takeReviewStepRequest, useReviewStepRequestNonce} from './reviewNav';
 import {bump, endVisit, getSavedView, rememberView, ReviewView, startVisit} from './reviewVisit';
 import {ReviewStepProps} from './shared';
-import FocusResetStep from './steps/FocusResetStep';
 import GmailStep from './steps/GmailStep';
 import InboxStep, {inboxStepEntries} from './steps/InboxStep';
 import ItemListStep from './steps/ItemListStep';
@@ -66,7 +65,6 @@ import OpenLoopsStep, {openLoopsCount, useLoopRoster} from './steps/OpenLoopsSte
 import AgreementsStep, {agreementsStepCount, useAgreementReview} from './steps/AgreementsStep';
 import TendingThreadsStep, {tendingCount, useTendingRoster} from './steps/TendingThreadsStep';
 import SomedayStep from './steps/SomedayStep';
-import UnfocusedNextStep from './steps/UnfocusedNextStep';
 import WeekAheadStep from './steps/WeekAheadStep';
 import {useReviewData} from './useReviewData';
 
@@ -237,8 +235,6 @@ export default function ReviewScreen({onOpenItem, onReviewRecorded, onOpenCalend
       ? buildReviewStepCounts(
           agg,
           inboxEntries.openTasks.length + inboxEntries.openMeetings.length + openMarkCount,
-          items,
-          settings,
           getCachedGmailInbox()?.length ?? 0,
           countMeetingsInRange(inbox?.meetings ?? [], week.start, week.end),
           tendingCount(rosters.tending),
@@ -325,12 +321,8 @@ export default function ReviewScreen({onOpenItem, onReviewRecorded, onOpenCalend
         return <ItemListStep key={id} step={id} onStartCloseOut={onStartCloseOut} {...stepProps} />;
       case 'openLoops':
         return <OpenLoopsStep {...stepProps} />;
-      case 'unfocusedNext':
-        return <UnfocusedNextStep {...stepProps} />;
       case 'somedayMaybe':
         return <SomedayStep {...stepProps} />;
-      case 'weeklyFocus':
-        return <FocusResetStep {...stepProps} />;
     }
   };
 
