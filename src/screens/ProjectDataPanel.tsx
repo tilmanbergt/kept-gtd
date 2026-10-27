@@ -95,7 +95,7 @@ import {createStandaloneNote} from '../storage/standaloneNotes';
 import {log, logError} from '../utils/log';
 import {useEinkRefreshOnLoad} from '../utils/screenRefresh';
 import {ARMING_TEXT, LinkTarget} from '../ui/FileBrowserPane';
-import {useEditTarget} from '../ui/useEditTarget';
+import {cardOrEdit, useEditTarget} from '../ui/useEditTarget';
 import QuickAddWidget, {editTargetFor, MeetingQuickAddFields, QuickFilePayload} from '../ui/QuickAddWidget';
 import MarksCard from '../ui/MarksCard';
 import {MarkScope} from '../domain/marks';
@@ -672,7 +672,7 @@ export default function ProjectDataPanel({
     path,
     settings,
     target: editTarget,
-    mode: editMode,
+    mode: cardOrEdit(editMode),
     select: selectEdit,
     start: startEdit,
     edit: editSelected,
@@ -781,7 +781,7 @@ export default function ProjectDataPanel({
             onSave={withMeetings}
             onOpenCalendarSettings={onOpenCalendarSettings}
             editingIndex={editTarget?.type === 'meeting' ? editTarget.index : null}
-            editMode={editMode}
+            editMode={cardOrEdit(editMode)}
             armingIndex={armTarget?.type === 'meeting' ? armTarget.index : null}
             onSelect={index => selectEdit({type: 'meeting', index})}
             onOpenLinkedFile={onOpenLinkedFile}

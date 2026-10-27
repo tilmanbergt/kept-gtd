@@ -446,3 +446,24 @@ tests were deleted with its code, lower that baseline by hand in S6 with the rea
   meeting list (it is an Inbox meeting list). Changed tests: `currentPagePerf`, `currentThreadsTab` and the
   current-page golden file look for "Schedule" instead of "Meetings" (the golden also gains the F box).
 
+### S2 - Context panel
+
+- Domain as designed: `domain/meetingContext.ts` (`meetingContextOf` on `ownerOfMeeting`, `engagePageOf`,
+  `optionsOf`), `domain/meetingQuickAdd.ts` (`quickAddPartsFor`; `useEngageQuickAdd` calls it, Engage's tests
+  unchanged). Additions found while building: a thread's or loop's **Next also lists its plan todos** (an agenda
+  item added before the meeting has no flow state and must show, D14); a todo already listed above "Agreed last
+  time" shows once; an **Inbox meeting has no owner** (`ownerOfMeeting` knows Projects/Areas only) - its panel
+  lists nothing and Quick Add to meeting files to the Inbox; the owner's lens line reads "… showing its project"
+  / "its area".
+- UI: `ui/meetingContext/{MeetingContextPanel,ContextBackRow,useMeetingContext,useMeetingQuickAdd,useMeetingContextSlot}`.
+  `useMeetingContextSlot` holds the per-screen wiring (Daily, Week, Month) so the screens only lay out. The back
+  row is its own small component. `useEditTarget` gained `add`/`toCard` and `cardOrEdit` for the parts that know
+  no `add` (agreements, the project page); `editTargetFor` returns null for `add` (Quick Add in create mode).
+- **Todo rows in the panel tick, open their note and linked file, but a tap selects nothing**: the screen's one
+  selection stays the meeting (Week and Month select meetings only). Editing a todo stays on its page or Daily's
+  Next todos. The footer reads "‹ Back to the card" while Quick Add is open (Quick Add's create mode has no ✕).
+- Entries added through the panel go to the meeting's Project/Area (the Inbox for an Inbox meeting).
+- Week: a chip selects (card + panel) and leaves the day panel as it was; `openDay` (the back row's day link) opens
+  a day without toggling. Month's back row: left = close the day panel, right = back to the day panel. Review's
+  Week ahead gets all of this through `WeekPlanner`; `rightSide="schedule-only"` comes with Given time in S4.
+

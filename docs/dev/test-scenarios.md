@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-106 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+112 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -153,6 +153,41 @@ Test: `__tests__/scenarios/dailySlim.test.tsx`
 - **Then** it is in Garage's file and not in Inbox.txt
 
 Test: `__tests__/scenarios/dailySlim.test.tsx`
+
+### Daily: tapping a thread meeting shows its card and the context panel
+
+- **Given** "1:1 Mieke #sparring/mieke" today at 15:00, an owed todo from the last 1:1, a waiting todo and an agreement
+- **When** I tap the meeting on Daily
+- **Then** the card shows and the panel lists I owe, Waiting for and Agreed last time
+- **When** I close the card
+- **Then** Next todos are back
+
+Test: `__tests__/scenarios/meetingContext.test.tsx`
+
+### Daily: a plain meeting with nothing linked shows its project
+
+- **Given** "Steering committee" today in project Website, which has the Next todo "Draft homepage"
+- **When** I tap it
+- **Then** the panel says so and lists Website's next todos
+
+Test: `__tests__/scenarios/meetingContext.test.tsx`
+
+### Quick Add to meeting before it starts: an agenda item with the thread tag
+
+- **Given** the thread meeting "1:1 Mieke" today at 15:00
+- **When** I tap it, use + Quick Add to meeting and add "Bring the numbers"
+- **Then** the todo carries the thread tag and no meeting field
+- **And** the card is back and the panel lists it
+
+Test: `__tests__/scenarios/meetingContext.test.tsx`
+
+### Quick Add to meeting during it: the meeting is recorded
+
+- **Given** the thread meeting "1:1 Mieke" today 9:30-10:30, running now
+- **When** I add "Send the contract" through + Quick Add to meeting
+- **Then** the todo has the thread tag and [meeting:: …] of this meeting
+
+Test: `__tests__/scenarios/meetingContext.test.tsx`
 
 ### Daily: tomorrow's tracked meeting offers Prepped, and Daily has no Link file
 
@@ -996,6 +1031,30 @@ Test: `__tests__/scenarios/threadsBigArea.test.tsx` · design: `docs/dev/history
 Test: `__tests__/scenarios/threadsBigArea.test.tsx` · design: `docs/dev/history/technical-design-perf-threads.md`
 
 ## Week and Month
+
+### Week: a day header opens the day, a chip the card and panel, "‹ Back to Week 42" the normal side
+
+- **Given** "1:1 Mieke" on Thursday 15.10.
+- **When** I open Week and tap Thursday's header
+- **Then** the day panel shows
+- **When** I tap the chip
+- **Then** the card and the panel show, with the back row
+- **When** I tap "‹ Back to Week 42"
+- **Then** the panel is gone and the day panel is there again
+
+Test: `__tests__/scenarios/meetingContext.test.tsx`
+
+### Month: a day, then a meeting in it, then "‹ Back to October 2026"
+
+- **Given** "1:1 Mieke" on 15.10.
+- **When** I open Month, tap the 15th and the meeting in its day panel
+- **Then** the card and panel show with the back row
+- **When** I tap the day link
+- **Then** the day panel shows again
+- **When** I tap the meeting again and then "‹ Back to October 2026"
+- **Then** neither the panel nor the day panel shows
+
+Test: `__tests__/scenarios/meetingContext.test.tsx`
 
 ### Week shows this week's meetings and the weekly focus with its goals (smoke)
 

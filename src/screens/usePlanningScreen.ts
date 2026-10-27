@@ -41,7 +41,6 @@ import {WeeklyMeetingEntry} from '../storage/weeklyAggregate';
 import {log, logError} from '../utils/log';
 import {useEinkRefreshOnLoad} from '../utils/screenRefresh';
 import {MeetingRowLayout, MeetingRowProps, MeetingTrackingConfig, trackingSetups} from '../ui/MeetingRow';
-import {entryDate} from '../domain/meetingSpan';
 import {MeetingQuickAddFields, QuickFilePayload} from '../ui/QuickAddWidget';
 import {useCachedItems} from '../ui/useCachedItems';
 import {useEditTarget} from '../ui/useEditTarget';
@@ -84,6 +83,8 @@ export function usePlanningScreen({logTag}: Options) {
     select: selectEdit,
     edit: editSelected,
     saved: savedEditTarget,
+    add: addToSelected,
+    toCard: selectedToCard,
     cancel: cancelEditTarget,
     set: setEditingKey,
     flushEditRef,
@@ -300,11 +301,16 @@ export function usePlanningScreen({logTag}: Options) {
       setSelectedDate(prev => (prev === date ? null : date));
       setEditingKey(null);
     });
-  /** Week chip tapped: opens that meeting's day and shows its card in Quick Add's place. */
+  /** Week chip tapped: that meeting's card and context panel on the right; the day panel stays as it was (D15). */
   const openMeetingFromGrid = (entry: WeeklyMeetingEntry) =>
     afterSave(() => {
-      setSelectedDate(entryDate(entry));
       setEditingKey(meetingKey(entry), 'card');
+    });
+  /** The context panel's day link: that day's panel, the selection closed. */
+  const openDay = (date: string) =>
+    afterSave(() => {
+      setSelectedDate(date);
+      setEditingKey(null);
     });
   /** Closes the day panel (Close, or changing week/month - `then` runs after the pending edit was saved). */
   const closeDayPanel = (then?: () => void) =>
@@ -335,7 +341,7 @@ export function usePlanningScreen({logTag}: Options) {
     note: {onOpen: () => handleMeetingNote(entry), onCreate: () => handleMeetingNote(entry)},
     file: {linkedFile: entry.meeting.linkedFile, onOpen: onOpenLinkedFile},
     onPress: () => selectMeeting(entry),
-    state: editingKey === meetingKey(entry) ? (editMode === 'card' ? 'selected' : 'editing') : undefined,
+    state: editingKey === meetingKey(entry) ? (editMode === 'edit' ? 'editing' : 'selected') : undefined,
     ownerPath: entry.item.path,
     textColor: opts.textColor,
     borderColor: opts.borderColor,
@@ -359,6 +365,8 @@ export function usePlanningScreen({logTag}: Options) {
     load,
     editingKey,
     editMode,
+    addToSelected,
+    selectedToCard,
     widgetError,
     meetingsActionError,
     // Stable identities (docs/dev/history/technical-design-render-perf-ab.md §3 B2) -
@@ -380,6 +388,7 @@ export function usePlanningScreen({logTag}: Options) {
     selectedDate,
     selectDay,
     openMeetingFromGrid,
+    openDay,
     closeDayPanel,
     dayRowProps,
     flushEditRef,

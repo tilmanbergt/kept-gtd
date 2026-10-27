@@ -6,8 +6,11 @@
  *
  * - Left: Meetings | Google mini-tabs; "Meetings" is ui/WeekGrid.tsx (chips,
  *   4 x 2 per weekday, 2 x 2 per weekend day).
- * - Right: Quick Add on top, then EITHER the shared day panel
- *   (ui/DayMeetingsPanel.tsx, after tapping a chip or a day header) OR the
+ * - Right: Quick Add on top, then the selected meeting's context panel
+ *   (ui/meetingContext/, after tapping a chip or a day-panel row: card +
+ *   panel with "‹ Back to Week 44 · Tue 27.10. · 8 meetings ›",
+ *   docs/dev/history/technical-design-time-and-place.md §3.2), else the shared
+ *   day panel (ui/DayMeetingsPanel.tsx, after tapping a day header), else the
  *   weekly focus panel / goal history - the same pattern as the Month view.
  *   No "Focus" label above Quick Add, so Week and Month line up.
  *
@@ -18,7 +21,14 @@ import {SCHEDULE_LABEL} from '../domain/meetingDisplay';
 import React, {useMemo, useState} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import {Destination} from '../domain/destination';
+import {formatDayHeader} from '../domain/dateFormat';
 import {todayIso} from '../domain/meetingTime';
+import {entryDate} from '../domain/meetingSpan';
+import {scheduleCountText} from '../domain/meetingDisplay';
+import {isoWeekOf} from '../domain/weekDate';
+import ContextBackRow from '../ui/meetingContext/ContextBackRow';
+import MeetingContextPanel from '../ui/meetingContext/MeetingContextPanel';
+import {useMeetingContextSlot} from '../ui/meetingContext/useMeetingContextSlot';
 import {canEditPeriod, periodOf, shiftPeriod} from '../domain/period';
 import {meetingsOnDay} from '../storage/monthlyAggregate';
 import {buildWeeklyAggregate, WeeklyMeetingEntry} from '../storage/weeklyAggregate';
@@ -123,6 +133,19 @@ export default function WeekPlanner({
       : null;
   const linkedFileMissing = useLinkedFileMissing(editingMeetingEntry?.meeting.linkedFile, paths);
   const meetingCard = useMeetingCard(planning.cardOptions(editingMeetingEntry, {onOpenSource: item => openSource(item)}));
+  const slot = useMeetingContextSlot(
+    editingMeetingEntry,
+    {items, inbox, inboxPath, settings},
+    planning.editMode,
+    {addTask: planning.handleAddTask, addMeeting: planning.handleAddMeeting},
+    FIXED_INBOX_DESTINATION,
+    planning.selectedToCard,
+  );
+  const contextDate = editingMeetingEntry ? entryDate(editingMeetingEntry) : null;
+  const contextDayRows = useMemo(
+    () => (contextDate ? meetingsOnDay(items, inbox ? {tasks: inbox.tasks, meetings: inbox.meetings} : null, inboxPath ?? '', contextDate) : []),
+    [items, inbox, inboxPath, contextDate],
+  );
 
   const openSource = (item: WeeklyMeetingEntry['item']) => {
     if (item.kind === 'inbox') {
@@ -130,6 +153,11 @@ export default function WeekPlanner({
       return;
     }
     onOpenItem(item.kind, {name: item.name, path: item.path, isFolder: true});
+  };
+
+  const openItemAt = (path: string) => {
+    const owner = items.find(i => i.path === path);
+    if (owner) onOpenItem(owner.kind, {name: owner.name, path, isFolder: true});
   };
 
   const dayTabs: MiniTabDef<DayTab>[] = [
@@ -201,9 +229,7 @@ export default function WeekPlanner({
         <View style={styles.fill}>
           <QuickAddWidget
             layoutKey="week"
-            fixedDestination={FIXED_INBOX_DESTINATION}
-            onAddTask={planning.handleAddTask}
-            onAddMeeting={planning.handleAddMeeting}
+            {...slot.widget}
             initialDate={selectedDate ?? (isCurrentWeek ? todayIso() : weekStart)}
             isMeetingDateVisible={stableIsMeetingDateVisible}
             editTarget={editTargetFor(editingKey, {meeting: editingMeetingEntry?.meeting}, planning.editMode)}
@@ -223,7 +249,28 @@ export default function WeekPlanner({
           />
           <View style={[common.divider, {backgroundColor: borderColor}]} />
 
-          {selectedDate ? (
+          {slot.model && slot.entry && contextDate ? (
+            <MeetingContextPanel
+              model={slot.model}
+              meeting={slot.entry.meeting}
+              adding={slot.adding}
+              onQuickAdd={planning.addToSelected}
+              onBackToCard={planning.selectedToCard}
+              onOpenItem={path => openItemAt(path)}
+              backRow={
+                <ContextBackRow
+                  backLabel={`Back to Week ${isoWeekOf(shiftedNow).week}`}
+                  onBack={planning.cancelEditTarget}
+                  dayLabel={`${formatDayHeader(contextDate, todayDate)} · ${scheduleCountText(contextDayRows)}`}
+                  onDay={() => planning.openDay(contextDate)}
+                  textColor={textColor}
+                  borderColor={borderColor}
+                />
+              }
+              textColor={textColor}
+              borderColor={borderColor}
+            />
+          ) : selectedDate ? (
             <DayMeetingsPanel
               date={selectedDate}
               entries={dayRows}

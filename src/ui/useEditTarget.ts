@@ -6,7 +6,10 @@
  * The selected item shows in one of two modes (docs/dev/history/technical-design-item-card.md §3):
  * - `card`: the item card in Quick Add's place - the first tap on a row;
  * - `edit`: Quick Add's edit form - the card's Edit, or a second tap on the
- *   selected row (two quick taps on a row therefore go straight to edit).
+ *   selected row (two quick taps on a row therefore go straight to edit);
+ * - `add`: Quick Add in create mode for the selected meeting - the context
+ *   panel's "+ Quick Add to meeting" (docs/dev/history/technical-design-time-and-place.md
+ *   §3.2); `saved()` after an add, or `toCard()`, shows the card again.
  *
  * - `select(t)` saves an open edit's pending changes first (ui/useEditFlush.ts,
  *   save-then-switch), then shows `t` as card; on the target already shown as
@@ -25,7 +28,10 @@
 import {useCallback, useRef, useState} from 'react';
 import {useEditFlush} from './useEditFlush';
 
-export type EditMode = 'card' | 'edit';
+export type EditMode = 'card' | 'edit' | 'add';
+
+/** The mode for a part that knows no `add` (only a meeting is ever added to): `add` shows as `card` there. */
+export const cardOrEdit = (mode: EditMode): 'card' | 'edit' => (mode === 'add' ? 'card' : mode);
 
 const sameTarget = (a: unknown, b: unknown): boolean => JSON.stringify(a) === JSON.stringify(b);
 
@@ -63,6 +69,9 @@ export function useEditTarget<T, A = never>() {
   );
   const edit = useCallback(() => setSelection(s => (s.target === null ? s : {target: s.target, mode: 'edit'})), []);
   const saved = useCallback(() => setSelection(s => (s.target === null ? s : {target: s.target, mode: 'card'})), []);
+  /** The selected meeting's Quick Add (`add`); `toCard` returns to its card. */
+  const add = useCallback(() => setSelection(s => (s.target === null ? s : {target: s.target, mode: 'add'})), []);
+  const toCard = saved;
   const cancel = useCallback(() => {
     setSelection({target: null, mode: 'edit'});
     setArm(null);
@@ -79,6 +88,8 @@ export function useEditTarget<T, A = never>() {
     start,
     edit,
     saved,
+    add,
+    toCard,
     cancel,
     armFor,
     cancelArm,

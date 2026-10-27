@@ -61,12 +61,13 @@ export type QuickAddEditTarget =
 
 export type EditMode = 'card' | 'edit';
 
-/** The edit target for a screen's edited todo or meeting (a todo wins), or null when nothing is edited. */
+/** The edit target for a screen's edited todo or meeting (a todo wins), or null when nothing is edited or the screen's selection adds to a meeting (`add`: Quick Add is in create mode). */
 export function editTargetFor(
   key: string | null,
   item: {task?: Task | null; meeting?: Meeting | null; loop?: boolean},
-  mode: EditMode = 'edit',
+  mode: EditMode | 'add' = 'edit',
 ): QuickAddEditTarget | null {
+  if (mode === 'add') return null;
   if (item.task) return {kind: item.loop ? 'loop' : 'task', mode, key, task: item.task};
   if (item.meeting) return {kind: 'meeting', mode, key, meeting: item.meeting};
   return null;

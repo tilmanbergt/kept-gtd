@@ -30,7 +30,12 @@
 import React, {useMemo, useState} from 'react';
 import {ActivityIndicator, Pressable, StyleSheet, Text, View} from 'react-native';
 import {Destination} from '../domain/destination';
+import {formatDayHeader} from '../domain/dateFormat';
 import {todayIso} from '../domain/meetingTime';
+import {scheduleCountText, SCHEDULE_LABEL} from '../domain/meetingDisplay';
+import ContextBackRow from '../ui/meetingContext/ContextBackRow';
+import MeetingContextPanel from '../ui/meetingContext/MeetingContextPanel';
+import {useMeetingContextSlot} from '../ui/meetingContext/useMeetingContextSlot';
 import {canEditPeriod, monthTitle, periodOf, shiftPeriod} from '../domain/period';
 import {buildMonthlyAggregate, meetingsOnDay} from '../storage/monthlyAggregate';
 import {WeeklyMeetingEntry} from '../storage/weeklyAggregate';
@@ -124,9 +129,22 @@ export default function MonthView({
   const openSource = (item: WeeklyMeetingEntry['item']) =>
     item.kind !== 'inbox' && onOpenItem(item.kind, {name: item.name, path: item.path, isFolder: true});
   const meetingCard = useMeetingCard(planning.cardOptions(editingMeetingEntry, {onOpenSource: openSource}));
+  // A meeting tapped in the day panel: card + context panel (docs/dev/history/technical-design-time-and-place.md §3.2, D15).
+  const slot = useMeetingContextSlot(
+    editingMeetingEntry,
+    {items, inbox, inboxPath, settings},
+    planning.editMode,
+    {addTask: planning.handleAddTask, addMeeting: planning.handleAddMeeting},
+    FIXED_INBOX_DESTINATION,
+    planning.selectedToCard,
+  );
+  const openItemAt = (path: string) => {
+    const owner = items.find(i => i.path === path);
+    if (owner) onOpenItem(owner.kind, {name: owner.name, path, isFolder: true});
+  };
 
   const dayTabs: DayTabDef<DayTab>[] = [
-    {key: 'meetings', label: `Meetings (${dayRows.length})`},
+    {key: 'meetings', label: `${SCHEDULE_LABEL} (${dayRows.length})`},
     {key: 'google', label: 'Google'},
   ];
 
@@ -208,9 +226,7 @@ export default function MonthView({
               <View style={styles.columnScroll}>
                 <QuickAddWidget
                   layoutKey="month"
-                  fixedDestination={FIXED_INBOX_DESTINATION}
-                  onAddTask={planning.handleAddTask}
-                  onAddMeeting={planning.handleAddMeeting}
+                  {...slot.widget}
                   initialDate={newMeetingDate}
                   // A meeting added from the day panel is meant for the month.
                   initialMonthly={selectedDate != null}
@@ -232,7 +248,28 @@ export default function MonthView({
                 />
                 <View style={[common.divider, {backgroundColor: borderColor}]} />
 
-                {selectedDate ? (
+                {slot.model && slot.entry && selectedDate ? (
+                  <MeetingContextPanel
+                    model={slot.model}
+                    meeting={slot.entry.meeting}
+                    adding={slot.adding}
+                    onQuickAdd={planning.addToSelected}
+                    onBackToCard={planning.selectedToCard}
+                    onOpenItem={openItemAt}
+                    backRow={
+                      <ContextBackRow
+                        backLabel={`Back to ${monthTitle(shiftedNow)}`}
+                        onBack={() => planning.closeDayPanel()}
+                        dayLabel={`${formatDayHeader(selectedDate, todayDate)} · ${scheduleCountText(dayRows)}`}
+                        onDay={planning.cancelEditTarget}
+                        textColor={textColor}
+                        borderColor={borderColor}
+                      />
+                    }
+                    textColor={textColor}
+                    borderColor={borderColor}
+                  />
+                ) : selectedDate ? (
                   <DayMeetingsPanel
                     date={selectedDate}
                     entries={dayRows}

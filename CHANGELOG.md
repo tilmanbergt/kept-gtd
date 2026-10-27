@@ -17,10 +17,19 @@ or your project/area files are stored.
   show, have no prep/review and no Reflection page, and never appear in "Meetings to close out".
   Their note follows a Note setup that matches their tags; otherwise the card opens the owner's home
   notebook instead of creating a note.
+- **The context panel**: tap a meeting or focus block on Daily, Week or Month and its card shows with
+  everything around it below: **I owe**, **Next**, **Waiting for** and **Agreed last time** (a
+  thread) or **From its meetings** (a loop). A plain meeting shows what is linked to it, or its
+  project's or area's next todos ("Nothing linked to this meeting yet"). **+ Quick Add to meeting**
+  (**+ Quick Add to block**) adds to it: before it starts the todo gets the thread's or loop's tag,
+  during and after it also records the meeting, as in Engage.
 - **Settings → Features**: switch **Project close-out** on or off. Off, a Done project is archived
   directly from its page and from the Weekly Review, without the checklist and the PDF.
 
 ### Changed
+- **Week**: tapping a meeting in the grid shows its card and context panel with "‹ Back to Week 42 ·
+  Thu 15.10. · 2 meetings ›" instead of opening its day; tapping the day's header still opens the
+  day. **Month**: a meeting in the day panel opens the same way, with "‹ Back to October".
 - Lists that hold meetings and focus blocks are called **Schedule**: Week's left tab, the day
   panel's tab, a project's or area's page and the Inbox. A day's line counts both: "Wed 14.10. ·
   2 meetings · 1 focus".

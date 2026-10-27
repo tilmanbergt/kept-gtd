@@ -16,6 +16,8 @@ import {COLUMN_WIDTH_PX, FlatTaskRow, GROUP_HEADER_ROW_PX} from './dailyRows';
 interface Props {
   /** Quick Add or the selected item's card. */
   quickAdd: React.ReactNode;
+  /** A selected meeting's context panel, in the Next todos' place (docs/dev/history/technical-design-time-and-place.md §3.2). */
+  panel?: React.ReactNode;
   rows: FlatTaskRow[];
   renderEntry: (row: Extract<FlatTaskRow, {kind: 'entry'}>, heightPx: number) => React.ReactNode;
   onOpenItem: (item: DailyItemRef) => void;
@@ -25,7 +27,7 @@ interface Props {
   borderColor: string;
 }
 
-export default function DailyTodosColumn({quickAdd, rows, renderEntry, onOpenItem, tagFilter, failedItemNames, textColor, borderColor}: Props): React.JSX.Element {
+export default function DailyTodosColumn({quickAdd, panel, rows, renderEntry, onOpenItem, tagFilter, failedItemNames, textColor, borderColor}: Props): React.JSX.Element {
   const rowHeight = (row: FlatTaskRow) => (row.kind === 'header' ? GROUP_HEADER_ROW_PX : taskRowHeight(row.entry.task, COLUMN_WIDTH_PX, 'flat', tagFilter != null));
   const renderRow = (row: FlatTaskRow) => {
     if (row.kind === 'header') {
@@ -44,6 +46,7 @@ export default function DailyTodosColumn({quickAdd, rows, renderEntry, onOpenIte
     <View style={styles.column}>
       {quickAdd}
       <View style={[common.divider, {backgroundColor: borderColor}]} />
+      {panel ?? (
       <PagedSection
         header="Next todos"
         rows={rows}
@@ -56,6 +59,7 @@ export default function DailyTodosColumn({quickAdd, rows, renderEntry, onOpenIte
         textColor={textColor}
         borderColor={borderColor}
       />
+      )}
       {failedItemNames.length > 0 && (
         <Text style={[common.error, common.sectionSpacingSmall, {color: textColor}]}>
           ⚠ Couldn't read {failedItemNames.length} item(s): {failedItemNames.join(', ')}

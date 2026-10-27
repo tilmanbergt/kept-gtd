@@ -7,7 +7,10 @@
  * - Right (screens/daily/DailyTodosColumn.tsx): one Quick Add, always to the
  *   Inbox (docs/dev/history/technical-design-filing-unification.md §6), above
  *   the Next todos grouped by owner. A selected row's card takes Quick Add's
- *   place (ui/useEditTarget.ts: first tap card, second tap edit).
+ *   place (ui/useEditTarget.ts: first tap card, second tap edit). A selected
+ *   meeting or focus block shows its context panel (ui/meetingContext/) in the
+ *   Next todos' place; "+ Quick Add to meeting" turns the card's slot into
+ *   Quick Add for it (`add` mode) until the add or "‹ Back to the card".
  *
  * What shows is storage/dailyAggregate.ts's rule over the cache and the
  * Inbox (screens/daily/useDailyData.ts). Every write goes through
@@ -51,6 +54,9 @@ import LoadErrorNotice from '../ui/LoadErrorNotice';
 import {useThemeColors} from '../ui/theme';
 import {useStableCallback} from '../ui/useStableCallback';
 import {useEntryActions} from '../ui/useEntryActions';
+import {cardOrEdit} from '../ui/useEditTarget';
+import MeetingContextPanel from '../ui/meetingContext/MeetingContextPanel';
+import {useMeetingContextSlot} from '../ui/meetingContext/useMeetingContextSlot';
 import {useMeetingCard} from '../ui/itemCard/useMeetingCard';
 import {useTodoCard} from '../ui/itemCard/useTodoCard';
 import DailyModeRow from './daily/DailyModeRow';
@@ -87,6 +93,7 @@ export default function DailyView({onOpenItem, onOpenInbox, onOpenCalendarSettin
   const {items, inbox, inboxPath, paths, settings, todayDate, tomorrowDate} = data;
   const actions = useEntryActions('DailyView');
   const {target: editTarget, mode: editMode, select: selectEditTarget, cancel: cancelEditTarget, flushEditRef} = actions.edit;
+  const cardMode = cardOrEdit(editMode);
   const features = useFeatures();
   const [calendarTab, setCalendarTab] = useState<CalendarTab>('today');
   const [tagFilter, setTagFilter] = useState<string | null>(null);
@@ -141,6 +148,9 @@ export default function DailyView({onOpenItem, onOpenInbox, onOpenCalendarSettin
   // Quick-file needs the edited row's real location: this screen's fixedDestination is always the Inbox.
   const editingEntryItem = editingTaskEntry?.item ?? editingMeetingEntry?.item ?? null;
   const editingItemPath = editingEntryItem && editingEntryItem.kind !== 'inbox' ? editingEntryItem.path : null;
+
+  // The selected meeting's context panel and its Quick Add (docs/dev/history/technical-design-time-and-place.md §3.2).
+  const context = useMeetingContextSlot(editingMeetingEntry, {items, inbox, inboxPath, settings}, editMode, actions, FIXED_INBOX_DESTINATION, actions.edit.toCard);
 
   const todoCard = useTodoCard(
     actions.todoCardOptions(editingTaskEntry, {
@@ -219,7 +229,7 @@ export default function DailyView({onOpenItem, onOpenInbox, onOpenCalendarSettin
         note={{onOpen: () => actions.meetingNote(entry), onCreate: () => actions.meetingNote(entry)}}
         file={{linkedFile: entry.meeting.linkedFile, onOpen: actions.openFile}}
         onPress={() => selectEditTarget({type: 'meeting', key})}
-        state={editTarget?.type === 'meeting' && editTarget.key === key ? (editMode === 'card' ? 'selected' : 'editing') : undefined}
+        state={editTarget?.type === 'meeting' && editTarget.key === key ? (cardMode === 'card' ? 'selected' : 'editing') : undefined}
         contextTag={tagFilter}
         onToggleContext={toggleTagFilter}
         ownerPath={entry.item.path}
@@ -236,8 +246,7 @@ export default function DailyView({onOpenItem, onOpenInbox, onOpenCalendarSettin
   };
 
   // Stable props for the memoized QuickAddWidget (render-perf-ab §3 B2): called only from its handlers, never while it renders.
-  const stableAddTask = useStableCallback(actions.addTask);
-  const stableAddMeeting = useStableCallback(actions.addMeeting);
+
   const stableIsMeetingDateVisible = useStableCallback((date: string) =>
     calendarTab === 'today' ? date === todayDate : calendarTab === 'tomorrow' ? date === tomorrowDate : false,
   );
@@ -259,9 +268,7 @@ export default function DailyView({onOpenItem, onOpenInbox, onOpenCalendarSettin
   const quickAdd = (
     <QuickAddWidget
       layoutKey="daily"
-      fixedDestination={FIXED_INBOX_DESTINATION}
-      onAddTask={stableAddTask}
-      onAddMeeting={stableAddMeeting}
+      {...context.widget}
       initialDate={calendarTab === 'tomorrow' ? tomorrowDate : todayDate}
       // Only the shown tab's day is in the list; anything else gets the widget's "where did it go" note.
       isMeetingDateVisible={stableIsMeetingDateVisible}
@@ -344,6 +351,23 @@ export default function DailyView({onOpenItem, onOpenInbox, onOpenCalendarSettin
             <View style={common.column}>
               <DailyTodosColumn
                 quickAdd={quickAdd}
+                panel={
+                  context.model && context.entry ? (
+                    <MeetingContextPanel
+                      model={context.model}
+                      meeting={context.entry.meeting}
+                      adding={context.adding}
+                      onQuickAdd={actions.edit.add}
+                      onBackToCard={actions.edit.toCard}
+                      onOpenItem={path => {
+                        const owner = items.find(i => i.path === path);
+                        if (owner) onOpenItem(owner.kind, {name: owner.name, path, isFolder: true});
+                      }}
+                      textColor={textColor}
+                      borderColor={borderColor}
+                    />
+                  ) : undefined
+                }
                 rows={taskRows}
                 renderEntry={(row: Extract<FlatTaskRow, {kind: 'entry'}>, heightPx) => renderTaskEntry(row.entry, heightPx)}
                 onOpenItem={openItem}
