@@ -10,7 +10,7 @@
     "test": "jest",
     "gen": "node scripts/gen-bundled-content.mjs",
     "postinstall": "node scripts/gen-bundled-content.mjs",
-    "test:scripts": "node scripts/test-versioning.mjs && node scripts/test-userdocs.mjs && node scripts/test-code-health.mjs && node scripts/test-scenario-catalog.mjs && node scripts/test-test-areas.mjs && node scripts/test-check-tiers.mjs",
+    "test:scripts": "node scripts/test-versioning.mjs && node scripts/test-userdocs.mjs && node scripts/test-code-health.mjs && node scripts/test-scenario-catalog.mjs && node scripts/test-test-areas.mjs && node scripts/test-check-tiers.mjs && node scripts/test-coverage-report.mjs",
     "scenarios": "jest --selectProjects scenarios && node scripts/scenario-catalog.mjs",
     "check": "node scripts/check.mjs",
     "check:quick": "node scripts/check.mjs --quick",

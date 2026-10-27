@@ -127,7 +127,7 @@ update this document in the same commit and note it under "As built".
 | Release "Prepare" (RELEASING §5.1) | **quick**, plus: CI for `origin/main` is green (looked up with `gh run list`; if `gh` isn't available, the script says so and asks) |
 | `release.ps1 -DryRun` | **quick** (shows what would happen) |
 | `release.ps1` | **full + coverage, once, after the version is stamped**. Red stops the release with the undo hints; the "Continue anyway?" prompt is removed (R1) |
-| CI on the release tag | skipped (`tags-ignore: ['**']`); the release commit on `main` runs as every push does |
+| CI on the release tag | skipped (`on: push: branches: ['**']`, see As built T4); the release commit on `main` runs as every push does |
 
 The rule written into DEVELOPMENT-POLICY §7/§9: "Every check and every test runs green on the exact release
 commit (`release.ps1`) and on every push (CI). Other moments run the smallest tier that covers the change."
@@ -256,7 +256,7 @@ Notes:
 | `test-helpers/scenario/clock.ts` (new), `smokeSpace.ts` (new) | fixed clock, smoke data set |
 | `__tests__/scenarios/smoke/*.test.tsx` (new) | §3.4 scenarios 1-10, plus the moved Engage and lasso scenario |
 | `__tests__/scenarios/{engageMoment,pageSection,threadsBigArea}.test.tsx` | use `fixedClock` |
-| `.github/workflows/check.yml` | `tags-ignore`, `npm run coverage`, job summary, artifact |
+| `.github/workflows/check.yml` | branch pushes only (no tags), `npm run coverage`, job summary, artifact |
 | `scripts/release.ps1` | DryRun → quick; real run → full + coverage once; no "continue anyway"; copy the matrix into the release commit |
 | `buildPlugin.ps1` | `-Check` runs `--smoke` |
 | `docs/dev/DEVELOPMENT-POLICY.md` §7, §8, §9 | the rule of §3.3; the tiers; smoke must stay ≤ 60 s; new tests belong to an area |
@@ -430,3 +430,76 @@ checklist).
     groups are Inbox, Garage, Garden and Website.
   - Scenario 4: the 14th has two meetings (Neighbour chat, Dentist), not three.
 - Timings (4-core container): `smoke/` alone 7 s in Jest (12 tests); `npm run check:smoke` 28 s.
+
+### T4 - coverage overview and ratchet
+
+- The ratchet and the reading of Jest's output are pure functions in `scripts/lib/coverageReport.mjs`, tested by
+  `scripts/test-coverage-report.mjs` (design scenarios 5 and 6); `scripts/coverage-report.mjs` only reads and
+  writes files. `renderMatrix` and `areaStats` stay in `scripts/lib/testAreas.mjs`.
+- `jest.config.js` also gets `collectCoverageFrom` (`App.tsx` and `src/`, without `src/generated/`): every source
+  file counts, also those no test loads, so an area's % can't look better because a file is never imported.
+- The matrix has a column **Scenarios** (catalogued scenarios of the area's test files) next to **Scenario** (tests
+  under `__tests__/scenarios/`); they are equal today, one test per scenario. Areas are named with their id.
+- `scripts/coverage-baseline.json` is `{"about": …, "areas": {id: {lines, branches}}}`, one decimal, from the run
+  below. An area with no baseline is not checked; `--update-baseline` adds it.
+- CI skips tags with `on: push: branches: ['**']`, not the `tags-ignore` of §3.3: GitHub runs a push workflow
+  that has only a tag filter for no branch push either, so `tags-ignore` alone stopped every CI run (the T4 and T5
+  pushes started none).
+- CI runs `npm run coverage` (timeout 20 min), appends `coverage/areas.md` to the job summary (also when a check
+  failed, saying so when there is no table) and uploads `coverage/` as the artifact "coverage" for 14 days.
+- Measured on `feature/test-tiers` after T3 (4-core container), the baseline:
+
+  | Area | Unit | UI | Scenario | Smoke | Src lines | Line % | Branch % |
+  |---|---:|---:|---:|---:|---:|---:|---:|
+  | integrations | 5 | 0 | 0 | 0 | 988 | 15.9 | 8.8 |
+  | planning | 13 | 2 | 6 | 5 | 1043 | 66.2 | 50.2 |
+  | engage | 152 | 28 | 11 | 1 | 897 | 96.4 | 90.0 |
+  | close-out | 13 | 0 | 1 | 0 | 1245 | 67.1 | 45.9 |
+  | lasso | 86 | 19 | 1 | 1 | 1121 | 68.9 | 63.7 |
+  | agreements | 56 | 3 | 8 | 0 | 261 | 95.8 | 89.4 |
+  | loops | 59 | 9 | 0 | 0 | 538 | 91.4 | 80.3 |
+  | threads | 121 | 23 | 2 | 0 | 907 | 88.9 | 78.8 |
+  | review | 26 | 7 | 2 | 1 | 1187 | 59.2 | 46.4 |
+  | meetings | 36 | 7 | 8 | 0 | 515 | 79.8 | 69.7 |
+  | note-setups | 287 | 24 | 15 | 0 | 1916 | 86.5 | 78.1 |
+  | quick-add | 38 | 37 | 18 | 0 | 1711 | 80.5 | 75.4 |
+  | current-page | 13 | 4 | 5 | 1 | 883 | 59.7 | 52.6 |
+  | tags | 44 | 9 | 0 | 0 | 305 | 92.1 | 87.9 |
+  | files | 145 | 17 | 8 | 1 | 1912 | 82.7 | 72.1 |
+  | settings | 147 | 11 | 11 | 1 | 1370 | 82.5 | 71.1 |
+  | foundation | 17 | 34 | 1 | 1 | 947 | 81.9 | 71.6 |
+  | **all** | 1258 | 234 | 97 | 12 | 17746 | 75.0 | 66.2 |
+
+  Daily/Week/Month went from 49 % lines (analysis, before the smoke scenarios) to 66.2 %. `npm run coverage` takes
+  152 s.
+
+### T5 - release script, test builds, docs
+
+- `release.ps1`:
+  - looks up CI for the exact commit of `main` it releases (`gh run list --workflow check.yml`, matched by
+    `headSha`) and stops when there is no run, it is still running or it isn't green; without a logged-in `gh`
+    it says so, names the Actions page and asks. This is the "CI green" of Prepare (§3.3), done by the script
+    for the dry run and the real run alike;
+  - dry run: quick tier; real run: `check.mjs --coverage` once, after the version is stamped. Red stops
+    with the undo hints; the "Continue anyway?" prompt is gone;
+  - copies `coverage/areas.md` to `docs/dev/history/test-coverage-<version>.md` (first line names the version)
+    and `git add`s it, since `git commit -am` takes no new files; the undo hints name it too.
+  - stays ASCII-only. It could not be run here (no PowerShell in the container): §6's manual checks cover it.
+- `buildPlugin.ps1 -Check` runs `check.mjs --smoke`.
+- Docs: DEVELOPMENT-POLICY §7 (the rule, the tiers, who runs which, smoke ≤ 60 s, areas, ratchet), §8, §9;
+  RELEASING §2 (merge without local tests, CI on `main` is the gate), §4 (tiers), §5 (Prepare = quick + CI green,
+  what `release.ps1` checks); README "Checking your changes" and "Writing scenarios"; `design-overview.md`'s
+  testing line; CLAUDE.md's Checks line.
+- **Timings** (4-core container, Jest cache warm):
+
+  | Tier | Time |
+  |---|---|
+  | quick | 16 s |
+  | smoke | 27 s (`smoke/` alone 7 s) |
+  | affected, one changed domain file (`domain/period.ts`, measured in T2) | 61 s |
+  | full | 59 s |
+  | full + coverage | 79 s (152 s with a cold Jest cache) |
+
+  §8's estimates were made on 2 cores; on 4 cores full and affected are close, because one domain file reaches
+  most scenarios through `App.tsx`. Affected pays off for changes in `ui/` and `screens/` and in scripts and docs
+  (smoke only).

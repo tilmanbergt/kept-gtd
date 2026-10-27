@@ -8,7 +8,8 @@
 //   npm run check -- --area a,b          quick + the test files of feature areas a and b (scripts/test-areas.json)
 //   npm run check -- --affected          quick + the tests related to the files changed against
 //                                        origin/main (committed or not) + smoke
-//   npm run check -- --coverage          full with coverage
+//   npm run check -- --coverage          full with coverage, then the area matrix coverage/areas.md and the
+//                                        ratchet against scripts/coverage-baseline.json
 //
 // Flags combine (--area planning --smoke). Stops at the first failing check; the last line names
 // the tier. Which moment runs which tier: docs/dev/DEVELOPMENT-POLICY.md §7.
@@ -24,8 +25,8 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 
 /** ESLint warnings allowed (null = any number). */
 const LINT_MAX_WARNINGS = 0;
-/** Jest's coverage run: the summary and lcov reporters, and the test results per file for the area matrix. */
-const COVERAGE_ARGS = ['--coverage', '--coverageReporters=json-summary', '--coverageReporters=lcov', '--json', '--outputFile=coverage/jest-results.json'];
+/** Jest's coverage run (reporters in jest.config.js), with the test results per file for the area matrix. */
+const COVERAGE_ARGS = ['--coverage', '--json', '--outputFile=coverage/jest-results.json'];
 /** When true, any code-health finding fails the check. */
 const CODE_HEALTH_STRICT = true;
 
@@ -49,6 +50,7 @@ const SCRIPT_TESTS = [
   ['scenario catalog tests', 'scripts/test-scenario-catalog.mjs'],
   ['test area tests', 'scripts/test-test-areas.mjs'],
   ['check tier tests', 'scripts/test-check-tiers.mjs'],
+  ['coverage report tests', 'scripts/test-coverage-report.mjs'],
 ];
 
 function fail(name, status) {
@@ -148,6 +150,7 @@ run('code health', 'node', ['scripts/code-health.mjs', ...(CODE_HEALTH_STRICT ? 
 
 const jest = jestCommand();
 if (jest) run(jest.name, 'npx', ['jest', ...jest.args]);
+if (opts.coverage) run('coverage by feature area (coverage/areas.md, ratchet)', 'node', ['scripts/coverage-report.mjs']);
 else console.log(`\n--- tests (jest): ${tier === 'quick' ? 'skipped (--quick)' : 'nothing to run'}`);
 
 console.log(`\nAll checks passed (${tier}) in ${Math.round((Date.now() - started) / 1000)} s.`);

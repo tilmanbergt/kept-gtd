@@ -41,14 +41,15 @@ git pull
 git switch -c feature/<short-name>
 ```
 
-Finish it (after the Definition of Done in `DEVELOPMENT-POLICY.md` §8 is met):
+Finish it (after the Definition of Done in `DEVELOPMENT-POLICY.md` §8 is met). The merge runs no
+tests locally: CI runs everything with coverage on the `main` push. If CI turns red, fix it on
+`main` before anything else - a red `main` can't be released (§5).
 
 ```powershell
 git switch main
 git pull
 git merge --no-ff feature/<short-name> -m "Merge feature/<short-name>: <what it adds>"
-npm test                                     # once more on main after the merge
-git push
+git push                                     # CI on main runs every check and test: that is the gate
 git branch -d feature/<short-name>
 git push origin --delete feature/<short-name> # only if the branch was pushed
 ```
@@ -75,11 +76,15 @@ git push
 ## 4. Checks and test builds (every day)
 
 ```powershell
-npm run check                  # tsc, lint, Jest, script tests, code health - before every commit
-npm run check -- --quick       # the same without Jest, for a fast loop
+npm run check:quick            # tsc, lint, script tests, catalog, code health - no Jest (about 20 s)
+npm run check:smoke            # quick + the smoke scenarios, one per main flow
+npm run check:affected         # quick + the tests related to what changed against origin/main + smoke
+npm run check -- --area planning   # quick + every test of a feature area (scripts/test-areas.json)
+npm run check                  # everything - at the end of a feature's steps
+npm run coverage               # everything with coverage: coverage/areas.md and the ratchet
 ./buildPlugin.ps1              # test build, labelled for the release being worked on
 ./buildPlugin.ps1 -Stage beta  # same, once that release is feature-complete (final device test)
-./buildPlugin.ps1 -Check       # runs npm run check first and stops if it fails
+./buildPlugin.ps1 -Check       # runs the smoke tier first and stops if it fails
 ```
 
 - **The release being worked on** is `nextVersion` in `package.json`. Set it when work on the next
@@ -112,16 +117,20 @@ npm run check -- --quick       # the same without Jest, for a fast loop
 
 ### Steps
 
-1. **Prepare** - on `main`, clean tree, everything pushed:
+1. **Prepare** - on `main`, clean tree, everything pushed, CI green for that commit:
    ```powershell
    git switch main
    git pull
    git status --short           # must be empty
-   npm run check
+   npm run check:quick
    ```
+   CI on `main` (GitHub → Actions) must be green for the latest commit: it ran every check and test
+   with coverage. `release.ps1` looks this up with `gh` and stops when it isn't green; without `gh`
+   it says so and asks.
 2. **Check** the release checklist in `DEVELOPMENT-POLICY.md` §9 (CHANGELOG read as a user, help
    pages, README, PRIVACY, Experimental, logging).
-3. **Dry run** - shows the new version and what would happen, changes nothing:
+3. **Dry run** - shows the new version and what would happen, changes nothing; it checks CI on `main`
+   and runs the quick tier only:
    ```powershell
    ./scripts/release.ps1 -DryRun                 # releases nextVersion from package.json
    ./scripts/release.ps1 -Bump patch -DryRun     # a hotfix without a nextVersion
@@ -131,9 +140,14 @@ npm run check -- --quick       # the same without Jest, for a fast loop
    ./scripts/release.ps1                         # or -Bump patch for a hotfix
    ```
    `-Bump` must agree with `nextVersion` when one is set; `-Version x.y.z` overrides both.
-   The script runs `npm run check`, sets the version in `package.json`, `package-lock.json` and `PluginConfig.json`, turns `[Unreleased]`
-   into `[x.y.z] - date` in the CHANGELOG, commits `Release x.y.z`, tags `vx.y.z` and builds
-   `build\outputs\kept-gtd-x.y.z.snplg`. Then it **pauses**.
+   The script checks that CI is green on `main` for this commit, sets the version in `package.json`,
+   `package-lock.json` and `PluginConfig.json`, turns `[Unreleased]` into `[x.y.z] - date` in the
+   CHANGELOG, then runs every check and every test once, with coverage (`npm run coverage`), on
+   exactly what it is about to commit. If anything is red it **stops** and prints how to undo the
+   version changes - there is no way to publish past a red run. It copies the coverage table to
+   `docs/dev/history/test-coverage-x.y.z.md`, commits `Release x.y.z`, tags `vx.y.z` and builds
+   `build\outputs\kept-gtd-x.y.z.snplg`. Then it **pauses**. The tag starts no CI run; the
+   release commit is checked by CI when it is pushed to `main`.
 5. **Device check** while the script waits (§6 below), then answer `y` to publish. The script
    pushes `main` with the tag and creates the GitHub release with the `.snplg` and the
    changelog section as text.
