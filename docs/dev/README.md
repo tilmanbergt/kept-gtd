@@ -165,6 +165,7 @@ no history and no open work:
 - `design-device-rendering.md`: screen facts, row heights and space budgets for the A5 X.
 - `supernote-host-facts.md`: how the Supernote and its plugin host behave where the SDK
   documentation is silent or unclear (limits, quirks), as found on the device.
+- `GITHUB-GUIDE.md`: which GitHub flow (button, workflow) to use when, and what it does.
 - `RELEASING.md`: git, build and release workflow.
 - `inkhub-listing.md`: the field values for the InkHub store listing.
 - this `README.md`.

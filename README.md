@@ -114,6 +114,7 @@ folders stay as they are; debug files and the demo space move to `EXPORT/kept-gt
 ## For developers
 
 Architecture, design documents and build instructions are in [docs/dev/](docs/dev/README.md).
+Which GitHub flow to use when (test builds, merging, betas, releases): [docs/dev/GITHUB-GUIDE.md](docs/dev/GITHUB-GUIDE.md).
 
 ## License
 
