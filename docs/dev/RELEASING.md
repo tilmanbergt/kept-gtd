@@ -7,6 +7,7 @@
 How code gets from an idea to a release: branches, commits, builds, releases and what comes
 after. Rules for *what* a change must contain are in `DEVELOPMENT-POLICY.md`; this document is
 about *how* it moves. Design of the release scripts: `technical-design-versioning-release.md`.
+The short version - which GitHub flow to use when - is `GITHUB-GUIDE.md`.
 
 All commands are PowerShell, run in the repository root.
 
