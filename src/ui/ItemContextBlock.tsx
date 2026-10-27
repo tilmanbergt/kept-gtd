@@ -6,7 +6,7 @@
  * detail.md §5.1).
  *
  * Scope/Goal rendering and editing live in one place (ui/ItemContextRows.tsx),
- * used by both the item detail screen's ui/ItemFocusPanel.tsx and every
+ * used by both the item detail screen's ui/ItemScopePanel.tsx and every
  * Review step that shows an item, so the same elements look and behave the
  * same everywhere.
  *
@@ -14,11 +14,11 @@
  * cache lookup - see reviewAggregate.ts's/ReviewScreen.tsx's module doc
  * comments on why the detail panel always re-reads `items.find(...)` rather
  * than trusting a frozen snapshot entry) rather than doing its own
- * `ensureItemCached` load the way `ItemFocusPanel` does - Review already has
+ * `ensureItemCached` load the way `ItemScopePanel` does - Review already has
  * the item in hand, so a second load here would be redundant I/O.
  *
  * Saves write straight through the shared cache (`updateItemScope`/
- * `updateItemWeeklyGoals`, same functions `ItemFocusPanel`'s own
+ * `updateItemWeeklyGoals`, same functions `ItemScopePanel`'s own
  * handleSaveScope/handleSaveGoal call) and then call `onChanged` so the
  * caller can refresh its own view of the cache (`ReviewScreen.tsx`'s
  * `refreshFromCache` pattern).

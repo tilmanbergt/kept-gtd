@@ -14,15 +14,15 @@
  *   (`#monthly`) automatically.
  * - Right column: Quick Add on top (always - needed to edit a meeting's
  *   time/length and to add one to the selected day),
- *   then EITHER the day panel (ui/DayMeetingsPanel.tsx, shared with Week and
+ *   then a meeting's card and context panel (a meeting tapped in the day
+ *   panel, "‹ Back to October", docs/dev/history/technical-design-time-and-place.md
+ *   §3.2), else the day panel (ui/DayMeetingsPanel.tsx, shared with Week and
  *   Daily - after tapping a day: all of that day's meetings as the standard
- *   2-line rows, pick highlights with the M toggle) OR the
- *   monthly focus panel (ui/PeriodFocusPanel.tsx, scope "monthly" - the same
- *   component and UX as the Week view's) on months whose focus can be edited
- *   (domain/period.ts's canEditPeriod: this month, and next month during the
- *   last 7 days), else the read-only goal history (ui/PeriodGoalsHistoryPanel).
+ *   2-line rows, pick highlights with the M toggle), else Given time this
+ *   month (ui/period/GivenTimePanel.tsx: all meetings and focus blocks, not
+ *   only highlights).
  *
- * All loading and every meeting/focus/goal action come from
+ * All loading and every meeting action come from
  * screens/usePlanningScreen.ts (shared with WeekView) - this file is layout.
  * Quick Add here creates into the Inbox, like Week and Daily; with a day
  * selected, a new meeting defaults to that day with M already on.
@@ -36,7 +36,9 @@ import {scheduleCountText, SCHEDULE_LABEL} from '../domain/meetingDisplay';
 import ContextBackRow from '../ui/meetingContext/ContextBackRow';
 import MeetingContextPanel from '../ui/meetingContext/MeetingContextPanel';
 import {useMeetingContextSlot} from '../ui/meetingContext/useMeetingContextSlot';
-import {canEditPeriod, monthTitle, periodOf, shiftPeriod} from '../domain/period';
+import {monthTitle, periodOf, shiftPeriod} from '../domain/period';
+import GivenTimePanel from '../ui/period/GivenTimePanel';
+import {requestReviewStep} from './review/reviewNav';
 import {buildMonthlyAggregate, meetingsOnDay} from '../storage/monthlyAggregate';
 import {WeeklyMeetingEntry} from '../storage/weeklyAggregate';
 import {FolderEntry} from '../supernote/fileSystem';
@@ -47,12 +49,9 @@ import {useMeetingCard} from '../ui/itemCard/useMeetingCard';
 import MeetingRow from '../ui/MeetingRow';
 import {MiniTabDef as DayTabDef} from '../ui/MiniTabs';
 import MonthDaysColumn from '../ui/MonthDaysColumn';
-import PeriodFocusPanel from '../ui/PeriodFocusPanel';
-import PeriodGoalsHistoryPanel from '../ui/PeriodGoalsHistoryPanel';
 import QuickAddWidget, {editTargetFor, MeetingQuickAddFields, QuickFilePayload} from '../ui/QuickAddWidget';
 import {useStableCallback} from '../ui/useStableCallback';
 import {AbbrevFileMatch} from '../domain/abbrev';
-import {CachedItem} from '../storage/dataCache';
 import {common} from '../ui/commonStyles';
 import LoadErrorNotice from '../ui/LoadErrorNotice';
 import {FONT} from '../ui/theme';
@@ -101,7 +100,7 @@ export default function MonthView({
   const period = periodOf('monthly', shiftedNow);
   const isCurrentMonth = monthOffset === 0;
   const todayDate = todayIso();
-  const canEditFocus = canEditPeriod('monthly', monthOffset);
+  const monthRange = useMemo(() => ({start: period.start, end: period.end}), [period.start, period.end]);
 
   const changeMonth = (delta: number) => planning.closeDayPanel(() => setMonthOffset(o => o + delta));
 
@@ -162,10 +161,6 @@ export default function MonthView({
   });
   const stableQuickFileEdit = useStableCallback((target: AbbrevFileMatch, payload: QuickFilePayload) =>
     editingMeetingEntry ? planning.handleQuickFileEdit(editingMeetingEntry, target, payload) : Promise.resolve(),
-  );
-  const stableToggleFocus = useStableCallback((item: CachedItem, value: boolean) => planning.toggleFocus(item, 'monthly', value));
-  const stableSaveGoal = useStableCallback((item: CachedItem, key: string, text: string) =>
-    planning.saveGoal(item, 'monthly', key, text),
   );
 
   return (
@@ -307,39 +302,20 @@ export default function MonthView({
                     textColor={textColor}
                     borderColor={borderColor}
                   />
-                ) : canEditFocus ? (
-                  paths && (
-                    <PeriodFocusPanel
-                      scope="monthly"
-                      items={items}
-                      projectsPath={paths.projects}
-                      areasPath={paths.areas}
-                      projectLimit={settings?.monthlyFocusProjectCount ?? 0}
-                      areaLimit={settings?.monthlyFocusAreaCount ?? 0}
-                      focusCards={aggregate.focusCards}
-                      periodKey={period.key}
-                      onOpenItem={onOpenItem}
-                      onToggle={stableToggleFocus}
-                      onSaveGoal={stableSaveGoal}
-                      textColor={textColor}
-                      borderColor={borderColor}
-                      placeholderColor={placeholderColor}
-                    />
-                  )
                 ) : (
-                  <>
-                    <Text style={[styles.hint, {color: textColor}]}>
-                      Monthly focus is only editable for the current month (and next month during the last 7 days).
-                    </Text>
-                    <PeriodGoalsHistoryPanel
-                      scope="monthly"
-                      entries={aggregate.historicalGoals}
-                      periodLabel={monthTitle(shiftedNow)}
-                      onOpenItem={onOpenItem}
-                      textColor={textColor}
-                      borderColor={borderColor}
-                    />
-                  </>
+                  <GivenTimePanel
+                    scope="month"
+                    range={monthRange}
+                    items={items}
+                    inbox={inbox}
+                    inboxPath={inboxPath}
+                    settings={settings}
+                    filter={planning.contextFilter}
+                    onOpenItem={openItemAt}
+                    onTend={() => requestReviewStep('tendingThreads', null)}
+                    textColor={textColor}
+                    borderColor={borderColor}
+                  />
                 )}
               </View>
             </View>

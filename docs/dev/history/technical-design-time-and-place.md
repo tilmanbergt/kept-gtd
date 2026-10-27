@@ -499,3 +499,28 @@ tests were deleted with its code, lower that baseline by hand in S6 with the rea
 - Help: `contexts.md` (area `contexts`). The 27-row help list made room by folding `obsidian.md` into
   `files-and-folders.md` ("Your files, folders and Obsidian", same area).
 
+
+### S4 - Given time
+
+- Domain: `domain/givenTime.ts` as designed, with these differences: `givenTimeOf` takes no `nowMs` (the range
+  alone decides; a meeting later today counts like one earlier) and returns `hiddenOwners` for the hidden line; a
+  row carries `kindLabel`/`name` (from `ownerTitle`) and its owner is `EngageOwner | {kind: 'inbox'}` - an Inbox
+  meeting has no `ownerOfMeeting` owner (S2), so the Inbox gets its own row. Helpers: `meetingMinutes`,
+  `givenTimeText`, `givenTimeDetail`, `nothingPlanned`, `tendLineText`.
+- **The page line is not `givenTimeOf`**: "time scheduled in the item" is `scheduledMinutes(itemMeetings(...))` -
+  the item's own meetings and focus blocks, an Area's with its Projects' (`ui/GivenTimeLine.tsx`), all-day at 8 h a
+  day, never context-filtered. `givenTimeOf` would split an Area's time over its threads and loops. The line sits
+  in `ui/ItemScopePanel.tsx` (Scope + Given time), which replaces the deleted `ItemFocusPanel.tsx`; the page's
+  focus switches and goals go with it (D16-D18). Changed test: `currentPagePerf` waits for `ItemScopePanel`
+  instead of `ItemFocusPanel`.
+- Tend line: computed in `GivenTimePanel` from the tending and loop rosters, limited to the owners the active
+  context shows; tapping it opens Review → Tending threads (`requestReviewStep`).
+- Week ahead = `WeekPlanner rightSide="schedule-only"` (Quick Add, card and context panel, no Given time).
+- Review: "nothing planned" ends the second row line in Tending threads (not for one-off counterparts, which
+  have no meetings by nature) and Open loops. **+ F block** seeds Quick Add's Meeting tab with
+  "<loop name> #<loop tag>", today, F on; Open loops' Quick Add is no longer todo-only: a meeting added there gets
+  the loop tag (`titleWithLoopTag`) and goes to the loop's Area or Project.
+- Smoke (scenarios 3, 4, 7) rewritten: Week's and Month's Given time replace the focus-panel assertions ("Delivery"
+  as 1 day; Month counts all of Garden's meetings, highlight or not), the area page shows its Given time line. The
+  smoke space keeps its focus flags and goals until S5 (Daily's smoke still reads daily focus).
+- Scenarios 13 and 14 plus "+ F block" in `__tests__/scenarios/givenTime.test.tsx`.

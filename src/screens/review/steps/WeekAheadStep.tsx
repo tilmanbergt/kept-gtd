@@ -7,6 +7,9 @@
  * not have, and the grid is fixed-height, so there is no room for a separate
  * header line.
  *
+ * - Meetings and focus blocks only (D29): no Given time on the right
+ *   (`rightSide="schedule-only"`); a tapped meeting shows its card and context
+ *   panel as on Week.
  * - It opens on next week from Friday to Sunday (the usual review days),
  *   otherwise on the current week, the same rule domain/period.ts's
  *   canEditPeriod uses to allow editing next week's focus.
@@ -85,6 +88,7 @@ export default function ReviewWeekAhead({
         borderColor={borderColor}
         placeholderColor={placeholderColor}
         leftTabsTrailing={weekNav}
+        rightSide="schedule-only"
       />
     </View>
   );

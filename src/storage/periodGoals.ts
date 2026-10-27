@@ -1,7 +1,7 @@
 /**
  * Weekly + monthly goals behind one API (docs/dev/history/technical-design-monthly-view.md
  * §4.2). Before this, "save a weekly goal" existed in three copies
- * (screens/WeekView.tsx, ui/ItemFocusPanel.tsx, ui/ItemContextBlock.tsx);
+ * (ui/ItemContextBlock.tsx, the Review's focus steps);
  * every goal read/write for either period now goes through here. The stored
  * shapes stay as they were (`CachedItem.weeklyGoals` with `weekKey`,
  * `CachedItem.monthlyGoals` with `monthKey`) - this module only maps them to

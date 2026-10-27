@@ -29,6 +29,15 @@ or your project/area files are stored.
   project's or area's next todos ("Nothing linked to this meeting yet"). **+ Quick Add to meeting**
   (**+ Quick Add to block**) adds to it: before it starts the todo gets the thread's or loop's tag,
   during and after it also records the meeting, as in Engage.
+- **Given time** on Week and Month: the loops, threads, projects and areas that got time in the week
+  or month, from meetings and focus blocks (an all-day event counts as "1 day"), with blocks, meetings,
+  todos done and the next todo; **Worked on** lists the ones with todos done but nothing scheduled.
+  **Tend: 3 threads · 2 loops quiet ›** counts those with nothing planned in 14 days and opens the
+  Review's Tending threads.
+- A project's or area's page shows **Given time · this week 3 h · this month 11 h**.
+- Review: **Tending threads** and **Open loops** mark rows with "nothing planned" (no meeting in the
+  next 14 days); **Open loops** has **+ F block**, which fills Quick Add's Meeting tab with the loop
+  and F on.
 - **Settings → Features**: switch **Project close-out** on or off. Off, a Done project is archived
   directly from its page and from the Weekly Review, without the checklist and the PDF.
 
@@ -44,6 +53,9 @@ or your project/area files are stored.
 - The **Experimental** switches (Google Calendar, Gmail, Notebook contents) moved from Settings →
   Advanced to the new Settings → Features.
 - Daily opens a little faster the first time.
+- Week and Month no longer show the weekly and monthly focus panels and goals; Given time takes their
+  place. A project's or area's page shows Given time instead of its focus switches. The Review's
+  **Week ahead** shows only the schedule.
 
 ### Upgrade notes
 - New settings for contexts (stored per profile). After the update the context is **Everything**, so

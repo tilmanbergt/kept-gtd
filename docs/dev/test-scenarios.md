@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-116 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+119 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -801,6 +801,7 @@ Test: `__tests__/scenarios/currentPagePerf.test.tsx` · design: `docs/dev/histor
 - **Given** the smoke space on Wednesday 14.10.2026
 - **When** I open Garden from Areas
 - **Then** Todos list "Buy bulbs" and "Repair the fence", and Meetings list "Neighbour chat"
+- **And** the Given time line counts this week's two meetings and "Delivery" (10 h) and this month's (19 h)
 - **And** Garden's folder is not listed
 - **When** I tap "◇ Agreements 1 ›"
 - **Then** the list shows "Water only in the morning"
@@ -950,6 +951,30 @@ Test: `__tests__/scenarios/quickAdd.test.tsx` · design: `docs/dev/history/techn
 
 Test: `__tests__/scenarios/smoke/daily.test.tsx`
 
+## Review
+
+### Tend: a thread without a meeting in 14 days counts in the Tend line and shows "nothing planned"
+
+- **Given** on Wednesday 14.10.: Coaching's active thread mieke met yesterday and has nothing ahead
+- **When** I open Week
+- **Then** the Tend line counts one quiet thread
+- **When** I tap it
+- **Then** Review opens Tending threads, where mieke's row says "nothing planned"
+- **And** no error was logged
+
+Test: `__tests__/scenarios/givenTime.test.tsx`
+
+### Open loops: "+ F block" fills Quick Add's Meeting tab with the loop and F on
+
+- **Given** on Wednesday 14.10.: Writing with the active loop #writing/novel and nothing planned
+- **When** I open Review → Open loops and select the loop
+- **Then** its row says "nothing planned"
+- **When** I tap "+ F block", set 9-11 and add
+- **Then** Writing gets a focus block today with the loop tag
+- **And** no error was logged
+
+Test: `__tests__/scenarios/givenTime.test.tsx`
+
 ## Settings
 
 ### Close-out off: a Done project archives directly from its page
@@ -1082,6 +1107,16 @@ Test: `__tests__/scenarios/threadsBigArea.test.tsx` · design: `docs/dev/history
 
 ## Week and Month
 
+### Given time: owners by time, an all-day event as "1 day", Worked on for todos done
+
+- **Given** on Wednesday 14.10.: Writing with two focus blocks this week, Garden with an all-day delivery, Website with a todo done and nothing scheduled
+- **When** I open Week
+- **Then** Given time lists Garden (1 day) above Writing (3.5 h, two blocks, its next todo)
+- **And** Worked on lists Website with its todo done
+- **And** no error was logged
+
+Test: `__tests__/scenarios/givenTime.test.tsx`
+
 ### Week: a day header opens the day, a chip the card and panel, "‹ Back to Week 42" the normal side
 
 - **Given** "1:1 Mieke" on Thursday 15.10.
@@ -1106,25 +1141,25 @@ Test: `__tests__/scenarios/meetingContext.test.tsx`
 
 Test: `__tests__/scenarios/meetingContext.test.tsx`
 
-### Week shows this week's meetings and the weekly focus with its goals (smoke)
+### Week shows this week's meetings and the time given to each owner (smoke)
 
 - **Given** the smoke space on Wednesday 14.10.2026
 - **When** I open Week
 - **Then** the grid shows Wednesday 14 "Neighbour chat" and "Dentist", Thursday 15 "Supplier call" and Friday 16 "Delivery"
 - **And** not "Soil test", which is next week
-- **And** the weekly focus panel shows Garden with "Plant the bulbs" and Garage with "Clear the shelves"
+- **And** Given time lists Garden first with "Delivery" as 1 day and its two timed meetings, then the Inbox's Dentist
 - **When** I tap ›
 - **Then** the grid shows Tuesday 20 "Soil test"
 - **And** no error was logged
 
 Test: `__tests__/scenarios/smoke/weekAndMonth.test.tsx`
 
-### Month shows the highlights and the monthly focus with its goal (smoke)
+### Month shows the highlights and the time given this month (smoke)
 
 - **Given** the smoke space on Wednesday 14.10.2026
 - **When** I open Month
 - **Then** the 28th shows "Garden fair" and no other day shows a meeting, since none is a highlight
-- **And** the monthly focus panel shows Garden with "Beds ready for winter"
+- **And** Given time counts all of Garden's meetings, highlight or not, and its todo done this month
 - **When** I tap the 14th
 - **Then** the right side lists both meetings of that day
 - **And** no error was logged

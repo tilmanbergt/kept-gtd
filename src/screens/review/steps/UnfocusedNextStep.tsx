@@ -501,7 +501,7 @@ export default function UnfocusedNextStep({
    * Removes a Daily or Weekly focus slot from the Unfocused-next-items step's
    * "Current focus" panel - shared by both scopes since turning a focus flag
    * *off* is never blocked (focusBlockedReason only gates turning one *on* -
-   * see ui/ItemFocusPanel.tsx), so no settings/blocked-reason check, just the
+   * see storage/focusSlots.ts), so no settings/blocked-reason check, just the
    * same setItemFocus + refreshFromCache write-through as every other focus
    * change on this screen. Doesn't touch any step's acted-on set - freeing a
    * *different* item's slot isn't an action on the selected item.

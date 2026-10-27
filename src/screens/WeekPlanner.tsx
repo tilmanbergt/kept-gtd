@@ -10,8 +10,10 @@
  *   (ui/meetingContext/, after tapping a chip or a day-panel row: card +
  *   panel with "‹ Back to Week 44 · Tue 27.10. · 8 meetings ›",
  *   docs/dev/history/technical-design-time-and-place.md §3.2), else the shared
- *   day panel (ui/DayMeetingsPanel.tsx, after tapping a day header), else the
- *   weekly focus panel / goal history - the same pattern as the Month view.
+ *   day panel (ui/DayMeetingsPanel.tsx, after tapping a day header), else
+ *   Given time this week (ui/period/GivenTimePanel.tsx) - the same pattern as
+ *   the Month view. Review's Week ahead passes `rightSide="schedule-only"`:
+ *   no Given time there (it is no look-ahead).
  *   No "Focus" label above Quick Add, so Week and Month line up.
  *
  * All state and actions come from screens/usePlanningScreen.ts, which the
@@ -19,7 +21,7 @@
  */
 import {SCHEDULE_LABEL} from '../domain/meetingDisplay';
 import React, {useMemo, useState} from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import {Destination} from '../domain/destination';
 import {formatDayHeader} from '../domain/dateFormat';
 import {todayIso} from '../domain/meetingTime';
@@ -29,7 +31,9 @@ import {isoWeekOf} from '../domain/weekDate';
 import ContextBackRow from '../ui/meetingContext/ContextBackRow';
 import MeetingContextPanel from '../ui/meetingContext/MeetingContextPanel';
 import {useMeetingContextSlot} from '../ui/meetingContext/useMeetingContextSlot';
-import {canEditPeriod, periodOf, shiftPeriod} from '../domain/period';
+import {periodOf, shiftPeriod} from '../domain/period';
+import GivenTimePanel from '../ui/period/GivenTimePanel';
+import {requestReviewStep} from './review/reviewNav';
 import {meetingsOnDay} from '../storage/monthlyAggregate';
 import {buildWeeklyAggregate, WeeklyMeetingEntry} from '../storage/weeklyAggregate';
 import {FolderEntry} from '../supernote/fileSystem';
@@ -39,15 +43,11 @@ import GoogleCalendarPanel from '../ui/GoogleCalendarPanel';
 import {useFeatures, visibleTabs} from '../ui/featureStore';
 import MeetingRow from '../ui/MeetingRow';
 import MiniTabs, {MiniTabDef} from '../ui/MiniTabs';
-import PeriodFocusPanel from '../ui/PeriodFocusPanel';
-import PeriodGoalsHistoryPanel from '../ui/PeriodGoalsHistoryPanel';
 import QuickAddWidget, {editTargetFor, MeetingQuickAddFields, QuickFilePayload} from '../ui/QuickAddWidget';
 import {useStableCallback} from '../ui/useStableCallback';
 import {AbbrevFileMatch} from '../domain/abbrev';
-import {CachedItem} from '../storage/dataCache';
 import WeekGrid from '../ui/WeekGrid';
 import {common} from '../ui/commonStyles';
-import {FONT} from '../ui/theme';
 import {dayEntryKey, meetingKey, useLinkedFileMissing, usePlanningScreen} from './usePlanningScreen';
 import {usePerfRender} from '../utils/perf';
 
@@ -70,6 +70,8 @@ interface Props {
   textColor: string;
   borderColor: string;
   placeholderColor: string;
+  /** 'schedule-only' (Review's Week ahead): no Given time under Quick Add. */
+  rightSide?: 'full' | 'schedule-only';
   /** Shown at the right end of the left Meetings | Google tab row - the Review's week-ahead step puts its ‹ Week 40 › navigation here, since it has no room for a separate header line above the fixed-height grid. */
   leftTabsTrailing?: React.ReactNode;
 }
@@ -84,6 +86,7 @@ export default function WeekPlanner({
   borderColor,
   placeholderColor,
   leftTabsTrailing,
+  rightSide = 'full',
 }: Props): React.JSX.Element {
   usePerfRender('WeekPlanner');
   const {items, settings, inboxPath, paths, inbox, editingKey, selectedDate} = planning;
@@ -99,7 +102,7 @@ export default function WeekPlanner({
   const period = periodOf('weekly', shiftedNow);
   const {start: weekStart, end: weekEnd, key: weekKey} = period;
   const isCurrentWeek = weekOffset === 0;
-  const canEditFocus = canEditPeriod('weekly', weekOffset);
+  const weekRange = useMemo(() => ({start: weekStart, end: weekEnd}), [weekStart, weekEnd]);
 
   // Memoized on their real inputs (docs/dev/history/technical-design-render-perf-ab.md
   // §3 B4); `todayDate` keeps "today"-dependent parts fresh over midnight.
@@ -177,10 +180,6 @@ export default function WeekPlanner({
   });
   const stableQuickFileEdit = useStableCallback((target: AbbrevFileMatch, payload: QuickFilePayload) =>
     editingMeetingEntry ? planning.handleQuickFileEdit(editingMeetingEntry, target, payload) : Promise.resolve(),
-  );
-  const stableToggleFocus = useStableCallback((item: CachedItem, value: boolean) => planning.toggleFocus(item, 'weekly', value));
-  const stableSaveGoal = useStableCallback((item: CachedItem, key: string, text: string) =>
-    planning.saveGoal(item, 'weekly', key, text),
   );
 
   return (
@@ -303,39 +302,21 @@ export default function WeekPlanner({
               textColor={textColor}
               borderColor={borderColor}
             />
-          ) : canEditFocus ? (
-            paths && (
-              <PeriodFocusPanel
-                scope="weekly"
-                items={items}
-                projectsPath={paths.projects}
-                areasPath={paths.areas}
-                projectLimit={settings?.weeklyFocusProjectCount ?? 0}
-                areaLimit={settings?.weeklyFocusAreaCount ?? 0}
-                focusCards={aggregate.focusCards}
-                periodKey={weekKey}
-                onOpenItem={onOpenItem}
-                onToggle={stableToggleFocus}
-                onSaveGoal={stableSaveGoal}
-                textColor={textColor}
-                borderColor={borderColor}
-                placeholderColor={placeholderColor}
-              />
-            )
-          ) : (
-            <>
-              <Text style={[styles.hint, {color: textColor}]}>
-                Weekly focus is only editable for the current week (and next week on Fri–Sun).
-              </Text>
-              <PeriodGoalsHistoryPanel
-                scope="weekly"
-                entries={aggregate.historicalGoals}
-                periodLabel={`week ${weekKey}`}
-                onOpenItem={onOpenItem}
-                textColor={textColor}
-                borderColor={borderColor}
-              />
-            </>
+          ) : rightSide === 'schedule-only' ? null : (
+            <GivenTimePanel
+              scope="week"
+              range={weekRange}
+              items={items}
+              inbox={inbox}
+              inboxPath={inboxPath}
+              settings={settings}
+              filter={planning.contextFilter}
+              onOpenItem={openItemAt}
+              onOpenInbox={onOpenInbox}
+              onTend={() => requestReviewStep('tendingThreads', null)}
+              textColor={textColor}
+              borderColor={borderColor}
+            />
           )}
         </View>
       </View>
@@ -350,10 +331,5 @@ const styles = StyleSheet.create({
   },
   fill: {
     flex: 1,
-  },
-  hint: {
-    fontSize: FONT.medium,
-    opacity: 0.6,
-    marginTop: 8,
   },
 });

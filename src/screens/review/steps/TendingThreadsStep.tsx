@@ -19,6 +19,7 @@ import React, {useCallback, useMemo, useState} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import {Destination} from '../../../domain/destination';
 import {oneOffLabel, threadTypesOf} from '../../../domain/counterparts';
+import {nothingPlanned} from '../../../domain/givenTime';
 import {todayIso} from '../../../domain/meetingTime';
 import {rosterCountsText, rosterMeetingText} from '../../../domain/threadText';
 import {CounterpartStatus} from '../../../domain/threadsSection';
@@ -131,7 +132,8 @@ export default function TendingThreadsStep({data, stepEntryToken, onAddTask, tex
     const marker = cp?.backInUse && cp.status === 'inactive' ? 'back in use' : cp?.status === 'new' ? 'new' : null;
     const oneOff = cp?.oneOff ? oneOffLabel(cp.oneOff) : null;
     const counts = entry ? rosterCountsText(entry) : '';
-    const meeting = entry ? rosterMeetingText(entry, oneOff, today) : '';
+    const quiet = entry && !oneOff && nothingPlanned(entry.nextMeeting, today) ? ' · nothing planned' : '';
+    const meeting = entry ? `${rosterMeetingText(entry, oneOff, today)}${quiet}` : '';
     return (
       <View style={[styles.row, {borderColor}, selected && styles.rowSelected]}>
         <View style={styles.line}>

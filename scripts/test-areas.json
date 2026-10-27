@@ -20,7 +20,7 @@
       "name": "Daily, Week and Month",
       "help": ["daily.md", "week-and-month.md"],
       "tests": [
-        "__tests__/**/*{daily,month,period,planning}*",
+        "__tests__/**/*{daily,month,period,planning,givenTime}*",
         "__tests__/ui/focusedItemRowAccessory.test.tsx",
         "__tests__/scenarios/smoke/weekAndMonth*"
       ],
@@ -30,7 +30,8 @@
         "src/ui/{Daily,Period,Week,Month,Focus,DayMeetings}*",
         "src/storage/{daily,weekly,monthly}Aggregate.ts",
         "src/storage/{periodFocusCards,periodGoals,focusSlots}.ts",
-        "src/domain/{period,weekDate,monthHighlight}.ts"
+        "src/domain/{period,weekDate,monthHighlight,givenTime}.ts",
+        "src/ui/period/**"
       ]
     },
     {
@@ -207,7 +208,7 @@
         "src/screens/{ItemsList,ItemDetail,ProjectDataPanel}.tsx",
         "src/screens/area/**",
         "src/screens/projectData/**",
-        "src/ui/{ItemStatusPanel,ItemFocusPanel,ItemContextBlock,ItemContextRows}.tsx",
+        "src/ui/{ItemStatusPanel,ItemScopePanel,GivenTimeLine,ItemContextBlock,ItemContextRows}.tsx",
         "src/ui/{useStatusChoice,useStatusConfirm}.ts",
         "src/storage/{areaAssignment,statusControl,projectGlance}.ts"
       ]

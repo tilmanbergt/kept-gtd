@@ -27,6 +27,9 @@ scenario('The area page shows its todos, meetings and agreements, and its folder
     expect(todos).toEqual(expect.arrayContaining(['Buy bulbs', 'Repair the fence']));
     expect(textsBetween('◇ Agreements 1 ›')).toContain('Neighbour chat');
   });
+  and('the Given time line counts this week\'s two meetings and "Delivery" (10 h) and this month\'s (19 h)', () =>
+    expectShows('Given time · this week 10 h · this month 19 h'),
+  );
   and('Garden\'s folder is not listed', () => {
     expect(listings(areaDir('Garden'))).toBe(0);
     expectNotShows('📄 area.txt');

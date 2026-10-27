@@ -1,7 +1,7 @@
 /**
  * ItemContextRows — ItemScopeRow + ItemGoalRow (docs/
  * technical-design-review-master-detail.md §Component inventory), shared by
- * ui/ItemFocusPanel.tsx's Current tab and Review's master-detail detail
+ * ui/ItemScopePanel.tsx's Current tab and Review's master-detail detail
  * panels (Stalled projects, Neglected areas, Done awaiting review, On Hold
  * reconsideration), so both show Scope and the latest weekly goal with the
  * same visual/UX logic (including the tap-to-edit convention).
@@ -17,7 +17,7 @@ import InlineTextEditor from './InlineTextEditor';
 import {FONT} from './theme';
 
 /**
- * The Scope text - see ui/ItemFocusPanel.tsx's module doc comment's "Scope"
+ * The Scope text - see ui/ItemScopePanel.tsx's module doc comment's "Scope"
  * paragraph for the display/edit rules. Not editing: shows the current
  * scope plain (no `numberOfLines` truncation - deliberately unclamped,
  * unlike ItemGoalRow's `numberOfLines={2}` below, since Scope is meant to
@@ -69,7 +69,7 @@ export function ItemScopeRow({
 
 /**
  * The single goal line below the Focus checkboxes - see
- * ui/ItemFocusPanel.tsx's module doc comment's "Weekly goal" paragraph for
+ * ui/ItemScopePanel.tsx's module doc comment's "Weekly goal" paragraph for
  * the display/edit rules. Not editing: shows the latest-week entry (plain
  * if it's the current week, "Last goal (Week NN): ..." otherwise) or, with
  * no entries at all, a dim "+ Add a goal for this week" prompt - either
@@ -77,7 +77,7 @@ export function ItemScopeRow({
  * ui/InlineTextEditor.tsx, shared with ItemScopeRow and
  * ui/PeriodFocusPanel.tsx's GoalRow.
  *
- * `disabled` is always externally supplied by the caller (ItemFocusPanel
+ * `disabled` is always externally supplied by the caller (ItemScopePanel
  * passes `state.status !== 'active'`; Review's ui/ItemContextBlock.tsx
  * always passes `false`, since Review's own Area/Scope/Goal context block
  * is read-mostly and never status-gated the way the Current tab's Focus

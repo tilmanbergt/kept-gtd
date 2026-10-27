@@ -14,7 +14,7 @@ Every row on the Projects and Areas tabs ends with the notebook icon of its home
 
 - **Header**: name, kind and the abbreviation (tap to change it); **Notebook** opens its home notebook, or creates it (see "Home notebooks" below); **Engage ›** opens [Engage](engage.md) for this project or area
 - **Scope**: one to three sentences about what this project or area is about. Tap to edit.
-- **Focus**: daily, weekly and monthly focus, each with an optional goal for the week or month
+- **Given time**: `Given time · this week 3 h · this month 11 h` - the meetings and focus blocks scheduled in it (an area counts its projects' too); all-day events count as 8 h a day
 - **Status**: Active, On Hold, Done (projects only) - and Close out… or Archive…
 - **Files pane**: up to four tabs. On a project: **Threads** (open when the page opens), **Loops**, **Notebook** and **Files**. On an area: **Threads**, **Projects** (its projects at a glance), **Notebook** and **Files**. **Notebook** shows the home notebook with its years and contents; it is there while the Default note setup uses one notebook. Inside **Files** a second row picks the place: **Project**, **Area** (once one is assigned) and **Resources** on a project; **Area** and **Resources** on an area. **Files** opens on the page's own folder.
 - **Todos** and **Meetings**, grouped and paged, with Quick Add above them. Todos are grouped Next, Waiting For, Plan (no flow state: planned, not yet next), Someday and Maybe. Tapping a todo or meeting shows its card in Quick Add's place: for a todo done, the flow chips, linking a file, moving it and delete (see [Quick Add](quick-add.md)); for a meeting the prep or review tick, **Reflect** once it is over, linking a file and moving it (see [Meetings](meetings.md))

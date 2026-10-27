@@ -2,7 +2,7 @@
  * Status (Active/On Hold/Done) + Archive + Assign to Area - the Current
  * tab's left pane, below Files (docs/dev/history/technical-design-inbox-tab.md §4).
  *
- * Focus is shown by ui/ItemFocusPanel.tsx at the TOP of the same column -
+ * Focus is shown by ui/ItemScopePanel.tsx at the TOP of the same column -
  * see that file's module doc comment (independent load, the weekly goal
  * line, and the accepted eventual-consistency window between it and this
  * component). `dailyFocus`/`weeklyFocus` stay on this component's own
@@ -15,7 +15,7 @@
  * data), this component does its own small, independent ensureItemCached
  * load - the same "independent per-section state, synchronized only through
  * the shared cache + write-through" pattern DailyFocusKindSection/ItemsList/
- * ProjectDataPanel/ui/ItemFocusPanel.tsx use side-by-side without sharing
+ * ProjectDataPanel/ui/ItemScopePanel.tsx use side-by-side without sharing
  * state directly (design-overview.md §3's "reads should prefer the cache").
  *
  * **Assign to Area** (technical-design-project-area-assignment.md §4.1,
@@ -91,7 +91,7 @@ interface StatusPanelState {
 
 /**
  * This item as every frontmatter write here should see it: fresh from the
- * shared cache when present (another panel on this screen - ItemFocusPanel,
+ * shared cache when present (another panel on this screen - ItemScopePanel,
  * ItemDetail's own resource-folder/abbrev saves - may have written the
  * file since this panel loaded), falling back to this panel's own snapshot.
  * Every write spreads the whole thing (docs/dev/history/technical-design-monthly-view.md
