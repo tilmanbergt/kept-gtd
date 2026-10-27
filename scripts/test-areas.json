@@ -5,7 +5,7 @@
     {
       "id": "integrations",
       "name": "Integrations (experimental)",
-      "help": ["integrations.md"],
+      "help": ["features.md"],
       "tests": ["__tests__/**/*{icsParser,gmail,Gmail,googleCalendar,GoogleCalendar}*"],
       "sources": [
         "src/domain/{icsParser,googleCalendarEvent,emailNote,attachmentSummary,textPagination}.ts",
@@ -26,6 +26,7 @@
       ],
       "sources": [
         "src/screens/{DailyView,WeekView,WeekPlanner,MonthView,usePlanningScreen}.ts*",
+        "src/screens/daily/**",
         "src/ui/{Daily,Period,Week,Month,Focus,DayMeetings}*",
         "src/storage/{daily,weekly,monthly}Aggregate.ts",
         "src/storage/{periodFocusCards,periodGoals,focusSlots}.ts",

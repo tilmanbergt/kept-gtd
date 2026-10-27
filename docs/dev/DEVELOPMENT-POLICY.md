@@ -45,7 +45,7 @@ Details: `docs/dev/design-philosophy.md` and `docs/user/philosophy.md`.
 - **Keeping your word clean**, and **room for rest**: features make commitments visible; they
   don't pile up more to do.
 - **External services are experimental.** Anything depending on an outside service (Google,
-  network) sits behind a switch in Settings → Advanced and is off by default.
+  network) sits behind a switch in Settings → Features (Experimental) and is off by default.
 
 ## 3. Architecture rules
 

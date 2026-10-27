@@ -112,7 +112,7 @@ A project's or area's page has a **Notebook** tab next to Threads and Loops (Pro
 
 The pages Kept made are listed by what they belong to: the Home page by the project's name, a todo's or meeting's page by the todo or meeting. Other headings show the typed text under them; a heading on handwriting shows as **Handwritten heading**. The list is read again when the notebook changed, for example after you wrote in it and came back.
 
-Contents can be switched off in Settings → Advanced → **Notebook contents**. Then the tab shows the name, the years and Open.
+Contents can be switched off in Settings → Features → **Notebook contents**. Then the tab shows the name, the years and Open.
 
 ### Engage: Go to the notebook
 

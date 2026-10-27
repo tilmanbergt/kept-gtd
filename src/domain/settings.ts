@@ -9,6 +9,7 @@ import type {LegacyTagRule, MigrationReport} from './noteSetupMigration';
 import type {EngageOwner, EngageTodoKey} from './engageOwner';
 import type {NoteSetup, NoteSetupDefaults} from './noteSetups';
 import {ReviewStepsMap} from './reviewSteps';
+import {DEFAULT_MODULES, Modules} from './features';
 
 export interface GtdParaSettings {
   baseRoot: string;
@@ -180,6 +181,13 @@ export interface GtdParaSettings {
    */
   experimentalGoogleCalendar: boolean;
   experimentalGmail: boolean;
+  /**
+   * Module switches (Settings → Features, docs/dev/history/technical-design-daily-slim.md
+   * §3.6): `closeOut` - Project close-out, on by default. Per profile. Read
+   * through domain/features.ts's featuresOf/modulesOf, which fill a missing
+   * key from its default, so stored settings without the map need no migration.
+   */
+  modules: Modules;
   /** Debug logging: also append every log line to a rotating file in the debug folder (utils/logSink.ts). */
   debugLogging: boolean;
   /**
@@ -239,6 +247,7 @@ export const DEFAULT_SETTINGS: GtdParaSettings = {
   keepTabsAlive: true,
   experimentalGoogleCalendar: false,
   experimentalGmail: false,
+  modules: DEFAULT_MODULES,
   debugLogging: false,
   notebookContentsEnabled: true,
   lastSeenVersion: '',

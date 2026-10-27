@@ -31,7 +31,7 @@ Kept GTD is a calm GTD and PARA workspace for the Supernote. Your projects, area
 ## Setup and help
 
 - [Settings](settings.md)
+- [Features and integrations](features.md): switch parts on or off, Google Calendar and Gmail (experimental)
 - [Profiles and the demo space](profiles-and-demo.md)
-- [Google Calendar and Gmail (experimental)](integrations.md)
 - [Using Kept GTD with Obsidian](obsidian.md)
 - [Troubleshooting and reporting problems](troubleshooting.md)

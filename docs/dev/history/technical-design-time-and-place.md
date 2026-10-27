@@ -398,4 +398,26 @@ tests were deleted with its code, lower that baseline by hand in S6 with the rea
 
 ## As built
 
-(Filled in during S0-S6.)
+### S0 - Daily structure, Settings → Features
+
+- Daily slim's structural part as designed: `screens/daily/{useDailyData,DailyTodosColumn,DailyModeRow,dailyRows}`,
+  Daily on `ui/useEntryActions.ts` (gained `toggleNow`, `saveTasks` with `inboxOverride` and its written Inbox as
+  result, `todoCardOptions`/`cardOptions` with `extra`, settings from `useSettings()`, memoized `tracking`), the
+  `taskRowLayout` cache (key also holds `task.dueDate`, which a due label reads), `heightKey="daily:todos"`,
+  `daily:firstContent`. `DailyView.tsx` 1,508 → 366 lines, off the code-health baseline.
+- **Focus mode kept until S5** (core rule 1): its code moved unchanged out of DailyView into
+  `screens/daily/FocusModeScreen.tsx` (no `useFocusSession`; the session state stays in the screen). The file is
+  deleted with focus mode in S5. The Focus mode button stays in `DailyModeRow` until then; no focus-mode switch.
+- Not built: Daily slim §3.5's home-notebook icon redraw - its only beneficiaries, `DailyFocusPanel` and
+  `PeriodFocusPanel`, are removed in S4/S5.
+- Settings → Features: `modules: {closeOut}` (per profile through `PROFILE_KEYS`); `featuresOf` adds `closeOut`,
+  `modulesOf` fills missing/malformed keys; `NO_EXPERIMENTAL_FEATURES` became `NO_FEATURES`. The rows use the
+  switch line the moved Experimental rows already had (`screens/settings/SettingSwitch.tsx`, extracted from
+  `AdvancedTab`) instead of `CheckToggle`, so the tab has one look. Close-out off = no `onStartCloseOut` for
+  Current (both App call sites) and Review; both already fall back to direct archiving.
+- Help: the in-app help list has room for 27 rows (`__tests__/domain/helpTopics.test.ts`), so the new
+  `features.md` took in `integrations.md` ("Features and integrations": the switches, then Google Calendar and
+  Gmail); area `integrations` names `features.md` as its help page.
+- Scenarios: Daily slim T1, T3 (focus session with two Inbox todos; removed with focus mode in S5), T4, T5
+  (`__tests__/scenarios/dailySlim.test.tsx`), T10-T12 (`features.test.tsx`); unit U1-U3 (`taskRowLayout.test.ts`),
+  U4 (`features.test.ts`). T2, T6-T9 and U5-U7 tested the focus-mode switch, which this release does not build.

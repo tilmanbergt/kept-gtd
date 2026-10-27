@@ -7,6 +7,8 @@ When a project is finished, Kept GTD helps you end it cleanly: nothing left open
 - On the project's **Current** tab, tap **Close out…** in the status section.
 - In the Weekly Review, the step **Done awaiting review** lists all projects marked Done. Each has **Close out…** and **Quick archive…**.
 
+Close-out can be switched off in **Settings → Features** (**Project close-out**); then a Done project offers **Archive…** on its page and **Archive** in the Weekly Review, and is archived directly after one confirmation. See [Features](features.md).
+
 You can leave the close-out at any time. Every decision is saved in the project's file (in a `## Close-out` section), so next time it continues where you stopped.
 
 If Kept is stopped while **Archive now** runs (the Supernote switches off, for example), nothing is lost. If the project is still in Projects, open **Close out…** again and tap **Archive now**: it finishes the steps that are left. If the folder had already moved, the project is fully archived; only `status:` in its `project.txt` may still say `active`, which you can change by hand or leave. **Run Integrity Check** in Settings → Advanced tells you which of the two it is.

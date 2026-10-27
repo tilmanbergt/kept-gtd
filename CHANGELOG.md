@@ -10,6 +10,19 @@ or your project/area files are stored.
 
 ## [Unreleased]
 
+### New
+- **Settings → Features**: switch **Project close-out** on or off. Off, a Done project is archived
+  directly from its page and from the Weekly Review, without the checklist and the PDF.
+
+### Changed
+- The **Experimental** switches (Google Calendar, Gmail, Notebook contents) moved from Settings →
+  Advanced to the new Settings → Features.
+- Daily opens a little faster the first time.
+
+### Upgrade notes
+- Google Calendar, Gmail and Notebook contents keep their setting and are now in Settings → Features.
+  Project close-out is on, as before.
+
 ## [0.21.1] — 2026-10-26
 
 ### Fixed

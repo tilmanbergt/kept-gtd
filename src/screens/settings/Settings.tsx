@@ -1,12 +1,12 @@
 /**
  * Settings: one screen with sub-tabs (Folders, Focus, Calendar, Gmail, Note
- * setups, Advanced, About). Calendar and Gmail show only while their
+ * setups, Features, Advanced, About). Calendar and Gmail show only while their
  * experimental switch is on.
  *
  * Folders, Focus, Calendar and Gmail edit one shared draft
  * (useSettingsDraft.ts) that only the Save button at the bottom writes.
  * Everything else takes effect at once: Note setups saves each setup itself
- * (noteSetups/), and the switches on Advanced and About write immediately and
+ * (noteSetups/), and the switches on Features, Advanced and About write immediately and
  * update the draft too, so a later Save can't write an old value back.
  *
  * `initialTab` lets another screen land on a tab (e.g. a Google Calendar
@@ -15,7 +15,7 @@
  */
 import React, {useState} from 'react';
 import {ActivityIndicator, Pressable, Text, View} from 'react-native';
-import {featuresOf} from '../../domain/features';
+import {featuresOf, Modules, modulesOf} from '../../domain/features';
 import {FileFix, fileNameFixConfirmText, fileNameFixDoneText} from '../../domain/fileNameFix';
 import {GtdParaSettings} from '../../domain/settings';
 import {rebuildCache} from '../../storage/dataCache';
@@ -35,6 +35,7 @@ import {perfEnable} from '../../utils/perf';
 import {requestEinkRefresh} from '../../utils/screenRefresh';
 import AboutTab from './AboutTab';
 import AdvancedTab from './AdvancedTab';
+import FeaturesTab from './FeaturesTab';
 import {CalendarTab, FocusTab, FoldersTab, GmailTab} from './DraftTabs';
 import {styles} from './settingsStyles';
 import TouchTestScreen from './TouchTestScreen';
@@ -43,13 +44,14 @@ import {useMyStylePngs} from './noteSetups/useMyStylePngs';
 import {useNoteSetupDraft} from './noteSetups/useNoteSetupDraft';
 import {useSettingsDraft} from './useSettingsDraft';
 
-export type SettingsTab = 'folders' | 'focus' | 'calendar' | 'gmail' | 'templates' | 'advanced' | 'about';
+export type SettingsTab = 'folders' | 'focus' | 'calendar' | 'gmail' | 'templates' | 'features' | 'advanced' | 'about';
 const SETTINGS_TABS: MiniTabDef<SettingsTab>[] = [
   {key: 'folders', label: 'Folders'},
   {key: 'focus', label: 'Focus'},
   {key: 'calendar', label: 'Calendar'},
   {key: 'gmail', label: 'Gmail'},
   {key: 'templates', label: 'Note setups'},
+  {key: 'features', label: 'Features'},
   {key: 'advanced', label: 'Advanced'},
   {key: 'about', label: 'About'},
 ];
@@ -181,6 +183,20 @@ export default function Settings({initialTab, onSwitchProfile}: Props): React.JS
     }
   };
 
+  /** A module switch (Settings → Features): applied, stored inside `modules`, and mirrored into the draft. */
+  const toggleModule = async (key: keyof Modules) => {
+    const nextModules = {...modulesOf(values), [key]: !modulesOf(values)[key]};
+    const nextValues = {...values, modules: nextModules};
+    setValues(v => ({...v, modules: nextModules}));
+    setFeatures(featuresOf(nextValues));
+    log('Settings: module switched', key, nextModules[key]);
+    try {
+      await patchSettings({modules: nextModules});
+    } catch (e) {
+      setSaveError(errorMessage(e));
+    }
+  };
+
   /** A switch that takes effect at once: applied, stored, and mirrored into the draft. */
   const toggleNow = async (key: keyof GtdParaSettings & ('perfTracing' | 'keepTabsAlive' | 'debugLogging' | 'experimentalGoogleCalendar' | 'experimentalGmail' | 'notebookContentsEnabled')) => {
     const next = !values[key];
@@ -230,23 +246,31 @@ export default function Settings({initialTab, onSwitchProfile}: Props): React.JS
           {activeTab === 'templates' && (
             <NoteSetupsTab draft={noteSetups} values={values} myStyle={myStyle} {...tabProps} />
           )}
+          {activeTab === 'features' && (
+            <FeaturesTab
+              closeOut={modulesOf(values).closeOut}
+              experimentalGoogleCalendar={values.experimentalGoogleCalendar}
+              experimentalGmail={values.experimentalGmail}
+              notebookContentsEnabled={values.notebookContentsEnabled}
+              onToggleCloseOut={() => toggleModule('closeOut')}
+              onToggleGoogleCalendar={() => toggleNow('experimentalGoogleCalendar')}
+              onToggleGmail={() => toggleNow('experimentalGmail')}
+              onToggleNotebookContents={() => toggleNow('notebookContentsEnabled')}
+              textColor={textColor}
+              borderColor={borderColor}
+            />
+          )}
           {activeTab === 'advanced' && (
             <AdvancedTab
               activeProfileId={values.activeProfileId}
               onSwitchProfile={onSwitchProfile}
-              experimentalGoogleCalendar={values.experimentalGoogleCalendar}
-              experimentalGmail={values.experimentalGmail}
               perfTracing={values.perfTracing}
               keepTabsAlive={values.keepTabsAlive}
               integrityCheckRunning={integrityCheckRunning}
               reloading={reloading}
               onReloadAllFiles={handleReloadAllFiles}
-              onToggleGoogleCalendar={() => toggleNow('experimentalGoogleCalendar')}
-              onToggleGmail={() => toggleNow('experimentalGmail')}
               onTogglePerfTracing={() => toggleNow('perfTracing')}
               onToggleKeepTabsAlive={() => toggleNow('keepTabsAlive')}
-              notebookContentsEnabled={values.notebookContentsEnabled}
-              onToggleNotebookContents={() => toggleNow('notebookContentsEnabled')}
               onRunIntegrityCheck={handleRunIntegrityCheck}
               onOpenTouchTest={() => setTouchTestOpen(true)}
               textColor={textColor}

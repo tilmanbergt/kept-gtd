@@ -10,13 +10,18 @@
  * errs on the safe side (a bit of space left over rather than a cut label).
  *
  * `taskRowLayout` is the one place both the row (render) and its callers
- * (height for ui/PagedSection.tsx) read, so the two can't disagree.
+ * (height for ui/PagedSection.tsx) read, so the two can't disagree. Its
+ * result is remembered per Task object (docs/dev/history/technical-design-daily-slim.md
+ * §3.4): the key holds every argument plus `task.text`, which carries every tag
+ * the layout reads, and the due date, so a Task changed in place or a new day gets a fresh layout.
+ * Perf counters: `calc:taskRowLayout` (computed), `calc:taskRowLayoutHit`.
  */
 import {TaskLabel, TaskLabelContext, displayTaskText, taskLabels} from '../domain/taskLabels';
 import {todayIso} from '../domain/meetingTime';
 import {Task} from '../domain/types';
 import {activeLineEstimator} from '../domain/textLineEstimator';
 import {FONT} from './theme';
+import {perfCount} from '../utils/perf';
 
 /** A todo row never shows more than two lines of text. */
 export const TASK_ROW_MAX_LINES = 2;
@@ -75,6 +80,8 @@ export interface TaskRowLayout {
   lines: number;
 }
 
+const layoutCache = new WeakMap<Task, {key: string; layout: TaskRowLayout}>();
+
 export function taskRowLayout(
   task: Task,
   columnWidthPx: number,
@@ -82,6 +89,19 @@ export function taskRowLayout(
   contextActive = false,
   today: string = todayIso(),
 ): TaskRowLayout {
+  const key = `${columnWidthPx}|${context}|${contextActive}|${today}|${task.dueDate ?? ''}|${task.text}`;
+  const known = layoutCache.get(task);
+  if (known && known.key === key) {
+    perfCount('calc:taskRowLayoutHit');
+    return known.layout;
+  }
+  perfCount('calc:taskRowLayout');
+  const layout = computeTaskRowLayout(task, columnWidthPx, context, contextActive, today);
+  layoutCache.set(task, {key, layout});
+  return layout;
+}
+
+function computeTaskRowLayout(task: Task, columnWidthPx: number, context: TaskLabelContext, contextActive: boolean, today: string): TaskRowLayout {
   const labels = taskLabels(task, context, today, contextActive);
   const suffix = labelSuffix(labels);
   const widthPx = taskTextWidthPx(columnWidthPx);

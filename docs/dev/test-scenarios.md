@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-97 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+104 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -114,6 +114,45 @@ Test: `__tests__/scenarios/keptGtd.test.tsx`
 - **Then** the status line says where it went, since Daily doesn't show next week
 
 Test: `__tests__/scenarios/daily.test.tsx` · design: `docs/dev/history/technical-design-cache-subscription-and-shared-add-path.md`
+
+### Daily: a todo's card, then its edit, saved into its own file
+
+- **Given** the smoke space and Daily open
+- **When** I tap "Water the lawn"
+- **Then** its card shows in Quick Add's place, with its owner
+- **When** I tap Edit on the card, change the text to "Water the lawn early" and save
+- **Then** Garden's area.txt has the new text and the card shows again
+
+Test: `__tests__/scenarios/dailySlim.test.tsx`
+
+### Focus session with two Inbox todos: both done, #now cleared from both
+
+- **Given** the Inbox has "Call the plumber" and "Pay the invoice", both #now
+- **When** I open focus mode from Daily
+- **Then** the running session lists both
+- **When** I tick both
+- **Then** "Congratulations: All tasks done!" lists both
+- **And** Inbox.txt has both done, neither with #now
+
+Test: `__tests__/scenarios/dailySlim.test.tsx`
+
+### Daily's tag filter: tapping a tag shows only its todos, the pill clears it
+
+- **Given** the smoke space with "Buy bulbs #garden" in Garden
+- **When** I open Daily and tap #garden in a row
+- **Then** only #garden todos show and the pill reads #garden
+- **When** I tap the pill
+- **Then** everything shows again
+
+Test: `__tests__/scenarios/dailySlim.test.tsx`
+
+### Quick-file from a Daily edit: "Save to <Name>" moves the todo
+
+- **Given** "Buy bulbs" in the Inbox and project Garage (#GAR)
+- **When** I edit it on Daily, add "#GAR" and tap Save to Garage
+- **Then** it is in Garage's file and not in Inbox.txt
+
+Test: `__tests__/scenarios/dailySlim.test.tsx`
 
 ### Daily: tomorrow's tracked meeting offers Prepped, and Daily has no Link file
 
@@ -806,6 +845,39 @@ Test: `__tests__/scenarios/quickAdd.test.tsx` · design: `docs/dev/history/techn
 Test: `__tests__/scenarios/smoke/daily.test.tsx`
 
 ## Settings
+
+### Close-out off: a Done project archives directly from its page
+
+- **Given** Project close-out is switched off and project "Website" is Done
+- **When** I open Website on Current
+- **Then** its status panel offers Archive, not Close out
+- **When** I archive it and confirm
+- **Then** the folder is in the Archive and no close-out wizard opened
+
+Test: `__tests__/scenarios/features.test.tsx`
+
+### Close-out off: Review's Done step archives directly
+
+- **Given** Project close-out is switched off and project "Website" is Done
+- **When** I open Review → Done awaiting review and pick Website
+- **Then** it offers Archive, not Close out… or Quick archive…
+- **When** I archive it and confirm
+- **Then** the folder is in the Archive
+
+Test: `__tests__/scenarios/features.test.tsx`
+
+### Settings → Features shows the Experimental switches that moved from Advanced
+
+- **Given** Google Calendar was switched on before and project "Website" is Done
+- **When** I open Settings → Features
+- **Then** Project close-out is on and Google Calendar is on under Experimental
+- **When** I open Advanced
+- **Then** it no longer shows the Experimental switches
+- **When** I switch Project close-out off on Features
+- **And** open the Done project Website
+- **Then** its page offers Archive at once
+
+Test: `__tests__/scenarios/features.test.tsx`
 
 ### Unreadable settings are never replaced by the defaults unasked
 

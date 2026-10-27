@@ -1,8 +1,10 @@
 /**
- * Experimental feature switches (docs/dev/history/technical-design-about-debug-experimental.md
- * §3.1-3.2). Google Calendar and Gmail depend on external services and are
- * shown only when switched on in Settings → Advanced. Switching one off
- * hides its entry points; its configuration stays stored.
+ * Feature switches (Settings → Features, docs/dev/history/technical-design-daily-slim.md
+ * §3.6, docs/dev/history/technical-design-about-debug-experimental.md §3.1-3.2).
+ * Project close-out is a module (`settings.modules`, on by default); Google
+ * Calendar and Gmail depend on external services and are shown only when
+ * switched on under Experimental. Switching one off hides its entry points;
+ * its configuration and data stay stored.
  *
  * Pure domain logic, structurally typed (no import of settings.ts, which
  * imports reviewSteps.ts, which imports this file).
@@ -11,21 +13,38 @@
 export interface Features {
   googleCalendar: boolean;
   gmail: boolean;
+  /** Project close-out (checklist, outcomes, archive PDF); off archives Done projects directly. */
+  closeOut: boolean;
 }
 
-/** What screens see before settings have loaded: integrations hidden. */
-export const NO_EXPERIMENTAL_FEATURES: Features = {googleCalendar: false, gmail: false};
+/** The module switches stored in `settings.modules`; a missing key reads as its default. */
+export interface Modules {
+  closeOut: boolean;
+}
+
+export const DEFAULT_MODULES: Modules = {closeOut: true};
+
+/** What screens see before settings have loaded: integrations hidden, modules at their defaults. */
+export const NO_FEATURES: Features = {googleCalendar: false, gmail: false, ...DEFAULT_MODULES};
 
 interface FeatureFlagFields {
   experimentalGoogleCalendar: boolean;
   experimentalGmail: boolean;
+  modules?: Partial<Modules> | null;
+}
+
+/** The modules map with every missing or malformed key filled from DEFAULT_MODULES (a partial map, e.g. from a later version, also works). */
+export function modulesOf(settings: Pick<FeatureFlagFields, 'modules'> | null | undefined): Modules {
+  const stored = settings?.modules && typeof settings.modules === 'object' ? settings.modules : {};
+  return {closeOut: typeof stored.closeOut === 'boolean' ? stored.closeOut : DEFAULT_MODULES.closeOut};
 }
 
 export function featuresOf(settings: FeatureFlagFields | null | undefined): Features {
-  if (!settings) {return NO_EXPERIMENTAL_FEATURES;}
+  if (!settings) {return NO_FEATURES;}
   return {
     googleCalendar: settings.experimentalGoogleCalendar === true,
     gmail: settings.experimentalGmail === true,
+    ...modulesOf(settings),
   };
 }
 

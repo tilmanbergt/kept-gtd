@@ -61,4 +61,4 @@ You also reach it from the Review step **Meetings to close out**, from a past me
 
 ## From Google Calendar
 
-With the experimental Google Calendar integration you can copy calendar events into Kept meetings. See [Google Calendar and Gmail](integrations.md).
+With the experimental Google Calendar integration you can copy calendar events into Kept meetings. See [Google Calendar and Gmail](features.md).

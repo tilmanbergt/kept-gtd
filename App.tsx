@@ -14,6 +14,7 @@ import ItemsList from './src/screens/ItemsList';
 import Settings, {SettingsTab} from './src/screens/settings/Settings';
 import ItemDetail from './src/screens/ItemDetail';
 import DailyView from './src/screens/DailyView';
+import FocusModeScreen from './src/screens/daily/FocusModeScreen';
 import WeekView from './src/screens/WeekView';
 import MonthView from './src/screens/MonthView';
 import InboxScreen from './src/screens/InboxScreen';
@@ -115,9 +116,8 @@ interface CurrentItem {
 // Daily's focus mode. Deliberately separate from `activeTab`/`currentItem`
 // (which persist regardless of mode) - both the capture overlay and focus
 // mode sit on top of the tab shell rather than being one of its tabs.
-// 'focus' (docs/dev/history/technical-design-now-focus-mode.md §4) is the same
-// DailyView instance as 'tabs'-mode Daily, just rendered with its
-// focusMode prop on instead of a separate screen component.
+// 'focus' (docs/dev/history/technical-design-now-focus-mode.md §4) shows
+// screens/daily/FocusModeScreen.tsx.
 type Mode = 'loading' | 'capture' | 'tabs' | 'focus' | 'engage';
 
 // The central status slot (docs/dev/history/technical-design-status-slot.md) needs its
@@ -547,6 +547,8 @@ function AppShell({onProfileSwitched}: {onProfileSwitched: () => void}): React.J
     if (shownBeforeRef.current.has(activeTab)) requestEinkRefresh();
     shownBeforeRef.current.add(activeTab);
   }, [activeTab, keepTabsAlive]);
+  // Project close-out off (Settings → Features): no "Close out…" on Current or
+  // in Review, so a Done project archives directly there.
   // The kept screens' elements, created once (and for Current once per
   // item): the same element object on every App render lets React skip a
   // hidden screen entirely when App re-renders on a tab tap.
@@ -586,7 +588,7 @@ function AppShell({onProfileSwitched}: {onProfileSwitched: () => void}): React.J
           onArchived={stableNav.handleArchived}
           onOpenCalendarSettings={stableNav.openSettingsCalendar}
           onOpenItem={stableOpenItem}
-          onStartCloseOut={stableNav.startCloseOutFull}
+          onStartCloseOut={features.closeOut ? stableNav.startCloseOutFull : undefined}
         />
       ) : (
         <View style={styles.emptyCurrent}>
@@ -596,7 +598,7 @@ function AppShell({onProfileSwitched}: {onProfileSwitched: () => void}): React.J
         </View>
       ),
     }),
-    [currentItem, stableOpenItem, stableNav, textColor],
+    [currentItem, stableOpenItem, stableNav, textColor, features.closeOut],
   );
 
   const openSettingsAbout = () => {
@@ -792,24 +794,16 @@ function AppShell({onProfileSwitched}: {onProfileSwitched: () => void}): React.J
     );
   }
 
-  // Focus mode (docs/dev/history/technical-design-now-focus-mode.md §4): the exact same
-  // DailyView instance 'tabs' mode's Daily tab renders below, just with
-  // focusMode on - no separate screen component, no separate data load.
-  // Rendered here, before the TabBar-wrapped 'tabs' branch, like 'capture'
-  // above - full-screen, no TabBar.
+  // Focus mode (docs/dev/history/technical-design-now-focus-mode.md §4,
+  // screens/daily/FocusModeScreen.tsx): full-screen, no TabBar, mounted fresh
+  // on every entry.
   if (mode === 'focus') {
     // The status slot sits at the very top of focus mode (D4) - it's
     // normally empty there.
     return (
       <View style={styles.root}>
         <StatusFrame>
-          <DailyView
-            focusMode
-            onExitFocusMode={onExitFocusMode}
-            onOpenItem={stableOpenItem}
-            onOpenInbox={openInbox}
-            onOpenCalendarSettings={openSettingsCalendar}
-          />
+          <FocusModeScreen onExitFocusMode={onExitFocusMode} onOpenItem={stableOpenItem} onOpenInbox={openInbox} />
         </StatusFrame>
       </View>
     );
@@ -840,7 +834,7 @@ function AppShell({onProfileSwitched}: {onProfileSwitched: () => void}): React.J
             onOpenItem={stableOpenItem}
             onReviewRecorded={refreshSettings}
             onOpenCalendarSettings={openSettingsCalendar}
-            onStartCloseOut={openCloseOut}
+            onStartCloseOut={features.closeOut ? openCloseOut : undefined}
           />
         ))}
       {activeTab === 'settings' && (
@@ -924,7 +918,7 @@ function AppShell({onProfileSwitched}: {onProfileSwitched: () => void}): React.J
                     onArchived={handleArchived}
                     onOpenCalendarSettings={openSettingsCalendar}
                     onOpenItem={stableOpenItem}
-                    onStartCloseOut={path => openCloseOut(path, 'full')}
+                    onStartCloseOut={features.closeOut ? path => openCloseOut(path, 'full') : undefined}
                   />
                 ) : (
                   <View style={styles.emptyCurrent}>

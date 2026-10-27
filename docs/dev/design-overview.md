@@ -759,7 +759,11 @@ focused; a status change away from Active clears all flags (§2.9). `domain/dest
 read and written through `storage/periodGoals.ts`; `domain/period.ts`'s `canEditPeriod` allows
 the current period plus the next week from Friday and the next month in its last 7 days.
 
-**Daily** (`screens/DailyView.tsx`, aggregate `storage/dailyAggregate.ts`). Left column: the day
+**Daily** (`screens/DailyView.tsx`, aggregate `storage/dailyAggregate.ts`; data from
+`screens/daily/useDailyData.ts`: the cache at mount without a loading pass when it is ready, a
+`daily:firstContent` perf span; every write through `ui/useEntryActions.ts`, the overviews' write
+path; the right column `screens/daily/DailyTodosColumn.tsx`, the tag-filter pill and Focus mode
+button `screens/daily/DailyModeRow.tsx`). Left column: the day
 panel (`ui/DayMeetingsPanel.tsx`, Today | Tomorrow | Google) and below it `ui/DailyFocusPanel.tsx`
 (Focus | Projects | Areas; an empty focus slot arms the matching list as a picker). Right column:
 Quick Add (always to the Inbox) above the Open tasks, grouped by source item, focused items
@@ -774,8 +778,8 @@ tomorrow, multi-day meetings on every covered day (`domain/meetingSpan.ts`). Tap
 sets a **context filter**: only tasks and meetings with that tag show (any flow state except
 Maybe), and when the tag is a Project/Area abbreviation, also everything belonging to that item.
 
-**Focus mode** (`mode: 'focus'`, `settings.focusModeActive`): Daily in a one-column, no-TabBar
-layout around the `#now` tasks; reopening the plugin lands back in it until it is left. Detail:
+**Focus mode** (`mode: 'focus'`, `settings.focusModeActive`, `screens/daily/FocusModeScreen.tsx`):
+a one-column, no-TabBar screen around the `#now` tasks; reopening the plugin lands back in it until it is left. Detail:
 `docs/dev/history/technical-design-now-focus-mode.md`.
 
 **Engage** (`mode: 'engage'`, `screens/engage/`) is the doing step over the note, next to focus
@@ -985,7 +989,7 @@ missing. Detail: `docs/dev/history/technical-design-lasso-0.8.md`.
 
 ### 2.11 Integrations
 
-Both integrations are **experimental switches** (Settings → Advanced, `domain/features.ts`,
+Both integrations are **experimental switches** (Settings → Features, `domain/features.ts`,
 read through `ui/featureStore.ts`). Off hides every entry point (Google tabs, the Gmail step and
 Settings tabs); configuration stays stored. Both need the INTERNET permission, requested on first
 use only.
@@ -1017,12 +1021,15 @@ at its old place with an error. Credentials: `gmailEmail`, `gmailAppPassword` (s
 ### 2.12 Settings, profiles and diagnostics
 
 **Settings screen** (`screens/settings/`): mini-tabs Folders, Focus, Calendar, Gmail (the last
-two only while switched on), Note setups, Advanced, About. Folders, Focus, Calendar and Gmail edit
+two only while switched on), Note setups, Features, Advanced, About. Folders, Focus, Calendar and Gmail edit
 one draft (`useSettingsDraft.ts`) that only Save writes; every Save clears the cache (the next
 screen builds it again) and the Gmail list, and a changed Inbox folder name moves the folder first (`storage/inboxFolder.ts`, refused
 when the target exists, not moved when Base or Areas change in the same save). Note setups save
-per setup (and the Default on its own), and its Heading style (`noteHeadingStyle`) at once; the switches on Advanced and About write immediately. Advanced holds Profiles, the
-experimental switches, "Reload all files", "Run Integrity Check", "Touch test", "Keep tabs in
+per setup (and the Default on its own), and its Heading style (`noteHeadingStyle`) at once; the switches on Features, Advanced and About write immediately. **Features**
+(`FeaturesTab.tsx`) holds the module switches - `settings.modules` (`closeOut`, on by default; read
+through `domain/features.ts`'s `featuresOf`/`modulesOf`, which fill a missing key from its default,
+and `ui/featureStore.ts`'s `useFeatures`; close-out off passes no `onStartCloseOut` to Current and
+Review, so a Done project archives directly) - and the Experimental switches. Advanced holds Profiles, "Reload all files", "Run Integrity Check", "Touch test", "Keep tabs in
 memory" and "Performance tracing". About shows version and build, the changelog ("What's new", also offered
 once after an update), Debug logging and "Export debug bundle".
 

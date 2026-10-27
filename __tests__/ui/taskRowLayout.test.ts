@@ -64,3 +64,26 @@ describe('taskRowLayout', () => {
     });
   });
 });
+
+describe('taskRowLayout cache (technical-design-daily-slim.md §3.4)', () => {
+  it('U1: the same Task with the same arguments gets the same layout object', () => {
+    const t = task('Book train #next');
+    const first = taskRowLayout(t, TASK_COLUMN_WIDTH_PX, 'flat', false, TODAY);
+    expect(taskRowLayout(t, TASK_COLUMN_WIDTH_PX, 'flat', false, TODAY)).toBe(first);
+  });
+  it('U2: another day, tag filter or width computes again', () => {
+    const t = task('Book train #next');
+    const first = taskRowLayout(t, TASK_COLUMN_WIDTH_PX, 'flat', false, TODAY);
+    expect(taskRowLayout(t, TASK_COLUMN_WIDTH_PX, 'flat', false, '2026-10-05')).not.toBe(first);
+    expect(taskRowLayout(t, TASK_COLUMN_WIDTH_PX, 'flat', true, TODAY)).not.toBe(first);
+    expect(taskRowLayout(t, 400, 'flat', false, TODAY)).not.toBe(first);
+  });
+  it('U3: the same object with changed text computes again', () => {
+    const t = task('Book train #next');
+    const first = taskRowLayout(t, TASK_COLUMN_WIDTH_PX, 'flat', false, TODAY);
+    t.text = `${LONG} #next`;
+    const second = taskRowLayout(t, TASK_COLUMN_WIDTH_PX, 'flat', false, TODAY);
+    expect(second).not.toBe(first);
+    expect(second.lines).toBe(2);
+  });
+});
