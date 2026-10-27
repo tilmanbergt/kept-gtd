@@ -22,6 +22,8 @@ export interface MeetingSeedFields {
   time: string;
   endTime: string;
   days: number;
+  /** Seeds Quick Add's F on (Review's "+ F block", docs/dev/history/technical-design-time-and-place.md §3.6). */
+  focusBlock?: boolean;
 }
 
 export const DEFAULT_MEETING_INTERVAL_DAYS = 7;

@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-104 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+106 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -499,6 +499,27 @@ Test: `__tests__/scenarios/pageSection.test.tsx`
 Test: `__tests__/scenarios/smoke/captureTodo.test.tsx`
 
 ## Meetings
+
+### Focus block from Quick Add: F on, the tag in the file, an F row and a Focus card
+
+- **Given** the smoke space on Wednesday and a Loop setup for #writing
+- **When** I add the meeting "Writing session #writing/novel" tomorrow 9-11 on Daily with F on
+- **Then** Inbox.txt has the line with #focusblock
+- **When** I open Tomorrow
+- **Then** the row shows the F mark and no #focusblock; the day counts it as focus
+- **When** I tap it
+- **Then** the card says "Focus · ahead" with "writing novel ›" and has no P or R
+
+Test: `__tests__/scenarios/focusBlocks.test.tsx`
+
+### No close-out for focus blocks
+
+- **Given** area Coaching with yesterday's "Sparring Mieke" and the focus block "Sparring prep", both of a setup that tracks review
+- **When** I open Review → Meetings to close out
+- **Then** it lists the meeting and not the focus block
+- **And** nothing was logged as an error
+
+Test: `__tests__/scenarios/focusBlocks.test.tsx`
 
 ### Tick R and M on the card: only the tags change
 

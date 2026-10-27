@@ -143,10 +143,10 @@
       "name": "Meetings and reflection",
       "help": ["meetings.md"],
       "tests": [
-        "__tests__/**/*{meeting,Meeting,nextMeeting,reflection,Reflection}*"
+        "__tests__/**/*{meeting,Meeting,nextMeeting,reflection,Reflection,focusBlock}*"
       ],
       "sources": [
-        "src/domain/{meetingDisplay,meetingNoteBlock,meetingTime,meetingTracking,nextMeeting,reflection}.ts",
+        "src/domain/{meetingDisplay,meetingNoteBlock,meetingTime,meetingTracking,nextMeeting,reflection,focusBlock}.ts",
         "src/storage/{meetingNoteAggregate,meetingNoteContent,reflectionPage}.ts",
         "src/ui/{MeetingChip,MeetingList,MeetingRow}.tsx",
         "src/ui/useReflectionLookup.ts",

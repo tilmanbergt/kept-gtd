@@ -295,8 +295,8 @@
    "Prepare the roadmap 67",
    "+📓",
    "+",
-   "Meetings",
-   "Meetings",
+   "Schedule",
+   "Schedule",
    "+37",
    "›",
    "Upcoming",
@@ -954,7 +954,7 @@
     ]
    },
    {
-    "header": "Meetings",
+    "header": "Schedule",
     "rows": [
      {
       "kind": "header",
@@ -1344,7 +1344,7 @@
     ]
    },
    {
-    "header": "Meetings",
+    "header": "Schedule",
     "rows": [
      {
       "kind": "header",
@@ -1976,6 +1976,7 @@
    "Agreement",
    "Note",
    "M",
+   "F",
    "+ Add",
    "Hide done tasks",
    "Todos",
@@ -2119,8 +2120,8 @@
    "Prepare the roadmap 67",
    "+📓",
    "+",
-   "Meetings",
-   "Meetings",
+   "Schedule",
+   "Schedule",
    "+37",
    "›",
    "Upcoming",
@@ -2778,7 +2779,7 @@
     ]
    },
    {
-    "header": "Meetings",
+    "header": "Schedule",
     "rows": [
      {
       "kind": "header",
@@ -3168,7 +3169,7 @@
     ]
    },
    {
-    "header": "Meetings",
+    "header": "Schedule",
     "rows": [
      {
       "kind": "header",
@@ -3943,8 +3944,8 @@
    "Prepare the roadmap 67",
    "+📓",
    "+",
-   "Meetings",
-   "Meetings",
+   "Schedule",
+   "Schedule",
    "+37",
    "›",
    "Upcoming",
@@ -4602,7 +4603,7 @@
     ]
    },
    {
-    "header": "Meetings",
+    "header": "Schedule",
     "rows": [
      {
       "kind": "header",
@@ -4992,7 +4993,7 @@
     ]
    },
    {
-    "header": "Meetings",
+    "header": "Schedule",
     "rows": [
      {
       "kind": "header",
@@ -5766,8 +5767,8 @@
    "Prepare the roadmap 67",
    "+📓",
    "+",
-   "Meetings",
-   "Meetings",
+   "Schedule",
+   "Schedule",
    "+37",
    "›",
    "Upcoming",
@@ -6425,7 +6426,7 @@
     ]
    },
    {
-    "header": "Meetings",
+    "header": "Schedule",
     "rows": [
      {
       "kind": "header",
@@ -6815,7 +6816,7 @@
     ]
    },
    {
-    "header": "Meetings",
+    "header": "Schedule",
     "rows": [
      {
       "kind": "header",
@@ -7594,8 +7595,8 @@
    "Prepare the roadmap 67",
    "+📓",
    "+",
-   "Meetings",
-   "Meetings",
+   "Schedule",
+   "Schedule",
    "+37",
    "›",
    "Upcoming",
@@ -8253,7 +8254,7 @@
     ]
    },
    {
-    "header": "Meetings",
+    "header": "Schedule",
     "rows": [
      {
       "kind": "header",
@@ -8643,7 +8644,7 @@
     ]
    },
    {
-    "header": "Meetings",
+    "header": "Schedule",
     "rows": [
      {
       "kind": "header",
@@ -9199,8 +9200,8 @@
    "Offsite in Zen too",
    "+📓",
    "+",
-   "Meetings",
-   "Meetings",
+   "Schedule",
+   "Schedule",
    "Upcoming",
    "2.11. 7:00",
    "#sangha/morning",
@@ -9374,7 +9375,7 @@
     ]
    },
    {
-    "header": "Meetings",
+    "header": "Schedule",
     "rows": [
      {
       "kind": "header",
@@ -9414,7 +9415,7 @@
     ]
    },
    {
-    "header": "Meetings",
+    "header": "Schedule",
     "rows": [
      {
       "kind": "header",
@@ -9792,8 +9793,8 @@
    "#retro/beta",
    "+📓",
    "+",
-   "Meetings",
-   "Meetings",
+   "Schedule",
+   "Schedule",
    "Upcoming",
    "30.10. 10:00",
    "#sparring/mieke",
@@ -10262,7 +10263,7 @@
     ]
    },
    {
-    "header": "Meetings",
+    "header": "Schedule",
     "rows": [
      {
       "kind": "header",
@@ -10392,7 +10393,7 @@
     ]
    },
    {
-    "header": "Meetings",
+    "header": "Schedule",
     "rows": [
      {
       "kind": "header",
@@ -10679,8 +10680,8 @@
    "#retro/omega",
    "+📓",
    "+",
-   "Meetings",
-   "Meetings",
+   "Schedule",
+   "Schedule",
    "Upcoming",
    "31.10. 16:00",
    "#retro/omega",
@@ -10824,7 +10825,7 @@
     ]
    },
    {
-    "header": "Meetings",
+    "header": "Schedule",
     "rows": [
      {
       "kind": "header",
@@ -10849,7 +10850,7 @@
     ]
    },
    {
-    "header": "Meetings",
+    "header": "Schedule",
     "rows": [
      {
       "kind": "header",

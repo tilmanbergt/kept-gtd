@@ -1,6 +1,8 @@
 /**
  * The small "M" box that marks a meeting as a Month highlight (`#monthly`,
- * docs/dev/history/technical-design-monthly-view.md §5.1/§5.2). ONE component so the
+ * docs/dev/history/technical-design-monthly-view.md §5.1/§5.2), and with
+ * `letter="F"` the box of a focus block (`#focusblock`,
+ * docs/dev/history/technical-design-time-and-place.md §3.1). ONE component so the
  * places it appears always look alike:
  * - `variant="row"`: a small filled, non-tappable mark in front of a meeting
  *   row's time in every meeting list (ui/MeetingRow.tsx).
@@ -14,6 +16,8 @@ import {FONT} from './theme';
 
 interface Props {
   on: boolean;
+  /** 'M' (Month highlight, the default) or 'F' (focus block). */
+  letter?: 'M' | 'F';
   variant: 'row' | 'toggle';
   /** Toggle variant only. */
   onPress?: () => void;
@@ -28,12 +32,13 @@ function inverse(color: string): string {
   return c === '#000' || c === '#000000' || c === 'black' ? '#ffffff' : '#000000';
 }
 
-export default function HighlightMark({on, variant, onPress, disabled, size = 'normal', textColor}: Props): React.JSX.Element | null {
+export default function HighlightMark({on, letter = 'M', variant, onPress, disabled, size = 'normal', textColor}: Props): React.JSX.Element | null {
+  const label = letter === 'F' ? 'Focus block' : 'Month highlight';
   if (variant === 'row') {
     if (!on) return null;
     return (
-      <View style={[styles.rowMark, {backgroundColor: textColor}]} accessibilityLabel="Month highlight">
-        <Text style={[styles.rowMarkText, {color: inverse(textColor)}]}>M</Text>
+      <View style={[styles.rowMark, {backgroundColor: textColor}]} accessibilityLabel={label}>
+        <Text style={[styles.rowMarkText, {color: inverse(textColor)}]}>{letter}</Text>
       </View>
     );
   }
@@ -45,10 +50,10 @@ export default function HighlightMark({on, variant, onPress, disabled, size = 'n
       hitSlop={6}
       accessibilityRole="switch"
       accessibilityState={{checked: on}}
-      accessibilityLabel="Month highlight"
+      accessibilityLabel={label}
       style={[box, {borderColor: textColor}, on && {backgroundColor: textColor}]}>
       <Text style={[size === 'large' ? styles.toggleTextLarge : styles.toggleText, {color: on ? inverse(textColor) : textColor}]}>
-        M
+        {letter}
       </Text>
     </Pressable>
   );

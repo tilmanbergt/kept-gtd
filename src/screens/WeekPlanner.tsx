@@ -14,6 +14,7 @@
  * All state and actions come from screens/usePlanningScreen.ts, which the
  * host screen owns (it also owns loading/refresh) and passes in.
  */
+import {SCHEDULE_LABEL} from '../domain/meetingDisplay';
 import React, {useMemo, useState} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import {Destination} from '../domain/destination';
@@ -44,7 +45,7 @@ const FIXED_INBOX_DESTINATION: Destination = {type: 'inbox'};
 
 type LeftTab = 'meetings' | 'google';
 const LEFT_TABS: MiniTabDef<LeftTab>[] = [
-  {key: 'meetings', label: 'Meetings'},
+  {key: 'meetings', label: SCHEDULE_LABEL},
   {key: 'google', label: 'Google'},
 ];
 type DayTab = 'meetings' | 'google';
@@ -132,7 +133,7 @@ export default function WeekPlanner({
   };
 
   const dayTabs: MiniTabDef<DayTab>[] = [
-    {key: 'meetings', label: `Meetings (${dayRows.length})`},
+    {key: 'meetings', label: `${SCHEDULE_LABEL} (${dayRows.length})`},
     {key: 'google', label: 'Google'},
   ];
 

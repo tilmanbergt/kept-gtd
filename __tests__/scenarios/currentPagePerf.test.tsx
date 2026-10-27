@@ -96,7 +96,7 @@ scenario('An Area page lists its folder only when the Files tab is opened', {fea
   when('I tap Files', () => tap('Files', texts().filter(t => t === 'Files').length - 1));
   then('the folder is listed once and its entries show', () => {
     expect(listings(areaDir('Atruvia'))).toBe(1);
-    expectShows('Meetings');
+    expectShows('Schedule');
   });
 });
 

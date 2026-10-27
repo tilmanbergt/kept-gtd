@@ -11,10 +11,19 @@ or your project/area files are stored.
 ## [Unreleased]
 
 ### New
+- **Focus blocks**: time for yourself with a loop, thread, project or area. Switch on **F** next to
+  **M** in Quick Add's Meeting form (or on a meeting's card); the line gets the tag `#focusblock`,
+  so it stays an ordinary meeting in your files. Focus blocks show a filled **F** wherever meetings
+  show, have no prep/review and no Reflection page, and never appear in "Meetings to close out".
+  Their note follows a Note setup that matches their tags; otherwise the card opens the owner's home
+  notebook instead of creating a note.
 - **Settings → Features**: switch **Project close-out** on or off. Off, a Done project is archived
   directly from its page and from the Weekly Review, without the checklist and the PDF.
 
 ### Changed
+- Lists that hold meetings and focus blocks are called **Schedule**: Week's left tab, the day
+  panel's tab, a project's or area's page and the Inbox. A day's line counts both: "Wed 14.10. ·
+  2 meetings · 1 focus".
 - The **Experimental** switches (Google Calendar, Gmail, Notebook contents) moved from Settings →
   Advanced to the new Settings → Features.
 - Daily opens a little faster the first time.

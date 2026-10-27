@@ -56,6 +56,7 @@
  * piece's own `maxWidthPx` - see domain/pageLayout.ts's `NotePiece`) and
  * the element itself via `supernote/noteElements.ts`'s `buildTextboxElement`.
  */
+import {isFocusBlock} from '../domain/focusBlock';
 import {linkTypeForExtension, notePieceUserData} from '../domain/meetingNoteBlock';
 import {itemDateKeyword, staleManagedNums} from '../domain/noteFindability';
 import {isMeetingAutoUpdateFrozen, todayIso} from '../domain/meetingTime';
@@ -70,7 +71,7 @@ import {
   renderPieceText,
 } from '../domain/pageLayout';
 import {homePageContext} from '../domain/homeNotebook';
-import {layoutFor} from '../domain/noteSetups';
+import {focusBlockNoteTarget, layoutFor} from '../domain/noteSetups';
 import {NoteCreateConfirm, NoteCreationPlan} from '../domain/noteCreationPlan';
 import {joinNotePath, meetingPageKeyword, parseSharedNoteAnchor, todoPageKeyword} from '../domain/sharedNotePages';
 import {DEFAULT_SETTINGS, GtdParaSettings, NoteHeadingStyle, ResolvedParaPaths, resolvePaths} from '../domain/settings';
@@ -658,6 +659,9 @@ export async function ensureMeetingNote(
  * changed) alongside `changed`; the caller persists when `changed`.
  * `cancelled` is true (and `changed` false) when the user tapped ✕.
  */
+/** Why a focus block's note icon created nothing. */
+export const FOCUS_BLOCK_NO_NOTE = 'A focus block gets a note only from a Note setup that matches its tags. Its card opens the home notebook instead.';
+
 export async function openOrCreateMeetingNote(
   meeting: Meeting,
   itemPath: string,
@@ -665,6 +669,11 @@ export async function openOrCreateMeetingNote(
   inbox: MeetingNoteInboxInput | null,
   options: OpenOrCreateNoteOptions = {},
 ): Promise<{meeting: Meeting; changed: boolean; cancelled: boolean; outcome: OpenOrCreateNoteOutcome | null}> {
+  // A focus block gets its first note only where a setup places it (docs/dev/history/technical-design-time-and-place.md §3.1).
+  if (isFocusBlock(meeting) && !meeting.notePath) {
+    const inboxItem = itemPath.replace(/\/+$/, '') === resolvePaths(settings).inboxFolder.replace(/\/+$/, '');
+    if (focusBlockNoteTarget(meeting, settings.noteSetups, inboxItem) !== 'meeting') throw new Error(FOCUS_BLOCK_NO_NOTE);
+  }
   const ensured = await ensureMeetingNote(meeting, itemPath, settings, inbox, options);
   if (!ensured) return {meeting, changed: false, cancelled: true, outcome: null};
   const {anchor} = ensured;

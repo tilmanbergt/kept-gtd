@@ -6,6 +6,7 @@
  * (domain/ convention).
  */
 import {formatTime} from './dateFormat';
+import {isFocusBlock} from './focusBlock';
 import {meetingDatePrefix} from './meetingTime';
 import {MeetingSpanDay, withSpanArrows} from './meetingSpan';
 import {meetingDisplayTitle} from './meetingTracking';
@@ -28,6 +29,22 @@ export interface MeetingTimeCell {
 }
 
 export const ALL_DAY_LABEL = 'all day';
+
+/**
+ * The label of every list that holds meetings and focus blocks (D10, §9.5):
+ * Week's left mini-tab, the day panel's tab, a Project's/Area's and the
+ * Inbox's meeting lists.
+ */
+export const SCHEDULE_LABEL = 'Schedule';
+
+/** A day's count line after its date: "2 meetings", "6 meetings · 3 focus", "1 focus". */
+export function scheduleCountText(entries: ReadonlyArray<{meeting: Pick<Meeting, 'tags'>}>): string {
+  const focus = entries.filter(e => isFocusBlock(e.meeting)).length;
+  const meetings = entries.length - focus;
+  const meetingText = `${meetings} meeting${meetings === 1 ? '' : 's'}`;
+  if (focus === 0) return meetingText;
+  return meetings === 0 ? `${focus} focus` : `${meetingText} · ${focus} focus`;
+}
 const TODAY_LABEL = 'today';
 
 type TimeFields = Pick<Meeting, 'date' | 'time' | 'endTime'>;

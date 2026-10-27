@@ -13,6 +13,7 @@
  * - `meetingsOnDay`: EVERY meeting (highlighted or not) covering one date -
  *   the Month view's day panel, where highlights are picked.
  */
+import {isFocusBlock} from '../domain/focusBlock';
 import {entriesInRange, SpanPart, spanDayOn, spanScanStart} from '../domain/meetingSpan';
 import {meetingTimestampMs} from '../domain/meetingTime';
 import {isHighlight, monthLabel} from '../domain/monthHighlight';
@@ -44,6 +45,8 @@ export interface MonthDay {
   /** ISO week number, set on Mondays only (the Month view's week rule label). */
   isoWeek: number | null;
   highlights: MonthDayEntry[];
+  /** Focus blocks covering the day (docs/dev/history/technical-design-time-and-place.md §3.1): the row's F / F2 mark. */
+  focusBlocks: number;
 }
 
 export interface MonthlyAggregate {
@@ -103,9 +106,9 @@ function buildMonthlyAggregateImpl(
   // Candidates: highlights that start inside the month, or up to
   // MAX_MEETING_DAYS before it (a long run spilling into the month).
   const earliest = spanScanStart(period.start);
-  const highlights = allMeetingEntries(items, inbox, inboxPath).filter(
-    e => isHighlight(e.meeting) && e.meeting.date >= earliest && e.meeting.date <= period.end,
-  );
+  const inRange = allMeetingEntries(items, inbox, inboxPath).filter(e => e.meeting.date >= earliest && e.meeting.date <= period.end);
+  const highlights = inRange.filter(e => isHighlight(e.meeting));
+  const blocks = inRange.filter(e => isFocusBlock(e.meeting));
 
   const days: MonthDay[] = [];
   const touched = new Set<WeeklyMeetingEntry>();
@@ -120,7 +123,8 @@ function buildMonthlyAggregateImpl(
       dayEntries.push({entry: e, label: monthLabel(e.meeting), part: span.part, dayNumber: span.dayNumber, dayCount: span.dayCount});
     }
     dayEntries.sort((a, b) => byDayOrder(a.entry, b.entry));
-    days.push({date, weekday, isoWeek: weekday === 0 ? isoWeekNumberOf(date) : null, highlights: dayEntries});
+    const focusBlocks = blocks.filter(e => spanDayOn(e.meeting, date) !== null).length;
+    days.push({date, weekday, isoWeek: weekday === 0 ? isoWeekNumberOf(date) : null, highlights: dayEntries, focusBlocks});
   }
 
   return {

@@ -5,6 +5,7 @@
  * and Files pane (link a file, pick a filing target) as the Inbox tab.
  * Past meetings in the Inbox are left out: they can't be prepared for any more.
  */
+import {SCHEDULE_LABEL} from '../../../domain/meetingDisplay';
 import React, {useEffect, useState} from 'react';
 import {Text, View} from 'react-native';
 import {AbbrevFileMatch} from '../../../domain/abbrev';
@@ -471,7 +472,7 @@ return (
       <MeetingList
         listId="reviewInbox"
         defaultLayout="oneLine"
-        header="Meetings"
+        header={SCHEDULE_LABEL}
         rows={inboxOpenMeetings}
         renderRow={({meeting, meetingIndex}, layout) => (
           <MeetingRow

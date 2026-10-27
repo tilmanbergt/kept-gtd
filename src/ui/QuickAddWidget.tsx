@@ -281,7 +281,7 @@ function QuickAddWidget(props: Props): React.JSX.Element {
       setError(null);
     },
     seed: fields => {
-      if (!taskOnly) meeting.showDraft({title: fields.title, date: fields.date, time: formatMeetingWhen(fields), monthly: false}, null);
+      if (!taskOnly) meeting.showDraft({title: fields.title, date: fields.date, time: formatMeetingWhen(fields), monthly: false, focusBlock: fields.focusBlock === true}, null);
     },
   });
 
@@ -342,7 +342,7 @@ function QuickAddWidget(props: Props): React.JSX.Element {
       draftTitle = insertTagAtPosition(displayTitle, origin.abbrev, null).text;
     }
     meeting.showDraft(
-      {title: draftTitle, date: fields.date, time: fields.time, monthly: false},
+      {title: draftTitle, date: fields.date, time: fields.time, monthly: false, focusBlock: false},
       `Copied "${truncateItemName(displayTitle, 16)}" - adjust, then Add`,
     );
     onCancelEdit();
@@ -350,10 +350,13 @@ function QuickAddWidget(props: Props): React.JSX.Element {
 
   const buttonMark = useQuickAddStatus(core, task, meeting, note, agreement);
 
-  // The "M" box left of + Add (meeting tab only) - see ui/HighlightMark.tsx.
+  // The "M" and "F" boxes left of + Add (meeting tab only) - see ui/HighlightMark.tsx.
   const monthlyToggle =
     displayType === 'meeting' ? (
-      <HighlightMark on={meeting.fields.monthly} variant="toggle" onPress={meeting.toggleMonthly} disabled={pending} textColor={textColor} />
+      <>
+        <HighlightMark on={meeting.fields.monthly} variant="toggle" onPress={meeting.toggleMonthly} disabled={pending} textColor={textColor} />
+        <HighlightMark on={meeting.fields.focusBlock} letter="F" variant="toggle" onPress={meeting.toggleFocusBlock} disabled={pending} textColor={textColor} />
+      </>
     ) : null;
   const loopMode = task.loopMode;
   // A recognized abbreviation tag while editing: Save files the item there

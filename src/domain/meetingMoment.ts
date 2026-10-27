@@ -69,6 +69,8 @@ export interface StripInput {
   nextNeeded: boolean;
   /** Engage is open on the meeting's Reflection page: Reflect is not offered. */
   onReflectionPage: boolean;
+  /** A focus block gets no Reflection page (docs/dev/history/technical-design-time-and-place.md §3.1). */
+  focusBlock?: boolean;
 }
 
 /** The strip's buttons for `moment`, in R4's order, at most three; [] = no row. */
@@ -86,7 +88,7 @@ export function stripActions(moment: MeetingMoment, input: StripInput): StripAct
       add('nextMeeting', input.nextNeeded);
       break;
     case 'after':
-      add('reflect', !input.onReflectionPage);
+      add('reflect', !input.onReflectionPage && !input.focusBlock);
       add('markReviewed', input.tracksReview && !input.reviewed);
       add('nextMeeting', input.nextNeeded);
       break;

@@ -138,7 +138,7 @@ export function isSomedayMaybe(task: Pick<Task, 'flowState'>): boolean {
  * show up as a tappable filter tag and a suggestion chip).
  */
 // 'monthly' = the Month view's meeting highlight flag (docs/dev/history/technical-design-monthly-view.md §2.4).
-export const RESERVED_BARE_TAGS: readonly string[] = ['next', 'someday', 'maybe', 'now', 'prepped', 'reviewed', 'monthly'];
+export const RESERVED_BARE_TAGS: readonly string[] = ['next', 'someday', 'maybe', 'now', 'prepped', 'reviewed', 'monthly', 'focusblock'];
 
 /**
  * Whether `tags` (already-extracted, lowercased - see domain/markdown.ts's

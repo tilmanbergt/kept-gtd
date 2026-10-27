@@ -124,6 +124,8 @@ export interface MeetingDraft {
   time: string;
   /** The "M" toggle (docs/dev/history/technical-design-monthly-view.md §5.1) - composed into the title as `#monthly` on submit, never shown in the title field. */
   monthly: boolean;
+  /** The "F" toggle (docs/dev/history/technical-design-time-and-place.md §3.1) - composed into the title as `#focusblock` on submit, never shown in the title field. */
+  focusBlock: boolean;
 }
 
 /** An agreement being added: its words (tags inline) and its valid-till date. */
@@ -144,7 +146,7 @@ export function makeTaskDraft(): TaskDraft {
 export function makeMeetingDraft(initialDate?: string, initialMonthly = false): MeetingDraft {
   // Time starts EMPTY (most meetings get a time); a blank field is saved as
   // 1d.
-  return {title: '', date: initialDate ?? todayIso(), time: '', monthly: initialMonthly};
+  return {title: '', date: initialDate ?? todayIso(), time: '', monthly: initialMonthly, focusBlock: false};
 }
 
 export function makeNoteDraft(): NoteDraft {

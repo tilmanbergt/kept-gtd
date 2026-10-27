@@ -82,6 +82,7 @@
  * sections) into its `editingTask`/`editingMeeting` mode instead of an
  * inline row form.
  */
+import {SCHEDULE_LABEL} from '../domain/meetingDisplay';
 import React, {useCallback, useEffect, useState} from 'react';
 import {ActivityIndicator, Keyboard, Pressable, StyleSheet, Text, View} from 'react-native';
 import {AbbrevFileMatch} from '../domain/abbrev';
@@ -160,7 +161,7 @@ const FIXED_INBOX_DESTINATION: Destination = {type: 'inbox'};
 
 type MeetingsMainTab = 'meetings' | 'google';
 const MEETINGS_MAIN_TABS: MiniTabDef<MeetingsMainTab>[] = [
-  {key: 'meetings', label: 'Meetings'},
+  {key: 'meetings', label: SCHEDULE_LABEL},
   {key: 'google', label: 'Google'},
 ];
 
@@ -840,7 +841,7 @@ export default function InboxScreen({
             <View style={{flex: MEETINGS_WEIGHT}}>
             <View style={styles.stackedSection}>
               {/* No standalone "Meetings" label - PagedSection's own
-                  `header="Meetings"` below already says it, on the list
+                  `header={SCHEDULE_LABEL}` below already says it, on the list
                   itself (same as screens/WeekView.tsx's Meetings column). */}
               <MiniTabs
                 tabs={mainTabs.tabs}
@@ -858,7 +859,7 @@ export default function InboxScreen({
                   <MeetingList
                     listId="inbox"
                     defaultLayout="oneLine"
-                    header="Meetings"
+                    header={SCHEDULE_LABEL}
                     rows={meetingRows}
                     renderRow={(row, layout) => (
                       <MeetingRow

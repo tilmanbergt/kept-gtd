@@ -421,3 +421,28 @@ tests were deleted with its code, lower that baseline by hand in S6 with the rea
 - Scenarios: Daily slim T1, T3 (focus session with two Inbox todos; removed with focus mode in S5), T4, T5
   (`__tests__/scenarios/dailySlim.test.tsx`), T10-T12 (`features.test.tsx`); unit U1-U3 (`taskRowLayout.test.ts`),
   U4 (`features.test.ts`). T2, T6-T9 and U5-U7 tested the focus-mode switch, which this release does not build.
+
+### S1 - Focus blocks
+
+- As designed: `domain/focusBlock.ts`, `focusblock` in `RESERVED_BARE_TAGS` (no tag filter word, no
+  abbreviation), stripped by `meetingDisplayTitle`, `tracksCheckpoint` false, `reflectionOffered` false (it now
+  takes the tags; `meetingPhase` reads the time itself so a focus block still turns "over"), Engage's strip offers no
+  Reflect (`StripInput.focusBlock`).
+- Card: `MeetingCardModel.focusBlock`, heading "Focus · …". The R1 link stays the thread-tag link (it already opens
+  the loop overview for a loop tag); for a focus block whose tag's type is a Loop setup kind it reads
+  "writing novel ›". The card also got an **F** toggle next to **M** (acts at once, like M), so a copied Google
+  event can be made a focus block from its card; `onFocusBlock` is optional in `MeetingCardData`.
+- Note rule: `focusBlockNoteTarget(meeting, setups, inbox)` in `domain/noteSetups.ts` (`meeting` | `home` |
+  `none`). Applied in three places: the card (`note: 'home'` opens the home notebook through
+  `useHomeNotebookTap`; without a Default notebook or in the Inbox no note button), the row (`MeetingRow` hides
+  +📓 for a focus block no setup places), and `openOrCreateMeetingNote` (throws `FOCUS_BLOCK_NO_NOTE`), so no
+  path creates a Default note for a focus block.
+- Quick Add: the F box is `ui/HighlightMark.tsx` with `letter="F"`; `MeetingDraft`/`MeetingEditFields` carry
+  `focusBlock`, folded in by `compose` like `monthly`. `MeetingSeedFields.focusBlock` (optional) is there for S4's
+  "+ F block".
+- Marks: `MeetingRow` puts a filled F before the title (both layouts), `MeetingChip` a bold "F ", the Month row an
+  "F"/"F<n>" column (`MonthDay.focusBlocks`).
+- Schedule: `SCHEDULE_LABEL` and `scheduleCountText` in `domain/meetingDisplay.ts`; also the Review Inbox step's
+  meeting list (it is an Inbox meeting list). Changed tests: `currentPagePerf`, `currentThreadsTab` and the
+  current-page golden file look for "Schedule" instead of "Meetings" (the golden also gains the F box).
+

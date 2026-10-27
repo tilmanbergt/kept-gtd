@@ -18,6 +18,7 @@
  * meetings, so a line is exactly one meeting). Pure, zero RN/SDK imports
  * (design-overview.md §3).
  */
+import {FOCUS_BLOCK_TAG, isFocusBlock} from './focusBlock';
 import {hasBareTag, setBareTag, stripBareTags} from './flowState';
 import {deriveMeetingFields} from './markdown';
 import {isoDateOffset, meetingAutoUpdateCutoffMs} from './meetingTime';
@@ -76,7 +77,8 @@ export function resolveMeetingTracking(
  * cancelled meeting.
  */
 export function tracksCheckpoint(meeting: Pick<Meeting, 'tags' | 'cancelled'>, config: NoteSetupConfig, kind: MeetingTrackingKind): boolean {
-  if (meeting.cancelled) return false;
+  // A focus block is time for yourself: never prepared, never reviewed (D8).
+  if (meeting.cancelled || isFocusBlock(meeting)) return false;
   return matchingTracking(meeting.tags, config).some(t => (kind === 'prep' ? t.trackPrep : t.trackReview));
 }
 
@@ -147,8 +149,8 @@ export function toggleMeetingTrackingAt<T extends Pick<Meeting, 'title' | 'tags'
 export function meetingDisplayTitle(meeting: Pick<Meeting, 'title'>): string {
   // `#monthly` (the Month view's highlight flag, docs/dev/technical-design-
   // monthly-view.md §2.4) is machine-managed the same way and shown as the
-  // row's small "M" mark instead of as text.
-  return stripBareTags(meeting.title, [TRACKING_TAG.prep, TRACKING_TAG.review, 'monthly']);
+  // row's small "M" mark instead of as text; `#focusblock` as the F mark.
+  return stripBareTags(meeting.title, [TRACKING_TAG.prep, TRACKING_TAG.review, 'monthly', FOCUS_BLOCK_TAG]);
 }
 
 /**

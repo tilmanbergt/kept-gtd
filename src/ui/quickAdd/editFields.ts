@@ -6,6 +6,7 @@
  */
 import {Agreement} from '../../domain/agreements';
 import {formatMeetingWhen} from '../../domain/meetingTime';
+import {isFocusBlock, setFocusBlock} from '../../domain/focusBlock';
 import {isHighlight, setHighlight} from '../../domain/monthHighlight';
 import {stripTrackingTags} from '../../domain/meetingTracking';
 import {FlowState, Meeting, Task} from '../../domain/types';
@@ -24,6 +25,7 @@ export interface MeetingEditFields {
   date: string;
   time: string;
   monthly: boolean;
+  focusBlock: boolean;
   linkedFile: string;
 }
 
@@ -63,12 +65,13 @@ export function loadEditFields(editingTask: Task | undefined, editingMeeting: Me
     return {
       kind: 'meeting',
       fields: {
-        // `#monthly` is edited through the M toggle, not as title text; `#prepped`/`#reviewed`
-        // in the list toolbar (docs/dev/history/technical-design-meeting-reflection.md §2.5).
-        title: stripTrackingTags(setHighlight(editingMeeting.title, false)),
+        // `#monthly` and `#focusblock` are edited through the M and F toggles, not as title text;
+        // `#prepped`/`#reviewed` on the card (docs/dev/history/technical-design-meeting-reflection.md §2.5).
+        title: stripTrackingTags(setFocusBlock(setHighlight(editingMeeting.title, false), false)),
         date: editingMeeting.date,
         time: formatMeetingWhen(editingMeeting),
         monthly: isHighlight(editingMeeting),
+        focusBlock: isFocusBlock(editingMeeting),
         linkedFile: editingMeeting.linkedFile ?? '',
       },
     };
