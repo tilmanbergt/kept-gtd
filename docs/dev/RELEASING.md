@@ -107,8 +107,9 @@ npm run coverage               # everything with coverage: coverage/areas.md and
 ```
 
 - **The release being worked on** is `nextVersion` in `package.json`. Set it when work on the next
-  release starts (after the previous release is published):
-  `npm run next-version -- 0.10.0`.
+  release starts (after the previous release is published): on GitHub with the workflow
+  **next version** (Actions → next version → Run workflow, enter e.g. `0.10.0`; `GITHUB-GUIDE.md`),
+  or locally with `npm run next-version -- 0.10.0`, commit and push.
 - **Labels** say which release a build belongs to: `0.9.0-alpha+a1b2c3d` while the release is
   being built (spikes included), `0.9.0-beta+a1b2c3d` for the final device test, `0.9.0` for the
   release itself. `.dirty` at the end means the build contains uncommitted changes. Without a
@@ -241,7 +242,8 @@ CHANGELOG line under Fixed) followed by `./scripts/release.ps1 -Bump patch`.
   `docs/dev/inkhub-listing.md`. If permissions changed, update the description's permission
   paragraph and `docs/inkhub-review.md` first.
 - The next work starts with an empty `## [Unreleased]` section - the script leaves it ready.
-  Set the next release with `npm run next-version -- x.y.z` so test builds carry its name.
+  Set the next release with the workflow **next version** (or `npm run next-version -- x.y.z`) so
+  test builds carry its name.
 - Triage new issues: `needs-info` (version or log missing), `confirmed` (reproduced, ideally in
   the demo space), `experimental` (Google Calendar / Gmail). Fixes reference the issue
   (`Fixes #12`).
