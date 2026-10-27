@@ -127,7 +127,7 @@ update this document in the same commit and note it under "As built".
 | Release "Prepare" (RELEASING §5.1) | **quick**, plus: CI for `origin/main` is green (looked up with `gh run list`; if `gh` isn't available, the script says so and asks) |
 | `release.ps1 -DryRun` | **quick** (shows what would happen) |
 | `release.ps1` | **full + coverage, once, after the version is stamped**. Red stops the release with the undo hints; the "Continue anyway?" prompt is removed (R1) |
-| CI on the release tag | skipped (`tags-ignore: ['**']`); the release commit on `main` runs as every push does |
+| CI on the release tag | skipped (`on: push: branches: ['**']`, see As built T4); the release commit on `main` runs as every push does |
 
 The rule written into DEVELOPMENT-POLICY §7/§9: "Every check and every test runs green on the exact release
 commit (`release.ps1`) and on every push (CI). Other moments run the smallest tier that covers the change."
@@ -256,7 +256,7 @@ Notes:
 | `test-helpers/scenario/clock.ts` (new), `smokeSpace.ts` (new) | fixed clock, smoke data set |
 | `__tests__/scenarios/smoke/*.test.tsx` (new) | §3.4 scenarios 1-10, plus the moved Engage and lasso scenario |
 | `__tests__/scenarios/{engageMoment,pageSection,threadsBigArea}.test.tsx` | use `fixedClock` |
-| `.github/workflows/check.yml` | `tags-ignore`, `npm run coverage`, job summary, artifact |
+| `.github/workflows/check.yml` | branch pushes only (no tags), `npm run coverage`, job summary, artifact |
 | `scripts/release.ps1` | DryRun → quick; real run → full + coverage once; no "continue anyway"; copy the matrix into the release commit |
 | `buildPlugin.ps1` | `-Check` runs `--smoke` |
 | `docs/dev/DEVELOPMENT-POLICY.md` §7, §8, §9 | the rule of §3.3; the tiers; smoke must stay ≤ 60 s; new tests belong to an area |
@@ -442,6 +442,9 @@ checklist).
   under `__tests__/scenarios/`); they are equal today, one test per scenario. Areas are named with their id.
 - `scripts/coverage-baseline.json` is `{"about": …, "areas": {id: {lines, branches}}}`, one decimal, from the run
   below. An area with no baseline is not checked; `--update-baseline` adds it.
+- CI skips tags with `on: push: branches: ['**']`, not the `tags-ignore` of §3.3: GitHub runs a push workflow
+  that has only a tag filter for no branch push either, so `tags-ignore` alone stopped every CI run (the T4 and T5
+  pushes started none).
 - CI runs `npm run coverage` (timeout 20 min), appends `coverage/areas.md` to the job summary (also when a check
   failed, saying so when there is no table) and uploads `coverage/` as the artifact "coverage" for 14 days.
 - Measured on `feature/test-tiers` after T3 (4-core container), the baseline:

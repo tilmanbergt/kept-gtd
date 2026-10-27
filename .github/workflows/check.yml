@@ -5,7 +5,9 @@ name: check
 
 on:
   push:
-    tags-ignore: ['**']
+    # Branches only: with a branch filter and no tag filter, a pushed tag starts no run. (A tag filter
+    # alone, like tags-ignore, would switch off branch pushes too.)
+    branches: ['**']
   pull_request:
 
 permissions:
