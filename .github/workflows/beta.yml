@@ -1,0 +1,85 @@
+# A beta pre-release, started by hand: Actions -> beta -> Run workflow (branch main).
+# Builds main with -Stage beta and publishes it as GitHub pre-release v<nextVersion>-beta.<n> with the
+# .snplg and CHANGELOG [Unreleased] (docs/dev/RELEASING.md §4 "Betas", docs/dev/history/technical-design-ci-builds.md §2.2).
+# Pre-releases never become the "Latest" release.
+name: beta
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# One beta at a time, so two runs can't pick the same number.
+concurrency:
+  group: beta
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Only from main
+        if: github.ref != 'refs/heads/main'
+        run: |
+          echo "::error::Betas are built from main only - this run is on ${{ github.ref_name }}."
+          exit 1
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npm run check
+
+  beta:
+    needs: check
+    runs-on: windows-latest
+    timeout-minutes: 45
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: gradle
+      - run: npm ci --no-audit --no-fund
+      - name: Which beta
+        id: beta
+        run: node scripts/ci-build.mjs next-beta
+      - name: Build the plugin
+        shell: powershell
+        run: ./buildPlugin.ps1 -Stage beta
+      - name: Check the build
+        id: verify
+        run: node scripts/ci-build.mjs verify --beta
+      - name: Test notes (TESTING.md, since the last release)
+        id: notes
+        continue-on-error: true
+        run: node scripts/test-notes.mjs --out build/outputs/TESTING.md --branch main --label "${{ steps.verify.outputs.label }}"
+      - name: Release text
+        run: node scripts/ci-build.mjs notes ${{ github.sha }} build/beta-notes.md "${{ steps.notes.outputs.areas }}"
+      - name: Stop the Gradle daemon
+        # Lets the Gradle cache be saved: a running daemon locks files, and tar then fails on Windows.
+        if: always()
+        shell: powershell
+        run: if (Test-Path android\gradlew.bat) { & android\gradlew.bat -p android --stop }
+      - name: Publish the pre-release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >
+          gh release create "${{ steps.beta.outputs.tag }}" "${{ steps.verify.outputs.snplg }}"
+          $(test -f build/outputs/TESTING.md && echo build/outputs/TESTING.md)
+          --prerelease --target "${{ github.sha }}"
+          --title "${{ steps.beta.outputs.title }}"
+          --notes-file build/beta-notes.md

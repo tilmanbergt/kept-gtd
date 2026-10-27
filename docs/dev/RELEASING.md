@@ -61,6 +61,24 @@ git push origin --delete feature/<short-name> # only if the branch was pushed
 - **Message**: short imperative subject (max ~70 characters), e.g.
   `Fix clipped badge row on Daily`, then an empty line and details if useful. Reference issues
   with `Fixes #12` - GitHub closes the issue when it reaches `main`.
+- **"Device test:" block** at the end of the message, for every commit with an effect on the
+  device: from the line `Device test:` to the end, as many lines as needed - numbered steps,
+  expected results after `→`, setup if needed. Nothing to test: `Device test: none - <reason>`.
+  The CI build collects these blocks into its `TESTING.md` (§4); a commit without one is flagged
+  there.
+
+  ```
+  Show day panel when tapping a Week meeting chip
+
+  The chip now opens the same panel as the day header.
+
+  Device test:
+  1. Open Week, tap a meeting chip on a day with 3+ meetings.
+     → Day panel opens on that day, the tapped meeting is marked.
+  2. Regression: long-press on a chip does nothing anymore.
+  ```
+
+  A message with a body is easiest to commit from a file: `git commit -F msg.txt`.
 - **Never commit**: `build/`, `src/generated/`, `*.snplg`, `node_modules/`, logs, debug bundles,
   personal data or secrets. `.gitignore` covers the usual ones - still look at
   `git status --short` before every commit.
@@ -104,6 +122,47 @@ npm run coverage               # everything with coverage: coverage/areas.md and
   loaded" message appears, tap **Restart**.
 - After changing `CHANGELOG.md` or `docs/user/` without building, `npm run gen` refreshes
   `src/generated/` for tests and type checks.
+
+### Test builds from GitHub
+
+Every push to any branch builds the plugin on GitHub too, once the checks of that push passed
+(job "build" in `.github/workflows/check.yml`, about 15 minutes after the push). The `.snplg` is
+labelled like a local build (`0.9.0-alpha+a1b2c3d`) and kept for 30 days:
+
+1. GitHub → **Actions** → the run of the push (branch and commit message are shown).
+2. The run's summary page shows **what to test** (see below).
+3. At the bottom under **Artifacts**: `kept-gtd-<label>` - download, unzip. It holds the `.snplg`
+   and the same notes as `TESTING.md`.
+4. Install the `.snplg` over the existing plugin, as above.
+
+`TESTING.md` (`scripts/test-notes.mjs`) compares a feature branch with `main` (the merge base) and
+`main` with the last release, and lists: the "Device test:" blocks of the commits, newest first,
+those of the newest push marked **NEW** and commits without a block flagged; the feature areas the
+changed files belong to (`scripts/test-areas.json`); the new lines of CHANGELOG `[Unreleased]`; and
+the scenarios added, changed or removed in `docs/dev/test-scenarios.md` - what is already tested
+off-device. `npm run test-notes` writes the same to `build/TESTING.md` for a local build.
+
+A newer push to the same branch cancels a build that is still running. GitHub and local builds
+replace each other on the device (same plugin, same signing key). A local build is only needed
+for something not pushed yet. `release.ps1` waits for the whole run, the build included: a
+failing build stops a release like a failing check.
+
+### Betas
+
+A beta is a test version of the release being worked on (`nextVersion`) that anyone can install.
+Make one when that release is feature-complete on `main`, before the release itself:
+
+1. `CHANGELOG.md` `[Unreleased]` reads well for testers (it becomes the beta's text) and is pushed.
+2. GitHub → **Actions** → **beta** → **Run workflow**, branch `main` → **Run workflow**
+   (works from the phone too).
+3. About 20 minutes later the Releases page has the **pre-release** "Kept GTD 0.9.0 beta 1" (tag
+   `v0.9.0-beta.1`) with the `.snplg`, labelled `0.9.0-beta+a1b2c3d`, and `TESTING.md` since the
+   last release; its text names the feature areas to look at. The next run makes beta 2.
+
+The workflow refuses to run on another branch, without a `nextVersion` above the current version,
+with an empty `[Unreleased]`, or when the build has uncommitted changes. Pre-releases never become
+the "Latest" release, so users who don't look for them don't see them. They stay on the Releases
+page after the release; delete one there (and its tag) if it was a mistake.
 
 ## 5. Releases
 
@@ -195,7 +254,8 @@ guide** for what to do next to keep the code base consistent. It covers, as far 
 1. **Where we are**: which branch, what changed, what was verified off-device and what still
    needs the device.
 2. **Commit**: `git status --short` to look at, then `git add` / `git commit` with a ready
-   message (and on which branch).
+   message (and on which branch). The message ends with its "Device test:" block (§3); a message
+   with a body comes as a file for `git commit -F`.
 3. **Build and test**: whether a build is needed now, the command, what exactly to check on the
    device.
 4. **Push / merge**: whether to push, whether the feature branch is ready to merge (with the
