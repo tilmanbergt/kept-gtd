@@ -86,3 +86,22 @@ scenario('Engage fallback: on a note without owner, Engage lists the owners of t
   });
   and('nothing was logged as an error', () => expect(loggedErrors()).toEqual([]));
 });
+
+scenario('Month: a focus block shows with its name and F only when marked M', {feature: 'Week and Month', design: DESIGN}, () => {
+  given('area Writing with the focus block "Chapter one" on 15.10. marked M and "Chapter two" on 16.10. without M', () => {
+    smokeClock();
+    putFile(
+      areaFile('Writing'),
+      dataFile('area', {Scope: [], Tasks: [], Meetings: ['- 2026-10-15 09:00-11:00 Chapter one #focusblock #monthly', '- 2026-10-16 09:00-11:00 Chapter two #focusblock']}),
+    );
+  });
+  when('I open Month', async () => {
+    await openApp();
+    await tapTab('Month');
+  });
+  then('the 15th shows "Chapter one" and F; the 16th shows nothing', () => {
+    expect(textsBetween(/^Th 15/, /^Fr 16/)).toEqual(expect.arrayContaining(['Chapter one', 'F']));
+    expect(textsBetween(/^Fr 16/, /^Sa 17/).filter(t => t !== '')).toEqual([]);
+    expect(loggedErrors()).toEqual([]);
+  });
+});

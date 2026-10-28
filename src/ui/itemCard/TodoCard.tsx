@@ -2,7 +2,7 @@
  * The todo card (docs/dev/history/technical-design-item-card.md K9): in
  * Quick Add's place after one tap on a todo, the same four rows as the box.
  *   R1 "Todo · <due / waiting / …>", "↳ <meeting> ›" when it was agreed in one, ✕, Edit
- *   R2 the title and its labels
+ *   R2 the title (a tap edits, like Edit) and its labels
  *   R3 done, the flow chips (w/f · Maybe · Someday · Next) and Now, the note
  *   R4 the area chip (name opens it, arrow refiles), the linked file or +clip, delete
  * Every button acts at once; what shows is decided in domain/itemCard.ts.
@@ -34,7 +34,12 @@ export default function TodoCard({card, textColor, borderColor}: Props): React.J
       />
 
       <View style={[cardStyles.row, cardStyles.row2]}>
-        <Text style={[cardStyles.title, {color: textColor}, (model.done || !model.canDelete) && cardStyles.struck]} numberOfLines={1}>
+        <Text
+          style={[cardStyles.title, {color: textColor}, (model.done || !model.canDelete) && cardStyles.struck]}
+          numberOfLines={1}
+          onPress={card.onEdit}
+          accessibilityRole="button"
+          accessibilityHint="Edit">
           {model.title}
         </Text>
         {model.labels.length > 0 ? (

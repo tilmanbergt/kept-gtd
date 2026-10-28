@@ -80,7 +80,7 @@ function panelTodos(context: MeetingContextData): OwnerTodoRef[] {
   const model = context.model;
   if (!model) return [];
   const agreed = (model.agreed?.group.rows ?? []).flatMap(row => (row.kind === 'todo' ? [row.todo] : []));
-  return [...model.owe, ...model.next, ...model.waiting, ...agreed];
+  return [...model.owe, ...model.next, ...model.planned, ...model.waiting, ...agreed];
 }
 
 export function useMeetingContextSlot(

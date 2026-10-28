@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-126 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+129 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -263,6 +263,24 @@ Test: `__tests__/scenarios/meetingContext.test.tsx`
 - **Given** the thread meeting "1:1 Mieke" today at 15:00
 - **When** I tap the meeting, then ✕ Close next to Overview ›
 - **Then** the card and the panel are gone; Next todos shows
+
+Test: `__tests__/scenarios/meetingContext.test.tsx`
+
+### The panel gives the full context: Next, Planned and a Waiting for dated later, which Daily leaves out
+
+- **Given** the thread meeting "1:1 Mieke" today, an agenda point without a flow state and a Waiting for due on 30.10.
+- **When** I open Daily
+- **Then** Next todos lists neither the agenda point nor the later Waiting for
+- **When** I tap the meeting
+- **Then** the panel lists Next, Planned and Waiting for
+
+Test: `__tests__/scenarios/meetingContext.test.tsx`
+
+### Tapping the title on a card opens its edit form, like Edit
+
+- **Given** the thread meeting "1:1 Mieke" today with "Send the slides" owed
+- **When** I tap "Send the slides" in the panel, then the title on its card
+- **Then** the todo's edit form shows with Save
 
 Test: `__tests__/scenarios/meetingContext.test.tsx`
 
@@ -1166,6 +1184,14 @@ Test: `__tests__/scenarios/threadsBigArea.test.tsx` · design: `docs/dev/history
 
 ## Week and Month
 
+### Month: a focus block shows with its name and F only when marked M
+
+- **Given** area Writing with the focus block "Chapter one" on 15.10. marked M and "Chapter two" on 16.10. without M
+- **When** I open Month
+- **Then** the 15th shows "Chapter one" and F; the 16th shows nothing
+
+Test: `__tests__/scenarios/focusBlocks.test.tsx`
+
 ### Given time: areas and projects by time, an all-day event as "1 day", Worked on for todos done
 
 - **Given** on Wednesday 14.10.: Writing with two focus blocks this week, Garden with an all-day delivery, Website with a todo done and nothing scheduled
@@ -1229,7 +1255,7 @@ Test: `__tests__/scenarios/smoke/weekAndMonth.test.tsx`
 
 - **Given** the smoke space on Wednesday 14.10.2026
 - **When** I open Month
-- **Then** the 28th shows "Garden fair", the 15th the F of its focus block, and no other day shows a meeting, since none is a highlight
+- **Then** the 28th shows "Garden fair"; no other day shows a meeting or the F of the focus block on the 15th, since none is a highlight (marked M)
 - **And** Given time counts all of Garden's meetings, highlight or not, and its todo done this month
 - **When** I tap the 14th
 - **Then** the right side lists both meetings of that day

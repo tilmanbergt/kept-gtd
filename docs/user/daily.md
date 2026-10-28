@@ -22,7 +22,7 @@ After a todo's title, short labels show what matters about it: `#next`, `#w/f Le
 
 The left column is the schedule with the tabs **Today** and **Tomorrow** (and **Google** when the Google Calendar integration is on): meetings and focus blocks (see [Meetings](meetings.md)).
 
-Tap a meeting or focus block to see its card in Quick Add's place, and its **context panel** in place of the todos: what you owe, what is next, what you are waiting for and what was agreed last time (see [Meetings](meetings.md)). **+ Quick Add to meeting** at the end of the panel adds a todo to it. Tap it again or **Edit** to change it. Daily has no Files pane, so linking a file happens on the project's page.
+Tap a meeting or focus block to see its card in Quick Add's place, and its **context panel** in place of the todos: what you owe, what is next, what you are waiting for and what was agreed last time (see [Meetings](meetings.md)). **+ Quick Add to meeting** at the end of the panel adds a todo to it. Tap it again, **Edit** or the title on the card to change it. Daily has no Files pane, so linking a file happens on the project's page.
 
 Todos work the same way: a tap shows the todo's card, with done, the flow chips, its note and delete (see [Quick Add](quick-add.md)).
 

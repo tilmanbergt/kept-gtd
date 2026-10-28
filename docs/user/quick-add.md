@@ -67,7 +67,7 @@ The meeting card is described in [Meetings](meetings.md). Cards exist wherever a
 
 ## Editing
 
-**Edit** on the card, or a second tap on the selected row, opens the item in Quick Add. Change what you need, then **Save** - or **Cancel** - at the top right; **Save** brings you back to the card. Only one item is edited at a time: tapping another row saves the open edit first. With an abbreviation tag in the text, **Save** reads **Save to** followed by that project's name: it saves your changes and moves the item there in one step.
+**Edit** on the card, a tap on the card's title, or a second tap on the selected row opens the item in Quick Add. Change what you need, then **Save** - or **Cancel** - at the top right; **Save** brings you back to the card. Only one item is edited at a time: tapping another row saves the open edit first. With an abbreviation tag in the text, **Save** reads **Save to** followed by that project's name: it saves your changes and moves the item there in one step.
 
 ## Notes and files on a todo or meeting
 

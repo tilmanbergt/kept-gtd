@@ -3,7 +3,7 @@
  * Quick Add's place after one tap on a meeting, the same four rows at the
  * same heights (ui/quickAdd/QuickAddFrame.tsx), so nothing below moves.
  *   R1 "Meeting · <phase>", the thread link, ✕, Edit
- *   R2 title (with its tags) and when
+ *   R2 title (with its tags; a tap edits, like Edit) and when
  *   R3 P/R, M, F, note, Reflect (once over), the linked file or +clip (a
  *      focus block: no P/R and no Reflect; its note may be the home notebook)
  *   R4 the area chip (name opens it, arrow refiles), New from this, Cancel meeting
@@ -38,7 +38,12 @@ export default function MeetingCard({card, onNewFromThis, textColor, borderColor
       />
 
       <View style={[cardStyles.row, cardStyles.row2]}>
-        <Text style={[cardStyles.title, {color: textColor}, model.phase === 'cancelled' && cardStyles.struck]} numberOfLines={1}>
+        <Text
+          style={[cardStyles.title, {color: textColor}, model.phase === 'cancelled' && cardStyles.struck]}
+          numberOfLines={1}
+          onPress={card.onEdit}
+          accessibilityRole="button"
+          accessibilityHint="Edit">
           {model.title}
         </Text>
         <View style={cardStyles.spacer} />

@@ -8,6 +8,8 @@
  *   date-only meeting (`3d`) covers every one of its days, including ones
  *   that spill in from a meeting starting before the month (up to
  *   MAX_MEETING_DAYS back) - `part` says where in its run a day sits.
+ *   `focusBlocks` counts the focus blocks among them: only a block marked M
+ *   shows as F (docs/dev/history/technical-design-time-and-place.md §10 C8).
  * - `meetingsOnDay`: EVERY meeting (highlighted or not) covering one date -
  *   the Month view's day panel, where highlights are picked.
  */
@@ -98,7 +100,8 @@ function buildMonthlyAggregateImpl(
   const earliest = spanScanStart(period.start);
   const inRange = allMeetingEntries(items, inbox, inboxPath).filter(e => e.meeting.date >= earliest && e.meeting.date <= period.end);
   const highlights = inRange.filter(e => isHighlight(e.meeting));
-  const blocks = inRange.filter(e => isFocusBlock(e.meeting));
+  // Only a focus block marked M counts for the day's F; the others stay in the day panel and Given time.
+  const blocks = highlights.filter(e => isFocusBlock(e.meeting));
 
   const days: MonthDay[] = [];
   const touched = new Set<WeeklyMeetingEntry>();

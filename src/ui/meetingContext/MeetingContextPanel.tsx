@@ -2,7 +2,7 @@
  * The context panel under a tapped meeting's or focus block's card
  * (docs/dev/history/technical-design-time-and-place.md §3.2, D11-D15), the
  * same on Daily, Week, Month and Review's Week ahead: an optional back row,
- * then one paged list - I owe · Next · Waiting for · Agreed last time / From
+ * then one paged list - I owe · Next · Planned · Waiting for · Agreed last time / From
  * its meetings / Agreed here - whose section captions are rows, so paging
  * stays exact; sections without rows are left out. The header names the owner
  * and opens its overview (thread, loop) or page (Project, Area); its "✕ Close"
@@ -51,9 +51,10 @@ export function panelRowsOf(model: MeetingContextModel): PanelRow[] {
   };
   section('I owe', model.owe);
   section('Next', model.next);
+  section('Planned', model.planned);
   section('Waiting for', model.waiting);
   // A todo already listed above shows once.
-  const listed = new Set([...model.owe, ...model.next, ...model.waiting].map(t => `${t.item.path}#${t.taskIndex}`));
+  const listed = new Set([...model.owe, ...model.next, ...model.planned, ...model.waiting].map(t => `${t.item.path}#${t.taskIndex}`));
   const agreedRows = (model.agreed?.group.rows ?? []).filter(row => row.kind === 'agreement' || !listed.has(`${row.todo.item.path}#${row.todo.taskIndex}`));
   if (model.agreed && agreedRows.length > 0) {
     rows.push({kind: 'caption', text: model.agreed.caption});

@@ -761,7 +761,7 @@ counts the rest per step as "+n in other contexts"; Reviewed and overdue stay gl
 **Focus blocks** (`domain/focusBlock.ts`): a meeting tagged `#focusblock` (the F toggle in Quick
 Add and on the card). No prep/review tracking, no Reflection page, never in "Meetings to close
 out"; its note follows a matching Note setup, else the card opens the owner's home notebook
-(`focusBlockNoteTarget`). Rows show a filled F, chips "F …", the Month row F/F<n>; lists of
+(`focusBlockNoteTarget`). Rows show a filled F, chips "F …", the Month row F/F<n> for the focus blocks marked M (shown by name like any highlight); lists of
 meetings and focus blocks are titled **Schedule** (`domain/meetingDisplay.ts`'s `SCHEDULE_LABEL`,
 `scheduleCountText`).
 

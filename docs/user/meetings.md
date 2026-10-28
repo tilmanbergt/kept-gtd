@@ -6,7 +6,7 @@ A meeting has a date, an optional time or length, and a title that can carry tag
 
 - **Daily**: today and tomorrow
 - **Week**: the week grid; tap a day for the full list
-- **Month**: only monthly highlights (the **M** mark) and an **F** for days with focus blocks; tap a day for all its meetings
+- **Month**: only monthly highlights (the **M** mark); a focus block marked **M** shows with its name and an **F**, the others only in the day's list; tap a day for all its meetings
 - **Current**: all meetings of that project or area, upcoming and past
 
 ## Focus blocks
@@ -23,11 +23,11 @@ A focus block is time you give yourself for a loop, a thread, a project or an ar
 
 Tap a meeting or focus block on Daily, Week or Month: its card shows, and below it the **context panel** with everything around it.
 
-- A thread's meeting: **I owe**, **Next**, **Waiting for** and **Agreed last time**.
-- A loop's meeting or block: what is next and what came out of its meetings.
-- A plain meeting: what is linked to it, or - with nothing linked - its project's or area's next todos ("Nothing linked to this meeting yet · showing its project").
+- A thread's meeting: **I owe**, **Next**, **Planned** (todos without a flow state, such as agenda points), **Waiting for** and **Agreed last time**. The panel lists all of them, also what Daily leaves out - todos without **Next** and Waiting for todos with a later date - so you have the whole context for the session.
+- A loop's meeting or block: what is next and planned, what you wait for and what came out of its meetings.
+- A plain meeting: what is linked to it, or - with nothing linked - its project's or area's next, planned and waiting todos ("Nothing linked to this meeting yet · showing its project").
 
-Tick a todo there, open its note or its file. Tap a todo to see its card in Quick Add's place, tap it again (or **Edit**) to change it; its ✕ and **Save** bring the meeting's card back.
+Tick a todo there, open its note or its file. Tap a todo to see its card in Quick Add's place, tap it again (or **Edit**, or its title on the card) to change it; its ✕ and **Save** bring the meeting's card back.
 
 **+ Quick Add to meeting** (**+ Quick Add to block**) opens Quick Add for it, on the Todo tab; the button says where the todo goes, for example **+ Add to Coaching** - no abbreviation to type. Before the meeting the todo gets the thread's or loop's tag; during and after it also records the meeting, as in [Engage](engage.md). **‹ Back to the card** returns.
 
@@ -39,7 +39,7 @@ On Week the panel has a line on top, for example "‹ Back to Week 42 · Thu 15.
 
 A meeting row shows the time, the title (tap a tag in it as anywhere else), where the meeting lives, a small prep/review mark (see below), the note icon and - only when a file is linked - the clip, which opens that file.
 
-Tap the title, or the small mark, to select the meeting: the row gets a black bar and the meeting's **card** takes Quick Add's place, in the same box. Tap **Edit** on the card - or the row a second time - to change its title, date or time; **Save** brings you back to the card. **✕** closes the card; Quick Add comes back with whatever you had started to type. This works wherever a meeting list has Quick Add: Daily, the day panel of Week and Month, a project's or area's Meetings, the Inbox, the Review's Inbox step and the Ahead list of a thread or loop overview.
+Tap the title, or the small mark, to select the meeting: the row gets a black bar and the meeting's **card** takes Quick Add's place, in the same box. Tap **Edit** or the title on the card - or the row a second time - to change its title, date or time; **Save** brings you back to the card. **✕** closes the card; Quick Add comes back with whatever you had started to type. This works wherever a meeting list has Quick Add: Daily, the day panel of Week and Month, a project's or area's Meetings, the Inbox, the Review's Inbox step and the Ahead list of a thread or loop overview.
 
 The card shows:
 

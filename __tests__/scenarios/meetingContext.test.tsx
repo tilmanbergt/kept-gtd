@@ -180,6 +180,50 @@ scenario('✕ Close in the panel\'s header closes the meeting: Daily shows its n
   });
 });
 
+scenario('The panel gives the full context: Next, Planned and a Waiting for dated later, which Daily leaves out', {feature: 'Daily', design: DESIGN}, () => {
+  given('the thread meeting "1:1 Mieke" today, an agenda point without a flow state and a Waiting for due on 30.10.', () => {
+    smokeClock();
+    putFile(
+      areaFile('Coaching'),
+      dataFile('area', {
+        Scope: [],
+        Tasks: ['- [ ] Read her draft #sparring/mieke #next', '- [ ] Agenda point #sparring/mieke', '- [ ] Her reply #wf/mieke [due:: 2026-10-30]'],
+        Meetings: ['- 2026-10-14 15:00-16:00 1:1 Mieke #sparring/mieke'],
+      }),
+    );
+  });
+  when('I open Daily', openDaily);
+  then('Next todos lists neither the agenda point nor the later Waiting for', () => {
+    expectNotShows(/^Agenda point/);
+    expectNotShows(/^Her reply/);
+  });
+  when('I tap the meeting', () => tap(/^1:1 Mieke/));
+  then('the panel lists Next, Planned and Waiting for', () => {
+    const panel = textsBetween('Thread #sparring/mieke · Coaching', /^\+ Quick Add to meeting/);
+    expect(panel).toEqual(expect.arrayContaining(['Next', 'Planned', 'Waiting for']));
+    expect(panel.indexOf('Next')).toBeLessThan(panel.indexOf('Planned'));
+    expect(panel.some(t => t.startsWith('Agenda point'))).toBe(true);
+    expect(panel.some(t => t.startsWith('Her reply'))).toBe(true);
+  });
+});
+
+scenario('Tapping the title on a card opens its edit form, like Edit', {feature: 'Daily', design: DESIGN}, () => {
+  given('the thread meeting "1:1 Mieke" today with "Send the slides" owed', () => {
+    smokeClock();
+    coaching(['- 2026-10-14 15:00-16:00 1:1 Mieke #sparring/mieke']);
+  });
+  when('I tap "Send the slides" in the panel, then the title on its card', async () => {
+    await openDaily();
+    await tap(/^1:1 Mieke/);
+    await tap(/^Send the slides/);
+    await tap(/^Send the slides/);
+  });
+  then('the todo\'s edit form shows with Save', () => {
+    expectShows('Save');
+    expect(readTexts()).not.toContain('Todo · open');
+  });
+});
+
 scenario('Week: a day header opens the day, a chip the card and panel, "‹ Back to Week 42" the normal side', {feature: 'Week and Month', design: DESIGN}, () => {
   given('"1:1 Mieke" on Thursday 15.10.', () => {
     smokeClock();

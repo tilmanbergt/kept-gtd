@@ -1,22 +1,26 @@
 /**
  * The context panel of a tapped meeting or focus block
  * (docs/dev/history/technical-design-time-and-place.md §3.2, D11-D13): one
- * stacked list - I owe · Next · Waiting for · Agreed last time / From its
+ * stacked list - I owe · Next · Planned · Waiting for · Agreed last time / From its
  * meetings / Agreed here - built from Engage's owner logic, never a rule of
  * its own: `ownerOfMeeting` names the owner, `optionsOf` (with the meeting as
  * Engage's page, `engagePageOf`) gives the lists. Pure.
  *
  * - Thread or loop owner (`owner`): I owe = its `#next` and plan todos that
  *   relate as "owe" (already first in Engage's order); Next = the other
- *   `#next` todos (`#now` counts as `#next`), then its plan todos - an agenda
- *   item added before the meeting has no flow state and must show; Waiting for = Engage's Waiting;
+ *   `#next` todos (`#now` counts as `#next`); Planned = its other plan todos
+ *   (no flow state) - an agenda item added before the meeting has none and
+ *   must show; Waiting for = Engage's Waiting, dated or not;
  *   the newest From group as "Agreed last time" (thread) or "From its
  *   meetings" (loop).
  * - Plain meeting (owner kind `item`, `this-meeting`): only what is linked to
  *   this meeting - the todos and agreements agreed in it ("Agreed here") and
  *   open todos carrying one of its own tags. With nothing linked
- *   (`owner-lens`): the Project's or Area's Next and Waiting for, and the
- *   panel says so.
+ *   (`owner-lens`): the Project's or Area's Next, Planned and Waiting for,
+ *   and the panel says so.
+ * The panel shows all of them, also what Daily leaves out (plan todos,
+ * Waiting for with a later date), so the session has its full context
+ * (technical-design-time-and-place.md §10 C7).
  * - An Inbox meeting has no owner: `this-meeting` with nothing listed.
  * Due dates are the rows' labels; sections without rows are left out by the
  * panel.
@@ -34,6 +38,8 @@ export interface MeetingContextModel {
   mode: MeetingContextMode;
   owe: OwnerTodoRef[];
   next: OwnerTodoRef[];
+  /** Open todos without a flow state (no Someday/Maybe). */
+  planned: OwnerTodoRef[];
   waiting: OwnerTodoRef[];
   agreed: {caption: AgreedCaption; group: FromGroup} | null;
 }
@@ -45,7 +51,7 @@ const sameMeeting = (a: MeetingEntryRef, b: MeetingEntryRef) => a.item.path === 
 
 export function meetingContextOf(entry: MeetingEntryRef, source: EngageSource, nowMs: number): MeetingContextModel {
   const owner = entry.item.kind === 'inbox' ? null : ownerOfMeeting({itemPath: entry.item.path, meeting: entry.meeting}, source);
-  if (!owner) return {owner: null, ownerTitle: null, mode: 'this-meeting', owe: [], next: [], waiting: [], agreed: null};
+  if (!owner) return {owner: null, ownerTitle: null, mode: 'this-meeting', owe: [], next: [], planned: [], waiting: [], agreed: null};
   const page = engagePageOf({itemPath: entry.item.path, meetingIndex: entry.meetingIndex}, source, nowMs);
   const options = optionsOf(owner, source, nowMs, null, page);
   const title = ownerTitle(owner, source);
@@ -58,7 +64,8 @@ export function meetingContextOf(entry: MeetingEntryRef, source: EngageSource, n
       ownerTitle: title,
       mode: 'owner',
       owe,
-      next: [...options.next, ...options.plan].filter(t => t.relation !== 'owe'),
+      next: options.next.filter(t => t.relation !== 'owe'),
+      planned: options.plan.filter(t => t.relation !== 'owe'),
       waiting: options.waiting,
       agreed: newest ? {caption: owner.kind === 'thread' ? 'Agreed last time' : 'From its meetings', group: newest} : null,
     };
@@ -77,10 +84,11 @@ export function meetingContextOf(entry: MeetingEntryRef, source: EngageSource, n
       ownerTitle: title,
       mode: 'this-meeting',
       owe: [],
-      next: linkedByTag.filter(t => t.task.flowState !== 'waiting-for'),
+      next: linkedByTag.filter(t => t.task.flowState === 'next'),
+      planned: linkedByTag.filter(t => t.task.flowState !== 'next' && t.task.flowState !== 'waiting-for'),
       waiting: linkedByTag.filter(t => t.task.flowState === 'waiting-for'),
       agreed: here ? {caption: 'Agreed here', group: here} : null,
     };
   }
-  return {owner, ownerTitle: title, mode: 'owner-lens', owe: [], next: options.next, waiting: options.waiting, agreed: null};
+  return {owner, ownerTitle: title, mode: 'owner-lens', owe: [], next: options.next, planned: options.plan, waiting: options.waiting, agreed: null};
 }

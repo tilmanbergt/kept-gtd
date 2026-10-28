@@ -21,7 +21,7 @@ or your project/area files are stored.
 - **Focus blocks**: time for yourself with a loop, thread, project or area. Switch on **F** next to
   **M** in Quick Add's Meeting form (or on a meeting's card); the line gets the tag `#focusblock`,
   so it stays an ordinary meeting in your files. Focus blocks show a filled **F** wherever meetings
-  show, have no prep/review and no Reflection page, and never appear in "Meetings to close out".
+  show (on Month only when also marked **M**, then with their name), have no prep/review and no Reflection page, and never appear in "Meetings to close out".
   Their note follows a Note setup that matches their tags; otherwise the card opens the owner's home
   notebook instead of creating a note.
 - **The context panel**: tap a meeting or focus block on Daily, Week or Month and its card shows with
@@ -30,8 +30,9 @@ or your project/area files are stored.
   project's or area's next todos ("Nothing linked to this meeting yet"). **+ Quick Add to meeting**
   (**+ Quick Add to block**) adds to it on the Todo tab, the button naming where ("+ Add to Coaching"):
   before it starts the todo gets the thread's or loop's tag, during and after it also records the
-  meeting, as in Engage. Todos in the panel open their card and edit form like anywhere else; **✕ Close**
-  next to **Overview ›** closes the meeting.
+  meeting, as in Engage. The panel lists **Planned** todos and Waiting for todos dated later too - what
+  Daily leaves out - for the session's full context. Todos in the panel open their card and edit form
+  like anywhere else; **✕ Close** next to **Overview ›** closes the meeting.
 - **Given time** on Week and Month: the areas (with their projects) and projects that got time in the
   week or month, from meetings and focus blocks (an all-day event counts as "1 day"), with blocks,
   meetings, todos done and the next todo; then **Loops and counterparts** from 1 h a week / 2 h a
@@ -47,6 +48,7 @@ or your project/area files are stored.
   directly from its page and from the Weekly Review, without the checklist and the PDF.
 
 ### Changed
+- On a meeting's or todo's card above Quick Add, a tap on the title opens the edit form, like **Edit**.
 - The demo space is now marked by a boxed **D** and an inverted (black) tab bar. It has two contexts, **Work** and
   **Home**, and three focus blocks, and no longer sets focus or goals.
 - "Using Kept GTD with Obsidian" is now part of the help page "Your files, folders and Obsidian".

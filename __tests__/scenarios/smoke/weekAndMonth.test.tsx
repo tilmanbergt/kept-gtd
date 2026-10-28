@@ -45,11 +45,10 @@ scenario('Week shows this week\'s meetings and the time given to each owner', {f
 scenario('Month shows the highlights and the time given this month', {feature: 'Week and Month', design: DESIGN}, () => {
   given('the smoke space on Wednesday 14.10.2026', () => undefined);
   when('I open Month', () => openTab('Month'));
-  then('the 28th shows "Garden fair", the 15th the F of its focus block, and no other day shows a meeting, since none is a highlight', () => {
+  then('the 28th shows "Garden fair"; no other day shows a meeting or the F of the focus block on the 15th, since none is a highlight (marked M)', () => {
     const days = textsBetween(/^Th 01/, 'Todo');
-    expect(days.filter(t => !MONTH_LABEL.test(t))).toEqual(['F', 'Garden fair']);
+    expect(days.filter(t => !MONTH_LABEL.test(t))).toEqual(['Garden fair']);
     expect(days[days.indexOf('Garden fair') - 1]).toBe('We 28');
-    expect(days[days.indexOf('F') - 1]).toBe('Th 15');
   });
   and('Given time counts all of Garden\'s meetings, highlight or not, and its todo done this month', () => {
     const panel = textsBetween('Given time this month');

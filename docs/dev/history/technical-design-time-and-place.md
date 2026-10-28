@@ -634,3 +634,14 @@ another meeting, or none, ends the panel's selection.
 
 All of C4-C6 live in the shared panel and slot, so Daily, Week, Month and Week ahead behave alike.
 
+
+**C7 The panel gives the full context.** `MeetingContextModel` gets `planned` (open todos without a flow
+state, Engage's plan): `next` holds only `#next` todos, in every mode (owner, this-meeting, owner-lens). The
+panel's sections are I owe · Next · Planned · Waiting for · Agreed; Waiting for is Engage's list, dated or
+not. The panel is not filtered by Daily's rules.
+
+**C8 Month shows only focus blocks marked M.** `monthlyAggregate`'s `focusBlocks` counts the highlights that
+are focus blocks; such a block is a highlight anyway, so its label (`monthLabel`) shows next to its F.
+
+**C9 Card titles edit.** In `ui/itemCard/MeetingCard.tsx` and `TodoCard.tsx` the title's `onPress` is the
+card's `onEdit`.

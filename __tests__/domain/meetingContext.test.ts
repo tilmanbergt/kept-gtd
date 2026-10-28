@@ -46,10 +46,11 @@ describe('meetingContextOf: loop and focus block', () => {
     meetings: [m('2026-10-17', 'Writing session #writing/novel #focusblock')],
     tasks: [task('Chapter 3 #writing/novel #next'), task('Outline #writing/novel')],
   });
-  it('the loop owns the block; From its meetings is the caption', () => {
+  it('the loop owns the block; Next and Planned apart; From its meetings is the caption', () => {
     const model = meetingContextOf(entry(home, 0), src([home]), NOW);
     expect(model.owner).toEqual({kind: 'loop', itemPath: home.path, tag: 'writing/novel'});
-    expect(texts(model.next)).toEqual(['Chapter 3 #writing/novel #next', 'Outline #writing/novel']);
+    expect(texts(model.next)).toEqual(['Chapter 3 #writing/novel #next']);
+    expect(texts(model.planned)).toEqual(['Outline #writing/novel']);
     expect(model.agreed).toBeNull();
   });
 });

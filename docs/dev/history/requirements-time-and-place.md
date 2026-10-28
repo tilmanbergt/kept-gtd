@@ -292,3 +292,10 @@ on the release commit).
   the meeting stay in the grey line as before. Todos in the panel are selectable and editable like any row;
   ✕ or Save on such a todo returns to the meeting's card. The panel's header gets **✕ Close** next to
   **Overview ›**, doing what the card's ✕ does. All of this alike on Daily, Week, Month and Week ahead.
+- **Context panel, full context:** the panel lists **I owe · Next · Planned · Waiting for** (and what was
+  agreed): Planned are the open todos without a flow state, Waiting for includes those with a later date -
+  also what Daily itself leaves out, so a session starts with its whole context.
+- **Month:** a focus block shows on its day - with its name, shortened like a meeting's, and **F** - only when
+  it is also marked **M**; unmarked focus blocks show on the day panel and in Given time only.
+- **Cards:** on the meeting card and the todo card above Quick Add, a tap on the title opens the edit form,
+  like **Edit**.
