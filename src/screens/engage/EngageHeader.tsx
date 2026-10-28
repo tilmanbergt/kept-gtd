@@ -1,12 +1,13 @@
 /**
  * The panel's header (docs/dev/history/technical-design-engage.md §3.7): the
- * owner's kind pill, name and parent, and ✕ - or ‹ Back on the focus screens
+ * owner's name and parent with its kind as a badge (ui/KindBadge.tsx), and ✕ - or ‹ Back on the focus screens
  * when there is an owner to go back to.
  */
 import React from 'react';
 import {Pressable, Text, View} from 'react-native';
 import {OwnerTitle} from '../../domain/engageOwner';
 import {ENGAGE_TEXT} from '../../domain/engageText';
+import KindBadge from '../../ui/KindBadge';
 import {engageStyles as styles} from './engageStyles';
 
 interface Props {
@@ -28,13 +29,11 @@ export default function EngageHeader({title, heading, onClose, onBack, textColor
       ) : null}
       {title && !heading ? (
         <>
-          <View style={[styles.kindPill, {borderColor: textColor}]}>
-            <Text style={[styles.kindPillText, {color: textColor}]}>{title.kindLabel}</Text>
-          </View>
           <Text style={[styles.ownerName, {color: textColor}]} numberOfLines={1}>
             {title.name}
             {title.parent ? <Text style={styles.ownerParent}>{`  · ${title.parent}`}</Text> : null}
           </Text>
+          <KindBadge label={title.kindLabel} textColor={textColor} />
         </>
       ) : (
         <Text style={[styles.ownerName, {color: textColor}]} numberOfLines={1}>

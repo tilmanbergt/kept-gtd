@@ -5,7 +5,7 @@
  * then one paged list - I owe · Next · Planned · Waiting for · Agreed last time / From
  * its meetings / Agreed here - whose section captions are rows, so paging
  * stays exact; sections without rows are left out. The header names the owner
- * and opens its overview (thread, loop) or page (Project, Area); its "✕ Close"
+ * (its kind a badge on the right, ui/KindBadge.tsx) and opens its overview (thread, loop) or page (Project, Area); its "✕ Close"
  * closes the meeting like the card's ✕ (§10 C6). The footer switches the
  * card's slot to Quick Add for this meeting and back.
  *
@@ -22,6 +22,7 @@ import {isFocusBlock} from '../../domain/focusBlock';
 import {MeetingContextModel, OWNER_LENS_LINE} from '../../domain/meetingContext';
 import {todayIso} from '../../domain/meetingTime';
 import AgreementRow, {AGREEMENT_ROW_HEIGHT} from '../AgreementRow';
+import KindBadge from '../KindBadge';
 import {common} from '../commonStyles';
 import {openOverview} from '../overviewStore';
 import PagedSection from '../PagedSection';
@@ -92,7 +93,7 @@ export default function MeetingContextPanel(props: Props): React.JSX.Element {
   const today = todayIso();
   const rows = panelRowsOf(model);
   const {owner, ownerTitle} = model;
-  const title = ownerTitle ? [`${ownerTitle.kindLabel} ${ownerTitle.name}`, ownerTitle.parent].filter(Boolean).join(' · ') : 'Inbox';
+  const title = ownerTitle ? [ownerTitle.name, ownerTitle.parent].filter(Boolean).join(' · ') : 'Inbox';
   const openOwner = () => {
     if (!owner) return;
     if (owner.kind === 'item') onOpenItem(owner.itemPath);
@@ -139,8 +140,9 @@ export default function MeetingContextPanel(props: Props): React.JSX.Element {
         header={title}
         headerAccessory={
           <View style={styles.accessory}>
+            {ownerTitle ? <KindBadge label={ownerTitle.kindLabel} textColor={textColor} /> : null}
             {owner ? (
-              <Pressable onPress={openOwner} hitSlop={8}>
+              <Pressable onPress={openOwner} hitSlop={8} style={styles.overview}>
                 <Text style={[styles.link, {color: textColor}]}>Overview ›</Text>
               </Pressable>
             ) : null}
@@ -173,6 +175,7 @@ const styles = StyleSheet.create({
   caption: {marginTop: 6, marginBottom: 4},
   info: {fontWeight: '400', fontStyle: 'italic'},
   accessory: {flexDirection: 'row', alignItems: 'center'},
+  overview: {marginLeft: 16},
   close: {marginLeft: 16},
   link: {fontSize: FONT.small, fontWeight: '600', textDecorationLine: 'underline'},
   footer: {borderTopWidth: 1, paddingVertical: 8, alignItems: 'flex-start'},

@@ -645,3 +645,17 @@ are focus blocks; such a block is a highlight anyway, so its label (`monthLabel`
 
 **C9 Card titles edit.** In `ui/itemCard/MeetingCard.tsx` and `TodoCard.tsx` the title's `onPress` is the
 card's `onEdit`.
+
+**C10 Kind badges.** `ui/KindBadge.tsx`: the label in capitals at 10 px with the first letter at 13 px, weight
+600, letter spacing 0.8, `accessibilityLabel` the plain word. Used right of the name in `GivenTimePanel`'s
+rows (before the time), `MeetingContextPanel`'s header accessory (before Overview ›; the header text is the
+name and parent only), `EngageHeader` (replacing `kindPill`) and `ItemDetail`'s header (replacing `kindTag`).
+
+**C11 Counterparts in Given time.** `givenTimeOf` maps a side owner of kind `thread` to a
+`CounterpartOwner {kind: 'counterpart', scopeOwnerPath, leaf, tags}` (the thread owner's scope and its tag's
+leaf; `#wf/x` and `#owe/x` todos resolve to threads through `ownerOfTodo` and join the same row). Rows are
+keyed `counterpart:<scope>|<leaf>`; `tags` collects the thread tags seen. `givenTimeDetail` starts a
+counterpart's line with its series (tag types without `wf`/`owe`); `nextTodo` is the first `#next` among its
+threads' todos; a leaf in two scopes gets "leaf · Scope". The panel opens `openOverview({tag: tags[0],
+ownerPath: scope})`, which picks the counterpart lens. `tendLineText` reads "counterparts" - the tending
+roster already counts counterparts.

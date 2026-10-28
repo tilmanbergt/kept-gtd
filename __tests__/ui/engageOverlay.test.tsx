@@ -183,7 +183,7 @@ describe('EngageOverlay screens', () => {
     ]);
     mockNote.path = `${COACHING}/Todos/Book room.note`;
     const {r} = await open({via: 'button'});
-    expect(texts(r)).toContain('Loop');
+    expect(r.root.findAll(n => n.props.accessibilityLabel === 'Loop').length).toBeGreaterThan(0); // the kind badge
     expect(texts(r)).toContain('Working on');
     expect(texts(r)).toEqual(expect.arrayContaining(['Next 1', 'Plan 1']));
     expect(rendered(r)).toContain('Draft agenda');
@@ -465,7 +465,7 @@ describe('EngageOverlay in context (docs/dev/history/technical-design-engage-in-
 
   it('opens on From Thread from the meeting page, with Next here, Also here and Today next', async () => {
     const {r} = await open({via: 'button'});
-    expect(texts(r)).toContain('Thread');
+    expect(r.root.findAll(n => n.props.accessibilityLabel === 'Thread').length).toBeGreaterThan(0); // the kind badge
     // An agreed plan todo is also in Plan (D6: the overlap is accepted).
     expect(texts(r)).toEqual(expect.arrayContaining(['From Thread 3', 'Next 2', 'Plan 1']));
     expect(texts(r).some(t => t.endsWith(' · Sparring Mieke'))).toBe(true);

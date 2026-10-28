@@ -52,17 +52,6 @@ export const engageStyles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: SPACING.sm,
   },
-  kindPill: {
-    borderWidth: 1,
-    borderRadius: RADII.pillSm,
-    paddingHorizontal: SPACING.sm,
-    paddingVertical: 2,
-    marginRight: SPACING.sm,
-  },
-  kindPillText: {
-    fontSize: FONT.small,
-    fontWeight: '700',
-  },
   ownerName: {
     flex: 1,
     fontSize: FONT.medium,

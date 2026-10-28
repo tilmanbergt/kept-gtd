@@ -299,3 +299,13 @@ on the release commit).
   it is also marked **M**; unmarked focus blocks show on the day panel and in Given time only.
 - **Cards:** on the meeting card and the todo card above Quick Add, a tap on the title opens the edit form,
   like **Edit**.
+- **Kind badges:** the kind of an owner (Area, Project, Loop, Thread, Counterpart) shows as one small-caps
+  badge (capitals, first letter larger) right of the name - in Given time, the context panel's header,
+  Engage's header (replacing its boxed pill) and a Project's or Area's page. Sentences ("showing its
+  project") and Settings' or the Files pane's choices stay words.
+- **Given time per counterpart:** "Loops and counterparts" lists counterparts, not threads: all threads of
+  a counterpart within its scope (an Area with its Projects, or a Project without an Area) sum into one row
+  (value = retro/value + review/value + replenishment/value), its `#wf/` and `#owe/` todos included; the
+  grey line names its series; a tap opens the counterpart's overview; the threshold applies to the sum. The
+  same counterpart in two scopes shows twice, with the scope's name. Loops stay one row each. The Tend line
+  says "counterparts". The context panel's header still names the meeting's thread.

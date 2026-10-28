@@ -23,13 +23,13 @@ The right side has **Given time this month** (see below).
 Given time shows where your time went, from your schedule alone, in two lists:
 
 - **Given time this week**: your areas - each with everything scheduled in it and in its projects - and the projects without an area, the one with the most time first. A project with more time than an area comes before it. The Inbox is never listed.
-- **Loops and counterparts**: the loops and threads that got time, again the most first. The same meeting counts here once more. Only those with at least **1 h a week** (**2 h a month**) are listed, so the list stays short; when none reaches that, it says "Nothing above 1 h this week". Each context can set its own threshold, see [Contexts](contexts.md).
+- **Loops and counterparts**: the loops and the counterparts that got time, again the most first. The same meeting counts here once more. A counterpart sums all its threads: **value** counts `#retro/value`, `#review/value` and `#replenishment/value` together (and its `#wf/value` and `#owe/value` todos), and its grey line names the series (`retro · review · replenishment`). Counterparts belong to an area (with its projects) or a project without an area; the same name in two areas shows twice, with the area: "value · Home". Loops stay one row each. Only those with at least **1 h a week** (**2 h a month**) are listed, so the list stays short; when none reaches that, it says "Nothing above 1 h this week". Each context can set its own threshold, see [Contexts](contexts.md).
 
-The time is on the right (`3.5 h`; an all-day event counts as `1 day`), the grey line below says how many focus blocks and meetings, how many todos were done and the next todo (`2 blocks · 1 meeting · 3 done · next: Draft chapter`). Tap a row to open its project or area, or the overview of its thread or loop.
+Each row's kind - AREA, PROJECT, LOOP, COUNTERPART - is a small badge right of the name. The time is on the right (`3.5 h`; an all-day event counts as `1 day`), the grey line below says how many focus blocks and meetings, how many todos were done and the next todo (`2 blocks · 1 meeting · 3 done · next: Draft chapter`). Tap a row to open its project or area, the overview of its loop, or a counterpart's overview with all its threads.
 
 **Worked on this week** lists the areas and projects with todos done but nothing scheduled. Cancelled meetings don't count.
 
-Under it, **Tend: 3 threads · 2 loops quiet ›** counts the threads that need tending - nothing planned in the next 14 days and no next or I-owe todo - and the loops that need a look (see [Weekly Review](review.md)); tap it to open the Weekly Review's **Tending threads**. With a context active ([Contexts](contexts.md)), only what it shows counts, and the last line says how many owners it hides.
+Under it, **Tend: 3 counterparts · 2 loops quiet ›** counts the counterparts that need tending - nothing planned in the next 14 days and no next or I-owe todo - and the loops that need a look (see [Weekly Review](review.md)); tap it to open the Weekly Review's **Tending threads**. With a context active ([Contexts](contexts.md)), only what it shows counts, and the last line says how many owners it hides.
 
 ## Meeting length
 

@@ -43,7 +43,7 @@ scenario('Daily: tapping a thread meeting shows its card and the context panel',
   });
   then('the card shows and the panel lists I owe, Waiting for and Agreed last time', () => {
     expectShows('Meeting · today');
-    const panel = textsBetween('Thread #sparring/mieke · Coaching', /^\+ Quick Add to meeting/);
+    const panel = textsBetween('#sparring/mieke · Coaching', /^\+ Quick Add to meeting/);
     expect(panel).toEqual(expect.arrayContaining(['I owe', 'Waiting for', 'Agreed last time']));
     expect(panel.some(t => t.startsWith('◇ Feedback only in our 1:1s'))).toBe(true);
     expect(panel.some(t => t.startsWith('Send the slides'))).toBe(true);
@@ -68,7 +68,7 @@ scenario('Daily: a plain meeting with nothing linked shows its project', {featur
   });
   then('the panel says so and lists Website\'s next todos', () => {
     expectShows('Nothing linked to this meeting yet · showing its project');
-    expect(textsBetween('Project Website', /^\+ Quick Add to meeting/).some(t => t.startsWith('Draft homepage'))).toBe(true);
+    expect(textsBetween('Website', /^\+ Quick Add to meeting/).some(t => t.startsWith('Draft homepage'))).toBe(true);
   });
 });
 
@@ -199,7 +199,7 @@ scenario('The panel gives the full context: Next, Planned and a Waiting for date
   });
   when('I tap the meeting', () => tap(/^1:1 Mieke/));
   then('the panel lists Next, Planned and Waiting for', () => {
-    const panel = textsBetween('Thread #sparring/mieke · Coaching', /^\+ Quick Add to meeting/);
+    const panel = textsBetween('#sparring/mieke · Coaching', /^\+ Quick Add to meeting/);
     expect(panel).toEqual(expect.arrayContaining(['Next', 'Planned', 'Waiting for']));
     expect(panel.indexOf('Next')).toBeLessThan(panel.indexOf('Planned'));
     expect(panel.some(t => t.startsWith('Agenda point'))).toBe(true);
@@ -240,7 +240,7 @@ scenario('Week: a day header opens the day, a chip the card and panel, "‹ Back
     expectShows('Meeting · ahead');
     expectShows('‹ Back to Week 42');
     expectShows('Thu 15.10. · 1 meeting ›');
-    expectShows('Thread #sparring/mieke · Coaching');
+    expectShows('#sparring/mieke · Coaching');
   });
   when('I tap "‹ Back to Week 42"', () => tap('‹ Back to Week 42'));
   then('the panel is gone and the day panel is there again', () => {

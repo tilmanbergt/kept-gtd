@@ -7,7 +7,8 @@
  * "Loops and counterparts" (from the context's threshold up), then "Worked
  * on this week" (todos done, nothing scheduled) - the Tend line (threads and
  * loops that need tending, opening Review → Tending threads) and the hidden
- * line under the active context. A row opens its owner: a thread's or loop's
+ * line under the active context. The kind is a badge right of the name
+ * (ui/KindBadge.tsx). A row opens its owner: a thread's or loop's
  * overview, a Project's or Area's page. The Inbox is never listed. Built from
  * the cache on every cache change, never by a timer.
  */
@@ -29,6 +30,7 @@ import {common} from '../commonStyles';
 import HiddenLine from '../context/HiddenLine';
 import {ContextFilter} from '../context/useContextMatcher';
 import {openOverview} from '../overviewStore';
+import KindBadge from '../KindBadge';
 import PagedSection from '../PagedSection';
 import {FONT} from '../theme';
 
@@ -88,6 +90,8 @@ export default function GivenTimePanel(props: Props): React.JSX.Element {
   ];
   const open = (owner: GivenTimeOwner) => {
     if (owner.kind === 'item') props.onOpenItem(owner.itemPath);
+    // A counterpart's thread tag opens the counterpart lens (ui/overviewStore.ts).
+    else if (owner.kind === 'counterpart') openOverview({tag: owner.tags[0], ownerPath: owner.scopeOwnerPath});
     else openOverview({tag: owner.tag, ownerPath: owner.kind === 'thread' ? owner.scopeOwnerPath : owner.itemPath});
   };
   const renderRow = (row: Row) => {
@@ -106,14 +110,15 @@ export default function GivenTimePanel(props: Props): React.JSX.Element {
       );
     }
     const r = row.row;
-    const key = r.owner.kind === 'item' ? r.owner.itemPath : `${r.owner.kind}:${r.owner.tag}`;
+    const o = r.owner;
+    const key = o.kind === 'item' ? o.itemPath : o.kind === 'counterpart' ? `counterpart:${o.scopeOwnerPath}|${o.leaf}` : `${o.kind}:${o.tag}`;
     return (
       <Pressable key={key} onPress={() => open(r.owner)} style={[styles.row, {borderBottomColor: borderColor}]}>
         <View style={styles.line1}>
           <Text style={[styles.name, {color: textColor}]} numberOfLines={1}>
             {r.name}
-            <Text style={styles.kind}>{`  ${r.kindLabel}`}</Text>
           </Text>
+          <KindBadge label={r.kindLabel} textColor={textColor} />
           <Text style={[styles.time, {color: textColor}]}>{givenTimeText(r)}</Text>
         </View>
         <Text style={[styles.detail, {color: textColor}]} numberOfLines={1}>
@@ -156,7 +161,6 @@ const styles = StyleSheet.create({
   row: {height: GIVEN_TIME_ROW_PX, paddingVertical: 7, borderBottomWidth: 1, overflow: 'hidden'},
   line1: {flexDirection: 'row', alignItems: 'center'},
   name: {flex: 1, fontSize: FONT.medium, fontWeight: '600', lineHeight: 22, includeFontPadding: false},
-  kind: {fontSize: FONT.small, fontWeight: '400'},
   time: {fontSize: FONT.medium, lineHeight: 22, marginLeft: 8, includeFontPadding: false},
   hint: {height: CAPTION_ROW_PX, fontSize: FONT.small, lineHeight: CAPTION_ROW_PX, opacity: 0.6, includeFontPadding: false},
   detail: {fontSize: FONT.small, lineHeight: 18, opacity: 0.6, includeFontPadding: false},

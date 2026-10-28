@@ -35,9 +35,10 @@ or your project/area files are stored.
   like anywhere else; **✕ Close** next to **Overview ›** closes the meeting.
 - **Given time** on Week and Month: the areas (with their projects) and projects that got time in the
   week or month, from meetings and focus blocks (an all-day event counts as "1 day"), with blocks,
-  meetings, todos done and the next todo; then **Loops and counterparts** from 1 h a week / 2 h a
+  meetings, todos done and the next todo; then **Loops and counterparts** - a counterpart sums all its
+  threads (value: retro/value, review/value, replenishment/value) - from 1 h a week / 2 h a
   month (a threshold each context can change in Settings → Contexts, Everything's too); **Worked on**
-  lists areas and projects with todos done but nothing scheduled. **Tend: 3 threads · 2 loops quiet ›**
+  lists areas and projects with todos done but nothing scheduled. **Tend: 3 counterparts · 2 loops quiet ›**
   counts the threads and loops that need tending and opens the Review's Tending threads.
 - A project's or area's page shows **Given time · this week 3 h · this month 11 h**.
 - Review: **Tending threads** lists new counterparts and the active ones that need tending - nothing
@@ -48,6 +49,9 @@ or your project/area files are stored.
   directly from its page and from the Weekly Review, without the checklist and the PDF.
 
 ### Changed
+- The kind of a project, area, loop, thread or counterpart is a small capitals badge right of its name
+  (AREA, THREAD, …): in Given time, the context panel's header, Engage's header and a project's or
+  area's page.
 - On a meeting's or todo's card above Quick Add, a tap on the title opens the edit form, like **Edit**.
 - The demo space is now marked by a boxed **D** and an inverted (black) tab bar. It has two contexts, **Work** and
   **Home**, and three focus blocks, and no longer sets focus or goals.

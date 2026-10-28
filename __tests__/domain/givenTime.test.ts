@@ -60,15 +60,17 @@ describe('givenTimeOf', () => {
     expect(result.areas.map(line)).toEqual(['Area Home 2 days · 4 h', 'Area Coaching 2 days · 1 h']);
   });
   it('loops and counterparts in their own list: a meeting counts there once more', () => {
-    expect(result.owners.map(line)).toEqual(['Thread #sparring/mieke 2 days · 1 h', 'Loop novel 3 h']);
+    expect(result.owners.map(line)).toEqual(['Counterpart mieke 2 days · 1 h', 'Loop novel 3 h']);
     const loop = result.owners.find(r => r.kindLabel === 'Loop')!;
     expect(loop).toMatchObject({blocks: 2, meetings: 0, nextTodo: 'Chapter 3'});
     expect(givenTimeDetail(loop)).toBe('2 blocks · next: Chapter 3');
-    expect(result.owners.find(r => r.kindLabel === 'Thread')).toMatchObject({meetings: 2, done: 1});
+    const mieke = result.owners.find(r => r.kindLabel === 'Counterpart')!;
+    expect(mieke).toMatchObject({meetings: 2, done: 1});
+    expect(givenTimeDetail(mieke)).toBe('sparring · 2 meetings · 1 done');
     expect(result.areas.find(r => r.name === 'Home')).toMatchObject({blocks: 2, meetings: 2});
   });
   it('the threshold leaves out loops and counterparts with less time', () => {
-    expect(givenTimeOf({source, range: WEEK, matcher: all, minMinutes: 200}).owners.map(r => r.name)).toEqual(['#sparring/mieke']);
+    expect(givenTimeOf({source, range: WEEK, matcher: all, minMinutes: 200}).owners.map(r => r.name)).toEqual(['mieke']);
   });
   it('Worked on: done in the range and nothing scheduled; earlier done todos never count', () => {
     expect(result.workedOn.map(r => `${r.name} ${r.done}`)).toEqual(['Website 2']);
@@ -78,9 +80,24 @@ describe('givenTimeOf', () => {
     const work: ContextDef = {id: 'c', name: 'Work', shows: [{kind: 'item', itemKind: 'area', name: 'Coaching'}], hides: [], outsideMeetings: 'dim'};
     const filtered = givenTimeOf({source, range: WEEK, matcher: contextMatcher(work), minMinutes: 60});
     expect(filtered.areas.map(r => r.name)).toEqual(['Coaching']);
-    expect(filtered.owners.map(r => r.name)).toEqual(['#sparring/mieke']);
+    expect(filtered.owners.map(r => r.name)).toEqual(['mieke']);
     expect(filtered.workedOn).toEqual([]);
     expect(filtered.hiddenOwners).toBe(3);
+  });
+  it('a counterpart sums its threads and #wf todos in its scope; the same leaf in two scopes names the scope', () => {
+    const atruvia = item('area', 'Atruvia', {
+      meetings: [
+        m('2026-10-13', 'Retro #retro/value', {time: '09:00', endTime: '10:00'}),
+        m('2026-10-14', 'Review #review/value', {time: '09:00', endTime: '10:30'}),
+        m('2026-10-15', 'Replenishment #replenishment/value', {time: '09:00', endTime: '09:30'}),
+      ],
+      tasks: [done('Got the numbers #wf/value', '2026-10-14'), task('Ask about scope #review/value #next')],
+    });
+    const homeArea = item('area', 'Home', {meetings: [m('2026-10-16', 'Value chat #retro/value', {time: '18:00', endTime: '19:00'})]});
+    const three: EngageSource = {...src([atruvia, homeArea]), threadTypes: ['retro', 'review', 'replenishment', 'wf', 'owe']};
+    const owners = givenTimeOf({source: three, range: WEEK, matcher: all, minMinutes: 60}).owners;
+    expect(owners.map(line)).toEqual(['Counterpart value · Atruvia 3 h', 'Counterpart value · Home 1 h']);
+    expect(givenTimeDetail(owners[0])).toBe('retro · review · replenishment · 3 meetings · 1 done · next: Ask about scope');
   });
   it('"Nothing above 1 h this week" when no loop or counterpart reaches the threshold', () => {
     expect(belowThresholdText(60, 'this week')).toBe('Nothing above 1 h this week');
@@ -113,7 +130,7 @@ describe('Tend', () => {
     const t = (nextMeeting: string | null, nextCount = 0) => ({nextMeeting, oweCount: 0, nextCount});
     const count = tendCount({threads: [t(null), t('2026-10-20'), t('2026-12-01'), t(null, 1)], loops: [{attention: 'noNext'}, {attention: null}]}, today);
     expect(count).toEqual({threads: 2, loops: 1});
-    expect(tendLineText(count)).toBe('Tend: 2 threads · 1 loop quiet ›');
+    expect(tendLineText(count)).toBe('Tend: 2 counterparts · 1 loop quiet ›');
     expect(tendLineText({threads: 0, loops: 0})).toBeNull();
   });
 });

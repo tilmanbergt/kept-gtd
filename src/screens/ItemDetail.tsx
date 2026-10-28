@@ -145,6 +145,7 @@ import MarkWrap from '../ui/status/StatusMark';
 import {usePerfRender} from '../utils/perf';
 import {useOnScreenShow} from '../ui/screenActivity';
 import {errorMessage} from '../utils/errorMessage';
+import KindBadge from '../ui/KindBadge';
 
 /**
  * User-facing text for an invalid abbreviation candidate (domain/abbrev.ts's
@@ -535,9 +536,7 @@ export default function ItemDetail({
         <Text style={[styles.heading, {color: textColor}]} numberOfLines={1}>
           {name}
         </Text>
-        <Text style={[styles.kindTag, {color: textColor}]}>
-          {kind === 'project' ? 'Project' : 'Area'}
-        </Text>
+        <KindBadge label={kind === 'project' ? 'Project' : 'Area'} textColor={textColor} />
         {resourceFolderState && (
           <AbbrevPill
             abbrev={resourceFolderState.abbrev}
@@ -621,7 +620,7 @@ export default function ItemDetail({
 
 /**
  * Trailing `#tag` pill in the header (docs/dev/technical-design-project-area-
- * abbreviations.md) - always last, after the kindTag. Tap to edit inline,
+ * abbreviations.md) - always last, after the kind badge. Tap to edit inline,
  * mirroring ui/ItemScopePanel.tsx's ItemScopeRow tap-to-edit pattern (draft
  * state + Save/Cancel text buttons). Always rendered once
  * resourceFolderState has loaded - migrateMissingAbbrevs
@@ -754,11 +753,6 @@ const styles = StyleSheet.create({
     fontSize: FONT.large,
     fontWeight: '700',
     flex: 1,
-  },
-  kindTag: {
-    fontSize: FONT.small,
-    opacity: 0.6,
-    marginLeft: 8,
   },
   body: {
     flex: 1,

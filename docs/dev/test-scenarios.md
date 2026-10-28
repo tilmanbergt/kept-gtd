@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-129 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+130 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -1210,6 +1210,15 @@ Test: `__tests__/scenarios/givenTime.test.tsx`
 - **Then** Writing has all 2.5 h; Loops and counterparts lists novel, not essay (below 1 h); no Inbox row
 - **When** I set Everything's threshold to "all" a week in Settings → Contexts and go back to Week
 - **Then** essay shows too
+- **And** no error was logged
+
+Test: `__tests__/scenarios/givenTime.test.tsx`
+
+### Given time sums a counterpart's threads into one row
+
+- **Given** on Wednesday 14.10.: Atruvia with Retro, Review and Replenishment with "value" this week, 1 h each
+- **When** I open Week
+- **Then** Loops and counterparts lists "value" once, with 3 h and its three series
 - **And** no error was logged
 
 Test: `__tests__/scenarios/givenTime.test.tsx`

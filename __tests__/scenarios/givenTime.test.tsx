@@ -27,13 +27,13 @@ scenario('Given time: areas and projects by time, an all-day event as "1 day", W
     await tapTab('Week');
   });
   then('Given time lists Garden (1 day) above Writing (3.5 h, two blocks, its next todo)', () => {
-    expect(textsBetween('Given time this week', 'Loops and counterparts')).toEqual(['Garden  Area', '1 day', '1 meeting', 'Writing  Area', '3.5 h', '2 blocks · next: Draft chapter']);
+    expect(textsBetween('Given time this week', 'Loops and counterparts')).toEqual(['Garden', 'AREA', '1 day', '1 meeting', 'Writing', 'AREA', '3.5 h', '2 blocks · next: Draft chapter']);
   });
   and('no loop or counterpart reaches 1 h', () => {
     expect(textsBetween('Loops and counterparts', 'Worked on this week')).toEqual(['Nothing above 1 h this week']);
   });
   and('Worked on lists Website with its todo done', () => {
-    expect(textsBetween('Worked on this week').slice(0, 2)).toEqual(['Website  Project', '1 done']);
+    expect(textsBetween('Worked on this week').slice(0, 3)).toEqual(['Website', 'PROJECT', '1 done']);
   });
   and('no error was logged', () => expect(loggedErrors()).toEqual([]));
 });
@@ -50,8 +50,8 @@ scenario('Tend: a thread without a meeting in 14 days counts in the Tend line an
     await openApp({settings: sparringSettings()});
     await tapTab('Week');
   });
-  then('the Tend line counts one quiet thread', () => expectShows('Tend: 1 thread quiet ›'));
-  when('I tap it', () => tap('Tend: 1 thread quiet ›'));
+  then('the Tend line counts one quiet thread', () => expectShows('Tend: 1 counterpart quiet ›'));
+  when('I tap it', () => tap('Tend: 1 counterpart quiet ›'));
   then('Review opens Tending threads, where mieke\'s row says "nothing planned"', () => {
     expectShows('Tending threads');
     expect(readTexts().some(t => /nothing planned/.test(t))).toBe(true);
@@ -102,10 +102,10 @@ scenario('Given time lists loops and counterparts from the threshold up, never t
     await tapTab('Week');
   });
   then('Writing has all 2.5 h; Loops and counterparts lists novel, not essay (below 1 h); no Inbox row', () => {
-    expect(textsBetween('Given time this week', 'Loops and counterparts')).toEqual(['Writing  Area', '2.5 h', '2 blocks']);
-    expect(textsBetween('Loops and counterparts').slice(0, 2)).toEqual(['novel  Loop', '2 h']);
-    expect(readTexts()).not.toContain('Inbox  Inbox');
-    expect(readTexts()).not.toContain('essay  Loop');
+    expect(textsBetween('Given time this week', 'Loops and counterparts')).toEqual(['Writing', 'AREA', '2.5 h', '2 blocks']);
+    expect(textsBetween('Loops and counterparts').slice(0, 3)).toEqual(['novel', 'LOOP', '2 h']);
+    expect(readTexts()).not.toContain('INBOX');
+    expect(readTexts()).not.toContain('essay');
   });
   when('I set Everything\'s threshold to "all" a week in Settings → Contexts and go back to Week', async () => {
     await tap('Everything ›');
@@ -114,7 +114,34 @@ scenario('Given time lists loops and counterparts from the threshold up, never t
     await tapTab('Week');
   });
   then('essay shows too', () => {
-    expect(textsBetween('Loops and counterparts')).toEqual(expect.arrayContaining(['novel  Loop', 'essay  Loop', '30 min']));
+    expect(textsBetween('Loops and counterparts')).toEqual(expect.arrayContaining(['novel', 'LOOP', 'essay', 'LOOP', '30 min']));
+  });
+  and('no error was logged', () => expect(loggedErrors()).toEqual([]));
+});
+
+scenario('Given time sums a counterpart\'s threads into one row', {feature: 'Week and Month', design: DESIGN}, () => {
+  given('on Wednesday 14.10.: Atruvia with Retro, Review and Replenishment with "value" this week, 1 h each', () => {
+    smokeClock();
+    putFile(
+      areaFile('Atruvia'),
+      dataFile('area', {
+        Scope: [],
+        Tasks: [],
+        Meetings: [
+          '- 2026-10-12 09:00-10:00 Retro #retro/value',
+          '- 2026-10-13 09:00-10:00 Review #review/value',
+          '- 2026-10-14 09:00-10:00 Replenishment #replenishment/value',
+        ],
+      }),
+    );
+  });
+  when('I open Week', async () => {
+    const setup = (id: string, tag: string) => ({...createNoteSetup(id, 'thread'), name: tag, tags: [tag]});
+    await openApp({settings: {noteSetups: [setup('1', 'retro'), setup('2', 'review'), setup('3', 'replenishment')], noteSetupsMigrated: true}});
+    await tapTab('Week');
+  });
+  then('Loops and counterparts lists "value" once, with 3 h and its three series', () => {
+    expect(textsBetween('Loops and counterparts').slice(0, 4)).toEqual(['value', 'COUNTERPART', '3 h', 'retro · review · replenishment · 3 meetings']);
   });
   and('no error was logged', () => expect(loggedErrors()).toEqual([]));
 });

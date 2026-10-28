@@ -839,13 +839,14 @@ the Inbox) or the selected meeting's card on the right, then the shared day pane
 day), the context panel (after tapping a meeting) or **Given time**
 (`ui/period/GivenTimePanel.tsx`, `domain/givenTime.ts`): two lists by scheduled time (timed:
 end - start, 60 min without an end; all-day: 8 h a day for sorting, shown as days) - the Areas
-(with their Projects) and the Projects without an Area, then "Loops and counterparts" from the
-context's threshold up (`minMinutesOf`, Everything's `givenTimeMinMinutes`) - each with blocks,
+(with their Projects) and the Projects without an Area, then "Loops and counterparts" (a thread
+counts for its counterpart within its scope, `CounterpartOwner`) from the context's threshold up (`minMinutesOf`, Everything's `givenTimeMinMinutes`) - each with blocks,
 meetings, todos done and the next todo; never the Inbox; "Worked on" for Areas and Projects with
 todos done and nothing scheduled; the Tend line (threads that need tending, `needsTending`, and
 loops that need a look, opening Review → Tending threads); the hidden line. In the context panel,
 the slot (`ui/meetingContext/useMeetingContextSlot.ts`) keeps its own todo selection and hands
-Quick Add `todoOverride`; the panel's header has "✕ Close". The Project/Area page shows
+Quick Add `todoOverride`; the panel's header has "✕ Close". An owner's kind shows as
+`ui/KindBadge.tsx` (small caps, right of the name) wherever it is labelled. The Project/Area page shows
 `ui/GivenTimeLine.tsx` (this week, this month; the item's and an Area's Projects' meetings,
 never filtered by the context).
 

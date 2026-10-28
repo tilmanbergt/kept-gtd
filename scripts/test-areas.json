@@ -29,7 +29,8 @@
         "src/ui/{Daily,Period,Week,Month,DayMeetings}*",
         "src/storage/{daily,weekly,monthly}Aggregate.ts",
         "src/domain/{period,weekDate,monthHighlight,givenTime}.ts",
-        "src/ui/period/**"
+        "src/ui/period/**",
+        "src/ui/KindBadge.tsx"
       ]
     },
     {

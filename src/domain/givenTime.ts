@@ -8,8 +8,12 @@
  *   A meeting or focus block counts for its file's item, a Project rolled up
  *   into its Area. Timed: end - start (60 minutes without an end); all-day:
  *   8 hours per covered day in the range for sorting, shown as days.
- * - `owners`: loops and counterparts (threads) - the same meeting counts here
- *   once more when `ownerOfMeeting` names one - from `minMinutes` up.
+ * - `owners`: loops and counterparts - the same meeting counts here once more
+ *   when `ownerOfMeeting` names a loop or a thread - from `minMinutes` up. A
+ *   thread counts for its counterpart (§10 C11): `retro/value`,
+ *   `review/value` and `#wf/value` all make one row "value" per scope (an
+ *   Area with its Projects, or a Project without an Area); a leaf in two
+ *   scopes gets the scope's name ("value · Home"). Loops stay one row each.
  * - `done`: todos completed in the range (`completion`): for the rolled-up
  *   item in `areas`, for their loop or thread (`ownerOfTodo`) in `owners`.
  * - `workedOn`: Areas and Projects with todos done and nothing scheduled.
@@ -19,6 +23,8 @@
  *   `hiddenOwners` (the hidden line).
  */
 import {ContextMatcher} from './contexts';
+import {WAITING_FOR_TYPE} from './flowState';
+import {OWE_TYPE} from './threads';
 import {EngageItem, EngageOwner, EngageSource, ownerKey, ownerOfMeeting, ownerOfTodo, ownerTitle, ownerTodos} from './engageOwner';
 import {isNextTask} from './engageOptions';
 import {isFocusBlock} from './focusBlock';
@@ -27,11 +33,20 @@ import {meetingEndMs, meetingStartMs} from './meetingTime';
 import {daysBetween} from './nextMeeting';
 import {Meeting, Task} from './types';
 
-export type GivenTimeOwner = EngageOwner;
+/** A counterpart within its scope: the leaf of its threads' tags (`retro/value` → `value`). */
+export interface CounterpartOwner {
+  kind: 'counterpart';
+  scopeOwnerPath: string;
+  leaf: string;
+  /** Its thread tags with time or done todos, first seen first. */
+  tags: string[];
+}
+
+export type GivenTimeOwner = EngageOwner | CounterpartOwner;
 
 export interface GivenTimeRow {
   owner: GivenTimeOwner;
-  /** "Loop", "Thread", "Project" or "Area". */
+  /** "Loop", "Counterpart", "Project" or "Area". */
   kindLabel: string;
   name: string;
   /** Timed meetings and blocks, in minutes. */
@@ -73,10 +88,16 @@ export function givenTimeText(row: Pick<GivenTimeRow, 'minutes' | 'allDayDays'>)
   return parts.join(' · ');
 }
 
-/** The grey line: "2 blocks · 1 meeting · 3 done · next: Draft chapter". */
+/** The grey line: "2 blocks · 1 meeting · 3 done · next: Draft chapter"; a counterpart's starts with its threads' types ("retro · review"). */
 export function givenTimeDetail(row: GivenTimeRow): string {
   const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
+  // The series it meets in; #wf and #owe are no series.
+  const types =
+    row.owner.kind === 'counterpart'
+      ? Array.from(new Set(row.owner.tags.map(t => t.split('/')[0]).filter(t => t !== WAITING_FOR_TYPE && t !== OWE_TYPE))).join(' · ')
+      : '';
   return [
+    types,
     row.blocks > 0 ? plural(row.blocks, 'block', 'blocks') : '',
     row.meetings > 0 ? plural(row.meetings, 'meeting', 'meetings') : '',
     row.done > 0 ? `${row.done} done` : '',
@@ -107,12 +128,15 @@ export function givenTimeOf(input: {source: EngageSource; range: {start: string;
   const scanFrom = spanScanStart(range.start);
 
   const rowOf = (rows: Map<string, GivenTimeRow>, owner: GivenTimeOwner): GivenTimeRow => {
-    const key = ownerKey(owner);
+    const key = keyOf(owner);
     let row = rows.get(key);
     if (!row) {
-      const title = ownerTitle(owner, source);
+      const title = owner.kind === 'counterpart' ? {kindLabel: 'Counterpart', name: owner.leaf} : ownerTitle(owner, source);
       row = {owner, kindLabel: title.kindLabel, name: title.name, minutes: 0, allDayDays: 0, blocks: 0, meetings: 0, done: 0, nextTodo: null};
       rows.set(key, row);
+    }
+    if (row.owner.kind === 'counterpart' && owner.kind === 'counterpart') {
+      for (const tag of owner.tags) if (!row.owner.tags.includes(tag)) row.owner.tags.push(tag);
     }
     return row;
   };
@@ -130,11 +154,10 @@ export function givenTimeOf(input: {source: EngageSource; range: {start: string;
       if (meeting.cancelled || meeting.date < scanFrom || meeting.date > range.end) continue;
       const days = coveredDaysIn(meeting, range.start, range.end).length;
       if (days === 0) continue;
-      const owner = ownerOfMeeting({itemPath: item.path, meeting}, source);
-      const side = owner && owner.kind !== 'item' ? owner : null;
+      const side = sideOwner(ownerOfMeeting({itemPath: item.path, meeting}, source));
       if (matcher.meetingState(item, meeting) !== 'shown') {
         hidden.add(ownerKey(home));
-        if (side) hidden.add(ownerKey(side));
+        if (side) hidden.add(keyOf(side));
         continue;
       }
       addTime(rowOf(areaRows, home), meeting, days);
@@ -142,11 +165,10 @@ export function givenTimeOf(input: {source: EngageSource; range: {start: string;
     }
     for (const task of item.tasks) {
       if (!doneIn(task)) continue;
-      const owner = ownerOfTodo({itemPath: item.path, task}, source);
-      const side = owner && owner.kind !== 'item' ? owner : null;
+      const side = sideOwner(ownerOfTodo({itemPath: item.path, task}, source));
       if (!matcher.taskShown(item, {tags: task.tags, dueDate: null}, '')) {
         hidden.add(ownerKey(home));
-        if (side) hidden.add(ownerKey(side));
+        if (side) hidden.add(keyOf(side));
         continue;
       }
       rowOf(areaRows, home).done++;
@@ -156,7 +178,15 @@ export function givenTimeOf(input: {source: EngageSource; range: {start: string;
 
   for (const row of [...areaRows.values(), ...ownerRows.values()]) {
     row.nextTodo = firstNext(row.owner, source);
-    hidden.delete(ownerKey(row.owner));
+    hidden.delete(keyOf(row.owner));
+  }
+  // The same leaf in two scopes: name the scope.
+  const counterparts = Array.from(ownerRows.values()).filter(r => r.owner.kind === 'counterpart');
+  for (const row of counterparts) {
+    const owner = row.owner as CounterpartOwner;
+    if (counterparts.filter(r => (r.owner as CounterpartOwner).leaf === owner.leaf).length > 1) {
+      row.name = `${owner.leaf} · ${source.items.find(i => i.path === owner.scopeOwnerPath)?.name ?? ''}`;
+    }
   }
   const byTime = (a: GivenTimeRow, b: GivenTimeRow) => sortMinutes(b) - sortMinutes(a) || a.name.localeCompare(b.name);
   const areas = Array.from(areaRows.values());
@@ -170,9 +200,26 @@ export function givenTimeOf(input: {source: EngageSource; range: {start: string;
   };
 }
 
+/** A loop stays; a thread becomes its counterpart; an item or none is no side row. */
+function sideOwner(owner: EngageOwner | null): Exclude<GivenTimeOwner, {kind: 'item'}> | null {
+  if (!owner || owner.kind === 'item') return null;
+  if (owner.kind === 'loop') return owner;
+  const leaf = owner.tag.split('/').slice(1).join('/');
+  return {kind: 'counterpart', scopeOwnerPath: owner.scopeOwnerPath, leaf, tags: [owner.tag]};
+}
+
+const keyOf = (owner: GivenTimeOwner) => (owner.kind === 'counterpart' ? `counterpart:${owner.scopeOwnerPath}|${owner.leaf}` : ownerKey(owner));
+
 function firstNext(owner: GivenTimeOwner, source: EngageSource): string | null {
   const plain = (task: Task) => task.text.replace(/\s*#\S+/g, '').trim() || task.text;
-  const owners: GivenTimeOwner[] = [owner];
+  if (owner.kind === 'counterpart') {
+    for (const tag of owner.tags) {
+      const next = ownerTodos({kind: 'thread', scopeOwnerPath: owner.scopeOwnerPath, tag}, source).find(t => isNextTask(t.task));
+      if (next) return plain(next.task);
+    }
+    return null;
+  }
+  const owners: EngageOwner[] = [owner];
   if (owner.kind === 'item') {
     const area = source.items.find(i => i.path === owner.itemPath);
     if (area?.kind === 'area') {
@@ -219,10 +266,10 @@ export function tendCount(
   };
 }
 
-/** "Tend: 3 threads · 2 loops quiet ›", or null when nothing is quiet. */
+/** "Tend: 3 counterparts · 2 loops quiet ›" (`threads` counts the roster's counterparts), or null when nothing is quiet. */
 export function tendLineText(count: {threads: number; loops: number}): string | null {
   const parts = [
-    count.threads > 0 ? `${count.threads} thread${count.threads === 1 ? '' : 's'}` : '',
+    count.threads > 0 ? `${count.threads} counterpart${count.threads === 1 ? '' : 's'}` : '',
     count.loops > 0 ? `${count.loops} loop${count.loops === 1 ? '' : 's'}` : '',
   ].filter(Boolean);
   return parts.length > 0 ? `Tend: ${parts.join(' · ')} quiet ›` : null;
