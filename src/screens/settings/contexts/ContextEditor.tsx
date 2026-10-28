@@ -5,8 +5,10 @@
  * the usual case), Projects, or plain tags in use (a loop or thread tag only
  * once a context names it) - where a tap adds or removes an entry; meetings
  * outside the context dimmed or shown as usual; a preview of how many `#next`
- * todos it shows. Save and Delete write at once. Every row but the chip list
- * keeps its height, so the name and Save always fit on the screen.
+ * todos it shows; from how much time loops and counterparts show in Given
+ * time. Save and Delete write at once. Every row but the chip list keeps its
+ * height, so the name and Save always fit on the screen. Everything opens
+ * with only its Given time threshold.
  */
 import React, {useEffect, useState} from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
@@ -23,6 +25,7 @@ import {errorMessage} from '../../../utils/errorMessage';
 import {logWarn} from '../../../utils/log';
 import {styles} from '../settingsStyles';
 import {setupStyles} from '../noteSetups/noteSetupsStyles';
+import GivenTimeThreshold from './GivenTimeThreshold';
 import {ContextListSide, ContextsDraft} from './useContextsDraft';
 
 /** Context tags of open todos and meetings, most used first: what a context can name besides the recently typed tags. */
@@ -81,6 +84,15 @@ export default function ContextEditor({draft, textColor, borderColor, placeholde
     };
   }, []);
   const ctx = draft.draft;
+  if (!ctx && draft.everythingOpen) {
+    return (
+      <View style={setupStyles.page}>
+        <Text style={[setupStyles.setupRowName, {color: textColor}]}>Everything</Text>
+        <Text style={[styles.pathPreview, {color: textColor}]}>All your projects, areas and todos. Contexts without their own threshold use this one too.</Text>
+        <GivenTimeThreshold value={draft.minMinutes} onChange={draft.setMinMinutes} textColor={textColor} borderColor={borderColor} />
+      </View>
+    );
+  }
   if (!ctx) {
     return <Text style={[styles.label, {color: textColor}]}>Tap a context on the left to edit it, or create a new one.</Text>;
   }
@@ -131,8 +143,9 @@ export default function ContextEditor({draft, textColor, borderColor, placeholde
       <View style={local.fixed}>
         <Text style={[styles.label, {color: textColor}]}>Meetings outside this context</Text>
         <MiniTabs tabs={OUTSIDE} activeKey={ctx.outsideMeetings} onChange={draft.setOutsideMeetings} textColor={textColor} borderColor={borderColor} />
+        <GivenTimeThreshold value={draft.minMinutes} onChange={draft.setMinMinutes} textColor={textColor} borderColor={borderColor} />
         <Text style={[styles.pathPreview, {color: textColor}]}>
-          Preview: shows {shown} of {all} next todos. The Inbox and todos due today or earlier always show.
+          Preview: shows {shown} of {all} next todos. The Inbox always shows.
         </Text>
       </View>
     </View>

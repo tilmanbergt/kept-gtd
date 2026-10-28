@@ -245,6 +245,7 @@ export default function WeekPlanner({
             textColor={textColor}
             borderColor={borderColor}
             placeholderColor={placeholderColor}
+            {...slot.todoOverride}
           />
           <View style={[common.divider, {backgroundColor: borderColor}]} />
 
@@ -255,6 +256,10 @@ export default function WeekPlanner({
               adding={slot.adding}
               onQuickAdd={planning.addToSelected}
               onBackToCard={planning.selectedToCard}
+              onClose={planning.cancelEditTarget}
+              actions={slot.todoActions}
+              selectedTodoKey={slot.selectedTodoKey}
+              onSelectTodo={slot.onSelectTodo}
               onOpenItem={path => openItemAt(path)}
               backRow={
                 <ContextBackRow
@@ -311,7 +316,6 @@ export default function WeekPlanner({
               settings={settings}
               filter={planning.contextFilter}
               onOpenItem={openItemAt}
-              onOpenInbox={onOpenInbox}
               onTend={() => requestReviewStep('tendingThreads', null)}
               textColor={textColor}
               borderColor={borderColor}

@@ -1,22 +1,25 @@
 /**
- * Given time (docs/dev/history/technical-design-time-and-place.md §3.4,
- * D16-D18, §9.6): which owners - loops, threads, Projects, Areas, the Inbox
- * - got time in a period, from the schedule alone. Pure.
+ * Given time (docs/dev/history/technical-design-time-and-place.md §3.4, §10
+ * C2, D16-D18): where the time of a period went, from the schedule alone. Two
+ * lists. Pure.
  *
- * - Every meeting and focus block that is not cancelled and covers a day of
- *   the range counts once, for `ownerOfMeeting` (its thread, else its active
- *   loop, else its Project or Area; the Inbox for an Inbox meeting). Timed:
- *   end - start (60 minutes without an end); all-day: 8 hours per covered day
- *   in the range for sorting, shown as days.
- * - `done`: todos completed in the range (`completion`), for `ownerOfTodo`.
- * - Given time: owners with scheduled time, by time (desc), then name.
- *   Worked on: owners with todos done and no scheduled time.
+ * - `areas`: every Area with everything scheduled in it and in its Projects,
+ *   and every Project without an Area - one list, by time (desc), then name.
+ *   A meeting or focus block counts for its file's item, a Project rolled up
+ *   into its Area. Timed: end - start (60 minutes without an end); all-day:
+ *   8 hours per covered day in the range for sorting, shown as days.
+ * - `owners`: loops and counterparts (threads) - the same meeting counts here
+ *   once more when `ownerOfMeeting` names one - from `minMinutes` up.
+ * - `done`: todos completed in the range (`completion`): for the rolled-up
+ *   item in `areas`, for their loop or thread (`ownerOfTodo`) in `owners`.
+ * - `workedOn`: Areas and Projects with todos done and nothing scheduled.
+ * - The Inbox is never listed.
  * - The active context (domain/contexts.ts) applies: a meeting it dims and a
  *   todo it hides count for no row; owners left with nothing shown count in
  *   `hiddenOwners` (the hidden line).
  */
 import {ContextMatcher} from './contexts';
-import {EngageOwner, EngageSource, ownerKey, ownerOfMeeting, ownerOfTodo, ownerTitle, ownerTodos} from './engageOwner';
+import {EngageItem, EngageOwner, EngageSource, ownerKey, ownerOfMeeting, ownerOfTodo, ownerTitle, ownerTodos} from './engageOwner';
 import {isNextTask} from './engageOptions';
 import {isFocusBlock} from './focusBlock';
 import {coveredDaysIn, spanScanStart} from './meetingSpan';
@@ -24,11 +27,11 @@ import {meetingEndMs, meetingStartMs} from './meetingTime';
 import {daysBetween} from './nextMeeting';
 import {Meeting, Task} from './types';
 
-export type GivenTimeOwner = EngageOwner | {kind: 'inbox'};
+export type GivenTimeOwner = EngageOwner;
 
 export interface GivenTimeRow {
   owner: GivenTimeOwner;
-  /** "Loop", "Thread", "Project", "Area" or "Inbox". */
+  /** "Loop", "Thread", "Project" or "Area". */
   kindLabel: string;
   name: string;
   /** Timed meetings and blocks, in minutes. */
@@ -38,12 +41,15 @@ export interface GivenTimeRow {
   blocks: number;
   meetings: number;
   done: number;
-  /** The owner's first open `#next` todo, or null. */
+  /** The owner's first open `#next` todo (an Area's own, then its Projects'), or null. */
   nextTodo: string | null;
 }
 
 export interface GivenTimeResult {
-  given: GivenTimeRow[];
+  /** Areas (with their Projects) and Projects without an Area, by time. */
+  areas: GivenTimeRow[];
+  /** Loops and counterparts with at least `minMinutes`, by time. */
+  owners: GivenTimeRow[];
   workedOn: GivenTimeRow[];
   /** Owners with time or done todos that the context leaves out. */
   hiddenOwners: number;
@@ -80,81 +86,104 @@ export function givenTimeDetail(row: GivenTimeRow): string {
     .join(' · ');
 }
 
-const INBOX: GivenTimeOwner = {kind: 'inbox'};
-const keyOf = (owner: GivenTimeOwner) => (owner.kind === 'inbox' ? 'inbox' : ownerKey(owner));
-const sortMinutes = (row: GivenTimeRow) => row.minutes + row.allDayDays * ALL_DAY_MINUTES;
+/** "Nothing above 1 h this week": the empty Loops and counterparts list. */
+export function belowThresholdText(minMinutes: number, period: string): string {
+  return minMinutes > 0 ? `Nothing above ${hoursText(minMinutes)} ${period}` : `Nothing ${period}`;
+}
 
-export function givenTimeOf(input: {source: EngageSource; range: {start: string; end: string}; matcher: ContextMatcher}): GivenTimeResult {
-  const {source, range, matcher} = input;
-  const rows = new Map<string, GivenTimeRow>();
+export const sortMinutes = (row: Pick<GivenTimeRow, 'minutes' | 'allDayDays'>) => row.minutes + row.allDayDays * ALL_DAY_MINUTES;
+
+/** A Project's Area when it is a known item, else the item itself. */
+function rolledUp(item: EngageItem, source: EngageSource): EngageItem {
+  if (item.kind !== 'project' || !item.area) return item;
+  return source.items.find(i => i.kind === 'area' && i.name === item.area) ?? item;
+}
+
+export function givenTimeOf(input: {source: EngageSource; range: {start: string; end: string}; matcher: ContextMatcher; minMinutes: number}): GivenTimeResult {
+  const {source, range, matcher, minMinutes} = input;
+  const areaRows = new Map<string, GivenTimeRow>();
+  const ownerRows = new Map<string, GivenTimeRow>();
   const hidden = new Set<string>();
   const scanFrom = spanScanStart(range.start);
 
-  const rowOf = (owner: GivenTimeOwner): GivenTimeRow => {
-    const key = keyOf(owner);
+  const rowOf = (rows: Map<string, GivenTimeRow>, owner: GivenTimeOwner): GivenTimeRow => {
+    const key = ownerKey(owner);
     let row = rows.get(key);
     if (!row) {
-      const title = owner.kind === 'inbox' ? {kindLabel: 'Inbox', name: 'Inbox'} : ownerTitle(owner, source);
+      const title = ownerTitle(owner, source);
       row = {owner, kindLabel: title.kindLabel, name: title.name, minutes: 0, allDayDays: 0, blocks: 0, meetings: 0, done: 0, nextTodo: null};
       rows.set(key, row);
     }
     return row;
   };
-  const addMeeting = (owner: GivenTimeOwner, meeting: Meeting, shown: boolean) => {
-    if (meeting.cancelled || meeting.date < scanFrom || meeting.date > range.end) return;
-    const days = coveredDaysIn(meeting, range.start, range.end);
-    if (days.length === 0) return;
-    if (!shown) {
-      hidden.add(keyOf(owner));
-      return;
-    }
-    const row = rowOf(owner);
+  const addTime = (row: GivenTimeRow, meeting: Meeting, days: number) => {
     if (meeting.time) row.minutes += meetingMinutes(meeting);
-    else row.allDayDays += days.length;
+    else row.allDayDays += days;
     if (isFocusBlock(meeting)) row.blocks++;
     else row.meetings++;
   };
   const doneIn = (task: Task) => task.done && !task.cancelled && !!task.fields.completion && task.fields.completion >= range.start && task.fields.completion <= range.end;
 
   for (const item of source.items) {
+    const home: GivenTimeOwner = {kind: 'item', itemPath: rolledUp(item, source).path};
     for (const meeting of item.meetings) {
+      if (meeting.cancelled || meeting.date < scanFrom || meeting.date > range.end) continue;
+      const days = coveredDaysIn(meeting, range.start, range.end).length;
+      if (days === 0) continue;
       const owner = ownerOfMeeting({itemPath: item.path, meeting}, source);
-      if (owner) addMeeting(owner, meeting, matcher.meetingState(item, meeting) === 'shown');
+      const side = owner && owner.kind !== 'item' ? owner : null;
+      if (matcher.meetingState(item, meeting) !== 'shown') {
+        hidden.add(ownerKey(home));
+        if (side) hidden.add(ownerKey(side));
+        continue;
+      }
+      addTime(rowOf(areaRows, home), meeting, days);
+      if (side) addTime(rowOf(ownerRows, side), meeting, days);
     }
     for (const task of item.tasks) {
       if (!doneIn(task)) continue;
       const owner = ownerOfTodo({itemPath: item.path, task}, source);
-      if (!owner) continue;
-      if (matcher.taskShown(item, {tags: task.tags, dueDate: null}, '')) rowOf(owner).done++;
-      else hidden.add(keyOf(owner));
+      const side = owner && owner.kind !== 'item' ? owner : null;
+      if (!matcher.taskShown(item, {tags: task.tags, dueDate: null}, '')) {
+        hidden.add(ownerKey(home));
+        if (side) hidden.add(ownerKey(side));
+        continue;
+      }
+      rowOf(areaRows, home).done++;
+      if (side) rowOf(ownerRows, side).done++;
     }
   }
-  if (source.inbox) {
-    for (const meeting of source.inbox.meetings) addMeeting(INBOX, meeting, true);
-    for (const task of source.inbox.tasks) if (doneIn(task)) rowOf(INBOX).done++;
-  }
 
-  for (const row of rows.values()) {
+  for (const row of [...areaRows.values(), ...ownerRows.values()]) {
     row.nextTodo = firstNext(row.owner, source);
-    hidden.delete(keyOf(row.owner));
+    hidden.delete(ownerKey(row.owner));
   }
-  const all = Array.from(rows.values());
   const byTime = (a: GivenTimeRow, b: GivenTimeRow) => sortMinutes(b) - sortMinutes(a) || a.name.localeCompare(b.name);
+  const areas = Array.from(areaRows.values());
   return {
-    given: all.filter(r => sortMinutes(r) > 0).sort(byTime),
-    workedOn: all.filter(r => sortMinutes(r) === 0 && r.done > 0).sort((a, b) => b.done - a.done || a.name.localeCompare(b.name)),
+    areas: areas.filter(r => sortMinutes(r) > 0).sort(byTime),
+    owners: Array.from(ownerRows.values())
+      .filter(r => sortMinutes(r) > 0 && sortMinutes(r) >= minMinutes)
+      .sort(byTime),
+    workedOn: areas.filter(r => sortMinutes(r) === 0 && r.done > 0).sort((a, b) => b.done - a.done || a.name.localeCompare(b.name)),
     hiddenOwners: hidden.size,
   };
 }
 
 function firstNext(owner: GivenTimeOwner, source: EngageSource): string | null {
   const plain = (task: Task) => task.text.replace(/\s*#\S+/g, '').trim() || task.text;
-  if (owner.kind === 'inbox') {
-    const task = source.inbox?.tasks.find(t => !t.done && !t.cancelled && isNextTask(t));
-    return task ? plain(task) : null;
+  const owners: GivenTimeOwner[] = [owner];
+  if (owner.kind === 'item') {
+    const area = source.items.find(i => i.path === owner.itemPath);
+    if (area?.kind === 'area') {
+      for (const p of source.items) if (p.kind === 'project' && p.area === area.name) owners.push({kind: 'item', itemPath: p.path});
+    }
   }
-  const next = ownerTodos(owner, source).find(t => isNextTask(t.task));
-  return next ? plain(next.task) : null;
+  for (const o of owners) {
+    const next = ownerTodos(o, source).find(t => isNextTask(t.task));
+    if (next) return plain(next.task);
+  }
+  return null;
 }
 
 /** Whether a thread or loop has "nothing planned" (D29, §9.14): no meeting or focus block in the next `windowDays` days. */
@@ -162,15 +191,31 @@ export function nothingPlanned(nextMeeting: string | null, today: string, window
   return nextMeeting === null || daysBetween(today, nextMeeting) > windowDays;
 }
 
-/** The Tend line's counts (D18): threads and loops with nothing planned. */
+/** What says whether an active counterpart needs tending (tendingRoster's entry fits). */
+export interface TendSignals {
+  nextMeeting: string | null;
+  oweCount: number;
+  /** Open `#next` todos of the counterpart. */
+  nextCount: number;
+}
+
+/**
+ * Whether an active counterpart needs tending (§10 C3): nothing planned in
+ * the next `windowDays` days and no `#next` or I-owe todo moving it forward.
+ */
+export function needsTending(entry: TendSignals, today: string, windowDays = 14): boolean {
+  return nothingPlanned(entry.nextMeeting, today, windowDays) && entry.oweCount === 0 && entry.nextCount === 0;
+}
+
+/** The Tend line's counts (D18): active threads that need tending, loops that need a look (storage/loopRoster.ts). */
 export function tendCount(
-  rosters: {threads: ReadonlyArray<{nextMeeting: string | null}>; loops: ReadonlyArray<{nextMeeting: string | null}>},
+  rosters: {threads: readonly TendSignals[]; loops: ReadonlyArray<{attention: string | null}>},
   today: string,
   windowDays = 14,
 ): {threads: number; loops: number} {
   return {
-    threads: rosters.threads.filter(t => nothingPlanned(t.nextMeeting, today, windowDays)).length,
-    loops: rosters.loops.filter(l => nothingPlanned(l.nextMeeting, today, windowDays)).length,
+    threads: rosters.threads.filter(t => needsTending(t, today, windowDays)).length,
+    loops: rosters.loops.filter(l => l.attention !== null).length,
   };
 }
 

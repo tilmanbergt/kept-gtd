@@ -56,9 +56,11 @@ jest.mock('../../src/supernote/fileSystem', () => {
       '## Meetings',
       '- 2026-01-07 10:00-11:00 Retro #retro/alpha',
       '- 2026-01-08 10:00-11:00 Other',
+      '- 2026-01-05 10:00-11:00 Retro #retro/beta',
       '',
       '## Threads',
       '- alpha: active',
+      '- beta: active',
       '',
     ].join('\n'),
     '/storage/emulated/0/Note/2 Areas/0 Inbox/Inbox.txt': '---\nkind: inbox\n---\n\n## Tasks\n- [ ] Inbox only #wf/ivan\n\n## Meetings\n',
@@ -141,7 +143,8 @@ describe('Review: Tending threads', () => {
     await settle();
 
     const md = r.root.findAll(n => n.props.header === 'Tending threads' && Array.isArray(n.props.rows))[0];
-    expect(md.props.rows.map((row: {kind: string; label?: string; leaf?: string}) => row.leaf ?? row.label)).toEqual(['New', 'anna', 'Coaching', 'alpha']);
+    // alpha has an I-owe todo, so it needs no tending; beta has nothing planned and nothing next (time-and-place §10 C3).
+    expect(md.props.rows.map((row: {kind: string; label?: string; leaf?: string}) => row.leaf ?? row.label)).toEqual(['New', 'anna', 'Coaching', 'beta']);
 
     const alpha = await detail(r, `${AREA}|alpha`);
     expect(texts(alpha)).toEqual(expect.arrayContaining(['alpha', 'Open overview ›', 'Set inactive', 'I owe · 1', 'Relevant · 1']));

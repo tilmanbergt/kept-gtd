@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-122 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+126 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -111,8 +111,8 @@ Test: `__tests__/scenarios/keptGtd.test.tsx`
 - **Given** contexts Work (Area Atruvia) and Home (Area Garden)
 - **When** I open Daily, tap the chip in the tab bar, choose Home in Settings → Contexts and go back to Daily
 - **Then** the chip names Home, and the status line says so
-- **And** Atruvia's next todos are hidden, Garden's, the Inbox and an overdue Atruvia todo show
-- **And** Atruvia's meeting is still listed (dimmed), and the hidden line counts the hidden todos
+- **And** Atruvia's todos are hidden, its overdue one too; Garden's and the Inbox show
+- **And** Atruvia's meeting is still listed (dimmed), and the hidden line counts the hidden todos and warns of the due one
 - **When** I tap Show
 - **Then** everything shows
 - **When** I switch to Week and back to Daily
@@ -238,6 +238,34 @@ Test: `__tests__/scenarios/meetingContext.test.tsx`
 
 Test: `__tests__/scenarios/meetingContext.test.tsx`
 
+### Quick Add to meeting opens the Todo tab and names where it adds, without an abbreviation in the text
+
+- **Given** the thread meeting "1:1 Mieke" today at 15:00, and Quick Add left on its Meeting tab
+- **When** I switch Quick Add to Meeting, tap the meeting and + Quick Add to meeting
+- **Then** the Todo tab shows, its button reads "+ Add to Coaching" and the text is empty
+
+Test: `__tests__/scenarios/meetingContext.test.tsx`
+
+### A todo in the panel opens its card and edit form; Save and ✕ return to the meeting
+
+- **Given** the thread meeting "1:1 Mieke" today at 15:00 with "Send the slides" owed
+- **When** I tap the meeting, then "Send the slides" in the panel
+- **Then** the todo's card shows in Quick Add's place; the panel stays
+- **When** I close the todo's card
+- **Then** the meeting's card is back
+- **When** I tap "Send the slides" twice, change it to "Send the final slides" and save
+- **Then** the file has the new text and the meeting's card is back
+
+Test: `__tests__/scenarios/meetingContext.test.tsx`
+
+### ✕ Close in the panel's header closes the meeting: Daily shows its next todos again
+
+- **Given** the thread meeting "1:1 Mieke" today at 15:00
+- **When** I tap the meeting, then ✕ Close next to Overview ›
+- **Then** the card and the panel are gone; Next todos shows
+
+Test: `__tests__/scenarios/meetingContext.test.tsx`
+
 ### Daily: tomorrow's tracked meeting offers Prepped, and Daily has no Link file
 
 - **Given** area "Coaching" has a sparring session tomorrow
@@ -262,7 +290,7 @@ Test: `__tests__/scenarios/rollback.test.tsx`
 - **Given** the smoke space on Wednesday 14.10.2026 with the context Home (Area Garden) active
 - **When** I open Daily
 - **Then** the Today tab lists "Neighbour chat" and "Dentist"
-- **And** the todos are the Inbox's, Garden's project Garage's, Website's overdue one and Garden's, each with its label; the rest is counted
+- **And** the todos are the Inbox's, Garden's project Garage's and Garden's, each with its label; the rest is counted, Website's overdue one as "1 due!"
 - **And** Someday, Maybe and done todos don't show
 - **When** I tap Show
 - **Then** Website's next todo and its Waiting For show too
@@ -997,7 +1025,7 @@ Test: `__tests__/scenarios/givenTime.test.tsx`
 
 ### Open loops: "+ F block" fills Quick Add's Meeting tab with the loop and F on
 
-- **Given** on Wednesday 14.10.: Writing with the active loop #writing/novel and nothing planned
+- **Given** on Wednesday 14.10.: Writing with the active loop #writing/novel, nothing planned and no next todo
 - **When** I open Review → Open loops and select the loop
 - **Then** its row says "nothing planned"
 - **When** I tap "+ F block", set 9-11 and add
@@ -1138,12 +1166,24 @@ Test: `__tests__/scenarios/threadsBigArea.test.tsx` · design: `docs/dev/history
 
 ## Week and Month
 
-### Given time: owners by time, an all-day event as "1 day", Worked on for todos done
+### Given time: areas and projects by time, an all-day event as "1 day", Worked on for todos done
 
 - **Given** on Wednesday 14.10.: Writing with two focus blocks this week, Garden with an all-day delivery, Website with a todo done and nothing scheduled
 - **When** I open Week
 - **Then** Given time lists Garden (1 day) above Writing (3.5 h, two blocks, its next todo)
+- **And** no loop or counterpart reaches 1 h
 - **And** Worked on lists Website with its todo done
+- **And** no error was logged
+
+Test: `__tests__/scenarios/givenTime.test.tsx`
+
+### Given time lists loops and counterparts from the threshold up, never the Inbox
+
+- **Given** on Wednesday 14.10.: Writing with 2 h for the loop novel and 30 min for the loop essay this week, and an Inbox meeting
+- **When** I open Week
+- **Then** Writing has all 2.5 h; Loops and counterparts lists novel, not essay (below 1 h); no Inbox row
+- **When** I set Everything's threshold to "all" a week in Settings → Contexts and go back to Week
+- **Then** essay shows too
 - **And** no error was logged
 
 Test: `__tests__/scenarios/givenTime.test.tsx`
@@ -1178,7 +1218,7 @@ Test: `__tests__/scenarios/meetingContext.test.tsx`
 - **When** I open Week
 - **Then** the grid shows Wednesday 14 "Neighbour chat" and "Dentist", Thursday 15 "Supplier call" and the focus block, Friday 16 "Delivery"
 - **And** not "Soil test", which is next week
-- **And** Given time lists Garden first with "Delivery" as 1 day, its two timed meetings and its focus block, then the Inbox's Dentist
+- **And** Given time lists Garden with "Delivery" as 1 day, its two timed meetings and its focus block; never the Inbox's Dentist
 - **When** I tap ›
 - **Then** the grid shows Tuesday 20 "Soil test"
 - **And** no error was logged

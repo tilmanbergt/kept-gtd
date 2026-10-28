@@ -117,7 +117,7 @@ export default function DailyView({onOpenItem, onOpenInbox, onOpenCalendarSettin
     // eslint-disable-next-line react-hooks/exhaustive-deps -- todayDate: recompute after midnight
     [tagFilter, items, inbox, inboxPath, aggregate, todayDate, matcher],
   );
-  const hiddenText = contextFilter.lineText(tallyHidden(displayAggregate.hiddenTasks ?? [], contextFilter.kinds));
+  const hiddenText = contextFilter.lineText(tallyHidden(displayAggregate.hiddenTasks ?? [], contextFilter.kinds, todayDate));
 
   // dailyEntryDate: a multi-day meeting is listed on each day it covers.
   const meetingsToday = displayAggregate.meetings.filter(entry => dailyEntryDate(entry) === todayDate);
@@ -264,6 +264,7 @@ export default function DailyView({onOpenItem, onOpenInbox, onOpenCalendarSettin
       textColor={textColor}
       borderColor={borderColor}
       placeholderColor={placeholderColor}
+      {...context.todoOverride}
     />
   );
 
@@ -322,6 +323,10 @@ export default function DailyView({onOpenItem, onOpenInbox, onOpenCalendarSettin
                       adding={context.adding}
                       onQuickAdd={actions.edit.add}
                       onBackToCard={actions.edit.toCard}
+                      onClose={cancelEditTarget}
+                      actions={context.todoActions}
+                      selectedTodoKey={context.selectedTodoKey}
+                      onSelectTodo={context.onSelectTodo}
                       onOpenItem={path => {
                         const owner = items.find(i => i.path === path);
                         if (owner) onOpenItem(owner.kind, {name: owner.name, path, isFolder: true});

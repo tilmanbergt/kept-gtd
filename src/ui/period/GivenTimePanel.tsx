@@ -1,18 +1,20 @@
 /**
  * Week's and Month's right side under Quick Add
- * (docs/dev/history/technical-design-time-and-place.md §3.4, D16-D18): one
- * paged list - "Given time this week" (owners by scheduled time, hours on the
+ * (docs/dev/history/technical-design-time-and-place.md §3.4, §10 C2-C3,
+ * D16-D18): one paged list - "Given time this week" (Areas with their
+ * Projects and Projects without an Area, by scheduled time, hours on the
  * right, a grey line with blocks, meetings, todos done and the next todo),
- * then "Worked on this week" (todos done, nothing scheduled) - the Tend line
- * (threads and loops with nothing planned in 14 days, opening Review →
- * Tending threads) and the hidden line under the active context. A row opens
- * its owner: a thread's or loop's overview, a Project's or Area's page, the
- * Inbox. Built from the cache on every cache change, never by a timer.
+ * "Loops and counterparts" (from the context's threshold up), then "Worked
+ * on this week" (todos done, nothing scheduled) - the Tend line (threads and
+ * loops that need tending, opening Review → Tending threads) and the hidden
+ * line under the active context. A row opens its owner: a thread's or loop's
+ * overview, a Project's or Area's page. The Inbox is never listed. Built from
+ * the cache on every cache change, never by a timer.
  */
 import React, {useEffect, useMemo} from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
-import {NO_HIDDEN} from '../../domain/contexts';
-import {GivenTimeOwner, GivenTimeRow, givenTimeDetail, givenTimeOf, givenTimeText, tendCount, tendLineText} from '../../domain/givenTime';
+import {minMinutesOf, NO_HIDDEN} from '../../domain/contexts';
+import {belowThresholdText, GivenTimeOwner, GivenTimeRow, givenTimeDetail, givenTimeOf, givenTimeText, tendCount, tendLineText} from '../../domain/givenTime';
 import {todayIso} from '../../domain/meetingTime';
 import {GtdParaSettings} from '../../domain/settings';
 import {threadTypesOf} from '../../domain/counterparts';
@@ -30,7 +32,7 @@ import {openOverview} from '../overviewStore';
 import PagedSection from '../PagedSection';
 import {FONT} from '../theme';
 
-type Row = {kind: 'caption'; text: string} | {kind: 'owner'; row: GivenTimeRow};
+type Row = {kind: 'caption'; text: string} | {kind: 'hint'; text: string} | {kind: 'owner'; row: GivenTimeRow};
 
 const CAPTION_ROW_PX = 28;
 /** Two lines: name and time 22, the grey line 18, padding 7 × 2, border 1 (design-device-rendering §3, like a 2-line meeting row). */
@@ -45,7 +47,6 @@ interface Props {
   settings: GtdParaSettings | null;
   filter: ContextFilter;
   onOpenItem: (path: string) => void;
-  onOpenInbox?: () => void;
   onTend: () => void;
   textColor: string;
   borderColor: string;
@@ -55,7 +56,8 @@ export default function GivenTimePanel(props: Props): React.JSX.Element {
   const {scope, range, items, inbox, inboxPath, settings, filter, textColor, borderColor} = props;
   const noteSetups = settings?.noteSetups;
   const source = useMemo(() => engageSourceOf(items, engageInboxOf(inboxPath, inbox), noteSetups ?? []), [items, inbox, inboxPath, noteSetups]);
-  const result = useMemo(() => givenTimeOf({source, range, matcher: filter.matcher}), [source, range, filter.matcher]);
+  const minMinutes = minMinutesOf(filter.matcher.context, settings?.givenTimeMinMinutes, scope);
+  const result = useMemo(() => givenTimeOf({source, range, matcher: filter.matcher, minMinutes}), [source, range, filter.matcher, minMinutes]);
   const today = todayIso();
   const tend = useMemo(() => {
     const threads = buildTendingRoster([...items], inbox && inboxPath ? {path: inboxPath, tasks: inbox.tasks, meetings: inbox.meetings} : null, threadTypesOf(noteSetups ?? []));
@@ -67,23 +69,25 @@ export default function GivenTimePanel(props: Props): React.JSX.Element {
     return tendCount(
       {
         threads: threads.filter(s => contextItems(s.owner.path)).flatMap(s => s.active),
-        loops: loops.filter(s => contextItems(s.owner.path)).flatMap(s => s.loops.map(l => l.glance)),
+        loops: loops.filter(s => contextItems(s.owner.path)).flatMap(s => s.loops),
       },
       today,
     );
   }, [items, inbox, inboxPath, noteSetups, today, filter.matcher]);
   useEffect(() => {
-    log('GivenTime: built', `rows ${result.given.length + result.workedOn.length}`);
+    log('GivenTime: built', `areas ${result.areas.length}`, `owners ${result.owners.length}`, `worked on ${result.workedOn.length}`);
   }, [result]);
 
   const period = scope === 'week' ? 'this week' : 'this month';
+  const ownerRow = (row: GivenTimeRow): Row => ({kind: 'owner', row});
   const rows: Row[] = [
-    ...result.given.map(row => ({kind: 'owner' as const, row})),
-    ...(result.workedOn.length > 0 ? [{kind: 'caption' as const, text: `Worked on ${period}`}, ...result.workedOn.map(row => ({kind: 'owner' as const, row}))] : []),
+    ...(result.areas.length > 0 ? result.areas.map(ownerRow) : [{kind: 'hint' as const, text: `Nothing scheduled ${period} yet.`}]),
+    {kind: 'caption', text: 'Loops and counterparts'},
+    ...(result.owners.length > 0 ? result.owners.map(ownerRow) : [{kind: 'hint' as const, text: belowThresholdText(minMinutes, period)}]),
+    ...(result.workedOn.length > 0 ? [{kind: 'caption' as const, text: `Worked on ${period}`}, ...result.workedOn.map(ownerRow)] : []),
   ];
   const open = (owner: GivenTimeOwner) => {
-    if (owner.kind === 'inbox') props.onOpenInbox?.();
-    else if (owner.kind === 'item') props.onOpenItem(owner.itemPath);
+    if (owner.kind === 'item') props.onOpenItem(owner.itemPath);
     else openOverview({tag: owner.tag, ownerPath: owner.kind === 'thread' ? owner.scopeOwnerPath : owner.itemPath});
   };
   const renderRow = (row: Row) => {
@@ -94,8 +98,15 @@ export default function GivenTimePanel(props: Props): React.JSX.Element {
         </Text>
       );
     }
+    if (row.kind === 'hint') {
+      return (
+        <Text key={`hint:${row.text}`} style={[styles.hint, {color: textColor}]} numberOfLines={1}>
+          {row.text}
+        </Text>
+      );
+    }
     const r = row.row;
-    const key = r.owner.kind === 'inbox' ? 'inbox' : r.owner.kind === 'item' ? r.owner.itemPath : `${r.owner.kind}:${r.owner.tag}`;
+    const key = r.owner.kind === 'item' ? r.owner.itemPath : `${r.owner.kind}:${r.owner.tag}`;
     return (
       <Pressable key={key} onPress={() => open(r.owner)} style={[styles.row, {borderBottomColor: borderColor}]}>
         <View style={styles.line1}>
@@ -117,12 +128,11 @@ export default function GivenTimePanel(props: Props): React.JSX.Element {
       <PagedSection
         header={`Given time ${period}`}
         rows={rows}
-        rowHeight={row => (row.kind === 'caption' ? CAPTION_ROW_PX : GIVEN_TIME_ROW_PX)}
+        rowHeight={row => (row.kind === 'owner' ? GIVEN_TIME_ROW_PX : CAPTION_ROW_PX)}
         resetKey={`${range.start}|${range.end}`}
         heightKey={`givenTime:${scope}`}
         isCountableRow={row => row.kind === 'owner'}
         renderRow={renderRow}
-        emptyHint={`Nothing scheduled ${period} yet.`}
         textColor={textColor}
         borderColor={borderColor}
       />
@@ -147,7 +157,8 @@ const styles = StyleSheet.create({
   line1: {flexDirection: 'row', alignItems: 'center'},
   name: {flex: 1, fontSize: FONT.medium, fontWeight: '600', lineHeight: 22, includeFontPadding: false},
   kind: {fontSize: FONT.small, fontWeight: '400'},
-  time: {fontSize: FONT.medium, fontWeight: '700', lineHeight: 22, marginLeft: 8, includeFontPadding: false},
+  time: {fontSize: FONT.medium, lineHeight: 22, marginLeft: 8, includeFontPadding: false},
+  hint: {height: CAPTION_ROW_PX, fontSize: FONT.small, lineHeight: CAPTION_ROW_PX, opacity: 0.6, includeFontPadding: false},
   detail: {fontSize: FONT.small, lineHeight: 18, opacity: 0.6, includeFontPadding: false},
   tend: {paddingVertical: 6},
   tendText: {fontSize: FONT.small, fontWeight: '600', textDecorationLine: 'underline'},

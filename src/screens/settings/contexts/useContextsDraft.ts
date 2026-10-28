@@ -4,9 +4,11 @@
  * which write `contexts` at once (and mirror it into the Settings draft, so a
  * later Save on another tab keeps it) - the Note setups pattern - and
  * `handleActivate`, which makes a context (or Everything, '') the active one.
+ * Everything opens in the editor too, with only its Given time threshold,
+ * which is written at once (`givenTimeMinMinutes`).
  */
 import {useState} from 'react';
-import {ContextDef, ContextEntry, EVERYTHING_LABEL, newContext, toggleEntry} from '../../../domain/contexts';
+import {ContextDef, ContextEntry, DEFAULT_MIN_MINUTES, EVERYTHING_LABEL, MinMinutes, newContext, toggleEntry} from '../../../domain/contexts';
 import {GtdParaSettings} from '../../../domain/settings';
 import {patchSettings} from '../../../storage/settingsStorage';
 import {useStatusApi} from '../../../ui/status/StatusProvider';
@@ -18,12 +20,19 @@ export type ContextListSide = 'shows' | 'hides';
 
 export interface ContextsDraft {
   draft: ContextDef | null;
+  /** Everything is open in the editor (no draft then). */
+  everythingOpen: boolean;
+  /** The open context's Given time threshold, or Everything's. */
+  minMinutes: MinMinutes;
   /** The draft is a context not saved yet. */
   isNew: boolean;
   side: ContextListSide;
   setSide: (side: ContextListSide) => void;
   handleNew: () => void;
   handleEdit: (id: string) => void;
+  handleEditEverything: () => void;
+  /** The draft's threshold; Everything's is written at once. */
+  setMinMinutes: (scope: keyof MinMinutes, minutes: number) => void;
   setName: (name: string) => void;
   toggle: (entry: ContextEntry) => void;
   setOutsideMeetings: (value: ContextDef['outsideMeetings']) => void;
@@ -36,6 +45,8 @@ export interface ContextsDraft {
 
 export function useContextsDraft(values: GtdParaSettings, setValues: (update: (v: GtdParaSettings) => GtdParaSettings) => void): ContextsDraft {
   const [draft, setDraft] = useState<ContextDef | null>(null);
+  const [everythingOpen, setEverythingOpen] = useState(false);
+  const everything = values.givenTimeMinMinutes ?? DEFAULT_MIN_MINUTES;
   const [side, setSide] = useState<ContextListSide>('shows');
   const statusApi = useStatusApi();
   const contexts = values.contexts ?? [];
@@ -59,16 +70,40 @@ export function useContextsDraft(values: GtdParaSettings, setValues: (update: (v
   const update = (change: (d: ContextDef) => ContextDef) => setDraft(d => (d ? change(d) : d));
   return {
     draft,
+    everythingOpen,
+    minMinutes: draft?.minMinutes ?? everything,
     isNew,
     side,
     setSide,
     handleNew: () => {
       setDraft(newContext(contexts));
+      setEverythingOpen(false);
       setSide('shows');
     },
     handleEdit: id => {
       setDraft(contexts.find(c => c.id === id) ?? null);
+      setEverythingOpen(false);
       setSide('shows');
+    },
+    handleEditEverything: () => {
+      setDraft(null);
+      setEverythingOpen(true);
+    },
+    setMinMinutes: (scope, minutes) => {
+      if (draft) {
+        update(d => ({...d, minMinutes: {...(d.minMinutes ?? everything), [scope]: minutes}}));
+        return;
+      }
+      if (!everythingOpen) return;
+      const next = {...everything, [scope]: minutes};
+      setValues(v => ({...v, givenTimeMinMinutes: next}));
+      patchSettings({givenTimeMinMinutes: next})
+        .then(() => {
+          log('Settings: given time threshold saved', `week ${next.week} min`, `month ${next.month} min`);
+          const id = 'Settings.contexts';
+          statusApi.show(id, {kind: 'success', text: 'Everything saved.', onDismiss: () => statusApi.clear(id)});
+        })
+        .catch(e => logError('Settings: saving the given time threshold failed', errorMessage(e)));
     },
     setName: name => update(d => ({...d, name})),
     toggle: entry => update(d => (side === 'shows' ? {...d, shows: toggleEntry(d.shows, entry)} : {...d, hides: toggleEntry(d.hides, entry)})),
@@ -88,7 +123,10 @@ export function useContextsDraft(values: GtdParaSettings, setValues: (update: (v
       }
       setDraft(null);
     },
-    handleCancel: () => setDraft(null),
+    handleCancel: () => {
+      setDraft(null);
+      setEverythingOpen(false);
+    },
     handleActivate: id => {
       if (id === (values.activeContextId ?? '')) return;
       const name = contexts.find(c => c.id === id)?.name || EVERYTHING_LABEL;

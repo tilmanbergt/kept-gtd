@@ -9,6 +9,7 @@ import {
   newContext,
   nextCountOf,
   renameItemInContexts,
+  minMinutesOf,
   tallyHidden,
   toggleEntry,
   unknownContextEntries,
@@ -44,11 +45,11 @@ describe('contextMatcher', () => {
     expect(m.taskShown(garden, task('Prep #retro/demand #next'), TODAY)).toBe(true);
     expect(m.taskShown(garden, task('Prep #retrospective #next'), TODAY)).toBe(false);
   });
-  it('the Inbox and todos due today or overdue always show', () => {
+  it('the Inbox always shows; due todos follow the context', () => {
     const m = contextMatcher(ctx({hides: [{kind: 'item', itemKind: 'area', name: 'Garden'}]}));
     expect(m.taskShown('inbox', task('Call #next'), TODAY)).toBe(true);
-    expect(m.taskShown(garden, task('Water', {dueDate: '2026-10-14'}), TODAY)).toBe(true);
-    expect(m.taskShown(garden, task('Old', {dueDate: '2026-10-01'}), TODAY)).toBe(true);
+    expect(m.taskShown(garden, task('Water', {dueDate: '2026-10-14'}), TODAY)).toBe(false);
+    expect(m.taskShown(garden, task('Old', {dueDate: '2026-10-01'}), TODAY)).toBe(false);
     expect(m.taskShown(garden, task('Later', {dueDate: '2026-10-20'}), TODAY)).toBe(false);
   });
   it('Hides wins over Shows', () => {
@@ -78,6 +79,15 @@ describe('contextMatcher', () => {
   });
 });
 
+describe('minMinutesOf', () => {
+  it('the context\'s own threshold, else Everything\'s, else 1 h a week · 2 h a month', () => {
+    expect(minMinutesOf({...work, minMinutes: {week: 30, month: 60}}, {week: 120, month: 240}, 'week')).toBe(30);
+    expect(minMinutesOf(work, {week: 120, month: 240}, 'month')).toBe(240);
+    expect(minMinutesOf(null, undefined, 'week')).toBe(60);
+    expect(minMinutesOf(null, null, 'month')).toBe(120);
+  });
+});
+
 describe('activeContext', () => {
   it('finds the stored id; empty or unknown is Everything', () => {
     expect(activeContext({contexts: [work], activeContextId: 'c1'})).toBe(work);
@@ -88,14 +98,14 @@ describe('activeContext', () => {
 });
 
 describe('tallyHidden and the hidden line', () => {
-  it('counts todos and the distinct loops and threads among them', () => {
-    const hidden = [task('a #writing/novel'), task('b #writing/novel'), task('c #sparring/mieke'), task('d #other/x'), task('e')].map(t => ({task: t}));
-    expect(tallyHidden(hidden, {loopKinds: ['writing'], threadTypes: ['sparring']})).toEqual({todos: 5, loops: 1, threads: 1, items: 0});
+  it('counts todos, the distinct loops and threads among them and the due ones', () => {
+    const hidden = [task('a #writing/novel'), task('b #writing/novel', {dueDate: TODAY}), task('c #sparring/mieke', {dueDate: '2026-10-01'}), task('d #other/x', {dueDate: '2026-10-20'}), task('e')].map(t => ({task: t}));
+    expect(tallyHidden(hidden, {loopKinds: ['writing'], threadTypes: ['sparring']}, TODAY)).toEqual({todos: 5, loops: 1, threads: 1, items: 0, due: 2});
   });
-  it('reads "Hidden by Work: 9 todos · 2 loops · 1 thread"; nothing hidden is no line', () => {
-    expect(hiddenLineText('Work', {todos: 9, loops: 2, threads: 1, items: 0})).toBe('Hidden by Work: 9 todos · 2 loops · 1 thread');
-    expect(hiddenLineText('Home', {todos: 0, loops: 0, threads: 0, items: 1}, {one: 'area', many: 'areas'})).toBe('Hidden by Home: 1 area');
-    expect(hiddenLineText('Home', {todos: 0, loops: 0, threads: 0, items: 0})).toBeNull();
+  it('reads "Hidden by Work: 9 todos · 2 loops · 1 thread · 3 due!"; nothing hidden is no line', () => {
+    expect(hiddenLineText('Work', {todos: 9, loops: 2, threads: 1, items: 0, due: 3})).toBe('Hidden by Work: 9 todos · 2 loops · 1 thread · 3 due!');
+    expect(hiddenLineText('Home', {todos: 0, loops: 0, threads: 0, items: 1, due: 0}, {one: 'area', many: 'areas'})).toBe('Hidden by Home: 1 area');
+    expect(hiddenLineText('Home', {todos: 0, loops: 0, threads: 0, items: 0, due: 0})).toBeNull();
   });
   it('the Quick Add notice', () => expect(hiddenAddText('Atruvia', 'Home')).toBe('Saved to Atruvia · hidden by Home'));
 });

@@ -70,7 +70,7 @@ A loop ends as **Done** (it reached its end) or **Dropped** (it stops here). **C
 
 ## In the Weekly Review
 
-The step **Open loops** lists your loops per area and project, and points at the ones without a next action or past their main date. See [Weekly Review](review.md).
+The step **Open loops** lists the loops that need a look, per area and project: those without a next action and nothing planned, and those past their main date. See [Weekly Review](review.md).
 
 ## In your files
 

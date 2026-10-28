@@ -1,6 +1,8 @@
 /**
  * Review step "Open loops" (docs/dev/history/technical-design-loops.md §4.8):
- * the active loops per scope (storage/loopRoster.ts), frozen when the step
+ * the active loops that need a look per scope (storage/loopRoster.ts:
+ * nothing planned and no next action, or past their main date;
+ * technical-design-time-and-place.md §10 C3), frozen when the step
  * is entered - an Area with its Projects, then each Project without an Area.
  * Two lines a row: ○ the loop and its kind (and its Project, inside an
  * Area's scope); then main date · next meeting and the counts of its own
@@ -61,8 +63,10 @@ export const openLoopsCount = loopRosterCount;
 function rosterRows(roster: LoopRosterScope[]): LoopRow[] {
   const rows: LoopRow[] = [];
   for (const scope of roster) {
+    const look = scope.loops.filter(l => l.attention !== null);
+    if (look.length === 0) continue;
     rows.push({kind: 'head', key: `h-${scope.owner.path}`, label: scope.owner.name});
-    scope.loops.forEach(e => rows.push({kind: 'loop', key: entryKey(e), label: e.glance.loop.name}));
+    look.forEach(e => rows.push({kind: 'loop', key: entryKey(e), label: e.glance.loop.name}));
   }
   return rows;
 }
@@ -199,7 +203,7 @@ export default function OpenLoopsStep({data, stepEntryToken, onAddTask, textColo
       renderDetail={renderDetail}
       actedOnKeys={frozen.actedOn}
       resetKey={stepEntryToken}
-      emptyHint="No open loops. A Note setup of the kind Loop makes its tag a kind of loop (#workshop/<name>)."
+      emptyHint="No loop needs a look: each has something planned or a next todo. A Note setup of the kind Loop makes its tag a kind of loop (#workshop/<name>)."
       textColor={textColor}
       borderColor={borderColor}
     />

@@ -14,9 +14,9 @@ or your project/area files are stored.
 - **Contexts**: Work, Home, Café - set them up in **Settings → Contexts** (areas, projects and tags
   the context shows or hides; usually just a few areas) and switch there: the chip in the tab bar names
   the active context and opens Settings → Contexts, where ○ makes another one active. A context filters Daily, Week,
-  Month, Projects, Areas and the Weekly Review; the Inbox and todos due today or earlier always show,
-  meetings outside it are dimmed, never hidden. Every filtered tab ends with "Hidden by Work: 9 todos
-  · Show". The Review's overview adds "+2 in other contexts"; Reviewed counts for every context.
+  Month, Projects, Areas and the Weekly Review; the Inbox always shows, meetings outside it are
+  dimmed, never hidden. Every filtered tab ends with "Hidden by Work: 9 todos · Show", with "3 due!"
+  when hidden todos are due today or earlier. The Review's overview adds "+2 in other contexts"; Reviewed counts for every context.
   Quick Add says when a new todo lands outside the context: "Saved to Atruvia · hidden by Home".
 - **Focus blocks**: time for yourself with a loop, thread, project or area. Switch on **F** next to
   **M** in Quick Add's Meeting form (or on a meeting's card); the line gets the tag `#focusblock`,
@@ -28,17 +28,21 @@ or your project/area files are stored.
   everything around it below: **I owe**, **Next**, **Waiting for** and **Agreed last time** (a
   thread) or **From its meetings** (a loop). A plain meeting shows what is linked to it, or its
   project's or area's next todos ("Nothing linked to this meeting yet"). **+ Quick Add to meeting**
-  (**+ Quick Add to block**) adds to it: before it starts the todo gets the thread's or loop's tag,
-  during and after it also records the meeting, as in Engage.
-- **Given time** on Week and Month: the loops, threads, projects and areas that got time in the week
-  or month, from meetings and focus blocks (an all-day event counts as "1 day"), with blocks, meetings,
-  todos done and the next todo; **Worked on** lists the ones with todos done but nothing scheduled.
-  **Tend: 3 threads · 2 loops quiet ›** counts those with nothing planned in 14 days and opens the
-  Review's Tending threads.
+  (**+ Quick Add to block**) adds to it on the Todo tab, the button naming where ("+ Add to Coaching"):
+  before it starts the todo gets the thread's or loop's tag, during and after it also records the
+  meeting, as in Engage. Todos in the panel open their card and edit form like anywhere else; **✕ Close**
+  next to **Overview ›** closes the meeting.
+- **Given time** on Week and Month: the areas (with their projects) and projects that got time in the
+  week or month, from meetings and focus blocks (an all-day event counts as "1 day"), with blocks,
+  meetings, todos done and the next todo; then **Loops and counterparts** from 1 h a week / 2 h a
+  month (a threshold each context can change in Settings → Contexts, Everything's too); **Worked on**
+  lists areas and projects with todos done but nothing scheduled. **Tend: 3 threads · 2 loops quiet ›**
+  counts the threads and loops that need tending and opens the Review's Tending threads.
 - A project's or area's page shows **Given time · this week 3 h · this month 11 h**.
-- Review: **Tending threads** and **Open loops** mark rows with "nothing planned" (no meeting in the
-  next 14 days); **Open loops** has **+ F block**, which fills Quick Add's Meeting tab with the loop
-  and F on.
+- Review: **Tending threads** lists new counterparts and the active ones that need tending - nothing
+  planned in the next 14 days and no next or I-owe todo; **Open loops** lists the loops with no next
+  action and nothing planned, or past their main date. Both mark "nothing planned"; **Open loops** has
+  **+ F block**, which fills Quick Add's Meeting tab with the loop and F on.
 - **Settings → Features**: switch **Project close-out** on or off. Off, a Done project is archived
   directly from its page and from the Weekly Review, without the checklist and the PDF.
 

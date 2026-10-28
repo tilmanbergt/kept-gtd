@@ -35,13 +35,12 @@ scenario('Daily under a context shows today\'s meetings and the next todos it sh
     expect(textsBetween('Today', 'Todo')).toEqual(expect.arrayContaining(['Neighbour chat', 'Dentist']));
     expect(textsBetween('Today', 'Todo')).not.toContain('Supplier call');
   });
-  and('the todos are the Inbox\'s, Garden\'s project Garage\'s, Website\'s overdue one and Garden\'s, each with its label; the rest is counted', () => {
+  and('the todos are the Inbox\'s, Garden\'s project Garage\'s and Garden\'s, each with its label; the rest is counted, Website\'s overdue one as "1 due!"', () => {
     expect(todoList()).toEqual([
       'Inbox', 'Call the plumber  #next',
       'Garage', 'Sort tools  #next',
-      'Website', 'Send invoice  #due 13.10. !',
       'Garden', 'Buy bulbs  #next', 'Water the lawn  #due 14.10.',
-      'Hidden by Home: 2 todos · 1 thread · ', 'Show',
+      'Hidden by Home: 3 todos · 1 thread · 1 due! · ', 'Show',
     ]);
   });
   and('Someday, Maybe and done todos don\'t show', () => {

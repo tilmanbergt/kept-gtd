@@ -32,9 +32,10 @@ scenario('Week shows this week\'s meetings and the time given to each owner', {f
     expect(weekDay('Fr 16.10.')).toEqual(['all day', 'Delivery']);
   });
   and('not "Soil test", which is next week', () => expectNotShows('Soil test'));
-  and('Given time lists Garden first with "Delivery" as 1 day, its two timed meetings and its focus block, then the Inbox\'s Dentist', () => {
+  and('Given time lists Garden with "Delivery" as 1 day, its two timed meetings and its focus block; never the Inbox\'s Dentist', () => {
     const panel = textsBetween('Given time this week');
-    expect(panel.slice(0, 6)).toEqual(['Garden  Area', '1 day · 3 h', '1 block · 3 meetings · next: Buy bulbs', 'Inbox  Inbox', '1 h', '1 meeting · next: Call the plumber']);
+    expect(panel.slice(0, 5)).toEqual(['Garden  Area', '1 day · 3 h', '1 block · 3 meetings · next: Buy bulbs', 'Loops and counterparts', 'Nothing above 1 h this week']);
+    expect(panel).not.toContain('Inbox  Inbox');
   });
   when('I tap ›', () => tap('›'));
   then('the grid shows Tuesday 20 "Soil test"', () => expect(weekDay('Tu 20.10.')).toEqual(['11:00', 'Soil test']));

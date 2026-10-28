@@ -5,12 +5,14 @@
  * then one paged list - I owe · Next · Waiting for · Agreed last time / From
  * its meetings / Agreed here - whose section captions are rows, so paging
  * stays exact; sections without rows are left out. The header names the owner
- * and opens its overview (thread, loop) or page (Project, Area). The footer
- * switches the card's slot to Quick Add for this meeting and back.
+ * and opens its overview (thread, loop) or page (Project, Area); its "✕ Close"
+ * closes the meeting like the card's ✕ (§10 C6). The footer switches the
+ * card's slot to Quick Add for this meeting and back.
  *
- * Todo rows tick, open their note and linked file through
- * ui/useEntryActions.ts; a tap on a row selects nothing - the screen's one
- * selection stays the meeting.
+ * Todo rows tick, open their note and linked file through the slot's
+ * ui/useEntryActions.ts; a tap on a row selects it - its card shows in Quick
+ * Add's place, a second tap its edit form (the slot's own selection,
+ * ui/meetingContext/useMeetingContextSlot.ts, §10 C5).
  */
 import React from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
@@ -26,7 +28,8 @@ import PagedSection from '../PagedSection';
 import TaskRow, {taskRowHeight, taskRowLines} from '../TaskRow';
 import {TASK_COLUMN_WIDTH_PX} from '../taskRowLayout';
 import {FONT} from '../theme';
-import {useEntryActions} from '../useEntryActions';
+import {EntryActions} from '../useEntryActions';
+import {panelTodoKey} from './useMeetingContextSlot';
 import {Meeting} from '../../domain/types';
 
 type PanelRow =
@@ -69,6 +72,12 @@ interface Props {
   adding: boolean;
   onQuickAdd: () => void;
   onBackToCard: () => void;
+  /** Closes the meeting (the screen's cancel): back to Next todos or Given time. */
+  onClose: () => void;
+  /** The slot's todo actions and selection. */
+  actions: EntryActions;
+  selectedTodoKey: string | null;
+  onSelectTodo: (todo: OwnerTodoRef) => void;
   /** Opens a Project's or Area's page (a plain meeting's owner). */
   onOpenItem: (path: string) => void;
   /** Week/Month: "‹ Back to Week 44 · Tue 27.10. · 8 meetings ›" above the list. */
@@ -77,8 +86,8 @@ interface Props {
   borderColor: string;
 }
 
-export default function MeetingContextPanel({model, meeting, adding, onQuickAdd, onBackToCard, onOpenItem, backRow, textColor, borderColor}: Props): React.JSX.Element {
-  const actions = useEntryActions('MeetingContext');
+export default function MeetingContextPanel(props: Props): React.JSX.Element {
+  const {model, meeting, adding, onQuickAdd, onBackToCard, onClose, actions, selectedTodoKey, onSelectTodo, onOpenItem, backRow, textColor, borderColor} = props;
   const today = todayIso();
   const rows = panelRowsOf(model);
   const {owner, ownerTitle} = model;
@@ -105,8 +114,8 @@ export default function MeetingContextPanel({model, meeting, adding, onQuickAdd,
       <TaskRow
         key={`todo:${todo.item.path}#${todo.taskIndex}`}
         task={todo.task}
-        isEditing={false}
-        onStartEdit={() => {}}
+        isEditing={selectedTodoKey === panelTodoKey(todo)}
+        onStartEdit={() => onSelectTodo(todo)}
         onToggleDone={() => actions.toggleDone(todo)}
         onCreateNote={() => actions.taskNote(todo)}
         onOpenNote={() => actions.taskNote(todo)}
@@ -128,11 +137,16 @@ export default function MeetingContextPanel({model, meeting, adding, onQuickAdd,
       <PagedSection
         header={title}
         headerAccessory={
-          owner ? (
-            <Pressable onPress={openOwner} hitSlop={8}>
-              <Text style={[styles.link, {color: textColor}]}>Overview ›</Text>
+          <View style={styles.accessory}>
+            {owner ? (
+              <Pressable onPress={openOwner} hitSlop={8}>
+                <Text style={[styles.link, {color: textColor}]}>Overview ›</Text>
+              </Pressable>
+            ) : null}
+            <Pressable onPress={onClose} hitSlop={8} style={styles.close} accessibilityLabel="Close the meeting">
+              <Text style={[styles.link, {color: textColor}]}>✕ Close</Text>
             </Pressable>
-          ) : undefined
+          </View>
         }
         rows={rows}
         rowHeight={rowHeight}
@@ -157,6 +171,8 @@ const styles = StyleSheet.create({
   root: {flex: 1},
   caption: {marginTop: 6, marginBottom: 4},
   info: {fontWeight: '400', fontStyle: 'italic'},
+  accessory: {flexDirection: 'row', alignItems: 'center'},
+  close: {marginLeft: 16},
   link: {fontSize: FONT.small, fontWeight: '600', textDecorationLine: 'underline'},
   footer: {borderTopWidth: 1, paddingVertical: 8, alignItems: 'flex-start'},
   footerText: {fontSize: FONT.medium, fontWeight: '600'},

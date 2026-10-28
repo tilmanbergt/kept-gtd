@@ -240,6 +240,7 @@ export default function MonthView({
                   textColor={textColor}
                   borderColor={borderColor}
                   placeholderColor={placeholderColor}
+                  {...slot.todoOverride}
                 />
                 <View style={[common.divider, {backgroundColor: borderColor}]} />
 
@@ -250,6 +251,10 @@ export default function MonthView({
                     adding={slot.adding}
                     onQuickAdd={planning.addToSelected}
                     onBackToCard={planning.selectedToCard}
+                    onClose={() => planning.closeDayPanel()}
+                    actions={slot.todoActions}
+                    selectedTodoKey={slot.selectedTodoKey}
+                    onSelectTodo={slot.onSelectTodo}
                     onOpenItem={openItemAt}
                     backRow={
                       <ContextBackRow

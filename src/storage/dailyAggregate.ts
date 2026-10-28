@@ -48,8 +48,7 @@
  * The active context (docs/dev/history/technical-design-time-and-place.md
  * §3.3, domain/contexts.ts) applies on top, as `matcher`: a todo the rule
  * above lets through but the context hides goes to `hiddenTasks` (the
- * hidden line counts them); the Inbox and todos due today or earlier always
- * pass. Meetings are never hidden, only marked `contextState: 'dimmed'`.
+ * hidden line counts them, due ones as "3 due!"); the Inbox always passes. Meetings are never hidden, only marked `contextState: 'dimmed'`.
  */
 import {entriesInRange, entryDate, MeetingSpanDay} from '../domain/meetingSpan';
 import {resolveAbbrevPath} from '../domain/abbrev';

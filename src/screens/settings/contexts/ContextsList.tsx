@@ -3,8 +3,8 @@
  * §3.3): "+ New context", the built-in Everything (not editable) and the
  * contexts with their one-line summary and how many `#next` todos they show.
  * Each row starts with a radio: a tap there makes it the active context (the
- * tab bar's chip opens this tab); a tap on the rest of a context's row opens
- * it in the editor.
+ * tab bar's chip opens this tab); a tap on the rest of a row opens it in the
+ * editor (Everything with only its Given time threshold).
  */
 import React from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
@@ -22,12 +22,14 @@ interface Props {
   openId: string | null;
   onNew: () => void;
   onEdit: (id: string) => void;
+  onEditEverything: () => void;
+  everythingOpen: boolean;
   onActivate: (id: string) => void;
   textColor: string;
   borderColor: string;
 }
 
-export default function ContextsList({contexts, activeId, openId, onNew, onEdit, onActivate, textColor, borderColor}: Props): React.JSX.Element {
+export default function ContextsList({contexts, activeId, openId, onNew, onEdit, onEditEverything, everythingOpen, onActivate, textColor, borderColor}: Props): React.JSX.Element {
   const items = useCachedItems();
   const today = todayIso();
   const radio = (id: string, name: string) => {
@@ -51,16 +53,16 @@ export default function ContextsList({contexts, activeId, openId, onNew, onEdit,
       <Pressable onPress={onNew} hitSlop={8} style={styles.addDefRow}>
         <Text style={[styles.addDefRowText, {color: textColor}]}>+ New context</Text>
       </Pressable>
-      <View style={[setupStyles.setupRow, setupStyles.defaultRow, local.row, {borderColor}]}>
+      <View style={[setupStyles.setupRow, local.row, {borderColor}, everythingOpen && setupStyles.defaultRow]}>
         {radio('', EVERYTHING_LABEL)}
-        <View style={setupStyles.setupRowMain}>
+        <Pressable onPress={onEditEverything} hitSlop={4} style={setupStyles.setupRowMain}>
           <Text style={[setupStyles.setupRowName, {color: textColor}]} numberOfLines={1}>
             {EVERYTHING_LABEL}
           </Text>
           <Text style={[setupStyles.setupRowMeta, {color: textColor}]} numberOfLines={1}>
             {meta('built in: all your projects, areas and todos', null)}
           </Text>
-        </View>
+        </Pressable>
       </View>
       <View style={setupStyles.listBody}>
         <PagedSection<ContextDef>

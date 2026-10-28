@@ -7,7 +7,8 @@
  *
  * The rules, in this order:
  * 1. Everything shows all.
- * 2. Inbox entries and todos due today or overdue always show.
+ * 2. Inbox entries always show. Due todos follow the context too; the hidden
+ *    line counts the hidden ones that are due ("3 due!").
  * 3. An item entry matches a Project or Area by kind and folder name; an
  *    Area also matches its Projects (`area:`). A tag entry matches a todo or
  *    meeting carrying the tag or one nested under it (`tagMatchesSetupTag`:
@@ -32,6 +33,21 @@ export interface ContextDef {
   shows: ContextEntry[];
   hides: ContextEntry[];
   outsideMeetings: 'dim' | 'show';
+  /** Given time lists loops and counterparts from this much time up; absent = Everything's (`givenTimeMinMinutes`). */
+  minMinutes?: MinMinutes;
+}
+
+/** Minutes a loop or counterpart needs in a week and in a month to show in Given time. */
+export interface MinMinutes {
+  week: number;
+  month: number;
+}
+
+export const DEFAULT_MIN_MINUTES: MinMinutes = {week: 60, month: 120};
+
+/** The active context's threshold for `scope`, else Everything's, else the default. */
+export function minMinutesOf(ctx: ContextDef | null, everything: MinMinutes | null | undefined, scope: 'week' | 'month'): number {
+  return (ctx?.minMinutes ?? everything ?? DEFAULT_MIN_MINUTES)[scope];
 }
 
 /** What the matcher reads about a Project or Area (a cached item fits). */
@@ -88,9 +104,8 @@ export function contextMatcher(ctx: ContextDef | null): ContextMatcher {
   return {
     context: ctx,
     itemShown: item => passes(ctx, item, []),
-    taskShown: (item, task, today) => {
+    taskShown: (item, task) => {
       if (item === 'inbox') return true;
-      if (task.dueDate && task.dueDate <= today) return true;
       return passes(ctx, item, task.tags);
     },
     meetingState: (item, meeting) => {
@@ -106,18 +121,21 @@ export interface HiddenTally {
   loops: number;
   threads: number;
   items: number;
+  /** Hidden todos due today or earlier: "3 due!". */
+  due: number;
 }
 
-export const NO_HIDDEN: HiddenTally = {todos: 0, loops: 0, threads: 0, items: 0};
+export const NO_HIDDEN: HiddenTally = {todos: 0, loops: 0, threads: 0, items: 0, due: 0};
 
 /**
- * Counts hidden todos, and the distinct loops and threads among their tags
- * (`loopKinds`/`threadTypes`: the Note setups' kinds); `items` is passed
- * through for tabs that hide Projects or Areas.
+ * Counts hidden todos, the distinct loops and threads among their tags
+ * (`loopKinds`/`threadTypes`: the Note setups' kinds) and the hidden todos due
+ * by `today`; `items` is passed through for tabs that hide Projects or Areas.
  */
 export function tallyHidden(
-  hiddenTasks: ReadonlyArray<{task: Pick<Task, 'tags'>}>,
+  hiddenTasks: ReadonlyArray<{task: Pick<Task, 'tags' | 'dueDate'>}>,
   kinds: {loopKinds: readonly string[]; threadTypes: readonly string[]},
+  today: string,
   items = 0,
 ): HiddenTally {
   const loops = new Set<string>();
@@ -130,18 +148,20 @@ export function tallyHidden(
       else if (kinds.threadTypes.includes(type)) threads.add(tag);
     }
   }
-  return {todos: hiddenTasks.length, loops: loops.size, threads: threads.size, items};
+  const due = hiddenTasks.filter(({task}) => task.dueDate !== null && task.dueDate <= today).length;
+  return {todos: hiddenTasks.length, loops: loops.size, threads: threads.size, items, due};
 }
 
 const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
 
-/** "Hidden by Work: 9 todos · 2 loops · 1 thread", or null when nothing is hidden. `itemNoun` names hidden items ("projects", "areas", "items"). */
+/** "Hidden by Work: 9 todos · 2 loops · 1 thread · 3 due!", or null when nothing is hidden. `itemNoun` names hidden items ("projects", "areas", "items"). */
 export function hiddenLineText(contextName: string, tally: HiddenTally, itemNoun: {one: string; many: string} = {one: 'item', many: 'items'}): string | null {
   const parts = [
     tally.todos > 0 ? plural(tally.todos, 'todo', 'todos') : '',
     tally.loops > 0 ? plural(tally.loops, 'loop', 'loops') : '',
     tally.threads > 0 ? plural(tally.threads, 'thread', 'threads') : '',
     tally.items > 0 ? plural(tally.items, itemNoun.one, itemNoun.many) : '',
+    tally.due > 0 ? `${tally.due} due!` : '',
   ].filter(Boolean);
   return parts.length > 0 ? `Hidden by ${contextName}: ${parts.join(' · ')}` : null;
 }

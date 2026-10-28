@@ -1,7 +1,7 @@
 /** Given time, Worked on and Tend (docs/dev/history/technical-design-time-and-place.md §3.4, §6). */
 import {contextMatcher, ContextDef} from '../../src/domain/contexts';
 import {EngageItem, EngageSource} from '../../src/domain/engageOwner';
-import {givenTimeDetail, givenTimeOf, givenTimeText, meetingMinutes, nothingPlanned, scheduledMinutes, tendCount, tendLineText} from '../../src/domain/givenTime';
+import {belowThresholdText, GivenTimeRow, givenTimeDetail, givenTimeOf, givenTimeText, meetingMinutes, needsTending, nothingPlanned, scheduledMinutes, tendCount, tendLineText} from '../../src/domain/givenTime';
 import {LoopLine} from '../../src/domain/loopsSection';
 import {deriveMeetingFields} from '../../src/domain/markdown';
 import {Meeting} from '../../src/domain/types';
@@ -50,35 +50,41 @@ describe('givenTimeOf', () => {
     meetings: [m('2026-10-14', '1:1 Mieke #sparring/mieke', {time: '10:00', endTime: '11:00'}), m('2026-10-11', 'Long run #sparring/mieke', {days: 3})],
     tasks: [done('Sent slides #sparring/mieke', '2026-10-14')],
   });
+  const garage = item('project', 'Garage', {area: 'Home', meetings: [m('2026-10-14', 'Tool sort', {time: '17:00'})], tasks: [task('Sort tools #next')]});
   const web = item('project', 'Website', {tasks: [done('Logo', '2026-10-13'), done('Copy', '2026-10-14'), task('Draft homepage #next')]});
-  const source = src([home, coaching, web], [m('2026-10-14', 'Dentist', {time: '16:00', endTime: '16:30'})]);
-  const result = givenTimeOf({source, range: WEEK, matcher: all});
+  const source = src([home, coaching, garage, web], [m('2026-10-14', 'Dentist', {time: '16:00', endTime: '16:30'})]);
+  const result = givenTimeOf({source, range: WEEK, matcher: all, minMinutes: 60});
+  const line = (r: GivenTimeRow) => `${r.kindLabel} ${r.name} ${givenTimeText(r)}`;
 
-  it('sorts owners by time; all-day counts 8 h per covered day in the range; multi-day clipped', () => {
-    expect(result.given.map(r => `${r.kindLabel} ${r.name} ${givenTimeText(r)}`)).toEqual([
-      'Thread #sparring/mieke 2 days · 1 h',
-      'Area Home 2 days',
-      'Loop novel 3 h',
-      'Inbox Inbox 30 min',
-    ]);
+  it('Areas with their Projects, by time; all-day counts 8 h per covered day in the range; multi-day clipped; no Inbox', () => {
+    expect(result.areas.map(line)).toEqual(['Area Home 2 days · 4 h', 'Area Coaching 2 days · 1 h']);
   });
-  it('a focus block counts for its loop as a block; a meeting once, for its thread', () => {
-    const loop = result.given.find(r => r.kindLabel === 'Loop')!;
+  it('loops and counterparts in their own list: a meeting counts there once more', () => {
+    expect(result.owners.map(line)).toEqual(['Thread #sparring/mieke 2 days · 1 h', 'Loop novel 3 h']);
+    const loop = result.owners.find(r => r.kindLabel === 'Loop')!;
     expect(loop).toMatchObject({blocks: 2, meetings: 0, nextTodo: 'Chapter 3'});
     expect(givenTimeDetail(loop)).toBe('2 blocks · next: Chapter 3');
-    const thread = result.given.find(r => r.kindLabel === 'Thread')!;
-    expect(thread).toMatchObject({meetings: 2, done: 1});
+    expect(result.owners.find(r => r.kindLabel === 'Thread')).toMatchObject({meetings: 2, done: 1});
+    expect(result.areas.find(r => r.name === 'Home')).toMatchObject({blocks: 2, meetings: 2});
+  });
+  it('the threshold leaves out loops and counterparts with less time', () => {
+    expect(givenTimeOf({source, range: WEEK, matcher: all, minMinutes: 200}).owners.map(r => r.name)).toEqual(['#sparring/mieke']);
   });
   it('Worked on: done in the range and nothing scheduled; earlier done todos never count', () => {
     expect(result.workedOn.map(r => `${r.name} ${r.done}`)).toEqual(['Website 2']);
-    expect(result.given.find(r => r.name === 'Home')?.done).toBe(0);
+    expect(result.areas.find(r => r.name === 'Home')?.done).toBe(0);
   });
   it('the context leaves dimmed meetings and hidden todos out and counts their owners', () => {
     const work: ContextDef = {id: 'c', name: 'Work', shows: [{kind: 'item', itemKind: 'area', name: 'Coaching'}], hides: [], outsideMeetings: 'dim'};
-    const filtered = givenTimeOf({source, range: WEEK, matcher: contextMatcher(work)});
-    expect(filtered.given.map(r => r.name)).toEqual(['#sparring/mieke', 'Inbox']);
+    const filtered = givenTimeOf({source, range: WEEK, matcher: contextMatcher(work), minMinutes: 60});
+    expect(filtered.areas.map(r => r.name)).toEqual(['Coaching']);
+    expect(filtered.owners.map(r => r.name)).toEqual(['#sparring/mieke']);
     expect(filtered.workedOn).toEqual([]);
     expect(filtered.hiddenOwners).toBe(3);
+  });
+  it('"Nothing above 1 h this week" when no loop or counterpart reaches the threshold', () => {
+    expect(belowThresholdText(60, 'this week')).toBe('Nothing above 1 h this week');
+    expect(belowThresholdText(0, 'this month')).toBe('Nothing this month');
   });
 });
 
@@ -95,8 +101,17 @@ describe('Tend', () => {
     expect(nothingPlanned('2026-10-28', today)).toBe(false);
     expect(nothingPlanned('2026-10-29', today)).toBe(true);
   });
-  it('counts threads and loops, and the line', () => {
-    const count = tendCount({threads: [{nextMeeting: null}, {nextMeeting: '2026-10-20'}, {nextMeeting: '2026-12-01'}], loops: [{nextMeeting: null}]}, today);
+  it('a counterpart needs tending with nothing planned and no next or I-owe todo', () => {
+    const quiet = {nextMeeting: null, oweCount: 0, nextCount: 0};
+    expect(needsTending(quiet, today)).toBe(true);
+    expect(needsTending({...quiet, oweCount: 1}, today)).toBe(false);
+    expect(needsTending({...quiet, nextCount: 1}, today)).toBe(false);
+    expect(needsTending({...quiet, nextMeeting: '2026-10-20'}, today)).toBe(false);
+    expect(needsTending({...quiet, nextMeeting: '2026-12-01'}, today)).toBe(true);
+  });
+  it('counts threads that need tending and loops that need a look, and the line', () => {
+    const t = (nextMeeting: string | null, nextCount = 0) => ({nextMeeting, oweCount: 0, nextCount});
+    const count = tendCount({threads: [t(null), t('2026-10-20'), t('2026-12-01'), t(null, 1)], loops: [{attention: 'noNext'}, {attention: null}]}, today);
     expect(count).toEqual({threads: 2, loops: 1});
     expect(tendLineText(count)).toBe('Tend: 2 threads · 1 loop quiet ›');
     expect(tendLineText({threads: 0, loops: 0})).toBeNull();

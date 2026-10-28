@@ -28,6 +28,8 @@ export default function ContextsTab(props: {
           openId={draft.draft?.id ?? null}
           onNew={draft.handleNew}
           onEdit={draft.handleEdit}
+          onEditEverything={draft.handleEditEverything}
+          everythingOpen={draft.everythingOpen}
           onActivate={draft.handleActivate}
           textColor={textColor}
           borderColor={borderColor}

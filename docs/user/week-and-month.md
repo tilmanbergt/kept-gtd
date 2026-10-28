@@ -20,11 +20,16 @@ The right side has **Given time this month** (see below).
 
 ## Given time
 
-Given time shows where your time went, from your schedule alone: every loop, thread, project and area (and the Inbox) that has meetings or focus blocks in the week or month, the one with the most time first. The time is on the right (`3.5 h`; an all-day event counts as `1 day`), the grey line below says how many focus blocks and meetings, how many todos were done and the next todo (`2 blocks · 1 meeting · 3 done · next: Draft chapter`). Tap a row to open its project or area, or the overview of its thread or loop.
+Given time shows where your time went, from your schedule alone, in two lists:
 
-**Worked on this week** lists the ones with todos done but nothing scheduled. Cancelled meetings don't count.
+- **Given time this week**: your areas - each with everything scheduled in it and in its projects - and the projects without an area, the one with the most time first. A project with more time than an area comes before it. The Inbox is never listed.
+- **Loops and counterparts**: the loops and threads that got time, again the most first. The same meeting counts here once more. Only those with at least **1 h a week** (**2 h a month**) are listed, so the list stays short; when none reaches that, it says "Nothing above 1 h this week". Each context can set its own threshold, see [Contexts](contexts.md).
 
-Under it, **Tend: 3 threads · 2 loops quiet ›** counts the threads and loops with nothing planned in the next 14 days; tap it to open the Weekly Review's **Tending threads**. With a context active ([Contexts](contexts.md)), only what it shows counts, and the last line says how many owners it hides.
+The time is on the right (`3.5 h`; an all-day event counts as `1 day`), the grey line below says how many focus blocks and meetings, how many todos were done and the next todo (`2 blocks · 1 meeting · 3 done · next: Draft chapter`). Tap a row to open its project or area, or the overview of its thread or loop.
+
+**Worked on this week** lists the areas and projects with todos done but nothing scheduled. Cancelled meetings don't count.
+
+Under it, **Tend: 3 threads · 2 loops quiet ›** counts the threads that need tending - nothing planned in the next 14 days and no next or I-owe todo - and the loops that need a look (see [Weekly Review](review.md)); tap it to open the Weekly Review's **Tending threads**. With a context active ([Contexts](contexts.md)), only what it shows counts, and the last line says how many owners it hides.
 
 ## Meeting length
 

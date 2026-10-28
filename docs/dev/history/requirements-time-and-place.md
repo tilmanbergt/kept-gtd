@@ -271,3 +271,24 @@ on the release commit).
   Hides ("everything but work").
 - **Q2 Review under a context** as in §9 item 13.
 - **Q3 Release numbering (confirmed):** 0.22.0 "Time and place" absorbs Daily slim; Agenda becomes 0.23.0.
+
+## 11. Changes after the first device test (decided 2026-10-28)
+
+- **D23 changed:** only the **Inbox** is always shown. Todos due today and overdue follow the context like
+  any other todo; the hidden line names how many of the hidden todos are due: "Hidden by Work: 13 todos ·
+  1 loop · 3 due! · Show".
+- **D16/D17 changed — Given time in two lists.** First **Areas and projects**: each Area with everything in
+  it (its projects, loops, threads) and each project without an Area, in one list sorted by time (a project
+  can come before an Area). Then **Loops and counterparts**: the same time once more, per loop and per
+  counterpart, only from a threshold up (per context, default 1 h a week / 2 h a month; "Nothing above 1 h this
+  week" when none). The Inbox is never listed. Times in the same size and weight as the names. Worked on
+  stays, for Areas and projects.
+- **D18/D29 changed:** Review's **Tending threads** lists the New counterparts (Tend / Not) and the active
+  ones with nothing planned in 14 days and no next todo (`#next` or I owe); **Open loops** lists the loops
+  with nothing planned and no next todo (and, as before, those past their main date). The Tend line counts
+  the same.
+- **Context panel (D10-D15 refined):** "+ Quick Add to meeting/block" opens on the **Todo** tab with "Add to
+  <owner's Project or Area>" as its fixed destination - no `#ABBR` in the text; the thread's or loop's tag and
+  the meeting stay in the grey line as before. Todos in the panel are selectable and editable like any row;
+  ✕ or Save on such a todo returns to the meeting's card. The panel's header gets **✕ Close** next to
+  **Overview ›**, doing what the card's ✕ does. All of this alike on Daily, Week, Month and Week ahead.

@@ -52,15 +52,15 @@ scenario('A context filters Daily: hidden todos, dimmed meetings, the hidden lin
     expectShows('Home ›');
     expectShows('Context: Home');
   });
-  and('Atruvia\'s next todos are hidden, Garden\'s, the Inbox and an overdue Atruvia todo show', () => {
+  and('Atruvia\'s todos are hidden, its overdue one too; Garden\'s and the Inbox show', () => {
     expectNotShows(/^Prepare offer/);
+    expectNotShows(/^Send the report/);
     expectShows(/^Buy bulbs/);
     expectShows(/^Call the plumber/);
-    expectShows(/^Send the report/);
   });
-  and('Atruvia\'s meeting is still listed (dimmed), and the hidden line counts the hidden todos', () => {
+  and('Atruvia\'s meeting is still listed (dimmed), and the hidden line counts the hidden todos and warns of the due one', () => {
     expectShows(/^Steering committee/);
-    expectShows('Hidden by Home: 2 todos ·');
+    expectShows('Hidden by Home: 3 todos · 1 due! ·');
   });
   when('I tap Show', () => tap('Show'));
   then('everything shows', () => {
@@ -141,7 +141,7 @@ scenario('Settings → Contexts: create Café, then choose it from the chip', {f
     await tap('Hides');
     await tap('#computer');
   });
-  then('the preview counts what it shows', () => expectShows('Preview: shows 1 of 3 next todos. The Inbox and todos due today or earlier always show.'));
+  then('the preview counts what it shows', () => expectShows('Preview: shows 1 of 3 next todos. The Inbox always shows.'));
   when('I save', () => tap('Save'));
   then('Café is listed with its count and summary', () => {
     expectShows('Café');

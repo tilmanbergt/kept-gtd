@@ -82,7 +82,7 @@ scenario('Quick Add to meeting before it starts: an agenda item with the thread 
     await tap(/^1:1 Mieke/);
     await tap('+ Quick Add to meeting');
     await type('New task', 'Bring the numbers');
-    await tap('+ Add');
+    await tap('+ Add to Coaching');
   });
   then('the todo carries the thread tag and no meeting field', () => {
     expect(sectionLines(areaFile('Coaching'), 'Tasks')).toContainEqual(expect.stringMatching(/^- \[ \] Bring the numbers #sparring\/mieke( \[created:: 2026-10-14\])?$/));
@@ -104,11 +104,79 @@ scenario('Quick Add to meeting during it: the meeting is recorded', {feature: 'D
     await tap(/^1:1 Mieke/);
     await tap('+ Quick Add to meeting');
     await type('New task', 'Send the contract');
-    await tap('+ Add');
+    await tap('+ Add to Coaching');
   });
   then('the todo has the thread tag and [meeting:: …] of this meeting', () => {
     const key = meetingKey({date: '2026-10-14', title: '1:1 Mieke #sparring/mieke'});
     expect(sectionLines(areaFile('Coaching'), 'Tasks')).toContainEqual(expect.stringMatching(new RegExp(`^- \\[ \\] Send the contract #sparring/mieke \\[meeting:: ${key.replace(/[.*+?^${}()|[\]\\/]/g, '\\$&')}\\]`)));
+  });
+});
+
+scenario('Quick Add to meeting opens the Todo tab and names where it adds, without an abbreviation in the text', {feature: 'Daily', design: DESIGN}, () => {
+  given('the thread meeting "1:1 Mieke" today at 15:00, and Quick Add left on its Meeting tab', () => {
+    smokeClock();
+    coaching(['- 2026-10-14 15:00-16:00 1:1 Mieke #sparring/mieke']);
+  });
+  when('I switch Quick Add to Meeting, tap the meeting and + Quick Add to meeting', async () => {
+    await openDaily();
+    await tap('Meeting');
+    await tap(/^1:1 Mieke/);
+    await tap('+ Quick Add to meeting');
+  });
+  then('the Todo tab shows, its button reads "+ Add to Coaching" and the text is empty', () => {
+    expectShows('+ Add to Coaching');
+    expectShows('Next');
+    expect(readTexts()).not.toContain('#COA');
+  });
+});
+
+scenario('A todo in the panel opens its card and edit form; Save and ✕ return to the meeting', {feature: 'Daily', design: DESIGN}, () => {
+  given('the thread meeting "1:1 Mieke" today at 15:00 with "Send the slides" owed', () => {
+    smokeClock();
+    coaching(['- 2026-10-14 15:00-16:00 1:1 Mieke #sparring/mieke']);
+  });
+  when('I tap the meeting, then "Send the slides" in the panel', async () => {
+    await openDaily();
+    await tap(/^1:1 Mieke/);
+    await tap(/^Send the slides/);
+  });
+  then('the todo\'s card shows in Quick Add\'s place; the panel stays', () => {
+    expectShows('Todo · open');
+    expectShows('I owe');
+  });
+  when('I close the todo\'s card', () => tapLabel('Close'));
+  then('the meeting\'s card is back', () => {
+    expectShows('Meeting · today');
+    expectShows('I owe');
+  });
+  when('I tap "Send the slides" twice, change it to "Send the final slides" and save', async () => {
+    await tap(/^Send the slides/);
+    // The card's title comes first now; the panel's row is the second.
+    await tap(/^Send the slides/, 1);
+    await type('New task', 'Send the final slides');
+    await tap('Save');
+  });
+  then('the file has the new text and the meeting\'s card is back', () => {
+    expect(sectionLines(areaFile('Coaching'), 'Tasks')).toContainEqual(expect.stringMatching(/^- \[ \] Send the final slides \[meeting:: /));
+    expectShows('Meeting · today');
+    expect(loggedErrors()).toEqual([]);
+  });
+});
+
+scenario('✕ Close in the panel\'s header closes the meeting: Daily shows its next todos again', {feature: 'Daily', design: DESIGN}, () => {
+  given('the thread meeting "1:1 Mieke" today at 15:00', () => {
+    smokeClock();
+    coaching(['- 2026-10-14 15:00-16:00 1:1 Mieke #sparring/mieke']);
+  });
+  when('I tap the meeting, then ✕ Close next to Overview ›', async () => {
+    await openDaily();
+    await tap(/^1:1 Mieke/);
+    await tap('✕ Close');
+  });
+  then('the card and the panel are gone; Next todos shows', () => {
+    expectNotShows('Meeting · today');
+    expectNotShows('I owe');
+    expectShows('Next todos');
   });
 });
 

@@ -12,7 +12,7 @@ A todo appears on Daily when it is open and one of these is true:
 
 Todos marked Someday or Maybe never appear on Daily. Todos are grouped by project or area, the Inbox first; Waiting for todos come last in their group.
 
-With a context active, Daily shows only the todos of the projects, areas and tags the context shows. The Inbox and todos due today or earlier always show. The last line counts the rest, for example "Hidden by Home: 4 todos · Show"; **Show** shows everything until you switch tabs. Meetings outside the context stay in the list, dimmed.
+With a context active, Daily shows only the todos of the projects, areas and tags the context shows. The Inbox always shows; todos that are due follow the context too. The last line counts the rest, for example "Hidden by Home: 4 todos · 1 due! · Show" - "due!" counts hidden todos due today or earlier; **Show** shows everything until you switch tabs. Meetings outside the context stay in the list, dimmed.
 
 ## Labels
 

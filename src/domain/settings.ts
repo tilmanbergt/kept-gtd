@@ -10,7 +10,7 @@ import type {EngageOwner, EngageTodoKey} from './engageOwner';
 import type {NoteSetup, NoteSetupDefaults} from './noteSetups';
 import {ReviewStepsMap} from './reviewSteps';
 import {DEFAULT_MODULES, Modules} from './features';
-import type {ContextDef} from './contexts';
+import type {ContextDef, MinMinutes} from './contexts';
 
 export interface GtdParaSettings {
   baseRoot: string;
@@ -192,6 +192,8 @@ export interface GtdParaSettings {
   contexts: ContextDef[];
   /** The active context's id; '' = Everything. Per profile; chosen from the tab bar's chip. */
   activeContextId: string;
+  /** Everything's Given time threshold for loops and counterparts (a context without its own uses it too). Per profile. */
+  givenTimeMinMinutes: MinMinutes;
   /** Debug logging: also append every log line to a rotating file in the debug folder (utils/logSink.ts). */
   debugLogging: boolean;
   /**
@@ -259,6 +261,7 @@ export const DEFAULT_SETTINGS: GtdParaSettings = {
   modules: DEFAULT_MODULES,
   contexts: [],
   activeContextId: '',
+  givenTimeMinMinutes: {week: 60, month: 120},
   debugLogging: false,
   notebookContentsEnabled: true,
   lastSeenVersion: '',

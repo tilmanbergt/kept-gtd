@@ -592,3 +592,45 @@ tests were deleted with its code, lower that baseline by hand in S6 with the rea
   makes it active at once (`useContextsDraft.handleActivate`), with its next-todo count; `nextCountOf` moved to
   `domain/contexts.ts`. D21 still holds: the chip names the context and leads to the switch.
 
+## 10. Changes after the first device test (requirements §11, decided 2026-10-28)
+
+**C1 Due todos follow the context.** `contextMatcher.taskShown` keeps only the Inbox as always shown;
+`tallyHidden` also counts the hidden todos due today or earlier (`due`), and `hiddenLineText` ends with
+"3 due!" ("Hidden by Work: 13 todos · 1 loop · 3 due!").
+
+**C2 Given time in two lists** (`domain/givenTime.ts`):
+- `givenTimeOf` returns `areas` (each Area with everything scheduled in it and in its Projects, and each
+  Project without an Area - one list, by time), `owners` (loops and counterparts, by time, only from the
+  threshold up), `workedOn` (Areas and Projects with todos done and nothing scheduled) and `hiddenOwners`.
+  A meeting counts once in `areas` (its file's item, a Project rolled up into its Area) and once more in
+  `owners` when `ownerOfMeeting` names a loop or thread. The Inbox is never listed.
+- Threshold: `ContextDef.minMinutes?: {week: number; month: number}`; Everything's in the new per-profile
+  setting `givenTimeMinMinutes` (default `{week: 60, month: 120}`); a context without its own uses
+  Everything's (`minMinutesOf`). Settings → Contexts (`GivenTimeThreshold.tsx`): "Given time: loops and
+  counterparts from" with one row of fixed steps per period - a week: all · 30 min · 1 h · 2 h; a month:
+  all · 1 h · 2 h · 4 h - no keyboard needed; under "Meetings outside this context", saved with the
+  context. A tap on Everything's row (not its ○) opens an editor with only these rows, written at once.
+- `GivenTimePanel`: "Given time this week" (areas), "Loops and counterparts" (owners; "Nothing above 1 h
+  this week" when empty), "Worked on this week", the Tend line, the hidden line. Times in the row's normal
+  weight and size.
+
+**C3 Tending and Open loops list what needs tending.** `needsTending(entry, today)`: a New counterpart to
+confirm, or an active one with nothing planned in 14 days and no `#next` or I-owe todo. Open loops lists the
+loops with nothing planned and no next todo, plus those past their main date. The step counts and the Tend
+line use the same rules (`tendCount`).
+
+**C4 Quick Add for the selected meeting** (`ui/meetingContext/useMeetingContextSlot.ts`): entering `add`
+mode switches Quick Add to the Todo tab (`QuickAddWidget`'s new `showTodoKey`), and its button names the
+destination ("+ Add to Atruvia", new prop `addToName`) - no abbreviation in the text.
+
+**C5 Todos in the panel are selectable.** The slot holds its own selection (`useEntryActions`' edit state,
+`todoActions`): a tap shows the todo's card in Quick Add's place, a second tap its edit form; ✕, Cancel or
+Save returns to the meeting's card. Screens spread `slot.todoOverride` onto Quick Add after their own props;
+it also clears the screen's meeting-only props (`onDeleteEdit`, `onQuickFile`, `meetingCard`). Selecting
+another meeting, or none, ends the panel's selection.
+
+**C6 ✕ Close in the panel header**, next to Overview ›: the same as the card's ✕ (the screen's
+`cancelEditTarget`), back to Next todos (Daily) or Given time (Week, Month).
+
+All of C4-C6 live in the shared panel and slot, so Daily, Week, Month and Week ahead behave alike.
+

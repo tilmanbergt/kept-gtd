@@ -27,7 +27,11 @@ Tap a meeting or focus block on Daily, Week or Month: its card shows, and below 
 - A loop's meeting or block: what is next and what came out of its meetings.
 - A plain meeting: what is linked to it, or - with nothing linked - its project's or area's next todos ("Nothing linked to this meeting yet · showing its project").
 
-Tick a todo there, open its note or its file. **+ Quick Add to meeting** (**+ Quick Add to block**) opens Quick Add for it: before the meeting the todo gets the thread's or loop's tag; during and after it also records the meeting, as in [Engage](engage.md). **‹ Back to the card** returns.
+Tick a todo there, open its note or its file. Tap a todo to see its card in Quick Add's place, tap it again (or **Edit**) to change it; its ✕ and **Save** bring the meeting's card back.
+
+**+ Quick Add to meeting** (**+ Quick Add to block**) opens Quick Add for it, on the Todo tab; the button says where the todo goes, for example **+ Add to Coaching** - no abbreviation to type. Before the meeting the todo gets the thread's or loop's tag; during and after it also records the meeting, as in [Engage](engage.md). **‹ Back to the card** returns.
+
+**✕ Close** next to **Overview ›** closes the meeting, like the card's ✕: Daily shows its next todos again, Week and Month their Given time.
 
 On Week the panel has a line on top, for example "‹ Back to Week 42 · Thu 15.10. · 2 meetings ›": the left part closes it, the right part opens that day.
 

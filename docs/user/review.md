@@ -36,9 +36,9 @@ This step is about keeping your word in ongoing relationships: is the next meeti
 On the left:
 
 - **New** on top: counterparts you use but haven't confirmed, with the area or project they belong to, and inactive ones that got a new meeting (`back in use`).
-- Then one block per area (with its projects) and per project without an area, its active counterparts in alphabetical order. The Inbox has none.
+- Then one block per area (with its projects) and per project without an area, its active counterparts that need tending, in alphabetical order: nothing planned in the next 14 days and no `#next` or I-owe todo. A counterpart with its next meeting set up or a next step on the list is in good hands and not listed. The Inbox has none.
 
-Each row has two lines: the counterpart, then `last 30.9. · next 14.10.` and what is open (`2 owe · w/f 18 d`); `nothing planned` when no meeting is set up for the next 14 days. One-off counterparts (only `#wf/name` or `#owe/name`) show `w/f only`, `owe only` or `w/f · owe only` instead of meeting dates.
+Each row has two lines: the counterpart, then `last 30.9. · next 14.10.` and what is open (`w/f 18 d`); `nothing planned` when no meeting is set up for the next 14 days. One-off counterparts (only `#wf/name` or `#owe/name`) show `w/f only`, `owe only` or `w/f · owe only` instead of meeting dates.
 
 Tap a counterpart to see it on the right: Quick Add, then **Tend** and **Not** for a new one, **Open overview ›** and **Set inactive** for an active one, its next meetings (or **+ Next retro**, which puts the next meeting into Quick Add), what you owe, wait for and should raise, its active agreements, and its last three meetings. **Open overview ›** opens its thread overview over the Review; **‹ Review** brings you back to the step as you left it. **Set inactive** first goes through its open todos (Done, Cancel or Keep each one) and its agreements (Keep or End each one, or **End all**), see [Projects and Areas](projects-and-areas.md).
 
@@ -73,9 +73,9 @@ Each step remembers what you did in it (items filed, todos done, loops closed). 
 
 ## Open loops
 
-This step goes through your active loops, one block per area (with its projects) and per project without an area. Each row has two lines: ○ the loop and its kind (and its project), then its main date, next meeting and todos (`14.11. · next 20.10. · 2 open · 1 next`), and `nothing planned` when it has no meeting or focus block in the next 14 days.
+This step goes through the active loops that need a look, one block per area (with its projects) and per project without an area: those without a todo you can act on and with nothing planned in the next 14 days (`no next action`), and those past their main date (`was 14.11. · close?`). Loops with a next todo or a meeting or focus block coming up are not listed. Each row has two lines: ○ the loop and its kind (and its project), then its main date, next meeting and todos (`14.11. · next 20.10. · 2 open · 1 next`), and `nothing planned` when it has no meeting or focus block in the next 14 days.
 
-The step counts the loops that need a look: those without a todo you can act on and without a meeting ahead (`no next action`), and those past their main date (`was 14.11. · close?`). When none needs a look, the step counts as reviewed.
+The step counts these loops. When none needs a look, the step counts as reviewed.
 
 Tap a loop to see it on the right: Quick Add (a todo or meeting you add gets the loop's tag), its summary, **+ F block**, **Open overview ›** and **Close loop**. **+ F block** fills Quick Add's Meeting tab with the loop and **F** on: set the day and time and add it, for time of your own with the loop. Closing asks **Done** or **Dropped**, and only works while the loop has no open todo and no meeting ahead - otherwise the status line says what is still open, and **Show** opens the loop. The recap counts the loops closed.
 

@@ -837,11 +837,15 @@ the owner's plan in the status slot when its last `#next` was done. Detail:
 selection with its context panel and back row, the context's dimming). Both have Quick Add (to
 the Inbox) or the selected meeting's card on the right, then the shared day panel (after tapping a
 day), the context panel (after tapping a meeting) or **Given time**
-(`ui/period/GivenTimePanel.tsx`, `domain/givenTime.ts`): the owners of the displayed week or
-month by scheduled time (timed: end - start, 60 min without an end; all-day: 8 h a day for
-sorting, shown as days), each with blocks, meetings, todos done and the next todo; "Worked on"
-for owners with todos done and nothing scheduled; the Tend line (threads and loops with nothing
-planned in 14 days, opening Review → Tending threads); the hidden line. The Project/Area page shows
+(`ui/period/GivenTimePanel.tsx`, `domain/givenTime.ts`): two lists by scheduled time (timed:
+end - start, 60 min without an end; all-day: 8 h a day for sorting, shown as days) - the Areas
+(with their Projects) and the Projects without an Area, then "Loops and counterparts" from the
+context's threshold up (`minMinutesOf`, Everything's `givenTimeMinMinutes`) - each with blocks,
+meetings, todos done and the next todo; never the Inbox; "Worked on" for Areas and Projects with
+todos done and nothing scheduled; the Tend line (threads that need tending, `needsTending`, and
+loops that need a look, opening Review → Tending threads); the hidden line. In the context panel,
+the slot (`ui/meetingContext/useMeetingContextSlot.ts`) keeps its own todo selection and hands
+Quick Add `todoOverride`; the panel's header has "✕ Close". The Project/Area page shows
 `ui/GivenTimeLine.tsx` (this week, this month; the item's and an Area's Projects' meetings,
 never filtered by the context).
 
