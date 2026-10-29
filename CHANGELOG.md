@@ -10,6 +10,8 @@ or your project/area files are stored.
 
 ## [Unreleased]
 
+## [0.22.0] — 2026-10-29
+
 ### New
 - **Contexts**: Work, Home, Café - set them up in **Settings → Contexts** (areas, projects and tags
   the context shows or hides; usually just a few areas) and switch there: the chip in the tab bar names
