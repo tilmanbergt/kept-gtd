@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-139 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+140 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -580,6 +580,16 @@ Test: `__tests__/scenarios/smoke/engagePage.test.tsx`
 - **And** after ✕ Close and opening the help again there is no ‹ Back
 
 Test: `__tests__/scenarios/helpLinks.test.tsx` · design: `docs/dev/history/technical-design-easy-start.md`
+
+### A link to a heading of the same page jumps there, and ‹ Back returns
+
+- **Given** the help shows Projects and Areas at its top
+- **When** I page to its link home notebook and tap it
+- **Then** the same page shows its section Home notebooks, with ‹ Back
+- **When** I tap ‹ Back
+- **Then** the page shows the link again and there is nothing more to go back to
+
+Test: `__tests__/scenarios/helpLinks.test.tsx` · design: `docs/dev/history/technical-design-help-linking.md`
 
 ## Inbox
 

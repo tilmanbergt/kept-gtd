@@ -61,3 +61,29 @@ scenario('Follow links between help pages and walk back with ‹ Back', {feature
     expectNotShows('‹ Back');
   });
 });
+
+scenario('A link to a heading of the same page jumps there, and ‹ Back returns', {feature: 'Help', design: 'technical-design-help-linking.md'}, () => {
+  given('the help shows Projects and Areas at its top', async () => {
+    await openApp();
+    await tapTab('Projects');
+    await tap('?');
+    expectShows(/^Projects and Areas/);
+    expectNotShows(/has one obvious place to write/);
+  });
+  when('I page to its link home notebook and tap it', async () => {
+    await pageTo('home notebook');
+    await tap('home notebook');
+  });
+  then('the same page shows its section Home notebooks, with ‹ Back', () => {
+    expectShows(/has one obvious place to write/);
+    expectShows('‹ Back');
+  });
+  when('I tap ‹ Back', async () => {
+    await tap('‹ Back');
+  });
+  then('the page shows the link again and there is nothing more to go back to', () => {
+    expectNotShows(/has one obvious place to write/);
+    expectShows('home notebook');
+    expectNotShows('‹ Back');
+  });
+});

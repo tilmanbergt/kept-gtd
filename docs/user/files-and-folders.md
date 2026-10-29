@@ -4,15 +4,15 @@ Everything Kept GTD knows lives in ordinary files that you can read and edit you
 
 ## The folder layout
 
-With the default settings:
+With the default settings ([Settings → Folders](settings.md#folders) changes them):
 
 - `Note/1 Projects/<project>/project.txt`
 - `Note/2 Areas/<area>/area.txt`
 - `Note/2 Areas/0 Inbox/Inbox.txt`: captured items not yet filed
 - `Note/3 Resources/`: your reference material
-- `Note/4 Archive/<year>/`: archived projects and areas, see [Closing out a project](close-out.md)
+- `Note/4 Archive/<year>/`: archived projects and areas, see [Where things end up](close-out.md#where-things-end-up)
 
-Notes that Kept creates for todos and meetings go into `Todos` and `Meetings` folders inside the project or area, and for the Inbox inside its folder `0 Inbox`.
+Notes that Kept creates for todos and meetings (with [Own note per item](note-setups.md#what-a-setup-is)) go into `Todos` and `Meetings` folders inside the project or area, and for the Inbox inside its folder `0 Inbox`.
 
 ## File names
 
@@ -20,9 +20,9 @@ The names of files Kept creates leave out `\ / : * ? " < > |` (not allowed in fi
 
 ## The Inbox folder
 
-The Inbox has its own folder inside the Areas folder, so the `Note` folder holds only your PARA folders. Kept doesn't treat it as an area: it isn't listed on the Areas tab or in refile. You can change its name in Settings, see [Settings](settings.md).
+The Inbox has its own folder inside the Areas folder, so the `Note` folder holds only your PARA folders. Kept doesn't treat it as an area: it isn't listed on the [Areas](projects-and-areas.md) tab or in refile. You can change its name in [Settings → Folders](settings.md#folders).
 
-Up to version 0.1.0 the Inbox lived directly in `Note` (`Inbox.txt` plus `Todos` and `Meetings` folders). Versions 0.2 to 0.8 moved these into the Inbox folder on their first start; from 0.9.0 on Kept no longer does. If you still have them in `Note`, move them into the Inbox folder by hand; **Run Integrity Check** in Settings → Advanced points them out.
+Up to version 0.1.0 the Inbox lived directly in `Note` (`Inbox.txt` plus `Todos` and `Meetings` folders). Versions 0.2 to 0.8 moved these into the Inbox folder on their first start; from 0.9.0 on Kept no longer does. If you still have them in `Note`, move them into the Inbox folder by hand; [Run Integrity Check](settings.md#advanced) in Settings → Advanced points them out.
 
 ## Inside project.txt
 
@@ -57,25 +57,25 @@ Turn the back garden into a vegetable garden before winter.
 - `- [ ]` is an open todo, `- [x]` a done one, `- [-]` a cancelled one.
 - A meeting line is date, then time (`10:00`, `10:00-11:00`) or length (`1d`, `2d`), then the title.
 - On screen, dates are shown as day and month (`4.10.`, with the year when it isn't this year) and times in 24 hours (`9:30`); in the files they stay `2026-10-04` and `09:30`.
-- A linked note appears at the end of a line as `→ [[Meetings/…]]`, a linked file as `+[[…]]`. A link to a page, from a lasso capture, ends in `#page=3`.
-- A todo line ends in fields that Kept writes: `[meeting:: …]` (the meeting it was agreed in, see [Threads](threads.md)), `[created:: …]`, `[due:: …]` and `[completion:: …]`, in this order, after the links. A field you add yourself at the end of the line, for example `[priority:: high]`, is kept. In the middle of the text, `[key:: value]` is just text.
+- A [linked note](quick-add.md#notes-and-files-on-a-todo-or-meeting) appears at the end of a line as `→ [[Meetings/…]]`, a linked file as `+[[…]]`. A link to a page, from a [lasso capture](lasso.md#capturing-right-away), ends in `#page=3`.
+- A todo line ends in fields that Kept writes: `[meeting:: …]` (the meeting it was agreed in, see [Where a todo was agreed](threads.md#where-a-todo-was-agreed)), `[created:: …]`, `[due:: …]` and `[completion:: …]`, in this order, after the links. A field you add yourself at the end of the line, for example `[priority:: high]`, is kept. In the middle of the text, `[key:: value]` is just text.
 - Older lines with `#due:2026-10-03` or `#waiting-for:marco` are read as before. A line gets the new form only when you edit that todo; nothing is converted on its own.
-- A `## Marks` section lists open lasso marks, one per line, see [Lasso](lasso.md).
-- A `## Threads` section in `area.txt` (or in `project.txt` of a project without an area) holds the counterparts you confirmed, one per line: `- jordan: active` or `- lena: inactive`. Text after a comma is kept. See [Threads](threads.md).
+- A `## Marks` section lists open lasso marks, one per line, see [Where marks are stored](lasso.md#where-marks-are-stored).
+- A `## Threads` section in `area.txt` (or in `project.txt` of a project without an area) holds the [counterparts you confirmed](threads.md#tending-counterparts), one per line: `- jordan: active` or `- lena: inactive`. Text after a comma is kept.
 - Files written by earlier versions may have `dailyFocus: true` (and weekly or monthly) in the header and `## Weekly Goals` or `## Monthly Goals` sections. Kept no longer uses them and leaves them exactly as they are.
 - Lines Kept doesn't understand are kept as they are.
 
 ## Editing by hand
 
-You can edit these files in any text editor, on Windows too, for example on your computer via Supernote Cloud, or in Obsidian through the Supernote Cloud Sync plugin's Paired folder. Afterwards, open Kept again: it reads the files that changed. If a change doesn't show up (a sync can keep a file's old time and size), tap [Reload all files](settings.md#advanced) in Settings → Advanced. Keep the section headings (`## Tasks`, `## Meetings`, `## Marks`, `## Threads`) as they are.
+You can edit these files in any text editor, on Windows too, for example on your computer via Supernote Cloud, or in Obsidian through the Supernote Cloud Sync plugin's Paired folder ([Set up the sync](files-and-folders.md#set-up-the-sync)). Afterwards, open Kept again: it reads the files that changed. If a change doesn't show up (a sync can keep a file's old time and size), tap [Reload all files](settings.md#advanced) in Settings → Advanced. Keep the section headings (`## Tasks`, `## Meetings`, `## Marks`, `## Threads`) as they are.
 
 If you edit a file while Kept is open, Kept reads it again before it saves:
 
 - When your edit was in another part of the file (for example the Scope, while you add a todo in Kept), both changes are kept.
-- When both changed the same part (for example the todos), the status line asks which version wins. **Use mine** saves Kept's change over the edit; **Use the file** keeps the edit and saves nothing. ✕ counts as **Use the file**. Other parts of the file keep your edit either way.
-- When the file was deleted or moved meanwhile, nothing is saved; tap **Reload all files** in Settings → Advanced to see what is there now.
+- When both changed the same part (for example the todos), the [status line](index.md#the-status-line) asks which version wins. **Use mine** saves Kept's change over the edit; **Use the file** keeps the edit and saves nothing. ✕ counts as **Use the file**. Other parts of the file keep your edit either way.
+- When the file was deleted or moved meanwhile, nothing is saved; tap [Reload all files](settings.md#advanced) in Settings → Advanced to see what is there now.
 
-Kept saves a file by writing a hidden copy next to it (for example `.project.txt.gtdpara-tmp`) and putting it in place in one step, so a file is never left half written. If Kept is stopped in that moment, the hidden copy stays behind; the next save replaces it, and **Run Integrity Check** lists it.
+Kept saves a file by writing a hidden copy next to it (for example `.project.txt.gtdpara-tmp`) and putting it in place in one step, so a file is never left half written. If Kept is stopped in that moment, the hidden copy stays behind; the next save replaces it, and [Run Integrity Check](settings.md#advanced) lists it.
 
 ## Using Kept GTD with Obsidian
 
@@ -102,7 +102,7 @@ From Obsidian to the Supernote:
 1. Edit in Obsidian.
 2. Sync the Supernote Cloud Sync plugin.
 3. Sync the Supernote.
-4. Open Kept GTD. If a change doesn't show up, tap **Reload all files** in Settings → Advanced.
+4. Open Kept GTD. If a change doesn't show up, tap [Reload all files](settings.md#advanced) in Settings → Advanced.
 
 From the Supernote to Obsidian: sync the Supernote, then the plugin.
 
@@ -125,7 +125,7 @@ From the Supernote to Obsidian: sync the Supernote, then the plugin.
 - You type tags. Fields go at the end of the line.
 - Kept puts the fields it knows (`meeting`, `created`, `due`, `completion`) in its fixed order the next time it saves the file. Other fields stay as you wrote them.
 - Leave `→ [[…]]` (the item's note) and `+[[…]]` (a linked file) as they are.
-- A meeting line is the date, then the time (`10:00`, `10:00-11:00`) or the length (`1d`, `2d`), then the title. See the format at the top of this page.
+- A meeting line is the date, then the time (`10:00`, `10:00-11:00`) or the length (`1d`, `2d`), then the title. See [Inside project.txt](files-and-folders.md#inside-projecttxt).
 
 ### Agreements
 
@@ -136,7 +136,7 @@ Agreements are plain bullets in a section `## Agreements`, without a checkbox, s
 - Feedback only in our 1:1s #sparring/jordan [created:: 2026-10-14] [valid:: 2026-12-31]
 ```
 
-Kept writes `meeting`, `created`, `valid` and `ended` in that order; other fields and lines stay as you wrote them. See [Agreements](agreements.md).
+Kept writes `meeting`, `created`, `valid` and `ended` in that order; other fields and lines stay as you wrote them. See [In your files](agreements.md#in-your-files).
 
 ### Two example queries
 
@@ -157,14 +157,14 @@ WHERE !completed AND any(tags, (t) => t = "#wf" OR startswith(t, "#wf/"))
 
 ## Files outside Note
 
-A todo or meeting can link a file from anywhere you keep files on the Supernote, not only from your projects, areas and Resources. The Files pane has a tab **Device** for that: the Supernote's own folders next to `Note` - `Document`, `EXPORT`, `INBOX`, `MyStyle`, `SCREENSHOT`, `Download` and `Note` itself - and, when an SD card is in, **Internal** and **SD card** to choose from. Folders of Android and other apps are not shown. Linking works as on the other tabs: tap **+** and the clip on a todo's or meeting's card, open **Device** and tap the file (see [Quick Add](quick-add.md#notes-and-files-on-a-todo-or-meeting)).
+A todo or meeting can link a file from anywhere you keep files on the Supernote, not only from your projects, areas and Resources. The [Files pane](projects-and-areas.md#files-and-linked-files) has a tab **Device** for that: the Supernote's own folders next to `Note` - `Document`, `EXPORT`, `INBOX`, `MyStyle`, `SCREENSHOT`, `Download` and `Note` itself - and, when an SD card is in, **Internal** and **SD card** to choose from. Folders of Android and other apps are not shown. Linking works as on the other tabs: tap **+** and the clip on a todo's or meeting's card, open **Device** and tap the file (see [Quick Add](quick-add.md#notes-and-files-on-a-todo-or-meeting)).
 
 When you opened Kept from a note or a document, the Files pane shows two rows at the top while you link a file: **This file · p. 12** links the page you were on, **This file** links the file without a page, so it opens where you last left it.
 
-A file inside `Note` is stored as a path inside `Note`, like every linked file; a file outside it with its full path, for example `+[[/storage/emulated/0/Document/Book.pdf#page=12]]`, as the lasso does for a PDF. Opening, the ⚠ for a missing file and removing a link work the same way. When you change the todo or meeting later, the Files pane opens the Device tab at the file's folder (not for a file on the SD card).
+A file inside `Note` is stored as a path inside `Note`, like every linked file; a file outside it with its full path, for example `+[[/storage/emulated/0/Document/Book.pdf#page=12]]`, as the [lasso](lasso.md#capturing-right-away) does for a PDF. Opening, the ⚠ for a missing file and removing a link work the same way. When you change the todo or meeting later, the Files pane opens the Device tab at the file's folder (not for a file on the SD card).
 
 ## What Kept GTD keeps elsewhere
 
-- *Settings* are stored inside the plugin. Profiles save them as files, see [Profiles](profiles-and-demo.md).
-- *Pictures and handwriting of lasso marks* are kept in the plugin's own storage until the mark is processed, see [Lasso](lasso.md).
-- *Exports* go to `EXPORT/kept-gtd`: `profiles` for profile files, `debug` for logs, debug bundles and reports.
+- *Settings* are stored inside the plugin. Profiles save them as files, see [Profile files](profiles-and-demo.md#profile-files).
+- *Pictures and handwriting of lasso marks* are kept in the plugin's own storage until the mark is processed, see [Where marks are stored](lasso.md#where-marks-are-stored).
+- *Exports* go to `EXPORT/kept-gtd`: `profiles` for [profile files](profiles-and-demo.md#profile-files), `debug` for logs, [debug bundles](troubleshooting.md#reporting-a-problem) and reports.
