@@ -23,6 +23,7 @@ import CaptureScreen, {CaptureRequest, CaptureReturnTo} from './src/screens/Capt
 import EngageOverlay from './src/screens/engage/EngageOverlay';
 import {setOpenMarksHandler} from './src/ui/marksNav';
 import {getEngageRequest, requestEngage, subscribeEngage} from './src/ui/engageStore';
+import {noteLaunchChanged} from './src/ui/useThisFile';
 import {MarkScope} from './src/domain/marks';
 import MarkOutcomeScreen from './src/ui/MarkOutcomeScreen';
 import {logStaleBuilds} from './src/supernote/pluginRuntime';
@@ -347,6 +348,7 @@ function AppShell({onProfileSwitched}: {onProfileSwitched: () => void}): React.J
         // i.e. every time the plugin is (re)opened - see
         // rememberLaunchNotePath's own doc comment in fileSystem.ts.
         rememberLaunchNotePath(currentPath);
+        noteLaunchChanged();
         if (loadedSettings.debugLogging === true && currentPath) void logNoteTitlesDiagnostic(currentPath);
         if (cancelled || routedByLassoButtonRef.current || routedByEngageButtonRef.current) return;
 

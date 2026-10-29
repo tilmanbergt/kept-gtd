@@ -207,6 +207,8 @@ function resourceFolderStateOf(item: CachedItem): ResourceFolderState {
   };
 }
 
+import {useDeviceRoot} from '../ui/fileBrowser/useDeviceRoot';
+
 export default function ItemDetail({
   kind,
   name,
@@ -436,6 +438,8 @@ export default function ItemDetail({
   // "active" either.
   const disableOthersWhileArming = (r: FileBrowserRoot): FileBrowserRoot =>
     isRefileArming || isAreaAssignmentArming ? {...r, disabled: true} : r;
+  // The whole device (docs/dev/history/technical-design-easy-start.md §6.2), for linking any file.
+  const deviceRoot = useDeviceRoot(isRefileArming || isAreaAssignmentArming);
 
   const fileBrowserRoots: FileBrowserRoot[] = paths
     ? kind === 'project'
@@ -451,6 +455,7 @@ export default function ItemDetail({
             defaultSubfolder: resourceFolderState?.defaultResourceFolder ?? null,
             onSetDefaultSubfolder: handleSetDefaultResourceFolder,
           }),
+          deviceRoot,
         ]
       : [
           disableOthersWhileArming({key: 'project', label: 'Area Files', shortLabel: 'Area', rootPath: path}),
@@ -461,6 +466,7 @@ export default function ItemDetail({
             defaultSubfolder: resourceFolderState?.defaultResourceFolder ?? null,
             onSetDefaultSubfolder: handleSetDefaultResourceFolder,
           }),
+          deviceRoot,
         ]
     : [{key: 'project', label: kind === 'project' ? 'Project Files' : 'Area Files', rootPath: path}];
 
@@ -576,6 +582,7 @@ export default function ItemDetail({
               onActiveLocationChange={reportFilesLocation}
               extraTabs={extraTabs}
               groupLabel="Files"
+              thisFileRows
               textColor={textColor}
               borderColor={borderColor}
             />

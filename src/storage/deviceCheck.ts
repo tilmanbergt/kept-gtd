@@ -13,9 +13,14 @@ import {errorMessage} from '../utils/errorMessage';
 import {log, logWarn} from '../utils/log';
 
 export const INTERNAL_STORAGE = '/storage/emulated/0';
-const STORAGE_ROOT = '/storage';
+export const STORAGE_ROOT = '/storage';
 /** Entries of `/storage` that are the internal storage under other names, not an SD card. */
 const NOT_SD = new Set(['emulated', 'self']);
+
+/** The folders of a `/storage` listing that can be an SD card. */
+export function sdCardCandidates(entries: FolderEntry[]): FolderEntry[] {
+  return entries.filter(e => e.isFolder && !NOT_SD.has(e.name));
+}
 
 export interface DeviceCheckListing {
   path: string;
@@ -89,7 +94,7 @@ export async function runDeviceCheck(): Promise<DeviceCheckResult> {
     listingOf(STORAGE_ROOT, storage.entries, storage.error),
   ];
   const sdRoots: FolderEntry[] = [];
-  for (const e of (storage.entries ?? []).filter(x => x.isFolder && !NOT_SD.has(x.name))) {
+  for (const e of sdCardCandidates(storage.entries ?? [])) {
     const sd = await list(e.path);
     listings.push(listingOf(e.path, sd.entries, sd.error));
     if (sd.entries && sd.entries.length > 0) sdRoots.push(...sd.entries);

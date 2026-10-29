@@ -578,7 +578,15 @@ own note (missing).
 carries `#page=N`); edit mode shows it with ⚠ when missing and ✕ to remove it; a new link is set
 by arming the Files pane from the row and tapping a file. `locateLinkedFile` finds the root and
 folder for auto-locate. Gmail email notes and attachments become linked files under Resources
-(§2.11). Detail: `docs/dev/history/technical-design-linked-files.md`.
+(§2.11). The Files pane's **Device** tab (`ui/fileBrowser/useDeviceRoot.ts`, roots from
+`storage/deviceRoots.ts`) offers the Supernote's own folders next to `Note` and an SD card; a file
+outside the base folder is stored with its absolute path (`toLinkedFile`), and every arm's pick goes
+through `pickedPath`. While a file is linked, the **This-file** rows (`ui/fileBrowser/ThisFileRows.tsx`)
+offer the note or document Kept was opened from (`ui/useThisFile.ts`, pure targets in
+`domain/linkTargets.ts`), with or without its page; Quick Add's This-file line
+(`ui/quickAdd/ThisFileLine.tsx`, prop `thisFileLine`) hands the same choice to the screen's add handler
+as its third argument, `linkedFile`. Detail: `docs/dev/history/technical-design-linked-files.md`,
+`docs/dev/history/technical-design-easy-start.md` §6.
 
 **Note setups.** `domain/noteSetups.ts` defines `NoteSetup`s (stored in `settings.noteSetups`,
 edited in Settings → Note setups, `screens/settings/noteSetups/`): one per thing tracked - a

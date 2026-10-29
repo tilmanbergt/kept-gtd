@@ -227,6 +227,7 @@ export default function WeekPlanner({
       <View style={common.column}>
         <View style={styles.fill}>
           <QuickAddWidget
+            thisFileLine
             layoutKey="week"
             {...slot.widget}
             initialDate={selectedDate ?? (isCurrentWeek ? todayIso() : weekStart)}

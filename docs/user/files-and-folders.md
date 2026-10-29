@@ -155,6 +155,14 @@ TASK
 WHERE !completed AND any(tags, (t) => t = "#wf" OR startswith(t, "#wf/"))
 ```
 
+## Files outside Note
+
+A todo or meeting can link a file from anywhere you keep files on the Supernote, not only from your projects, areas and Resources. The Files pane has a tab **Device** for that: the Supernote's own folders next to `Note` - `Document`, `EXPORT`, `INBOX`, `MyStyle`, `SCREENSHOT`, `Download` and `Note` itself - and, when an SD card is in, **Internal** and **SD card** to choose from. Folders of Android and other apps are not shown. Linking works as on the other tabs: tap **+** and the clip on a todo's or meeting's card, open **Device** and tap the file (see [Quick Add](quick-add.md#notes-and-files-on-a-todo-or-meeting)).
+
+When you opened Kept from a note or a document, the Files pane shows two rows at the top while you link a file: **This file · p. 12** links the page you were on, **This file** links the file without a page, so it opens where you last left it.
+
+A file inside `Note` is stored as a path inside `Note`, like every linked file; a file outside it with its full path, for example `+[[/storage/emulated/0/Document/Book.pdf#page=12]]`, as the lasso does for a PDF. Opening, the ⚠ for a missing file and removing a link work the same way. When you change the todo or meeting later, the Files pane opens the Device tab at the file's folder (not for a file on the SD card).
+
 ## What Kept GTD keeps elsewhere
 
 - **Settings** are stored inside the plugin. Profiles save them as files, see [Profiles](profiles-and-demo.md).

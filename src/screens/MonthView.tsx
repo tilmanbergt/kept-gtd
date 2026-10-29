@@ -220,6 +220,7 @@ export default function MonthView({
             <View style={common.column}>
               <View style={styles.columnScroll}>
                 <QuickAddWidget
+                  thisFileLine
                   layoutKey="month"
                   {...slot.widget}
                   initialDate={newMeetingDate}

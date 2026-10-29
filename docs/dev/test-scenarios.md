@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-133 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+136 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -1345,6 +1345,41 @@ Test: `__tests__/scenarios/review.test.tsx` · design: `docs/dev/history/technic
 Test: `__tests__/scenarios/smoke/review.test.tsx`
 
 ## Your files
+
+### Link a PDF from Document on the Device tab; re-editing finds it there
+
+- **Given** project "Garden renovation" has the todo "Order soil", Document holds Book.pdf, and the device has Android and DCIM folders
+- **When** I tap the todo on the project page, tap +clip on its card and open the Device tab
+- **Then** the Device tab lists the Supernote folders only: Document, not Android or DCIM
+- **When** I open Document and tap Book.pdf
+- **Then** the todo links the PDF by its full path
+- **And** selecting the todo again shows the Device tab at Document
+
+Test: `__tests__/scenarios/deviceLinks.test.tsx` · design: `docs/dev/history/technical-design-easy-start.md`
+
+### This file: link the PDF Kept was opened from, with its page, in the Files pane and from Quick Add
+
+- **Given** project "Garden renovation" has the todo "Order soil" and Document holds Book.pdf
+- **When** I open Kept from page 12 of Book.pdf, open the project and tap +clip on the todo
+- **Then** the Files pane shows both This-file rows on top
+- **When** I tap "This file · p. 12"
+- **Then** the todo links the PDF at page 12
+- **When** I close the card and add the todo "Read chapter 3" with Quick Add
+- **Then** the new todo links the page too: the line is on by default for a document
+
+Test: `__tests__/scenarios/deviceLinks.test.tsx` · design: `docs/dev/history/technical-design-easy-start.md`
+
+### This file from a note: Quick Add starts off and links the note relative to Note; from Home nothing is offered
+
+- **Given** project "Garden renovation" has the todo "Order soil" and the note Ideas.note
+- **When** I open Kept from page 2 of Ideas.note and open the project
+- **Then** Quick Add shows the note, switched off
+- **When** I switch on "no page" and add the todo "Sketch the beds"
+- **Then** the todo links the note by its path inside Note, without a page
+- **When** I reopen Kept from Home, open the project and tap +clip on "Order soil"
+- **Then** neither Quick Add nor the Files pane offers This file
+
+Test: `__tests__/scenarios/deviceLinks.test.tsx` · design: `docs/dev/history/technical-design-easy-start.md`
 
 ### A hand-edited project file keeps everything Kept GTD does not own when a todo is added
 

@@ -266,3 +266,27 @@ built); demo space → `foundation`; setup assistant → `settings`; Device tab,
   list. Getting started does not link the setup assistant yet (S5 adds that link with its page). The
   other real names the old help used (a company and three people) are also replaced in code, tests and
   goldens with demo names (Team, Sam, Lena, Marco); one test's expected order follows the new names.
+- **S4** K1-K5 all answered yes on the device (no SD card was in, so the SD branch is as designed, not
+  seen); no fallback of §7 was needed. Facts in `supernote-host-facts.md` §7.
+  - **Device tab contents (Tilman's decision on L2)**: on the internal storage the tab shows only the
+    Supernote's own folders next to `Note` - `Document`, `EXPORT`, `INBOX`, `MyStyle`, `SCREENSHOT`,
+    `Note` - plus `Download` (not a folder the Supernote shows, but useful), as the list
+    `DEVICE_FOLDERS` in `domain/linkTargets.ts`; Android's and the apps' folders are not offered. An SD
+    card shows everything but hidden folders, `Android` and `LOST.DIR`.
+  - **Page links are 1-based** in the file: a This-file link to index 11 (p. 12) is `…Book.pdf#page=12`
+    (`buildPageAnchor`, as lasso links), not `#page=11` as §9 scenario 9 said.
+  - **One pick path**: `storage/linkedFiles.ts`'s `pickedPath` replaces the four copies of
+    "root + relative" in the arm handlers and accepts an absolute pick (SD card, This file).
+    `locateLinkedFile`'s last fallback is anywhere on the internal storage, which also locates an
+    Area's file inside one of its Projects. An SD file opens but doesn't auto-locate.
+  - **The This-file rows** are a `thisFileRows` switch on FileBrowserPane (it renders
+    `ui/fileBrowser/ThisFileRows.tsx` itself) instead of a `leadRows` node, so the callers don't create a
+    component per render. FileBrowserPane grew from 922 to 934 lines (the switch, the `device` source
+    kind); no split was needed.
+  - **Quick Add's line** has two chips, **p. 12** and **no page**; tapping the filled one switches it
+    off (no separate ✕). It sits in row 4, before the screen's grey line. It shows where the screen sets
+    `thisFileLine`, which means its add handlers pass the new optional third argument `linkedFile` on to
+    `buildTask`/`buildMeeting`: the project/area page, Inbox, Daily, Week, Month, thread and loop
+    overviews, Engage. The Review steps and Gmail don't show it. The launch file is read again after
+    every reopen (`noteLaunchChanged` from App's `reorient`).
+  - **The Review's Inbox step** also got the Device tab and This-file rows (L1: "in the Inbox").

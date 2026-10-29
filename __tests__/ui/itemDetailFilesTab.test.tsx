@@ -147,19 +147,19 @@ describe('one Files tab on the Project/Area page', () => {
     const r = await openPage('Areas', /^Home /);
     // The header carries "Engage ›" for this Area (docs/dev/history/technical-design-engage.md §3.7).
     expect(r.root.findAll(n => n.props.label === 'Engage ›' && n.props.owner === undefined && typeof n.props.onPress === 'function')).toHaveLength(1);
-    expect(await filesOf(r)).toEqual({top: ['Threads', 'Projects', 'Files'], places: ['Area', 'Resources'], active: 'project'});
+    expect(await filesOf(r)).toEqual({top: ['Threads', 'Projects', 'Files'], places: ['Area', 'Resources', 'Device'], active: 'project'});
     act(() => r.unmount());
   });
 
   it('a Project with an Area: Threads · Loops · Files, with Project · Area · Resources', async () => {
     const r = await openPage('Projects', /^Garden /);
-    expect(await filesOf(r)).toEqual({top: ['Threads', 'Loops', 'Files'], places: ['Project', 'Area', 'Resources'], active: 'project'});
+    expect(await filesOf(r)).toEqual({top: ['Threads', 'Loops', 'Files'], places: ['Project', 'Area', 'Resources', 'Device'], active: 'project'});
     act(() => r.unmount());
   });
 
   it('a Project without an Area: Project · Resources', async () => {
     const r = await openPage('Projects', /^Allotment /, true);
-    expect(await filesOf(r)).toEqual({top: ['Threads', 'Loops', 'Files'], places: ['Project', 'Resources'], active: 'project'});
+    expect(await filesOf(r)).toEqual({top: ['Threads', 'Loops', 'Files'], places: ['Project', 'Resources', 'Device'], active: 'project'});
     act(() => r.unmount());
   });
 });

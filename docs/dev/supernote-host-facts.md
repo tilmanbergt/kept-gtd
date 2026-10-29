@@ -66,7 +66,26 @@ Measured on: Supernote A5 X, plugin firmware Chauvet 2.27.42, `sn-plugin-lib` 0.
   (error 904). Kept takes the lasso picture first, before the slower reads
   (`design-overview.md` §2.10, "Recognition").
 
-## 7. Installing builds
+## 7. Files outside Note
+
+Checked with Settings → Advanced → Check device files (`storage/deviceCheck.ts`). Source:
+`docs/dev/history/technical-design-easy-start.md` §7.
+
+- **Listing**: `listFolderEntries('/storage/emulated/0')` lists every top-level folder - the
+  Supernote's own (`Note`, `Document`, `EXPORT`, `INBOX`, `MyStyle`, `SCREENSHOT`) next to Android's
+  and the apps' (`Android`, `DCIM`, `Alarms`, `Download`, …). Folders below them, `Document` and its
+  subfolders for example, list like folders in `Note`. The Files pane's Device tab offers only the
+  Supernote's folders and `Download` (`domain/linkTargets.ts`'s `DEVICE_FOLDERS`).
+- **SD card**: without a card, `/storage` lists only `emulated` and `self`, the internal storage's own
+  names. Kept treats any other entry that lists something as an SD card (`storage/deviceRoots.ts`).
+- **Opening**: `openPath` opens a PDF, an EPUB and a `.note` outside `Note/` the same way as inside.
+  `openPath(path, -1)` reopens a PDF or a note at the page last read there.
+- **Launch file and page**: when Kept is opened from a document, `getCurrentFilePath` returns the
+  document's absolute path as it does for a note, and `getCurrentPageNum` the page on screen, 0-based:
+  the same index `openPath` takes. A stored page link writes it 1-based (`#page=12` for index 11,
+  `domain/sharedNotePages.ts`'s `buildPageAnchor`), as lasso links do.
+
+## 8. Installing builds
 
 - The host can install a new build into the running process instead of restarting it, so two
   builds end up loaded in one process. Every build gets a higher `versionCode`, and

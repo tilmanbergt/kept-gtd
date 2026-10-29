@@ -109,15 +109,15 @@ export function useEntryActions(name = 'ThreadOverview', options: {hiddenNotice?
   };
   const currentSettings = async () => settings ?? (await loadSettings());
 
-  const addTask = async (line: string, destination: Destination): Promise<void> => {
-    const task = buildTask(line);
+  const addTask = async (line: string, destination: Destination, linkedFile?: string): Promise<void> => {
+    const task = buildTask(line, {linkedFile});
     const {nextInbox} = await addTaskToDestination(task, destination, ctx);
     if (nextInbox) setCachedInbox(nextInbox);
     log(`${LOG}: added task`, destinationLabel(destination));
     if (options.hiddenNotice) hiddenNotice(destination, {kind: 'task', tags: task.tags});
   };
-  const addMeeting = async (fields: MeetingQuickAddFields, destination: Destination): Promise<void> => {
-    const meeting = buildMeeting(fields);
+  const addMeeting = async (fields: MeetingQuickAddFields, destination: Destination, linkedFile?: string): Promise<void> => {
+    const meeting = buildMeeting(fields, {linkedFile});
     const {nextInbox} = await addMeetingToDestination(meeting, destination, ctx);
     if (nextInbox) setCachedInbox(nextInbox);
     log(`${LOG}: added meeting`, destinationLabel(destination));

@@ -29,8 +29,10 @@ interface Props {
   onCollapse: () => void;
   destination: Destination;
   layoutKey: string;
-  onAddTask: (text: string, destination: Destination) => Promise<void>;
-  onAddMeeting: (fields: MeetingQuickAddFields, destination: Destination) => Promise<void>;
+  onAddTask: (text: string, destination: Destination, linkedFile?: string) => Promise<void>;
+  onAddMeeting: (fields: MeetingQuickAddFields, destination: Destination, linkedFile?: string) => Promise<void>;
+  /** Quick Add's line offering the file Kept was opened from (ui/quickAdd/ThisFileLine.tsx). */
+  thisFileLine?: boolean;
   /** The grey line: what the screen adds to new entries, a ✕ per part. */
   provenance?: QuickAddAdds | null;
   /** "+ Next <type>": the Meeting tab with this seed. */
@@ -82,12 +84,12 @@ function Expanded(props: ExpandedProps): React.JSX.Element {
   // the box mounts together with "+ Next"'s seed, so the seed is handed over one render later.
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
-  const addTask = async (text: string, dest: Destination) => {
-    await onAddTask(text, dest);
+  const addTask = async (text: string, dest: Destination, linkedFile?: string) => {
+    await onAddTask(text, dest, linkedFile);
     onCollapse();
   };
-  const addMeeting = async (fields: MeetingQuickAddFields, dest: Destination) => {
-    await onAddMeeting(fields, dest);
+  const addMeeting = async (fields: MeetingQuickAddFields, dest: Destination, linkedFile?: string) => {
+    await onAddMeeting(fields, dest, linkedFile);
     onCollapse();
   };
   const handlers = agreements?.handlers;
@@ -104,6 +106,7 @@ function Expanded(props: ExpandedProps): React.JSX.Element {
         fixedDestination={destination}
         onAddTask={addTask}
         onAddMeeting={addMeeting}
+        thisFileLine={props.thisFileLine}
         provenance={provenance}
         meetingSeed={mounted ? meetingSeed : null}
         editTarget={agreements?.editTarget ?? null}

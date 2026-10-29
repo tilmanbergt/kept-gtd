@@ -157,6 +157,7 @@ import {log, logError} from '../utils/log';
 import {usePerfRender} from '../utils/perf';
 import {requestEinkRefresh, useEinkRefreshOnLoad} from '../utils/screenRefresh';
 import MiniTabs from './MiniTabs';
+import ThisFileRows from './fileBrowser/ThisFileRows';
 import {activeTopTab, FILES_GROUP_KEY, groupEntryKey, groupTopTab} from './fileBrowserGroup';
 import PagedSection from './PagedSection';
 import {JumpTo} from './pagination';
@@ -255,8 +256,8 @@ export interface FileBrowserRoot {
   entryFilter?: (entry: FolderEntry) => boolean;
   /** Greys this root's MiniTabs entry out and makes it non-tappable, without removing it from `roots` - see the module doc comment's `disabled` note. Omitted/false = enabled. */
   disabled?: boolean;
-  /** Composite "Browse" root only - see the module doc comment's `sources`/`onNavigateToItem` note. Each entry becomes one synthetic depth-0 folder (`label`), which - once tapped - drills into an ordinary scan of `path`. `kind` tags that listing for pick/navigate purposes one level down. */
-  sources?: {kind: 'project' | 'area'; path: string; label: string}[];
+  /** Composite "Browse" root only - see the module doc comment's `sources`/`onNavigateToItem` note. Each entry becomes one synthetic depth-0 folder (`label`), which - once tapped - drills into an ordinary scan of `path`. `kind` tags that listing for pick/navigate purposes one level down; `device` (the Device tab's Internal and SD card, ui/fileBrowser/useDeviceRoot.ts) only browses and links files. */
+  sources?: {kind: 'project' | 'area' | 'device'; path: string; label: string}[];
   /** Composite "Browse" root only - fires on a tap, one level below the depth-0 chooser, of an entry inside one of `sources`' listings, when `linkTarget` is null (plain browsing, not arming) - see the module doc comment's tap-priority note. Ignored elsewhere, and ignored entirely on a root with no `sources`. */
   onNavigateToItem?: (kind: 'project' | 'area', name: string, path: string) => void;
   /** A root shown in this root's tab slot while arming needs it (the Browse merge) - see the module doc comment's `alternate` note. */
@@ -351,6 +352,12 @@ interface Props {
   extraTabs?: FileBrowserExtraTab[];
   /** All roots under one top tab with this label - see the module doc comment's `groupLabel` note. */
   groupLabel?: string;
+  /**
+   * The This-file rows above every root's listing while a file-link arm is active
+   * (ui/fileBrowser/ThisFileRows.tsx; docs/dev/history/technical-design-easy-start.md §6.2): a tap
+   * picks the file Kept was opened from (with `#page=n` for its page) the way a file tap picks.
+   */
+  thisFileRows?: boolean;
   textColor: string;
   borderColor: string;
 }
@@ -374,6 +381,7 @@ export default function FileBrowserPane({
   viewportHeight,
   extraTabs = [],
   groupLabel,
+  thisFileRows = false,
   textColor,
   borderColor,
 }: Props): React.JSX.Element {
@@ -631,7 +639,7 @@ export default function FileBrowserPane({
   }, [current?.path, showSourceChooser, reloadTick, showingRoot]);
 
   /** Which `sources` entry `current` (the folder actually being listed, one level below the depth-0 chooser) came from - null off a non-`sources` root, or above/below that level. Depends only on `current`, not on which of its child entries is being picked/navigated - every entry at pickNavigateDepth came from the same one source. */
-  const currentSourceKind = (): 'project' | 'area' | null => {
+  const currentSourceKind = (): 'project' | 'area' | 'device' | null => {
     const source = activeRoot?.sources?.find(s => current?.path === s.path);
     return source?.kind ?? null;
   };
@@ -695,7 +703,7 @@ export default function FileBrowserPane({
         // storage/inboxFiling.ts's resolveFilingPick already expects
         // instead (see FileBrowserRoot's `sources` doc comment).
         const kind = currentSourceKind();
-        if (kind) linkTarget.onPick(kind === 'project' ? 'projects' : 'areas', entry.name);
+        if (kind && kind !== 'device') linkTarget.onPick(kind === 'project' ? 'projects' : 'areas', entry.name);
         return;
       }
       linkTarget.onPick(activeRoot.key, relativeToRoot(activeRoot.rootPath, entry.path));
@@ -710,7 +718,7 @@ export default function FileBrowserPane({
     // a file inside one of these folders.
     if (!linkTarget && isSourcesRoot && depth === pickNavigateDepth && activeRoot.onNavigateToItem && entry.isFolder) {
       const kind = currentSourceKind();
-      if (kind) {
+      if (kind && kind !== 'device') {
         activeRoot.onNavigateToItem(kind, entry.name, entry.path);
         return;
       }
@@ -761,6 +769,7 @@ export default function FileBrowserPane({
   ];
   const topActiveKey = grouped ? activeTopTab(activeExtra?.key ?? null, slotRoot.key, ownRoots) : activeExtra ? activeExtra.key : slotRoot.key;
   const showPlaces = grouped && topActiveKey === FILES_GROUP_KEY && ownRoots.length > 1;
+  const fileArm = linkTarget?.mode === 'arming' && (linkTarget.pickKind ?? 'file') === 'file' ? linkTarget : null;
 
   return (
     <View style={selfMeasuring ? styles.selfMeasuringRoot : undefined}>
@@ -802,6 +811,9 @@ export default function FileBrowserPane({
           the same fixed-height box via `viewportContent`, so the
           header/breadcrumb/pin stay mounted and stable across a folder-load
           flicker instead of the whole section disappearing and reappearing. */}
+      {!activeExtra && fileArm && thisFileRows ? (
+        <ThisFileRows pick={path => fileArm.onPick(activeRoot.key, path)} textColor={textColor} borderColor={borderColor} />
+      ) : null}
       {activeExtra ? (
         <View style={selfMeasuring ? styles.selfMeasuringRoot : undefined}>{activeExtra.render(viewportHeight)}</View>
       ) : (

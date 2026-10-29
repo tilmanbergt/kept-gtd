@@ -250,8 +250,9 @@ function LoopOverviewBody({request, backLabel, onClose}: Props): React.JSX.Eleme
             layoutKey="loop"
             fixedDestination={destination}
             meetingSeed={seed}
-            onAddTask={(text, dest) => actions.addTask(withLoopTag(text, loop.tag), dest)}
-            onAddMeeting={(fields, dest) => actions.addMeeting({...fields, title: titleWithLoopTag(fields.title, loop.tag)}, dest)}
+            onAddTask={(text, dest, linkedFile) => actions.addTask(withLoopTag(text, loop.tag), dest, linkedFile)}
+            onAddMeeting={(fields, dest, linkedFile) => actions.addMeeting({...fields, title: titleWithLoopTag(fields.title, loop.tag)}, dest, linkedFile)}
+            thisFileLine
             editTarget={
               (loopEditing ? null : agreements.editTarget) ??
               editTargetFor(loopEditing ? LOOP_EDIT_KEY : target ? `${target.type}:${target.key}` : null, {

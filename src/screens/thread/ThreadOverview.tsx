@@ -242,13 +242,14 @@ function ThreadOverviewBody({request, backLabel, onClose}: Props): React.JSX.Ele
             fixedDestination={fixedDestination}
             provenance={[...(origin.provenance ?? []), ...(preset.part ? [preset.part] : [])]}
             meetingSeed={seed}
-            onAddTask={(line, dest) =>
-              actions.addTask(preset.apply(origin.apply(line)), dest).then(() => {
+            onAddTask={(line, dest, linkedFile) =>
+              actions.addTask(preset.apply(origin.apply(line)), dest, linkedFile).then(() => {
                 origin.added();
                 preset.added();
               })
             }
-            onAddMeeting={(fields, dest) => actions.addMeeting(fields, dest).then(() => setSeedItem(null))}
+            onAddMeeting={(fields, dest, linkedFile) => actions.addMeeting(fields, dest, linkedFile).then(() => setSeedItem(null))}
+            thisFileLine
             editTarget={
               agreements.editTarget ??
               editTargetFor(target ? `${target.type}:${target.key}` : null, {task: editingTask?.task, meeting: editingMeeting?.meeting}, edit.mode)

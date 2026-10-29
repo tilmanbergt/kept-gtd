@@ -39,7 +39,9 @@ interface Input {
   editingLoop: boolean;
   /** False in the capture panel: no loop handling there. */
   loopsEnabled: boolean;
-  onAddTask: (text: string, destination: Destination) => Promise<void>;
+  onAddTask: (text: string, destination: Destination, linkedFile?: string) => Promise<void>;
+  /** The linked file a new todo gets (Quick Add's This-file line), read at + Add. */
+  linkedFileForAdd?: () => string | undefined;
   onSaveEditTask?: (nextText: string, nextLinkedFile: string) => Promise<void | boolean>;
   /** Called on every user change of the text (the capture panel's "typed since the seed"). */
   onUserEdit?: () => void;
@@ -164,7 +166,7 @@ export function useTaskDraft(core: QuickAddCore, input: Input) {
     setError(null);
     setPending(true);
     input
-      .onAddTask(finalText, destination)
+      .onAddTask(finalText, destination, input.linkedFileForAdd?.())
       .then(() => {
         resetAfterAdd();
         if (startsLoop) return;

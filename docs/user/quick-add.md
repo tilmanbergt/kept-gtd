@@ -46,7 +46,7 @@ Every project and area has a short abbreviation, for example `GR` for "Garden re
 
 ## The Inbox
 
-Whatever you add without a project or area lands in the Inbox: from Daily, Week and Month, from a lasso capture you don't file right away, and marks from notes outside your projects and areas. The **Inbox** tab shows all of it, grouped into Next, Waiting For, Someday, Maybe and Other; **Hide done tasks** keeps it short. The Files pane on the left lets you look into your projects, areas and resources while you sort.
+Whatever you add without a project or area lands in the Inbox: from Daily, Week and Month, from a lasso capture you don't file right away, and marks from notes outside your projects and areas. The **Inbox** tab shows all of it, grouped into Next, Waiting For, Someday, Maybe and Other; **Hide done tasks** keeps it short. The Files pane on the left lets you look into your projects, areas and resources, and the Supernote's other folders (**Device**), while you sort.
 
 To empty the Inbox, tap each item and, on its card, either finish it, delete it, or move it with the arrow next to its place (or an abbreviation tag while editing, see above). The [Weekly Review](review.md) has a step **Inbox to zero** for exactly this.
 
@@ -74,7 +74,11 @@ The meeting card is described in [Meetings](meetings.md). Cards exist wherever a
 Every todo and meeting can have its own handwritten note - one of Kept's most useful features. One tap creates it, already filled in: title, date and time, related open todos, a background from your templates. Next time the same tap opens it again.
 
 - The note icon (+ with a notebook) creates a note for the todo or meeting and opens it, after you confirm what will be created in the status line; the notebook icon opens it later. How the note looks and where it goes is set by [Note setups](note-setups.md); by default it is a page in the project's or area's [home notebook](projects-and-areas.md#home-notebooks).
-- The clip icon links an existing file (for example a PDF from Resources). On a todo row, tap the `+` clip, then tap the file in the Files pane; or select the todo or meeting and tap **+** and the clip on its card. A filled clip opens the linked file. To remove a link, tap ✕ next to the file's name on the card.
+- The clip icon links an existing file (for example a PDF from Resources, or one from `Document` on the Files pane's **Device** tab, see [Files outside Note](files-and-folders.md#files-outside-note)). On a todo row, tap the `+` clip, then tap the file in the Files pane; or select the todo or meeting and tap **+** and the clip on its card. A filled clip opens the linked file. To remove a link, tap ✕ next to the file's name on the card.
+
+## The file you opened Kept from
+
+When you opened Kept from a note or a document - a PDF, an EPUB - Quick Add's Todo and Meeting tabs show one more line in the fourth row: the clip, the file's name and two choices, **p. 12** (the page you were on) and **no page** (the file opens where you last left it). The filled one is what a new todo or meeting links; tap it again to link nothing. From a document it starts on **p. 12**, so todos you add while reading point back to their page; from a note it starts off. The line is there on a project's or area's page, the Inbox, Daily, Week, Month, the thread and loop overviews and in [Engage](engage.md); opened from Home it doesn't show. The same file is offered at the top of the Files pane when you link a file, see [Files outside Note](files-and-folders.md#files-outside-note).
 
 ## Capturing handwriting with the lasso
 

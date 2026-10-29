@@ -2,6 +2,7 @@
 // one top tab for every root, a second row for the place, and every arm landing on the right place.
 jest.mock('../../src/utils/screenRefresh', () => ({requestEinkRefresh: jest.fn(), useEinkRefreshOnLoad: jest.fn()}));
 jest.mock('../../src/utils/log', () => ({log: jest.fn(), logWarn: jest.fn(), logError: jest.fn()}));
+jest.mock('../../src/supernote/currentPage', () => ({getCurrentPageNum: jest.fn(async () => null)}));
 jest.mock('../../src/supernote/fileSystem', () => ({
   listFolderEntries: async (folder: string) => [{name: `${folder.split('/').pop()}-file.pdf`, path: `${folder}/x.pdf`, isFolder: false}],
   openPath: jest.fn(),

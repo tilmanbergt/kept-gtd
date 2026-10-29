@@ -17,6 +17,13 @@ or your project/area files are stored.
 - **Help pages link to each other**: tap an underlined link to open that page, at the heading it
   names; **‹ Back** in the help's header walks back through the pages you came from.
 
+- **Link files from anywhere**: the Files pane has a **Device** tab with the Supernote's folders next to
+  `Note` (`Document`, `EXPORT`, `INBOX`, `MyStyle`, `SCREENSHOT`, `Download`) and the SD card when one is
+  in - link a PDF from `Document` to a todo or meeting.
+- **This file**: opened from a note or a document, the Files pane offers **This file · p. 12** and
+  **This file** at the top while you link a file, and Quick Add shows a line to link it to every new
+  todo or meeting - on by default for a PDF or EPUB, off for a note.
+
 ### Changed
 - **Getting started** is a short walk through Kept for simple needs - your folders, projects and
   areas, todos, meetings, notes, capture, the weekly review - each step linking to its page. "The

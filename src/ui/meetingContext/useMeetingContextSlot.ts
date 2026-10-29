@@ -33,8 +33,8 @@ import {useMeetingQuickAdd} from './useMeetingQuickAdd';
 type SelectedMeeting = {item: MeetingEntryRef['item']; meetingIndex: number; meeting: Meeting};
 
 interface Base {
-  addTask: (line: string, destination: Destination) => Promise<void>;
-  addMeeting: (fields: MeetingQuickAddFields, destination: Destination) => Promise<void>;
+  addTask: (line: string, destination: Destination, linkedFile?: string) => Promise<void>;
+  addMeeting: (fields: MeetingQuickAddFields, destination: Destination, linkedFile?: string) => Promise<void>;
 }
 
 export interface MeetingContextSlot extends MeetingContextData {
@@ -141,9 +141,11 @@ export function useMeetingContextSlot(
         }
       : null;
   // Stable for the memoized QuickAddWidget; called from its handlers only.
-  const onAddTask = useStableCallback((line: string, destination: Destination) => (adding && add ? add.onAddTask(line, destination) : base.addTask(line, destination)));
-  const onAddMeeting = useStableCallback((fields: MeetingQuickAddFields, destination: Destination) =>
-    adding && add ? add.onAddMeeting(fields, destination) : base.addMeeting(fields, destination),
+  const onAddTask = useStableCallback((line: string, destination: Destination, linkedFile?: string) =>
+    adding && add ? add.onAddTask(line, destination, linkedFile) : base.addTask(line, destination, linkedFile),
+  );
+  const onAddMeeting = useStableCallback((fields: MeetingQuickAddFields, destination: Destination, linkedFile?: string) =>
+    adding && add ? add.onAddMeeting(fields, destination, linkedFile) : base.addMeeting(fields, destination, linkedFile),
   );
   return {
     ...context,
