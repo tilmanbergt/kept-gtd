@@ -17,13 +17,16 @@ or your project/area files are stored.
 - **Help pages link to each other**: tap a link (bold and underlined) to open that page, at the heading
   it names; **‹ Back** in the help's header walks back through the pages you came from. Terms the help
   explains are in italics, buttons and labels stay bold.
-
 - **Link files from anywhere**: the Files pane has a **Device** tab with the Supernote's folders next to
   `Note` (`Document`, `EXPORT`, `INBOX`, `MyStyle`, `SCREENSHOT`, `Download`) and the SD card when one is
   in - link a PDF from `Document` to a todo or meeting.
 - **This file**: opened from a note or a document, the Files pane offers **This file · p. 12** and
   **This file** at the top while you link a file, and Quick Add shows a line to link it to every new
   todo or meeting - on by default for a PDF or EPUB, off for a note.
+- **Setup assistant**: on the first start after installing, four short steps - your folders (existing
+  ones like `Projects` or `1 Projects` are suggested, nothing is moved), where notes go, Simple or
+  Everything, and the demo space. Finish shows which folders it creates, creates only those and opens
+  the Projects tab. Any time later: **Run setup assistant** in Settings → Folders.
 
 ### Changed
 - **Getting started** is a short walk through Kept for simple needs - your folders, projects and

@@ -52,10 +52,11 @@ interface MigratableFields extends FeatureFlagFields {
   googleCalendarIcsUrl: string;
   gmailEmail: string;
   lastSeenVersion: string;
+  setupAssistant: 'pending' | 'done';
 }
 
 /**
- * One-time defaults for the switches and the What's-new marker, run on every
+ * First-start defaults: the switches, the What's-new marker and the setup assistant, run on every
  * settings load (storage/settingsStorage.ts), same contract as the other
  * migrations there: returns the SAME object when nothing changes.
  *
@@ -63,8 +64,11 @@ interface MigratableFields extends FeatureFlagFields {
  *   starts ON when its integration is already configured, so nothing
  *   disappears after the update. `lastSeenVersion` stays '' so the
  *   "Updated to …" notice shows once.
- * - Fresh install (nothing stored): switches stay OFF (defaults) and
- *   `lastSeenVersion` becomes `currentVersion`, so no notice.
+ * - Fresh install (nothing stored): switches stay OFF (defaults),
+ *   `lastSeenVersion` becomes `currentVersion`, so no notice, and the setup
+ *   assistant is 'pending', so it opens once
+ *   (docs/dev/history/technical-design-easy-start.md §5.1). Every stored blob
+ *   keeps the default 'done': an existing install never sees it by itself.
  */
 export function migrateExperimentalFlags<T extends MigratableFields>(
   merged: T,
@@ -76,6 +80,7 @@ export function migrateExperimentalFlags<T extends MigratableFields>(
   let next = merged;
   if (freshInstall) {
     if (!merged.lastSeenVersion) {next = {...next, lastSeenVersion: currentVersion};}
+    if (merged.setupAssistant !== 'pending') {next = {...next, setupAssistant: 'pending'};}
     return next;
   }
   if (raw.experimentalGoogleCalendar === undefined) {

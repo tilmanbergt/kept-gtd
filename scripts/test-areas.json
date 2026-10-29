@@ -247,14 +247,14 @@
       "name": "Settings, profiles, demo, help and logging",
       "help": ["settings.md", "profiles-and-demo.md"],
       "tests": [
-        "__tests__/**/*{settings,Settings,profile,Profile,demoSpace,buildVersionText,helpTopics,markdownBlocks,features,redact,debugBundle,logSink,userDocs,keptGtd,touch,Touch,deviceCheck,helpLinks}*"
+        "__tests__/**/*{settings,Settings,profile,Profile,demoSpace,buildVersionText,helpTopics,markdownBlocks,features,redact,debugBundle,logSink,userDocs,keptGtd,touch,Touch,deviceCheck,helpLinks,setupAssistant}*"
       ],
       "sources": [
         "src/screens/settings/**",
-        "src/domain/{settings,profiles,profileCopy,demoSpace,buildVersionText,helpTopics,helpLinks,markdownBlocks,features,redact,touchDiag}.ts",
-        "src/storage/{settings*,profiles,profileKeys,demoSpace,debugBundle,perfStats,touchLog,deviceCheck}.ts",
+        "src/domain/{settings,profiles,profileCopy,demoSpace,buildVersionText,helpTopics,helpLinks,markdownBlocks,features,redact,touchDiag,setupAssistant}.ts",
+        "src/storage/{settings*,profiles,profileKeys,demoSpace,debugBundle,perfStats,touchLog,deviceCheck,setupAssistant}.ts",
         "src/ui/{HelpOverlay,MarkdownBlocks}.tsx",
-        "src/ui/{useSettings,useSettingsUnreadableNotice,useProfileCopyNotice,useWhatsNewNotice,featureStore}.ts",
+        "src/ui/{useSettings,useSettingsUnreadableNotice,useProfileCopyNotice,useWhatsNewNotice,featureStore,helpStore}.ts",
         "src/ui/touchDiag/**",
         "src/utils/{log,logSink,perf,touchDiagStore}.ts"
       ]

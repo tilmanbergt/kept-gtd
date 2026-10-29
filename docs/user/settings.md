@@ -2,6 +2,17 @@
 
 Settings has these tabs:
 
+## Setup assistant
+
+On the first start after installing, Kept opens the setup assistant once. It is always available as **Run setup assistant** at the top of the Folders tab (while you have unsaved changes in the folder fields it waits for you to save or reset them). Four steps, one per screen, each with **? Help** and a line saying where to change it later:
+
+1. *Folders*: the base folder and the Projects, Areas, Resources and Archive folders. Kept suggests folders you already have (`Projects`, `1 Projects`, `01 Projects` and so on) and shows what it finds under each field: "exists · 12 folders" or "will be created". Nothing is moved; every subfolder of the Projects and Areas folders becomes a project or area.
+2. *Notes*: **One notebook per project and year** (recommended) or **Own note per todo or meeting** - what the Default note setup does (see [Note setups](note-setups.md#the-default)).
+3. *Features*: **Simple** (Project close-out, Google Calendar, Gmail and Notebook contents off) or **Everything** (all on; Calendar and Gmail still need their addresses on their tabs). See [Features and integrations](features.md).
+4. *Look around first?*: **Create demo space**, and how to switch to it (see [Profiles and the demo space](profiles-and-demo.md#the-demo-space)).
+
+**‹ Back** and **Next ›** move between the steps. The last screen shows exactly which folders Kept will create and what it will save; **Finish** creates only the missing folders, saves your choices and opens the Projects tab, where the status line names the folders it created. **Skip** closes the assistant without changing anything. Nothing is created before **Finish**.
+
 ## Folders
 
 The base folder and the names of the Projects, Areas, Resources and Archive folders, and of the **Inbox folder** inside Areas. Below each field you see the full path. Tap **Save** at the bottom after changing something (the same on the Calendar and Gmail tabs).

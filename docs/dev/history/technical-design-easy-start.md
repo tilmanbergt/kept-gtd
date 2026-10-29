@@ -298,3 +298,18 @@ built); demo space → `foundation`; setup assistant → `settings`; Device tab,
   dropping a "see …" to the same page right after it); terms the page explains became italics; a tag
   became `code`. The rule is in `docs/dev/README.md` "Writing user docs"; `scripts/test-userdocs.mjs`
   also fails when a page lands in two groups of the help's list.
+- **S5** The assistant is `domain/setupAssistant.ts` (suggestions, statuses, `initialChoices`,
+  `planFinish`), `storage/setupAssistant.ts` (`scanBaseFolder`, `finishSetup` through `patchSettings` -
+  the normal save path, refused while settings are unreadable - then `ensureFolderExists` for the
+  missing folders only; `skipSetup`) and `screens/settings/SetupAssistant.tsx` (about 300 lines).
+  The base folder is an editable field too; it is read again half a second after a change (at once on
+  the first read), and the first read fills in the suggestions. The status text after Finish is
+  `domain/fileChangeText.ts`'s `setupFinishedText` plus "Create your first project here.", published
+  `global` so it survives the switch to the Projects tab. ? Help goes through a new module store,
+  `ui/helpStore.ts`, that `useAppOverlays` opens the help for (Folders → Getting started "Your folders",
+  Notes → Note setups "The Default", Features → Features, Demo → "The demo space", Finish → Settings
+  "Setup assistant"). App lands on Settings with the assistant only on its first reorient while
+  `setupAssistant` is 'pending'; leaving the Settings tab ends that start. Run setup assistant is
+  disabled while the folder fields differ from the stored settings. The Create demo space text moved to
+  `fileChangeText.ts` (`demoSpaceCreatedText`) for ProfilesSection and the assistant. The debug bundle
+  shows `setup assistant pending|done`.

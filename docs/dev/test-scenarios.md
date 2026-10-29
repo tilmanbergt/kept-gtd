@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-136 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+139 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -1151,6 +1151,38 @@ Test: `__tests__/scenarios/keptGtd.test.tsx`
 - **Then** one kept-gtd-debug file is in EXPORT/kept-gtd/debug, it says Kept GTD, and the status line names it
 
 Test: `__tests__/scenarios/keptGtd.test.tsx`
+
+### A fresh install opens the setup assistant; Finish saves the folders found and creates only the missing ones
+
+- **Given** Note holds a folder "Projects" with 3 project folders and nothing else of PARA
+- **When** Kept starts for the first time
+- **Then** Settings shows the assistant on its Folders step, suggesting Projects
+- **When** I go through Notes (keep one notebook) and Features (Everything) to Finish
+- **Then** Finish lists exactly the folders it will create
+- **When** I tap Finish
+- **Then** the folders are created, Projects is kept as it is, and the Projects tab says what happened
+- **And** the settings hold the choices
+
+Test: `__tests__/scenarios/setupAssistant.test.tsx` · design: `docs/dev/history/technical-design-easy-start.md`
+
+### Skip closes the assistant without saving or creating anything
+
+- **When** Kept starts for the first time and I tap ? Help
+- **Then** the help opens at Getting started, "Your folders"
+- **When** I close the help and tap Skip
+- **Then** Settings shows its tabs, no folder was created, and the assistant is done
+
+Test: `__tests__/scenarios/setupAssistant.test.tsx` · design: `docs/dev/history/technical-design-easy-start.md`
+
+### An existing install opens on Daily as before; Run setup assistant starts it from Settings → Folders, Simple with own notes
+
+- **When** Kept starts with stored settings
+- **Then** it lands on Daily, without the assistant
+- **When** I tap Run setup assistant on Settings → Folders, choose own notes and Simple, and Finish
+- **Then** close-out, Calendar, Gmail and Notebook contents are off and the Default has no notebook
+- **And** Run setup assistant waits while the Folders fields have unsaved changes
+
+Test: `__tests__/scenarios/setupAssistant.test.tsx` · design: `docs/dev/history/technical-design-easy-start.md`
 
 ### Record taps in the touch test without changing anything
 

@@ -19,7 +19,7 @@ Kept keeps everything in four folders inside your `Note` folder:
 - `3 Resources`: reference material
 - `4 Archive`: finished projects
 
-Kept creates these folders when it first needs them, for example when you create your first project. Nothing else is created behind your back.
+Kept creates these folders when it first needs them, for example when you create your first project, or right away in the [setup assistant](settings.md#setup-assistant), which opens on the first start and shows every folder before it creates it. Nothing else is created behind your back.
 
 Already have a folder system? Point [Settings → Folders](settings.md#folders) at it and tap **Save**. Every subfolder of your projects folder is then a project, every subfolder of your areas folder an area. Nothing is moved or renamed. See [Your files, folders and Obsidian](files-and-folders.md).
 

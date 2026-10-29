@@ -10,6 +10,7 @@
 import React, {useCallback, useEffect, useState, useSyncExternalStore} from 'react';
 import {ActivityIndicator, Pressable, StyleSheet, Text, View} from 'react-native';
 import {DEFAULT_PROFILE_ID} from '../../domain/profiles';
+import {demoSpaceCreatedText} from '../../domain/fileChangeText';
 import {createDemoSpace} from '../../storage/demoSpace';
 import {ensureDefaultProfileFile, listProfiles, ProfileInfo, saveActiveProfile} from '../../storage/profiles';
 import {getSettingsUnreadable, subscribeSettingsUnreadable} from '../../storage/settingsUnreadable';
@@ -75,8 +76,7 @@ export default function ProfilesSection({activeProfileId, onSwitchProfile, textC
   const handleDemo = () =>
     run(async () => {
       const r = await createDemoSpace();
-      const files = r.written > 0 ? `${r.written} demo files written to Note/kept-gtd-demo` : 'demo files already in Note/kept-gtd-demo';
-      return `${files}${r.skipped > 0 && r.written > 0 ? `, ${r.skipped} kept` : ''}${r.profileCreated ? ', profile "Demo" added' : ''}.`;
+      return demoSpaceCreatedText(r.written, r.skipped, r.profileCreated);
     });
 
   const unreadable = useSyncExternalStore(subscribeSettingsUnreadable, getSettingsUnreadable) !== null;

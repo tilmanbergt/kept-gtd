@@ -30,6 +30,7 @@ import ThreadOverview from './thread/ThreadOverview';
 import {requestEinkRefresh} from '../utils/screenRefresh';
 import HelpOverlay from '../ui/HelpOverlay';
 import {AppTab, tabLabel} from '../ui/TabBar';
+import {useHelpRequest} from '../ui/helpStore';
 import {closeOverview, OverviewRequest, useOverview} from '../ui/overviewStore';
 
 export interface AppOverlays {
@@ -97,6 +98,16 @@ export function useAppOverlays(inTabs: boolean, activeTab: AppTab): AppOverlays 
   useEffect(() => {
     if (thread) setHelp(null);
   }, [thread]);
+
+  // A page asked for from a screen (ui/helpStore.ts) opens the help there, with a fresh history.
+  const helpRequest = useHelpRequest();
+  useEffect(() => {
+    if (!helpRequest || !USER_DOCS.pages[helpRequest.page]) return;
+    closeOverview();
+    setHelpHistory([]);
+    showHelpSpot({pageId: helpRequest.page, row: linkRow(helpRequest)});
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- once per request
+  }, [helpRequest?.nonce]);
 
   // History belongs to one opening of the help.
   useEffect(() => {

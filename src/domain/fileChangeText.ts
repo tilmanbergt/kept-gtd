@@ -299,3 +299,19 @@ export const AGREEMENT_SAVED_TEXT = 'Agreement saved';
 export const AGREEMENT_KEPT_TEXT = 'Agreement kept';
 /** A save whose agreement line is gone or was changed in the file since it was read. */
 export const AGREEMENT_VANISHED_TEXT = 'That agreement changed in the file - look again';
+
+/**
+ * After the setup assistant's Finish (docs/dev/history/technical-design-easy-start.md §5.4): which
+ * folders it created in the base folder, which it couldn't create, and that the choices are saved.
+ */
+export function setupFinishedText(created: string[], failed: string[], baseDisplay: string): string {
+  const made = created.length > 0 ? `Created ${created.join(', ')} in ${baseDisplay}. ` : 'No folder needed creating. ';
+  const notMade = failed.length > 0 ? `Could not create ${failed.join(', ')}. ` : '';
+  return `${made}${notMade}Setup saved.`;
+}
+
+/** After Create demo space (Settings → Advanced → Profiles, the setup assistant's last step). */
+export function demoSpaceCreatedText(written: number, skipped: number, profileCreated: boolean): string {
+  const files = written > 0 ? `${written} demo files written to Note/kept-gtd-demo` : 'demo files already in Note/kept-gtd-demo';
+  return `${files}${skipped > 0 && written > 0 ? `, ${skipped} kept` : ''}${profileCreated ? ', profile "Demo" added' : ''}.`;
+}

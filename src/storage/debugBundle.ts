@@ -63,7 +63,7 @@ export function summarizeSettings(s: GtdParaSettings): string[] {
       ` · modules: closeOut ${onOff(f.closeOut)}` +
       ` · contexts ${(s.contexts ?? []).length}, active ${s.activeContextId ? 'yes' : 'no'}`,
     `          keepTabs ${onOff(s.keepTabsAlive)} · perfTracing ${onOff(s.perfTracing)} · debugLogging ${onOff(s.debugLogging)}` +
-      ` · reviewSteps recorded ${Object.keys(s.reviewSteps ?? {}).length}`,
+      ` · reviewSteps recorded ${Object.keys(s.reviewSteps ?? {}).length} · setup assistant ${s.setupAssistant}`,
     noteSetupsLine(s, didNoteSetupMigrationFail()),
     `          homeNotebooks ${onOff(!!s.noteSetupDefaults?.notebook)} · contents ${onOff(s.notebookContentsEnabled)} · pageIndex: cached ${cachedPageIndexCount()}`,
   ];

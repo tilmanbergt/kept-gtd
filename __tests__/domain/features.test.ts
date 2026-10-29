@@ -6,6 +6,7 @@ const base = {
   googleCalendarIcsUrl: '',
   gmailEmail: '',
   lastSeenVersion: '',
+  setupAssistant: 'done' as 'pending' | 'done',
 };
 
 describe('featuresOf', () => {
@@ -35,7 +36,7 @@ describe('modulesOf', () => {
 describe('migrateExperimentalFlags', () => {
   it('fresh install: flags stay off, lastSeenVersion set', () => {
     const out = migrateExperimentalFlags(base, {}, '0.1.0');
-    expect(out).toEqual({...base, lastSeenVersion: '0.1.0'});
+    expect(out).toEqual({...base, lastSeenVersion: '0.1.0', setupAssistant: 'pending'});
   });
   it('fresh install with null raw', () => {
     expect(migrateExperimentalFlags(base, null, '0.1.0').lastSeenVersion).toBe('0.1.0');
@@ -52,6 +53,9 @@ describe('migrateExperimentalFlags', () => {
     const out = migrateExperimentalFlags(merged, {gmailEmail: 'a@b.c'}, '0.1.0');
     expect(out.experimentalGmail).toBe(true);
     expect(out.experimentalGoogleCalendar).toBe(false);
+  });
+  it('existing install: the setup assistant stays done', () => {
+    expect(migrateExperimentalFlags(base, {baseRoot: '/storage/emulated/0/Note'}, '0.1.0').setupAssistant).toBe('done');
   });
   it('keys already stored: no-op, same reference', () => {
     const merged = {...base, googleCalendarIcsUrl: 'https://x/ical/y.ics'};

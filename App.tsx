@@ -207,6 +207,13 @@ function AppShell({onProfileSwitched}: {onProfileSwitched: () => void}): React.J
   // initializer - see that screen's module doc comment for why a watched
   // effect isn't needed (a tab switch away always unmounts it first).
   const [settingsTab, setSettingsTab] = useState<SettingsTab>('folders');
+  // A fresh install starts on Settings with the setup assistant running, once
+  // (docs/dev/history/technical-design-easy-start.md §5.5).
+  const [setupAtStart, setSetupAtStart] = useState(false);
+  // Once: leaving Settings ends the start (Run setup assistant on Settings → Folders stays).
+  useEffect(() => {
+    if (activeTab !== 'settings') setSetupAtStart(false);
+  }, [activeTab]);
 
   // Help and the other overlays over the tab body (screens/useAppOverlays.tsx).
   const overlays = useAppOverlays(mode === 'tabs', activeTab);
@@ -415,7 +422,12 @@ function AppShell({onProfileSwitched}: {onProfileSwitched: () => void}): React.J
         // old note by hand later can't resurrect it.
         if (landing.clearRecord) clearReturnRecord();
 
-        if (landing.kind === 'item') {
+        if (loadedSettings.setupAssistant === 'pending' && !hasLandedRef.current) {
+          log('App: reorient landing on the setup assistant');
+          setSetupAtStart(true);
+          setSettingsTab('folders');
+          setActiveTab('settings');
+        } else if (landing.kind === 'item') {
           const enclosing = landing.item;
           log('App: reorienting to current note\'s item', enclosing.kind, enclosing.path);
           setCurrentItem({kind: enclosing.kind, name: enclosing.name, path: enclosing.path});
@@ -784,7 +796,15 @@ function AppShell({onProfileSwitched}: {onProfileSwitched: () => void}): React.J
           />
         ))}
       {activeTab === 'settings' && (
-        <Settings initialTab={settingsTab} onSwitchProfile={switchToProfile} />
+        <Settings
+          initialTab={settingsTab}
+          onSwitchProfile={switchToProfile}
+          startSetup={setupAtStart}
+          onSetupClosed={finished => {
+            setSetupAtStart(false);
+            if (finished) setActiveTab('projects');
+          }}
+        />
       )}
     </>
   );
