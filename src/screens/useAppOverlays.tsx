@@ -6,13 +6,20 @@
  * An overlay sits inside StatusFrame, so the TabBar and the status slot stay
  * visible and the tab screens stay mounted underneath, exactly as they were.
  *
+ * The help keeps the pages read since it opened, so ‹ Back returns to each at
+ * the screen it showed (docs/dev/history/technical-design-easy-start.md §2.4):
+ * a link tap and a page picked in the help's list both push where the reader
+ * was; closing the help forgets them.
+ *
  * At most one overlay is open: opening one closes the others. Any change of tab and leaving the tab shell (capture, focus mode)
  * close both; an overview requested outside the tab shell is dropped. Closing
  * an overlay requests an e-ink refresh, because the screen behind reappears
  * without a load edge of its own.
  */
 import React, {useEffect, useRef, useState} from 'react';
-import {helpStartPage, LastHelpPage} from '../domain/helpTopics';
+import {findAnchorBlock} from '../domain/helpLinks';
+import {helpStartPage, LastHelpPage, stripLeadingTitle} from '../domain/helpTopics';
+import {HelpLinkTarget, parseMarkdownBlocks} from '../domain/markdownBlocks';
 import {USER_DOCS} from '../generated/userDocs';
 import {loopOf} from '../domain/loops';
 import {findLoopLine} from '../domain/loopsSection';
@@ -49,32 +56,75 @@ function loopRequestOf(request: OverviewRequest): LoopOverviewRequest | null {
   return {tag: loop.tag, ownerPath: owner?.path ?? rowItem.path};
 }
 
+/** A place in the help: a page and the first block on screen. */
+interface HelpSpot {
+  pageId: string;
+  row: number;
+}
+
+/** Most places ‹ Back remembers; older ones are dropped. */
+const HELP_HISTORY_MAX = 20;
+
+/** The block a link opens its page at: the anchor's heading, or the top. */
+function linkRow(link: HelpLinkTarget): number {
+  const page = USER_DOCS.pages[link.page];
+  if (!page || !link.anchor) return 0;
+  return Math.max(0, findAnchorBlock(parseMarkdownBlocks(stripLeadingTitle(page.markdown)), link.anchor));
+}
+
 export function useAppOverlays(inTabs: boolean, activeTab: AppTab): AppOverlays {
-  // The page shown in the help overlay, or null while it's closed. The last
-  // page read per tab is remembered for this session only.
-  const [helpPage, setHelpPage] = useState<string | null>(null);
+  // The place shown in the help overlay, or null while it's closed; `nonce`
+  // makes every navigation a new jump. The last page read per tab is
+  // remembered for this session only.
+  const [help, setHelp] = useState<{spot: HelpSpot; nonce: number} | null>(null);
+  const helpPage = help?.spot.pageId ?? null;
+  const [helpHistory, setHelpHistory] = useState<HelpSpot[]>([]);
+  const helpRowRef = useRef(0);
   const lastHelpRef = useRef<LastHelpPage | null>(null);
   const thread = useOverview();
 
   useEffect(() => {
-    if (!inTabs) setHelpPage(null);
+    if (!inTabs) setHelp(null);
   }, [inTabs]);
   useEffect(() => {
     if (!inTabs && thread) closeOverview();
   }, [inTabs, thread]);
   useEffect(() => {
-    setHelpPage(null);
+    setHelp(null);
     closeOverview();
   }, [activeTab]);
   // An overview opened while the help shows replaces it.
   useEffect(() => {
-    if (thread) setHelpPage(null);
+    if (thread) setHelp(null);
   }, [thread]);
+
+  // History belongs to one opening of the help.
+  useEffect(() => {
+    if (helpPage === null) setHelpHistory([]);
+  }, [helpPage]);
 
   const closeHelp = () => {
     if (helpPage === null) return;
-    setHelpPage(null);
+    setHelp(null);
     requestEinkRefresh();
+  };
+  const showHelpSpot = (spot: HelpSpot) => {
+    lastHelpRef.current = {tab: activeTab, pageId: spot.pageId};
+    helpRowRef.current = spot.row;
+    setHelp(prev => ({spot, nonce: (prev?.nonce ?? 0) + 1}));
+  };
+  /** Opens `spot`, remembering where the reader was for ‹ Back. */
+  const navigateHelp = (spot: HelpSpot) => {
+    if (!help) return;
+    const here = {pageId: help.spot.pageId, row: helpRowRef.current};
+    setHelpHistory(h => [...h, here].slice(-HELP_HISTORY_MAX));
+    showHelpSpot(spot);
+  };
+  const helpBack = () => {
+    const previous = helpHistory[helpHistory.length - 1];
+    if (!previous) return;
+    setHelpHistory(h => h.slice(0, -1));
+    showHelpSpot(previous);
   };
   const closeThread = () => {
     if (!thread) return;
@@ -88,18 +138,29 @@ export function useAppOverlays(inTabs: boolean, activeTab: AppTab): AppOverlays 
       return;
     }
     closeOverview();
-    const page = helpStartPage(activeTab, lastHelpRef.current, new Set(Object.keys(USER_DOCS.pages)));
-    lastHelpRef.current = {tab: activeTab, pageId: page};
-    setHelpPage(page);
+    showHelpSpot({pageId: helpStartPage(activeTab, lastHelpRef.current, new Set(Object.keys(USER_DOCS.pages))), row: 0});
   };
-  const selectHelpPage = (pageId: string) => {
-    lastHelpRef.current = {tab: activeTab, pageId};
-    setHelpPage(pageId);
+  const selectHelpPage = (pageId: string) => navigateHelp({pageId, row: 0});
+  const followHelpLink = (link: HelpLinkTarget) => {
+    if (!USER_DOCS.pages[link.page]) return;
+    navigateHelp({pageId: link.page, row: linkRow(link)});
   };
 
   let overlay: React.ReactNode = null;
-  if (helpPage !== null) {
-    overlay = <HelpOverlay pageId={helpPage} onSelectPage={selectHelpPage} onClose={closeHelp} />;
+  if (help !== null) {
+    overlay = (
+      <HelpOverlay
+        pageId={help.spot.pageId}
+        jumpTo={{key: help.nonce, row: help.spot.row}}
+        onSelectPage={selectHelpPage}
+        onLink={followHelpLink}
+        onBack={helpHistory.length > 0 ? helpBack : null}
+        onFirstRowChange={row => {
+          helpRowRef.current = row;
+        }}
+        onClose={closeHelp}
+      />
+    );
   } else if (thread && inTabs) {
     const backLabel = `‹ ${tabLabel(activeTab)}`;
     const loop = loopRequestOf(thread);

@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-132 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+133 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -561,6 +561,25 @@ Test: `__tests__/scenarios/pageSection.test.tsx`
 - **And** the line reads "Section: Coach call · 24.10. · from p. 3"
 
 Test: `__tests__/scenarios/smoke/engagePage.test.tsx`
+
+## Help
+
+### Follow links between help pages and walk back with ‹ Back
+
+- **Given** Kept is open on the Projects tab
+- **When** I open the help
+- **Then** it shows Projects and Areas, without ‹ Back
+- **When** I pick Overview in the list and tap its link Threads
+- **Then** the Threads page opens, with ‹ Back
+- **When** I tap ‹ Back twice
+- **Then** Projects and Areas shows again and there is nothing more to go back to
+- **When** I pick Quick Add and capture, page to its link Mark for later and tap it
+- **Then** the Lasso page opens on the screen with its heading Marking for later
+- **When** I tap ‹ Back
+- **Then** Quick Add and capture shows again on the screen with the link
+- **And** after ✕ Close and opening the help again there is no ‹ Back
+
+Test: `__tests__/scenarios/helpLinks.test.tsx` · design: `docs/dev/history/technical-design-easy-start.md`
 
 ## Inbox
 

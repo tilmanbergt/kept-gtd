@@ -59,7 +59,11 @@ files".
 the help (`ui/HelpOverlay.tsx`), the **thread overview** (`screens/thread/ThreadOverview.tsx`)
 or the **loop overview** (`screens/loop/LoopOverview.tsx`).
 Opening one closes the other; a tab tap, leaving the tab shell and the overlay's own close
-(help: ✕ Close; overview: "‹ <tab name>") close it, and closing requests an e-ink refresh. An
+(help: ✕ Close; overview: "‹ <tab name>") close it, and closing requests an e-ink refresh.
+Links between help pages (`[text](page.md#heading)`, `domain/markdownBlocks.ts`'s `link` spans,
+anchors by `domain/helpLinks.ts`'s GitHub slug) open the page at that heading; the help keeps the
+places read since it opened (`{pageId, row}`, at most 20) for its **‹ Back**, and forgets them on
+close. The help generator fails on a link to a missing page or heading (`scripts/lib/userDocs.mjs`). An
 overview is opened from any row through the module store `ui/overviewStore.ts`
 (`openOverview({tag, ownerPath, lens})`), so no list threads props for it; useAppOverlays opens
 the loop overview when the tag is a loop tag (§2.6) and the owner a cached Project or Area,

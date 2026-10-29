@@ -128,13 +128,17 @@ new page must be linked there. The app renders them with the same renderer as "W
 pages stick to it:
 
 - headings, paragraphs, `-` and `1.` lists with at most one nested level, `>` quotes
-- `**bold**`, `` `code` ``, links to other pages in the folder (shown as plain text on the device)
+- `**bold**`, `` `code` ``, links to other pages in the folder as `[text](page.md)` or
+  `[text](page.md#heading-slug)` (tappable in the help, which opens the page at that heading and
+  offers ‹ Back; the slug is GitHub's, `domain/helpLinks.ts`); links to web addresses show as text
 - fenced code blocks (shown in monospace, long ones continue on the next page)
 - no tables, images, HTML (not even `<name>` placeholders) or horizontal rules
 
 Write labels exactly as the app shows them, and check a behaviour in the code before describing
-it. `__tests__/docs/userDocs.test.ts` fails on anything outside the subset and on links to pages
-that don't exist, so `npm test` catches most slips.
+it. `__tests__/docs/userDocs.test.ts` fails on anything outside the subset, and the generator
+(`npm run gen`, run by every check tier and build) fails on a link to a page that doesn't exist or
+to a heading the page doesn't have (`scripts/lib/userDocs.mjs`'s `checkLinks`, with the app's slug
+rule), so the checks catch most slips.
 
 ## Code tour
 

@@ -185,7 +185,9 @@ export default function PagedSection<T>({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selfMeasuring, measuredHeight]);
 
-  const paged = usePagedByHeight(rows, rowHeight, effectiveViewportHeight, resetKey, jumpTo);
+  // A jump waits for a viewport height: the target's page depends on it (a self-measuring list
+  // has none before its first onLayout).
+  const paged = usePagedByHeight(rows, rowHeight, effectiveViewportHeight, resetKey, effectiveViewportHeight > 0 ? jumpTo : null);
   useEffect(() => {
     onFirstRowChange?.(paged.startIndex);
     // eslint-disable-next-line react-hooks/exhaustive-deps

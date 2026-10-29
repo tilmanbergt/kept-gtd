@@ -1,4 +1,4 @@
-import {blockText, CODE_CHUNK_LINES, parseInline, parseMarkdownBlocks} from '../../src/domain/markdownBlocks';
+import {blockText, CODE_CHUNK_LINES, helpLinkTarget, parseInline, parseMarkdownBlocks} from '../../src/domain/markdownBlocks';
 
 describe('parseInline', () => {
   it('splits bold, code and links', () => {
@@ -51,5 +51,30 @@ describe('parseMarkdownBlocks', () => {
     const blocks = parseMarkdownBlocks(['```', ...lines, '```'].join('\n'));
     expect(blocks).toHaveLength(2);
     expect(blockText(blocks[1])).toBe(lines.slice(CODE_CHUNK_LINES).join('\n'));
+  });
+});
+
+describe('help page links', () => {
+  it('keeps a page link and its anchor; other links become text', () => {
+    expect(parseInline('See [Threads](threads.md), [later](lasso.md#marking-for-later) or [web](https://x.org).')).toEqual([
+      {text: 'See '},
+      {text: 'Threads', link: {page: 'threads', anchor: null}},
+      {text: ', '},
+      {text: 'later', link: {page: 'lasso', anchor: 'marking-for-later'}},
+      {text: ' or web.'},
+    ]);
+  });
+  it('a link inside bold stays bold; a link inside code stays code', () => {
+    expect(parseInline('**[Tags](tags.md)** `[x](y.md)`')).toEqual([
+      {text: 'Tags', bold: true, link: {page: 'tags', anchor: null}},
+      {text: ' '},
+      {text: '[x](y.md)', code: true},
+    ]);
+  });
+  it('helpLinkTarget accepts only help pages', () => {
+    expect(helpLinkTarget('daily.md')).toEqual({page: 'daily', anchor: null});
+    expect(helpLinkTarget('../dev/x.md')).toBeNull();
+    expect(helpLinkTarget('images/a.png')).toBeNull();
+    expect(helpLinkTarget('Daily.md')).toBeNull();
   });
 });

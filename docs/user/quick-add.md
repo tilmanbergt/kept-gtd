@@ -78,4 +78,4 @@ Every todo and meeting can have its own handwritten note - one of Kept's most us
 
 ## Capturing handwriting with the lasso
 
-Select handwriting in any note and tap **Capture Todo/Meeting** in the lasso toolbar: Kept recognizes it and opens the same form, with **Save & next**, **Save & view** and **Save & close**. **Mark for later** saves a selection for later without opening Kept. Open marks show as a card **n marks to process** on the Inbox tab. Both are explained in [Lasso: capture and mark for later](lasso.md).
+Select handwriting in any note and tap **Capture Todo/Meeting** in the lasso toolbar: Kept recognizes it and opens the same form, with **Save & next**, **Save & view** and **Save & close**. [Mark for later](lasso.md#marking-for-later) saves a selection for later without opening Kept. Open marks show as a card **n marks to process** on the Inbox tab. Both are explained in [Lasso: capture and mark for later](lasso.md).

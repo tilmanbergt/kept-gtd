@@ -241,3 +241,14 @@ built); demo space → `foundation`; setup assistant → `settings`; Device tab,
   file (last page)" and "Open this file at page N" with the page the SDK reports, so K4's numbering can
   be compared by eye. The log line holds counts and kinds only. A line in `settings.md` (Advanced) and
   in the CHANGELOG describe it; files in the `settings` area.
+- **S1** Help files stay in the `settings` area, where the help renderer, `helpTopics` and the user-docs
+  tests already were (no new `help` area; `foundation` stays as it is). One slug function: the
+  generator and its script test load `src/domain/helpLinks.ts` itself through
+  `scripts/lib/tsModule.mjs` (transpiled with the project's TypeScript, loaded only when needed, so
+  the "next version" workflow keeps running without `node_modules`). The generator is `npm run gen`
+  (there is no `docs:user` script); every tier and build runs it first. The slug keeps `_` as GitHub
+  does, and letters are matched as a Latin range instead of `\p{L}` so every JS engine reads it.
+  `PagedSection` holds a `jumpTo` back until its viewport is measured (a jump to a row needs the page
+  height); this helps the Files pane's locate too. A list tap pushes onto the history like a link
+  (§2.4). Scenario 9.2 is the script test in `scripts/test-userdocs.mjs` (the generator is not a
+  Jest scenario). The first anchor link is Quick Add's "Mark for later" → `lasso.md#marking-for-later`.
