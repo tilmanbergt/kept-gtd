@@ -1,7 +1,7 @@
 import {expectNotShows, expectShows, openApp, shows, tap, tapTab} from '../../test-helpers/scenario/app';
 import {and, given, scenario, then, when} from '../../test-helpers/scenario/scenario';
 
-const OVERVIEW_LINE = /: install, first setup/;
+const OVERVIEW_LINE = /: the way in - install/;
 
 /** Pages forward (›) through the open help page until `text` is on screen. */
 async function pageTo(text: string): Promise<void> {

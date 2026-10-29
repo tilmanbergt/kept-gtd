@@ -18,7 +18,7 @@ jest.mock('../../src/supernote/fileSystem', () => ({
   ...jest.requireActual('../../src/supernote/fileSystem'),
   listFolderEntries: async () => [{name: 'Lined.png', path: '/MyStyle/Lined.png', isFolder: false}],
 }));
-jest.mock('../../src/storage/tagUsage', () => ({getRecentTags: async () => ['coaching/sabina', 'retro/alpha', 'daily']}));
+jest.mock('../../src/storage/tagUsage', () => ({getRecentTags: async () => ['coaching/lena', 'retro/alpha', 'daily']}));
 jest.mock('../../src/storage/loopKinds', () => ({setLoopSetups: jest.fn()}));
 jest.mock('../../src/storage/settingsStorage', () => {
   const s = jest.requireActual('../../src/domain/settings');

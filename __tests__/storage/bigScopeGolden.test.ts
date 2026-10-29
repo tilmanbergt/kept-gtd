@@ -1,5 +1,5 @@
 /**
- * Golden master of the thread views on an Atruvia-sized scope
+ * Golden master of the thread views on an Team-sized scope
  * (docs/dev/history/technical-design-perf-threads.md §7, R1 "same results, less work").
  * The results were recorded once, before any of the performance changes, into
  * `__golden__/bigScope.json`. The file is never updated to make this test pass: a
@@ -29,7 +29,7 @@ jest.mock('../../src/utils/log', () => ({log: jest.fn(), logWarn: jest.fn(), log
 
 const GOLDEN = path.join(__dirname, '__golden__', 'bigScope.json');
 
-const {items, inbox, atruvia} = bigScopeCache();
+const {items, inbox, team} = bigScopeCache();
 const setups = BIG_SETUP_TAGS.map(s => ({enabled: true, kind: s.kind, tags: [s.tag]}));
 const ruleTypes = threadTypesOf(setups);
 const nameOf = (p: string) => (p === inbox.path ? 'Inbox' : items.find(i => i.path === p)?.name ?? p);
@@ -103,7 +103,7 @@ function allEntries(): Array<{itemPath: string; label: string; entry: Task | Agr
 }
 
 function results() {
-  const scope = counterpartScopes(items).find(s => s.owner === atruvia)!;
+  const scope = counterpartScopes(items).find(s => s.owner === team)!;
   const sources: ProvenanceSource[] = [...items.map(i => ({path: i.path, meetings: i.meetings})), {path: inbox.path, meetings: inbox.meetings}];
   const engage: EngageSource = {items, inbox, loopKinds: loopKindsOf(setups), threadTypes: ruleTypes};
   const overviewTags = ['101/anna', 'retro/alpha', 'jf/board', 'wf/olga', 'sparring/jordan'];
@@ -117,12 +117,12 @@ function results() {
     tendingRoster: buildTendingRoster(items, inbox, ruleTypes, BIG_NOW).map(scopeOut),
     overviews: overviewTags.flatMap(tag =>
       (['thread', 'counterpart'] as const).flatMap(lens => [
-        {tag, lens, owner: 'Atruvia', overview: overviewOut(buildThreadOverview(items, inbox, tag, lens, atruvia.path, BIG_NOW))},
+        {tag, lens, owner: 'Team', overview: overviewOut(buildThreadOverview(items, inbox, tag, lens, team.path, BIG_NOW))},
         {tag, lens, owner: null, overview: overviewOut(buildThreadOverview(items, inbox, tag, lens, null, BIG_NOW))},
       ]),
     ),
     counterpartMatcher: matchers.map(tag => {
-      const m = counterpartMatcher(items, inbox, tag, atruvia.path)!;
+      const m = counterpartMatcher(items, inbox, tag, team.path)!;
       return {
         tag,
         tasks: everyTodo.filter(e => m.task(e.task)).map(e => `${e.item?.name ?? 'Inbox'}:t${(e.item?.tasks ?? inbox.tasks).indexOf(e.task)}`),
@@ -169,15 +169,15 @@ describe('golden master: thread views on a big scope (perf-threads §7)', () => 
 
   it('covers the cases of §6 scenarios 2-5', () => {
     const match = (label: string) => now.provenance.find((p: {entry: string}) => p.entry === label)?.match;
-    const atruviaTodo = (start: string) => `Atruvia:t${atruvia.tasks.findIndex(t => t.text.startsWith(start))}`;
+    const atruviaTodo = (start: string) => `Team:t${team.tasks.findIndex(t => t.text.startsWith(start))}`;
     const tender = items.find(i => i.name === 'Tender')!;
     const tenderTodo = (start: string) => `Tender:t${tender.tasks.findIndex(t => t.text.startsWith(start))}`;
     // The hand-made meeting with this title: the one on the date the todo's key names.
     const atruviaMeeting = (title: string, todoStart: string, nth = 0) => {
-      const todo = [...atruvia.tasks, ...tender.tasks].find(t => t.text.startsWith(todoStart))!;
+      const todo = [...team.tasks, ...tender.tasks].find(t => t.text.startsWith(todoStart))!;
       const date = todo.fields.meeting!.slice(0, 10);
-      const at = atruvia.meetings.map((m, i) => (m.title === title && m.date === date ? i : -1)).filter(i => i >= 0);
-      return `Atruvia:m${at[nth]}`;
+      const at = team.meetings.map((m, i) => (m.title === title && m.date === date ? i : -1)).filter(i => i >= 0);
+      return `Team:m${at[nth]}`;
     };
     // 2. Scope first; only another Area has it.
     expect(match(atruviaTodo('Offsite notes out'))).toBe(atruviaMeeting('Strategy offsite #jf/board', 'Offsite notes out'));

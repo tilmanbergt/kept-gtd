@@ -257,3 +257,12 @@ built); demo space → `foundation`; setup assistant → `settings`; Device tab,
   test (`__tests__/userDocsExamples.test.ts`) lands in S3 with the help text it checks: in S2 it would
   fail on every old tag, and the old names may not be allowlisted. The policy line sits in
   DEVELOPMENT-POLICY §6 (help pages), where the other help-page rules are; §8 is the checklist.
+- **S3** The demo gets one more Coaching todo, `Send Jordan the book tip #owe/jordan [due:: …]`, so the
+  help's I-owe examples (threads, engage) are demo-true; the design's list of demo todos had no `#owe`.
+  Placeholders allowed by the examples test: `#wf/name`, `#owe/name`, `#w/f` (a label), `#tax/2026`
+  and `#sparring/jordan/2026` (a deeper tag), each with its reason. A loop idea and a loop rename are
+  described without an invented tag. The "Tabs at a glance" list on the Overview carries no page links,
+  because a linked list item under a `##` heading of `index.md` would add a group to the help's page
+  list. Getting started does not link the setup assistant yet (S5 adds that link with its page). The
+  other real names the old help used (a company and three people) are also replaced in code, tests and
+  goldens with demo names (Team, Sam, Lena, Marco); one test's expected order follows the new names.

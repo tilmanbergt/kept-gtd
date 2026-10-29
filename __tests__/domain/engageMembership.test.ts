@@ -37,7 +37,7 @@ const coaching = item('area', 'Coaching', {
     task('Promise #owe/jordan'), // 4 owe
     task('Org chart #wf/jordan'), // 5 waiting
     agreedIn('Parked #someday', spar2), // 6 someday
-    task('Other person #sparring/sven #next'), // 7 not Jordan's
+    task('Other person #sparring/sam #next'), // 7 not Jordan's
     agreedIn('Old agreement', spar1), // 8 agreed in the earlier meeting
     task('Venue #proj/offsite'), // 9 loop tagged
     agreedIn('Catering', loopPast), // 10 loop, agreed in a past meeting
@@ -75,7 +75,7 @@ describe('ownerTodos - thread (E1)', () => {
   });
 
   it('leaves out another counterpart and the Inbox (not the owner)', () => {
-    expect(texts(refs)).not.toContain('Other person #sparring/sven #next');
+    expect(texts(refs)).not.toContain('Other person #sparring/sam #next');
     expect(texts(refs)).not.toContain('Inbox thing #sparring/jordan');
   });
 
@@ -110,7 +110,7 @@ describe('optionsOf - order (E5)', () => {
     expect(texts(optionsOf(area, source, NOW).next)).toEqual([
       'Read article #jordan #next',
       'Book follow-up #next',
-      'Other person #sparring/sven #next',
+      'Other person #sparring/sam #next',
       'Loose #next',
     ]);
   });

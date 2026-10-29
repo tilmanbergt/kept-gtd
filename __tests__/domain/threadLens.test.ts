@@ -69,21 +69,21 @@ describe('threadLensContext - scope and owner', () => {
 describe('threadLensContext - how a todo relates to a thread (§1.2.1)', () => {
   const jordan1 = m('2026-09-30', '1:1 Jordan #101/jordan', {time: '09:00', endTime: '09:30'});
   const jordan2 = m('2026-10-06', '1:1 Jordan #101/jordan', {time: '09:00', endTime: '09:30'});
-  const sven = m('2026-10-01', '1:1 Sven #101/sven', {time: '09:00', endTime: '09:30'});
+  const sam = m('2026-10-01', '1:1 Sam #101/sam', {time: '09:00', endTime: '09:30'});
   const team = item('area', 'Team', {
-    meetings: [jordan1, jordan2, sven],
+    meetings: [jordan1, jordan2, sam],
     tasks: [
-      agreedIn('Raise budget question #101/sven', jordan1),
+      agreedIn('Raise budget question #101/sam', jordan1),
       agreedIn('Agreed only', jordan2),
       agreedIn('Agreed and tagged #101/jordan', jordan2),
       task('Tagged only #101/jordan'),
       task('Leaf only #jordan #next'),
       task('Promised #owe/jordan #next'),
-      task('Bare owe #owe #101/sven'),
+      task('Bare owe #owe #101/sam'),
       task('Contract #wf/jordan'),
       agreedIn('Her feedback #wf', jordan2),
       task('Her slides #wf #101/jordan'),
-      agreedIn("Sven's numbers #wf/sven", jordan2),
+      agreedIn("Sam's numbers #wf/sam", jordan2),
       task('Untagged bare wf #wf'),
       task('Bare wf with a promise #wf #owe/jordan'),
     ],
@@ -93,28 +93,28 @@ describe('threadLensContext - how a todo relates to a thread (§1.2.1)', () => {
 
   it('classifies every open todo once: waiting, then owe, then relevant', () => {
     expect(relations(ctx('101/jordan'))).toEqual([
-      'Raise budget question #101/sven: owe',
+      'Raise budget question #101/sam: owe',
       'Agreed only: owe',
       'Agreed and tagged #101/jordan: owe',
       'Tagged only #101/jordan: relevant',
       'Leaf only #jordan #next: relevant',
       'Promised #owe/jordan #next: owe',
-      'Bare owe #owe #101/sven: -',
+      'Bare owe #owe #101/sam: -',
       'Contract #wf/jordan: waiting',
       'Her feedback #wf: waiting',
       'Her slides #wf #101/jordan: waiting',
-      "Sven's numbers #wf/sven: owe",
+      "Sam's numbers #wf/sam: owe",
       'Untagged bare wf #wf: -',
       'Bare wf with a promise #wf #owe/jordan: owe',
     ]);
   });
 
-  it('agreed with Jordan and tagged #101/sven: Relevant for Sven; #wf/sven is waiting there', () => {
-    const svens = ctx('101/sven');
+  it('agreed with Jordan and tagged #101/sam: Relevant for Sam; #wf/sam is waiting there', () => {
+    const svens = ctx('101/sam');
     const of = (text: string) => svens.relationOf(team.tasks.find(t => t.text === text)!);
-    expect(of('Raise budget question #101/sven')).toBe('relevant');
-    expect(of('Bare owe #owe #101/sven')).toBe('relevant');
-    expect(of("Sven's numbers #wf/sven")).toBe('waiting');
+    expect(of('Raise budget question #101/sam')).toBe('relevant');
+    expect(of('Bare owe #owe #101/sam')).toBe('relevant');
+    expect(of("Sam's numbers #wf/sam")).toBe('waiting');
   });
 
   it('resolves provenance to the meeting the todo was agreed in', () => {

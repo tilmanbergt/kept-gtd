@@ -58,10 +58,10 @@ scenario('Opening an Area page renders each part a bounded number of times and r
     for (const f of bigScopeFiles()) putFile(f.path, f.content);
     await openApp({settings: bigScopeSettings()});
   });
-  when('I open Zen\'s page, then Atruvia\'s from the Areas list, then Zen\'s again', async () => {
+  when('I open Zen\'s page, then Team\'s from the Areas list, then Zen\'s again', async () => {
     await tapTab('Areas');
     await tap(/^Zen/);
-    work.atruvia = await openCounted(/^Atruvia/);
+    work.team = await openCounted(/^Team/);
     work.zen = await openCounted(/^Zen/);
   });
   then('Quick Add, the page and its parts render at most as often as recorded', () => {
@@ -87,26 +87,26 @@ scenario('An Area page lists its folder only when the Files tab is opened', {fea
     for (const f of bigScopeFiles()) putFile(f.path, f.content);
     await openApp({settings: bigScopeSettings()});
   });
-  when('I open Atruvia\'s page (the Threads tab is shown)', async () => {
+  when('I open Team\'s page (the Threads tab is shown)', async () => {
     await tapTab('Areas');
-    await tap(/^Atruvia/);
+    await tap(/^Team/);
   });
-  then('its folder is not listed', () => expect(listings(areaDir('Atruvia'))).toBe(0));
+  then('its folder is not listed', () => expect(listings(areaDir('Team'))).toBe(0));
   // "Files" shows twice on this page; the Files tab is the last one.
   when('I tap Files', () => tap('Files', texts().filter(t => t === 'Files').length - 1));
   then('the folder is listed once and its entries show', () => {
-    expect(listings(areaDir('Atruvia'))).toBe(1);
+    expect(listings(areaDir('Team'))).toBe(1);
     expectShows('Schedule');
   });
 });
 
 scenario('Hiding done todos on an Area page changes the Todos list and nothing else, and is kept', {feature: 'Projects and Areas', design: 'technical-design-perf-current-page.md'}, () => {
-  given('the big data set and Atruvia\'s page open', async () => {
+  given('the big data set and Team\'s page open', async () => {
     clock();
     for (const f of bigScopeFiles()) putFile(f.path, f.content);
     await openApp({settings: bigScopeSettings()});
     await tapTab('Areas');
-    await tap(/^Atruvia/);
+    await tap(/^Team/);
   });
   when('I tap "Hide done tasks"', async () => {
     // After the page's first e-ink flush, which builds Quick Add's other tabs once.
@@ -127,7 +127,7 @@ scenario('Hiding done todos on an Area page changes the Todos list and nothing e
     await tapTab('Areas');
     await tap(/^Zen/);
     await tapTab('Areas');
-    await tap(/^Atruvia/);
+    await tap(/^Team/);
     expectShows(/^Show \d+ done tasks?$/);
   });
 });

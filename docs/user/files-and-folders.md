@@ -16,7 +16,7 @@ Notes that Kept creates for todos and meetings go into `Todos` and `Meetings` fo
 
 ## File names
 
-The names of files Kept creates leave out `\ / : * ? " < > |` (not allowed in file names) and `# [ ] ^`, which break links in Obsidian. They are replaced by a space, so `Plan [v2] #team` becomes `Plan v2 team`. Project and area names can't contain these characters at all. Files you named yourself are left as they are. Notes created by older versions can still have such names: **Run Integrity Check** in Settings → Advanced lists them, and **Fix file names** renames them all at once and updates their links (see [Settings](settings.md)).
+The names of files Kept creates leave out `\ / : * ? " < > |` (not allowed in file names) and `# [ ] ^`, which break links in Obsidian. They are replaced by a space, so `Plan [v2] #team` becomes `Plan v2 team`. Project and area names can't contain these characters at all. Files you named yourself are left as they are. Notes created by older versions can still have such names: **Run Integrity Check** in Settings → Advanced lists them, and **Fix file names** renames them all at once and updates their links (see [Settings](settings.md#advanced)).
 
 ## The Inbox folder
 
@@ -61,7 +61,7 @@ Turn the back garden into a vegetable garden before winter.
 - A todo line ends in fields that Kept writes: `[meeting:: …]` (the meeting it was agreed in, see [Threads](threads.md)), `[created:: …]`, `[due:: …]` and `[completion:: …]`, in this order, after the links. A field you add yourself at the end of the line, for example `[priority:: high]`, is kept. In the middle of the text, `[key:: value]` is just text.
 - Older lines with `#due:2026-10-03` or `#waiting-for:marco` are read as before. A line gets the new form only when you edit that todo; nothing is converted on its own.
 - A `## Marks` section lists open lasso marks, one per line, see [Lasso](lasso.md).
-- A `## Threads` section in `area.txt` (or in `project.txt` of a project without an area) holds the counterparts you confirmed, one per line: `- mieke: active` or `- sven: inactive`. Text after a comma is kept. See [Threads](threads.md).
+- A `## Threads` section in `area.txt` (or in `project.txt` of a project without an area) holds the counterparts you confirmed, one per line: `- jordan: active` or `- lena: inactive`. Text after a comma is kept. See [Threads](threads.md).
 - Files written by earlier versions may have `dailyFocus: true` (and weekly or monthly) in the header and `## Weekly Goals` or `## Monthly Goals` sections. Kept no longer uses them and leaves them exactly as they are.
 - Lines Kept doesn't understand are kept as they are.
 
@@ -119,7 +119,7 @@ From the Supernote to Obsidian: sync the Supernote, then the plugin.
 - [ ] Signed contract back #wf/marco [due:: 2026-10-20]
 
 ## Meetings
-- 2026-10-21 10:00-11:00 Retro #retro/alpha
+- 2026-10-21 10:00-11:00 Sparring Jordan #sparring/jordan
 ```
 
 - You type tags. Fields go at the end of the line.
@@ -133,7 +133,7 @@ Agreements are plain bullets in a section `## Agreements`, without a checkbox, s
 
 ```
 ## Agreements
-- Feedback only in our 1:1s #sparring/mieke [created:: 2026-10-14] [valid:: 2026-12-31]
+- Feedback only in our 1:1s #sparring/jordan [created:: 2026-10-14] [valid:: 2026-12-31]
 ```
 
 Kept writes `meeting`, `created`, `valid` and `ended` in that order; other fields and lines stay as you wrote them. See [Agreements](agreements.md).

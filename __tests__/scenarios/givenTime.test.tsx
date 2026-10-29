@@ -120,10 +120,10 @@ scenario('Given time lists loops and counterparts from the threshold up, never t
 });
 
 scenario('Given time sums a counterpart\'s threads into one row', {feature: 'Week and Month', design: DESIGN}, () => {
-  given('on Wednesday 14.10.: Atruvia with Retro, Review and Replenishment with "value" this week, 1 h each', () => {
+  given('on Wednesday 14.10.: Team with Retro, Review and Replenishment with "value" this week, 1 h each', () => {
     smokeClock();
     putFile(
-      areaFile('Atruvia'),
+      areaFile('Team'),
       dataFile('area', {
         Scope: [],
         Tasks: [],

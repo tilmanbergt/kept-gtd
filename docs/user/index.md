@@ -2,9 +2,27 @@
 
 Kept GTD is a calm GTD and PARA workspace for the Supernote. Your projects, areas, todos and meetings live as plain text files in your own folders. The plugin shows them in a few focused views and helps you review them regularly.
 
+## The tabs at a glance
+
+- **Projects** and **Areas**: all your projects and areas, create new ones
+- **Daily**: today and tomorrow - your schedule and the todos that matter now
+- **Week** and **Month**: plan the week and the month, and see where your time went (Given time)
+- **Inbox**: everything captured but not yet filed
+- **Current**: the project or area you opened last, with its todos, meetings, files and notes
+- **Review**: the Weekly Review, one step at a time
+- **Settings**: folders, contexts, Note setups, features, advanced options, About
+
+The chip next to **?** shows the current context (Everything, Work, Home …); tap it to switch, see [Contexts](contexts.md).
+
+**?** opens this help, starting at the page for the tab you are on. Underlined words are links to other pages; **‹ Back** returns to where you were. **✕ Close** in the help closes it again; the tab behind it stays exactly as it was. ✕ closes the plugin. When you open Kept, it reads the files you changed outside it again. To read all files again, use **Reload all files** in Settings → Advanced.
+
+## Opening Kept GTD from a note
+
+When you open Kept from a note that belongs to a project or area, it opens that project on the **Current** tab. From any other note it opens **Daily**. If you opened a note from inside Kept and come back from that same note, Kept returns to the screen you left.
+
 ## Start here
 
-- [Getting started](getting-started.md): install, first setup, the tabs at a glance
+- [Getting started](getting-started.md): the way in - install, folders, todos, meetings, notes, once a week
 - [Why Kept GTD works this way](philosophy.md): the ideas behind the design
 - [Threads](threads.md): keeping your word with the people and meeting series you work with
 - [Loops](loops.md): small projects inside an Area, from first todo to done

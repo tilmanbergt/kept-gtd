@@ -25,14 +25,14 @@ async function openJordanOverview(): Promise<void> {
 }
 
 scenario('An agreement in the thread overview: it shows in the block "Agreements", another thread\'s does not', {feature: 'Agreements', design: 'technical-design-meetings-0.21.md'}, () => {
-  given('area "Coaching" has an agreement tagged #jordan and one tagged #sparring/sven', () => {
-    coaching([`- Feedback only in our 1:1s #jordan [created:: ${past}]`, `- Sven owns the slides #sparring/sven [created:: ${past}]`]);
+  given('area "Coaching" has an agreement tagged #jordan and one tagged #sparring/sam', () => {
+    coaching([`- Feedback only in our 1:1s #jordan [created:: ${past}]`, `- Sam owns the slides #sparring/sam [created:: ${past}]`]);
   });
   when('I open Jordan\'s thread overview', openJordanOverview);
   then('Ahead lists the block "Agreements" with the first one only', () => {
     expectShows('Agreements');
     expectShows('◇ Feedback only in our 1:1s #jordan');
-    expectNotShows('◇ Sven owns the slides #sparring/sven');
+    expectNotShows('◇ Sam owns the slides #sparring/sam');
   });
   when('I switch to All jordan', () => tap('All jordan'));
   then('the agreement shows there too', () => expectShows('◇ Feedback only in our 1:1s #jordan'));

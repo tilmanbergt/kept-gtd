@@ -9,14 +9,14 @@ const NO_OWNER = {itemName: '', itemAbbrev: ''};
 // docs/dev/history/technical-design-split-by-tag.md §3.3, §3.5, §3.6
 
 describe('renderSharedFileName', () => {
-  const base = {template: 'Coaching {subtag} {year}', fallbackName: 'Coaching', subtag: 'sabina', date: '2026-10-02', ...NO_OWNER};
+  const base = {template: 'Coaching {subtag} {year}', fallbackName: 'Coaching', subtag: 'lena', date: '2026-10-02', ...NO_OWNER};
 
   it('fills every placeholder', () => {
-    expect(renderSharedFileName({...base, template: '{subtag} {year}-{quarter} {month}'})).toBe('sabina 2026-Q4 10');
+    expect(renderSharedFileName({...base, template: '{subtag} {year}-{quarter} {month}'})).toBe('lena 2026-Q4 10');
   });
 
   it('matches placeholders case-insensitively and keeps unknown ones', () => {
-    expect(renderSharedFileName({...base, template: 'Coaching {Subtag} {YEAR} {client}'})).toBe('Coaching sabina 2026 {client}');
+    expect(renderSharedFileName({...base, template: 'Coaching {Subtag} {YEAR} {client}'})).toBe('Coaching lena 2026 {client}');
   });
 
   it('drops a missing subtag without a double space', () => {
@@ -43,15 +43,15 @@ describe('renderSharedFileName', () => {
 
 // docs/dev/history/technical-design-note-setups-finish.md §1
 describe('{name} and {abbr} in note names', () => {
-  const base = {template: '{abbr} {tag} {subtag} {year}', fallbackName: 'Sparring', tag: 'sparring', subtag: 'peter', date: '2026-10-02'};
+  const base = {template: '{abbr} {tag} {subtag} {year}', fallbackName: 'Sparring', tag: 'sparring', subtag: 'marco', date: '2026-10-02'};
   const owner = {itemName: 'Leadership Program', itemAbbrev: 'LP'};
 
   it('fills the owner’s abbreviation and name', () => {
-    expect(renderSharedFileName({...base, ...owner})).toBe('LP sparring peter 2026');
+    expect(renderSharedFileName({...base, ...owner})).toBe('LP sparring marco 2026');
     expect(renderSharedFileName({...base, ...owner, template: '{name} {year}'})).toBe('Leadership Program 2026');
   });
   it('uses the name for {abbr} when there is no abbreviation', () => {
-    expect(renderSharedFileName({...base, itemName: 'Garden', itemAbbrev: ''})).toBe('Garden sparring peter 2026');
+    expect(renderSharedFileName({...base, itemName: 'Garden', itemAbbrev: ''})).toBe('Garden sparring marco 2026');
   });
   it('matches them case-insensitively', () => {
     expect(renderSharedFileName({...base, ...owner, template: '{ABBR}-{Name}'})).toBe('LP-Leadership Program');
@@ -61,7 +61,7 @@ describe('{name} and {abbr} in note names', () => {
     expect(renderSharedFileName({...base, ...NO_OWNER, template: '{abbr}{name}'})).toBe('Sparring');
   });
   it('works with date placeholders left out', () => {
-    expect(renderSharedFileName({...base, ...owner, template: '{abbr} {subtag} {year}-{month}', date: ''})).toBe('LP peter');
+    expect(renderSharedFileName({...base, ...owner, template: '{abbr} {subtag} {year}-{month}', date: ''})).toBe('LP marco');
   });
 });
 
@@ -93,20 +93,20 @@ describe('spliceWordAtSelection', () => {
 describe('noteCreationConfirmText', () => {
   const plan = (kind: NoteCreationPlan['kind'], extra: Partial<NoteCreationPlan> = {}): NoteCreationPlan => ({
     kind,
-    file: 'Meetings/Coaching sabina 2026.note',
+    file: 'Meetings/Coaching lena 2026.note',
     absolutePath: '/x',
     setupName: 'Coaching',
     ...extra,
   });
-  const full = 'Note/2 Areas/Coaching/Meetings/Coaching sabina 2026.note';
+  const full = 'Note/2 Areas/Coaching/Meetings/Coaching lena 2026.note';
 
   it('names the rule and the file for first-time notes', () => {
     expect(noteCreationConfirmText(plan('new-shared-file'), full)).toMatchObject({
-      text: 'Coaching: new file Meetings/Coaching sabina 2026.note',
+      text: 'Coaching: new file Meetings/Coaching lena 2026.note',
       actionLabel: 'Create',
     });
     expect(noteCreationConfirmText(plan('new-page'), full)).toMatchObject({
-      text: 'Coaching: new page in Meetings/Coaching sabina 2026.note',
+      text: 'Coaching: new page in Meetings/Coaching lena 2026.note',
       actionLabel: 'Add page',
     });
     expect(noteCreationConfirmText(plan('new-own-file', {file: 'Todos/Call.note'}), full).text).toBe(
@@ -154,7 +154,7 @@ describe('{tag} in shared file names', () => {
 describe('note choice text (docs/dev/history/technical-design-note-setups.md §4.4)', () => {
   const full = 'Note/2 Areas/Coaching/2026-11 workshop offsite.note';
   const loopPlan: NoteCreationPlan = {kind: 'new-page', file: '2026-11 workshop offsite.note', absolutePath: '/x', setupName: 'Workshop'};
-  const notebook: NoteCreationPlan = {kind: 'new-shared-file', file: 'Sparring/sparring peter 2026.note', absolutePath: '/y', setupName: 'Sparring'};
+  const notebook: NoteCreationPlan = {kind: 'new-shared-file', file: 'Sparring/sparring marco 2026.note', absolutePath: '/y', setupName: 'Sparring'};
   const own: NoteCreationPlan = {kind: 'new-own-file', file: 'Todos/Draft.note', absolutePath: '/z', setupName: 'Team'};
 
   it('one place: the plain confirm', () => {
@@ -168,7 +168,7 @@ describe('note choice text (docs/dev/history/technical-design-note-setups.md §4
   it('more places: one button for the best other one, every place in the detail', () => {
     const t = noteChoiceText({...loopPlan, alternatives: [notebook, own]}, full);
     expect(t.labels).toEqual(['Add page', 'In Sparring']);
-    expect(t.detail).toContain('Or: Sparring: new file Sparring/sparring peter 2026.note');
+    expect(t.detail).toContain('Or: Sparring: new file Sparring/sparring marco 2026.note');
     expect(t.detail).toContain('Or: Team: new note Todos/Draft.note');
     expect(noteChoiceText({...loopPlan, alternatives: [own]}, full).labels).toEqual(['Add page', 'Own note']);
   });

@@ -18,7 +18,12 @@ or your project/area files are stored.
   names; **‹ Back** in the help's header walks back through the pages you came from.
 
 ### Changed
-- The demo space's sparring partner is now **Jordan** (`#sparring/jordan`).
+- **Getting started** is a short walk through Kept for simple needs - your folders, projects and
+  areas, todos, meetings, notes, capture, the weekly review - each step linking to its page. "The
+  tabs at a glance" and "Opening Kept GTD from a note" moved to the help's Overview. Every help page
+  uses examples from the demo space and links the terms it builds on.
+- The demo space's sparring partner is now **Jordan** (`#sparring/jordan`), with a promise
+  `#owe/jordan` to show I owe outside a meeting.
 
 ## [0.22.0] — 2026-10-29
 

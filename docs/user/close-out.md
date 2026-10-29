@@ -4,7 +4,7 @@ When a project is finished, Kept GTD helps you end it cleanly: nothing left open
 
 ## Where to start it
 
-- On the project's **Current** tab, tap **Close out…** in the status section.
+- On the project's **Current** tab, tap **Close out…** in the [status section](projects-and-areas.md#status).
 - In the Weekly Review, the step **Done awaiting review** lists all projects marked Done. Each has **Close out…** and **Quick archive…**.
 
 Close-out can be switched off in **Settings → Features** (**Project close-out**); then a Done project offers **Archive…** on its page and **Archive** in the Weekly Review, and is archived directly after one confirmation. See [Features](features.md).

@@ -85,7 +85,7 @@ describe('givenTimeOf', () => {
     expect(filtered.hiddenOwners).toBe(3);
   });
   it('a counterpart sums its threads and #wf todos in its scope; the same leaf in two scopes names the scope', () => {
-    const atruvia = item('area', 'Atruvia', {
+    const team = item('area', 'Team', {
       meetings: [
         m('2026-10-13', 'Retro #retro/value', {time: '09:00', endTime: '10:00'}),
         m('2026-10-14', 'Review #review/value', {time: '09:00', endTime: '10:30'}),
@@ -94,9 +94,9 @@ describe('givenTimeOf', () => {
       tasks: [done('Got the numbers #wf/value', '2026-10-14'), task('Ask about scope #review/value #next')],
     });
     const homeArea = item('area', 'Home', {meetings: [m('2026-10-16', 'Value chat #retro/value', {time: '18:00', endTime: '19:00'})]});
-    const three: EngageSource = {...src([atruvia, homeArea]), threadTypes: ['retro', 'review', 'replenishment', 'wf', 'owe']};
+    const three: EngageSource = {...src([team, homeArea]), threadTypes: ['retro', 'review', 'replenishment', 'wf', 'owe']};
     const owners = givenTimeOf({source: three, range: WEEK, matcher: all, minMinutes: 60}).owners;
-    expect(owners.map(line)).toEqual(['Counterpart value · Atruvia 3 h', 'Counterpart value · Home 1 h']);
+    expect(owners.map(line)).toEqual(['Counterpart value · Team 3 h', 'Counterpart value · Home 1 h']);
     expect(givenTimeDetail(owners[0])).toBe('retro · review · replenishment · 3 meetings · 1 done · next: Ask about scope');
   });
   it('"Nothing above 1 h this week" when no loop or counterpart reaches the threshold', () => {

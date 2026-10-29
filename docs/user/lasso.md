@@ -12,7 +12,7 @@ The lasso toolbar has two Kept GTD buttons:
 1. Select handwriting (or a text box) with the lasso and tap **Capture Todo/Meeting**.
 2. The screen **New from Lasso** shows the selection as a picture and the recognized text below it. The text appears as soon as recognition is done, usually after a few seconds. If you start typing before that, your text is kept.
 3. Choose **Todo** or **Meeting**, correct the text, and pick flow chips, tags and a due date as in [Quick Add](quick-add.md).
-4. **File to** shows where the item goes: the project or area the note belongs to, otherwise the Inbox. The chips offer the Inbox, that place and the ones you saved to lately; **More…** shows all of them. Writing an abbreviation like `#GR` in the text files it there, too.
+4. **File to** shows where the item goes: the project or area the note belongs to, otherwise the Inbox. The chips offer the Inbox, that place and the ones you saved to lately; **More…** shows all of them. Writing an [abbreviation](projects-and-areas.md#abbreviations) like `#GR` in the text files it there, too.
 5. Save with one of the three buttons under the text.
 
 - **Save & next** saves and goes on: to the next open mark, if there is one, otherwise to an empty form for another item.
@@ -27,7 +27,7 @@ The lasso selection is removed once something is saved. **Mark for later** on th
 
 ## Capturing an agreement
 
-When the page belongs to someone - a meeting's page, or a note of a project or area - the panel has a third kind, **Agreement**, next to Todo and Meeting. An agreement is one item, so **Split lines** isn't offered. Below the tags, **For** replaces **File to**: the thread or loop of the page's meeting comes first (for example `#sparring/mieke`) - without a meeting, the thread or loop of the todo's or loop's page the page follows - then the project or area of the note; **More…** offers every other one. The agreement gets that thread's or loop's tag and, on a meeting's page, records the meeting (the grey line, ✕ drops it). It goes into the file of the area or project that owns it, never into the Inbox. See [Agreements](agreements.md).
+When the page belongs to someone - a meeting's page, or a note of a project or area - the panel has a third kind, **Agreement**, next to Todo and Meeting. An agreement is one item, so **Split lines** isn't offered. Below the tags, **For** replaces **File to**: the thread or loop of the page's meeting comes first (for example `#sparring/jordan`) - without a meeting, the thread or loop of the todo's or loop's page the page follows - then the project or area of the note; **More…** offers every other one. The agreement gets that thread's or loop's tag and, on a meeting's page, records the meeting (the grey line, ✕ drops it). It goes into the file of the area or project that owns it, never into the Inbox. See [Agreements](agreements.md).
 
 ## Several todos from one selection
 
@@ -49,7 +49,7 @@ Open marks show as a card **n marks to process** under Quick Add:
 
 - on the **Inbox** tab: all marks,
 - on the **Current** tab: the marks of that project or area,
-- in the Weekly Review step **Inbox to zero**: all marks, and they count toward the step.
+- in the [Weekly Review](review.md) step **Inbox to zero**: all marks, and they count toward the step.
 
 **Process ›** opens the marks screen. The left column lists the marks by note, each with its picture, page, date and time, and whether it has been recognized yet. Recognition starts when you open the screen and runs ahead for the next marks; each mark is recognized only once.
 

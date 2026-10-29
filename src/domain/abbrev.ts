@@ -76,7 +76,7 @@ function splitWords(name: string): string[] {
  * On a collision (with an existing abbreviation, or a reserved word -
  * checked via validateAbbrev, so this can never drift from that rule):
  * first tries appending one more letter, drawn from whatever's left of the
- * last word this heuristic read from (e.g. "Atruvia" -> base "ATR", with
+ * last word this heuristic read from (e.g. "Team" -> base "ATR", with
  * "UVIA" available to extend with); if that's exhausted or still collides,
  * falls back to a trailing number (2, 3, ...) until unique. No attempt at
  * elegant capitalization (an "AoT"-style default is a manual edit) and no

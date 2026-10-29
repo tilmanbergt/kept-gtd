@@ -6,7 +6,7 @@ Daily is the page for today. It shows your schedule for today and tomorrow and t
 
 A todo appears on Daily when it is open and one of these is true:
 
-- it is marked **Next**
+- it is marked **Next** (`#next`, see [Tags](tags.md#flow-tags-for-todos))
 - it is due today, tomorrow or overdue
 - it is marked **Waiting for** and has no date, or its date is today or earlier
 
@@ -22,10 +22,10 @@ After a todo's title, short labels show what matters about it: `#next`, `#w/f Le
 
 The left column is the schedule with the tabs **Today** and **Tomorrow** (and **Google** when the Google Calendar integration is on): meetings and focus blocks (see [Meetings](meetings.md)).
 
-Tap a meeting or focus block to see its card in Quick Add's place, and its **context panel** in place of the todos: what you owe, what is next, what you are waiting for and what was agreed last time (see [Meetings](meetings.md)). **+ Quick Add to meeting** at the end of the panel adds a todo to it. Tap it again, **Edit** or the title on the card to change it. Daily has no Files pane, so linking a file happens on the project's page.
+Tap a meeting or focus block to see its card in Quick Add's place, and its **context panel** in place of the todos: what you owe, what is next, what you are waiting for and what was agreed last time (see [Meetings](meetings.md)). **+ Quick Add to meeting** at the end of the panel adds a todo to it. Tap it again, **Edit** or the title on the card to change it. Daily has no [Files pane](projects-and-areas.md#files-and-linked-files), so linking a file happens on the project's page.
 
-Todos work the same way: a tap shows the todo's card, with done, the flow chips, its note and delete (see [Quick Add](quick-add.md)).
+Todos work the same way: a tap shows the todo's [card](quick-add.md#the-card-one-tap-selects), with done, the flow chips, its note and delete (see [Quick Add](quick-add.md)).
 
 ## Filtering by a tag
 
-Tap a tag inside a todo or meeting (for example `#lena`) to show only items with that tag. A nested tag such as `#retro/alpha` opens its thread overview instead, see [Threads](threads.md). If the tag is the abbreviation of a project or area (for example `#GR`), Daily shows all of that project's items. Tap the tag again to remove the filter.
+Tap a tag inside a todo or meeting (for example `#lena`) to show only items with that tag. A nested tag such as `#sparring/jordan` opens its thread overview instead, see [Threads](threads.md). If the tag is the abbreviation of a project or area (for example `#GR`), Daily shows all of that project's items. Tap the tag again to remove the filter.

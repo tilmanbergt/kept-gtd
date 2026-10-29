@@ -14,7 +14,7 @@ A context has a **Shows** list and a **Hides** list. Each holds areas, projects 
 
 - an **area** brings its projects, and the loops and threads in them;
 - a **project** is just that project;
-- a **tag** brings every todo and meeting with that tag or a tag under it: `#retro` also brings `#retro/demand`. Loop and thread tags work the same way.
+- a **tag** brings every todo and meeting with that tag or a tag under it: `#sparring` also brings `#sparring/jordan`. Loop and thread tags work the same way.
 
 The rules:
 
@@ -27,7 +27,7 @@ The rules:
 ## Where it applies
 
 - **Daily**: the next todos of the context; meetings outside it dimmed.
-- **Week and Month**: meetings outside it dimmed; Given time counts only what the context shows.
+- **Week and Month**: meetings outside it dimmed; [Given time](week-and-month.md#given-time) counts only what the context shows.
 - **Projects and Areas**: only the context's projects and areas.
 - **Weekly Review**: each step lists the context's items and todos. The overview shows "+2 in other contexts" next to a step's count. **Reviewed** and the reminder dot count every context: reviewing a step under Home marks it reviewed for all.
 
@@ -37,7 +37,7 @@ Not filtered: the Inbox tab, a project's or area's own page (Current), Settings,
 
 A filtered tab ends with a line like "Hidden by Work: 9 todos · 2 loops · 1 thread · 3 due! · Show". "3 due!" counts the hidden todos due today or earlier, so nothing urgent slips by unseen. **Show** shows everything on that tab until you leave it; the context itself stays.
 
-When Quick Add files a todo where the active context doesn't show it, the status line says so: "Saved to Atruvia · hidden by Home".
+When Quick Add files a todo where the active context doesn't show it, the status line says so: "Saved to Team · hidden by Home".
 
 ## Setting up contexts
 
@@ -45,4 +45,4 @@ In **Settings → Contexts**, tap **+ New context** and type its name; **Save** 
 
 Tap **Everything** (not its ○) to set the same threshold for Everything: 1 h a week and 2 h a month unless you change it. A context without its own threshold uses Everything's. Everything's threshold is saved as soon as you tap it.
 
-When you rename a project's or area's folder and Kept GTD offers to rename its home notebook, its contexts follow the new name. Otherwise **Run Integrity Check** (Settings → Advanced) lists contexts that name a project or area that isn't there any more.
+When you rename a project's or area's folder and Kept GTD offers to rename its [home notebook](projects-and-areas.md#home-notebooks), its contexts follow the new name. Otherwise **Run Integrity Check** (Settings → Advanced) lists contexts that name a project or area that isn't there any more.

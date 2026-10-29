@@ -30,7 +30,7 @@ Kept is inspired by Werner Erhard's and Michael Jensen's work on integrity, in p
 
 For a task list, integrity is the most practical of the four: your word is whole when you either keep what you said you would do, or consciously renegotiate it. What breaks integrity is the silent slip - something that quietly stopped being true without you owning it.
 
-That is why Kept asks you to say clearly what is **next**, and to give your time to it on purpose: a focus block in your schedule is a promise to yourself, and **Given time** on Week and Month shows honestly where your time went. A list of things you might get to is not your word about anything. A few clearly chosen next steps are.
+That is why Kept asks you to say clearly what is **next** ([Tags](tags.md#flow-tags-for-todos)), and to give your time to it on purpose: a [focus block](meetings.md#focus-blocks) in your schedule is a promise to yourself, and [Given time](week-and-month.md#given-time) on Week and Month shows honestly where your time went. A list of things you might get to is not your word about anything. A few clearly chosen next steps are.
 
 Changing a commitment - moving a due date, putting a project on hold, setting a thread inactive - is a real decision, not a typo fix. Kept makes these separate, visible actions.
 
@@ -42,4 +42,4 @@ There are no recurring meetings and no repeating todos, on purpose. Every meetin
 
 ## Room for rest
 
-There are no notifications, no timers and no streaks. When you finish what you meant to do, nothing pushes the next thing at you; Engage only offers what you already chose - the same owner, your schedule. The pause after finishing something is yours. Rest and non-doing are part of a good week, not a gap in it.
+There are no notifications, no timers and no streaks. When you finish what you meant to do, nothing pushes the next thing at you; [Engage](engage.md) only offers what you already chose - the same owner, your schedule. The pause after finishing something is yours. Rest and non-doing are part of a good week, not a gap in it.

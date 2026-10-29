@@ -1,6 +1,6 @@
 # Week and Month
 
-The Week and Month tabs are for planning. Both work the same way: meetings and focus blocks on the left, Quick Add and **Given time** on the right.
+The Week and Month tabs are for planning. Both work the same way: meetings and [focus blocks](meetings.md#focus-blocks) on the left, [Quick Add](quick-add.md) and **Given time** on the right.
 
 ## Week
 
@@ -14,7 +14,7 @@ The left side lists every day of the month. It shows meetings you marked as **mo
 
 Tap one of the day's meetings on the right, and its card takes Quick Add's place, as on every meeting list (see [Meetings](meetings.md)): the prep or review tick, **M** and, once the meeting is over, **Reflect**.
 
-To make a meeting a monthly highlight, switch on the small **M** next to **+ Add** when adding it, or **M** on its card later. Highlighted meetings show the same M in 2-line rows. A short name in brackets at the end of the title, for example "Art of Transformation Session (AoT)", is used as the short form in the month list.
+To make a meeting a monthly highlight, switch on the small **M** next to **+ Add** when adding it, or **M** on its card later. Highlighted meetings show the same M in 2-line rows. A short name in brackets at the end of the title, for example "Team offsite (Offsite)", is used as the short form in the month list.
 
 The right side has **Given time this month** (see below).
 
@@ -23,7 +23,7 @@ The right side has **Given time this month** (see below).
 Given time shows where your time went, from your schedule alone, in two lists:
 
 - **Given time this week**: your areas - each with everything scheduled in it and in its projects - and the projects without an area, the one with the most time first. A project with more time than an area comes before it. The Inbox is never listed.
-- **Loops and counterparts**: the loops and the counterparts that got time, again the most first. The same meeting counts here once more. A counterpart sums all its threads: **value** counts `#retro/value`, `#review/value` and `#replenishment/value` together (and its `#wf/value` and `#owe/value` todos), and its grey line names the series (`retro · review · replenishment`). Counterparts belong to an area (with its projects) or a project without an area; the same name in two areas shows twice, with the area: "value · Home". Loops stay one row each. Only those with at least **1 h a week** (**2 h a month**) are listed, so the list stays short; when none reaches that, it says "Nothing above 1 h this week". Each context can set its own threshold, see [Contexts](contexts.md).
+- **Loops and counterparts**: the loops and the counterparts that got time, again the most first. The same meeting counts here once more. A counterpart sums all its threads: **jordan** counts `#sparring/jordan` and every other type used with jordan together (and its `#wf/jordan` todos), and its grey line names the series (`sparring`). Counterparts belong to an area (with its projects) or a project without an area; the same name in two areas shows twice, with the area: "jordan · Coaching". Loops stay one row each. Only those with at least **1 h a week** (**2 h a month**) are listed, so the list stays short; when none reaches that, it says "Nothing above 1 h this week". Each context can set its own threshold, see [Contexts](contexts.md).
 
 Each row's kind - AREA, PROJECT, LOOP, COUNTERPART - is a small badge right of the name. The time is on the right (`3.5 h`; an all-day event counts as `1 day`), the grey line below says how many focus blocks and meetings, how many todos were done and the next todo (`2 blocks · 1 meeting · 3 done · next: Draft chapter`). Tap a row to open its project or area, the overview of its loop, or a counterpart's overview with all its threads.
 

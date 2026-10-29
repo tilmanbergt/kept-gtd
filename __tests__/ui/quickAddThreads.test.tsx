@@ -101,7 +101,7 @@ describe('useProvenance (close-out, overview and capture write through it)', () 
     const p = probe();
     expect(p.current().provenance?.[0].label.startsWith('↳ from 1:1 Jordan · ')).toBe(true);
     expect(p.current().provenance?.[0].label).not.toContain('adds');
-    expect(p.current().apply('Raise budget #101/sven')).toBe('Raise budget #101/sven [meeting:: 2026-09-30 1:1 Jordan 101/jordan]');
+    expect(p.current().apply('Raise budget #101/sam')).toBe('Raise budget #101/sam [meeting:: 2026-09-30 1:1 Jordan 101/jordan]');
   });
 
   it('✕ drops the link for the next todo only', () => {

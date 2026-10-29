@@ -46,7 +46,7 @@ const LINKED_FILE_RE = /\s*\+\[\[([^\]]+)\]\]\s*$/;
 
 // A tag is "#" followed by a letter/digit, optionally extended with "-",
 // nested "/segment" parts and a ":value" suffix - #next, #waiting, #team-jf,
-// #coaching/sabina, #due:YYYY-MM-DD are all one tag each (design-overview.md
+// #coaching/lena, #due:YYYY-MM-DD are all one tag each (design-overview.md
 // §3's "one tag mechanism": GTD flow-state, context, and due dates all share
 // this instead of separate syntaxes). Nested tags (docs/dev/technical-design-
 // split-by-tag.md §3.1) use the same "/" syntax as Obsidian; a segment needs
@@ -258,7 +258,7 @@ export function insertTagAtPosition(
 export function removeTagFromText(text: string, tag: string): string {
   const escapedTag = tag.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
   // Whole-tag guard instead of `\\b` (technical-design-split-by-tag.md §3.1):
-  // removing `#coaching` must not cut it out of `#coaching/sabina`,
+  // removing `#coaching` must not cut it out of `#coaching/lena`,
   // `#coaching-x` or `#coaching:x` - those are different tags.
   const tagRe = new RegExp(`\\s?#${escapedTag}(?![\\w/:-])`, 'gi');
   return text.replace(tagRe, '').replace(/\s{2,}/g, ' ').trim();
@@ -476,7 +476,7 @@ export interface FrontMatterFields {
   weeklyFocus: boolean;
   /** Monthly focus (docs/dev/history/technical-design-monthly-view.md) - same "written only when true" convention as the other two focus flags. */
   monthlyFocus: boolean;
-  /** From a `defaultResourceFolder:` line, relative to `paths.resources` (e.g. "Atruvia" or "Atruvia/Templates") - null if the line is absent (technical-design-linked-files.md §3.1). Lets a Project/Area pin which Resources subfolder its Files pane's "Resources" root opens into by default. */
+  /** From a `defaultResourceFolder:` line, relative to `paths.resources` (e.g. "Team" or "Team/Templates") - null if the line is absent (technical-design-linked-files.md §3.1). Lets a Project/Area pin which Resources subfolder its Files pane's "Resources" root opens into by default. */
   defaultResourceFolder: string | null;
   /** From an `area:` line - the bare folder name (under `paths.areas`) of the Area this Project supports, or null if absent (technical-design-project-area-assignment.md §2). Areas never have this set - the parser stays permissive about what it *reads* regardless of kind, same posture as `status`/`defaultResourceFolder`, but nothing in the UI ever writes it for an Area. */
   area: string | null;

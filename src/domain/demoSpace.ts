@@ -147,6 +147,7 @@ export function buildDemoFiles(today: Date): DemoFile[] {
       `- [ ] Old point from the first session ${agreed(-14)}`,
       "- [ ] Read Jordan's article #jordan #next",
       '- [ ] Contract draft #wf/jordan',
+      `- [ ] Send Jordan the book tip #owe/jordan [due:: ${d(4)}]`,
       '- [ ] Invite Jordan to the forum #sparring/jordan #someday',
       '- [ ] Book the workshop room #workshop/offsite #next',
       `- [ ] Print the handouts [meeting:: ${meetingKey({date: d(0), title: planning})}]`,

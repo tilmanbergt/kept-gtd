@@ -4,20 +4,20 @@ A meeting has a date, an optional time or length, and a title that can carry tag
 
 ## Where meetings show up
 
-- **Daily**: today and tomorrow
+- [Daily](daily.md): today and tomorrow
 - **Week**: the week grid; tap a day for the full list
 - **Month**: only monthly highlights (the **M** mark); a focus block marked **M** shows with its name and an **F**, the others only in the day's list; tap a day for all its meetings
 - **Current**: all meetings of that project or area, upcoming and past
 
 ## Focus blocks
 
-A focus block is time you give yourself for a loop, a thread, a project or an area - writing, preparing, thinking. Switch on **F** next to **M** in Quick Add's Meeting form, or on a meeting's card. The line gets the tag `#focusblock`, so in your files it stays an ordinary meeting, for example `- 2026-10-15 09:00-11:00 Draft chapter #writing/novel #focusblock`.
+A focus block is time you give yourself for a [loop](loops.md), a [thread](threads.md), a project or an area - writing, preparing, thinking. Switch on **F** next to **M** in [Quick Add's Meeting form](quick-add.md#adding-a-meeting), or on a meeting's card. The line gets the tag `#focusblock`, so in your files it stays an ordinary meeting, for example `- 2026-10-15 09:00-10:30 Prepare the workshop #workshop/offsite #focusblock`.
 
 - Focus blocks show a filled **F** wherever meetings show; a day's line counts both: "Thu 15.10. · 2 meetings · 1 focus".
-- The card says **Focus** instead of **Meeting** and links its loop or thread (for example `writing novel ›`).
+- The card says **Focus** instead of **Meeting** and links its loop or thread (for example `workshop offsite ›`).
 - Focus blocks have no prep or review mark, no Reflection page, and never appear in "Meetings to close out".
 - Their note follows a Note setup that matches their tags. Without one, the note button opens the project's or area's home notebook instead of creating a note.
-- They count in **Given time** on Week and Month, see [Week and Month](week-and-month.md).
+- They count in **Given time** on Week and Month, see [Week and Month](week-and-month.md#given-time).
 
 ## The context panel
 
@@ -43,7 +43,7 @@ Tap the title, or the small mark, to select the meeting: the row gets a black ba
 
 The card shows:
 
-- First row: **Meeting** and whether it is ahead, today, over or cancelled; the meeting's thread (for example `#sparring/mieke ›`), which opens the thread overview; ✕ and **Edit**.
+- First row: **Meeting** and whether it is ahead, today, over or cancelled; the meeting's thread (for example `#sparring/jordan ›`), which opens the thread overview; ✕ and **Edit**.
 - Second row: the title with its tags, and when.
 - Third row: **P** before the meeting or **R** after it, when the meeting's Note setup tracks that (see below) - tap to tick, filled means done, tap again to undo; **M** for a monthly highlight; **F** for a focus block; the note icon; once the meeting is over, the **Reflect** icon (a loop turning back with a question mark; filled once the reflection page exists, see below); the linked file's name (tap it to open it, ✕ removes the link), or **+** and the clip to link a file where a Files pane is there to pick from (a project's or area's page, the Inbox).
 - Fourth row: where the meeting lives (tap the name to open it; where a Files pane is there, the arrow next to it moves the meeting to another project or area), **New from this** (two pages: a new meeting with the same title, date and time, for example the next session of a series) and **Cancel meeting** (a calendar with a cross; it asks first, and the meeting stays in the file, marked as cancelled).
@@ -72,18 +72,18 @@ Past meetings that still need a review appear in the Review step **Meetings to c
 
 After a meeting, you may want to reflect on it in your own handwriting: how did it go, what did I notice, what do I try next time. Every meeting that is over (and not cancelled) can have one **Reflection page** for that. It is not a todo and not a review: nothing counts it and nothing reminds you of it, and writing it never ticks `#reviewed`.
 
-Tap the **Reflect** icon on the selected meeting's card. The first time, the status line asks, for example "Sparring: reflection page in Meetings/sparring mieke 2026.note, after the meeting's page" - tap **Add page**. When the meeting has no page yet, it says "…: pages for the meeting and its reflection in …" and **Add pages** creates both. After that the icon is filled and opens the page.
+Tap the **Reflect** icon on the selected meeting's card. The first time, the status line asks, for example "Sparring: reflection page in Coaching 2026.note, after the meeting's page" - tap **Add page**. When the meeting has no page yet, it says "…: pages for the meeting and its reflection in …" and **Add pages** creates both. After that the icon is filled and opens the page.
 
 - **Where it goes**: in the meeting's note, after the meeting's page and every page you added to it by hand, before the next meeting's or todo's page. In a meeting's own note it is the last page.
 - **What is on it**: the Reflection page of the meeting's Note setup, or the Default's - at first just the date and title as a heading. Add your guiding questions as texts of your own, see [Note setups](note-setups.md).
-- **Finding it**: its keyword is `reflection` with the meeting's date and title (for example `reflection 2026-10-14 Sparring Mieke`), plus the meeting's tags. When you rename the meeting, the keyword follows the next time you open the page from Kept.
+- **Finding it**: its keyword is `reflection` with the meeting's date and title (for example `reflection 2026-10-14 Sparring Jordan`), plus the meeting's tags. When you rename the meeting, the keyword follows the next time you open the page from Kept.
 - **Part of the meeting**: on the reflection page, Engage and lasso capture treat it as the meeting's page - todos you capture there were agreed in that meeting, and Engage opens on **From Thread** (see [Engage](engage.md)).
 
 You also reach it from the Review step **Meetings to close out**, from a past meeting in a thread overview, and from Engage on the meeting's page: **Reflect ›** after the meeting (see [Engage](engage.md)).
 
 ## Cancelling and repeating
 
-**Cancel meeting** on the meeting's card cancels it after asking; it stays in the file, marked as cancelled. Kept has no repeating meetings: for a series, use **New from this** to create the next one with the same title, and give the series its own tag (for example `#team-sync`). With a nested tag such as `#retro/alpha`, the series becomes a thread: its overview offers **+ Next retro**, which picks the next date for you, see [Threads](threads.md).
+**Cancel meeting** on the meeting's card cancels it after asking; it stays in the file, marked as cancelled. Kept has no repeating meetings: for a series, use **New from this** to create the next one with the same title, and give the series its own tag (for example `#team-sync`). With a nested tag such as `#sparring/jordan`, the series becomes a thread: its overview offers **+ Next sparring**, which picks the next date for you, see [Threads](threads.md).
 
 ## From Google Calendar
 

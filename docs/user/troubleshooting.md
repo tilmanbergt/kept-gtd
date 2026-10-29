@@ -4,7 +4,7 @@
 
 - **Something looks outdated**, for example after editing files on your computer: open Kept GTD again, it reads changed files when it opens. If that doesn't help, tap **Reload all files** in Settings → Advanced. If it happens often, try switching off **Keep tabs in memory** there.
 - **A handwritten tag isn't recognized**: a tag must not contain a space after `#`. Quick Add removes such spaces automatically; in files you edited by hand, check them.
-- **A note link or linked file is broken**: run **Run Integrity Check** in Settings → Advanced. It writes a report to `EXPORT/kept-gtd/debug`.
+- **A note link or linked file is broken**: run **Run Integrity Check** in [Settings → Advanced](settings.md#advanced). It writes a report to `EXPORT/kept-gtd/debug`.
 - **A link to a Kept note doesn't work in Obsidian**: the note probably has an old name with `#`, `[`, `]` or `^`. Run **Run Integrity Check**; when it finds such names, the message offers **Fix file names (n)**. It asks once, then renames all of them and updates their links in your projects, areas and the Inbox. Notes linked from archived projects and your own notes linked by their full path are only listed in the report.
 - **Creating a note fails when Kept was opened from a PDF or document**: the Supernote only lets plugins create notes when they were opened from a note. Open Kept GTD from any note and create the note there. This is a limit of the Supernote, not of Kept.
 - **The calendar or Gmail doesn't load**: check the network connection and the settings; the error message tells you whether it is the network, the login or something else.

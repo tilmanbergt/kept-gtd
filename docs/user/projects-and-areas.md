@@ -14,7 +14,7 @@ Every row on the Projects and Areas tabs ends with the notebook icon of its home
 
 - **Header**: name, kind and the abbreviation (tap to change it); **Notebook** opens its home notebook, or creates it (see "Home notebooks" below); **Engage ›** opens [Engage](engage.md) for this project or area
 - **Scope**: one to three sentences about what this project or area is about. Tap to edit.
-- **Given time**: `Given time · this week 3 h · this month 11 h` - the meetings and focus blocks scheduled in it (an area counts its projects' too); all-day events count as 8 h a day
+- **Given time** ([Week and Month](week-and-month.md#given-time)): `Given time · this week 3 h · this month 11 h` - the meetings and focus blocks scheduled in it (an area counts its projects' too); all-day events count as 8 h a day
 - **Status**: Active, On Hold, Done (projects only) - and Close out… or Archive…
 - **Files pane**: up to four tabs. On a project: **Threads** (open when the page opens), **Loops**, **Notebook** and **Files**. On an area: **Threads**, **Projects** (its projects at a glance), **Notebook** and **Files**. **Notebook** shows the home notebook with its years and contents; it is there while the Default note setup uses one notebook. Inside **Files** a second row picks the place: **Project**, **Area** (once one is assigned) and **Resources** on a project; **Area** and **Resources** on an area. **Files** opens on the page's own folder.
 - **Todos** and **Meetings**, grouped and paged, with Quick Add above them. Todos are grouped Next, Waiting For, Plan (no flow state: planned, not yet next), Someday and Maybe. Tapping a todo or meeting shows its card in Quick Add's place: for a todo done, the flow chips, linking a file, moving it and delete (see [Quick Add](quick-add.md)); for a meeting the prep or review tick, **Reflect** once it is over, linking a file and moving it (see [Meetings](meetings.md))
@@ -63,15 +63,15 @@ Tap a row to open the project. To browse the projects' folders, open the project
 
 ## Threads
 
-The **Threads** tab lists the counterparts of this project or area: the people, teams and series behind nested tags such as `#retro/alpha` (see [Threads](threads.md)). On a project with an area it shows the area's counterparts that this project's todos and meetings use; the tab's heading then names the area (`Threads · Coaching`), because that is where they are kept.
+The **Threads** tab lists the counterparts of this project or area: the people, teams and series behind nested tags such as `#sparring/jordan` (see [Threads](threads.md)). On a project with an area it shows the area's counterparts that this project's todos and meetings use; the tab's heading then names the area (`Threads · Coaching`), because that is where they are kept.
 
 - **New**: counterparts you use but haven't confirmed yet. **Tend** keeps them, **Not** sets them aside. A counterpart you set aside that gets a new meeting comes back here as `back in use: name`.
-- **Active**: the counterpart and, below it, `last 30.9. · next 14.10.` (its latest and next meeting) and what is open: `2 owe · w/f 18 d` (two todos you owe, the oldest thing you wait for has waited 18 days). A counterpart you only use with `#wf/name` or `#owe/name` shows `w/f only`, `owe only` or `w/f · owe only` instead of meeting dates. **▸** shows its threads (`#retro/alpha · next 14.10.`) with **+ next**, which puts the next meeting into Quick Add's Meeting tab like **+ Next retro** in the overview.
+- **Active**: the counterpart and, below it, `last 30.9. · next 14.10.` (its latest and next meeting) and what is open: `2 owe · w/f 18 d` (two todos you owe, the oldest thing you wait for has waited 18 days). A counterpart you only use with `#wf/name` or `#owe/name` shows `w/f only`, `owe only` or `w/f · owe only` instead of meeting dates. **▸** shows its threads (`#sparring/jordan · next 14.10.`) with **+ next**, which puts the next meeting into Quick Add's Meeting tab like **+ Next sparring** in the overview.
 - **n inactive ▸**: the counterparts set aside, folded. Unfolded, **Tend** takes one back.
 
 Tap a counterpart's name to open its overview (see [Threads](threads.md)).
 
-Tap **Filter** on its row to filter the Todos and Meetings on the right: only todos you owe it, wait for from it or that are relevant for it (the same three ways as in its overview), and only its meetings. A todo agreed in your 1:1 with Mieke but tagged `#101/sven` shows under both mieke and sven. The row's pill turns into **Filter ✕** and a pill `mieke ✕` above Quick Add shows the filter; tap either to show everything.
+Tap **Filter** on its row to filter the Todos and Meetings on the right: only todos you owe it, wait for from it or that are relevant for it (the same three ways as in its overview), and only its meetings. A todo agreed in your sparring with Jordan but tagged `#wf/lena` shows under both jordan and lena. The row's pill turns into **Filter ✕** and a pill `jordan ✕` above Quick Add shows the filter; tap either to show everything.
 
 While a counterpart is filtered, its row offers **Set inactive**. With open todos you first decide for each one under **I owe**, **Waiting for**, **Relevant** and **Someday / Maybe**: **Done**, **Cancel** or **Keep** (Keep is preselected). Its active agreements follow under **Agreements**: **Keep** or **End**, or **End all**. **Set inactive** then applies them. With nothing open, one confirmation is enough. An inactive counterpart leaves the Weekly Review and the tag suggestions; its overview keeps working.
 
@@ -105,7 +105,7 @@ A project's or area's page has a **Notebook** tab next to Threads and Loops (Pro
 
 - the notebook's name with **Open** (the page you last looked at)
 - a chip for every year that has a notebook, this year first; a missing current year shows as **+ 2027** and creates it. The chip you choose decides what Open and the contents show.
-- **Contents**: the headings of the notebook in page order, "p.4  Kick-off with agency · 2.9." - tap one to open the notebook on that page
+- **Contents**: the headings of the notebook in page order, "p.4  Site visit with Marco · 4.10." - tap one to open the notebook on that page
 - without any notebook: what it will be, and **+ Create notebook**
 
 ### Contents (experimental)
@@ -124,7 +124,7 @@ In [Engage](engage.md), when you work in another note of a project or area - a t
 
 Kept keeps the name of each project and area in its file (`name:` at the top). When you rename the folder elsewhere - in the file manager or on your computer - this year's notebook still has the old name. When you open the project's or area's page, the status line asks:
 
-"Leadership is now People Leadership. Rename Leadership 2026.note to People Leadership 2026.note?" **Rename** · **Not now**
+"Garden renovation is now Garden makeover. Rename Garden renovation 2026.note to Garden makeover 2026.note?" **Rename** · **Not now**
 
 **Rename** renames this year's notebook and updates every link into it: the notes of todos and meetings, page links and marks. Notebooks of earlier years keep their names. **Not now** asks again the next time Kept starts. **Run Integrity Check** (Settings → Advanced) also lists such renamed folders.
 

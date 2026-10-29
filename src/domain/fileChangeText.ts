@@ -44,7 +44,7 @@ const RECREATE_DETAIL =
 
 /**
  * The confirm text for a note plan. `fullDisplay` is the plan's file as a
- * display path (e.g. "Note/2 Areas/Coaching/Meetings/Coaching sabina 2026.note").
+ * display path (e.g. "Note/2 Areas/Coaching/Meetings/Coaching lena 2026.note").
  * First-time notes name the deciding Note setup, so a misspelt tag (which picks a
  * different setup, file or none) is visible before anything is created.
  */
@@ -102,7 +102,7 @@ export interface NoteChoiceText {
   labels: string[];
 }
 
-/** One place in the choice's detail: "Sparring: new page in Sparring/sparring peter 2026.note". */
+/** One place in the choice's detail: "Sparring: new page in Sparring/sparring marco 2026.note". */
 function placeLine(plan: NoteCreationPlan): string {
   return noteCreationConfirmText(plan, plan.file).text;
 }

@@ -279,10 +279,10 @@ scenario('On a todo\'s page, w/f Jordan turns #next into Waiting For, with Undo'
 
 scenario('An Inbox meeting\'s page: no Agreement tab, agreements are never kept in the Inbox', {feature: 'Engage', design: 'technical-design-meetings-0.21.md'}, () => {
   const INBOX_NOTE = `${INBOX_FILE.replace(/\/[^/]+$/, '')}/Meetings/Call.note`;
-  given('the Inbox has a meeting "Call with Sven" today with its own note', () => {
+  given('the Inbox has a meeting "Call with Sam" today with its own note', () => {
     clock(12, 0);
-    putFile(INBOX_FILE, dataFile('inbox', {Tasks: [], Meetings: [`- ${TODAY} 11:00-11:30 Call with Sven → [[Meetings/Call.note#${TODAY} Call with Sven]]`]}));
-    device().sdk.putNote(INBOX_NOTE, [{keywords: [TODAY, `${TODAY} Call with Sven`]}]);
+    putFile(INBOX_FILE, dataFile('inbox', {Tasks: [], Meetings: [`- ${TODAY} 11:00-11:30 Call with Sam → [[Meetings/Call.note#${TODAY} Call with Sam]]`]}));
+    device().sdk.putNote(INBOX_NOTE, [{keywords: [TODAY, `${TODAY} Call with Sam`]}]);
   });
   when('I open Engage on its page and open Quick Add if offered', async () => {
     await openEngage({fromNote: INBOX_NOTE, page: 0});

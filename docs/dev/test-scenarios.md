@@ -11,7 +11,7 @@
 
 ### An agreement in the thread overview: it shows in the block "Agreements", another thread's does not
 
-- **Given** area "Coaching" has an agreement tagged #jordan and one tagged #sparring/sven
+- **Given** area "Coaching" has an agreement tagged #jordan and one tagged #sparring/sam
 - **When** I open Jordan's thread overview
 - **Then** Ahead lists the block "Agreements" with the first one only
 - **When** I switch to All jordan
@@ -108,11 +108,11 @@ Test: `__tests__/scenarios/keptGtd.test.tsx`
 
 ### A context filters Daily: hidden todos, dimmed meetings, the hidden line and Show
 
-- **Given** contexts Work (Area Atruvia) and Home (Area Garden)
+- **Given** contexts Work (Area Team) and Home (Area Garden)
 - **When** I open Daily, tap the chip in the tab bar, choose Home in Settings → Contexts and go back to Daily
 - **Then** the chip names Home, and the status line says so
-- **And** Atruvia's todos are hidden, its overdue one too; Garden's and the Inbox show
-- **And** Atruvia's meeting is still listed (dimmed), and the hidden line counts the hidden todos and warns of the due one
+- **And** Team's todos are hidden, its overdue one too; Garden's and the Inbox show
+- **And** Team's meeting is still listed (dimmed), and the hidden line counts the hidden todos and warns of the due one
 - **When** I tap Show
 - **Then** everything shows
 - **When** I switch to Week and back to Daily
@@ -124,7 +124,7 @@ Test: `__tests__/scenarios/contexts.test.tsx`
 
 - **Given** contexts Work and Home, Home active
 - **When** I open Areas
-- **Then** only Garden is listed, and the hidden line counts Atruvia
+- **Then** only Garden is listed, and the hidden line counts Team
 - **When** I open Review
 - **Then** Stalled projects counts Home's project and "+1 in other contexts"
 - **When** I open the step
@@ -136,9 +136,9 @@ Test: `__tests__/scenarios/contexts.test.tsx`
 
 ### Quick Add says when the entry lands outside the context
 
-- **Given** Home is active and Atruvia has the abbreviation AT
+- **Given** Home is active and Team has the abbreviation AT
 - **When** I add "Prepare offer #AT" on Daily
-- **Then** it is in Atruvia's file, and the status line says "Saved to Atruvia · hidden by Home"
+- **Then** it is in Team's file, and the status line says "Saved to Team · hidden by Home"
 
 Test: `__tests__/scenarios/contexts.test.tsx`
 
@@ -156,11 +156,11 @@ Test: `__tests__/scenarios/contexts.test.tsx`
 
 ### Settings → Contexts: a context that shows one Area, named and saved from the top row
 
-- **Given** the areas Home and Atruvia, each with a next todo
+- **Given** the areas Home and Team, each with a next todo
 - **When** I create "Home" with Shows on the Area Home and tap Save
 - **Then** the Areas list counts the choice and the context is listed
 - **When** I tap its radio and open Daily
-- **Then** Daily shows Home's todo and hides Atruvia's
+- **Then** Daily shows Home's todo and hides Team's
 
 Test: `__tests__/scenarios/contexts.test.tsx`
 
@@ -427,7 +427,7 @@ Test: `__tests__/scenarios/engageMoment.test.tsx` · design: `docs/dev/history/t
 
 ### An Inbox meeting's page: no Agreement tab, agreements are never kept in the Inbox
 
-- **Given** the Inbox has a meeting "Call with Sven" today with its own note
+- **Given** the Inbox has a meeting "Call with Sam" today with its own note
 - **When** I open Engage on its page and open Quick Add if offered
 - **Then** Quick Add has no Agreement tab
 
@@ -843,12 +843,12 @@ Test: `__tests__/scenarios/smoke/profiles.test.tsx`
 
 ### The Current pages of the big data set show what was recorded before the performance work
 
-- **Given** the big data set: area "Atruvia" with projects "Tender" and "Migration", area "Zen", project "Solo" and the Inbox
-- **When** I open Atruvia's page
+- **Given** the big data set: area "Team" with projects "Tender" and "Migration", area "Zen", project "Solo" and the Inbox
+- **When** I open Team's page
 - **Then** it shows the recorded texts and list rows, also on each Quick Add tab
 - **When** I open Zen's page
 - **Then** it shows the recorded texts and list rows
-- **When** I open project Tender (in Atruvia) and project Solo
+- **When** I open project Tender (in Team) and project Solo
 - **Then** both show the recorded texts and list rows
 
 Test: `__tests__/scenarios/currentPageGolden.test.tsx` · design: `docs/dev/history/technical-design-perf-current-page.md`
@@ -856,7 +856,7 @@ Test: `__tests__/scenarios/currentPageGolden.test.tsx` · design: `docs/dev/hist
 ### Opening an Area page renders each part a bounded number of times and reads no settings it knows
 
 - **Given** the big data set and the app started
-- **When** I open Zen's page, then Atruvia's from the Areas list, then Zen's again
+- **When** I open Zen's page, then Team's from the Areas list, then Zen's again
 - **Then** Quick Add, the page and its parts render at most as often as recorded
 - **And** the settings are read at most as often as recorded
 
@@ -865,7 +865,7 @@ Test: `__tests__/scenarios/currentPagePerf.test.tsx` · design: `docs/dev/histor
 ### An Area page lists its folder only when the Files tab is opened
 
 - **Given** the big data set and the app started
-- **When** I open Atruvia's page (the Threads tab is shown)
+- **When** I open Team's page (the Threads tab is shown)
 - **Then** its folder is not listed
 - **When** I tap Files
 - **Then** the folder is listed once and its entries show
@@ -874,7 +874,7 @@ Test: `__tests__/scenarios/currentPagePerf.test.tsx` · design: `docs/dev/histor
 
 ### Hiding done todos on an Area page changes the Todos list and nothing else, and is kept
 
-- **Given** the big data set and Atruvia's page open
+- **Given** the big data set and Team's page open
 - **When** I tap "Hide done tasks"
 - **Then** the Todos list offers to show the done ones again, and neither Quick Add nor the left pane rendered
 - **And** after opening Zen and coming back, done todos are still hidden
@@ -1202,8 +1202,8 @@ Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/techn
 
 ### A big Area's Threads tab shows the same counterparts and signals as before, built once
 
-- **Given** area "Atruvia" with 2 projects, 26 counterparts, 133 meetings and 97 todos (half agreed in a meeting, some in the Inbox and in area "Zen", two with a renamed meeting)
-- **When** I open Atruvia's page
+- **Given** area "Team" with 2 projects, 26 counterparts, 133 meetings and 97 todos (half agreed in a meeting, some in the Inbox and in area "Zen", two with a renamed meeting)
+- **When** I open Team's page
 - **And** I unfold the inactive counterparts
 - **Then** the Threads tab lists New, Active and Inactive counterparts with the recorded last/next, I-owe and Waiting
 - **And** the roster was built once for this open
@@ -1212,8 +1212,8 @@ Test: `__tests__/scenarios/threadsBigArea.test.tsx` · design: `docs/dev/history
 
 ### Renaming a meeting in Quick Add updates the Threads tab of the big Area
 
-- **Given** area "Atruvia" of the big data set also has a todo agreed in "1:1 Ines" on a day only "1:1 Vera" has a meeting
-- **When** I open Atruvia's page
+- **Given** area "Team" of the big data set also has a todo agreed in "1:1 Ines" on a day only "1:1 Vera" has a meeting
+- **When** I open Team's page
 - **Then** Ines has no next meeting and owes nothing
 - **When** I rename that meeting to "1:1 Ines #101/ines" in Quick Add
 - **Then** the file has the new title
@@ -1255,7 +1255,7 @@ Test: `__tests__/scenarios/givenTime.test.tsx`
 
 ### Given time sums a counterpart's threads into one row
 
-- **Given** on Wednesday 14.10.: Atruvia with Retro, Review and Replenishment with "value" this week, 1 h each
+- **Given** on Wednesday 14.10.: Team with Retro, Review and Replenishment with "value" this week, 1 h each
 - **When** I open Week
 - **Then** Loops and counterparts lists "value" once, with 3 h and its three series
 - **And** no error was logged

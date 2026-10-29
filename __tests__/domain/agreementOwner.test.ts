@@ -24,7 +24,7 @@ const coaching = item('area', 'Coaching', {
   agreements: [
     a('Feedback in 1:1s #sparring/jordan', meetingKey(spar)), // 0 thread
     a('Leaf only #jordan'), // 1 counterpart leaf
-    a('Other person #sparring/sven'), // 2 another thread
+    a('Other person #sparring/sam'), // 2 another thread
     a('Venue booked early #proj/offsite'), // 3 loop
     a('Plain area rule'), // 4 item
     endedAgreement(a('Old #sparring/jordan'), TODAY), // 5 ended

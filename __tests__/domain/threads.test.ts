@@ -93,13 +93,13 @@ describe('scopeOf', () => {
 
 describe('#owe/<counterpart> (D13)', () => {
   it('names the counterparts a todo promises something to', () => {
-    expect(owedTo(['owe/sven', 'next', 'owe/sven/budget', 'owe/jordan', 'owe'])).toEqual(['sven', 'jordan']);
-    expect(owedTo(['owe', 'wf/sven'])).toEqual([]);
+    expect(owedTo(['owe/sam', 'next', 'owe/sam/budget', 'owe/jordan', 'owe'])).toEqual(['sam', 'jordan']);
+    expect(owedTo(['owe', 'wf/sam'])).toEqual([]);
   });
   it('is not a flow state: it combines with #next and #someday', () => {
-    expect(deriveFlowState(['owe/sven', 'next'])).toBe('next');
-    expect(deriveFlowState(['owe/sven', 'someday'])).toBe('someday');
-    expect(deriveFlowState(['owe/sven'])).toBeNull();
+    expect(deriveFlowState(['owe/sam', 'next'])).toBe('next');
+    expect(deriveFlowState(['owe/sam', 'someday'])).toBe('someday');
+    expect(deriveFlowState(['owe/sam'])).toBeNull();
   });
   it('names a counterpart, not a thread, like wf', () => {
     expect(isCounterpartType('owe')).toBe(true);

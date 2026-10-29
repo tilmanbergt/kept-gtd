@@ -1,6 +1,6 @@
 {
  "scopeRoster": {
-  "owner": "Atruvia",
+  "owner": "Team",
   "confirm": [
    {
     "leaf": "jonas",
@@ -11,7 +11,7 @@
     "oneOff": null,
     "inUse": true,
     "backInUse": false,
-    "owner": "Atruvia",
+    "owner": "Team",
     "tag": "101/jonas",
     "lastMeeting": "2026-10-22",
     "nextMeeting": null,
@@ -21,11 +21,11 @@
     "overview": {
      "lens": "counterpart",
      "thread": "101/jonas",
-     "owner": "Atruvia",
+     "owner": "Team",
      "scope": [
       "Tender",
       "Migration",
-      "Atruvia"
+      "Team"
      ],
      "types": [
       "101",
@@ -52,7 +52,7 @@
      },
      "past": [
       {
-       "meeting": "Atruvia:m60",
+       "meeting": "Team:m60",
        "key": "2026-10-22 1:1 Jonas 101/jonas",
        "agreed": [
         "Tender:t12"
@@ -89,7 +89,7 @@
     "oneOff": "wf",
     "inUse": true,
     "backInUse": false,
-    "owner": "Atruvia",
+    "owner": "Team",
     "tag": "wf/olga",
     "lastMeeting": null,
     "nextMeeting": null,
@@ -99,11 +99,11 @@
     "overview": {
      "lens": "counterpart",
      "thread": "wf/olga",
-     "owner": "Atruvia",
+     "owner": "Team",
      "scope": [
       "Tender",
       "Migration",
-      "Atruvia"
+      "Team"
      ],
      "types": [
       "wf"
@@ -112,7 +112,7 @@
       "meetings": [],
       "owe": [],
       "waiting": [
-       "Atruvia:t40"
+       "Team:t40"
       ],
       "relevant": [],
       "someday": [],
@@ -133,7 +133,7 @@
     "oneOff": "wf",
     "inUse": true,
     "backInUse": false,
-    "owner": "Atruvia",
+    "owner": "Team",
     "tag": "wf/paul",
     "lastMeeting": null,
     "nextMeeting": null,
@@ -143,11 +143,11 @@
     "overview": {
      "lens": "counterpart",
      "thread": "wf/paul",
-     "owner": "Atruvia",
+     "owner": "Team",
      "scope": [
       "Tender",
       "Migration",
-      "Atruvia"
+      "Team"
      ],
      "types": [
       "wf"
@@ -156,7 +156,7 @@
       "meetings": [],
       "owe": [],
       "waiting": [
-       "Atruvia:t41"
+       "Team:t41"
       ],
       "relevant": [],
       "someday": [],
@@ -177,7 +177,7 @@
     "oneOff": "owe",
     "inUse": true,
     "backInUse": false,
-    "owner": "Atruvia",
+    "owner": "Team",
     "tag": "owe/quinn",
     "lastMeeting": null,
     "nextMeeting": null,
@@ -187,11 +187,11 @@
     "overview": {
      "lens": "counterpart",
      "thread": "owe/quinn",
-     "owner": "Atruvia",
+     "owner": "Team",
      "scope": [
       "Tender",
       "Migration",
-      "Atruvia"
+      "Team"
      ],
      "types": [
       "owe"
@@ -221,7 +221,7 @@
     "oneOff": "owe",
     "inUse": true,
     "backInUse": false,
-    "owner": "Atruvia",
+    "owner": "Team",
     "tag": "owe/rosa",
     "lastMeeting": null,
     "nextMeeting": null,
@@ -231,11 +231,11 @@
     "overview": {
      "lens": "counterpart",
      "thread": "owe/rosa",
-     "owner": "Atruvia",
+     "owner": "Team",
      "scope": [
       "Tender",
       "Migration",
-      "Atruvia"
+      "Team"
      ],
      "types": [
       "owe"
@@ -265,7 +265,7 @@
     "oneOff": "wf+owe",
     "inUse": true,
     "backInUse": false,
-    "owner": "Atruvia",
+    "owner": "Team",
     "tag": "wf/stan",
     "lastMeeting": null,
     "nextMeeting": null,
@@ -275,11 +275,11 @@
     "overview": {
      "lens": "counterpart",
      "thread": "wf/stan",
-     "owner": "Atruvia",
+     "owner": "Team",
      "scope": [
       "Tender",
       "Migration",
-      "Atruvia"
+      "Team"
      ],
      "types": [
       "wf",
@@ -312,7 +312,7 @@
     "oneOff": null,
     "inUse": true,
     "backInUse": true,
-    "owner": "Atruvia",
+    "owner": "Team",
     "tag": "101/ulf",
     "lastMeeting": "2026-09-06",
     "nextMeeting": "2026-11-25",
@@ -322,11 +322,11 @@
     "overview": {
      "lens": "counterpart",
      "thread": "101/ulf",
-     "owner": "Atruvia",
+     "owner": "Team",
      "scope": [
       "Tender",
       "Migration",
-      "Atruvia"
+      "Team"
      ],
      "types": [
       "101",
@@ -334,7 +334,7 @@
      ],
      "ahead": {
       "meetings": [
-       "Atruvia:m68"
+       "Team:m68"
       ],
       "owe": [
        "Tender:t0",
@@ -349,8 +349,8 @@
      "since": {
       "from": "2026-09-06",
       "done": [
-       "Atruvia:t11",
-       "Atruvia:t36"
+       "Team:t11",
+       "Team:t36"
       ]
      },
      "past": [
@@ -359,7 +359,7 @@
        "key": "2026-09-06 1:1 Ulf 101/ulf",
        "agreed": [
         "Tender:t0",
-        "Atruvia:t36"
+        "Team:t36"
        ],
        "agreements": [],
        "counts": {
@@ -393,7 +393,7 @@
     "oneOff": null,
     "inUse": true,
     "backInUse": true,
-    "owner": "Atruvia",
+    "owner": "Team",
     "tag": "101/vera",
     "lastMeeting": "2026-08-27",
     "nextMeeting": "2026-11-04",
@@ -403,18 +403,18 @@
     "overview": {
      "lens": "counterpart",
      "thread": "101/vera",
-     "owner": "Atruvia",
+     "owner": "Team",
      "scope": [
       "Tender",
       "Migration",
-      "Atruvia"
+      "Team"
      ],
      "types": [
       "101"
      ],
      "ahead": {
       "meetings": [
-       "Atruvia:m74"
+       "Team:m74"
       ],
       "owe": [],
       "waiting": [],
@@ -431,7 +431,7 @@
      },
      "past": [
       {
-       "meeting": "Atruvia:m75",
+       "meeting": "Team:m75",
        "key": "2026-08-27 1:1 Vera 101/vera",
        "agreed": [],
        "agreements": [],
@@ -456,7 +456,7 @@
     "oneOff": null,
     "inUse": true,
     "backInUse": false,
-    "owner": "Atruvia",
+    "owner": "Team",
     "tag": "retro/alpha",
     "lastMeeting": "2026-10-15",
     "nextMeeting": "2026-11-06",
@@ -466,31 +466,31 @@
     "overview": {
      "lens": "counterpart",
      "thread": "retro/alpha",
-     "owner": "Atruvia",
+     "owner": "Team",
      "scope": [
       "Tender",
       "Migration",
-      "Atruvia"
+      "Team"
      ],
      "types": [
       "retro"
      ],
      "ahead": {
       "meetings": [
-       "Atruvia:m11",
+       "Team:m11",
        "Tender:m18",
-       "Atruvia:m32",
+       "Team:m32",
        "Tender:m3"
       ],
       "owe": [
-       "Atruvia:t13",
-       "Atruvia:t35"
+       "Team:t13",
+       "Team:t35"
       ],
       "waiting": [],
       "relevant": [],
       "someday": [
-       "Atruvia:t0",
-       "Atruvia:t5"
+       "Team:t0",
+       "Team:t5"
       ],
       "agreements": []
      },
@@ -504,7 +504,7 @@
        "meeting": "Migration:m2",
        "key": "2026-10-15 Retro Alpha sprint retro/alpha",
        "agreed": [
-        "Atruvia:t35"
+        "Team:t35"
        ],
        "agreements": [],
        "counts": {
@@ -515,7 +515,7 @@
        }
       },
       {
-       "meeting": "Atruvia:m0",
+       "meeting": "Team:m0",
        "key": "2026-09-12 Retro Alpha sprint retro/alpha",
        "agreed": [],
        "agreements": [],
@@ -527,10 +527,10 @@
        }
       },
       {
-       "meeting": "Atruvia:m48",
+       "meeting": "Team:m48",
        "key": "2026-06-24 Retro Alpha sprint retro/alpha",
        "agreed": [
-        "Atruvia:t13"
+        "Team:t13"
        ],
        "agreements": [],
        "counts": {
@@ -541,7 +541,7 @@
        }
       },
       {
-       "meeting": "Atruvia:m70",
+       "meeting": "Team:m70",
        "key": "2026-06-18 Retro Alpha sprint retro/alpha",
        "agreed": [],
        "agreements": [],
@@ -579,7 +579,7 @@
     "oneOff": null,
     "inUse": true,
     "backInUse": false,
-    "owner": "Atruvia",
+    "owner": "Team",
     "tag": "retro/anna",
     "lastMeeting": "2026-10-24",
     "nextMeeting": "2026-11-26",
@@ -589,11 +589,11 @@
     "overview": {
      "lens": "counterpart",
      "thread": "retro/anna",
-     "owner": "Atruvia",
+     "owner": "Team",
      "scope": [
       "Tender",
       "Migration",
-      "Atruvia"
+      "Team"
      ],
      "types": [
       "retro",
@@ -603,20 +603,20 @@
      ],
      "ahead": {
       "meetings": [
-       "Atruvia:m29",
+       "Team:m29",
        "Tender:m12",
-       "Atruvia:m37"
+       "Team:m37"
       ],
       "owe": [
        "Tender:t7",
-       "Atruvia:t31",
-       "Atruvia:t33",
-       "Atruvia:t34"
+       "Team:t31",
+       "Team:t33",
+       "Team:t34"
       ],
       "waiting": [
-       "Atruvia:t8",
-       "Atruvia:t12",
-       "Atruvia:t39"
+       "Team:t8",
+       "Team:t12",
+       "Team:t39"
       ],
       "relevant": [],
       "someday": [],
@@ -629,10 +629,10 @@
      },
      "past": [
       {
-       "meeting": "Atruvia:m71",
+       "meeting": "Team:m71",
        "key": "2026-10-24 Retro with Anna",
        "agreed": [
-        "Atruvia:t12"
+        "Team:t12"
        ],
        "agreements": [],
        "counts": {
@@ -643,7 +643,7 @@
        }
       },
       {
-       "meeting": "Atruvia:m67",
+       "meeting": "Team:m67",
        "key": "2026-10-19 1:1 Anna 101/anna",
        "agreed": [],
        "agreements": [],
@@ -655,7 +655,7 @@
        }
       },
       {
-       "meeting": "Atruvia:m63",
+       "meeting": "Team:m63",
        "key": "2026-10-13 1:1 Anna 101/anna",
        "agreed": [],
        "agreements": [],
@@ -667,7 +667,7 @@
        }
       },
       {
-       "meeting": "Atruvia:m65",
+       "meeting": "Team:m65",
        "key": "2026-09-26 1:1 Anna 101/anna",
        "agreed": [],
        "agreements": [],
@@ -679,7 +679,7 @@
        }
       },
       {
-       "meeting": "Atruvia:m1",
+       "meeting": "Team:m1",
        "key": "2026-09-16 1:1 Anna 101/anna",
        "agreed": [],
        "agreements": [],
@@ -691,7 +691,7 @@
        }
       },
       {
-       "meeting": "Atruvia:m38",
+       "meeting": "Team:m38",
        "key": "2026-09-06 1:1 Anna 101/anna",
        "agreed": [],
        "agreements": [],
@@ -715,7 +715,7 @@
        }
       },
       {
-       "meeting": "Atruvia:m44",
+       "meeting": "Team:m44",
        "key": "2026-07-26 1:1 Anna 101/anna",
        "agreed": [],
        "agreements": [],
@@ -727,7 +727,7 @@
        }
       },
       {
-       "meeting": "Atruvia:m23",
+       "meeting": "Team:m23",
        "key": "2026-07-20 Retro with Anna retro/anna/2026",
        "agreed": [],
        "agreements": [],
@@ -739,7 +739,7 @@
        }
       },
       {
-       "meeting": "Atruvia:m30",
+       "meeting": "Team:m30",
        "key": "2026-07-15 1:1 Anna 101/anna",
        "agreed": [
         "Tender:t15"
@@ -753,11 +753,11 @@
        }
       },
       {
-       "meeting": "Atruvia:m15",
+       "meeting": "Team:m15",
        "key": "2026-07-04 Retro with Anna retro/anna",
        "agreed": [
-        "Atruvia:t31",
-        "Atruvia:t33"
+        "Team:t31",
+        "Team:t33"
        ],
        "agreements": [],
        "counts": {
@@ -768,7 +768,7 @@
        }
       },
       {
-       "meeting": "Atruvia:m7",
+       "meeting": "Team:m7",
        "key": "2026-06-01 1:1 Anna 101/anna anna",
        "agreed": [],
        "agreements": [],
@@ -791,7 +791,7 @@
     "oneOff": null,
     "inUse": true,
     "backInUse": false,
-    "owner": "Atruvia",
+    "owner": "Team",
     "tag": "101/bert",
     "lastMeeting": "2026-10-15",
     "nextMeeting": "2026-11-14",
@@ -801,11 +801,11 @@
     "overview": {
      "lens": "counterpart",
      "thread": "101/bert",
-     "owner": "Atruvia",
+     "owner": "Team",
      "scope": [
       "Tender",
       "Migration",
-      "Atruvia"
+      "Team"
      ],
      "types": [
       "101",
@@ -819,11 +819,11 @@
       "owe": [
        "Migration:t6",
        "Migration:t10",
-       "Atruvia:t38"
+       "Team:t38"
       ],
       "waiting": [
        "Tender:t29",
-       "Atruvia:t6"
+       "Team:t6"
       ],
       "relevant": [
        "Tender:t18",
@@ -831,8 +831,8 @@
       ],
       "someday": [],
       "agreements": [
-       "Atruvia:a5",
-       "Atruvia:a7"
+       "Team:a5",
+       "Team:a7"
       ]
      },
      "endedAgreements": [],
@@ -842,7 +842,7 @@
      },
      "past": [
       {
-       "meeting": "Atruvia:m82",
+       "meeting": "Team:m82",
        "key": "2026-10-15 1:1 Bert (short) 101/bert",
        "agreed": [
         "Tender:t29"
@@ -860,7 +860,7 @@
        "key": "2026-10-11 1:1 Bert 101/bert",
        "agreed": [],
        "agreements": [
-        "Atruvia:a5"
+        "Team:a5"
        ],
        "counts": {
         "agreed": 0,
@@ -870,7 +870,7 @@
        }
       },
       {
-       "meeting": "Atruvia:m19",
+       "meeting": "Team:m19",
        "key": "2026-09-30 1:1 Bert 101/bert",
        "agreed": [],
        "agreements": [],
@@ -882,10 +882,10 @@
        }
       },
       {
-       "meeting": "Atruvia:m64",
+       "meeting": "Team:m64",
        "key": "2026-09-28 1:1 Bert 101/bert",
        "agreed": [
-        "Atruvia:t6"
+        "Team:t6"
        ],
        "agreements": [],
        "counts": {
@@ -896,7 +896,7 @@
        }
       },
       {
-       "meeting": "Atruvia:m8",
+       "meeting": "Team:m8",
        "key": "2026-09-25 1:1 Bert 101/bert",
        "agreed": [],
        "agreements": [],
@@ -908,7 +908,7 @@
        }
       },
       {
-       "meeting": "Atruvia:m14",
+       "meeting": "Team:m14",
        "key": "2026-09-05 1:1 Bert 101/bert",
        "agreed": [],
        "agreements": [],
@@ -920,7 +920,7 @@
        }
       },
       {
-       "meeting": "Atruvia:m58",
+       "meeting": "Team:m58",
        "key": "2026-08-19 1:1 Bert 101/bert",
        "agreed": [],
        "agreements": [],
@@ -932,7 +932,7 @@
        }
       },
       {
-       "meeting": "Atruvia:m51",
+       "meeting": "Team:m51",
        "key": "2026-08-11 1:1 Bert 101/bert",
        "agreed": [],
        "agreements": [],
@@ -948,7 +948,7 @@
        "key": "2026-07-17 1:1 Bert 101/bert",
        "agreed": [],
        "agreements": [
-        "Atruvia:a7"
+        "Team:a7"
        ],
        "counts": {
         "agreed": 0,
@@ -958,10 +958,10 @@
        }
       },
       {
-       "meeting": "Atruvia:m13",
+       "meeting": "Team:m13",
        "key": "2026-06-26 1:1 Bert 101/bert",
        "agreed": [
-        "Atruvia:t38"
+        "Team:t38"
        ],
        "agreements": [],
        "counts": {
@@ -972,7 +972,7 @@
        }
       },
       {
-       "meeting": "Atruvia:m43",
+       "meeting": "Team:m43",
        "key": "2026-06-22 1:1 Bert 101/bert",
        "agreed": [],
        "agreements": [],
@@ -995,7 +995,7 @@
     "oneOff": null,
     "inUse": true,
     "backInUse": false,
-    "owner": "Atruvia",
+    "owner": "Team",
     "tag": "retro/beta",
     "lastMeeting": "2026-10-15",
     "nextMeeting": "2026-11-16",
@@ -1005,11 +1005,11 @@
     "overview": {
      "lens": "counterpart",
      "thread": "retro/beta",
-     "owner": "Atruvia",
+     "owner": "Team",
      "scope": [
       "Tender",
       "Migration",
-      "Atruvia"
+      "Team"
      ],
      "types": [
       "retro"
@@ -1017,8 +1017,8 @@
      "ahead": {
       "meetings": [
        "Tender:m24",
-       "Atruvia:m26",
-       "Atruvia:m41"
+       "Team:m26",
+       "Team:m41"
       ],
       "owe": [
        "Tender:t9"
@@ -1029,7 +1029,7 @@
        "Tender:t3"
       ],
       "agreements": [
-       "Atruvia:a2"
+       "Team:a2"
       ]
      },
      "endedAgreements": [],
@@ -1039,7 +1039,7 @@
      },
      "past": [
       {
-       "meeting": "Atruvia:m62",
+       "meeting": "Team:m62",
        "key": "2026-10-15 Retro Beta retro/beta/2026",
        "agreed": [],
        "agreements": [],
@@ -1075,7 +1075,7 @@
        }
       },
       {
-       "meeting": "Atruvia:m56",
+       "meeting": "Team:m56",
        "key": "2026-06-14 Retro Beta retro/beta",
        "agreed": [],
        "agreements": [],
@@ -1091,7 +1091,7 @@
        "key": "2026-06-06 Retro Beta retro/beta/2026",
        "agreed": [],
        "agreements": [
-        "Atruvia:a2"
+        "Team:a2"
        ],
        "counts": {
         "agreed": 0,
@@ -1101,7 +1101,7 @@
        }
       },
       {
-       "meeting": "Atruvia:m25",
+       "meeting": "Team:m25",
        "key": "2026-05-30 Retro Beta retro/beta",
        "agreed": [
         "Tender:t9"
@@ -1126,7 +1126,7 @@
     "oneOff": null,
     "inUse": true,
     "backInUse": false,
-    "owner": "Atruvia",
+    "owner": "Team",
     "tag": "jf/board",
     "lastMeeting": "2026-09-16",
     "nextMeeting": "2026-11-15",
@@ -1136,11 +1136,11 @@
     "overview": {
      "lens": "counterpart",
      "thread": "jf/board",
-     "owner": "Atruvia",
+     "owner": "Team",
      "scope": [
       "Tender",
       "Migration",
-      "Atruvia"
+      "Team"
      ],
      "types": [
       "jf",
@@ -1149,10 +1149,10 @@
      ],
      "ahead": {
       "meetings": [
-       "Atruvia:m6"
+       "Team:m6"
       ],
       "owe": [
-       "Atruvia:t42"
+       "Team:t42"
       ],
       "waiting": [
        "Tender:t22"
@@ -1160,7 +1160,7 @@
       "relevant": [],
       "someday": [],
       "agreements": [
-       "Atruvia:a8"
+       "Team:a8"
       ]
      },
      "endedAgreements": [],
@@ -1170,13 +1170,13 @@
      },
      "past": [
       {
-       "meeting": "Atruvia:m76",
+       "meeting": "Team:m76",
        "key": "2026-09-16 Strategy offsite jf/board",
        "agreed": [
-        "Atruvia:t42"
+        "Team:t42"
        ],
        "agreements": [
-        "Atruvia:a8"
+        "Team:a8"
        ],
        "counts": {
         "agreed": 1,
@@ -1210,7 +1210,7 @@
        }
       },
       {
-       "meeting": "Atruvia:m16",
+       "meeting": "Team:m16",
        "key": "2026-09-02 Jour fixe Board: budget…",
        "agreed": [],
        "agreements": [],
@@ -1222,7 +1222,7 @@
        }
       },
       {
-       "meeting": "Atruvia:m49",
+       "meeting": "Team:m49",
        "key": "2026-08-18 Jour fixe Board: budget…",
        "agreed": [],
        "agreements": [],
@@ -1234,7 +1234,7 @@
        }
       },
       {
-       "meeting": "Atruvia:m61",
+       "meeting": "Team:m61",
        "key": "2026-07-29 Jour fixe Board: budget…",
        "agreed": [],
        "agreements": [],
@@ -1257,7 +1257,7 @@
     "oneOff": null,
     "inUse": true,
     "backInUse": false,
-    "owner": "Atruvia",
+    "owner": "Team",
     "tag": "101/carla",
     "lastMeeting": "2026-10-12",
     "nextMeeting": null,
@@ -1267,11 +1267,11 @@
     "overview": {
      "lens": "counterpart",
      "thread": "101/carla",
-     "owner": "Atruvia",
+     "owner": "Team",
      "scope": [
       "Tender",
       "Migration",
-      "Atruvia"
+      "Team"
      ],
      "types": [
       "101",
@@ -1281,14 +1281,14 @@
       "meetings": [],
       "owe": [
        "Migration:t8",
-       "Atruvia:t4",
-       "Atruvia:t17",
-       "Atruvia:t19",
-       "Atruvia:t45"
+       "Team:t4",
+       "Team:t17",
+       "Team:t19",
+       "Team:t45"
       ],
       "waiting": [],
       "relevant": [
-       "Atruvia:t28"
+       "Team:t28"
       ],
       "someday": [],
       "agreements": []
@@ -1303,8 +1303,8 @@
        "meeting": "Tender:m16",
        "key": "2026-10-12 1:1 Carla 101/carla",
        "agreed": [
-        "Atruvia:t4",
-        "Atruvia:t19"
+        "Team:t4",
+        "Team:t19"
        ],
        "agreements": [],
        "counts": {
@@ -1327,7 +1327,7 @@
        }
       },
       {
-       "meeting": "Atruvia:m52",
+       "meeting": "Team:m52",
        "key": "2026-09-09 1:1 Carla 101/carla",
        "agreed": [],
        "agreements": [],
@@ -1367,8 +1367,8 @@
        "key": "2026-06-29 1:1 Carla 101/carla",
        "agreed": [
         "Migration:t8",
-        "Atruvia:t17",
-        "Atruvia:t21"
+        "Team:t17",
+        "Team:t21"
        ],
        "agreements": [],
        "counts": {
@@ -1390,7 +1390,7 @@
     "oneOff": null,
     "inUse": true,
     "backInUse": false,
-    "owner": "Atruvia",
+    "owner": "Team",
     "tag": "101/dirk",
     "lastMeeting": "2026-10-21",
     "nextMeeting": "2026-10-29",
@@ -1400,11 +1400,11 @@
     "overview": {
      "lens": "counterpart",
      "thread": "101/dirk",
-     "owner": "Atruvia",
+     "owner": "Team",
      "scope": [
       "Tender",
       "Migration",
-      "Atruvia"
+      "Team"
      ],
      "types": [
       "101",
@@ -1412,7 +1412,7 @@
      ],
      "ahead": {
       "meetings": [
-       "Atruvia:m18"
+       "Team:m18"
       ],
       "owe": [
        "Migration:t7"
@@ -1421,7 +1421,7 @@
       "relevant": [],
       "someday": [],
       "agreements": [
-       "Atruvia:a4"
+       "Team:a4"
       ]
      },
      "endedAgreements": [],
@@ -1431,7 +1431,7 @@
      },
      "past": [
       {
-       "meeting": "Atruvia:m35",
+       "meeting": "Team:m35",
        "key": "2026-10-21 1:1 Dirk 101/dirk",
        "agreed": [],
        "agreements": [],
@@ -1443,7 +1443,7 @@
        }
       },
       {
-       "meeting": "Atruvia:m12",
+       "meeting": "Team:m12",
        "key": "2026-10-06 1:1 Dirk 101/dirk",
        "agreed": [],
        "agreements": [],
@@ -1459,7 +1459,7 @@
        "key": "2026-09-16 1:1 Dirk 101/dirk dirk",
        "agreed": [],
        "agreements": [
-        "Atruvia:a4"
+        "Team:a4"
        ],
        "counts": {
         "agreed": 0,
@@ -1483,7 +1483,7 @@
        }
       },
       {
-       "meeting": "Atruvia:m59",
+       "meeting": "Team:m59",
        "key": "2026-05-31 1:1 Dirk 101/dirk",
        "agreed": [],
        "agreements": [],
@@ -1506,7 +1506,7 @@
     "oneOff": null,
     "inUse": true,
     "backInUse": false,
-    "owner": "Atruvia",
+    "owner": "Team",
     "tag": "101/eva",
     "lastMeeting": "2026-10-20",
     "nextMeeting": "2026-11-03",
@@ -1516,11 +1516,11 @@
     "overview": {
      "lens": "counterpart",
      "thread": "101/eva",
-     "owner": "Atruvia",
+     "owner": "Team",
      "scope": [
       "Tender",
       "Migration",
-      "Atruvia"
+      "Team"
      ],
      "types": [
       "101",
@@ -1529,7 +1529,7 @@
      ],
      "ahead": {
       "meetings": [
-       "Atruvia:m45",
+       "Team:m45",
        "Tender:m2"
       ],
       "owe": [
@@ -1537,15 +1537,15 @@
        "Tender:t28",
        "Migration:t3",
        "Migration:t14",
-       "Atruvia:t3"
+       "Team:t3"
       ],
       "waiting": [
-       "Atruvia:t7"
+       "Team:t7"
       ],
       "relevant": [],
       "someday": [],
       "agreements": [
-       "Atruvia:a9"
+       "Team:a9"
       ]
      },
      "endedAgreements": [],
@@ -1555,7 +1555,7 @@
      },
      "past": [
       {
-       "meeting": "Atruvia:m5",
+       "meeting": "Team:m5",
        "key": "2026-10-20 1:1 Eva 101/eva",
        "agreed": [],
        "agreements": [],
@@ -1567,14 +1567,14 @@
        }
       },
       {
-       "meeting": "Atruvia:m81",
+       "meeting": "Team:m81",
        "key": "2026-10-08 1:1 Eva - goals 101/eva",
        "agreed": [
         "Tender:t28",
         "Tender:t5"
        ],
        "agreements": [
-        "Atruvia:a9"
+        "Team:a9"
        ],
        "counts": {
         "agreed": 2,
@@ -1584,7 +1584,7 @@
        }
       },
       {
-       "meeting": "Atruvia:m50",
+       "meeting": "Team:m50",
        "key": "2026-09-10 1:1 Eva 101/eva",
        "agreed": [
         "Migration:t14"
@@ -1609,7 +1609,7 @@
     "oneOff": null,
     "inUse": true,
     "backInUse": false,
-    "owner": "Atruvia",
+    "owner": "Team",
     "tag": "101/frank",
     "lastMeeting": "2026-10-11",
     "nextMeeting": "2026-11-09",
@@ -1619,11 +1619,11 @@
     "overview": {
      "lens": "counterpart",
      "thread": "101/frank",
-     "owner": "Atruvia",
+     "owner": "Team",
      "scope": [
       "Tender",
       "Migration",
-      "Atruvia"
+      "Team"
      ],
      "types": [
       "101",
@@ -1631,7 +1631,7 @@
      ],
      "ahead": {
       "meetings": [
-       "Atruvia:m24"
+       "Team:m24"
       ],
       "owe": [],
       "waiting": [
@@ -1654,7 +1654,7 @@
        "meeting": "Migration:m23",
        "key": "2026-10-11 1:1 Frank 101/frank",
        "agreed": [
-        "Atruvia:t24"
+        "Team:t24"
        ],
        "agreements": [],
        "counts": {
@@ -1665,7 +1665,7 @@
        }
       },
       {
-       "meeting": "Atruvia:m34",
+       "meeting": "Team:m34",
        "key": "2026-10-11 1:1 Frank 101/frank",
        "agreed": [],
        "agreements": [],
@@ -1677,7 +1677,7 @@
        }
       },
       {
-       "meeting": "Atruvia:m53",
+       "meeting": "Team:m53",
        "key": "2026-10-05 1:1 Frank 101/frank",
        "agreed": [],
        "agreements": [
@@ -1703,7 +1703,7 @@
     "oneOff": null,
     "inUse": true,
     "backInUse": false,
-    "owner": "Atruvia",
+    "owner": "Team",
     "tag": "retro/gamma",
     "lastMeeting": "2026-10-17",
     "nextMeeting": "2026-10-29",
@@ -1713,11 +1713,11 @@
     "overview": {
      "lens": "counterpart",
      "thread": "retro/gamma",
-     "owner": "Atruvia",
+     "owner": "Team",
      "scope": [
       "Tender",
       "Migration",
-      "Atruvia"
+      "Team"
      ],
      "types": [
       "retro",
@@ -1727,10 +1727,10 @@
      "ahead": {
       "meetings": [
        "Migration:m11",
-       "Atruvia:m21",
+       "Team:m21",
        "Migration:m8",
-       "Atruvia:m55",
-       "Atruvia:m4"
+       "Team:m55",
+       "Team:m4"
       ],
       "owe": [],
       "waiting": [],
@@ -1739,12 +1739,12 @@
       ],
       "someday": [],
       "agreements": [
-       "Atruvia:a3"
+       "Team:a3"
       ]
      },
      "endedAgreements": [
-      "Atruvia:a1",
-      "Atruvia:a6"
+      "Team:a1",
+      "Team:a6"
      ],
      "since": {
       "from": "2026-10-17",
@@ -1752,7 +1752,7 @@
      },
      "past": [
       {
-       "meeting": "Atruvia:m27",
+       "meeting": "Team:m27",
        "key": "2026-10-17 Retro Gamma with the whole…",
        "agreed": [
         "Tender:t23"
@@ -1770,7 +1770,7 @@
        "key": "2026-09-06 Retro Gamma with the whole…",
        "agreed": [],
        "agreements": [
-        "Atruvia:a6"
+        "Team:a6"
        ],
        "counts": {
         "agreed": 0,
@@ -1815,7 +1815,7 @@
     "oneOff": null,
     "inUse": true,
     "backInUse": false,
-    "owner": "Atruvia",
+    "owner": "Team",
     "tag": "101/greta",
     "lastMeeting": "2026-10-22",
     "nextMeeting": "2026-11-06",
@@ -1825,11 +1825,11 @@
     "overview": {
      "lens": "counterpart",
      "thread": "101/greta",
-     "owner": "Atruvia",
+     "owner": "Team",
      "scope": [
       "Tender",
       "Migration",
-      "Atruvia"
+      "Team"
      ],
      "types": [
       "101",
@@ -1837,17 +1837,17 @@
      ],
      "ahead": {
       "meetings": [
-       "Atruvia:m3"
+       "Team:m3"
       ],
       "owe": [
        "Migration:t16",
-       "Atruvia:t44"
+       "Team:t44"
       ],
       "waiting": [],
       "relevant": [],
       "someday": [],
       "agreements": [
-       "Atruvia:a0"
+       "Team:a0"
       ]
      },
      "endedAgreements": [
@@ -1859,7 +1859,7 @@
      },
      "past": [
       {
-       "meeting": "Atruvia:m20",
+       "meeting": "Team:m20",
        "key": "2026-10-22 1:1 Greta 101/greta",
        "agreed": [],
        "agreements": [
@@ -1873,13 +1873,13 @@
        }
       },
       {
-       "meeting": "Atruvia:m77",
+       "meeting": "Team:m77",
        "key": "2026-09-23 1:1 Greta 101/greta",
        "agreed": [
-        "Atruvia:t44"
+        "Team:t44"
        ],
        "agreements": [
-        "Atruvia:a0"
+        "Team:a0"
        ],
        "counts": {
         "agreed": 1,
@@ -1889,7 +1889,7 @@
        }
       },
       {
-       "meeting": "Atruvia:m78",
+       "meeting": "Team:m78",
        "key": "2026-09-23 1:1 Greta 101/greta",
        "agreed": [],
        "agreements": [],
@@ -1901,7 +1901,7 @@
        }
       },
       {
-       "meeting": "Atruvia:m42",
+       "meeting": "Team:m42",
        "key": "2026-06-05 1:1 Greta 101/greta",
        "agreed": [],
        "agreements": [],
@@ -1924,7 +1924,7 @@
     "oneOff": null,
     "inUse": true,
     "backInUse": false,
-    "owner": "Atruvia",
+    "owner": "Team",
     "tag": "101/hans",
     "lastMeeting": "2026-09-11",
     "nextMeeting": "2026-11-03",
@@ -1934,21 +1934,21 @@
     "overview": {
      "lens": "counterpart",
      "thread": "101/hans",
-     "owner": "Atruvia",
+     "owner": "Team",
      "scope": [
       "Tender",
       "Migration",
-      "Atruvia"
+      "Team"
      ],
      "types": [
       "101"
      ],
      "ahead": {
       "meetings": [
-       "Atruvia:m9"
+       "Team:m9"
       ],
       "owe": [
-       "Atruvia:t37"
+       "Team:t37"
       ],
       "waiting": [],
       "relevant": [
@@ -1967,7 +1967,7 @@
        "meeting": "Tender:m19",
        "key": "2026-09-11 1:1 Hans 101/hans",
        "agreed": [
-        "Atruvia:t37"
+        "Team:t37"
        ],
        "agreements": [],
        "counts": {
@@ -2001,7 +2001,7 @@
     "oneOff": null,
     "inUse": true,
     "backInUse": false,
-    "owner": "Atruvia",
+    "owner": "Team",
     "tag": "101/ines",
     "lastMeeting": "2026-09-20",
     "nextMeeting": null,
@@ -2011,11 +2011,11 @@
     "overview": {
      "lens": "counterpart",
      "thread": "101/ines",
-     "owner": "Atruvia",
+     "owner": "Team",
      "scope": [
       "Tender",
       "Migration",
-      "Atruvia"
+      "Team"
      ],
      "types": [
       "101",
@@ -2066,7 +2066,7 @@
     "oneOff": null,
     "inUse": true,
     "backInUse": false,
-    "owner": "Atruvia",
+    "owner": "Team",
     "tag": "101/it",
     "lastMeeting": "2026-10-24",
     "nextMeeting": "2026-11-17",
@@ -2076,11 +2076,11 @@
     "overview": {
      "lens": "counterpart",
      "thread": "101/it",
-     "owner": "Atruvia",
+     "owner": "Team",
      "scope": [
       "Tender",
       "Migration",
-      "Atruvia"
+      "Team"
      ],
      "types": [
       "101",
@@ -2093,7 +2093,7 @@
       "owe": [],
       "waiting": [],
       "relevant": [
-       "Atruvia:t16"
+       "Team:t16"
       ],
       "someday": [],
       "agreements": []
@@ -2117,7 +2117,7 @@
        }
       },
       {
-       "meeting": "Atruvia:m17",
+       "meeting": "Team:m17",
        "key": "2026-06-09 JF IT jf/it it",
        "agreed": [],
        "agreements": [],
@@ -2140,7 +2140,7 @@
     "oneOff": null,
     "inUse": true,
     "backInUse": false,
-    "owner": "Atruvia",
+    "owner": "Team",
     "tag": "sparring/jordan",
     "lastMeeting": "2026-10-19",
     "nextMeeting": "2026-10-30",
@@ -2150,11 +2150,11 @@
     "overview": {
      "lens": "counterpart",
      "thread": "sparring/jordan",
-     "owner": "Atruvia",
+     "owner": "Team",
      "scope": [
       "Tender",
       "Migration",
-      "Atruvia"
+      "Team"
      ],
      "types": [
       "sparring"
@@ -2162,12 +2162,12 @@
      "ahead": {
       "meetings": [
        "Tender:m9",
-       "Atruvia:m54",
-       "Atruvia:m33"
+       "Team:m54",
+       "Team:m33"
       ],
       "owe": [
        "Tender:t11",
-       "Atruvia:t30"
+       "Team:t30"
       ],
       "waiting": [],
       "relevant": [],
@@ -2181,7 +2181,7 @@
      },
      "past": [
       {
-       "meeting": "Atruvia:m66",
+       "meeting": "Team:m66",
        "key": "2026-10-19 Sparring Jordan sparring/jordan",
        "agreed": [],
        "agreements": [],
@@ -2193,7 +2193,7 @@
        }
       },
       {
-       "meeting": "Atruvia:m47",
+       "meeting": "Team:m47",
        "key": "2026-09-14 Sparring Jordan",
        "agreed": [],
        "agreements": [],
@@ -2205,7 +2205,7 @@
        }
       },
       {
-       "meeting": "Atruvia:m31",
+       "meeting": "Team:m31",
        "key": "2026-08-11 Sparring Jordan sparring/jordan",
        "agreed": [],
        "agreements": [],
@@ -2229,7 +2229,7 @@
        }
       },
       {
-       "meeting": "Atruvia:m57",
+       "meeting": "Team:m57",
        "key": "2026-07-02 Sparring Jordan sparring/jordan",
        "agreed": [],
        "agreements": [],
@@ -2245,7 +2245,7 @@
        "key": "2026-06-07 Sparring Jordan sparring/jordan",
        "agreed": [
         "Tender:t11",
-        "Atruvia:t30"
+        "Team:t30"
        ],
        "agreements": [],
        "counts": {
@@ -2259,16 +2259,16 @@
     }
    },
    {
-    "leaf": "sven",
+    "leaf": "sam",
     "status": "active",
     "threads": [
-     "sparring/sven"
+     "sparring/sam"
     ],
     "oneOff": null,
     "inUse": true,
     "backInUse": false,
-    "owner": "Atruvia",
-    "tag": "sparring/sven",
+    "owner": "Team",
+    "tag": "sparring/sam",
     "lastMeeting": "2026-10-14",
     "nextMeeting": null,
     "oweCount": 1,
@@ -2276,12 +2276,12 @@
     "oldestWaitingDays": null,
     "overview": {
      "lens": "counterpart",
-     "thread": "sparring/sven",
-     "owner": "Atruvia",
+     "thread": "sparring/sam",
+     "owner": "Team",
      "scope": [
       "Tender",
       "Migration",
-      "Atruvia"
+      "Team"
      ],
      "types": [
       "sparring",
@@ -2290,10 +2290,10 @@
      "ahead": {
       "meetings": [],
       "owe": [
-       "Atruvia:t2"
+       "Team:t2"
       ],
       "waiting": [
-       "Atruvia:t26"
+       "Team:t26"
       ],
       "relevant": [],
       "someday": [],
@@ -2306,8 +2306,8 @@
      },
      "past": [
       {
-       "meeting": "Atruvia:m46",
-       "key": "2026-10-14 Sparring Sven sparring/sven",
+       "meeting": "Team:m46",
+       "key": "2026-10-14 Sparring Sam sparring/sam",
        "agreed": [],
        "agreements": [],
        "counts": {
@@ -2318,10 +2318,10 @@
        }
       },
       {
-       "meeting": "Atruvia:m28",
-       "key": "2026-06-27 Sparring Sven sparring/sven",
+       "meeting": "Team:m28",
+       "key": "2026-06-27 Sparring Sam sparring/sam",
        "agreed": [
-        "Atruvia:t2"
+        "Team:t2"
        ],
        "agreements": [],
        "counts": {
@@ -2333,7 +2333,7 @@
       },
       {
        "meeting": "Migration:m17",
-       "key": "2026-06-23 Sparring Sven sparring/sven",
+       "key": "2026-06-23 Sparring Sam sparring/sam",
        "agreed": [],
        "agreements": [],
        "counts": {
@@ -2355,7 +2355,7 @@
     "oneOff": null,
     "inUse": true,
     "backInUse": false,
-    "owner": "Atruvia",
+    "owner": "Team",
     "tag": "jf/works",
     "lastMeeting": "2026-07-28",
     "nextMeeting": "2026-11-23",
@@ -2365,11 +2365,11 @@
     "overview": {
      "lens": "counterpart",
      "thread": "jf/works",
-     "owner": "Atruvia",
+     "owner": "Team",
      "scope": [
       "Tender",
       "Migration",
-      "Atruvia"
+      "Team"
      ],
      "types": [
       "jf",
@@ -2397,7 +2397,7 @@
      },
      "past": [
       {
-       "meeting": "Atruvia:m10",
+       "meeting": "Team:m10",
        "key": "2026-07-28 Jour fixe works council",
        "agreed": [
         "Tender:t2"
@@ -2446,7 +2446,7 @@
     "oneOff": null,
     "inUse": false,
     "backInUse": false,
-    "owner": "Atruvia",
+    "owner": "Team",
     "tag": "wf/gone",
     "lastMeeting": null,
     "nextMeeting": null,
@@ -2456,11 +2456,11 @@
     "overview": {
      "lens": "counterpart",
      "thread": "wf/gone",
-     "owner": "Atruvia",
+     "owner": "Team",
      "scope": [
       "Tender",
       "Migration",
-      "Atruvia"
+      "Team"
      ],
      "types": [
       "wf"
@@ -2485,7 +2485,7 @@
  },
  "tendingRoster": [
   {
-   "owner": "Atruvia",
+   "owner": "Team",
    "confirm": [
     {
      "leaf": "jonas",
@@ -2496,7 +2496,7 @@
      "oneOff": null,
      "inUse": true,
      "backInUse": false,
-     "owner": "Atruvia",
+     "owner": "Team",
      "tag": "101/jonas",
      "lastMeeting": "2026-10-22",
      "nextMeeting": null,
@@ -2506,11 +2506,11 @@
      "overview": {
       "lens": "counterpart",
       "thread": "101/jonas",
-      "owner": "Atruvia",
+      "owner": "Team",
       "scope": [
        "Tender",
        "Migration",
-       "Atruvia"
+       "Team"
       ],
       "types": [
        "101",
@@ -2537,7 +2537,7 @@
       },
       "past": [
        {
-        "meeting": "Atruvia:m60",
+        "meeting": "Team:m60",
         "key": "2026-10-22 1:1 Jonas 101/jonas",
         "agreed": [
          "Tender:t12"
@@ -2574,7 +2574,7 @@
      "oneOff": "wf",
      "inUse": true,
      "backInUse": false,
-     "owner": "Atruvia",
+     "owner": "Team",
      "tag": "wf/olga",
      "lastMeeting": null,
      "nextMeeting": null,
@@ -2584,11 +2584,11 @@
      "overview": {
       "lens": "counterpart",
       "thread": "wf/olga",
-      "owner": "Atruvia",
+      "owner": "Team",
       "scope": [
        "Tender",
        "Migration",
-       "Atruvia"
+       "Team"
       ],
       "types": [
        "wf"
@@ -2597,7 +2597,7 @@
        "meetings": [],
        "owe": [],
        "waiting": [
-        "Atruvia:t40"
+        "Team:t40"
        ],
        "relevant": [],
        "someday": [],
@@ -2618,7 +2618,7 @@
      "oneOff": "wf",
      "inUse": true,
      "backInUse": false,
-     "owner": "Atruvia",
+     "owner": "Team",
      "tag": "wf/paul",
      "lastMeeting": null,
      "nextMeeting": null,
@@ -2628,11 +2628,11 @@
      "overview": {
       "lens": "counterpart",
       "thread": "wf/paul",
-      "owner": "Atruvia",
+      "owner": "Team",
       "scope": [
        "Tender",
        "Migration",
-       "Atruvia"
+       "Team"
       ],
       "types": [
        "wf"
@@ -2641,7 +2641,7 @@
        "meetings": [],
        "owe": [],
        "waiting": [
-        "Atruvia:t41"
+        "Team:t41"
        ],
        "relevant": [],
        "someday": [],
@@ -2662,7 +2662,7 @@
      "oneOff": "owe",
      "inUse": true,
      "backInUse": false,
-     "owner": "Atruvia",
+     "owner": "Team",
      "tag": "owe/quinn",
      "lastMeeting": null,
      "nextMeeting": null,
@@ -2672,11 +2672,11 @@
      "overview": {
       "lens": "counterpart",
       "thread": "owe/quinn",
-      "owner": "Atruvia",
+      "owner": "Team",
       "scope": [
        "Tender",
        "Migration",
-       "Atruvia"
+       "Team"
       ],
       "types": [
        "owe"
@@ -2706,7 +2706,7 @@
      "oneOff": "owe",
      "inUse": true,
      "backInUse": false,
-     "owner": "Atruvia",
+     "owner": "Team",
      "tag": "owe/rosa",
      "lastMeeting": null,
      "nextMeeting": null,
@@ -2716,11 +2716,11 @@
      "overview": {
       "lens": "counterpart",
       "thread": "owe/rosa",
-      "owner": "Atruvia",
+      "owner": "Team",
       "scope": [
        "Tender",
        "Migration",
-       "Atruvia"
+       "Team"
       ],
       "types": [
        "owe"
@@ -2750,7 +2750,7 @@
      "oneOff": "wf+owe",
      "inUse": true,
      "backInUse": false,
-     "owner": "Atruvia",
+     "owner": "Team",
      "tag": "wf/stan",
      "lastMeeting": null,
      "nextMeeting": null,
@@ -2760,11 +2760,11 @@
      "overview": {
       "lens": "counterpart",
       "thread": "wf/stan",
-      "owner": "Atruvia",
+      "owner": "Team",
       "scope": [
        "Tender",
        "Migration",
-       "Atruvia"
+       "Team"
       ],
       "types": [
        "wf",
@@ -2797,7 +2797,7 @@
      "oneOff": null,
      "inUse": true,
      "backInUse": true,
-     "owner": "Atruvia",
+     "owner": "Team",
      "tag": "101/ulf",
      "lastMeeting": "2026-09-06",
      "nextMeeting": "2026-11-25",
@@ -2807,11 +2807,11 @@
      "overview": {
       "lens": "counterpart",
       "thread": "101/ulf",
-      "owner": "Atruvia",
+      "owner": "Team",
       "scope": [
        "Tender",
        "Migration",
-       "Atruvia"
+       "Team"
       ],
       "types": [
        "101",
@@ -2819,7 +2819,7 @@
       ],
       "ahead": {
        "meetings": [
-        "Atruvia:m68"
+        "Team:m68"
        ],
        "owe": [
         "Tender:t0",
@@ -2834,8 +2834,8 @@
       "since": {
        "from": "2026-09-06",
        "done": [
-        "Atruvia:t11",
-        "Atruvia:t36"
+        "Team:t11",
+        "Team:t36"
        ]
       },
       "past": [
@@ -2844,7 +2844,7 @@
         "key": "2026-09-06 1:1 Ulf 101/ulf",
         "agreed": [
          "Tender:t0",
-         "Atruvia:t36"
+         "Team:t36"
         ],
         "agreements": [],
         "counts": {
@@ -2878,7 +2878,7 @@
      "oneOff": null,
      "inUse": true,
      "backInUse": true,
-     "owner": "Atruvia",
+     "owner": "Team",
      "tag": "101/vera",
      "lastMeeting": "2026-08-27",
      "nextMeeting": "2026-11-04",
@@ -2888,18 +2888,18 @@
      "overview": {
       "lens": "counterpart",
       "thread": "101/vera",
-      "owner": "Atruvia",
+      "owner": "Team",
       "scope": [
        "Tender",
        "Migration",
-       "Atruvia"
+       "Team"
       ],
       "types": [
        "101"
       ],
       "ahead": {
        "meetings": [
-        "Atruvia:m74"
+        "Team:m74"
        ],
        "owe": [],
        "waiting": [],
@@ -2916,7 +2916,7 @@
       },
       "past": [
        {
-        "meeting": "Atruvia:m75",
+        "meeting": "Team:m75",
         "key": "2026-08-27 1:1 Vera 101/vera",
         "agreed": [],
         "agreements": [],
@@ -2941,7 +2941,7 @@
      "oneOff": null,
      "inUse": true,
      "backInUse": false,
-     "owner": "Atruvia",
+     "owner": "Team",
      "tag": "retro/alpha",
      "lastMeeting": "2026-10-15",
      "nextMeeting": "2026-11-06",
@@ -2951,31 +2951,31 @@
      "overview": {
       "lens": "counterpart",
       "thread": "retro/alpha",
-      "owner": "Atruvia",
+      "owner": "Team",
       "scope": [
        "Tender",
        "Migration",
-       "Atruvia"
+       "Team"
       ],
       "types": [
        "retro"
       ],
       "ahead": {
        "meetings": [
-        "Atruvia:m11",
+        "Team:m11",
         "Tender:m18",
-        "Atruvia:m32",
+        "Team:m32",
         "Tender:m3"
        ],
        "owe": [
-        "Atruvia:t13",
-        "Atruvia:t35"
+        "Team:t13",
+        "Team:t35"
        ],
        "waiting": [],
        "relevant": [],
        "someday": [
-        "Atruvia:t0",
-        "Atruvia:t5"
+        "Team:t0",
+        "Team:t5"
        ],
        "agreements": []
       },
@@ -2989,7 +2989,7 @@
         "meeting": "Migration:m2",
         "key": "2026-10-15 Retro Alpha sprint retro/alpha",
         "agreed": [
-         "Atruvia:t35"
+         "Team:t35"
         ],
         "agreements": [],
         "counts": {
@@ -3000,7 +3000,7 @@
         }
        },
        {
-        "meeting": "Atruvia:m0",
+        "meeting": "Team:m0",
         "key": "2026-09-12 Retro Alpha sprint retro/alpha",
         "agreed": [],
         "agreements": [],
@@ -3012,10 +3012,10 @@
         }
        },
        {
-        "meeting": "Atruvia:m48",
+        "meeting": "Team:m48",
         "key": "2026-06-24 Retro Alpha sprint retro/alpha",
         "agreed": [
-         "Atruvia:t13"
+         "Team:t13"
         ],
         "agreements": [],
         "counts": {
@@ -3026,7 +3026,7 @@
         }
        },
        {
-        "meeting": "Atruvia:m70",
+        "meeting": "Team:m70",
         "key": "2026-06-18 Retro Alpha sprint retro/alpha",
         "agreed": [],
         "agreements": [],
@@ -3064,7 +3064,7 @@
      "oneOff": null,
      "inUse": true,
      "backInUse": false,
-     "owner": "Atruvia",
+     "owner": "Team",
      "tag": "retro/anna",
      "lastMeeting": "2026-10-24",
      "nextMeeting": "2026-11-26",
@@ -3074,11 +3074,11 @@
      "overview": {
       "lens": "counterpart",
       "thread": "retro/anna",
-      "owner": "Atruvia",
+      "owner": "Team",
       "scope": [
        "Tender",
        "Migration",
-       "Atruvia"
+       "Team"
       ],
       "types": [
        "retro",
@@ -3088,20 +3088,20 @@
       ],
       "ahead": {
        "meetings": [
-        "Atruvia:m29",
+        "Team:m29",
         "Tender:m12",
-        "Atruvia:m37"
+        "Team:m37"
        ],
        "owe": [
         "Tender:t7",
-        "Atruvia:t31",
-        "Atruvia:t33",
-        "Atruvia:t34"
+        "Team:t31",
+        "Team:t33",
+        "Team:t34"
        ],
        "waiting": [
-        "Atruvia:t8",
-        "Atruvia:t12",
-        "Atruvia:t39"
+        "Team:t8",
+        "Team:t12",
+        "Team:t39"
        ],
        "relevant": [],
        "someday": [],
@@ -3114,10 +3114,10 @@
       },
       "past": [
        {
-        "meeting": "Atruvia:m71",
+        "meeting": "Team:m71",
         "key": "2026-10-24 Retro with Anna",
         "agreed": [
-         "Atruvia:t12"
+         "Team:t12"
         ],
         "agreements": [],
         "counts": {
@@ -3128,7 +3128,7 @@
         }
        },
        {
-        "meeting": "Atruvia:m67",
+        "meeting": "Team:m67",
         "key": "2026-10-19 1:1 Anna 101/anna",
         "agreed": [],
         "agreements": [],
@@ -3140,7 +3140,7 @@
         }
        },
        {
-        "meeting": "Atruvia:m63",
+        "meeting": "Team:m63",
         "key": "2026-10-13 1:1 Anna 101/anna",
         "agreed": [],
         "agreements": [],
@@ -3152,7 +3152,7 @@
         }
        },
        {
-        "meeting": "Atruvia:m65",
+        "meeting": "Team:m65",
         "key": "2026-09-26 1:1 Anna 101/anna",
         "agreed": [],
         "agreements": [],
@@ -3164,7 +3164,7 @@
         }
        },
        {
-        "meeting": "Atruvia:m1",
+        "meeting": "Team:m1",
         "key": "2026-09-16 1:1 Anna 101/anna",
         "agreed": [],
         "agreements": [],
@@ -3176,7 +3176,7 @@
         }
        },
        {
-        "meeting": "Atruvia:m38",
+        "meeting": "Team:m38",
         "key": "2026-09-06 1:1 Anna 101/anna",
         "agreed": [],
         "agreements": [],
@@ -3200,7 +3200,7 @@
         }
        },
        {
-        "meeting": "Atruvia:m44",
+        "meeting": "Team:m44",
         "key": "2026-07-26 1:1 Anna 101/anna",
         "agreed": [],
         "agreements": [],
@@ -3212,7 +3212,7 @@
         }
        },
        {
-        "meeting": "Atruvia:m23",
+        "meeting": "Team:m23",
         "key": "2026-07-20 Retro with Anna retro/anna/2026",
         "agreed": [],
         "agreements": [],
@@ -3224,7 +3224,7 @@
         }
        },
        {
-        "meeting": "Atruvia:m30",
+        "meeting": "Team:m30",
         "key": "2026-07-15 1:1 Anna 101/anna",
         "agreed": [
          "Tender:t15"
@@ -3238,11 +3238,11 @@
         }
        },
        {
-        "meeting": "Atruvia:m15",
+        "meeting": "Team:m15",
         "key": "2026-07-04 Retro with Anna retro/anna",
         "agreed": [
-         "Atruvia:t31",
-         "Atruvia:t33"
+         "Team:t31",
+         "Team:t33"
         ],
         "agreements": [],
         "counts": {
@@ -3253,7 +3253,7 @@
         }
        },
        {
-        "meeting": "Atruvia:m7",
+        "meeting": "Team:m7",
         "key": "2026-06-01 1:1 Anna 101/anna anna",
         "agreed": [],
         "agreements": [],
@@ -3276,7 +3276,7 @@
      "oneOff": null,
      "inUse": true,
      "backInUse": false,
-     "owner": "Atruvia",
+     "owner": "Team",
      "tag": "101/bert",
      "lastMeeting": "2026-10-15",
      "nextMeeting": "2026-11-14",
@@ -3286,11 +3286,11 @@
      "overview": {
       "lens": "counterpart",
       "thread": "101/bert",
-      "owner": "Atruvia",
+      "owner": "Team",
       "scope": [
        "Tender",
        "Migration",
-       "Atruvia"
+       "Team"
       ],
       "types": [
        "101",
@@ -3304,11 +3304,11 @@
        "owe": [
         "Migration:t6",
         "Migration:t10",
-        "Atruvia:t38"
+        "Team:t38"
        ],
        "waiting": [
         "Tender:t29",
-        "Atruvia:t6"
+        "Team:t6"
        ],
        "relevant": [
         "Tender:t18",
@@ -3316,8 +3316,8 @@
        ],
        "someday": [],
        "agreements": [
-        "Atruvia:a5",
-        "Atruvia:a7"
+        "Team:a5",
+        "Team:a7"
        ]
       },
       "endedAgreements": [],
@@ -3327,7 +3327,7 @@
       },
       "past": [
        {
-        "meeting": "Atruvia:m82",
+        "meeting": "Team:m82",
         "key": "2026-10-15 1:1 Bert (short) 101/bert",
         "agreed": [
          "Tender:t29"
@@ -3345,7 +3345,7 @@
         "key": "2026-10-11 1:1 Bert 101/bert",
         "agreed": [],
         "agreements": [
-         "Atruvia:a5"
+         "Team:a5"
         ],
         "counts": {
          "agreed": 0,
@@ -3355,7 +3355,7 @@
         }
        },
        {
-        "meeting": "Atruvia:m19",
+        "meeting": "Team:m19",
         "key": "2026-09-30 1:1 Bert 101/bert",
         "agreed": [],
         "agreements": [],
@@ -3367,10 +3367,10 @@
         }
        },
        {
-        "meeting": "Atruvia:m64",
+        "meeting": "Team:m64",
         "key": "2026-09-28 1:1 Bert 101/bert",
         "agreed": [
-         "Atruvia:t6"
+         "Team:t6"
         ],
         "agreements": [],
         "counts": {
@@ -3381,7 +3381,7 @@
         }
        },
        {
-        "meeting": "Atruvia:m8",
+        "meeting": "Team:m8",
         "key": "2026-09-25 1:1 Bert 101/bert",
         "agreed": [],
         "agreements": [],
@@ -3393,7 +3393,7 @@
         }
        },
        {
-        "meeting": "Atruvia:m14",
+        "meeting": "Team:m14",
         "key": "2026-09-05 1:1 Bert 101/bert",
         "agreed": [],
         "agreements": [],
@@ -3405,7 +3405,7 @@
         }
        },
        {
-        "meeting": "Atruvia:m58",
+        "meeting": "Team:m58",
         "key": "2026-08-19 1:1 Bert 101/bert",
         "agreed": [],
         "agreements": [],
@@ -3417,7 +3417,7 @@
         }
        },
        {
-        "meeting": "Atruvia:m51",
+        "meeting": "Team:m51",
         "key": "2026-08-11 1:1 Bert 101/bert",
         "agreed": [],
         "agreements": [],
@@ -3433,7 +3433,7 @@
         "key": "2026-07-17 1:1 Bert 101/bert",
         "agreed": [],
         "agreements": [
-         "Atruvia:a7"
+         "Team:a7"
         ],
         "counts": {
          "agreed": 0,
@@ -3443,10 +3443,10 @@
         }
        },
        {
-        "meeting": "Atruvia:m13",
+        "meeting": "Team:m13",
         "key": "2026-06-26 1:1 Bert 101/bert",
         "agreed": [
-         "Atruvia:t38"
+         "Team:t38"
         ],
         "agreements": [],
         "counts": {
@@ -3457,7 +3457,7 @@
         }
        },
        {
-        "meeting": "Atruvia:m43",
+        "meeting": "Team:m43",
         "key": "2026-06-22 1:1 Bert 101/bert",
         "agreed": [],
         "agreements": [],
@@ -3480,7 +3480,7 @@
      "oneOff": null,
      "inUse": true,
      "backInUse": false,
-     "owner": "Atruvia",
+     "owner": "Team",
      "tag": "retro/beta",
      "lastMeeting": "2026-10-15",
      "nextMeeting": "2026-11-16",
@@ -3490,11 +3490,11 @@
      "overview": {
       "lens": "counterpart",
       "thread": "retro/beta",
-      "owner": "Atruvia",
+      "owner": "Team",
       "scope": [
        "Tender",
        "Migration",
-       "Atruvia"
+       "Team"
       ],
       "types": [
        "retro"
@@ -3502,8 +3502,8 @@
       "ahead": {
        "meetings": [
         "Tender:m24",
-        "Atruvia:m26",
-        "Atruvia:m41"
+        "Team:m26",
+        "Team:m41"
        ],
        "owe": [
         "Tender:t9"
@@ -3514,7 +3514,7 @@
         "Tender:t3"
        ],
        "agreements": [
-        "Atruvia:a2"
+        "Team:a2"
        ]
       },
       "endedAgreements": [],
@@ -3524,7 +3524,7 @@
       },
       "past": [
        {
-        "meeting": "Atruvia:m62",
+        "meeting": "Team:m62",
         "key": "2026-10-15 Retro Beta retro/beta/2026",
         "agreed": [],
         "agreements": [],
@@ -3560,7 +3560,7 @@
         }
        },
        {
-        "meeting": "Atruvia:m56",
+        "meeting": "Team:m56",
         "key": "2026-06-14 Retro Beta retro/beta",
         "agreed": [],
         "agreements": [],
@@ -3576,7 +3576,7 @@
         "key": "2026-06-06 Retro Beta retro/beta/2026",
         "agreed": [],
         "agreements": [
-         "Atruvia:a2"
+         "Team:a2"
         ],
         "counts": {
          "agreed": 0,
@@ -3586,7 +3586,7 @@
         }
        },
        {
-        "meeting": "Atruvia:m25",
+        "meeting": "Team:m25",
         "key": "2026-05-30 Retro Beta retro/beta",
         "agreed": [
          "Tender:t9"
@@ -3611,7 +3611,7 @@
      "oneOff": null,
      "inUse": true,
      "backInUse": false,
-     "owner": "Atruvia",
+     "owner": "Team",
      "tag": "jf/board",
      "lastMeeting": "2026-09-16",
      "nextMeeting": "2026-11-15",
@@ -3621,11 +3621,11 @@
      "overview": {
       "lens": "counterpart",
       "thread": "jf/board",
-      "owner": "Atruvia",
+      "owner": "Team",
       "scope": [
        "Tender",
        "Migration",
-       "Atruvia"
+       "Team"
       ],
       "types": [
        "jf",
@@ -3634,10 +3634,10 @@
       ],
       "ahead": {
        "meetings": [
-        "Atruvia:m6"
+        "Team:m6"
        ],
        "owe": [
-        "Atruvia:t42"
+        "Team:t42"
        ],
        "waiting": [
         "Tender:t22"
@@ -3645,7 +3645,7 @@
        "relevant": [],
        "someday": [],
        "agreements": [
-        "Atruvia:a8"
+        "Team:a8"
        ]
       },
       "endedAgreements": [],
@@ -3655,13 +3655,13 @@
       },
       "past": [
        {
-        "meeting": "Atruvia:m76",
+        "meeting": "Team:m76",
         "key": "2026-09-16 Strategy offsite jf/board",
         "agreed": [
-         "Atruvia:t42"
+         "Team:t42"
         ],
         "agreements": [
-         "Atruvia:a8"
+         "Team:a8"
         ],
         "counts": {
          "agreed": 1,
@@ -3695,7 +3695,7 @@
         }
        },
        {
-        "meeting": "Atruvia:m16",
+        "meeting": "Team:m16",
         "key": "2026-09-02 Jour fixe Board: budget…",
         "agreed": [],
         "agreements": [],
@@ -3707,7 +3707,7 @@
         }
        },
        {
-        "meeting": "Atruvia:m49",
+        "meeting": "Team:m49",
         "key": "2026-08-18 Jour fixe Board: budget…",
         "agreed": [],
         "agreements": [],
@@ -3719,7 +3719,7 @@
         }
        },
        {
-        "meeting": "Atruvia:m61",
+        "meeting": "Team:m61",
         "key": "2026-07-29 Jour fixe Board: budget…",
         "agreed": [],
         "agreements": [],
@@ -3742,7 +3742,7 @@
      "oneOff": null,
      "inUse": true,
      "backInUse": false,
-     "owner": "Atruvia",
+     "owner": "Team",
      "tag": "101/carla",
      "lastMeeting": "2026-10-12",
      "nextMeeting": null,
@@ -3752,11 +3752,11 @@
      "overview": {
       "lens": "counterpart",
       "thread": "101/carla",
-      "owner": "Atruvia",
+      "owner": "Team",
       "scope": [
        "Tender",
        "Migration",
-       "Atruvia"
+       "Team"
       ],
       "types": [
        "101",
@@ -3766,14 +3766,14 @@
        "meetings": [],
        "owe": [
         "Migration:t8",
-        "Atruvia:t4",
-        "Atruvia:t17",
-        "Atruvia:t19",
-        "Atruvia:t45"
+        "Team:t4",
+        "Team:t17",
+        "Team:t19",
+        "Team:t45"
        ],
        "waiting": [],
        "relevant": [
-        "Atruvia:t28"
+        "Team:t28"
        ],
        "someday": [],
        "agreements": []
@@ -3788,8 +3788,8 @@
         "meeting": "Tender:m16",
         "key": "2026-10-12 1:1 Carla 101/carla",
         "agreed": [
-         "Atruvia:t4",
-         "Atruvia:t19"
+         "Team:t4",
+         "Team:t19"
         ],
         "agreements": [],
         "counts": {
@@ -3812,7 +3812,7 @@
         }
        },
        {
-        "meeting": "Atruvia:m52",
+        "meeting": "Team:m52",
         "key": "2026-09-09 1:1 Carla 101/carla",
         "agreed": [],
         "agreements": [],
@@ -3852,8 +3852,8 @@
         "key": "2026-06-29 1:1 Carla 101/carla",
         "agreed": [
          "Migration:t8",
-         "Atruvia:t17",
-         "Atruvia:t21"
+         "Team:t17",
+         "Team:t21"
         ],
         "agreements": [],
         "counts": {
@@ -3875,7 +3875,7 @@
      "oneOff": null,
      "inUse": true,
      "backInUse": false,
-     "owner": "Atruvia",
+     "owner": "Team",
      "tag": "101/dirk",
      "lastMeeting": "2026-10-21",
      "nextMeeting": "2026-10-29",
@@ -3885,11 +3885,11 @@
      "overview": {
       "lens": "counterpart",
       "thread": "101/dirk",
-      "owner": "Atruvia",
+      "owner": "Team",
       "scope": [
        "Tender",
        "Migration",
-       "Atruvia"
+       "Team"
       ],
       "types": [
        "101",
@@ -3897,7 +3897,7 @@
       ],
       "ahead": {
        "meetings": [
-        "Atruvia:m18"
+        "Team:m18"
        ],
        "owe": [
         "Migration:t7"
@@ -3906,7 +3906,7 @@
        "relevant": [],
        "someday": [],
        "agreements": [
-        "Atruvia:a4"
+        "Team:a4"
        ]
       },
       "endedAgreements": [],
@@ -3916,7 +3916,7 @@
       },
       "past": [
        {
-        "meeting": "Atruvia:m35",
+        "meeting": "Team:m35",
         "key": "2026-10-21 1:1 Dirk 101/dirk",
         "agreed": [],
         "agreements": [],
@@ -3928,7 +3928,7 @@
         }
        },
        {
-        "meeting": "Atruvia:m12",
+        "meeting": "Team:m12",
         "key": "2026-10-06 1:1 Dirk 101/dirk",
         "agreed": [],
         "agreements": [],
@@ -3944,7 +3944,7 @@
         "key": "2026-09-16 1:1 Dirk 101/dirk dirk",
         "agreed": [],
         "agreements": [
-         "Atruvia:a4"
+         "Team:a4"
         ],
         "counts": {
          "agreed": 0,
@@ -3968,7 +3968,7 @@
         }
        },
        {
-        "meeting": "Atruvia:m59",
+        "meeting": "Team:m59",
         "key": "2026-05-31 1:1 Dirk 101/dirk",
         "agreed": [],
         "agreements": [],
@@ -3991,7 +3991,7 @@
      "oneOff": null,
      "inUse": true,
      "backInUse": false,
-     "owner": "Atruvia",
+     "owner": "Team",
      "tag": "101/eva",
      "lastMeeting": "2026-10-20",
      "nextMeeting": "2026-11-03",
@@ -4001,11 +4001,11 @@
      "overview": {
       "lens": "counterpart",
       "thread": "101/eva",
-      "owner": "Atruvia",
+      "owner": "Team",
       "scope": [
        "Tender",
        "Migration",
-       "Atruvia"
+       "Team"
       ],
       "types": [
        "101",
@@ -4014,7 +4014,7 @@
       ],
       "ahead": {
        "meetings": [
-        "Atruvia:m45",
+        "Team:m45",
         "Tender:m2"
        ],
        "owe": [
@@ -4022,15 +4022,15 @@
         "Tender:t28",
         "Migration:t3",
         "Migration:t14",
-        "Atruvia:t3"
+        "Team:t3"
        ],
        "waiting": [
-        "Atruvia:t7"
+        "Team:t7"
        ],
        "relevant": [],
        "someday": [],
        "agreements": [
-        "Atruvia:a9"
+        "Team:a9"
        ]
       },
       "endedAgreements": [],
@@ -4040,7 +4040,7 @@
       },
       "past": [
        {
-        "meeting": "Atruvia:m5",
+        "meeting": "Team:m5",
         "key": "2026-10-20 1:1 Eva 101/eva",
         "agreed": [],
         "agreements": [],
@@ -4052,14 +4052,14 @@
         }
        },
        {
-        "meeting": "Atruvia:m81",
+        "meeting": "Team:m81",
         "key": "2026-10-08 1:1 Eva - goals 101/eva",
         "agreed": [
          "Tender:t28",
          "Tender:t5"
         ],
         "agreements": [
-         "Atruvia:a9"
+         "Team:a9"
         ],
         "counts": {
          "agreed": 2,
@@ -4069,7 +4069,7 @@
         }
        },
        {
-        "meeting": "Atruvia:m50",
+        "meeting": "Team:m50",
         "key": "2026-09-10 1:1 Eva 101/eva",
         "agreed": [
          "Migration:t14"
@@ -4094,7 +4094,7 @@
      "oneOff": null,
      "inUse": true,
      "backInUse": false,
-     "owner": "Atruvia",
+     "owner": "Team",
      "tag": "101/frank",
      "lastMeeting": "2026-10-11",
      "nextMeeting": "2026-11-09",
@@ -4104,11 +4104,11 @@
      "overview": {
       "lens": "counterpart",
       "thread": "101/frank",
-      "owner": "Atruvia",
+      "owner": "Team",
       "scope": [
        "Tender",
        "Migration",
-       "Atruvia"
+       "Team"
       ],
       "types": [
        "101",
@@ -4116,7 +4116,7 @@
       ],
       "ahead": {
        "meetings": [
-        "Atruvia:m24"
+        "Team:m24"
        ],
        "owe": [],
        "waiting": [
@@ -4139,7 +4139,7 @@
         "meeting": "Migration:m23",
         "key": "2026-10-11 1:1 Frank 101/frank",
         "agreed": [
-         "Atruvia:t24"
+         "Team:t24"
         ],
         "agreements": [],
         "counts": {
@@ -4150,7 +4150,7 @@
         }
        },
        {
-        "meeting": "Atruvia:m34",
+        "meeting": "Team:m34",
         "key": "2026-10-11 1:1 Frank 101/frank",
         "agreed": [],
         "agreements": [],
@@ -4162,7 +4162,7 @@
         }
        },
        {
-        "meeting": "Atruvia:m53",
+        "meeting": "Team:m53",
         "key": "2026-10-05 1:1 Frank 101/frank",
         "agreed": [],
         "agreements": [
@@ -4188,7 +4188,7 @@
      "oneOff": null,
      "inUse": true,
      "backInUse": false,
-     "owner": "Atruvia",
+     "owner": "Team",
      "tag": "retro/gamma",
      "lastMeeting": "2026-10-17",
      "nextMeeting": "2026-10-29",
@@ -4198,11 +4198,11 @@
      "overview": {
       "lens": "counterpart",
       "thread": "retro/gamma",
-      "owner": "Atruvia",
+      "owner": "Team",
       "scope": [
        "Tender",
        "Migration",
-       "Atruvia"
+       "Team"
       ],
       "types": [
        "retro",
@@ -4212,10 +4212,10 @@
       "ahead": {
        "meetings": [
         "Migration:m11",
-        "Atruvia:m21",
+        "Team:m21",
         "Migration:m8",
-        "Atruvia:m55",
-        "Atruvia:m4"
+        "Team:m55",
+        "Team:m4"
        ],
        "owe": [],
        "waiting": [],
@@ -4224,12 +4224,12 @@
        ],
        "someday": [],
        "agreements": [
-        "Atruvia:a3"
+        "Team:a3"
        ]
       },
       "endedAgreements": [
-       "Atruvia:a1",
-       "Atruvia:a6"
+       "Team:a1",
+       "Team:a6"
       ],
       "since": {
        "from": "2026-10-17",
@@ -4237,7 +4237,7 @@
       },
       "past": [
        {
-        "meeting": "Atruvia:m27",
+        "meeting": "Team:m27",
         "key": "2026-10-17 Retro Gamma with the whole…",
         "agreed": [
          "Tender:t23"
@@ -4255,7 +4255,7 @@
         "key": "2026-09-06 Retro Gamma with the whole…",
         "agreed": [],
         "agreements": [
-         "Atruvia:a6"
+         "Team:a6"
         ],
         "counts": {
          "agreed": 0,
@@ -4300,7 +4300,7 @@
      "oneOff": null,
      "inUse": true,
      "backInUse": false,
-     "owner": "Atruvia",
+     "owner": "Team",
      "tag": "101/greta",
      "lastMeeting": "2026-10-22",
      "nextMeeting": "2026-11-06",
@@ -4310,11 +4310,11 @@
      "overview": {
       "lens": "counterpart",
       "thread": "101/greta",
-      "owner": "Atruvia",
+      "owner": "Team",
       "scope": [
        "Tender",
        "Migration",
-       "Atruvia"
+       "Team"
       ],
       "types": [
        "101",
@@ -4322,17 +4322,17 @@
       ],
       "ahead": {
        "meetings": [
-        "Atruvia:m3"
+        "Team:m3"
        ],
        "owe": [
         "Migration:t16",
-        "Atruvia:t44"
+        "Team:t44"
        ],
        "waiting": [],
        "relevant": [],
        "someday": [],
        "agreements": [
-        "Atruvia:a0"
+        "Team:a0"
        ]
       },
       "endedAgreements": [
@@ -4344,7 +4344,7 @@
       },
       "past": [
        {
-        "meeting": "Atruvia:m20",
+        "meeting": "Team:m20",
         "key": "2026-10-22 1:1 Greta 101/greta",
         "agreed": [],
         "agreements": [
@@ -4358,13 +4358,13 @@
         }
        },
        {
-        "meeting": "Atruvia:m77",
+        "meeting": "Team:m77",
         "key": "2026-09-23 1:1 Greta 101/greta",
         "agreed": [
-         "Atruvia:t44"
+         "Team:t44"
         ],
         "agreements": [
-         "Atruvia:a0"
+         "Team:a0"
         ],
         "counts": {
          "agreed": 1,
@@ -4374,7 +4374,7 @@
         }
        },
        {
-        "meeting": "Atruvia:m78",
+        "meeting": "Team:m78",
         "key": "2026-09-23 1:1 Greta 101/greta",
         "agreed": [],
         "agreements": [],
@@ -4386,7 +4386,7 @@
         }
        },
        {
-        "meeting": "Atruvia:m42",
+        "meeting": "Team:m42",
         "key": "2026-06-05 1:1 Greta 101/greta",
         "agreed": [],
         "agreements": [],
@@ -4409,7 +4409,7 @@
      "oneOff": null,
      "inUse": true,
      "backInUse": false,
-     "owner": "Atruvia",
+     "owner": "Team",
      "tag": "101/hans",
      "lastMeeting": "2026-09-11",
      "nextMeeting": "2026-11-03",
@@ -4419,21 +4419,21 @@
      "overview": {
       "lens": "counterpart",
       "thread": "101/hans",
-      "owner": "Atruvia",
+      "owner": "Team",
       "scope": [
        "Tender",
        "Migration",
-       "Atruvia"
+       "Team"
       ],
       "types": [
        "101"
       ],
       "ahead": {
        "meetings": [
-        "Atruvia:m9"
+        "Team:m9"
        ],
        "owe": [
-        "Atruvia:t37"
+        "Team:t37"
        ],
        "waiting": [],
        "relevant": [
@@ -4452,7 +4452,7 @@
         "meeting": "Tender:m19",
         "key": "2026-09-11 1:1 Hans 101/hans",
         "agreed": [
-         "Atruvia:t37"
+         "Team:t37"
         ],
         "agreements": [],
         "counts": {
@@ -4486,7 +4486,7 @@
      "oneOff": null,
      "inUse": true,
      "backInUse": false,
-     "owner": "Atruvia",
+     "owner": "Team",
      "tag": "101/ines",
      "lastMeeting": "2026-09-20",
      "nextMeeting": null,
@@ -4496,11 +4496,11 @@
      "overview": {
       "lens": "counterpart",
       "thread": "101/ines",
-      "owner": "Atruvia",
+      "owner": "Team",
       "scope": [
        "Tender",
        "Migration",
-       "Atruvia"
+       "Team"
       ],
       "types": [
        "101",
@@ -4551,7 +4551,7 @@
      "oneOff": null,
      "inUse": true,
      "backInUse": false,
-     "owner": "Atruvia",
+     "owner": "Team",
      "tag": "101/it",
      "lastMeeting": "2026-10-24",
      "nextMeeting": "2026-11-17",
@@ -4561,11 +4561,11 @@
      "overview": {
       "lens": "counterpart",
       "thread": "101/it",
-      "owner": "Atruvia",
+      "owner": "Team",
       "scope": [
        "Tender",
        "Migration",
-       "Atruvia"
+       "Team"
       ],
       "types": [
        "101",
@@ -4578,7 +4578,7 @@
        "owe": [],
        "waiting": [],
        "relevant": [
-        "Atruvia:t16"
+        "Team:t16"
        ],
        "someday": [],
        "agreements": []
@@ -4602,7 +4602,7 @@
         }
        },
        {
-        "meeting": "Atruvia:m17",
+        "meeting": "Team:m17",
         "key": "2026-06-09 JF IT jf/it it",
         "agreed": [],
         "agreements": [],
@@ -4625,7 +4625,7 @@
      "oneOff": null,
      "inUse": true,
      "backInUse": false,
-     "owner": "Atruvia",
+     "owner": "Team",
      "tag": "sparring/jordan",
      "lastMeeting": "2026-10-19",
      "nextMeeting": "2026-10-30",
@@ -4635,11 +4635,11 @@
      "overview": {
       "lens": "counterpart",
       "thread": "sparring/jordan",
-      "owner": "Atruvia",
+      "owner": "Team",
       "scope": [
        "Tender",
        "Migration",
-       "Atruvia"
+       "Team"
       ],
       "types": [
        "sparring"
@@ -4647,12 +4647,12 @@
       "ahead": {
        "meetings": [
         "Tender:m9",
-        "Atruvia:m54",
-        "Atruvia:m33"
+        "Team:m54",
+        "Team:m33"
        ],
        "owe": [
         "Tender:t11",
-        "Atruvia:t30"
+        "Team:t30"
        ],
        "waiting": [],
        "relevant": [],
@@ -4666,7 +4666,7 @@
       },
       "past": [
        {
-        "meeting": "Atruvia:m66",
+        "meeting": "Team:m66",
         "key": "2026-10-19 Sparring Jordan sparring/jordan",
         "agreed": [],
         "agreements": [],
@@ -4678,7 +4678,7 @@
         }
        },
        {
-        "meeting": "Atruvia:m47",
+        "meeting": "Team:m47",
         "key": "2026-09-14 Sparring Jordan",
         "agreed": [],
         "agreements": [],
@@ -4690,7 +4690,7 @@
         }
        },
        {
-        "meeting": "Atruvia:m31",
+        "meeting": "Team:m31",
         "key": "2026-08-11 Sparring Jordan sparring/jordan",
         "agreed": [],
         "agreements": [],
@@ -4714,7 +4714,7 @@
         }
        },
        {
-        "meeting": "Atruvia:m57",
+        "meeting": "Team:m57",
         "key": "2026-07-02 Sparring Jordan sparring/jordan",
         "agreed": [],
         "agreements": [],
@@ -4730,7 +4730,7 @@
         "key": "2026-06-07 Sparring Jordan sparring/jordan",
         "agreed": [
          "Tender:t11",
-         "Atruvia:t30"
+         "Team:t30"
         ],
         "agreements": [],
         "counts": {
@@ -4744,16 +4744,16 @@
      }
     },
     {
-     "leaf": "sven",
+     "leaf": "sam",
      "status": "active",
      "threads": [
-      "sparring/sven"
+      "sparring/sam"
      ],
      "oneOff": null,
      "inUse": true,
      "backInUse": false,
-     "owner": "Atruvia",
-     "tag": "sparring/sven",
+     "owner": "Team",
+     "tag": "sparring/sam",
      "lastMeeting": "2026-10-14",
      "nextMeeting": null,
      "oweCount": 1,
@@ -4761,12 +4761,12 @@
      "oldestWaitingDays": null,
      "overview": {
       "lens": "counterpart",
-      "thread": "sparring/sven",
-      "owner": "Atruvia",
+      "thread": "sparring/sam",
+      "owner": "Team",
       "scope": [
        "Tender",
        "Migration",
-       "Atruvia"
+       "Team"
       ],
       "types": [
        "sparring",
@@ -4775,10 +4775,10 @@
       "ahead": {
        "meetings": [],
        "owe": [
-        "Atruvia:t2"
+        "Team:t2"
        ],
        "waiting": [
-        "Atruvia:t26"
+        "Team:t26"
        ],
        "relevant": [],
        "someday": [],
@@ -4791,8 +4791,8 @@
       },
       "past": [
        {
-        "meeting": "Atruvia:m46",
-        "key": "2026-10-14 Sparring Sven sparring/sven",
+        "meeting": "Team:m46",
+        "key": "2026-10-14 Sparring Sam sparring/sam",
         "agreed": [],
         "agreements": [],
         "counts": {
@@ -4803,10 +4803,10 @@
         }
        },
        {
-        "meeting": "Atruvia:m28",
-        "key": "2026-06-27 Sparring Sven sparring/sven",
+        "meeting": "Team:m28",
+        "key": "2026-06-27 Sparring Sam sparring/sam",
         "agreed": [
-         "Atruvia:t2"
+         "Team:t2"
         ],
         "agreements": [],
         "counts": {
@@ -4818,7 +4818,7 @@
        },
        {
         "meeting": "Migration:m17",
-        "key": "2026-06-23 Sparring Sven sparring/sven",
+        "key": "2026-06-23 Sparring Sam sparring/sam",
         "agreed": [],
         "agreements": [],
         "counts": {
@@ -4840,7 +4840,7 @@
      "oneOff": null,
      "inUse": true,
      "backInUse": false,
-     "owner": "Atruvia",
+     "owner": "Team",
      "tag": "jf/works",
      "lastMeeting": "2026-07-28",
      "nextMeeting": "2026-11-23",
@@ -4850,11 +4850,11 @@
      "overview": {
       "lens": "counterpart",
       "thread": "jf/works",
-      "owner": "Atruvia",
+      "owner": "Team",
       "scope": [
        "Tender",
        "Migration",
-       "Atruvia"
+       "Team"
       ],
       "types": [
        "jf",
@@ -4882,7 +4882,7 @@
       },
       "past": [
        {
-        "meeting": "Atruvia:m10",
+        "meeting": "Team:m10",
         "key": "2026-07-28 Jour fixe works council",
         "agreed": [
          "Tender:t2"
@@ -4931,7 +4931,7 @@
      "oneOff": null,
      "inUse": false,
      "backInUse": false,
-     "owner": "Atruvia",
+     "owner": "Team",
      "tag": "wf/gone",
      "lastMeeting": null,
      "nextMeeting": null,
@@ -4941,11 +4941,11 @@
      "overview": {
       "lens": "counterpart",
       "thread": "wf/gone",
-      "owner": "Atruvia",
+      "owner": "Team",
       "scope": [
        "Tender",
        "Migration",
-       "Atruvia"
+       "Team"
       ],
       "types": [
        "wf"
@@ -5235,15 +5235,15 @@
   {
    "tag": "101/anna",
    "lens": "thread",
-   "owner": "Atruvia",
+   "owner": "Team",
    "overview": {
     "lens": "thread",
     "thread": "101/anna",
-    "owner": "Atruvia",
+    "owner": "Team",
     "scope": [
      "Tender",
      "Migration",
-     "Atruvia"
+     "Team"
     ],
     "types": [
      "101",
@@ -5253,21 +5253,21 @@
     ],
     "ahead": {
      "meetings": [
-      "Atruvia:m29",
+      "Team:m29",
       "Tender:m12",
-      "Atruvia:m37"
+      "Team:m37"
      ],
      "owe": [
       "Tender:t7",
-      "Atruvia:t34"
+      "Team:t34"
      ],
      "waiting": [
-      "Atruvia:t8",
-      "Atruvia:t12",
-      "Atruvia:t39"
+      "Team:t8",
+      "Team:t12",
+      "Team:t39"
      ],
      "relevant": [
-      "Atruvia:t31"
+      "Team:t31"
      ],
      "someday": [],
      "agreements": []
@@ -5279,10 +5279,10 @@
     },
     "past": [
      {
-      "meeting": "Atruvia:m71",
+      "meeting": "Team:m71",
       "key": "2026-10-24 Retro with Anna",
       "agreed": [
-       "Atruvia:t12"
+       "Team:t12"
       ],
       "agreements": [],
       "counts": {
@@ -5293,7 +5293,7 @@
       }
      },
      {
-      "meeting": "Atruvia:m67",
+      "meeting": "Team:m67",
       "key": "2026-10-19 1:1 Anna 101/anna",
       "agreed": [],
       "agreements": [],
@@ -5305,7 +5305,7 @@
       }
      },
      {
-      "meeting": "Atruvia:m63",
+      "meeting": "Team:m63",
       "key": "2026-10-13 1:1 Anna 101/anna",
       "agreed": [],
       "agreements": [],
@@ -5317,7 +5317,7 @@
       }
      },
      {
-      "meeting": "Atruvia:m65",
+      "meeting": "Team:m65",
       "key": "2026-09-26 1:1 Anna 101/anna",
       "agreed": [],
       "agreements": [],
@@ -5329,7 +5329,7 @@
       }
      },
      {
-      "meeting": "Atruvia:m1",
+      "meeting": "Team:m1",
       "key": "2026-09-16 1:1 Anna 101/anna",
       "agreed": [],
       "agreements": [],
@@ -5341,7 +5341,7 @@
       }
      },
      {
-      "meeting": "Atruvia:m38",
+      "meeting": "Team:m38",
       "key": "2026-09-06 1:1 Anna 101/anna",
       "agreed": [],
       "agreements": [],
@@ -5365,7 +5365,7 @@
       }
      },
      {
-      "meeting": "Atruvia:m44",
+      "meeting": "Team:m44",
       "key": "2026-07-26 1:1 Anna 101/anna",
       "agreed": [],
       "agreements": [],
@@ -5377,7 +5377,7 @@
       }
      },
      {
-      "meeting": "Atruvia:m30",
+      "meeting": "Team:m30",
       "key": "2026-07-15 1:1 Anna 101/anna",
       "agreed": [
        "Tender:t15"
@@ -5391,7 +5391,7 @@
       }
      },
      {
-      "meeting": "Atruvia:m7",
+      "meeting": "Team:m7",
       "key": "2026-06-01 1:1 Anna 101/anna anna",
       "agreed": [],
       "agreements": [],
@@ -5412,11 +5412,11 @@
    "overview": {
     "lens": "thread",
     "thread": "101/anna",
-    "owner": "Atruvia",
+    "owner": "Team",
     "scope": [
      "Tender",
      "Migration",
-     "Atruvia"
+     "Team"
     ],
     "types": [
      "101",
@@ -5426,21 +5426,21 @@
     ],
     "ahead": {
      "meetings": [
-      "Atruvia:m29",
+      "Team:m29",
       "Tender:m12",
-      "Atruvia:m37"
+      "Team:m37"
      ],
      "owe": [
       "Tender:t7",
-      "Atruvia:t34"
+      "Team:t34"
      ],
      "waiting": [
-      "Atruvia:t8",
-      "Atruvia:t12",
-      "Atruvia:t39"
+      "Team:t8",
+      "Team:t12",
+      "Team:t39"
      ],
      "relevant": [
-      "Atruvia:t31"
+      "Team:t31"
      ],
      "someday": [],
      "agreements": []
@@ -5452,10 +5452,10 @@
     },
     "past": [
      {
-      "meeting": "Atruvia:m71",
+      "meeting": "Team:m71",
       "key": "2026-10-24 Retro with Anna",
       "agreed": [
-       "Atruvia:t12"
+       "Team:t12"
       ],
       "agreements": [],
       "counts": {
@@ -5466,7 +5466,7 @@
       }
      },
      {
-      "meeting": "Atruvia:m67",
+      "meeting": "Team:m67",
       "key": "2026-10-19 1:1 Anna 101/anna",
       "agreed": [],
       "agreements": [],
@@ -5478,7 +5478,7 @@
       }
      },
      {
-      "meeting": "Atruvia:m63",
+      "meeting": "Team:m63",
       "key": "2026-10-13 1:1 Anna 101/anna",
       "agreed": [],
       "agreements": [],
@@ -5490,7 +5490,7 @@
       }
      },
      {
-      "meeting": "Atruvia:m65",
+      "meeting": "Team:m65",
       "key": "2026-09-26 1:1 Anna 101/anna",
       "agreed": [],
       "agreements": [],
@@ -5502,7 +5502,7 @@
       }
      },
      {
-      "meeting": "Atruvia:m1",
+      "meeting": "Team:m1",
       "key": "2026-09-16 1:1 Anna 101/anna",
       "agreed": [],
       "agreements": [],
@@ -5514,7 +5514,7 @@
       }
      },
      {
-      "meeting": "Atruvia:m38",
+      "meeting": "Team:m38",
       "key": "2026-09-06 1:1 Anna 101/anna",
       "agreed": [],
       "agreements": [],
@@ -5538,7 +5538,7 @@
       }
      },
      {
-      "meeting": "Atruvia:m44",
+      "meeting": "Team:m44",
       "key": "2026-07-26 1:1 Anna 101/anna",
       "agreed": [],
       "agreements": [],
@@ -5550,7 +5550,7 @@
       }
      },
      {
-      "meeting": "Atruvia:m30",
+      "meeting": "Team:m30",
       "key": "2026-07-15 1:1 Anna 101/anna",
       "agreed": [
        "Tender:t15"
@@ -5564,7 +5564,7 @@
       }
      },
      {
-      "meeting": "Atruvia:m7",
+      "meeting": "Team:m7",
       "key": "2026-06-01 1:1 Anna 101/anna anna",
       "agreed": [],
       "agreements": [],
@@ -5581,15 +5581,15 @@
   {
    "tag": "101/anna",
    "lens": "counterpart",
-   "owner": "Atruvia",
+   "owner": "Team",
    "overview": {
     "lens": "counterpart",
     "thread": "101/anna",
-    "owner": "Atruvia",
+    "owner": "Team",
     "scope": [
      "Tender",
      "Migration",
-     "Atruvia"
+     "Team"
     ],
     "types": [
      "101",
@@ -5599,20 +5599,20 @@
     ],
     "ahead": {
      "meetings": [
-      "Atruvia:m29",
+      "Team:m29",
       "Tender:m12",
-      "Atruvia:m37"
+      "Team:m37"
      ],
      "owe": [
       "Tender:t7",
-      "Atruvia:t31",
-      "Atruvia:t33",
-      "Atruvia:t34"
+      "Team:t31",
+      "Team:t33",
+      "Team:t34"
      ],
      "waiting": [
-      "Atruvia:t8",
-      "Atruvia:t12",
-      "Atruvia:t39"
+      "Team:t8",
+      "Team:t12",
+      "Team:t39"
      ],
      "relevant": [],
      "someday": [],
@@ -5625,10 +5625,10 @@
     },
     "past": [
      {
-      "meeting": "Atruvia:m71",
+      "meeting": "Team:m71",
       "key": "2026-10-24 Retro with Anna",
       "agreed": [
-       "Atruvia:t12"
+       "Team:t12"
       ],
       "agreements": [],
       "counts": {
@@ -5639,7 +5639,7 @@
       }
      },
      {
-      "meeting": "Atruvia:m67",
+      "meeting": "Team:m67",
       "key": "2026-10-19 1:1 Anna 101/anna",
       "agreed": [],
       "agreements": [],
@@ -5651,7 +5651,7 @@
       }
      },
      {
-      "meeting": "Atruvia:m63",
+      "meeting": "Team:m63",
       "key": "2026-10-13 1:1 Anna 101/anna",
       "agreed": [],
       "agreements": [],
@@ -5663,7 +5663,7 @@
       }
      },
      {
-      "meeting": "Atruvia:m65",
+      "meeting": "Team:m65",
       "key": "2026-09-26 1:1 Anna 101/anna",
       "agreed": [],
       "agreements": [],
@@ -5675,7 +5675,7 @@
       }
      },
      {
-      "meeting": "Atruvia:m1",
+      "meeting": "Team:m1",
       "key": "2026-09-16 1:1 Anna 101/anna",
       "agreed": [],
       "agreements": [],
@@ -5687,7 +5687,7 @@
       }
      },
      {
-      "meeting": "Atruvia:m38",
+      "meeting": "Team:m38",
       "key": "2026-09-06 1:1 Anna 101/anna",
       "agreed": [],
       "agreements": [],
@@ -5711,7 +5711,7 @@
       }
      },
      {
-      "meeting": "Atruvia:m44",
+      "meeting": "Team:m44",
       "key": "2026-07-26 1:1 Anna 101/anna",
       "agreed": [],
       "agreements": [],
@@ -5723,7 +5723,7 @@
       }
      },
      {
-      "meeting": "Atruvia:m23",
+      "meeting": "Team:m23",
       "key": "2026-07-20 Retro with Anna retro/anna/2026",
       "agreed": [],
       "agreements": [],
@@ -5735,7 +5735,7 @@
       }
      },
      {
-      "meeting": "Atruvia:m30",
+      "meeting": "Team:m30",
       "key": "2026-07-15 1:1 Anna 101/anna",
       "agreed": [
        "Tender:t15"
@@ -5749,11 +5749,11 @@
       }
      },
      {
-      "meeting": "Atruvia:m15",
+      "meeting": "Team:m15",
       "key": "2026-07-04 Retro with Anna retro/anna",
       "agreed": [
-       "Atruvia:t31",
-       "Atruvia:t33"
+       "Team:t31",
+       "Team:t33"
       ],
       "agreements": [],
       "counts": {
@@ -5764,7 +5764,7 @@
       }
      },
      {
-      "meeting": "Atruvia:m7",
+      "meeting": "Team:m7",
       "key": "2026-06-01 1:1 Anna 101/anna anna",
       "agreed": [],
       "agreements": [],
@@ -5785,11 +5785,11 @@
    "overview": {
     "lens": "counterpart",
     "thread": "101/anna",
-    "owner": "Atruvia",
+    "owner": "Team",
     "scope": [
      "Tender",
      "Migration",
-     "Atruvia"
+     "Team"
     ],
     "types": [
      "101",
@@ -5799,20 +5799,20 @@
     ],
     "ahead": {
      "meetings": [
-      "Atruvia:m29",
+      "Team:m29",
       "Tender:m12",
-      "Atruvia:m37"
+      "Team:m37"
      ],
      "owe": [
       "Tender:t7",
-      "Atruvia:t31",
-      "Atruvia:t33",
-      "Atruvia:t34"
+      "Team:t31",
+      "Team:t33",
+      "Team:t34"
      ],
      "waiting": [
-      "Atruvia:t8",
-      "Atruvia:t12",
-      "Atruvia:t39"
+      "Team:t8",
+      "Team:t12",
+      "Team:t39"
      ],
      "relevant": [],
      "someday": [],
@@ -5825,10 +5825,10 @@
     },
     "past": [
      {
-      "meeting": "Atruvia:m71",
+      "meeting": "Team:m71",
       "key": "2026-10-24 Retro with Anna",
       "agreed": [
-       "Atruvia:t12"
+       "Team:t12"
       ],
       "agreements": [],
       "counts": {
@@ -5839,7 +5839,7 @@
       }
      },
      {
-      "meeting": "Atruvia:m67",
+      "meeting": "Team:m67",
       "key": "2026-10-19 1:1 Anna 101/anna",
       "agreed": [],
       "agreements": [],
@@ -5851,7 +5851,7 @@
       }
      },
      {
-      "meeting": "Atruvia:m63",
+      "meeting": "Team:m63",
       "key": "2026-10-13 1:1 Anna 101/anna",
       "agreed": [],
       "agreements": [],
@@ -5863,7 +5863,7 @@
       }
      },
      {
-      "meeting": "Atruvia:m65",
+      "meeting": "Team:m65",
       "key": "2026-09-26 1:1 Anna 101/anna",
       "agreed": [],
       "agreements": [],
@@ -5875,7 +5875,7 @@
       }
      },
      {
-      "meeting": "Atruvia:m1",
+      "meeting": "Team:m1",
       "key": "2026-09-16 1:1 Anna 101/anna",
       "agreed": [],
       "agreements": [],
@@ -5887,7 +5887,7 @@
       }
      },
      {
-      "meeting": "Atruvia:m38",
+      "meeting": "Team:m38",
       "key": "2026-09-06 1:1 Anna 101/anna",
       "agreed": [],
       "agreements": [],
@@ -5911,7 +5911,7 @@
       }
      },
      {
-      "meeting": "Atruvia:m44",
+      "meeting": "Team:m44",
       "key": "2026-07-26 1:1 Anna 101/anna",
       "agreed": [],
       "agreements": [],
@@ -5923,7 +5923,7 @@
       }
      },
      {
-      "meeting": "Atruvia:m23",
+      "meeting": "Team:m23",
       "key": "2026-07-20 Retro with Anna retro/anna/2026",
       "agreed": [],
       "agreements": [],
@@ -5935,7 +5935,7 @@
       }
      },
      {
-      "meeting": "Atruvia:m30",
+      "meeting": "Team:m30",
       "key": "2026-07-15 1:1 Anna 101/anna",
       "agreed": [
        "Tender:t15"
@@ -5949,11 +5949,11 @@
       }
      },
      {
-      "meeting": "Atruvia:m15",
+      "meeting": "Team:m15",
       "key": "2026-07-04 Retro with Anna retro/anna",
       "agreed": [
-       "Atruvia:t31",
-       "Atruvia:t33"
+       "Team:t31",
+       "Team:t33"
       ],
       "agreements": [],
       "counts": {
@@ -5964,7 +5964,7 @@
       }
      },
      {
-      "meeting": "Atruvia:m7",
+      "meeting": "Team:m7",
       "key": "2026-06-01 1:1 Anna 101/anna anna",
       "agreed": [],
       "agreements": [],
@@ -5981,35 +5981,35 @@
   {
    "tag": "retro/alpha",
    "lens": "thread",
-   "owner": "Atruvia",
+   "owner": "Team",
    "overview": {
     "lens": "thread",
     "thread": "retro/alpha",
-    "owner": "Atruvia",
+    "owner": "Team",
     "scope": [
      "Tender",
      "Migration",
-     "Atruvia"
+     "Team"
     ],
     "types": [
      "retro"
     ],
     "ahead": {
      "meetings": [
-      "Atruvia:m11",
+      "Team:m11",
       "Tender:m18",
-      "Atruvia:m32",
+      "Team:m32",
       "Tender:m3"
      ],
      "owe": [
-      "Atruvia:t13",
-      "Atruvia:t35"
+      "Team:t13",
+      "Team:t35"
      ],
      "waiting": [],
      "relevant": [],
      "someday": [
-      "Atruvia:t0",
-      "Atruvia:t5"
+      "Team:t0",
+      "Team:t5"
      ],
      "agreements": []
     },
@@ -6023,7 +6023,7 @@
       "meeting": "Migration:m2",
       "key": "2026-10-15 Retro Alpha sprint retro/alpha",
       "agreed": [
-       "Atruvia:t35"
+       "Team:t35"
       ],
       "agreements": [],
       "counts": {
@@ -6034,7 +6034,7 @@
       }
      },
      {
-      "meeting": "Atruvia:m0",
+      "meeting": "Team:m0",
       "key": "2026-09-12 Retro Alpha sprint retro/alpha",
       "agreed": [],
       "agreements": [],
@@ -6046,10 +6046,10 @@
       }
      },
      {
-      "meeting": "Atruvia:m48",
+      "meeting": "Team:m48",
       "key": "2026-06-24 Retro Alpha sprint retro/alpha",
       "agreed": [
-       "Atruvia:t13"
+       "Team:t13"
       ],
       "agreements": [],
       "counts": {
@@ -6060,7 +6060,7 @@
       }
      },
      {
-      "meeting": "Atruvia:m70",
+      "meeting": "Team:m70",
       "key": "2026-06-18 Retro Alpha sprint retro/alpha",
       "agreed": [],
       "agreements": [],
@@ -6099,27 +6099,27 @@
     "scope": [
      "Tender",
      "Migration",
-     "Atruvia"
+     "Team"
     ],
     "types": [
      "retro"
     ],
     "ahead": {
      "meetings": [
-      "Atruvia:m11",
+      "Team:m11",
       "Tender:m18",
-      "Atruvia:m32",
+      "Team:m32",
       "Tender:m3"
      ],
      "owe": [
-      "Atruvia:t13",
-      "Atruvia:t35"
+      "Team:t13",
+      "Team:t35"
      ],
      "waiting": [],
      "relevant": [],
      "someday": [
-      "Atruvia:t0",
-      "Atruvia:t5"
+      "Team:t0",
+      "Team:t5"
      ],
      "agreements": []
     },
@@ -6133,7 +6133,7 @@
       "meeting": "Migration:m2",
       "key": "2026-10-15 Retro Alpha sprint retro/alpha",
       "agreed": [
-       "Atruvia:t35"
+       "Team:t35"
       ],
       "agreements": [],
       "counts": {
@@ -6144,7 +6144,7 @@
       }
      },
      {
-      "meeting": "Atruvia:m0",
+      "meeting": "Team:m0",
       "key": "2026-09-12 Retro Alpha sprint retro/alpha",
       "agreed": [],
       "agreements": [],
@@ -6156,10 +6156,10 @@
       }
      },
      {
-      "meeting": "Atruvia:m48",
+      "meeting": "Team:m48",
       "key": "2026-06-24 Retro Alpha sprint retro/alpha",
       "agreed": [
-       "Atruvia:t13"
+       "Team:t13"
       ],
       "agreements": [],
       "counts": {
@@ -6170,7 +6170,7 @@
       }
      },
      {
-      "meeting": "Atruvia:m70",
+      "meeting": "Team:m70",
       "key": "2026-06-18 Retro Alpha sprint retro/alpha",
       "agreed": [],
       "agreements": [],
@@ -6201,35 +6201,35 @@
   {
    "tag": "retro/alpha",
    "lens": "counterpart",
-   "owner": "Atruvia",
+   "owner": "Team",
    "overview": {
     "lens": "counterpart",
     "thread": "retro/alpha",
-    "owner": "Atruvia",
+    "owner": "Team",
     "scope": [
      "Tender",
      "Migration",
-     "Atruvia"
+     "Team"
     ],
     "types": [
      "retro"
     ],
     "ahead": {
      "meetings": [
-      "Atruvia:m11",
+      "Team:m11",
       "Tender:m18",
-      "Atruvia:m32",
+      "Team:m32",
       "Tender:m3"
      ],
      "owe": [
-      "Atruvia:t13",
-      "Atruvia:t35"
+      "Team:t13",
+      "Team:t35"
      ],
      "waiting": [],
      "relevant": [],
      "someday": [
-      "Atruvia:t0",
-      "Atruvia:t5"
+      "Team:t0",
+      "Team:t5"
      ],
      "agreements": []
     },
@@ -6243,7 +6243,7 @@
       "meeting": "Migration:m2",
       "key": "2026-10-15 Retro Alpha sprint retro/alpha",
       "agreed": [
-       "Atruvia:t35"
+       "Team:t35"
       ],
       "agreements": [],
       "counts": {
@@ -6254,7 +6254,7 @@
       }
      },
      {
-      "meeting": "Atruvia:m0",
+      "meeting": "Team:m0",
       "key": "2026-09-12 Retro Alpha sprint retro/alpha",
       "agreed": [],
       "agreements": [],
@@ -6266,10 +6266,10 @@
       }
      },
      {
-      "meeting": "Atruvia:m48",
+      "meeting": "Team:m48",
       "key": "2026-06-24 Retro Alpha sprint retro/alpha",
       "agreed": [
-       "Atruvia:t13"
+       "Team:t13"
       ],
       "agreements": [],
       "counts": {
@@ -6280,7 +6280,7 @@
       }
      },
      {
-      "meeting": "Atruvia:m70",
+      "meeting": "Team:m70",
       "key": "2026-06-18 Retro Alpha sprint retro/alpha",
       "agreed": [],
       "agreements": [],
@@ -6319,27 +6319,27 @@
     "scope": [
      "Tender",
      "Migration",
-     "Atruvia"
+     "Team"
     ],
     "types": [
      "retro"
     ],
     "ahead": {
      "meetings": [
-      "Atruvia:m11",
+      "Team:m11",
       "Tender:m18",
-      "Atruvia:m32",
+      "Team:m32",
       "Tender:m3"
      ],
      "owe": [
-      "Atruvia:t13",
-      "Atruvia:t35"
+      "Team:t13",
+      "Team:t35"
      ],
      "waiting": [],
      "relevant": [],
      "someday": [
-      "Atruvia:t0",
-      "Atruvia:t5"
+      "Team:t0",
+      "Team:t5"
      ],
      "agreements": []
     },
@@ -6353,7 +6353,7 @@
       "meeting": "Migration:m2",
       "key": "2026-10-15 Retro Alpha sprint retro/alpha",
       "agreed": [
-       "Atruvia:t35"
+       "Team:t35"
       ],
       "agreements": [],
       "counts": {
@@ -6364,7 +6364,7 @@
       }
      },
      {
-      "meeting": "Atruvia:m0",
+      "meeting": "Team:m0",
       "key": "2026-09-12 Retro Alpha sprint retro/alpha",
       "agreed": [],
       "agreements": [],
@@ -6376,10 +6376,10 @@
       }
      },
      {
-      "meeting": "Atruvia:m48",
+      "meeting": "Team:m48",
       "key": "2026-06-24 Retro Alpha sprint retro/alpha",
       "agreed": [
-       "Atruvia:t13"
+       "Team:t13"
       ],
       "agreements": [],
       "counts": {
@@ -6390,7 +6390,7 @@
       }
      },
      {
-      "meeting": "Atruvia:m70",
+      "meeting": "Team:m70",
       "key": "2026-06-18 Retro Alpha sprint retro/alpha",
       "agreed": [],
       "agreements": [],
@@ -6421,15 +6421,15 @@
   {
    "tag": "jf/board",
    "lens": "thread",
-   "owner": "Atruvia",
+   "owner": "Team",
    "overview": {
     "lens": "thread",
     "thread": "jf/board",
-    "owner": "Atruvia",
+    "owner": "Team",
     "scope": [
      "Tender",
      "Migration",
-     "Atruvia"
+     "Team"
     ],
     "types": [
      "jf",
@@ -6438,10 +6438,10 @@
     ],
     "ahead": {
      "meetings": [
-      "Atruvia:m6"
+      "Team:m6"
      ],
      "owe": [
-      "Atruvia:t42"
+      "Team:t42"
      ],
      "waiting": [
       "Tender:t22"
@@ -6449,7 +6449,7 @@
      "relevant": [],
      "someday": [],
      "agreements": [
-      "Atruvia:a8"
+      "Team:a8"
      ]
     },
     "endedAgreements": [],
@@ -6459,13 +6459,13 @@
     },
     "past": [
      {
-      "meeting": "Atruvia:m76",
+      "meeting": "Team:m76",
       "key": "2026-09-16 Strategy offsite jf/board",
       "agreed": [
-       "Atruvia:t42"
+       "Team:t42"
       ],
       "agreements": [
-       "Atruvia:a8"
+       "Team:a8"
       ],
       "counts": {
        "agreed": 1,
@@ -6499,7 +6499,7 @@
       }
      },
      {
-      "meeting": "Atruvia:m16",
+      "meeting": "Team:m16",
       "key": "2026-09-02 Jour fixe Board: budget…",
       "agreed": [],
       "agreements": [],
@@ -6511,7 +6511,7 @@
       }
      },
      {
-      "meeting": "Atruvia:m49",
+      "meeting": "Team:m49",
       "key": "2026-08-18 Jour fixe Board: budget…",
       "agreed": [],
       "agreements": [],
@@ -6523,7 +6523,7 @@
       }
      },
      {
-      "meeting": "Atruvia:m61",
+      "meeting": "Team:m61",
       "key": "2026-07-29 Jour fixe Board: budget…",
       "agreed": [],
       "agreements": [],
@@ -6544,11 +6544,11 @@
    "overview": {
     "lens": "thread",
     "thread": "jf/board",
-    "owner": "Atruvia",
+    "owner": "Team",
     "scope": [
      "Tender",
      "Migration",
-     "Atruvia"
+     "Team"
     ],
     "types": [
      "jf",
@@ -6557,10 +6557,10 @@
     ],
     "ahead": {
      "meetings": [
-      "Atruvia:m6"
+      "Team:m6"
      ],
      "owe": [
-      "Atruvia:t42"
+      "Team:t42"
      ],
      "waiting": [
       "Tender:t22"
@@ -6568,7 +6568,7 @@
      "relevant": [],
      "someday": [],
      "agreements": [
-      "Atruvia:a8"
+      "Team:a8"
      ]
     },
     "endedAgreements": [],
@@ -6578,13 +6578,13 @@
     },
     "past": [
      {
-      "meeting": "Atruvia:m76",
+      "meeting": "Team:m76",
       "key": "2026-09-16 Strategy offsite jf/board",
       "agreed": [
-       "Atruvia:t42"
+       "Team:t42"
       ],
       "agreements": [
-       "Atruvia:a8"
+       "Team:a8"
       ],
       "counts": {
        "agreed": 1,
@@ -6618,7 +6618,7 @@
       }
      },
      {
-      "meeting": "Atruvia:m16",
+      "meeting": "Team:m16",
       "key": "2026-09-02 Jour fixe Board: budget…",
       "agreed": [],
       "agreements": [],
@@ -6630,7 +6630,7 @@
       }
      },
      {
-      "meeting": "Atruvia:m49",
+      "meeting": "Team:m49",
       "key": "2026-08-18 Jour fixe Board: budget…",
       "agreed": [],
       "agreements": [],
@@ -6642,7 +6642,7 @@
       }
      },
      {
-      "meeting": "Atruvia:m61",
+      "meeting": "Team:m61",
       "key": "2026-07-29 Jour fixe Board: budget…",
       "agreed": [],
       "agreements": [],
@@ -6659,15 +6659,15 @@
   {
    "tag": "jf/board",
    "lens": "counterpart",
-   "owner": "Atruvia",
+   "owner": "Team",
    "overview": {
     "lens": "counterpart",
     "thread": "jf/board",
-    "owner": "Atruvia",
+    "owner": "Team",
     "scope": [
      "Tender",
      "Migration",
-     "Atruvia"
+     "Team"
     ],
     "types": [
      "jf",
@@ -6676,10 +6676,10 @@
     ],
     "ahead": {
      "meetings": [
-      "Atruvia:m6"
+      "Team:m6"
      ],
      "owe": [
-      "Atruvia:t42"
+      "Team:t42"
      ],
      "waiting": [
       "Tender:t22"
@@ -6687,7 +6687,7 @@
      "relevant": [],
      "someday": [],
      "agreements": [
-      "Atruvia:a8"
+      "Team:a8"
      ]
     },
     "endedAgreements": [],
@@ -6697,13 +6697,13 @@
     },
     "past": [
      {
-      "meeting": "Atruvia:m76",
+      "meeting": "Team:m76",
       "key": "2026-09-16 Strategy offsite jf/board",
       "agreed": [
-       "Atruvia:t42"
+       "Team:t42"
       ],
       "agreements": [
-       "Atruvia:a8"
+       "Team:a8"
       ],
       "counts": {
        "agreed": 1,
@@ -6737,7 +6737,7 @@
       }
      },
      {
-      "meeting": "Atruvia:m16",
+      "meeting": "Team:m16",
       "key": "2026-09-02 Jour fixe Board: budget…",
       "agreed": [],
       "agreements": [],
@@ -6749,7 +6749,7 @@
       }
      },
      {
-      "meeting": "Atruvia:m49",
+      "meeting": "Team:m49",
       "key": "2026-08-18 Jour fixe Board: budget…",
       "agreed": [],
       "agreements": [],
@@ -6761,7 +6761,7 @@
       }
      },
      {
-      "meeting": "Atruvia:m61",
+      "meeting": "Team:m61",
       "key": "2026-07-29 Jour fixe Board: budget…",
       "agreed": [],
       "agreements": [],
@@ -6782,11 +6782,11 @@
    "overview": {
     "lens": "counterpart",
     "thread": "jf/board",
-    "owner": "Atruvia",
+    "owner": "Team",
     "scope": [
      "Tender",
      "Migration",
-     "Atruvia"
+     "Team"
     ],
     "types": [
      "jf",
@@ -6795,10 +6795,10 @@
     ],
     "ahead": {
      "meetings": [
-      "Atruvia:m6"
+      "Team:m6"
      ],
      "owe": [
-      "Atruvia:t42"
+      "Team:t42"
      ],
      "waiting": [
       "Tender:t22"
@@ -6806,7 +6806,7 @@
      "relevant": [],
      "someday": [],
      "agreements": [
-      "Atruvia:a8"
+      "Team:a8"
      ]
     },
     "endedAgreements": [],
@@ -6816,13 +6816,13 @@
     },
     "past": [
      {
-      "meeting": "Atruvia:m76",
+      "meeting": "Team:m76",
       "key": "2026-09-16 Strategy offsite jf/board",
       "agreed": [
-       "Atruvia:t42"
+       "Team:t42"
       ],
       "agreements": [
-       "Atruvia:a8"
+       "Team:a8"
       ],
       "counts": {
        "agreed": 1,
@@ -6856,7 +6856,7 @@
       }
      },
      {
-      "meeting": "Atruvia:m16",
+      "meeting": "Team:m16",
       "key": "2026-09-02 Jour fixe Board: budget…",
       "agreed": [],
       "agreements": [],
@@ -6868,7 +6868,7 @@
       }
      },
      {
-      "meeting": "Atruvia:m49",
+      "meeting": "Team:m49",
       "key": "2026-08-18 Jour fixe Board: budget…",
       "agreed": [],
       "agreements": [],
@@ -6880,7 +6880,7 @@
       }
      },
      {
-      "meeting": "Atruvia:m61",
+      "meeting": "Team:m61",
       "key": "2026-07-29 Jour fixe Board: budget…",
       "agreed": [],
       "agreements": [],
@@ -6897,15 +6897,15 @@
   {
    "tag": "wf/olga",
    "lens": "thread",
-   "owner": "Atruvia",
+   "owner": "Team",
    "overview": {
     "lens": "counterpart",
     "thread": "wf/olga",
-    "owner": "Atruvia",
+    "owner": "Team",
     "scope": [
      "Tender",
      "Migration",
-     "Atruvia"
+     "Team"
     ],
     "types": [
      "wf"
@@ -6914,7 +6914,7 @@
      "meetings": [],
      "owe": [],
      "waiting": [
-      "Atruvia:t40"
+      "Team:t40"
      ],
      "relevant": [],
      "someday": [],
@@ -6940,7 +6940,7 @@
      "Tender",
      "Migration",
      "Solo",
-     "Atruvia",
+     "Team",
      "Zen",
      "Inbox"
     ],
@@ -6951,7 +6951,7 @@
      "meetings": [],
      "owe": [],
      "waiting": [
-      "Atruvia:t40"
+      "Team:t40"
      ],
      "relevant": [],
      "someday": [],
@@ -6968,15 +6968,15 @@
   {
    "tag": "wf/olga",
    "lens": "counterpart",
-   "owner": "Atruvia",
+   "owner": "Team",
    "overview": {
     "lens": "counterpart",
     "thread": "wf/olga",
-    "owner": "Atruvia",
+    "owner": "Team",
     "scope": [
      "Tender",
      "Migration",
-     "Atruvia"
+     "Team"
     ],
     "types": [
      "wf"
@@ -6985,7 +6985,7 @@
      "meetings": [],
      "owe": [],
      "waiting": [
-      "Atruvia:t40"
+      "Team:t40"
      ],
      "relevant": [],
      "someday": [],
@@ -7011,7 +7011,7 @@
      "Tender",
      "Migration",
      "Solo",
-     "Atruvia",
+     "Team",
      "Zen",
      "Inbox"
     ],
@@ -7022,7 +7022,7 @@
      "meetings": [],
      "owe": [],
      "waiting": [
-      "Atruvia:t40"
+      "Team:t40"
      ],
      "relevant": [],
      "someday": [],
@@ -7039,15 +7039,15 @@
   {
    "tag": "sparring/jordan",
    "lens": "thread",
-   "owner": "Atruvia",
+   "owner": "Team",
    "overview": {
     "lens": "thread",
     "thread": "sparring/jordan",
-    "owner": "Atruvia",
+    "owner": "Team",
     "scope": [
      "Tender",
      "Migration",
-     "Atruvia"
+     "Team"
     ],
     "types": [
      "sparring"
@@ -7055,12 +7055,12 @@
     "ahead": {
      "meetings": [
       "Tender:m9",
-      "Atruvia:m54",
-      "Atruvia:m33"
+      "Team:m54",
+      "Team:m33"
      ],
      "owe": [
       "Tender:t11",
-      "Atruvia:t30"
+      "Team:t30"
      ],
      "waiting": [],
      "relevant": [],
@@ -7074,7 +7074,7 @@
     },
     "past": [
      {
-      "meeting": "Atruvia:m66",
+      "meeting": "Team:m66",
       "key": "2026-10-19 Sparring Jordan sparring/jordan",
       "agreed": [],
       "agreements": [],
@@ -7086,7 +7086,7 @@
       }
      },
      {
-      "meeting": "Atruvia:m47",
+      "meeting": "Team:m47",
       "key": "2026-09-14 Sparring Jordan",
       "agreed": [],
       "agreements": [],
@@ -7098,7 +7098,7 @@
       }
      },
      {
-      "meeting": "Atruvia:m31",
+      "meeting": "Team:m31",
       "key": "2026-08-11 Sparring Jordan sparring/jordan",
       "agreed": [],
       "agreements": [],
@@ -7122,7 +7122,7 @@
       }
      },
      {
-      "meeting": "Atruvia:m57",
+      "meeting": "Team:m57",
       "key": "2026-07-02 Sparring Jordan sparring/jordan",
       "agreed": [],
       "agreements": [],
@@ -7138,7 +7138,7 @@
       "key": "2026-06-07 Sparring Jordan sparring/jordan",
       "agreed": [
        "Tender:t11",
-       "Atruvia:t30"
+       "Team:t30"
       ],
       "agreements": [],
       "counts": {
@@ -7158,11 +7158,11 @@
    "overview": {
     "lens": "thread",
     "thread": "sparring/jordan",
-    "owner": "Atruvia",
+    "owner": "Team",
     "scope": [
      "Tender",
      "Migration",
-     "Atruvia"
+     "Team"
     ],
     "types": [
      "sparring"
@@ -7170,12 +7170,12 @@
     "ahead": {
      "meetings": [
       "Tender:m9",
-      "Atruvia:m54",
-      "Atruvia:m33"
+      "Team:m54",
+      "Team:m33"
      ],
      "owe": [
       "Tender:t11",
-      "Atruvia:t30"
+      "Team:t30"
      ],
      "waiting": [],
      "relevant": [],
@@ -7189,7 +7189,7 @@
     },
     "past": [
      {
-      "meeting": "Atruvia:m66",
+      "meeting": "Team:m66",
       "key": "2026-10-19 Sparring Jordan sparring/jordan",
       "agreed": [],
       "agreements": [],
@@ -7201,7 +7201,7 @@
       }
      },
      {
-      "meeting": "Atruvia:m47",
+      "meeting": "Team:m47",
       "key": "2026-09-14 Sparring Jordan",
       "agreed": [],
       "agreements": [],
@@ -7213,7 +7213,7 @@
       }
      },
      {
-      "meeting": "Atruvia:m31",
+      "meeting": "Team:m31",
       "key": "2026-08-11 Sparring Jordan sparring/jordan",
       "agreed": [],
       "agreements": [],
@@ -7237,7 +7237,7 @@
       }
      },
      {
-      "meeting": "Atruvia:m57",
+      "meeting": "Team:m57",
       "key": "2026-07-02 Sparring Jordan sparring/jordan",
       "agreed": [],
       "agreements": [],
@@ -7253,7 +7253,7 @@
       "key": "2026-06-07 Sparring Jordan sparring/jordan",
       "agreed": [
        "Tender:t11",
-       "Atruvia:t30"
+       "Team:t30"
       ],
       "agreements": [],
       "counts": {
@@ -7269,15 +7269,15 @@
   {
    "tag": "sparring/jordan",
    "lens": "counterpart",
-   "owner": "Atruvia",
+   "owner": "Team",
    "overview": {
     "lens": "counterpart",
     "thread": "sparring/jordan",
-    "owner": "Atruvia",
+    "owner": "Team",
     "scope": [
      "Tender",
      "Migration",
-     "Atruvia"
+     "Team"
     ],
     "types": [
      "sparring"
@@ -7285,12 +7285,12 @@
     "ahead": {
      "meetings": [
       "Tender:m9",
-      "Atruvia:m54",
-      "Atruvia:m33"
+      "Team:m54",
+      "Team:m33"
      ],
      "owe": [
       "Tender:t11",
-      "Atruvia:t30"
+      "Team:t30"
      ],
      "waiting": [],
      "relevant": [],
@@ -7304,7 +7304,7 @@
     },
     "past": [
      {
-      "meeting": "Atruvia:m66",
+      "meeting": "Team:m66",
       "key": "2026-10-19 Sparring Jordan sparring/jordan",
       "agreed": [],
       "agreements": [],
@@ -7316,7 +7316,7 @@
       }
      },
      {
-      "meeting": "Atruvia:m47",
+      "meeting": "Team:m47",
       "key": "2026-09-14 Sparring Jordan",
       "agreed": [],
       "agreements": [],
@@ -7328,7 +7328,7 @@
       }
      },
      {
-      "meeting": "Atruvia:m31",
+      "meeting": "Team:m31",
       "key": "2026-08-11 Sparring Jordan sparring/jordan",
       "agreed": [],
       "agreements": [],
@@ -7352,7 +7352,7 @@
       }
      },
      {
-      "meeting": "Atruvia:m57",
+      "meeting": "Team:m57",
       "key": "2026-07-02 Sparring Jordan sparring/jordan",
       "agreed": [],
       "agreements": [],
@@ -7368,7 +7368,7 @@
       "key": "2026-06-07 Sparring Jordan sparring/jordan",
       "agreed": [
        "Tender:t11",
-       "Atruvia:t30"
+       "Team:t30"
       ],
       "agreements": [],
       "counts": {
@@ -7388,11 +7388,11 @@
    "overview": {
     "lens": "counterpart",
     "thread": "sparring/jordan",
-    "owner": "Atruvia",
+    "owner": "Team",
     "scope": [
      "Tender",
      "Migration",
-     "Atruvia"
+     "Team"
     ],
     "types": [
      "sparring"
@@ -7400,12 +7400,12 @@
     "ahead": {
      "meetings": [
       "Tender:m9",
-      "Atruvia:m54",
-      "Atruvia:m33"
+      "Team:m54",
+      "Team:m33"
      ],
      "owe": [
       "Tender:t11",
-      "Atruvia:t30"
+      "Team:t30"
      ],
      "waiting": [],
      "relevant": [],
@@ -7419,7 +7419,7 @@
     },
     "past": [
      {
-      "meeting": "Atruvia:m66",
+      "meeting": "Team:m66",
       "key": "2026-10-19 Sparring Jordan sparring/jordan",
       "agreed": [],
       "agreements": [],
@@ -7431,7 +7431,7 @@
       }
      },
      {
-      "meeting": "Atruvia:m47",
+      "meeting": "Team:m47",
       "key": "2026-09-14 Sparring Jordan",
       "agreed": [],
       "agreements": [],
@@ -7443,7 +7443,7 @@
       }
      },
      {
-      "meeting": "Atruvia:m31",
+      "meeting": "Team:m31",
       "key": "2026-08-11 Sparring Jordan sparring/jordan",
       "agreed": [],
       "agreements": [],
@@ -7467,7 +7467,7 @@
       }
      },
      {
-      "meeting": "Atruvia:m57",
+      "meeting": "Team:m57",
       "key": "2026-07-02 Sparring Jordan sparring/jordan",
       "agreed": [],
       "agreements": [],
@@ -7483,7 +7483,7 @@
       "key": "2026-06-07 Sparring Jordan sparring/jordan",
       "agreed": [
        "Tender:t11",
-       "Atruvia:t30"
+       "Team:t30"
       ],
       "agreements": [],
       "counts": {
@@ -7507,25 +7507,25 @@
     "Migration:t5",
     "Migration:t6",
     "Migration:t10",
-    "Atruvia:t6",
-    "Atruvia:t38"
+    "Team:t6",
+    "Team:t38"
    ],
    "meetings": [
     "Tender:m10",
     "Migration:m10",
     "Migration:m14",
     "Migration:m18",
-    "Atruvia:m2",
-    "Atruvia:m8",
-    "Atruvia:m13",
-    "Atruvia:m14",
-    "Atruvia:m19",
-    "Atruvia:m39",
-    "Atruvia:m43",
-    "Atruvia:m51",
-    "Atruvia:m58",
-    "Atruvia:m64",
-    "Atruvia:m82"
+    "Team:m2",
+    "Team:m8",
+    "Team:m13",
+    "Team:m14",
+    "Team:m19",
+    "Team:m39",
+    "Team:m43",
+    "Team:m51",
+    "Team:m58",
+    "Team:m64",
+    "Team:m82"
    ]
   },
   {
@@ -7544,10 +7544,10 @@
     "Migration:m11",
     "Migration:m13",
     "Migration:m21",
-    "Atruvia:m4",
-    "Atruvia:m21",
-    "Atruvia:m27",
-    "Atruvia:m55"
+    "Team:m4",
+    "Team:m21",
+    "Team:m27",
+    "Team:m55"
    ]
   },
   {
@@ -7565,11 +7565,11 @@
   },
   {
    "entry": "Tender:t1",
-   "match": "Atruvia:m45"
+   "match": "Team:m45"
   },
   {
    "entry": "Tender:t2",
-   "match": "Atruvia:m10"
+   "match": "Team:m10"
   },
   {
    "entry": "Tender:t3",
@@ -7581,7 +7581,7 @@
   },
   {
    "entry": "Tender:t5",
-   "match": "Atruvia:m81"
+   "match": "Team:m81"
   },
   {
    "entry": "Tender:t6",
@@ -7589,7 +7589,7 @@
   },
   {
    "entry": "Tender:t7",
-   "match": "Atruvia:m37"
+   "match": "Team:m37"
   },
   {
    "entry": "Tender:t8",
@@ -7597,7 +7597,7 @@
   },
   {
    "entry": "Tender:t9",
-   "match": "Atruvia:m25"
+   "match": "Team:m25"
   },
   {
    "entry": "Tender:t10",
@@ -7609,7 +7609,7 @@
   },
   {
    "entry": "Tender:t12",
-   "match": "Atruvia:m60"
+   "match": "Team:m60"
   },
   {
    "entry": "Tender:t13",
@@ -7617,11 +7617,11 @@
   },
   {
    "entry": "Tender:t14",
-   "match": "Atruvia:m72"
+   "match": "Team:m72"
   },
   {
    "entry": "Tender:t15",
-   "match": "Atruvia:m30"
+   "match": "Team:m30"
   },
   {
    "entry": "Tender:t16",
@@ -7653,7 +7653,7 @@
   },
   {
    "entry": "Tender:t23",
-   "match": "Atruvia:m27"
+   "match": "Team:m27"
   },
   {
    "entry": "Tender:t24",
@@ -7673,11 +7673,11 @@
   },
   {
    "entry": "Tender:t28",
-   "match": "Atruvia:m81 (fallback)"
+   "match": "Team:m81 (fallback)"
   },
   {
    "entry": "Tender:t29",
-   "match": "Atruvia:m82 (fallback)"
+   "match": "Team:m82 (fallback)"
   },
   {
    "entry": "Tender:t30",
@@ -7689,15 +7689,15 @@
   },
   {
    "entry": "Tender:a1",
-   "match": "Atruvia:m20"
+   "match": "Team:m20"
   },
   {
    "entry": "Tender:a2",
-   "match": "Atruvia:m74"
+   "match": "Team:m74"
   },
   {
    "entry": "Tender:a3",
-   "match": "Atruvia:m53"
+   "match": "Team:m53"
   },
   {
    "entry": "Migration:t0",
@@ -7713,7 +7713,7 @@
   },
   {
    "entry": "Migration:t3",
-   "match": "Atruvia:m45"
+   "match": "Team:m45"
   },
   {
    "entry": "Migration:t4",
@@ -7757,7 +7757,7 @@
   },
   {
    "entry": "Migration:t14",
-   "match": "Atruvia:m50"
+   "match": "Team:m50"
   },
   {
    "entry": "Migration:t15",
@@ -7780,232 +7780,232 @@
    "match": "Solo:m0"
   },
   {
-   "entry": "Atruvia:t0",
+   "entry": "Team:t0",
    "match": null
   },
   {
-   "entry": "Atruvia:t1",
+   "entry": "Team:t1",
    "match": null
   },
   {
-   "entry": "Atruvia:t2",
-   "match": "Atruvia:m28"
+   "entry": "Team:t2",
+   "match": "Team:m28"
   },
   {
-   "entry": "Atruvia:t3",
+   "entry": "Team:t3",
    "match": null
   },
   {
-   "entry": "Atruvia:t4",
+   "entry": "Team:t4",
    "match": "Tender:m16"
   },
   {
-   "entry": "Atruvia:t5",
+   "entry": "Team:t5",
    "match": null
   },
   {
-   "entry": "Atruvia:t6",
-   "match": "Atruvia:m64"
+   "entry": "Team:t6",
+   "match": "Team:m64"
   },
   {
-   "entry": "Atruvia:t7",
+   "entry": "Team:t7",
    "match": null
   },
   {
-   "entry": "Atruvia:t8",
-   "match": "Atruvia:m37"
+   "entry": "Team:t8",
+   "match": "Team:m37"
   },
   {
-   "entry": "Atruvia:t9",
+   "entry": "Team:t9",
    "match": null
   },
   {
-   "entry": "Atruvia:t10",
-   "match": "Atruvia:m76"
+   "entry": "Team:t10",
+   "match": "Team:m76"
   },
   {
-   "entry": "Atruvia:t11",
+   "entry": "Team:t11",
    "match": null
   },
   {
-   "entry": "Atruvia:t12",
-   "match": "Atruvia:m71"
+   "entry": "Team:t12",
+   "match": "Team:m71"
   },
   {
-   "entry": "Atruvia:t13",
-   "match": "Atruvia:m48"
+   "entry": "Team:t13",
+   "match": "Team:m48"
   },
   {
-   "entry": "Atruvia:t14",
+   "entry": "Team:t14",
    "match": "Tender:m18"
   },
   {
-   "entry": "Atruvia:t15",
+   "entry": "Team:t15",
    "match": null
   },
   {
-   "entry": "Atruvia:t16",
+   "entry": "Team:t16",
    "match": null
   },
   {
-   "entry": "Atruvia:t17",
+   "entry": "Team:t17",
    "match": "Migration:m1"
   },
   {
-   "entry": "Atruvia:t18",
+   "entry": "Team:t18",
    "match": null
   },
   {
-   "entry": "Atruvia:t19",
+   "entry": "Team:t19",
    "match": "Tender:m16"
   },
   {
-   "entry": "Atruvia:t20",
+   "entry": "Team:t20",
    "match": null
   },
   {
-   "entry": "Atruvia:t21",
+   "entry": "Team:t21",
    "match": "Migration:m1"
   },
   {
-   "entry": "Atruvia:t22",
+   "entry": "Team:t22",
    "match": null
   },
   {
-   "entry": "Atruvia:t23",
+   "entry": "Team:t23",
    "match": null
   },
   {
-   "entry": "Atruvia:t24",
+   "entry": "Team:t24",
    "match": "Migration:m23"
   },
   {
-   "entry": "Atruvia:t25",
+   "entry": "Team:t25",
    "match": null
   },
   {
-   "entry": "Atruvia:t26",
+   "entry": "Team:t26",
    "match": null
   },
   {
-   "entry": "Atruvia:t27",
+   "entry": "Team:t27",
    "match": null
   },
   {
-   "entry": "Atruvia:t28",
+   "entry": "Team:t28",
    "match": null
   },
   {
-   "entry": "Atruvia:t29",
+   "entry": "Team:t29",
    "match": null
   },
   {
-   "entry": "Atruvia:t30",
+   "entry": "Team:t30",
    "match": "Tender:m17"
   },
   {
-   "entry": "Atruvia:t31",
-   "match": "Atruvia:m15"
+   "entry": "Team:t31",
+   "match": "Team:m15"
   },
   {
-   "entry": "Atruvia:t32",
+   "entry": "Team:t32",
    "match": null
   },
   {
-   "entry": "Atruvia:t33",
-   "match": "Atruvia:m15"
+   "entry": "Team:t33",
+   "match": "Team:m15"
   },
   {
-   "entry": "Atruvia:t34",
+   "entry": "Team:t34",
    "match": null
   },
   {
-   "entry": "Atruvia:t35",
+   "entry": "Team:t35",
    "match": "Migration:m2"
   },
   {
-   "entry": "Atruvia:t36",
+   "entry": "Team:t36",
    "match": "Migration:m9"
   },
   {
-   "entry": "Atruvia:t37",
+   "entry": "Team:t37",
    "match": "Tender:m19"
   },
   {
-   "entry": "Atruvia:t38",
-   "match": "Atruvia:m13"
+   "entry": "Team:t38",
+   "match": "Team:m13"
   },
   {
-   "entry": "Atruvia:t39",
-   "match": "Atruvia:m73"
+   "entry": "Team:t39",
+   "match": "Team:m73"
   },
   {
-   "entry": "Atruvia:t40",
+   "entry": "Team:t40",
    "match": null
   },
   {
-   "entry": "Atruvia:t41",
+   "entry": "Team:t41",
    "match": null
   },
   {
-   "entry": "Atruvia:t42",
-   "match": "Atruvia:m76"
+   "entry": "Team:t42",
+   "match": "Team:m76"
   },
   {
-   "entry": "Atruvia:t43",
+   "entry": "Team:t43",
    "match": "Zen:m1"
   },
   {
-   "entry": "Atruvia:t44",
-   "match": "Atruvia:m77"
+   "entry": "Team:t44",
+   "match": "Team:m77"
   },
   {
-   "entry": "Atruvia:t45",
-   "match": "Atruvia:m79"
+   "entry": "Team:t45",
+   "match": "Team:m79"
   },
   {
-   "entry": "Atruvia:t46",
+   "entry": "Team:t46",
    "match": null
   },
   {
-   "entry": "Atruvia:a0",
-   "match": "Atruvia:m77"
+   "entry": "Team:a0",
+   "match": "Team:m77"
   },
   {
-   "entry": "Atruvia:a1",
+   "entry": "Team:a1",
    "match": "Migration:m8"
   },
   {
-   "entry": "Atruvia:a2",
+   "entry": "Team:a2",
    "match": "Tender:m0"
   },
   {
-   "entry": "Atruvia:a3",
-   "match": "Atruvia:m4"
+   "entry": "Team:a3",
+   "match": "Team:m4"
   },
   {
-   "entry": "Atruvia:a4",
+   "entry": "Team:a4",
    "match": "Migration:m15"
   },
   {
-   "entry": "Atruvia:a5",
+   "entry": "Team:a5",
    "match": "Migration:m18"
   },
   {
-   "entry": "Atruvia:a6",
+   "entry": "Team:a6",
    "match": "Migration:m21"
   },
   {
-   "entry": "Atruvia:a7",
+   "entry": "Team:a7",
    "match": "Migration:m10"
   },
   {
-   "entry": "Atruvia:a8",
-   "match": "Atruvia:m76"
+   "entry": "Team:a8",
+   "match": "Team:m76"
   },
   {
-   "entry": "Atruvia:a9",
-   "match": "Atruvia:m81 (fallback)"
+   "entry": "Team:a9",
+   "match": "Team:m81 (fallback)"
   },
   {
    "entry": "Zen:t0",
@@ -8021,7 +8021,7 @@
   },
   {
    "entry": "Inbox:t1",
-   "match": "Atruvia:m4"
+   "match": "Team:m4"
   },
   {
    "entry": "Inbox:t2",
@@ -8041,7 +8041,7 @@
    "entry": "Tender:t0",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "101/ulf"
    },
    "agreedInMeeting": "Migration:m9"
@@ -8050,25 +8050,25 @@
    "entry": "Tender:t1",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "101/eva"
    },
-   "agreedInMeeting": "Atruvia:m45"
+   "agreedInMeeting": "Team:m45"
   },
   {
    "entry": "Tender:t2",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "owe/works"
    },
-   "agreedInMeeting": "Atruvia:m10"
+   "agreedInMeeting": "Team:m10"
   },
   {
    "entry": "Tender:t3",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "retro/beta"
    },
    "agreedInMeeting": null
@@ -8077,7 +8077,7 @@
    "entry": "Tender:t4",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "owe/works"
    },
    "agreedInMeeting": null
@@ -8086,10 +8086,10 @@
    "entry": "Tender:t5",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "101/eva"
    },
-   "agreedInMeeting": "Atruvia:m81"
+   "agreedInMeeting": "Team:m81"
   },
   {
    "entry": "Tender:t6",
@@ -8100,16 +8100,16 @@
    "entry": "Tender:t7",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "101/anna"
    },
-   "agreedInMeeting": "Atruvia:m37"
+   "agreedInMeeting": "Team:m37"
   },
   {
    "entry": "Tender:t8",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "wf/gamma"
    },
    "agreedInMeeting": null
@@ -8118,16 +8118,16 @@
    "entry": "Tender:t9",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "retro/beta"
    },
-   "agreedInMeeting": "Atruvia:m25"
+   "agreedInMeeting": "Team:m25"
   },
   {
    "entry": "Tender:t10",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "101/gamma"
    },
    "agreedInMeeting": null
@@ -8136,7 +8136,7 @@
    "entry": "Tender:t11",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "sparring/jordan"
    },
    "agreedInMeeting": "Tender:m17"
@@ -8145,16 +8145,16 @@
    "entry": "Tender:t12",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "101/jonas"
    },
-   "agreedInMeeting": "Atruvia:m60"
+   "agreedInMeeting": "Team:m60"
   },
   {
    "entry": "Tender:t13",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "wf/ines"
    },
    "agreedInMeeting": null
@@ -8163,25 +8163,25 @@
    "entry": "Tender:t14",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "wf/anna"
    },
-   "agreedInMeeting": "Atruvia:m72"
+   "agreedInMeeting": "Team:m72"
   },
   {
    "entry": "Tender:t15",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "owe/anna"
    },
-   "agreedInMeeting": "Atruvia:m30"
+   "agreedInMeeting": "Team:m30"
   },
   {
    "entry": "Tender:t16",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "wf/frank"
    },
    "agreedInMeeting": null
@@ -8190,7 +8190,7 @@
    "entry": "Tender:t17",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "wf/jonas"
    },
    "agreedInMeeting": null
@@ -8199,7 +8199,7 @@
    "entry": "Tender:t18",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "101/bert"
    },
    "agreedInMeeting": null
@@ -8208,7 +8208,7 @@
    "entry": "Tender:t19",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "wf/ines"
    },
    "agreedInMeeting": null
@@ -8217,7 +8217,7 @@
    "entry": "Tender:t20",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "owe/ines"
    },
    "agreedInMeeting": null
@@ -8226,7 +8226,7 @@
    "entry": "Tender:t21",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "retro/beta"
    },
    "agreedInMeeting": "Migration:m16"
@@ -8235,7 +8235,7 @@
    "entry": "Tender:t22",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "wf/board"
    },
    "agreedInMeeting": null
@@ -8244,16 +8244,16 @@
    "entry": "Tender:t23",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "retro/gamma"
    },
-   "agreedInMeeting": "Atruvia:m27"
+   "agreedInMeeting": "Team:m27"
   },
   {
    "entry": "Tender:t24",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "wf/frank"
    },
    "agreedInMeeting": null
@@ -8267,7 +8267,7 @@
    "entry": "Tender:t26",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "owe/quinn"
    },
    "agreedInMeeting": null
@@ -8276,7 +8276,7 @@
    "entry": "Tender:t27",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "owe/rosa"
    },
    "agreedInMeeting": null
@@ -8285,19 +8285,19 @@
    "entry": "Tender:t28",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "101/eva"
    },
-   "agreedInMeeting": "Atruvia:m81"
+   "agreedInMeeting": "Team:m81"
   },
   {
    "entry": "Tender:t29",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "101/bert"
    },
-   "agreedInMeeting": "Atruvia:m82"
+   "agreedInMeeting": "Team:m82"
   },
   {
    "entry": "Tender:t30",
@@ -8314,21 +8314,21 @@
   {
    "entry": "Tender:a1",
    "agreementMadeIn": {
-    "itemPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "itemPath": "/storage/emulated/0/Note/2 Areas/Team",
     "meetingIndex": 20
    }
   },
   {
    "entry": "Tender:a2",
    "agreementMadeIn": {
-    "itemPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "itemPath": "/storage/emulated/0/Note/2 Areas/Team",
     "meetingIndex": 74
    }
   },
   {
    "entry": "Tender:a3",
    "agreementMadeIn": {
-    "itemPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "itemPath": "/storage/emulated/0/Note/2 Areas/Team",
     "meetingIndex": 53
    }
   },
@@ -8341,7 +8341,7 @@
    "entry": "Migration:t1",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "wf/ines"
    },
    "agreedInMeeting": "Migration:m4"
@@ -8350,7 +8350,7 @@
    "entry": "Migration:t2",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "101/hans"
    },
    "agreedInMeeting": null
@@ -8359,16 +8359,16 @@
    "entry": "Migration:t3",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "101/eva"
    },
-   "agreedInMeeting": "Atruvia:m45"
+   "agreedInMeeting": "Team:m45"
   },
   {
    "entry": "Migration:t4",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "wf/jonas"
    },
    "agreedInMeeting": null
@@ -8377,7 +8377,7 @@
    "entry": "Migration:t5",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "101/bert"
    },
    "agreedInMeeting": "Migration:m14"
@@ -8386,7 +8386,7 @@
    "entry": "Migration:t6",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "owe/bert"
    },
    "agreedInMeeting": "Migration:m14"
@@ -8395,7 +8395,7 @@
    "entry": "Migration:t7",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "owe/dirk"
    },
    "agreedInMeeting": "Migration:m5"
@@ -8404,7 +8404,7 @@
    "entry": "Migration:t8",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "101/carla"
    },
    "agreedInMeeting": "Migration:m1"
@@ -8418,7 +8418,7 @@
    "entry": "Migration:t10",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "owe/bert"
    },
    "agreedInMeeting": "Tender:m10"
@@ -8427,7 +8427,7 @@
    "entry": "Migration:t11",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "owe/ulf"
    },
    "agreedInMeeting": null
@@ -8436,7 +8436,7 @@
    "entry": "Migration:t12",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "owe/dirk"
    },
    "agreedInMeeting": "Tender:m25"
@@ -8450,10 +8450,10 @@
    "entry": "Migration:t14",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "101/eva"
    },
-   "agreedInMeeting": "Atruvia:m50"
+   "agreedInMeeting": "Team:m50"
   },
   {
    "entry": "Migration:t15",
@@ -8464,7 +8464,7 @@
    "entry": "Migration:t16",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "owe/greta"
    },
    "agreedInMeeting": null
@@ -8473,7 +8473,7 @@
    "entry": "Migration:t17",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "jf/works"
    },
    "agreedInMeeting": "Tender:m23"
@@ -8482,7 +8482,7 @@
    "entry": "Migration:t18",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "wf/stan"
    },
    "agreedInMeeting": null
@@ -8497,443 +8497,443 @@
    "agreedInMeeting": "Solo:m0"
   },
   {
-   "entry": "Atruvia:t0",
+   "entry": "Team:t0",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "retro/alpha"
    },
    "agreedInMeeting": null
   },
   {
-   "entry": "Atruvia:t1",
+   "entry": "Team:t1",
    "threadOfTodo": null,
    "agreedInMeeting": null
   },
   {
-   "entry": "Atruvia:t2",
+   "entry": "Team:t2",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
-    "tag": "sparring/sven"
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
+    "tag": "sparring/sam"
    },
-   "agreedInMeeting": "Atruvia:m28"
+   "agreedInMeeting": "Team:m28"
   },
   {
-   "entry": "Atruvia:t3",
+   "entry": "Team:t3",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "owe/eva"
    },
    "agreedInMeeting": null
   },
   {
-   "entry": "Atruvia:t4",
+   "entry": "Team:t4",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "owe/carla"
    },
    "agreedInMeeting": "Tender:m16"
   },
   {
-   "entry": "Atruvia:t5",
+   "entry": "Team:t5",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "retro/alpha"
    },
    "agreedInMeeting": null
   },
   {
-   "entry": "Atruvia:t6",
+   "entry": "Team:t6",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "101/bert"
    },
-   "agreedInMeeting": "Atruvia:m64"
+   "agreedInMeeting": "Team:m64"
   },
   {
-   "entry": "Atruvia:t7",
+   "entry": "Team:t7",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "wf/eva"
    },
    "agreedInMeeting": null
   },
   {
-   "entry": "Atruvia:t8",
+   "entry": "Team:t8",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "wf/anna"
    },
-   "agreedInMeeting": "Atruvia:m37"
+   "agreedInMeeting": "Team:m37"
   },
   {
-   "entry": "Atruvia:t9",
+   "entry": "Team:t9",
    "threadOfTodo": null,
    "agreedInMeeting": null
   },
   {
-   "entry": "Atruvia:t10",
+   "entry": "Team:t10",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "wf/board"
    },
-   "agreedInMeeting": "Atruvia:m76"
+   "agreedInMeeting": "Team:m76"
   },
   {
-   "entry": "Atruvia:t11",
+   "entry": "Team:t11",
    "threadOfTodo": null,
    "agreedInMeeting": null
   },
   {
-   "entry": "Atruvia:t12",
+   "entry": "Team:t12",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "retro/anna"
    },
-   "agreedInMeeting": "Atruvia:m71"
+   "agreedInMeeting": "Team:m71"
   },
   {
-   "entry": "Atruvia:t13",
+   "entry": "Team:t13",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "retro/alpha"
    },
-   "agreedInMeeting": "Atruvia:m48"
+   "agreedInMeeting": "Team:m48"
   },
   {
-   "entry": "Atruvia:t14",
+   "entry": "Team:t14",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "retro/beta"
    },
    "agreedInMeeting": "Tender:m18"
   },
   {
-   "entry": "Atruvia:t15",
+   "entry": "Team:t15",
    "threadOfTodo": null,
    "agreedInMeeting": null
   },
   {
-   "entry": "Atruvia:t16",
+   "entry": "Team:t16",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "101/it"
    },
    "agreedInMeeting": null
   },
   {
-   "entry": "Atruvia:t17",
+   "entry": "Team:t17",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "owe/carla"
    },
    "agreedInMeeting": "Migration:m1"
   },
   {
-   "entry": "Atruvia:t18",
+   "entry": "Team:t18",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "wf/anna"
    },
    "agreedInMeeting": null
   },
   {
-   "entry": "Atruvia:t19",
+   "entry": "Team:t19",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "101/carla"
    },
    "agreedInMeeting": "Tender:m16"
   },
   {
-   "entry": "Atruvia:t20",
+   "entry": "Team:t20",
    "threadOfTodo": null,
    "agreedInMeeting": null
   },
   {
-   "entry": "Atruvia:t21",
+   "entry": "Team:t21",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "101/carla"
    },
    "agreedInMeeting": "Migration:m1"
   },
   {
-   "entry": "Atruvia:t22",
+   "entry": "Team:t22",
    "threadOfTodo": null,
    "agreedInMeeting": null
   },
   {
-   "entry": "Atruvia:t23",
+   "entry": "Team:t23",
    "threadOfTodo": null,
    "agreedInMeeting": null
   },
   {
-   "entry": "Atruvia:t24",
+   "entry": "Team:t24",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "101/frank"
    },
    "agreedInMeeting": "Migration:m23"
   },
   {
-   "entry": "Atruvia:t25",
+   "entry": "Team:t25",
    "threadOfTodo": null,
    "agreedInMeeting": null
   },
   {
-   "entry": "Atruvia:t26",
+   "entry": "Team:t26",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
-    "tag": "wf/sven"
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
+    "tag": "wf/sam"
    },
    "agreedInMeeting": null
   },
   {
-   "entry": "Atruvia:t27",
+   "entry": "Team:t27",
    "threadOfTodo": null,
    "agreedInMeeting": null
   },
   {
-   "entry": "Atruvia:t28",
+   "entry": "Team:t28",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "101/carla"
    },
    "agreedInMeeting": null
   },
   {
-   "entry": "Atruvia:t29",
+   "entry": "Team:t29",
    "threadOfTodo": null,
    "agreedInMeeting": null
   },
   {
-   "entry": "Atruvia:t30",
+   "entry": "Team:t30",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "sparring/jordan"
    },
    "agreedInMeeting": "Tender:m17"
   },
   {
-   "entry": "Atruvia:t31",
+   "entry": "Team:t31",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "retro/anna"
    },
-   "agreedInMeeting": "Atruvia:m15"
+   "agreedInMeeting": "Team:m15"
   },
   {
-   "entry": "Atruvia:t32",
+   "entry": "Team:t32",
    "threadOfTodo": null,
    "agreedInMeeting": null
   },
   {
-   "entry": "Atruvia:t33",
+   "entry": "Team:t33",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "retro/anna"
    },
-   "agreedInMeeting": "Atruvia:m15"
+   "agreedInMeeting": "Team:m15"
   },
   {
-   "entry": "Atruvia:t34",
+   "entry": "Team:t34",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "owe/anna"
    },
    "agreedInMeeting": null
   },
   {
-   "entry": "Atruvia:t35",
+   "entry": "Team:t35",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "retro/alpha"
    },
    "agreedInMeeting": "Migration:m2"
   },
   {
-   "entry": "Atruvia:t36",
+   "entry": "Team:t36",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "101/ulf"
    },
    "agreedInMeeting": "Migration:m9"
   },
   {
-   "entry": "Atruvia:t37",
+   "entry": "Team:t37",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "101/hans"
    },
    "agreedInMeeting": "Tender:m19"
   },
   {
-   "entry": "Atruvia:t38",
+   "entry": "Team:t38",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "101/bert"
    },
-   "agreedInMeeting": "Atruvia:m13"
+   "agreedInMeeting": "Team:m13"
   },
   {
-   "entry": "Atruvia:t39",
+   "entry": "Team:t39",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "wf/anna"
    },
-   "agreedInMeeting": "Atruvia:m73"
+   "agreedInMeeting": "Team:m73"
   },
   {
-   "entry": "Atruvia:t40",
+   "entry": "Team:t40",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "wf/olga"
    },
    "agreedInMeeting": null
   },
   {
-   "entry": "Atruvia:t41",
+   "entry": "Team:t41",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "wf/paul"
    },
    "agreedInMeeting": null
   },
   {
-   "entry": "Atruvia:t42",
+   "entry": "Team:t42",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "owe/board"
    },
-   "agreedInMeeting": "Atruvia:m76"
+   "agreedInMeeting": "Team:m76"
   },
   {
-   "entry": "Atruvia:t43",
+   "entry": "Team:t43",
    "threadOfTodo": null,
    "agreedInMeeting": "Zen:m1"
   },
   {
-   "entry": "Atruvia:t44",
+   "entry": "Team:t44",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "101/greta"
    },
-   "agreedInMeeting": "Atruvia:m77"
+   "agreedInMeeting": "Team:m77"
   },
   {
-   "entry": "Atruvia:t45",
+   "entry": "Team:t45",
    "threadOfTodo": {
     "kind": "thread",
-    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Team",
     "tag": "101/carla"
    },
-   "agreedInMeeting": "Atruvia:m79"
+   "agreedInMeeting": "Team:m79"
   },
   {
-   "entry": "Atruvia:t46",
+   "entry": "Team:t46",
    "threadOfTodo": null,
    "agreedInMeeting": null
   },
   {
-   "entry": "Atruvia:a0",
+   "entry": "Team:a0",
    "agreementMadeIn": {
-    "itemPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "itemPath": "/storage/emulated/0/Note/2 Areas/Team",
     "meetingIndex": 77
    }
   },
   {
-   "entry": "Atruvia:a1",
+   "entry": "Team:a1",
    "agreementMadeIn": {
     "itemPath": "/storage/emulated/0/Note/1 Projects/Migration",
     "meetingIndex": 8
    }
   },
   {
-   "entry": "Atruvia:a2",
+   "entry": "Team:a2",
    "agreementMadeIn": {
     "itemPath": "/storage/emulated/0/Note/1 Projects/Tender",
     "meetingIndex": 0
    }
   },
   {
-   "entry": "Atruvia:a3",
+   "entry": "Team:a3",
    "agreementMadeIn": {
-    "itemPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "itemPath": "/storage/emulated/0/Note/2 Areas/Team",
     "meetingIndex": 4
    }
   },
   {
-   "entry": "Atruvia:a4",
+   "entry": "Team:a4",
    "agreementMadeIn": {
     "itemPath": "/storage/emulated/0/Note/1 Projects/Migration",
     "meetingIndex": 15
    }
   },
   {
-   "entry": "Atruvia:a5",
+   "entry": "Team:a5",
    "agreementMadeIn": {
     "itemPath": "/storage/emulated/0/Note/1 Projects/Migration",
     "meetingIndex": 18
    }
   },
   {
-   "entry": "Atruvia:a6",
+   "entry": "Team:a6",
    "agreementMadeIn": {
     "itemPath": "/storage/emulated/0/Note/1 Projects/Migration",
     "meetingIndex": 21
    }
   },
   {
-   "entry": "Atruvia:a7",
+   "entry": "Team:a7",
    "agreementMadeIn": {
     "itemPath": "/storage/emulated/0/Note/1 Projects/Migration",
     "meetingIndex": 10
    }
   },
   {
-   "entry": "Atruvia:a8",
+   "entry": "Team:a8",
    "agreementMadeIn": {
-    "itemPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "itemPath": "/storage/emulated/0/Note/2 Areas/Team",
     "meetingIndex": 76
    }
   },
   {
-   "entry": "Atruvia:a9",
+   "entry": "Team:a9",
    "agreementMadeIn": {
-    "itemPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
+    "itemPath": "/storage/emulated/0/Note/2 Areas/Team",
     "meetingIndex": 81
    }
   },

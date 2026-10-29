@@ -69,6 +69,7 @@ describe('demo space', () => {
     ]);
     expect(meetings.find(m => m.title.startsWith('Offsite planning'))!.date).toBe('2026-10-01');
     expect(coaching).toContain('- jordan: active');
+    expect(tasks.map(t => t.text)).toContain('Send Jordan the book tip #owe/jordan');
     expect(coaching).toContain('- workshop/offsite: active, 2026-10-15');
   });
 

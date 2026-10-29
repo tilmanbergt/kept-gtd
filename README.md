@@ -11,7 +11,7 @@ text in your own Projects / Areas / Resources / Archive folders, so you can read
 anywhere, with or without the plugin.
 
 **Keep your word with people.** Most of what you promise, you promise to someone: in a 1:1, a
-retro, a coaching session. Give a meeting series a nested tag such as `#101/jordan` and Kept GTD
+retro, a coaching session. Give a meeting series a nested tag such as `#sparring/jordan` and Kept GTD
 keeps its thread: when you meet next, what you agreed last time, what you owe and what you are
 waiting for. A project or area opens on its Threads tab, and the Weekly Review asks once a week
 which people and series you still tend. See [Threads](docs/user/threads.md).
@@ -53,7 +53,7 @@ More in [Why Kept GTD works this way](docs/user/philosophy.md).
 
 ## Features at a glance
 
-- **Threads**: tap a nested tag like `#retro/alpha` for everything around a person, team or meeting
+- **Threads**: tap a nested tag like `#sparring/jordan` for everything around a person, team or meeting
   series - next meetings, what you owe, what you wait for, what is relevant, what was agreed in
   past meetings and what got done since
 - **Tending threads**: confirm the people and series you work with per area, see what you owe and

@@ -1,6 +1,6 @@
 # Engage
 
-**Engage** is the step from organising to doing. While you work in a note, it shows a small panel over the note with your next actions for what you are working on, nothing else. One tap to open it, one or two taps to decide, and it is gone again.
+**Engage** is the step from organising to doing. While you work in a note, it shows a small panel over the note with your next actions (`#next`, see [Tags](tags.md#flow-tags-for-todos)) for what you are working on, nothing else. One tap to open it, one or two taps to decide, and it is gone again.
 
 ## Opening Engage
 
@@ -37,13 +37,13 @@ A heading you just wrote on the open page counts once the Supernote saved the pa
 
 Engage holds the same todos as the overviews:
 
-- **A thread** holds what its [thread overview](threads.md) holds: todos with the thread's tag, the plain tag (`#mieke`), todos agreed in one of its meetings and `#owe/mieke`.
+- **A thread** holds what its [thread overview](threads.md) holds: todos with the thread's tag, the plain tag (`#jordan`), todos agreed in one of its meetings and `#owe/…` with the counterpart's name.
 - **A loop** holds its tagged todos and the todos agreed in one of its meetings, also a meeting that is still running. See [Loops](loops.md).
 - **A Project or Area** holds its todos except those of its active loops, so a loop step never shows twice.
 
 ## On a meeting's page: before, during, after
 
-On a meeting's note or page (its Reflection page too), a line under the header names the meeting, for example "Sparring Mieke · today 10:00–11:00", with a switch **Before · During · After** on the right. The time chooses: **Before** until the meeting starts, **During** until its planned end, **After** for seven days from then. A meeting without a time is Before before its day, During on its day and After from the next day. Older meetings get no line.
+On a meeting's note or page (its Reflection page too), a line under the header names the meeting, for example "Sparring Jordan · today 10:00–11:00", with a switch **Before · During · After** on the right. The time chooses: **Before** until the meeting starts, **During** until its planned end, **After** for seven days from then. A meeting without a time is Before before its day, During on its day and After from the next day. Older meetings get no line.
 
 A meeting that ends early, or runs late: tap the moment you are in. Engage keeps your choice for this meeting until Kept GTD is closed; it is never written to a file.
 
@@ -57,18 +57,18 @@ During and after the meeting, what you add in Engage's Quick Add records the mee
 
 ## Next here and Today next
 
-- **Next here**, under the header, names the owner's next meeting at any distance, for example "Next here: Thu 23.10. 10:00 Sparring Mieke ›". Tap it to open the meeting's note (or create it, after the usual question); the panel closes. Without a meeting ahead the line is hidden, and so it is while it would name the meeting whose page you are on. For a loop the loop's own line names it (below).
+- **Next here**, under the header, names the owner's next meeting at any distance, for example "Next here: Thu 23.10. 10:00 Sparring Jordan ›". Tap it to open the meeting's note (or create it, after the usual question); the panel closes. Without a meeting ahead the line is hidden, and so it is while it would name the meeting whose page you are on. For a loop the loop's own line names it (below).
 - A **loop** has one line under the header, for example "Loop since 2.10. · 3 open   next: Thu 23.10. Workshop ›": since when it runs (its first meeting or todo), its open todos, and its next meeting, whose note a tap opens. With no meeting ahead it offers **+ Next workshop** instead.
-- **Today next**, quiet above **Open Kept GTD**, names your next meeting today with a time, from all projects, areas and the Inbox, for example "Today next: 14:00 Retro demand · in 40 min". How long until it starts shows only when it is less than three hours away. It is worked out when the panel opens or its data changes - there is no ticking clock. When it is the same meeting as Next here, it is left out and Next here says "· next today".
+- **Today next**, quiet above **Open Kept GTD**, names your next meeting today with a time, from all projects, areas and the Inbox, for example "Today next: 14:00 Plan the beds · in 40 min". How long until it starts shows only when it is less than three hours away. It is worked out when the panel opens or its data changes - there is no ticking clock. When it is the same meeting as Next here, it is left out and Next here says "· next today".
 
 ## Working on
 
 The todo you are working on stands at the top under **Working on**. When you haven't chosen one and the owner has exactly one `#next`, that one stands there as **Next action** - usually a project has just one next action. With several `#next` and none chosen, Engage says **Pick your next action below.**
 
 - A line with what matters about it: the due date (with "overdue"), or for a Waiting For who you are waiting for and when to follow up.
-- The meeting it was agreed in, for example "From Sparring Mieke · 14.10. ›": tap it to open that meeting's note.
+- The meeting it was agreed in, for example "From Sparring Jordan · 14.10. ›": tap it to open that meeting's note.
 - The large **✓** on the right ticks it off.
-- **w/f Mieke** makes it a Waiting For on the thread's counterpart (`#wf/mieke` instead of `#next`); for a loop or a project it is **w/f**, a plain `#wf`. **Do someday** parks it. **Remove #next** (when it has `#next`) sends it back to the plan.
+- **w/f Jordan** makes it a Waiting For on the thread's counterpart (`#wf/jordan` instead of `#next`); for a loop or a project it is **w/f**, a plain `#wf`. **Do someday** parks it. **Remove #next** (when it has `#next`) sends it back to the plan.
 - **Note ›** opens its note, or its page in a loop note or a shared notebook. Without a note, **+ Note** creates one the usual way: the status line first asks where it goes, and nothing is created without your confirmation.
 - **File: name ›** opens the file linked to it, for example a PDF.
 
@@ -78,10 +78,10 @@ Opening the note or the file closes the panel: the note is in front now.
 
 Below are the tabs, each with how many rows it lists, five per page. **From Thread**, **Waiting** and **Agreements** show only while they list something.
 
-- **From Thread** (for a loop **From Loop**, for a Project or Area **From meetings**): what came out of the owner's meetings that have started, newest meeting first, under a line such as "Tue 14.10. · Sparring Mieke": the open todos agreed in it, the agreements made in it (◇), and last the todos you agreed there and have done, struck through. Done todos show for the meetings that matter now: before a meeting for the one before it, during it for both, after it for this one, and away from a meeting's note for the latest that is over. Tap a `#next` row to work on it, **#next** makes a planned one a next action, **Done** ticks off one you are waiting for (marked "· waiting"). Someday and Maybe are left out. A Project or Area has the tab only on a meeting's note. A todo that is agreed and `#next` shows under From Thread and under Next.
+- **From Thread** (for a loop **From Loop**, for a Project or Area **From meetings**): what came out of the owner's meetings that have started, newest meeting first, under a line such as "Tue 14.10. · Sparring Jordan": the open todos agreed in it, the agreements made in it (◇), and last the todos you agreed there and have done, struck through. Done todos show for the meetings that matter now: before a meeting for the one before it, during it for both, after it for this one, and away from a meeting's note for the latest that is over. Tap a `#next` row to work on it, **#next** makes a planned one a next action, **Done** ticks off one you are waiting for (marked "· waiting"). Someday and Maybe are left out. A Project or Area has the tab only on a meeting's note. A todo that is agreed and `#next` shows under From Thread and under Next.
 - **Next**: the owner's other `#next` todos. Tap one to work on it: it moves up to **Working on**. **Remove #next** on a row sends it back to the plan.
 - **Plan**: the owner's todos without a flow state. **#next** on a row makes it a next action - it stays where it is, so you can mark several; then choose the one to work on under **Next**. **Someday** on a row parks it.
-- **Waiting**: the todos you are waiting for - for a thread `#wf/mieke`, and a plain `#wf` agreed in the thread or tagged with it - with where they were agreed ("from 14.10.") and **Done**.
+- **Waiting**: the todos you are waiting for - for a thread `#wf/jordan`, and a plain `#wf` agreed in the thread or tagged with it - with where they were agreed ("from 14.10.") and **Done**.
 - **Agreements**: the owner's active agreements with since when and till when they hold ("– over" once that day has passed). Tap one to show **Change** and **End**, tap again to hide them. Change opens Quick Add with its words; End asks once. See [Agreements](agreements.md).
 
 For a thread or a loop, Next and Plan list what you owe first - todos agreed in its meetings, and `#owe/…` for a thread - then the rest, each in the order of the file. A Project or Area keeps the order of the file.
@@ -113,8 +113,8 @@ Engage never moves on to another owner by itself. **Today's schedule ›** lists
 
 ## Quick Add, marks and leaving
 
-- **Go to** with the notebook's name, for example "Go to Garden renovation 2026 ›": when the owner is a project or area with a home notebook ([Projects and Areas](projects-and-areas.md)) and you are in another of its notes, this line opens the notebook and closes the panel.
-- **+ Quick Add** at the bottom opens Quick Add for the owner. For a loop or a thread, its tag is added to what you enter, shown in the grey line as `#sparring/mieke ✕`. During and after the meeting whose page you are on, new todos and agreements also record that meeting (`↳ from Sparring Mieke · Sat 24.10. ✕`). Tap a part's ✕ to add one entry without it. The **Agreement** tab adds an agreement to the owner's file, see [Agreements](agreements.md); it isn't there for an owner in the Inbox. **Cancel** folds it again.
+- **Go to** with the notebook's name, for example "Go to Garden renovation 2026 ›": when the owner is a project or area with a home notebook ([Projects and Areas](projects-and-areas.md#home-notebooks)) and you are in another of its notes, this line opens the notebook and closes the panel.
+- **+ Quick Add** at the bottom opens Quick Add for the owner. For a loop or a thread, its tag is added to what you enter, shown in the grey line as `#sparring/jordan ✕`. During and after the meeting whose page you are on, new todos and agreements also record that meeting (`↳ from Sparring Jordan · Sat 24.10. ✕`). Tap a part's ✕ to add one entry without it. The **Agreement** tab adds an agreement to the owner's file, see [Agreements](agreements.md); it isn't there for an owner in the Inbox. **Cancel** folds it again.
 - When the owner's Project or Area has marks to process, a line says so; it opens Process marks, and Close there brings you back to Engage.
 - **Open Kept GTD** opens the plugin as usual, **Close** (or ✕) closes the panel.
 

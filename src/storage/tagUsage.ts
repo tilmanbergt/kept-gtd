@@ -61,7 +61,7 @@ export async function recordTagsUsed(tags: string[]): Promise<void> {
 
 /**
  * `tags` without the counterparts set inactive (docs/dev/history/technical-design-tending-threads.md
- * §1.3): their nested tags (`#101/sven`) and plain leaf (`#sven`) are no
+ * §1.3): their nested tags (`#101/sam`) and plain leaf (`#sam`) are no
  * longer suggested. Read from the cache at call time; without a cache
  * nothing is left out.
  */

@@ -84,8 +84,8 @@ export function pageKindsOf(kind: SetupKind): PageKind[] {
 /**
  * Whether an item's tag matches a setup tag (docs/dev/history/
  * technical-design-split-by-tag.md §3.2): the tag itself, or a tag nested
- * under it - `coaching` matches `coaching` and `coaching/sabina`, never
- * `coachingx`, and `coaching/sabina` never matches plain `coaching`.
+ * under it - `coaching` matches `coaching` and `coaching/lena`, never
+ * `coachingx`, and `coaching/lena` never matches plain `coaching`.
  * Both sides are expected lowercased.
  */
 export function tagMatchesSetupTag(itemTag: string, setupTag: string): boolean {
@@ -94,8 +94,8 @@ export function tagMatchesSetupTag(itemTag: string, setupTag: string): boolean {
 
 /**
  * The part of the first item tag nested under any of `setupTags`, with that
- * prefix removed - `['coaching/sabina']` under `coaching` gives `"sabina"`;
- * deeper nesting keeps the rest (`coaching/sabina/2026` -> `"sabina/2026"`).
+ * prefix removed - `['coaching/lena']` under `coaching` gives `"lena"`;
+ * deeper nesting keeps the rest (`coaching/lena/2026` -> `"lena/2026"`).
  * Item tags are scanned in their own order, so the first nested tag wins.
  * Lowercased; `""` when no item tag is nested under a setup tag.
  */

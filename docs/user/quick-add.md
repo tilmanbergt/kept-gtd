@@ -16,7 +16,7 @@ While you write in the text or date field, a small strip hovers over the tabs: *
 ## Adding a todo
 
 1. Choose the **Todo** tab and write the text. Handwriting is recognized as you write.
-2. Optionally tap a flow chip: **Next**, **w/f** (waiting for), **Someday** or **Maybe**.
+2. Optionally tap a flow chip: **Next**, **w/f** (waiting for), **Someday** or **Maybe** (see [Tags](tags.md#flow-tags-for-todos)).
 3. Optionally set a due date. While the date field is active, a strip offers -1, Today, +1 and +7.
 4. Tap **+ Add** at the top right.
 
@@ -26,11 +26,11 @@ Recently used tags fill rows 3 and 4: tap one to insert it into the text, tap a 
 
 ## Adding a meeting
 
-Choose the **Meeting** tab, write the title, set the date and the time. For the time field see [Week and Month](week-and-month.md) (for example `15-16.30` or `2d`). The small **M** next to **+ Add** marks a monthly highlight; **F** makes it a focus block, time of your own for a loop, thread, project or area (see [Meetings](meetings.md)). When a new todo or meeting lands in a project or area the current context hides, the status line says so: "Saved to Atruvia · hidden by Home".
+Choose the **Meeting** tab, write the title, set the date and the time. For the time field see [Week and Month](week-and-month.md) (for example `15-16.30` or `2d`). The small **M** next to **+ Add** marks a monthly highlight; **F** makes it a focus block, time of your own for a loop, thread, project or area (see [Focus blocks](meetings.md#focus-blocks)). When a new todo or meeting lands in a project or area the current [context](contexts.md) hides, the status line says so: "Saved to Team · hidden by Home".
 
 ## The grey line: where a todo comes from
 
-Where a todo is agreed in a meeting - in a thread overview, in the Review step **Meetings to close out**, or when you capture from a meeting's note page - Quick Add shows one grey line in its fourth row, for example `↳ from Retro alpha · Wed 30.9.`. The new todo then records that meeting at the end of its line; its tags stay as you type them. In a thread overview the line also names the thread's tag, which new todos get (for example `#retro/alpha ✕`). Each part has its own ✕: tap it to add this one todo without it. See [Threads](threads.md).
+Where a todo is agreed in a meeting - in a thread overview, in the Review step **Meetings to close out**, or when you capture from a meeting's note page - Quick Add shows one grey line in its fourth row, for example `↳ from Sparring Jordan · Wed 30.9.`. The new todo then records that meeting at the end of its line; its tags stay as you type them. In a thread overview the line also names the thread's tag, which new todos get (for example `#sparring/jordan ✕`). Each part has its own ✕: tap it to add this one todo without it. See [Threads](threads.md).
 
 ## Adding an agreement
 
@@ -48,7 +48,7 @@ Every project and area has a short abbreviation, for example `GR` for "Garden re
 
 Whatever you add without a project or area lands in the Inbox: from Daily, Week and Month, from a lasso capture you don't file right away, and marks from notes outside your projects and areas. The **Inbox** tab shows all of it, grouped into Next, Waiting For, Someday, Maybe and Other; **Hide done tasks** keeps it short. The Files pane on the left lets you look into your projects, areas and resources while you sort.
 
-To empty the Inbox, tap each item and, on its card, either finish it, delete it, or move it with the arrow next to its place (or an abbreviation tag while editing, see above). The Weekly Review has a step **Inbox to zero** for exactly this.
+To empty the Inbox, tap each item and, on its card, either finish it, delete it, or move it with the arrow next to its place (or an abbreviation tag while editing, see above). The [Weekly Review](review.md) has a step **Inbox to zero** for exactly this.
 
 ## The card: one tap selects
 
@@ -56,7 +56,7 @@ Tap a todo or a meeting in a list with Quick Add: the row gets a black bar and t
 
 The todo card shows:
 
-- First row: **Todo** and its state - due, overdue, waiting for someone, someday, done or deleted; the meeting it was agreed in (for example `↳ Sparring Mieke ›`, which opens that thread's overview); ✕ and **Edit**.
+- First row: **Todo** and its state - due, overdue, waiting for someone, someday, done or deleted; the meeting it was agreed in (for example `↳ Sparring Jordan ›`, which opens that thread's overview); ✕ and **Edit**.
 - Second row: the text and its labels.
 - Third row: the box to tick it done; the flow chips **w/f**, **Maybe**, **Someday** and **Next** (tap one to set it, tap the filled one to clear it); the note icon.
 - Fourth row: where the todo lives (tap the name to open it; where a Files pane is there, the arrow next to it moves the todo to another project or area); its linked file (tap the name to open it, ✕ removes the link), or **+** and the clip to link one where a Files pane is there; at the right the trash icon, which asks first and then removes the todo from your lists - it stays in the file, marked as cancelled.
@@ -73,7 +73,7 @@ The meeting card is described in [Meetings](meetings.md). Cards exist wherever a
 
 Every todo and meeting can have its own handwritten note - one of Kept's most useful features. One tap creates it, already filled in: title, date and time, related open todos, a background from your templates. Next time the same tap opens it again.
 
-- The note icon (+ with a notebook) creates a note for the todo or meeting and opens it, after you confirm what will be created in the status line; the notebook icon opens it later. How the note looks and where it goes is set by [Note setups](note-setups.md).
+- The note icon (+ with a notebook) creates a note for the todo or meeting and opens it, after you confirm what will be created in the status line; the notebook icon opens it later. How the note looks and where it goes is set by [Note setups](note-setups.md); by default it is a page in the project's or area's [home notebook](projects-and-areas.md#home-notebooks).
 - The clip icon links an existing file (for example a PDF from Resources). On a todo row, tap the `+` clip, then tap the file in the Files pane; or select the todo or meeting and tap **+** and the clip on its card. A filled clip opens the linked file. To remove a link, tap ✕ next to the file's name on the card.
 
 ## Capturing handwriting with the lasso

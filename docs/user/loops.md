@@ -6,18 +6,18 @@ Threads you tend, loops you close: a thread (see [Threads](threads.md)) is an on
 
 ## Kinds of loops
 
-A loop is named by a nested tag, `#<kind>/<name>`, for example `#workshop/teamoffsite` or `#read/deepwork`. The kinds come from your Note setups: a setup of the kind **Loop** on the tag `workshop` makes every `#workshop/<name>` a loop. Each kind has its own pages for the loop note, see [Note setups](note-setups.md).
+A loop is named by a nested tag, `#<kind>/<name>`, for example `#workshop/offsite` or `#race/marathon`. The kinds come from your Note setups: a setup of the kind **Loop** on the tag `workshop` makes every `#workshop/<name>` a loop. Each kind has its own pages for the loop note, see [Note setups](note-setups.md).
 
-- Only the full tag counts: `#workshop/teamoffsite`. A plain `#teamoffsite` is just a tag.
+- Only the full tag counts: `#workshop/offsite`. A plain `#offsite` is just a tag.
 - A loop belongs to exactly one Area or Project: the one its line is in. The Inbox never holds loops.
 
 ## Starting a loop
 
-Type only the loop's tag into Quick Add, for example `#workshop/teamoffsite`. The button turns into **+ Add loop**, and the date field becomes the loop's **main date**: the day it is all about, like the workshop day. A file you attach becomes the loop's linked file. After the tap, the status line says the loop has started.
+Type only the loop's tag into [Quick Add](quick-add.md), for example `#workshop/offsite`. The button turns into **+ Add loop**, and the date field becomes the loop's **main date**: the day it is all about, like the workshop day. A file you attach becomes the loop's linked file. After the tap, the status line says the loop has started.
 
 - `#next` doesn't change this: a todo that is only a loop tag is the loop.
-- With `#someday` or `#maybe`, it stays a todo: a **loop idea**, such as `#read/oldshatterhand #someday`. When you take someday or maybe off - in Quick Add or in the Weekly Review - it becomes the loop.
-- A todo with words and a loop tag, like `Book room #workshop/teamoffsite`, is a todo of that loop.
+- With `#someday` or `#maybe`, it stays a todo: a **loop idea**: a loop tag together with `#someday`. When you take someday or maybe off - in Quick Add or in the [Weekly Review](review.md#open-loops) - it becomes the loop.
+- A todo with words and a loop tag, like `Book the workshop room #workshop/offsite`, is a todo of that loop.
 - A todo you already have can become a loop: edit it and replace its text with the loop's tag. **Save** turns into **Make loop**; its due date becomes the main date, and its own note and linked file come along.
 - In the Inbox, a loop tag on its own stays a todo; it becomes the loop when you file it into an Area or Project.
 - If the loop already exists, **+ Add** stays grey: type some words to add a todo of it.
@@ -46,17 +46,17 @@ A todo is one of the loop's when it has the loop's tag, or was agreed in one of 
 
 ## The loop note
 
-Every loop has one note, from start to end, in its Area's or Project's folder. Its name comes from the Loop setup (see [Note setups](note-setups.md)), for example `2026-11 workshop teamoffsite`.
+Every loop has one note, from start to end, in its Area's or Project's folder. Its name comes from the Loop setup (see [Note setups](note-setups.md)), for example `2026-11 workshop offsite`.
 
 - The 📓 on a loop row, or **Note ›** in the overview, opens it. The first time, the status line asks, then the note is created: its first page is the loop's own, filled from the Loop setup's First page.
-- A todo of the loop gets its note as a page in the loop note. A meeting does too, unless it also carries the tag of a Thread setup - `#jf`, say: a meeting goes to the thread first. When both are possible, the question before the note is created offers the other place as a second button; the meeting still shows in the loop. Pages follow the timeline after the loop's page, see [Note setups](note-setups.md).
+- A todo of the loop gets its note as a page in the loop note. A meeting does too, unless it also carries the tag of a Thread setup - `#sparring`, say: a meeting goes to the thread first. When both are possible, the question before the note is created offers the other place as a second button; the meeting still shows in the loop. Pages follow the timeline after the loop's page, see [Note setups](note-setups.md).
 - Prep and review tracking applies when any setup matching the meeting asks for it.
 
 ## Editing a loop
 
 **Edit** in the overview loads the loop into Quick Add: its tag, its main date and its linked file. Change them and tap **Save loop**.
 
-- A new name, like `#workshop/offsite` instead of `#workshop/teamoffsite`, renames the loop: the status line asks first, then every todo and meeting of the loop gets the new tag.
+- A new name after the `/` renames the loop: the status line asks first, then every todo and meeting of the loop gets the new tag.
 - When the loop note's name changes with it - with the default name, when the main date moves to another month - the status line asks before the note is renamed. Links to it follow.
 - Declining a question saves nothing.
 
@@ -76,6 +76,6 @@ The step **Open loops** lists the loops that need a look, per area and project: 
 
 The loops of an Area or Project are listed in its file, under `## Loops`:
 
-`- workshop/teamoffsite: active, 2026-11-14, [[Offsite brief.pdf]]`
+`- workshop/offsite: active, 2026-11-14, [[Offsite brief.pdf]]`
 
 The status (`active`, `done` or `dropped`), then the main date and the linked file, both optional. You can read and change these lines in Obsidian like the rest of the file.

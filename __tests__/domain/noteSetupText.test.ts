@@ -42,7 +42,7 @@ describe('row texts', () => {
 
 describe('setupTagChoices', () => {
   it('types first, then plain tags; tags of other setups left out; own tags kept', () => {
-    const recent = ['coaching/sabina', 'retro/alpha', 'daily', '#Workshop/offsite', 'sparring'];
+    const recent = ['coaching/lena', 'retro/alpha', 'daily', '#Workshop/offsite', 'sparring'];
     expect(setupTagChoices(recent, [sparring, workshop], null, [])).toEqual(['coaching', 'daily']);
     expect(setupTagChoices(recent, [sparring, workshop], '1', sparring.tags)).toEqual(['sparring', 'retro', 'coaching', 'daily']);
   });

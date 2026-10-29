@@ -1,14 +1,14 @@
 /**
- * A deterministic, Atruvia-sized data set for the Threads performance work
+ * A deterministic, Team-sized data set for the Threads performance work
  * (docs/dev/history/technical-design-perf-threads.md §6 scenario 1, §7): one Area
- * (Atruvia) with two Projects, about 25 counterparts, 130 meetings and 90 todos,
+ * (Team) with two Projects, about 25 counterparts, 130 meetings and 90 todos,
  * half of them agreed in a meeting, agreements with a `meeting` field, Inbox
  * entries, and around it a second Area (Zen) and a lone Project (Solo).
  *
  * Seeded (Park-Miller) with a fixed "now", so every run builds the same files. The
  * cases of §6 scenarios 2-5 are written in by hand:
- * - scope first: a meeting line that exists in Atruvia and in Zen, and one only in Zen;
- * - first in file: the same meeting line twice in Atruvia's file;
+ * - scope first: a meeting line that exists in Team and in Zen, and one only in Zen;
+ * - first in file: the same meeting line twice in Team's file;
  * - cancelled: a todo naming a cancelled meeting exactly, and one whose renamed meeting
  *   (same date and thread) is cancelled;
  * - renamed: two todos whose meeting was renamed (same date and thread), and one whose
@@ -82,7 +82,7 @@ function meetingLine(m: MeetingSpec): string {
   return `- ${m.cancelled ? '[-] ' : ''}${m.date} ${m.time} ${m.title}`;
 }
 
-/** The thread series of Atruvia and its Projects: type, counterpart, display name, how often. */
+/** The thread series of Team and its Projects: type, counterpart, display name, how often. */
 const SERIES: ReadonlyArray<{type: string; cp: string; title: string; weight: number}> = [
   {type: '101', cp: 'anna', title: '1:1 Anna', weight: 3},
   {type: '101', cp: 'bert', title: '1:1 Bert', weight: 3},
@@ -103,7 +103,7 @@ const SERIES: ReadonlyArray<{type: string; cp: string; title: string; weight: nu
   {type: 'jf', cp: 'works', title: 'Jour fixe works council', weight: 2},
   {type: 'jf', cp: 'it', title: 'JF IT', weight: 2},
   {type: 'sparring', cp: 'jordan', title: 'Sparring Jordan', weight: 2},
-  {type: 'sparring', cp: 'sven', title: 'Sparring Sven', weight: 1},
+  {type: 'sparring', cp: 'sam', title: 'Sparring Sam', weight: 1},
 ];
 
 const ONE_OFFS = {wf: ['olga', 'paul'], owe: ['quinn', 'rosa'], both: ['stan']};
@@ -115,7 +115,7 @@ export function bigScopeFiles(): BigFile[] {
   const int = (lo: number, hi: number) => lo + Math.floor(random() * (hi - lo + 1));
   const weighted = SERIES.flatMap(s => Array.from({length: s.weight}, () => s));
 
-  // --- meetings: 120 generated across Atruvia (most), Tender and Migration, then the hand-made cases.
+  // --- meetings: 120 generated across Team (most), Tender and Migration, then the hand-made cases.
   const atruviaMeetings: MeetingSpec[] = [];
   const tenderMeetings: MeetingSpec[] = [];
   const migrationMeetings: MeetingSpec[] = [];
@@ -144,7 +144,7 @@ export function bigScopeFiles(): BigFile[] {
   atruviaMeetings.push({date: bigDay(9), time: '10:00-11:00', title: '1:1 Vera #101/vera'});
   atruviaMeetings.push({date: bigDay(-60), time: '10:00-11:00', title: '1:1 Vera #101/vera'});
   tenderMeetings.push({date: bigDay(-5), time: '14:00-15:00', title: 'Tender kick-off'});
-  // §6 scenario 2: the same line in Atruvia and in Zen; one only in Zen.
+  // §6 scenario 2: the same line in Team and in Zen; one only in Zen.
   const shared: MeetingSpec = {date: bigDay(-40), time: '10:00-12:00', title: 'Strategy offsite #jf/board'};
   atruviaMeetings.push(shared);
   // §6 scenario 3: the same line twice in one file.
@@ -175,7 +175,7 @@ export function bigScopeFiles(): BigFile[] {
   ];
   const inboxMeetings: MeetingSpec[] = [
     {date: bigDay(-2), time: '13:00-13:30', title: 'Call with Anna #101/anna'},
-    {date: bigDay(-6), time: '17:00-17:30', title: 'Coffee with Sven'},
+    {date: bigDay(-6), time: '17:00-17:30', title: 'Coffee with Sam'},
     {date: bigDay(4), time: '08:00-08:30', title: 'Dentist'},
   ];
 
@@ -260,7 +260,7 @@ export function bigScopeFiles(): BigFile[] {
     agreement('Eva sets her own goals #101/eva', {meeting: `${renamedEva.date} 1:1 Eva 101/eva`}),
   );
 
-  // --- Inbox: todos agreed in Atruvia's and the Inbox's meetings, and plain ones.
+  // --- Inbox: todos agreed in Team's and the Inbox's meetings, and plain ones.
   const inboxTodos = [
     todo('Anna asked for the deck', {meeting: keyOf(inboxMeetings[0])}),
     todo('Filed later: board question', {meeting: keyOf(usable[3])}),
@@ -270,7 +270,7 @@ export function bigScopeFiles(): BigFile[] {
   ];
 
   const threadLines = [
-    ...['anna', 'bert', 'carla', 'dirk', 'eva', 'frank', 'greta', 'hans', 'ines', 'alpha', 'beta', 'gamma', 'board', 'works', 'it', 'jordan', 'sven'].map(
+    ...['anna', 'bert', 'carla', 'dirk', 'eva', 'frank', 'greta', 'hans', 'ines', 'alpha', 'beta', 'gamma', 'board', 'works', 'it', 'jordan', 'sam'].map(
       cp => `- ${cp}: active`,
     ),
     '- ulf: inactive',
@@ -292,16 +292,16 @@ export function bigScopeFiles(): BigFile[] {
   const area = (name: string, extra: string[], parts: Record<string, string[]>) => file('area', name, `${PATHS.areas}/${name}`, 'area.txt', extra, parts);
 
   return [
-    project('Tender', ['area: Atruvia', 'abbrev: TD'], {
+    project('Tender', ['area: Team', 'abbrev: TD'], {
       Tasks: tenderTodos,
       Meetings: tenderMeetings.map(meetingLine),
       Agreements: tenderAgreements,
       // A status line in a member Project: the owner's line wins.
       Threads: ['- hans: inactive'],
     }),
-    project('Migration', ['area: Atruvia', 'abbrev: MG'], {Tasks: migrationTodos, Meetings: migrationMeetings.map(meetingLine)}),
+    project('Migration', ['area: Team', 'abbrev: MG'], {Tasks: migrationTodos, Meetings: migrationMeetings.map(meetingLine)}),
     project('Solo', ['abbrev: SO'], {Tasks: [todo('Omega action items #retro/omega', {meeting: keyOf(soloMeetings[0])})], Meetings: soloMeetings.map(meetingLine)}),
-    area('Atruvia', ['abbrev: AT'], {
+    area('Team', ['abbrev: AT'], {
       Tasks: atruviaTodos,
       Meetings: atruviaMeetings.map(meetingLine),
       Agreements: atruviaAgreements,
@@ -349,13 +349,13 @@ function cachedItemOf(f: BigFile): CachedItem {
   };
 }
 
-/** The data set as the cache holds it: the Projects and Areas, the Inbox's lists, and Atruvia (the scope's owner). */
-export function bigScopeCache(): {items: CachedItem[]; inbox: ThreadInboxInput; atruvia: CachedItem} {
+/** The data set as the cache holds it: the Projects and Areas, the Inbox's lists, and Team (the scope's owner). */
+export function bigScopeCache(): {items: CachedItem[]; inbox: ThreadInboxInput; team: CachedItem} {
   const files = bigScopeFiles();
   const items = files.filter(f => f.kind !== 'inbox').map(cachedItemOf);
   const inboxFile = files.find(f => f.kind === 'inbox')!;
   const inbox = {path: inboxFile.folder, tasks: parseTasksSpan(inboxFile.content).tasks, meetings: parseMeetingsSpan(inboxFile.content).meetings};
-  return {items, inbox, atruvia: items.find(i => i.name === 'Atruvia')!};
+  return {items, inbox, team: items.find(i => i.name === 'Team')!};
 }
 
 /** The settings for the data set: its Thread and Loop setups, the seeded Default, everything else default. */

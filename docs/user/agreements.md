@@ -2,13 +2,13 @@
 
 An agreement is something you settle with someone that is not a todo: "Feedback only in our 1:1s", "No calls after six", "Slides go out a day ahead". Nobody ticks it off. It holds until you change or end it, or until the date it is valid till.
 
-Kept keeps agreements next to the todos and meetings they belong to, so you see them when they matter: in a thread's overview, in a loop's overview and on a project's or area's page.
+Kept keeps agreements next to the todos and meetings they belong to, so you see them when they matter: in a [thread](threads.md)'s overview, in a [loop](loops.md)'s overview and on a project's or area's page.
 
 ## Who an agreement belongs to
 
 Like a todo, an agreement belongs where its tags say:
 
-- **A thread**: tagged with the thread, for example `#sparring/mieke`, or with the plain `#mieke`. It shows in the thread's overview, and in **All mieke**.
+- **A thread**: tagged with the thread, for example `#sparring/jordan`, or with the plain `#jordan`. It shows in the thread's overview, and in **All jordan**.
 - **A loop**: tagged with the loop, for example `#workshop/offsite`. It shows in the loop's overview.
 - **A project or area**: no thread or loop tag. It shows on its page.
 
@@ -63,8 +63,8 @@ Agreements are plain bullets in a section `## Agreements`:
 
 ```
 ## Agreements
-- Feedback only in our 1:1s #sparring/mieke [meeting:: 2026-10-14 Sparring Mieke sparring/mieke] [created:: 2026-10-14] [valid:: 2026-12-31]
-- No calls after six #mieke [created:: 2026-09-02] [ended:: 2026-10-20]
+- Feedback only in our 1:1s #sparring/jordan [meeting:: 2026-10-14 Sparring Jordan sparring/jordan] [created:: 2026-10-14] [valid:: 2026-12-31]
+- No calls after six #jordan [created:: 2026-09-02] [ended:: 2026-10-20]
 ```
 
 - `[meeting:: …]` is the meeting it was made in, `[created:: …]` the day it was added, `[valid:: …]` the day it holds until, `[ended:: …]` the day it was ended. An agreement without `ended` is active.

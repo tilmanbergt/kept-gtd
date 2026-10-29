@@ -47,7 +47,7 @@ export interface MeetingContextSlot extends MeetingContextData {
     provenance: QuickAddAdds | undefined;
     onAddTask: Base['addTask'];
     onAddMeeting: Base['addMeeting'];
-    /** "+ Add to Atruvia" while adding to the meeting. */
+    /** "+ Add to Team" while adding to the meeting. */
     addToName: string | undefined;
     /** Changes when `add` mode starts: Quick Add shows its Todo tab. */
     showTodoKey: string | null;

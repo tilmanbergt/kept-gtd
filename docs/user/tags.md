@@ -6,9 +6,9 @@ Tags are words with a `#` in front, written straight into a todo or meeting. The
 
 Each todo has at most one of these. The chips in Quick Add set them for you.
 
-- `#next`: the next physical step. Shows on Daily (in the current context, see [Contexts](contexts.md)). Label: `#next`.
+- `#next`: the next physical step. Shows on [Daily](daily.md) (in the current context, see [Contexts](contexts.md)). Label: `#next`.
 - `#wf/name`: you are waiting for someone, for example `#wf/lena`, or just `#wf` without a name. Shows on Daily until you get it (label `#w/f Lena`); give it a due date to keep it off Daily until that day. You also find them in the **Waiting For** group of their project, area or the Inbox. The older form `#waiting-for:lena` still works; Kept GTD writes `#wf/lena` the next time you edit the todo in Quick Add.
-- `#someday` and `#maybe`: parked ideas. Never on Daily; a project with only these counts as stalled in the Review.
+- `#someday` and `#maybe`: parked ideas. Never on Daily; a project with only these counts as stalled in the [Review](review.md#the-steps).
 
 ## Due dates
 
@@ -27,7 +27,7 @@ Todos added with older versions get no created date, and a todo checked before t
 
 ## Promises: #owe/name
 
-`#owe/name` marks something you promised someone outside a meeting, for example `#owe/lena`. It is not a flow tag: it goes together with `#next`, `#someday` or a due date. The todo shows under **I owe** in Lena's thread overview, see [Threads](threads.md). A plain `#owe` without a name is an ordinary tag.
+`#owe/name` marks something you promised someone outside a meeting: `#owe/` and the person's name, written like `#wf/lena`. It is not a flow tag: it goes together with `#next`, `#someday` or a due date. The todo shows under **I owe** in that person's thread overview, see [Threads](threads.md). A plain `#owe` without a name is an ordinary tag.
 
 ## Now
 
@@ -39,11 +39,11 @@ Any other tag is a context tag: a person (`#lena`), a topic (`#budget`) or a rec
 
 ## Nested tags
 
-A tag can have parts separated by `/`, for example `#coaching/sabina`. It is one tag: one chip in Quick Add. Obsidian reads the same syntax as a nested tag.
+A tag can have parts separated by `/`, for example `#sparring/jordan`. It is one tag: one chip in Quick Add. Obsidian reads the same syntax as a nested tag.
 
-- A Note setup on `coaching` also covers `#coaching/sabina`, `#coaching/tom` and so on. The part after the `/` can choose the notebook, see [Note setups](note-setups.md).
-- Tapping a nested tag in any list opens its thread overview: everything around `#coaching/sabina` - upcoming meetings, open todos, what you wait for and what was agreed in past meetings. See [Threads](threads.md). On Daily, a nested tag does not filter the list; a plain tag does.
-- When the first part is a tag of one of your Thread setups (here `coaching`), or `wf` or `owe`, the second part (`sabina`) is a counterpart you are asked to tend. One you set inactive no longer appears among the suggested tags in Quick Add, neither `#coaching/sabina` nor `#sabina`; you can still type it. See [Threads](threads.md).
+- A Note setup on `sparring` also covers `#sparring/jordan` and every other `#sparring/…`. The part after the `/` can choose the notebook, see [Note setups](note-setups.md).
+- Tapping a nested tag in any list opens its thread overview: everything around `#sparring/jordan` - upcoming meetings, open todos, what you wait for and what was agreed in past meetings. See [Threads](threads.md). On Daily, a nested tag does not filter the list; a plain tag does.
+- When the first part is a tag of one of your Thread setups (here `sparring`), or `wf` or `owe`, the second part (`jordan`) is a counterpart you are asked to tend. One you set inactive no longer appears among the suggested tags in Quick Add, neither `#sparring/jordan` nor `#jordan`; you can still type it. See [Threads](threads.md).
 
 ## Project and area abbreviations
 

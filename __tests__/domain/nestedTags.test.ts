@@ -13,7 +13,7 @@ import {createNoteSetup, matchingSetups, NoteSetup, setupSubtag, tagMatchesSetup
 
 describe('nested tags - parsing', () => {
   it('reads #parent/child as one tag', () => {
-    expect(deriveMeetingFields('Session #coaching/sabina').tags).toEqual(['coaching/sabina']);
+    expect(deriveMeetingFields('Session #coaching/lena').tags).toEqual(['coaching/lena']);
     expect(deriveMeetingFields('#a/b/c x').tags).toEqual(['a/b/c']);
   });
 
@@ -26,7 +26,7 @@ describe('nested tags - parsing', () => {
   });
 
   it('lowercases nested tags like every tag', () => {
-    expect(deriveMeetingFields('#Coaching/Sabina').tags).toEqual(['coaching/sabina']);
+    expect(deriveMeetingFields('#Coaching/Lena').tags).toEqual(['coaching/lena']);
   });
 
   it('leaves the existing tag kinds unchanged', () => {
@@ -37,27 +37,27 @@ describe('nested tags - parsing', () => {
   });
 
   it('treats a nested tag as a context tag', () => {
-    expect(extractContextTags('Session #coaching/sabina #next')).toEqual(['coaching/sabina']);
+    expect(extractContextTags('Session #coaching/lena #next')).toEqual(['coaching/lena']);
   });
 
   it('splits text into one tag segment per nested tag', () => {
-    expect(splitTextWithTags('Session #coaching/sabina today')).toEqual([
+    expect(splitTextWithTags('Session #coaching/lena today')).toEqual([
       {kind: 'text', value: 'Session '},
-      {kind: 'tag', value: 'coaching/sabina', raw: '#coaching/sabina'},
+      {kind: 'tag', value: 'coaching/lena', raw: '#coaching/lena'},
       {kind: 'text', value: ' today'},
     ]);
-    expect(stripAllTags('Session #coaching/sabina today')).toBe('Session today');
+    expect(stripAllTags('Session #coaching/lena today')).toBe('Session today');
   });
 });
 
 describe('nested tags - whole-tag guards', () => {
   it('removing the parent tag does not touch a nested tag', () => {
-    expect(removeTagFromText('x #coaching/sabina', 'coaching')).toBe('x #coaching/sabina');
-    expect(removeTagFromText('x #coaching/sabina #coaching', 'coaching')).toBe('x #coaching/sabina');
+    expect(removeTagFromText('x #coaching/lena', 'coaching')).toBe('x #coaching/lena');
+    expect(removeTagFromText('x #coaching/lena #coaching', 'coaching')).toBe('x #coaching/lena');
   });
 
   it('removing a nested tag removes exactly that tag', () => {
-    expect(removeTagFromText('x #coaching/sabina #coaching/tom', 'coaching/sabina')).toBe('x #coaching/tom');
+    expect(removeTagFromText('x #coaching/lena #coaching/tom', 'coaching/lena')).toBe('x #coaching/tom');
   });
 
   it('still guards the other tag shapes', () => {
@@ -77,32 +77,32 @@ describe('nested tags - Note setup matching', () => {
 
   it('tagMatchesSetupTag: itself and children only', () => {
     expect(tagMatchesSetupTag('coaching', 'coaching')).toBe(true);
-    expect(tagMatchesSetupTag('coaching/sabina', 'coaching')).toBe(true);
-    expect(tagMatchesSetupTag('coaching/sabina/2026', 'coaching')).toBe(true);
+    expect(tagMatchesSetupTag('coaching/lena', 'coaching')).toBe(true);
+    expect(tagMatchesSetupTag('coaching/lena/2026', 'coaching')).toBe(true);
     expect(tagMatchesSetupTag('coachingx', 'coaching')).toBe(false);
-    expect(tagMatchesSetupTag('coaching', 'coaching/sabina')).toBe(false);
+    expect(tagMatchesSetupTag('coaching', 'coaching/lena')).toBe(false);
   });
 
   it('matchingSetups matches a setup through a nested tag', () => {
     const coaching = setup('Coaching', ['coaching']);
-    expect(matchingSetups(['coaching/sabina'], [coaching])).toEqual([coaching]);
+    expect(matchingSetups(['coaching/lena'], [coaching])).toEqual([coaching]);
     expect(matchingSetups(['coachingx'], [coaching])).toEqual([]);
   });
 
   it('keeps list order as priority', () => {
-    const first = setup('Sabina', ['coaching/sabina']);
+    const first = setup('Lena', ['coaching/lena']);
     const second = setup('Coaching', ['coaching']);
-    expect(matchingSetups(['coaching/sabina'], [first, second])[0]).toBe(first);
-    expect(matchingSetups(['coaching/sabina'], [second, first])[0]).toBe(second);
+    expect(matchingSetups(['coaching/lena'], [first, second])[0]).toBe(first);
+    expect(matchingSetups(['coaching/lena'], [second, first])[0]).toBe(second);
     expect(matchingSetups(['coaching'], [first, second])).toEqual([second]);
   });
 
   it('setupSubtag: first nested tag wins, deeper nesting kept, none -> ""', () => {
-    expect(setupSubtag(['next', 'coaching/sabina', 'coaching/tom'], ['coaching'])).toBe('sabina');
-    expect(setupSubtag(['coaching/sabina/2026'], ['coaching'])).toBe('sabina/2026');
+    expect(setupSubtag(['next', 'coaching/lena', 'coaching/tom'], ['coaching'])).toBe('lena');
+    expect(setupSubtag(['coaching/lena/2026'], ['coaching'])).toBe('lena/2026');
     expect(setupSubtag(['coaching'], ['coaching'])).toBe('');
     expect(setupSubtag(['coachingx/a'], ['coaching'])).toBe('');
-    expect(setupSubtag(['Coaching/Sabina'], ['COACHING'])).toBe('sabina');
+    expect(setupSubtag(['Coaching/Lena'], ['COACHING'])).toBe('lena');
     expect(setupSubtag(['team/a'], ['coaching', 'team'])).toBe('a');
   });
 });

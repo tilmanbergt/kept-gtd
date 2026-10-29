@@ -33,8 +33,8 @@ beforeEach(() => {
   mockWrites.length = 0;
   mockUpdates.length = 0;
   mockItems = [
-    item('area', 'Atruvia', {rawContent: '---\nkind: area\nstatus: active\n---\n\n## Scope\n\n## Tasks\n\n## Meetings\n'}),
-    item('project', 'Tender', {area: 'Atruvia', rawContent: '---\nkind: project\nstatus: active\narea: Atruvia\n---\n'}),
+    item('area', 'Team', {rawContent: '---\nkind: area\nstatus: active\n---\n\n## Scope\n\n## Tasks\n\n## Meetings\n'}),
+    item('project', 'Tender', {area: 'Team', rawContent: '---\nkind: project\nstatus: active\narea: Team\n---\n'}),
     item('project', 'Solo', {rawContent: '---\nkind: project\nstatus: active\n---\n\n## Tasks\n'}),
   ];
 });

@@ -17,16 +17,16 @@ const FILE = [
   '---',
   '',
   '## Tasks',
-  '- [ ] Raise budget #101/sven',
+  '- [ ] Raise budget #101/sam',
   '',
   '## Threads',
   '- client-a: active',
   '- Client-B:  Inactive',
-  '- sven: active, ~3w',
+  '- sam: active, ~3w',
   'a note by hand',
   '',
   '## Meetings',
-  '- 2026-10-01 10:00 1:1 #101/sven',
+  '- 2026-10-01 10:00 1:1 #101/sam',
   '',
 ].join('\n');
 
@@ -36,7 +36,7 @@ describe('parseThreadsSpan', () => {
     expect(threads.map(t => [t.leaf, t.status, t.rest])).toEqual([
       ['client-a', 'active', null],
       ['client-b', 'inactive', null],
-      ['sven', 'active', ' ~3w'],
+      ['sam', 'active', ' ~3w'],
     ]);
     expect(extraLines).toEqual(['a note by hand']);
   });
@@ -53,7 +53,7 @@ describe('parseThreadsSpan', () => {
 
   it('is part of the parsed file state', () => {
     const state = parseProjectFileContent(FILE);
-    expect(state.threads.map(t => t.leaf)).toEqual(['client-a', 'client-b', 'sven']);
+    expect(state.threads.map(t => t.leaf)).toEqual(['client-a', 'client-b', 'sam']);
     expect(state.threadsExtraLines).toEqual(['a note by hand']);
     expect(state.tasks).toHaveLength(1);
   });
@@ -67,9 +67,9 @@ describe('writeThreadsIntoContent', () => {
 
   it('rewrites a changed line in canonical form, keeping its columns', () => {
     const {threads, extraLines} = parseThreadsSpan(FILE);
-    const next = withCounterpartStatus(withCounterpartStatus(threads, 'client-b', 'active'), 'sven', 'inactive');
+    const next = withCounterpartStatus(withCounterpartStatus(threads, 'client-b', 'active'), 'sam', 'inactive');
     const written = writeThreadsIntoContent(FILE, next, extraLines);
-    expect(written).toContain('- client-a: active\n- client-b: active\n- sven: inactive, ~3w\na note by hand\n');
+    expect(written).toContain('- client-a: active\n- client-b: active\n- sam: inactive, ~3w\na note by hand\n');
   });
 
   it('appends a new leaf and a missing section', () => {
