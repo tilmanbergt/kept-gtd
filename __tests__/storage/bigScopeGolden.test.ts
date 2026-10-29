@@ -106,7 +106,7 @@ function results() {
   const scope = counterpartScopes(items).find(s => s.owner === atruvia)!;
   const sources: ProvenanceSource[] = [...items.map(i => ({path: i.path, meetings: i.meetings})), {path: inbox.path, meetings: inbox.meetings}];
   const engage: EngageSource = {items, inbox, loopKinds: loopKindsOf(setups), threadTypes: ruleTypes};
-  const overviewTags = ['101/anna', 'retro/alpha', 'jf/board', 'wf/olga', 'sparring/mieke'];
+  const overviewTags = ['101/anna', 'retro/alpha', 'jf/board', 'wf/olga', 'sparring/jordan'];
   const matchers = ['101/bert', 'retro/gamma', 'owe/quinn'];
   const everyTodo: Array<{item: CachedItem | null; task: Task}> = [
     ...items.flatMap(it => it.tasks.map(task => ({item: it, task}))),

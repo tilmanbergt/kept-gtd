@@ -252,3 +252,8 @@ built); demo space → `foundation`; setup assistant → `settings`; Device tab,
   height); this helps the Files pane's locate too. A list tap pushes onto the history like a link
   (§2.4). Scenario 9.2 is the script test in `scripts/test-userdocs.mjs` (the generator is not a
   Jest scenario). The first anchor link is Quick Add's "Mark for later" → `lasso.md#marking-for-later`.
+- **S2** The old counterpart name is replaced in every source file, comment, test, golden file and
+  living dev doc, not only in the demo and its tests, so no test or comment keeps it. The examples
+  test (`__tests__/userDocsExamples.test.ts`) lands in S3 with the help text it checks: in S2 it would
+  fail on every old tag, and the old names may not be allowlisted. The policy line sits in
+  DEVELOPMENT-POLICY §6 (help pages), where the other help-page rules are; §8 is the checklist.

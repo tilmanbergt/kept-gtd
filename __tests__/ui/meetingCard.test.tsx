@@ -35,7 +35,7 @@ import {StatusProvider} from '../../src/ui/status/StatusProvider';
 const sparring = {...createNoteSetup('1', 'thread'), name: 'Sparring', tags: ['sparring'], tracking: {trackPrep: true, trackReview: true}};
 const setups = {setups: [sparring], defaults: {pages: {}, tracking: {trackPrep: false, trackReview: false}, notebook: null}};
 const mk = (date: string, extra: Partial<Meeting> = {}): Meeting => ({
-  title: 'Sparring Mieke #sparring/mieke',
+  title: 'Sparring Jordan #sparring/jordan',
   date,
   time: '10:00',
   endTime: '11:00',
@@ -43,7 +43,7 @@ const mk = (date: string, extra: Partial<Meeting> = {}): Meeting => ({
   cancelled: false,
   notePath: '',
   linkedFile: '',
-  ...deriveMeetingFields('Sparring Mieke #sparring/mieke'),
+  ...deriveMeetingFields('Sparring Jordan #sparring/jordan'),
   ...extra,
 });
 const ahead = mk('2999-01-01');
@@ -90,7 +90,7 @@ const texts = (r: TestRenderer.ReactTestRenderer) => r.root.findAllByType(Text).
 describe('MeetingCard', () => {
   it('a meeting ahead: P, M, note, no Reflect, no clip; thread link, owner chip, New from this, Cancel', () => {
     const r = render(ahead, card(ahead));
-    expect(texts(r)).toEqual(expect.arrayContaining(['Meeting · ahead', '#sparring/mieke ›', 'Sparring Mieke #sparring/mieke', 'P', 'M', 'Coaching', 'Edit', '✕']));
+    expect(texts(r)).toEqual(expect.arrayContaining(['Meeting · ahead', '#sparring/jordan ›', 'Sparring Jordan #sparring/jordan', 'P', 'M', 'Coaching', 'Edit', '✕']));
     expect(labels(r)).toEqual(expect.arrayContaining(['Close', 'Prepped', 'Month highlight', 'Create note', 'New from this', 'Cancel meeting']));
     expect(labels(r)).not.toContain('Reflect');
     expect(labels(r)).not.toContain('Link file');
@@ -133,7 +133,7 @@ describe('MeetingCard', () => {
     press(r, 'Reflect');
     press(r, 'Cancel meeting');
     press(r, 'Open Coaching');
-    pressText(r, '#sparring/mieke ›');
+    pressText(r, '#sparring/jordan ›');
     for (const h of [data.onEdit, data.onClose, data.onCheckpoint, data.onMonthly, data.onNote, data.onReflect, data.onCancelMeeting, data.onOpenOwner, data.onOpenThread]) {
       expect(h).toHaveBeenCalledTimes(1);
     }
@@ -145,7 +145,7 @@ describe('MeetingCard', () => {
     press(r, 'New from this');
     expect(onCancelEdit).toHaveBeenCalledTimes(1);
     const title = r.root.findAllByType(TextInput).find(i => i.props.placeholder === 'New meeting title')!;
-    expect(title.props.value).toBe('Sparring Mieke #sparring/mieke');
+    expect(title.props.value).toBe('Sparring Jordan #sparring/jordan');
   });
 
   it('the create rows stay mounted behind the card, so a half-typed draft survives', () => {

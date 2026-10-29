@@ -130,113 +130,113 @@ describe('buildThreadOverview - owner', () => {
 });
 
 describe('buildThreadOverview - how a todo relates to a thread (§1.2.1)', () => {
-  // Agreed in the 1:1 with Mieke, to be raised with Sven.
-  const mieke1 = m('2026-09-30', '1:1 Mieke #101/mieke', {time: '09:00', endTime: '09:30'});
-  const mieke2 = m('2026-10-06', '1:1 Mieke #101/mieke', {time: '09:00', endTime: '09:30'});
+  // Agreed in the 1:1 with Jordan, to be raised with Sven.
+  const jordan1 = m('2026-09-30', '1:1 Jordan #101/jordan', {time: '09:00', endTime: '09:30'});
+  const jordan2 = m('2026-10-06', '1:1 Jordan #101/jordan', {time: '09:00', endTime: '09:30'});
   const sven = m('2026-10-01', '1:1 Sven #101/sven', {time: '09:00', endTime: '09:30'});
   const team = item('area', 'Team', {
-    meetings: [mieke1, mieke2, sven],
+    meetings: [jordan1, jordan2, sven],
     tasks: [
-      agreedIn('Raise budget question #101/sven', mieke1),
-      agreedIn('Agreed only', mieke2),
-      agreedIn('Agreed and tagged #101/mieke', mieke2),
-      task('Tagged only #101/mieke'),
-      task('Leaf only #mieke #next'),
-      task('Promised #owe/mieke #next'),
-      task('Promised someday #owe/mieke #someday'),
+      agreedIn('Raise budget question #101/sven', jordan1),
+      agreedIn('Agreed only', jordan2),
+      agreedIn('Agreed and tagged #101/jordan', jordan2),
+      task('Tagged only #101/jordan'),
+      task('Leaf only #jordan #next'),
+      task('Promised #owe/jordan #next'),
+      task('Promised someday #owe/jordan #someday'),
       task('Bare owe #owe #101/sven'),
-      task('Contract #wf/mieke'),
-      agreedIn('Her feedback #wf', mieke2),
-      task('Her slides #wf #101/mieke'),
-      agreedIn('Sven\'s numbers #wf/sven', mieke2),
+      task('Contract #wf/jordan'),
+      agreedIn('Her feedback #wf', jordan2),
+      task('Her slides #wf #101/jordan'),
+      agreedIn('Sven\'s numbers #wf/sven', jordan2),
       task('Untagged bare wf #wf'),
-      task('Bare wf with a promise #wf #owe/mieke'),
-      task('Cancelled #owe/mieke', {cancelled: true}),
+      task('Bare wf with a promise #wf #owe/jordan'),
+      task('Cancelled #owe/jordan', {cancelled: true}),
       // Done: since the latest past meeting (6.10.) or before, and one ticked before completion dates.
-      {...agreedIn('Done agreed', mieke1, {done: true}, null, '2026-10-07')},
-      doneOn('Done tagged #101/mieke', '2026-10-06'),
-      doneOn('Done before #101/mieke', '2026-10-05'),
-      doneOn('Done without date #101/mieke', null),
+      {...agreedIn('Done agreed', jordan1, {done: true}, null, '2026-10-07')},
+      doneOn('Done tagged #101/jordan', '2026-10-06'),
+      doneOn('Done before #101/jordan', '2026-10-05'),
+      doneOn('Done without date #101/jordan', null),
       doneOn('Done elsewhere #101/sven', '2026-10-07'),
     ],
   });
-  const inboxAgreed = {path: INBOX, tasks: [agreedIn('Still in the Inbox', mieke2)], meetings: []};
+  const inboxAgreed = {path: INBOX, tasks: [agreedIn('Still in the Inbox', jordan2)], meetings: []};
   const overview = (tag: string, lens: 'thread' | 'counterpart' = 'thread') =>
     buildThreadOverview([team], inboxAgreed, tag, lens, team.path, NOW)!;
-  const mieke = overview('101/mieke');
+  const jordan = overview('101/jordan');
 
   it('agreed only, or agreed and tagged with the same thread: I owe, once', () => {
-    expect(texts(mieke.ahead.owe)).toContain('Agreed only');
-    expect(texts(mieke.ahead.owe)).toContain('Agreed and tagged #101/mieke');
-    expect(texts(mieke.ahead.relevant)).not.toContain('Agreed and tagged #101/mieke');
+    expect(texts(jordan.ahead.owe)).toContain('Agreed only');
+    expect(texts(jordan.ahead.owe)).toContain('Agreed and tagged #101/jordan');
+    expect(texts(jordan.ahead.relevant)).not.toContain('Agreed and tagged #101/jordan');
   });
 
-  it('agreed with Mieke and tagged #101/sven: I owe for Mieke, Relevant for Sven', () => {
+  it('agreed with Jordan and tagged #101/sven: I owe for Jordan, Relevant for Sven', () => {
     const svens = overview('101/sven');
-    expect(texts(mieke.ahead.owe)).toContain('Raise budget question #101/sven');
-    expect(texts(mieke.ahead.relevant)).not.toContain('Raise budget question #101/sven');
+    expect(texts(jordan.ahead.owe)).toContain('Raise budget question #101/sven');
+    expect(texts(jordan.ahead.relevant)).not.toContain('Raise budget question #101/sven');
     expect(texts(svens.ahead.relevant)).toContain('Raise budget question #101/sven');
     expect(texts(svens.ahead.owe)).not.toContain('Raise budget question #101/sven');
-    // And under Mieke's meeting of 30.9. in Looking back.
-    const sept30 = mieke.past.find(p => p.entry.meeting.date === '2026-09-30')!;
+    // And under Jordan's meeting of 30.9. in Looking back.
+    const sept30 = jordan.past.find(p => p.entry.meeting.date === '2026-09-30')!;
     expect(texts(sept30.agreed)).toContain('Raise budget question #101/sven');
   });
 
   it('#owe/<counterpart> only: I owe, with #next; with #someday counted apart; a bare #owe means nothing', () => {
-    expect(texts(mieke.ahead.owe)).toContain('Promised #owe/mieke #next');
-    expect(texts(mieke.ahead.owe)).not.toContain('Promised someday #owe/mieke #someday');
-    expect(texts(mieke.ahead.someday)).toEqual(['Promised someday #owe/mieke #someday']);
-    expect(texts(mieke.ahead.owe)).not.toContain('Cancelled #owe/mieke');
+    expect(texts(jordan.ahead.owe)).toContain('Promised #owe/jordan #next');
+    expect(texts(jordan.ahead.owe)).not.toContain('Promised someday #owe/jordan #someday');
+    expect(texts(jordan.ahead.someday)).toEqual(['Promised someday #owe/jordan #someday']);
+    expect(texts(jordan.ahead.owe)).not.toContain('Cancelled #owe/jordan');
     const svens = overview('101/sven');
     expect(texts(svens.ahead.relevant)).toContain('Bare owe #owe #101/sven');
     expect(texts(svens.ahead.owe)).not.toContain('Bare owe #owe #101/sven');
   });
 
   it('the thread tag or the plain leaf only: Relevant', () => {
-    expect(texts(mieke.ahead.relevant)).toEqual(['Tagged only #101/mieke', 'Leaf only #mieke #next']);
+    expect(texts(jordan.ahead.relevant)).toEqual(['Tagged only #101/jordan', 'Leaf only #jordan #next']);
   });
 
   it('Waiting for: #wf/<counterpart>, or bare #wf when agreed in the thread or tagged with it', () => {
-    expect(texts(mieke.ahead.waiting)).toEqual(['Contract #wf/mieke', 'Her feedback #wf', 'Her slides #wf #101/mieke']);
-    // Waiting on Sven, agreed with Mieke: Waiting for in Sven's thread; for Mieke it is a commitment made to her.
+    expect(texts(jordan.ahead.waiting)).toEqual(['Contract #wf/jordan', 'Her feedback #wf', 'Her slides #wf #101/jordan']);
+    // Waiting on Sven, agreed with Jordan: Waiting for in Sven's thread; for Jordan it is a commitment made to her.
     expect(texts(overview('101/sven').ahead.waiting)).toContain("Sven's numbers #wf/sven");
-    expect(texts(mieke.ahead.owe)).toContain("Sven's numbers #wf/sven");
-    const all = [...mieke.ahead.waiting, ...mieke.ahead.owe, ...mieke.ahead.relevant];
+    expect(texts(jordan.ahead.owe)).toContain("Sven's numbers #wf/sven");
+    const all = [...jordan.ahead.waiting, ...jordan.ahead.owe, ...jordan.ahead.relevant];
     expect(texts(all)).not.toContain('Untagged bare wf #wf');
     // #owe/<cp> is not a tag of the lens: bare #wf with it stays a promise, in both lenses.
-    expect(texts(mieke.ahead.owe)).toContain('Bare wf with a promise #wf #owe/mieke');
-    expect(texts(overview('101/mieke', 'counterpart').ahead.owe)).toContain('Bare wf with a promise #wf #owe/mieke');
+    expect(texts(jordan.ahead.owe)).toContain('Bare wf with a promise #wf #owe/jordan');
+    expect(texts(overview('101/jordan', 'counterpart').ahead.owe)).toContain('Bare wf with a promise #wf #owe/jordan');
   });
 
   it('shows every todo once', () => {
-    const all = texts([...mieke.ahead.waiting, ...mieke.ahead.owe, ...mieke.ahead.relevant]);
+    const all = texts([...jordan.ahead.waiting, ...jordan.ahead.owe, ...jordan.ahead.relevant]);
     expect(new Set(all).size).toBe(all.length);
   });
 
   it('counts an agreed todo where it is filed: not while it is in the Inbox (D15)', () => {
-    expect(texts(mieke.ahead.owe)).not.toContain('Still in the Inbox');
+    expect(texts(jordan.ahead.owe)).not.toContain('Still in the Inbox');
   });
 
   it('the counterpart lens collects every thread of the counterpart', () => {
-    const allMieke = overview('101/mieke', 'counterpart');
-    expect(texts(allMieke.ahead.owe)).toContain('Agreed only');
-    expect(texts(allMieke.ahead.waiting)).toContain('Contract #wf/mieke');
-    expect(texts(allMieke.ahead.relevant)).toEqual(['Tagged only #101/mieke', 'Leaf only #mieke #next']);
+    const allJordan = overview('101/jordan', 'counterpart');
+    expect(texts(allJordan.ahead.owe)).toContain('Agreed only');
+    expect(texts(allJordan.ahead.waiting)).toContain('Contract #wf/jordan');
+    expect(texts(allJordan.ahead.relevant)).toEqual(['Tagged only #101/jordan', 'Leaf only #jordan #next']);
   });
 
   it('#wf/<name> and #owe/<name> open the counterpart lens', () => {
-    for (const tag of ['wf/mieke', 'owe/mieke']) {
+    for (const tag of ['wf/jordan', 'owe/jordan']) {
       const o = overview(tag, 'thread');
       expect(o.lens).toBe('counterpart');
       expect(texts(o.ahead.owe)).toContain('Agreed only');
-      expect(texts(o.ahead.waiting)).toContain('Contract #wf/mieke');
+      expect(texts(o.ahead.waiting)).toContain('Contract #wf/jordan');
       expect(o.past.map(p => p.entry.meeting.date)).toEqual(['2026-10-06', '2026-09-30']);
     }
   });
 
   it('Since: todos done on or after the latest past meeting, in any of the three ways', () => {
-    expect(mieke.since.from).toBe('2026-10-06');
-    expect(texts(mieke.since.done)).toEqual(['Done agreed', 'Done tagged #101/mieke']);
+    expect(jordan.since.from).toBe('2026-10-06');
+    expect(texts(jordan.since.done)).toEqual(['Done agreed', 'Done tagged #101/jordan']);
   });
 
   it('Since: no row without a past meeting', () => {

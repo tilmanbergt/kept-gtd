@@ -19,14 +19,14 @@ const TODAY = '2026-10-24';
 
 describe('parseAgreementLine', () => {
   it('reads text, tags and the four fields', () => {
-    const a = parseAgreementLine('- Feedback only in our 1:1s #sparring/mieke [meeting:: 2026-10-24 Sparring Mieke sparring/mieke] [created:: 2026-10-24] [valid:: 2026-12-31]')!;
-    expect(a.text).toBe('Feedback only in our 1:1s #sparring/mieke');
-    expect(a.tags).toEqual(['sparring/mieke']);
-    expect(a.fields).toEqual({meeting: '2026-10-24 Sparring Mieke sparring/mieke', created: '2026-10-24', valid: '2026-12-31', ended: null, extra: []});
+    const a = parseAgreementLine('- Feedback only in our 1:1s #sparring/jordan [meeting:: 2026-10-24 Sparring Jordan sparring/jordan] [created:: 2026-10-24] [valid:: 2026-12-31]')!;
+    expect(a.text).toBe('Feedback only in our 1:1s #sparring/jordan');
+    expect(a.tags).toEqual(['sparring/jordan']);
+    expect(a.fields).toEqual({meeting: '2026-10-24 Sparring Jordan sparring/jordan', created: '2026-10-24', valid: '2026-12-31', ended: null, extra: []});
   });
 
   it('keeps unknown fields and a task\'s keys verbatim', () => {
-    const a = parseAgreementLine('- Both sign #mieke [created:: 2026-10-01] [who:: both] [due:: 2026-11-01]')!;
+    const a = parseAgreementLine('- Both sign #jordan [created:: 2026-10-01] [who:: both] [due:: 2026-11-01]')!;
     expect(a.fields.extra).toEqual(['[due:: 2026-11-01]', '[who:: both]']);
   });
 
@@ -45,20 +45,20 @@ describe('parseAgreementLine', () => {
 
 describe('serializeAgreementLine', () => {
   it('writes the fields in order: meeting, created, valid, ended, then unknown', () => {
-    const a = buildAgreement('No calls on Friday #mieke', {today: TODAY, valid: '2026-12-31', meeting: '2026-10-24 Sparring Mieke'});
+    const a = buildAgreement('No calls on Friday #jordan', {today: TODAY, valid: '2026-12-31', meeting: '2026-10-24 Sparring Jordan'});
     expect(serializeAgreementLine(endedAgreement({...a, fields: {...a.fields, extra: ['[who:: both]']}}, '2026-11-02'))).toBe(
-      '- No calls on Friday #mieke [meeting:: 2026-10-24 Sparring Mieke] [created:: 2026-10-24] [valid:: 2026-12-31] [ended:: 2026-11-02] [who:: both]',
+      '- No calls on Friday #jordan [meeting:: 2026-10-24 Sparring Jordan] [created:: 2026-10-24] [valid:: 2026-12-31] [ended:: 2026-11-02] [who:: both]',
     );
   });
 
   it('writes a line nobody changed exactly as read', () => {
-    const raw = '-   Odd  spacing #mieke   [valid::2026-12-31]  [created:: 2026-10-01]';
+    const raw = '-   Odd  spacing #jordan   [valid::2026-12-31]  [created:: 2026-10-01]';
     expect(serializeAgreementLine(parseAgreementLine(raw)!)).toBe(raw);
   });
 
   it('re-serializes a changed line in the canonical order', () => {
-    const a = parseAgreementLine('- Odd #mieke [valid:: 2026-12-31] [created:: 2026-10-01]')!;
-    expect(serializeAgreementLine(endedAgreement(a, TODAY))).toBe('- Odd #mieke [created:: 2026-10-01] [valid:: 2026-12-31] [ended:: 2026-10-24]');
+    const a = parseAgreementLine('- Odd #jordan [valid:: 2026-12-31] [created:: 2026-10-01]')!;
+    expect(serializeAgreementLine(endedAgreement(a, TODAY))).toBe('- Odd #jordan [created:: 2026-10-01] [valid:: 2026-12-31] [ended:: 2026-10-24]');
   });
 });
 
@@ -71,19 +71,19 @@ describe('section round-trip (scenario 17)', () => {
     '- [ ] Something',
     '',
     AGREEMENTS_HEADING,
-    '- First #mieke [created:: 2026-10-01] [who:: both]',
+    '- First #jordan [created:: 2026-10-01] [who:: both]',
     'Comment line written by hand',
     '',
-    '- Second #mieke [created:: 2026-10-02]',
+    '- Second #jordan [created:: 2026-10-02]',
     '',
     '## Meetings',
-    '- 2026-10-24 10:00-11:00 Sparring Mieke #sparring/mieke',
+    '- 2026-10-24 10:00-11:00 Sparring Jordan #sparring/jordan',
     '',
   ].join('\n');
 
   it('reads agreements and keeps the other lines', () => {
     const {agreements, extraLines} = parseAgreementsSpan(file);
-    expect(agreements.map(a => a.text)).toEqual(['First #mieke', 'Second #mieke']);
+    expect(agreements.map(a => a.text)).toEqual(['First #jordan', 'Second #jordan']);
     expect(extraLines).toEqual(['Comment line written by hand']);
   });
 
@@ -96,19 +96,19 @@ describe('section round-trip (scenario 17)', () => {
     const {agreements, extraLines} = parseAgreementsSpan(file);
     const next = agreements.map((a, i) => (i === 1 ? endedAgreement(a, TODAY) : a));
     const written = writeAgreementsIntoContent(file, next, extraLines);
-    expect(written).toBe(file.replace('- Second #mieke [created:: 2026-10-02]', '- Second #mieke [created:: 2026-10-02] [ended:: 2026-10-24]'));
+    expect(written).toBe(file.replace('- Second #jordan [created:: 2026-10-02]', '- Second #jordan [created:: 2026-10-02] [ended:: 2026-10-24]'));
   });
 
   it('a new one goes after the last agreement', () => {
     const {agreements, extraLines} = parseAgreementsSpan(file);
     const written = writeAgreementsIntoContent(file, [...agreements, buildAgreement('Third', {today: TODAY, valid: null, meeting: null})], extraLines);
-    expect(written).toBe(file.replace('- Second #mieke [created:: 2026-10-02]\n', '- Second #mieke [created:: 2026-10-02]\n- Third [created:: 2026-10-24]\n'));
+    expect(written).toBe(file.replace('- Second #jordan [created:: 2026-10-02]\n', '- Second #jordan [created:: 2026-10-02]\n- Third [created:: 2026-10-24]\n'));
   });
 
   it('a file without the section gets it appended', () => {
     const plain = '## Tasks\n- [ ] Something\n';
-    const written = writeAgreementsIntoContent(plain, [buildAgreement('One #mieke', {today: TODAY, valid: null, meeting: null})]);
-    expect(written).toBe('## Tasks\n- [ ] Something\n\n## Agreements\n- One #mieke [created:: 2026-10-24]\n');
+    const written = writeAgreementsIntoContent(plain, [buildAgreement('One #jordan', {today: TODAY, valid: null, meeting: null})]);
+    expect(written).toBe('## Tasks\n- [ ] Something\n\n## Agreements\n- One #jordan [created:: 2026-10-24]\n');
     expect(parseAgreementsSpan(written).agreements).toHaveLength(1);
   });
 
@@ -120,19 +120,19 @@ describe('section round-trip (scenario 17)', () => {
 });
 
 describe('lifecycle (R22)', () => {
-  const a = buildAgreement('  Feedback only in our 1:1s #sparring/mieke ', {today: TODAY, valid: '2026-12-31', meeting: 'm'});
+  const a = buildAgreement('  Feedback only in our 1:1s #sparring/jordan ', {today: TODAY, valid: '2026-12-31', meeting: 'm'});
 
   it('builds an active agreement made today', () => {
-    expect(a.text).toBe('Feedback only in our 1:1s #sparring/mieke');
-    expect(a.tags).toEqual(['sparring/mieke']);
+    expect(a.text).toBe('Feedback only in our 1:1s #sparring/jordan');
+    expect(a.tags).toEqual(['sparring/jordan']);
     expect(a.fields.created).toBe(TODAY);
     expect(isActiveAgreement(a)).toBe(true);
   });
 
   it('edit keeps created, meeting and unknown fields', () => {
-    const e = withAgreementEdit({...a, fields: {...a.fields, extra: ['[who:: both]']}}, 'New words #mieke', null);
-    expect(e.text).toBe('New words #mieke');
-    expect(e.tags).toEqual(['mieke']);
+    const e = withAgreementEdit({...a, fields: {...a.fields, extra: ['[who:: both]']}}, 'New words #jordan', null);
+    expect(e.text).toBe('New words #jordan');
+    expect(e.tags).toEqual(['jordan']);
     expect(e.fields).toEqual({meeting: 'm', created: TODAY, valid: null, ended: null, extra: ['[who:: both]']});
   });
 

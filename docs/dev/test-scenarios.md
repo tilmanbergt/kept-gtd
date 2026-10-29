@@ -11,18 +11,18 @@
 
 ### An agreement in the thread overview: it shows in the block "Agreements", another thread's does not
 
-- **Given** area "Coaching" has an agreement tagged #mieke and one tagged #sparring/sven
-- **When** I open Mieke's thread overview
+- **Given** area "Coaching" has an agreement tagged #jordan and one tagged #sparring/sven
+- **When** I open Jordan's thread overview
 - **Then** Ahead lists the block "Agreements" with the first one only
-- **When** I switch to All mieke
+- **When** I switch to All jordan
 - **Then** the agreement shows there too
 
 Test: `__tests__/scenarios/agreements.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md`
 
 ### Add an agreement from the thread overview with valid till end of year
 
-- **Given** area "Coaching" has a past sparring session with Mieke and no agreements
-- **When** I open Mieke's thread overview, choose the Agreement tab and type "No calls after six"
+- **Given** area "Coaching" has a past sparring session with Jordan and no agreements
+- **When** I open Jordan's thread overview, choose the Agreement tab and type "No calls after six"
 - **And** I tap "valid till" and choose "end of year", then + Add
 - **Then** the area file has the agreement with the thread tag, the meeting it was made in, today and the valid-till date
 - **And** the status slot says where it went, and the overview lists it
@@ -31,8 +31,8 @@ Test: `__tests__/scenarios/agreements.test.tsx` · design: `docs/dev/history/tec
 
 ### Change an agreement: the old one is ended, the new one added; Cancel changes nothing
 
-- **Given** area "Coaching" has the agreement "Feedback only in our 1:1s" with Mieke
-- **When** I open Mieke's thread overview, tap the agreement and Change on its card, then Cancel
+- **Given** area "Coaching" has the agreement "Feedback only in our 1:1s" with Jordan
+- **When** I open Jordan's thread overview, tap the agreement and Change on its card, then Cancel
 - **Then** the file is unchanged
 - **When** I tap Change again, edit the words to "Feedback only in our 1:1s, except urgent" and tap + Add
 - **Then** the old line is ended today and the new one is added after it, made in the meeting the overview shows
@@ -42,8 +42,8 @@ Test: `__tests__/scenarios/agreements.test.tsx` · design: `docs/dev/history/tec
 
 ### End an agreement: asked once, then ended today
 
-- **Given** area "Coaching" has the agreement "Feedback only in our 1:1s" with Mieke
-- **When** I tap it in Mieke's thread overview, tap End on its card and confirm
+- **Given** area "Coaching" has the agreement "Feedback only in our 1:1s" with Jordan
+- **When** I tap it in Jordan's thread overview, tap End on its card and confirm
 - **Then** the line gets [ended:: today]
 - **And** the overview shows "1 agreement ended ›" in Looking back
 
@@ -52,31 +52,31 @@ Test: `__tests__/scenarios/agreements.test.tsx` · design: `docs/dev/history/tec
 ### A hand-edited Agreements section keeps every other line byte for byte when one agreement is ended
 
 - **Given** area "Coaching" has two agreements, one with the unknown field [who:: both], a comment line and a blank line between them
-- **When** I end the first one in Mieke's thread overview
+- **When** I end the first one in Jordan's thread overview
 - **Then** only that line changed; everything else is byte-identical
 
 Test: `__tests__/scenarios/agreements.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md`
 
 ### A Project page lists its own agreements; a thread's agreement shows in the thread overview instead
 
-- **Given** project "Leadership program" has one untagged agreement and one tagged #sparring/mieke
+- **Given** project "Leadership program" has one untagged agreement and one tagged #sparring/jordan
 - **When** I open the project
 - **Then** its todo list ends with "◇ Agreements 1 ›"
 - **When** I tap it
 - **Then** the column lists the untagged agreement, with "‹ Todos" back
-- **When** I open Mieke's thread overview from the meeting
+- **When** I open Jordan's thread overview from the meeting
 - **Then** the tagged one shows there
 
 Test: `__tests__/scenarios/agreements.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md`
 
 ### Review step "Agreements": keep one past its date for three more months, end one with an inactive thread
 
-- **Given** area "Coaching" has "Fridays are quiet" valid till yesterday, Mieke set inactive and an active agreement with her
+- **Given** area "Coaching" has "Fridays are quiet" valid till yesterday, Jordan set inactive and an active agreement with her
 - **When** I open Review and the step "Agreements"
 - **Then** it lists both, with "till … – over" and "thread inactive"
 - **When** I keep "Fridays are quiet" with "+3 m"
 - **Then** its valid-till is three months ahead
-- **When** I end the agreement with Mieke
+- **When** I end the agreement with Jordan
 - **Then** it is ended today, and both rows carry a checkmark
 
 Test: `__tests__/scenarios/agreements.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md`
@@ -205,7 +205,7 @@ Test: `__tests__/scenarios/dailySlim.test.tsx`
 
 ### Daily: tapping a thread meeting shows its card and the context panel
 
-- **Given** "1:1 Mieke #sparring/mieke" today at 15:00, an owed todo from the last 1:1, a waiting todo and an agreement
+- **Given** "1:1 Jordan #sparring/jordan" today at 15:00, an owed todo from the last 1:1, a waiting todo and an agreement
 - **When** I tap the meeting on Daily
 - **Then** the card shows and the panel lists I owe, Waiting for and Agreed last time
 - **When** I close the card
@@ -223,7 +223,7 @@ Test: `__tests__/scenarios/meetingContext.test.tsx`
 
 ### Quick Add to meeting before it starts: an agenda item with the thread tag
 
-- **Given** the thread meeting "1:1 Mieke" today at 15:00
+- **Given** the thread meeting "1:1 Jordan" today at 15:00
 - **When** I tap it, use + Quick Add to meeting and add "Bring the numbers"
 - **Then** the todo carries the thread tag and no meeting field
 - **And** the card is back and the panel lists it
@@ -232,7 +232,7 @@ Test: `__tests__/scenarios/meetingContext.test.tsx`
 
 ### Quick Add to meeting during it: the meeting is recorded
 
-- **Given** the thread meeting "1:1 Mieke" today 9:30-10:30, running now
+- **Given** the thread meeting "1:1 Jordan" today 9:30-10:30, running now
 - **When** I add "Send the contract" through + Quick Add to meeting
 - **Then** the todo has the thread tag and [meeting:: …] of this meeting
 
@@ -240,7 +240,7 @@ Test: `__tests__/scenarios/meetingContext.test.tsx`
 
 ### Quick Add to meeting opens the Todo tab and names where it adds, without an abbreviation in the text
 
-- **Given** the thread meeting "1:1 Mieke" today at 15:00, and Quick Add left on its Meeting tab
+- **Given** the thread meeting "1:1 Jordan" today at 15:00, and Quick Add left on its Meeting tab
 - **When** I switch Quick Add to Meeting, tap the meeting and + Quick Add to meeting
 - **Then** the Todo tab shows, its button reads "+ Add to Coaching" and the text is empty
 
@@ -248,7 +248,7 @@ Test: `__tests__/scenarios/meetingContext.test.tsx`
 
 ### A todo in the panel opens its card and edit form; Save and ✕ return to the meeting
 
-- **Given** the thread meeting "1:1 Mieke" today at 15:00 with "Send the slides" owed
+- **Given** the thread meeting "1:1 Jordan" today at 15:00 with "Send the slides" owed
 - **When** I tap the meeting, then "Send the slides" in the panel
 - **Then** the todo's card shows in Quick Add's place; the panel stays
 - **When** I close the todo's card
@@ -260,7 +260,7 @@ Test: `__tests__/scenarios/meetingContext.test.tsx`
 
 ### ✕ Close in the panel's header closes the meeting: Daily shows its next todos again
 
-- **Given** the thread meeting "1:1 Mieke" today at 15:00
+- **Given** the thread meeting "1:1 Jordan" today at 15:00
 - **When** I tap the meeting, then ✕ Close next to Overview ›
 - **Then** the card and the panel are gone; Next todos shows
 
@@ -268,7 +268,7 @@ Test: `__tests__/scenarios/meetingContext.test.tsx`
 
 ### The panel gives the full context: Next, Planned and a Waiting for dated later, which Daily leaves out
 
-- **Given** the thread meeting "1:1 Mieke" today, an agenda point without a flow state and a Waiting for due on 30.10.
+- **Given** the thread meeting "1:1 Jordan" today, an agenda point without a flow state and a Waiting for due on 30.10.
 - **When** I open Daily
 - **Then** Next todos lists neither the agenda point nor the later Waiting for
 - **When** I tap the meeting
@@ -278,7 +278,7 @@ Test: `__tests__/scenarios/meetingContext.test.tsx`
 
 ### Tapping the title on a card opens its edit form, like Edit
 
-- **Given** the thread meeting "1:1 Mieke" today with "Send the slides" owed
+- **Given** the thread meeting "1:1 Jordan" today with "Send the slides" owed
 - **When** I tap "Send the slides" in the panel, then the title on its card
 - **Then** the todo's edit form shows with Save
 
@@ -330,7 +330,7 @@ Test: `__tests__/scenarios/smoke/daily.test.tsx`
 
 ### Engage before the meeting: Before is chosen, the strip offers prep and the last note, From Thread shows the last session
 
-- **Given** it is 09:30 and today's sparring with Mieke is at 10:00; on 14.10. "Draft feedback" and "Org chart from Mieke" were agreed and "Send role canvas" is done
+- **Given** it is 09:30 and today's sparring with Jordan is at 10:00; on 14.10. "Draft feedback" and "Org chart from Jordan" were agreed and "Send role canvas" is done
 - **When** I open Engage on today's meeting page
 - **Then** the meeting line shows the meeting with Before chosen
 - **And** the strip offers Mark prepped and Note from last meeting ›
@@ -377,9 +377,9 @@ Test: `__tests__/scenarios/engageMoment.test.tsx` · design: `docs/dev/history/t
 
 Test: `__tests__/scenarios/engageMoment.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md`
 
-### The Waiting tab lists what I wait for from Mieke, where it was agreed, with Done
+### The Waiting tab lists what I wait for from Jordan, where it was agreed, with Done
 
-- **Given** "Org chart from Mieke #wf/mieke" was agreed on 14.10. and "Budget numbers #wf/mieke" not in a meeting
+- **Given** "Org chart from Jordan #wf/jordan" was agreed on 14.10. and "Budget numbers #wf/jordan" not in a meeting
 - **When** I open Engage on the meeting page and choose Waiting
 - **Then** it lists both, the first "from 14.10."; "Also here" counts no waiting
 - **When** I tap Done on the first
@@ -389,7 +389,7 @@ Test: `__tests__/scenarios/engageMoment.test.tsx` · design: `docs/dev/history/t
 
 ### + Next sparring only when no session follows today's
 
-- **Given** it is 10:20 during today's sparring, and no sparring with Mieke is planned after it
+- **Given** it is 10:20 during today's sparring, and no sparring with Jordan is planned after it
 - **When** I open Engage on the meeting page
 - **Then** the strip offers + Next sparring
 - **When** I tap it
@@ -416,11 +416,11 @@ Test: `__tests__/scenarios/engageMoment.test.tsx` · design: `docs/dev/history/t
 
 Test: `__tests__/scenarios/engageMoment.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md`
 
-### On a todo's page, w/f Mieke turns #next into Waiting For, with Undo
+### On a todo's page, w/f Jordan turns #next into Waiting For, with Undo
 
-- **Given** area "Coaching" has "Send Mieke the role canvas #next #sparring/mieke" with its own note
-- **When** I open Engage on the todo's note and tap w/f Mieke
-- **Then** the line carries #wf/mieke instead of #next
+- **Given** area "Coaching" has "Send Jordan the role canvas #next #sparring/jordan" with its own note
+- **When** I open Engage on the todo's note and tap w/f Jordan
+- **Then** the line carries #wf/jordan instead of #next
 - **And** the ack offers Undo, and the todo is on the Waiting tab
 
 Test: `__tests__/scenarios/engageMoment.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md`
@@ -444,7 +444,7 @@ Test: `__tests__/scenarios/focusBlocks.test.tsx`
 
 ### Engage on the meeting's page offers the reflection; on the reflection page it opens on what came out of the thread's meetings
 
-- **Given** the todo "Send Mieke the role canvas" was agreed in the sparring session three days ago; in the notebook the session's page is followed by a page added by hand, then the page of the todo "Prepare the workshop"
+- **Given** the todo "Send Jordan the role canvas" was agreed in the sparring session three days ago; in the notebook the session's page is followed by a page added by hand, then the page of the todo "Prepare the workshop"
 - **When** I open Engage on the meeting's page
 - **Then** the strip offers "Reflect ›" (the meeting is over: After)
 - **When** I tap it and confirm
@@ -529,9 +529,9 @@ Test: `__tests__/scenarios/pageSection.test.tsx`
 
 ### A thread notebook's follow-up page: the thread and its sparring
 
-- **Given** a thread notebook with a sparring page for Mieke and a follow-up page
+- **Given** a thread notebook with a sparring page for Jordan and a follow-up page
 - **When** I open Engage on the follow-up page
-- **Then** the owner is Thread #sparring/mieke and the moment line shows that sparring
+- **Then** the owner is Thread #sparring/jordan and the moment line shows that sparring
 
 Test: `__tests__/scenarios/pageSection.test.tsx`
 
@@ -619,7 +619,7 @@ Test: `__tests__/scenarios/interruptions.test.tsx` · design: `docs/dev/history/
 
 ### Capture an agreement from a mark on a meeting's page: it goes to the thread's area with the meeting
 
-- **Given** today's sparring with Mieke has its page, and a mark on that page says "Feedback only in our 1:1s"
+- **Given** today's sparring with Jordan has its page, and a mark on that page says "Feedback only in our 1:1s"
 - **When** I process the mark and choose Agreement
 - **Then** Split lines is not offered; it is for the thread first, with the meeting in the grey line
 - **When** I tap Save & close
@@ -629,9 +629,9 @@ Test: `__tests__/scenarios/agreements.test.tsx` · design: `docs/dev/history/tec
 
 ### An agreement from a mark on a thread notebook's follow-up page: for the thread, with the sparring
 
-- **Given** Mieke's sparring notebook has the sparring's page and a follow-up page with a mark "Feedback only in our 1:1s"
+- **Given** Jordan's sparring notebook has the sparring's page and a follow-up page with a mark "Feedback only in our 1:1s"
 - **When** I process the mark as an Agreement
-- **Then** the For chips start with #sparring/mieke, and the grey line names the sparring
+- **Then** the For chips start with #sparring/jordan, and the grey line names the sparring
 - **When** I tap Save & close
 - **Then** the agreement records the sparring meeting
 
@@ -683,7 +683,7 @@ Test: `__tests__/scenarios/focusBlocks.test.tsx`
 
 ### No close-out for focus blocks
 
-- **Given** area Coaching with yesterday's "Sparring Mieke" and the focus block "Sparring prep", both of a setup that tracks review
+- **Given** area Coaching with yesterday's "Sparring Jordan" and the focus block "Sparring prep", both of a setup that tracks review
 - **When** I open Review → Meetings to close out
 - **Then** it lists the meeting and not the focus block
 - **And** nothing was logged as an error
@@ -721,7 +721,7 @@ Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/techn
 
 ### Reflect on a sparring session: the page comes after the meeting's page and the pages added to it by hand
 
-- **Given** area "Coaching" has a sparring session three days ago and a check-in since; in "sparring mieke <year>.note" the session's page is followed by two pages added by hand, then the check-in's page
+- **Given** area "Coaching" has a sparring session three days ago and a check-in since; in "sparring jordan <year>.note" the session's page is followed by two pages added by hand, then the check-in's page
 - **When** I open Coaching and tap the sparring session
 - **Then** its card offers Reflect and R (not reviewed yet)
 - **When** I tap Reflect and confirm the new page
@@ -744,7 +744,7 @@ Test: `__tests__/scenarios/meetingReflection.test.tsx` · design: `docs/dev/hist
 
 ### A renamed meeting finds its reflection again
 
-- **Given** the sparring session has a reflection page, and its title was changed to "Sparring Mieke roles" since
+- **Given** the sparring session has a reflection page, and its title was changed to "Sparring Jordan roles" since
 - **When** I tap the session
 - **Then** the card's Reflect is filled: the page exists
 - **When** I tap it
@@ -1051,11 +1051,11 @@ Test: `__tests__/scenarios/smoke/daily.test.tsx`
 
 ### Tend: a thread without a meeting in 14 days counts in the Tend line and shows "nothing planned"
 
-- **Given** on Wednesday 14.10.: Coaching's active thread mieke met yesterday and has nothing ahead
+- **Given** on Wednesday 14.10.: Coaching's active thread jordan met yesterday and has nothing ahead
 - **When** I open Week
 - **Then** the Tend line counts one quiet thread
 - **When** I tap it
-- **Then** Review opens Tending threads, where mieke's row says "nothing planned"
+- **Then** Review opens Tending threads, where jordan's row says "nothing planned"
 - **And** no error was logged
 
 Test: `__tests__/scenarios/givenTime.test.tsx`
@@ -1264,7 +1264,7 @@ Test: `__tests__/scenarios/givenTime.test.tsx`
 
 ### Week: a day header opens the day, a chip the card and panel, "‹ Back to Week 42" the normal side
 
-- **Given** "1:1 Mieke" on Thursday 15.10.
+- **Given** "1:1 Jordan" on Thursday 15.10.
 - **When** I open Week and tap Thursday's header
 - **Then** the day panel shows
 - **When** I tap the chip
@@ -1276,7 +1276,7 @@ Test: `__tests__/scenarios/meetingContext.test.tsx`
 
 ### Month: a day, then a meeting in it, then "‹ Back to October 2026"
 
-- **Given** "1:1 Mieke" on 15.10.
+- **Given** "1:1 Jordan" on 15.10.
 - **When** I open Month, tap the 15th and the meeting in its day panel
 - **Then** the card and panel show with the back row
 - **When** I tap the day link

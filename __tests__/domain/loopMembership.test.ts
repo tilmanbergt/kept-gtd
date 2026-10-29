@@ -12,7 +12,7 @@ const agreedIn = (text: string, mt: Meeting): Task => task(text, {fields: {...em
 const past = m('2026-10-01', 'Kickoff #workshop/offsite', {time: '10:00', endTime: '11:00'});
 const ahead = m('2026-10-20', 'Dry run #workshop/offsite', {time: '10:00', endTime: '11:00'});
 const cancelled = m('2026-10-05', 'Prep #workshop/offsite', {cancelled: true});
-const other = m('2026-10-02', 'Sparring #sparring/mieke');
+const other = m('2026-10-02', 'Sparring #sparring/jordan');
 const item = {path: '/Note/2 Areas/Coaching', meetings: [past, ahead, cancelled, other]};
 const LOOP = 'workshop/offsite';
 

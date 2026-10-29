@@ -12,16 +12,16 @@ const d2 = isoDateOffset(-1); // a later meeting in the same notebook
 const ahead = isoDateOffset(2);
 const year = d1.slice(0, 4);
 
-const NOTEBOOK_REL = `Meetings/sparring mieke ${year}.note`;
+const NOTEBOOK_REL = `Meetings/sparring jordan ${year}.note`;
 const NOTEBOOK = `${areaDir('Coaching')}/${NOTEBOOK_REL}`;
-const MEETING_KW = `${d1} Sparring Mieke #sparring/mieke`;
-const CHECKIN_KW = `${d2} Check-in Mieke #sparring/mieke`;
+const MEETING_KW = `${d1} Sparring Jordan #sparring/jordan`;
+const CHECKIN_KW = `${d2} Check-in Jordan #sparring/jordan`;
 // 52 characters with the tag, so the keyword leaves the tag out (keyword limit 43).
-const REFLECTION_KW = `reflection ${d1} Sparring Mieke`;
+const REFLECTION_KW = `reflection ${d1} Sparring Jordan`;
 
 const sparringLine = (extra = '', withNote = true) =>
-  `- ${d1} 10:00-11:00 Sparring Mieke #sparring/mieke${extra}${withNote ? ` → [[${NOTEBOOK_REL}#${MEETING_KW}]]` : ''}`;
-const checkinLine = `- ${d2} 09:00-09:30 Check-in Mieke #sparring/mieke → [[${NOTEBOOK_REL}#${CHECKIN_KW}]]`;
+  `- ${d1} 10:00-11:00 Sparring Jordan #sparring/jordan${extra}${withNote ? ` → [[${NOTEBOOK_REL}#${MEETING_KW}]]` : ''}`;
+const checkinLine = `- ${d2} 09:00-09:30 Check-in Jordan #sparring/jordan → [[${NOTEBOOK_REL}#${CHECKIN_KW}]]`;
 
 /** Area "Coaching" with the given meeting lines (and todos). */
 function coaching(meetings: string[], tasks: string[] = []): void {
@@ -43,13 +43,13 @@ async function openCoaching(): Promise<void> {
 }
 
 scenario('Reflect on a sparring session: the page comes after the meeting\'s page and the pages added to it by hand', {feature: 'Meetings', design: 'technical-design-meeting-reflection.md'}, () => {
-  given('area "Coaching" has a sparring session three days ago and a check-in since; in "sparring mieke <year>.note" the session\'s page is followed by two pages added by hand, then the check-in\'s page', () => {
+  given('area "Coaching" has a sparring session three days ago and a check-in since; in "sparring jordan <year>.note" the session\'s page is followed by two pages added by hand, then the check-in\'s page', () => {
     coaching([sparringLine(), checkinLine]);
     sparringNotebook();
   });
   when('I open Coaching and tap the sparring session', async () => {
     await openCoaching();
-    await tap(/^Sparring Mieke/);
+    await tap(/^Sparring Jordan/);
   });
   then('its card offers Reflect and R (not reviewed yet)', () => {
     expectShows('Meeting · over');
@@ -58,7 +58,7 @@ scenario('Reflect on a sparring session: the page comes after the meeting\'s pag
   });
   when('I tap Reflect and confirm the new page', async () => {
     await tapLabel('Reflect');
-    expectShows(new RegExp(`^Sparring: reflection page in Meetings/sparring mieke ${year}\\.note, after the meeting's page`));
+    expectShows(new RegExp(`^Sparring: reflection page in Meetings/sparring jordan ${year}\\.note, after the meeting's page`));
     await tap('Add page');
   });
   then('the reflection page comes after both hand-added pages, not straight after the session\'s page, and before the check-in\'s page', () => {
@@ -74,7 +74,7 @@ scenario('Reflect on a sparring session: the page comes after the meeting\'s pag
     expect(pageKeywords(NOTEBOOK, 3)).not.toContain(d1);
   });
   and('it carries the setup\'s heading and guiding question', () => {
-    expect(pageTexts(NOTEBOOK, 3)).toEqual(expect.arrayContaining([expect.stringContaining('Sparring Mieke'), 'What did I notice?']));
+    expect(pageTexts(NOTEBOOK, 3)).toEqual(expect.arrayContaining([expect.stringContaining('Sparring Jordan'), 'What did I notice?']));
   });
   and('it was opened, and the card\'s Reflect is filled now', () => {
     expect(device().sdk.opened.at(-1)).toEqual({path: NOTEBOOK, page: 3});
@@ -91,9 +91,9 @@ scenario('Reflect on a meeting that has no page yet: one question, then meeting 
   });
   when('I tap the session, tap Reflect on its card and confirm', async () => {
     await openCoaching();
-    await tap(/^Sparring Mieke/);
+    await tap(/^Sparring Jordan/);
     await tapLabel('Reflect');
-    expectShows(new RegExp(`^Sparring: pages for the meeting and its reflection in Meetings/sparring mieke ${year}\\.note`));
+    expectShows(new RegExp(`^Sparring: pages for the meeting and its reflection in Meetings/sparring jordan ${year}\\.note`));
     await tap('Add pages');
   });
   then('the notebook exists with the meeting\'s page first and the reflection second', () => {
@@ -113,26 +113,26 @@ scenario('Reflect on a meeting that has no page yet: one question, then meeting 
 });
 
 scenario('A renamed meeting finds its reflection again', {feature: 'Meetings', design: 'technical-design-meeting-reflection.md'}, () => {
-  given('the sparring session has a reflection page, and its title was changed to "Sparring Mieke roles" since', () => {
-    coaching([`- ${d1} 10:00-11:00 Sparring Mieke roles #sparring/mieke → [[${NOTEBOOK_REL}#${MEETING_KW}]]`]);
+  given('the sparring session has a reflection page, and its title was changed to "Sparring Jordan roles" since', () => {
+    coaching([`- ${d1} 10:00-11:00 Sparring Jordan roles #sparring/jordan → [[${NOTEBOOK_REL}#${MEETING_KW}]]`]);
     device().sdk.putNote(NOTEBOOK, [{keywords: [d1, MEETING_KW]}, {keywords: [REFLECTION_KW]}]);
   });
   when('I tap the session', async () => {
     await openCoaching();
-    await tap(/^Sparring Mieke roles/);
+    await tap(/^Sparring Jordan roles/);
   });
   then('the card\'s Reflect is filled: the page exists', () => expect(labelled('Reflection')?.on).toBe(true));
   when('I tap it', () => tapLabel('Reflection'));
   then('the same page opens, now with the keyword of the new title', () => {
     expect(device().sdk.opened.at(-1)).toEqual({path: NOTEBOOK, page: 1});
-    expect(pageKeywords(NOTEBOOK, 1)).toEqual([`reflection ${d1} Sparring Mieke roles`]);
+    expect(pageKeywords(NOTEBOOK, 1)).toEqual([`reflection ${d1} Sparring Jordan roles`]);
     expect(device().sdk.note(NOTEBOOK)!.pages).toHaveLength(2);
   });
 });
 
 scenario('The card follows the selected meeting', {feature: 'Meetings', design: 'technical-design-item-card.md'}, () => {
   given('area "Coaching" has a sparring session three days ago and one in two days, both tracked by the Sparring setup', () => {
-    coaching([sparringLine(), `- ${ahead} 10:00-11:00 Next sparring Mieke #sparring/mieke`]);
+    coaching([sparringLine(), `- ${ahead} 10:00-11:00 Next sparring Jordan #sparring/jordan`]);
     sparringNotebook();
   });
   when('I open Coaching without tapping a meeting', openCoaching);
@@ -140,7 +140,7 @@ scenario('The card follows the selected meeting', {feature: 'Meetings', design: 
     expectShows('+ Add');
     expectNotShows(/^Meeting · /);
   });
-  when('I tap the session in two days', () => tap(/^Next sparring Mieke/));
+  when('I tap the session in two days', () => tap(/^Next sparring Jordan/));
   then('its card offers P and +clip, but no reflection yet', () => {
     expectShows('Meeting · ahead');
     expect(labelled('Prepped')).toEqual({on: false, disabled: false});
@@ -148,7 +148,7 @@ scenario('The card follows the selected meeting', {feature: 'Meetings', design: 
     expect(labelled('Reflect')).toBeNull();
     expect(labelled('Reviewed')).toBeNull();
   });
-  when('I tap the session three days ago', () => tap(/^Sparring Mieke/));
+  when('I tap the session three days ago', () => tap(/^Sparring Jordan/));
   then('the card switches to it: R, Reflect and +clip', () => {
     expectShows('Meeting · over');
     expect(labelled('Reviewed')).not.toBeNull();
@@ -165,25 +165,25 @@ scenario('Edit and save from the card, then tick reviewed on it: the title chang
   });
   when('I tap the session and then Edit on its card', async () => {
     await openCoaching();
-    await tap(/^Sparring Mieke/);
+    await tap(/^Sparring Jordan/);
     await tap('Edit');
   });
   then('the title field shows the title without #prepped', () => {
-    expect(fieldValue('New meeting title')).toBe('Sparring Mieke #sparring/mieke');
+    expect(fieldValue('New meeting title')).toBe('Sparring Jordan #sparring/jordan');
   });
   when('I change the title and tap Save', async () => {
-    await type('New meeting title', 'Sparring Mieke roles #sparring/mieke');
+    await type('New meeting title', 'Sparring Jordan roles #sparring/jordan');
     await tap('Save');
   });
   then('the card shows the meeting again', () => {
     expectShows('Meeting · over');
-    expectShows('Sparring Mieke roles #sparring/mieke');
+    expectShows('Sparring Jordan roles #sparring/jordan');
   });
   when('I tick R on the card', () => tapLabel('Reviewed'));
   then('R is filled', () => expect(labelled('Reviewed')?.on).toBe(true));
   and('the meeting has the new title and keeps both #prepped and #reviewed', () => {
     const [line] = sectionLines(areaFile('Coaching'), 'Meetings');
-    expect(line).toMatch(new RegExp(`^- ${d1} 10:00-11:00 Sparring Mieke roles #sparring/mieke`));
+    expect(line).toMatch(new RegExp(`^- ${d1} 10:00-11:00 Sparring Jordan roles #sparring/jordan`));
     expect(line).toContain('#prepped');
     expect(line).toContain('#reviewed');
   });
@@ -191,13 +191,13 @@ scenario('Edit and save from the card, then tick reviewed on it: the title chang
 
 scenario('Daily: tomorrow\'s tracked meeting offers Prepped, and Daily has no Link file', {feature: 'Daily', design: 'technical-design-item-card.md'}, () => {
   given('area "Coaching" has a sparring session tomorrow', () => {
-    coaching([`- ${isoDateOffset(1)} 10:00-11:00 Sparring Mieke #sparring/mieke`]);
+    coaching([`- ${isoDateOffset(1)} 10:00-11:00 Sparring Jordan #sparring/jordan`]);
   });
   when('I open Daily, switch to Tomorrow and tap the session', async () => {
     await openApp({settings: sparringSettings()});
     await tapTab('Daily');
     await tap('Tomorrow');
-    await tap(/^Sparring Mieke/);
+    await tap(/^Sparring Jordan/);
   });
   then('its card offers P, no +clip and no Reflect', () => {
     expect(labelled('Prepped')).toEqual({on: false, disabled: false});
@@ -215,7 +215,7 @@ scenario('Reflect from Review\'s "Meetings to close out" without ticking it revi
     await openApp({settings: sparringSettings()});
     await tapTab('Review');
     await tap('Meetings to close out');
-    await tap(/^Sparring Mieke/);
+    await tap(/^Sparring Jordan/);
     await tap('Reflect ›');
     await tap('Add page');
   });
@@ -231,13 +231,13 @@ scenario('Reflect from Review\'s "Meetings to close out" without ticking it revi
 });
 
 scenario('Engage on the meeting\'s page offers the reflection; on the reflection page it opens on what came out of the thread\'s meetings', {feature: 'Engage', design: 'technical-design-meeting-reflection.md'}, () => {
-  given('the todo "Send Mieke the role canvas" was agreed in the sparring session three days ago; in the notebook the session\'s page is followed by a page added by hand, then the page of the todo "Prepare the workshop"', () => {
-    const key = meetingKey({date: d1, title: 'Sparring Mieke #sparring/mieke'});
+  given('the todo "Send Jordan the role canvas" was agreed in the sparring session three days ago; in the notebook the session\'s page is followed by a page added by hand, then the page of the todo "Prepare the workshop"', () => {
+    const key = meetingKey({date: d1, title: 'Sparring Jordan #sparring/jordan'});
     coaching(
       [sparringLine()],
-      [`- [ ] Send Mieke the role canvas #next [meeting:: ${key}]`, `- [ ] Prepare the workshop #sparring/mieke [created:: ${d2}] → [[${NOTEBOOK_REL}#Prepare the workshop #sparring/mieke]]`],
+      [`- [ ] Send Jordan the role canvas #next [meeting:: ${key}]`, `- [ ] Prepare the workshop #sparring/jordan [created:: ${d2}] → [[${NOTEBOOK_REL}#Prepare the workshop #sparring/jordan]]`],
     );
-    device().sdk.putNote(NOTEBOOK, [{keywords: [d1, MEETING_KW]}, {keywords: []}, {keywords: [d2, 'Prepare the workshop #sparring/mieke']}]);
+    device().sdk.putNote(NOTEBOOK, [{keywords: [d1, MEETING_KW]}, {keywords: []}, {keywords: [d2, 'Prepare the workshop #sparring/jordan']}]);
   });
   when('I open Engage on the meeting\'s page', () => openEngage({fromNote: NOTEBOOK, page: 0, settings: sparringSettings()}));
   then('the strip offers "Reflect ›" (the meeting is over: After)', () => expectShows('Reflect ›'));
@@ -247,15 +247,15 @@ scenario('Engage on the meeting\'s page offers the reflection; on the reflection
   });
   then('the reflection page comes after the hand-added page and before the todo\'s page, and opens', () => {
     expect(pageKeywords(NOTEBOOK, 2)).toContain(REFLECTION_KW);
-    expect(pageKeywords(NOTEBOOK, 3)).toContain('Prepare the workshop #sparring/mieke');
+    expect(pageKeywords(NOTEBOOK, 3)).toContain('Prepare the workshop #sparring/jordan');
     expect(device().sdk.opened.at(-1)).toEqual({path: NOTEBOOK, page: 2});
   });
   when('I open Engage on the reflection page', () => openEngage({fromNote: NOTEBOOK, page: 2}));
   then('it opens on "From Thread 1" with the sparring session\'s group and the agreed todo', () => {
     expectShows('From Thread 1');
-    expectShows(/ · Sparring Mieke$/);
+    expectShows(/ · Sparring Jordan$/);
     // The row draws the title and its #next label as one text: match the title at its start.
-    expectShows(/^Send Mieke the role canvas/);
+    expectShows(/^Send Jordan the role canvas/);
   });
   and('it doesn\'t offer to reflect again', () => {
     expectNotShows('Reflect ›');

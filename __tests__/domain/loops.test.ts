@@ -64,7 +64,7 @@ describe('the loop itself vs a todo of it', () => {
     expect(loopItselfOfLine('#read/oldshatterhand #someday', KINDS)).toBeNull();
     expect(loopItselfOfLine('#read/oldshatterhand #maybe', KINDS)).toBeNull();
     expect(loopItselfOfLine('#workshop/teamoffsite #wf/bob', KINDS)).toBeNull();
-    expect(loopItselfOfLine('#workshop/teamoffsite #mieke', KINDS)).toBeNull();
+    expect(loopItselfOfLine('#workshop/teamoffsite #jordan', KINDS)).toBeNull();
     expect(loopItselfOfLine('#workshop/a #read/b', KINDS)).toBeNull();
     expect(loopItselfOfLine('#retro/demand', KINDS)).toBeNull();
     expect(loopItselfOfLine('#workshop/teamoffsite', [])).toBeNull();

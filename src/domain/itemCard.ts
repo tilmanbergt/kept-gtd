@@ -32,7 +32,7 @@ export interface MeetingCardModel {
   heading: string;
   /** A focus block (`#focusblock`): F on, no P/R, no Reflect (docs/dev/history/technical-design-time-and-place.md §3.1). */
   focusBlock: boolean;
-  /** R1: the meeting's thread (`#sparring/mieke`), opening its overview; a focus block's loop reads "writing novel ›"; null without a nested tag. */
+  /** R1: the meeting's thread (`#sparring/jordan`), opening its overview; a focus block's loop reads "writing novel ›"; null without a nested tag. */
   thread: {tag: string; label: string} | null;
   /** R2: the title as shown (state tags stripped, the user's tags kept). */
   title: string;
@@ -122,7 +122,7 @@ export function meetingCardModel(input: MeetingCardInput): MeetingCardModel {
 export interface TodoCardModel {
   /** R1: "Todo · due 24.10.", "· waiting for Lena", "· next", "· done". */
   heading: string;
-  /** R1: the meeting the todo was agreed in ("↳ Sparring Mieke ›"), opening its thread's overview when the meeting has a thread tag. */
+  /** R1: the meeting the todo was agreed in ("↳ Sparring Jordan ›"), opening its thread's overview when the meeting has a thread tag. */
   origin: {label: string; threadTag: string | null} | null;
   /** R2: the title without the tags its labels show, and the labels (`#next`, `#due 24.10.`). */
   title: string;
@@ -157,7 +157,7 @@ function todoStatus(task: Task, today: string): string {
   return task.flowState ?? 'open';
 }
 
-/** The meeting a provenance key (`2026-10-14 Sparring Mieke sparring/mieke`) names: its title words, and its first thread tag. */
+/** The meeting a provenance key (`2026-10-14 Sparring Jordan sparring/jordan`) names: its title words, and its first thread tag. */
 export function originOfKey(key: string): {label: string; threadTag: string | null} | null {
   const words = key.split(' ').filter(Boolean);
   if (words.length === 0) return null;

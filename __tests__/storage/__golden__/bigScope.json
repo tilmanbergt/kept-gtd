@@ -2132,16 +2132,16 @@
     }
    },
    {
-    "leaf": "mieke",
+    "leaf": "jordan",
     "status": "active",
     "threads": [
-     "sparring/mieke"
+     "sparring/jordan"
     ],
     "oneOff": null,
     "inUse": true,
     "backInUse": false,
     "owner": "Atruvia",
-    "tag": "sparring/mieke",
+    "tag": "sparring/jordan",
     "lastMeeting": "2026-10-19",
     "nextMeeting": "2026-10-30",
     "oweCount": 2,
@@ -2149,7 +2149,7 @@
     "oldestWaitingDays": null,
     "overview": {
      "lens": "counterpart",
-     "thread": "sparring/mieke",
+     "thread": "sparring/jordan",
      "owner": "Atruvia",
      "scope": [
       "Tender",
@@ -2182,7 +2182,7 @@
      "past": [
       {
        "meeting": "Atruvia:m66",
-       "key": "2026-10-19 Sparring Mieke sparring/mieke",
+       "key": "2026-10-19 Sparring Jordan sparring/jordan",
        "agreed": [],
        "agreements": [],
        "counts": {
@@ -2194,7 +2194,7 @@
       },
       {
        "meeting": "Atruvia:m47",
-       "key": "2026-09-14 Sparring Mieke",
+       "key": "2026-09-14 Sparring Jordan",
        "agreed": [],
        "agreements": [],
        "counts": {
@@ -2206,7 +2206,7 @@
       },
       {
        "meeting": "Atruvia:m31",
-       "key": "2026-08-11 Sparring Mieke sparring/mieke",
+       "key": "2026-08-11 Sparring Jordan sparring/jordan",
        "agreed": [],
        "agreements": [],
        "counts": {
@@ -2218,7 +2218,7 @@
       },
       {
        "meeting": "Migration:m7",
-       "key": "2026-08-08 Sparring Mieke sparring/mieke",
+       "key": "2026-08-08 Sparring Jordan sparring/jordan",
        "agreed": [],
        "agreements": [],
        "counts": {
@@ -2230,7 +2230,7 @@
       },
       {
        "meeting": "Atruvia:m57",
-       "key": "2026-07-02 Sparring Mieke sparring/mieke",
+       "key": "2026-07-02 Sparring Jordan sparring/jordan",
        "agreed": [],
        "agreements": [],
        "counts": {
@@ -2242,7 +2242,7 @@
       },
       {
        "meeting": "Tender:m17",
-       "key": "2026-06-07 Sparring Mieke sparring/mieke",
+       "key": "2026-06-07 Sparring Jordan sparring/jordan",
        "agreed": [
         "Tender:t11",
         "Atruvia:t30"
@@ -4617,16 +4617,16 @@
      }
     },
     {
-     "leaf": "mieke",
+     "leaf": "jordan",
      "status": "active",
      "threads": [
-      "sparring/mieke"
+      "sparring/jordan"
      ],
      "oneOff": null,
      "inUse": true,
      "backInUse": false,
      "owner": "Atruvia",
-     "tag": "sparring/mieke",
+     "tag": "sparring/jordan",
      "lastMeeting": "2026-10-19",
      "nextMeeting": "2026-10-30",
      "oweCount": 2,
@@ -4634,7 +4634,7 @@
      "oldestWaitingDays": null,
      "overview": {
       "lens": "counterpart",
-      "thread": "sparring/mieke",
+      "thread": "sparring/jordan",
       "owner": "Atruvia",
       "scope": [
        "Tender",
@@ -4667,7 +4667,7 @@
       "past": [
        {
         "meeting": "Atruvia:m66",
-        "key": "2026-10-19 Sparring Mieke sparring/mieke",
+        "key": "2026-10-19 Sparring Jordan sparring/jordan",
         "agreed": [],
         "agreements": [],
         "counts": {
@@ -4679,7 +4679,7 @@
        },
        {
         "meeting": "Atruvia:m47",
-        "key": "2026-09-14 Sparring Mieke",
+        "key": "2026-09-14 Sparring Jordan",
         "agreed": [],
         "agreements": [],
         "counts": {
@@ -4691,7 +4691,7 @@
        },
        {
         "meeting": "Atruvia:m31",
-        "key": "2026-08-11 Sparring Mieke sparring/mieke",
+        "key": "2026-08-11 Sparring Jordan sparring/jordan",
         "agreed": [],
         "agreements": [],
         "counts": {
@@ -4703,7 +4703,7 @@
        },
        {
         "meeting": "Migration:m7",
-        "key": "2026-08-08 Sparring Mieke sparring/mieke",
+        "key": "2026-08-08 Sparring Jordan sparring/jordan",
         "agreed": [],
         "agreements": [],
         "counts": {
@@ -4715,7 +4715,7 @@
        },
        {
         "meeting": "Atruvia:m57",
-        "key": "2026-07-02 Sparring Mieke sparring/mieke",
+        "key": "2026-07-02 Sparring Jordan sparring/jordan",
         "agreed": [],
         "agreements": [],
         "counts": {
@@ -4727,7 +4727,7 @@
        },
        {
         "meeting": "Tender:m17",
-        "key": "2026-06-07 Sparring Mieke sparring/mieke",
+        "key": "2026-06-07 Sparring Jordan sparring/jordan",
         "agreed": [
          "Tender:t11",
          "Atruvia:t30"
@@ -7037,12 +7037,12 @@
    }
   },
   {
-   "tag": "sparring/mieke",
+   "tag": "sparring/jordan",
    "lens": "thread",
    "owner": "Atruvia",
    "overview": {
     "lens": "thread",
-    "thread": "sparring/mieke",
+    "thread": "sparring/jordan",
     "owner": "Atruvia",
     "scope": [
      "Tender",
@@ -7075,7 +7075,7 @@
     "past": [
      {
       "meeting": "Atruvia:m66",
-      "key": "2026-10-19 Sparring Mieke sparring/mieke",
+      "key": "2026-10-19 Sparring Jordan sparring/jordan",
       "agreed": [],
       "agreements": [],
       "counts": {
@@ -7087,7 +7087,7 @@
      },
      {
       "meeting": "Atruvia:m47",
-      "key": "2026-09-14 Sparring Mieke",
+      "key": "2026-09-14 Sparring Jordan",
       "agreed": [],
       "agreements": [],
       "counts": {
@@ -7099,7 +7099,7 @@
      },
      {
       "meeting": "Atruvia:m31",
-      "key": "2026-08-11 Sparring Mieke sparring/mieke",
+      "key": "2026-08-11 Sparring Jordan sparring/jordan",
       "agreed": [],
       "agreements": [],
       "counts": {
@@ -7111,7 +7111,7 @@
      },
      {
       "meeting": "Migration:m7",
-      "key": "2026-08-08 Sparring Mieke sparring/mieke",
+      "key": "2026-08-08 Sparring Jordan sparring/jordan",
       "agreed": [],
       "agreements": [],
       "counts": {
@@ -7123,7 +7123,7 @@
      },
      {
       "meeting": "Atruvia:m57",
-      "key": "2026-07-02 Sparring Mieke sparring/mieke",
+      "key": "2026-07-02 Sparring Jordan sparring/jordan",
       "agreed": [],
       "agreements": [],
       "counts": {
@@ -7135,7 +7135,7 @@
      },
      {
       "meeting": "Tender:m17",
-      "key": "2026-06-07 Sparring Mieke sparring/mieke",
+      "key": "2026-06-07 Sparring Jordan sparring/jordan",
       "agreed": [
        "Tender:t11",
        "Atruvia:t30"
@@ -7152,12 +7152,12 @@
    }
   },
   {
-   "tag": "sparring/mieke",
+   "tag": "sparring/jordan",
    "lens": "thread",
    "owner": null,
    "overview": {
     "lens": "thread",
-    "thread": "sparring/mieke",
+    "thread": "sparring/jordan",
     "owner": "Atruvia",
     "scope": [
      "Tender",
@@ -7190,7 +7190,7 @@
     "past": [
      {
       "meeting": "Atruvia:m66",
-      "key": "2026-10-19 Sparring Mieke sparring/mieke",
+      "key": "2026-10-19 Sparring Jordan sparring/jordan",
       "agreed": [],
       "agreements": [],
       "counts": {
@@ -7202,7 +7202,7 @@
      },
      {
       "meeting": "Atruvia:m47",
-      "key": "2026-09-14 Sparring Mieke",
+      "key": "2026-09-14 Sparring Jordan",
       "agreed": [],
       "agreements": [],
       "counts": {
@@ -7214,7 +7214,7 @@
      },
      {
       "meeting": "Atruvia:m31",
-      "key": "2026-08-11 Sparring Mieke sparring/mieke",
+      "key": "2026-08-11 Sparring Jordan sparring/jordan",
       "agreed": [],
       "agreements": [],
       "counts": {
@@ -7226,7 +7226,7 @@
      },
      {
       "meeting": "Migration:m7",
-      "key": "2026-08-08 Sparring Mieke sparring/mieke",
+      "key": "2026-08-08 Sparring Jordan sparring/jordan",
       "agreed": [],
       "agreements": [],
       "counts": {
@@ -7238,7 +7238,7 @@
      },
      {
       "meeting": "Atruvia:m57",
-      "key": "2026-07-02 Sparring Mieke sparring/mieke",
+      "key": "2026-07-02 Sparring Jordan sparring/jordan",
       "agreed": [],
       "agreements": [],
       "counts": {
@@ -7250,7 +7250,7 @@
      },
      {
       "meeting": "Tender:m17",
-      "key": "2026-06-07 Sparring Mieke sparring/mieke",
+      "key": "2026-06-07 Sparring Jordan sparring/jordan",
       "agreed": [
        "Tender:t11",
        "Atruvia:t30"
@@ -7267,12 +7267,12 @@
    }
   },
   {
-   "tag": "sparring/mieke",
+   "tag": "sparring/jordan",
    "lens": "counterpart",
    "owner": "Atruvia",
    "overview": {
     "lens": "counterpart",
-    "thread": "sparring/mieke",
+    "thread": "sparring/jordan",
     "owner": "Atruvia",
     "scope": [
      "Tender",
@@ -7305,7 +7305,7 @@
     "past": [
      {
       "meeting": "Atruvia:m66",
-      "key": "2026-10-19 Sparring Mieke sparring/mieke",
+      "key": "2026-10-19 Sparring Jordan sparring/jordan",
       "agreed": [],
       "agreements": [],
       "counts": {
@@ -7317,7 +7317,7 @@
      },
      {
       "meeting": "Atruvia:m47",
-      "key": "2026-09-14 Sparring Mieke",
+      "key": "2026-09-14 Sparring Jordan",
       "agreed": [],
       "agreements": [],
       "counts": {
@@ -7329,7 +7329,7 @@
      },
      {
       "meeting": "Atruvia:m31",
-      "key": "2026-08-11 Sparring Mieke sparring/mieke",
+      "key": "2026-08-11 Sparring Jordan sparring/jordan",
       "agreed": [],
       "agreements": [],
       "counts": {
@@ -7341,7 +7341,7 @@
      },
      {
       "meeting": "Migration:m7",
-      "key": "2026-08-08 Sparring Mieke sparring/mieke",
+      "key": "2026-08-08 Sparring Jordan sparring/jordan",
       "agreed": [],
       "agreements": [],
       "counts": {
@@ -7353,7 +7353,7 @@
      },
      {
       "meeting": "Atruvia:m57",
-      "key": "2026-07-02 Sparring Mieke sparring/mieke",
+      "key": "2026-07-02 Sparring Jordan sparring/jordan",
       "agreed": [],
       "agreements": [],
       "counts": {
@@ -7365,7 +7365,7 @@
      },
      {
       "meeting": "Tender:m17",
-      "key": "2026-06-07 Sparring Mieke sparring/mieke",
+      "key": "2026-06-07 Sparring Jordan sparring/jordan",
       "agreed": [
        "Tender:t11",
        "Atruvia:t30"
@@ -7382,12 +7382,12 @@
    }
   },
   {
-   "tag": "sparring/mieke",
+   "tag": "sparring/jordan",
    "lens": "counterpart",
    "owner": null,
    "overview": {
     "lens": "counterpart",
-    "thread": "sparring/mieke",
+    "thread": "sparring/jordan",
     "owner": "Atruvia",
     "scope": [
      "Tender",
@@ -7420,7 +7420,7 @@
     "past": [
      {
       "meeting": "Atruvia:m66",
-      "key": "2026-10-19 Sparring Mieke sparring/mieke",
+      "key": "2026-10-19 Sparring Jordan sparring/jordan",
       "agreed": [],
       "agreements": [],
       "counts": {
@@ -7432,7 +7432,7 @@
      },
      {
       "meeting": "Atruvia:m47",
-      "key": "2026-09-14 Sparring Mieke",
+      "key": "2026-09-14 Sparring Jordan",
       "agreed": [],
       "agreements": [],
       "counts": {
@@ -7444,7 +7444,7 @@
      },
      {
       "meeting": "Atruvia:m31",
-      "key": "2026-08-11 Sparring Mieke sparring/mieke",
+      "key": "2026-08-11 Sparring Jordan sparring/jordan",
       "agreed": [],
       "agreements": [],
       "counts": {
@@ -7456,7 +7456,7 @@
      },
      {
       "meeting": "Migration:m7",
-      "key": "2026-08-08 Sparring Mieke sparring/mieke",
+      "key": "2026-08-08 Sparring Jordan sparring/jordan",
       "agreed": [],
       "agreements": [],
       "counts": {
@@ -7468,7 +7468,7 @@
      },
      {
       "meeting": "Atruvia:m57",
-      "key": "2026-07-02 Sparring Mieke sparring/mieke",
+      "key": "2026-07-02 Sparring Jordan sparring/jordan",
       "agreed": [],
       "agreements": [],
       "counts": {
@@ -7480,7 +7480,7 @@
      },
      {
       "meeting": "Tender:m17",
-      "key": "2026-06-07 Sparring Mieke sparring/mieke",
+      "key": "2026-06-07 Sparring Jordan sparring/jordan",
       "agreed": [
        "Tender:t11",
        "Atruvia:t30"
@@ -8137,7 +8137,7 @@
    "threadOfTodo": {
     "kind": "thread",
     "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
-    "tag": "sparring/mieke"
+    "tag": "sparring/jordan"
    },
    "agreedInMeeting": "Tender:m17"
   },
@@ -8731,7 +8731,7 @@
    "threadOfTodo": {
     "kind": "thread",
     "scopeOwnerPath": "/storage/emulated/0/Note/2 Areas/Atruvia",
-    "tag": "sparring/mieke"
+    "tag": "sparring/jordan"
    },
    "agreedInMeeting": "Tender:m17"
   },

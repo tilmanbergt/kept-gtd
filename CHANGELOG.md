@@ -14,6 +14,11 @@ or your project/area files are stored.
 - **Check device files** in Settings → Advanced (shown while Debug logging is on): lists the device's
   top folders, the SD card and the file Kept was opened from, with buttons to open sample files - for
   bug reports about files outside `Note`.
+- **Help pages link to each other**: tap an underlined link to open that page, at the heading it
+  names; **‹ Back** in the help's header walks back through the pages you came from.
+
+### Changed
+- The demo space's sparring partner is now **Jordan** (`#sparring/jordan`).
 
 ## [0.22.0] — 2026-10-29
 

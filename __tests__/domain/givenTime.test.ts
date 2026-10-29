@@ -47,8 +47,8 @@ describe('givenTimeOf', () => {
     tasks: [task('Chapter 3 #writing/novel #next'), done('Old', '2026-10-01')],
   });
   const coaching = item('area', 'Coaching', {
-    meetings: [m('2026-10-14', '1:1 Mieke #sparring/mieke', {time: '10:00', endTime: '11:00'}), m('2026-10-11', 'Long run #sparring/mieke', {days: 3})],
-    tasks: [done('Sent slides #sparring/mieke', '2026-10-14')],
+    meetings: [m('2026-10-14', '1:1 Jordan #sparring/jordan', {time: '10:00', endTime: '11:00'}), m('2026-10-11', 'Long run #sparring/jordan', {days: 3})],
+    tasks: [done('Sent slides #sparring/jordan', '2026-10-14')],
   });
   const garage = item('project', 'Garage', {area: 'Home', meetings: [m('2026-10-14', 'Tool sort', {time: '17:00'})], tasks: [task('Sort tools #next')]});
   const web = item('project', 'Website', {tasks: [done('Logo', '2026-10-13'), done('Copy', '2026-10-14'), task('Draft homepage #next')]});
@@ -60,17 +60,17 @@ describe('givenTimeOf', () => {
     expect(result.areas.map(line)).toEqual(['Area Home 2 days · 4 h', 'Area Coaching 2 days · 1 h']);
   });
   it('loops and counterparts in their own list: a meeting counts there once more', () => {
-    expect(result.owners.map(line)).toEqual(['Counterpart mieke 2 days · 1 h', 'Loop novel 3 h']);
+    expect(result.owners.map(line)).toEqual(['Counterpart jordan 2 days · 1 h', 'Loop novel 3 h']);
     const loop = result.owners.find(r => r.kindLabel === 'Loop')!;
     expect(loop).toMatchObject({blocks: 2, meetings: 0, nextTodo: 'Chapter 3'});
     expect(givenTimeDetail(loop)).toBe('2 blocks · next: Chapter 3');
-    const mieke = result.owners.find(r => r.kindLabel === 'Counterpart')!;
-    expect(mieke).toMatchObject({meetings: 2, done: 1});
-    expect(givenTimeDetail(mieke)).toBe('sparring · 2 meetings · 1 done');
+    const jordan = result.owners.find(r => r.kindLabel === 'Counterpart')!;
+    expect(jordan).toMatchObject({meetings: 2, done: 1});
+    expect(givenTimeDetail(jordan)).toBe('sparring · 2 meetings · 1 done');
     expect(result.areas.find(r => r.name === 'Home')).toMatchObject({blocks: 2, meetings: 2});
   });
   it('the threshold leaves out loops and counterparts with less time', () => {
-    expect(givenTimeOf({source, range: WEEK, matcher: all, minMinutes: 200}).owners.map(r => r.name)).toEqual(['mieke']);
+    expect(givenTimeOf({source, range: WEEK, matcher: all, minMinutes: 200}).owners.map(r => r.name)).toEqual(['jordan']);
   });
   it('Worked on: done in the range and nothing scheduled; earlier done todos never count', () => {
     expect(result.workedOn.map(r => `${r.name} ${r.done}`)).toEqual(['Website 2']);
@@ -80,7 +80,7 @@ describe('givenTimeOf', () => {
     const work: ContextDef = {id: 'c', name: 'Work', shows: [{kind: 'item', itemKind: 'area', name: 'Coaching'}], hides: [], outsideMeetings: 'dim'};
     const filtered = givenTimeOf({source, range: WEEK, matcher: contextMatcher(work), minMinutes: 60});
     expect(filtered.areas.map(r => r.name)).toEqual(['Coaching']);
-    expect(filtered.owners.map(r => r.name)).toEqual(['mieke']);
+    expect(filtered.owners.map(r => r.name)).toEqual(['jordan']);
     expect(filtered.workedOn).toEqual([]);
     expect(filtered.hiddenOwners).toBe(3);
   });

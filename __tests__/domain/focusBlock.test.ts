@@ -39,16 +39,16 @@ describe('focusBlock tag', () => {
 });
 
 describe('a focus block is not tracked and has no reflection', () => {
-  const block = m('2026-10-20', 'Sparring prep #sparring/mieke #focusblock');
+  const block = m('2026-10-20', 'Sparring prep #sparring/jordan #focusblock');
   it('no checkpoint, even when its setup and the Default track', () => {
     expect(tracksCheckpoint(block, config(), 'prep')).toBe(false);
     expect(tracksCheckpoint(block, config(), 'review')).toBe(false);
     expect(resolveMeetingTracking(block, config(), new Date(nowMs))).toBeNull();
-    expect(tracksCheckpoint({cancelled: false, tags: ['sparring/mieke']}, config(), 'review')).toBe(true);
+    expect(tracksCheckpoint({cancelled: false, tags: ['sparring/jordan']}, config(), 'review')).toBe(true);
   });
   it('no Reflect, also on the Engage strip', () => {
     expect(reflectionOffered(block, nowMs)).toBe(false);
-    expect(reflectionOffered({...block, tags: ['sparring/mieke']}, nowMs)).toBe(true);
+    expect(reflectionOffered({...block, tags: ['sparring/jordan']}, nowMs)).toBe(true);
     const strip = {tracksPrep: false, prepped: false, tracksReview: false, reviewed: false, lastHasNote: false, nextNeeded: false, onReflectionPage: false};
     expect(stripActions('after', {...strip, focusBlock: true})).toEqual([]);
     expect(stripActions('after', strip)).toEqual(['reflect']);
@@ -64,13 +64,13 @@ describe('the focus block card', () => {
     expect(ahead.focusBlock).toBe(true);
     expect(ahead.thread).toEqual({tag: 'writing/novel', label: 'writing novel ›'});
     expect(ahead.checkpoint).toBeNull();
-    const over = card(m('2026-10-19', 'Sparring prep #sparring/mieke #focusblock'));
+    const over = card(m('2026-10-19', 'Sparring prep #sparring/jordan #focusblock'));
     expect(over.heading).toBe('Focus · over');
     expect(over.reflection).toBeNull();
-    expect(over.thread?.label).toBe('#sparring/mieke ›');
+    expect(over.thread?.label).toBe('#sparring/jordan ›');
   });
   it('a meeting card stays as it is', () => {
-    const plain = card(m('2026-10-19', 'Sparring #sparring/mieke'));
+    const plain = card(m('2026-10-19', 'Sparring #sparring/jordan'));
     expect(plain.heading).toBe('Meeting · over');
     expect(plain.focusBlock).toBe(false);
     expect(plain.reflection).toBe('none');

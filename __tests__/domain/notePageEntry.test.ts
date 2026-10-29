@@ -54,12 +54,12 @@ describe('sharedPageHit', () => {
 });
 
 describe('sharedPageHit on a Reflection page (docs/dev/history/technical-design-meeting-reflection.md §2.4)', () => {
-  const kw = '2026-10-18 Sparring Mieke #sparring/mieke';
-  const renamed = meeting('2026-10-18', 'Sparring Mieke roles #sparring/mieke', {tags: ['sparring/mieke'], notePath: `Meetings/sparring.note#${kw}`});
+  const kw = '2026-10-18 Sparring Jordan #sparring/jordan';
+  const renamed = meeting('2026-10-18', 'Sparring Jordan roles #sparring/jordan', {tags: ['sparring/jordan'], notePath: `Meetings/sparring.note#${kw}`});
   const {shared} = notePageCandidates(`${AREA}/Meetings/sparring.note`, 2, [source({meetings: [renamed]})]);
   it('maps the page to its meeting, by the current reflection keyword or the one from the stored page keyword', () => {
-    expect(sharedPageHit(shared, ['reflection 2026-10-18 Sparring Mieke roles'])).toMatchObject({kind: 'meeting', meetingIndex: 0});
-    expect(sharedPageHit(shared, ['reflection 2026-10-18 Sparring Mieke', 'sparring/mieke'])).toMatchObject({kind: 'meeting', meetingIndex: 0});
-    expect(sharedPageHit(shared, ['reflection 2026-10-11 Sparring Mieke'])).toBeNull();
+    expect(sharedPageHit(shared, ['reflection 2026-10-18 Sparring Jordan roles'])).toMatchObject({kind: 'meeting', meetingIndex: 0});
+    expect(sharedPageHit(shared, ['reflection 2026-10-18 Sparring Jordan', 'sparring/jordan'])).toMatchObject({kind: 'meeting', meetingIndex: 0});
+    expect(sharedPageHit(shared, ['reflection 2026-10-11 Sparring Jordan'])).toBeNull();
   });
 });

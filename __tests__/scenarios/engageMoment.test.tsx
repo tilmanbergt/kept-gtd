@@ -11,12 +11,12 @@ import {fixedClock} from '../../test-helpers/scenario/clock';
 // the clock is set per scenario, so Before, During and After hold whenever the suite runs.
 const TODAY = '2026-10-24';
 const EARLIER = '2026-10-14';
-const NOTEBOOK_REL = 'Meetings/sparring mieke 2026.note';
+const NOTEBOOK_REL = 'Meetings/sparring jordan 2026.note';
 const NOTEBOOK = `${areaDir('Coaching')}/${NOTEBOOK_REL}`;
-const kw = (date: string) => `${date} Sparring Mieke #sparring/mieke`;
-const sparring = (date: string, extra = '') => `- ${date} 10:00-11:00 Sparring Mieke #sparring/mieke${extra} → [[${NOTEBOOK_REL}#${kw(date)}]]`;
-const KEY_EARLIER = meetingKey({date: EARLIER, title: 'Sparring Mieke #sparring/mieke'});
-const KEY_TODAY = meetingKey({date: TODAY, title: 'Sparring Mieke #sparring/mieke'});
+const kw = (date: string) => `${date} Sparring Jordan #sparring/jordan`;
+const sparring = (date: string, extra = '') => `- ${date} 10:00-11:00 Sparring Jordan #sparring/jordan${extra} → [[${NOTEBOOK_REL}#${kw(date)}]]`;
+const KEY_EARLIER = meetingKey({date: EARLIER, title: 'Sparring Jordan #sparring/jordan'});
+const KEY_TODAY = meetingKey({date: TODAY, title: 'Sparring Jordan #sparring/jordan'});
 
 /** The clock at `hour:minute` on October `day`, 2026. */
 function clock(hour: number, minute = 0, day = 24): void {
@@ -36,12 +36,12 @@ function coaching(extra: {tasks?: string[]; meetings?: string[]; agreements?: st
         Scope: [],
         Tasks: [
           `- [ ] Draft feedback [meeting:: ${KEY_EARLIER}]`,
-          `- [ ] Org chart from Mieke #wf/mieke [meeting:: ${KEY_EARLIER}]`,
+          `- [ ] Org chart from Jordan #wf/jordan [meeting:: ${KEY_EARLIER}]`,
           `- [x] Send role canvas [meeting:: ${KEY_EARLIER}] [completion:: 2026-10-20]`,
           ...(extra.tasks ?? []),
         ],
         Meetings: [sparring(EARLIER), sparring(TODAY), ...(extra.meetings ?? [])],
-        Threads: ['- mieke: active'],
+        Threads: ['- jordan: active'],
         ...(extra.agreements ? {Agreements: extra.agreements} : {}),
       },
       ['abbrev: Co'],
@@ -54,13 +54,13 @@ function coaching(extra: {tasks?: string[]; meetings?: string[]; agreements?: st
 const engageOnToday = () => openEngage({fromNote: NOTEBOOK, page: 1, settings: sparringSettings()});
 
 scenario('Engage before the meeting: Before is chosen, the strip offers prep and the last note, From Thread shows the last session', {feature: 'Engage', design: 'technical-design-meetings-0.21.md'}, () => {
-  given('it is 09:30 and today\'s sparring with Mieke is at 10:00; on 14.10. "Draft feedback" and "Org chart from Mieke" were agreed and "Send role canvas" is done', () => {
+  given('it is 09:30 and today\'s sparring with Jordan is at 10:00; on 14.10. "Draft feedback" and "Org chart from Jordan" were agreed and "Send role canvas" is done', () => {
     clock(9, 30);
     coaching();
   });
   when('I open Engage on today\'s meeting page', engageOnToday);
   then('the meeting line shows the meeting with Before chosen', () => {
-    expectShows('Sparring Mieke · today 10:00–11:00');
+    expectShows('Sparring Jordan · today 10:00–11:00');
     expect(labelled('Before')?.on).toBe(true);
     expect(labelled('During')?.on).toBe(false);
   });
@@ -70,10 +70,10 @@ scenario('Engage before the meeting: Before is chosen, the strip offers prep and
   });
   and('From Thread is open with the group of 14.10.: the two agreed todos, the done one struck last', () => {
     expectShows('From Thread 3');
-    expectShows('Wed 14.10. · Sparring Mieke');
+    expectShows('Wed 14.10. · Sparring Jordan');
     // A row draws its title and labels as one text: match the title at its start.
     expectShows(/^Draft feedback/);
-    expectShows(/^Org chart from Mieke/);
+    expectShows(/^Org chart from Jordan/);
     expectShows(/^Send role canvas/);
   });
   and('"Next here" does not repeat today\'s meeting', () => expectNotShows(/^Next here: /));
@@ -93,18 +93,18 @@ scenario('During the meeting: a todo and an agreement carry the meeting and the 
     await engageOnToday();
     expect(labelled('During')?.on).toBe(true);
     await tap('+ Quick Add');
-    expectShows(/^↳ from Sparring Mieke/);
-    expectShows('#sparring/mieke');
+    expectShows(/^↳ from Sparring Jordan/);
+    expectShows('#sparring/jordan');
     await type('New task', 'Book follow-up with HR');
     await tap('+ Add');
   });
   then('the todo records the meeting and has the thread tag', () => {
-    expect(sectionLines(areaFile('Coaching'), 'Tasks')).toContain(`- [ ] Book follow-up with HR #sparring/mieke [meeting:: ${KEY_TODAY}] [created:: ${TODAY}]`);
+    expect(sectionLines(areaFile('Coaching'), 'Tasks')).toContain(`- [ ] Book follow-up with HR #sparring/jordan [meeting:: ${KEY_TODAY}] [created:: ${TODAY}]`);
   });
   and('From Thread shows today\'s group on top, with it', () => {
     const all = describeScreen();
-    expect(all.indexOf('today · Sparring Mieke')).toBeGreaterThanOrEqual(0);
-    expect(all.indexOf('today · Sparring Mieke')).toBeLessThan(all.indexOf('Wed 14.10. · Sparring Mieke'));
+    expect(all.indexOf('today · Sparring Jordan')).toBeGreaterThanOrEqual(0);
+    expect(all.indexOf('today · Sparring Jordan')).toBeLessThan(all.indexOf('Wed 14.10. · Sparring Jordan'));
     expect(all).toContain('Book follow-up with HR');
   });
   when('at 10:30 I add on the Agreement tab "Feedback only in our 1:1s", valid till end of year', async () => {
@@ -118,14 +118,14 @@ scenario('During the meeting: a todo and an agreement carry the meeting and the 
   });
   then('area.txt has it under ## Agreements with the meeting, today and the end of the year', () => {
     expect(sectionLines(areaFile('Coaching'), 'Agreements')).toEqual([
-      `- Feedback only in our 1:1s #sparring/mieke [meeting:: ${KEY_TODAY}] [created:: ${TODAY}] [valid:: 2026-12-31]`,
+      `- Feedback only in our 1:1s #sparring/jordan [meeting:: ${KEY_TODAY}] [created:: ${TODAY}] [valid:: 2026-12-31]`,
     ]);
   });
   and('the Agreements tab lists it, and From Thread lists it in today\'s group', async () => {
     expectShows('Agreements 1');
     expectShows('◇');
     await tap('Agreements 1');
-    expectShows('Feedback only in our 1:1s #sparring/mieke');
+    expectShows('Feedback only in our 1:1s #sparring/jordan');
     expectShows('since 24.10. · till 31.12.');
   });
 });
@@ -177,28 +177,28 @@ scenario('Done rows follow the moment: Before the last session\'s, During both, 
   });
 });
 
-scenario('The Waiting tab lists what I wait for from Mieke, where it was agreed, with Done', {feature: 'Engage', design: 'technical-design-meetings-0.21.md'}, () => {
-  given('"Org chart from Mieke #wf/mieke" was agreed on 14.10. and "Budget numbers #wf/mieke" not in a meeting', () => {
+scenario('The Waiting tab lists what I wait for from Jordan, where it was agreed, with Done', {feature: 'Engage', design: 'technical-design-meetings-0.21.md'}, () => {
+  given('"Org chart from Jordan #wf/jordan" was agreed on 14.10. and "Budget numbers #wf/jordan" not in a meeting', () => {
     clock(12, 0);
-    coaching({tasks: ['- [ ] Budget numbers #wf/mieke']});
+    coaching({tasks: ['- [ ] Budget numbers #wf/jordan']});
   });
   when('I open Engage on the meeting page and choose Waiting', async () => {
     await engageOnToday();
     await tap('Waiting 2');
   });
   then('it lists both, the first "from 14.10."; "Also here" counts no waiting', () => {
-    expectShows(/^Org chart from Mieke.*from 14\.10\./);
+    expectShows(/^Org chart from Jordan.*from 14\.10\./);
     expectShows(/^Budget numbers/);
     expectNotShows(/^Also here: .*waiting/);
   });
   when('I tap Done on the first', () => tap('Done', 0));
   then('it is ticked in the file', () => {
-    expect(sectionLines(areaFile('Coaching'), 'Tasks')[1]).toMatch(/^- \[x\] Org chart from Mieke #wf\/mieke/);
+    expect(sectionLines(areaFile('Coaching'), 'Tasks')[1]).toMatch(/^- \[x\] Org chart from Jordan #wf\/jordan/);
   });
 });
 
 scenario('+ Next sparring only when no session follows today\'s', {feature: 'Engage', design: 'technical-design-meetings-0.21.md'}, () => {
-  given('it is 10:20 during today\'s sparring, and no sparring with Mieke is planned after it', () => {
+  given('it is 10:20 during today\'s sparring, and no sparring with Jordan is planned after it', () => {
     clock(10, 20);
     coaching();
   });
@@ -206,7 +206,7 @@ scenario('+ Next sparring only when no session follows today\'s', {feature: 'Eng
   then('the strip offers + Next sparring', () => expectShows('+ Next sparring'));
   when('I tap it', () => tap('+ Next sparring'));
   then('Quick Add\'s Meeting tab holds the next session, ten days on', () => {
-    expect(fieldValue('New meeting title')).toBe('Sparring Mieke #sparring/mieke');
+    expect(fieldValue('New meeting title')).toBe('Sparring Jordan #sparring/jordan');
     expect(fieldValue('YYYY-MM-DD')).toBe('2026-11-03');
   });
 });
@@ -214,14 +214,14 @@ scenario('+ Next sparring only when no session follows today\'s', {feature: 'Eng
 scenario('No + Next when the next session is planned already', {feature: 'Engage', design: 'technical-design-meetings-0.21.md'}, () => {
   given('it is 10:20 during today\'s sparring, and a sparring is planned on 6.11.', () => {
     clock(10, 20);
-    coaching({meetings: ['- 2026-11-06 10:00-11:00 Sparring Mieke #sparring/mieke']});
+    coaching({meetings: ['- 2026-11-06 10:00-11:00 Sparring Jordan #sparring/jordan']});
   });
   when('I open Engage on the meeting page', engageOnToday);
   then('there is no + Next', () => expectNotShows('+ Next sparring'));
 });
 
 scenario('Change an agreement from the Agreements tab: the old one ends, the new one is added', {feature: 'Engage', design: 'technical-design-meetings-0.21.md'}, () => {
-  const line = `- Feedback only in our 1:1s #sparring/mieke [meeting:: ${KEY_TODAY}] [created:: ${TODAY}] [valid:: 2026-12-31]`;
+  const line = `- Feedback only in our 1:1s #sparring/jordan [meeting:: ${KEY_TODAY}] [created:: ${TODAY}] [valid:: 2026-12-31]`;
   given('today\'s sparring made the agreement "Feedback only in our 1:1s"', () => {
     clock(10, 45);
     coaching({agreements: [line]});
@@ -229,7 +229,7 @@ scenario('Change an agreement from the Agreements tab: the old one ends, the new
   when('I open Engage on the meeting page, tap the agreement on the Agreements tab and Change, then Cancel', async () => {
     await engageOnToday();
     await tap('Agreements 1');
-    await tap('Feedback only in our 1:1s #sparring/mieke');
+    await tap('Feedback only in our 1:1s #sparring/jordan');
     await tap('Change');
     expectShows(/^↳ replaces 'Feedback only in our 1:1s'/);
     await tap('Cancel', 0);
@@ -237,43 +237,43 @@ scenario('Change an agreement from the Agreements tab: the old one ends, the new
   then('the file is unchanged', () => expect(sectionLines(areaFile('Coaching'), 'Agreements')).toEqual([line]));
   when('I change it to "Feedback only in our 1:1s, except urgent" and add it', async () => {
     await tap('Agreements 1');
-    await tap('Feedback only in our 1:1s #sparring/mieke');
+    await tap('Feedback only in our 1:1s #sparring/jordan');
     await tap('Change');
-    await type('New agreement', 'Feedback only in our 1:1s, except urgent #sparring/mieke');
+    await type('New agreement', 'Feedback only in our 1:1s, except urgent #sparring/jordan');
     await tap('+ Add');
   });
   then('the old line is ended today and the new one added with today as created', () => {
     expect(sectionLines(areaFile('Coaching'), 'Agreements')).toEqual([
       `${line} [ended:: ${TODAY}]`,
-      `- Feedback only in our 1:1s, except urgent #sparring/mieke [meeting:: ${KEY_TODAY}] [created:: ${TODAY}] [valid:: 2026-12-31]`,
+      `- Feedback only in our 1:1s, except urgent #sparring/jordan [meeting:: ${KEY_TODAY}] [created:: ${TODAY}] [valid:: 2026-12-31]`,
     ]);
   });
   and('the tab lists only the new one', async () => {
     await tap('Agreements 1');
-    expectShows('Feedback only in our 1:1s, except urgent #sparring/mieke');
-    expectNotShows('Feedback only in our 1:1s #sparring/mieke');
+    expectShows('Feedback only in our 1:1s, except urgent #sparring/jordan');
+    expectNotShows('Feedback only in our 1:1s #sparring/jordan');
   });
 });
 
-scenario('On a todo\'s page, w/f Mieke turns #next into Waiting For, with Undo', {feature: 'Engage', design: 'technical-design-meetings-0.21.md'}, () => {
-  const TODO_NOTE = `${areaDir('Coaching')}/Todos/Send Mieke the role canvas.note`;
-  given('area "Coaching" has "Send Mieke the role canvas #next #sparring/mieke" with its own note', () => {
+scenario('On a todo\'s page, w/f Jordan turns #next into Waiting For, with Undo', {feature: 'Engage', design: 'technical-design-meetings-0.21.md'}, () => {
+  const TODO_NOTE = `${areaDir('Coaching')}/Todos/Send Jordan the role canvas.note`;
+  given('area "Coaching" has "Send Jordan the role canvas #next #sparring/jordan" with its own note', () => {
     clock(12, 0);
-    coaching({tasks: ['- [ ] Send Mieke the role canvas #next #sparring/mieke → [[Todos/Send Mieke the role canvas.note]]']});
+    coaching({tasks: ['- [ ] Send Jordan the role canvas #next #sparring/jordan → [[Todos/Send Jordan the role canvas.note]]']});
     device().sdk.putNote(TODO_NOTE, [{keywords: []}]);
   });
-  when('I open Engage on the todo\'s note and tap w/f Mieke', async () => {
+  when('I open Engage on the todo\'s note and tap w/f Jordan', async () => {
     await openEngage({fromNote: TODO_NOTE, page: 0, settings: sparringSettings()});
     expectShows('Working on');
-    await tap('w/f Mieke');
+    await tap('w/f Jordan');
   });
-  then('the line carries #wf/mieke instead of #next', () => {
-    expect(sectionLines(areaFile('Coaching'), 'Tasks')[3]).toBe('- [ ] Send Mieke the role canvas #sparring/mieke #wf/mieke → [[Todos/Send Mieke the role canvas.note]]');
+  then('the line carries #wf/jordan instead of #next', () => {
+    expect(sectionLines(areaFile('Coaching'), 'Tasks')[3]).toBe('- [ ] Send Jordan the role canvas #sparring/jordan #wf/jordan → [[Todos/Send Jordan the role canvas.note]]');
   });
   and('the ack offers Undo, and the todo is on the Waiting tab', async () => {
     expectShows('Undo');
     await tap(/^Waiting \d/);
-    expectShows(/^Send Mieke the role canvas/);
+    expectShows(/^Send Jordan the role canvas/);
   });
 });
 

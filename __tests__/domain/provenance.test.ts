@@ -20,10 +20,10 @@ describe('meetingKey', () => {
     expect(meetingKey(retro)).toBe('2026-09-30 Retro alpha retro/alpha');
   });
   it('drops "#" but keeps the tag text, so Obsidian sees no tags in the field', () => {
-    const mieke = m('2026-10-08', '1:1 Mieke #mh #101/mieke');
-    expect(meetingKey(mieke)).toBe('2026-10-08 1:1 Mieke mh 101/mieke');
-    const line = applyProvenance('Send agenda', meetingKey(mieke));
-    expect(line).toBe('Send agenda [meeting:: 2026-10-08 1:1 Mieke mh 101/mieke]');
+    const jordan = m('2026-10-08', '1:1 Jordan #mh #101/jordan');
+    expect(meetingKey(jordan)).toBe('2026-10-08 1:1 Jordan mh 101/jordan');
+    const line = applyProvenance('Send agenda', meetingKey(jordan));
+    expect(line).toBe('Send agenda [meeting:: 2026-10-08 1:1 Jordan mh 101/jordan]');
     expect(buildTask(line, {today: '2026-10-08'}).tags).toEqual([]);
   });
   it('leaves out brackets so the field stays one token', () => {
@@ -38,9 +38,9 @@ describe('applyProvenance', () => {
     );
   });
   it('keeps the tags the user typed, also those of another thread', () => {
-    const mieke = m('2026-09-30', '1:1 Mieke #101/mieke');
-    expect(applyProvenance('Raise budget question #101/sven', meetingKey(mieke))).toBe(
-      'Raise budget question #101/sven [meeting:: 2026-09-30 1:1 Mieke 101/mieke]',
+    const jordan = m('2026-09-30', '1:1 Jordan #101/jordan');
+    expect(applyProvenance('Raise budget question #101/sven', meetingKey(jordan))).toBe(
+      'Raise budget question #101/sven [meeting:: 2026-09-30 1:1 Jordan 101/jordan]',
     );
   });
   it('round-trips through buildTask and the task line writer', () => {
@@ -77,12 +77,12 @@ describe('resolveProvenance', () => {
   });
 
   it('tells two same-titled meetings on one day apart by their tags', () => {
-    const a = m('2026-10-08', '1:1 #101/mieke');
+    const a = m('2026-10-08', '1:1 #101/jordan');
     const b = m('2026-10-08', '1:1 #101/tom');
     expect(meetingKey(a)).not.toBe(meetingKey(b));
     const sources = [{path: '/area', meetings: [a, b]}];
     expect(resolveProvenance(agreed(meetingKey(b), 'Follow up #101/tom'), sources, ['/area'])).toMatchObject({meetingIndex: 1, exact: true});
-    expect(resolveProvenance(agreed(meetingKey(a), 'Follow up #101/mieke'), sources, ['/area'])).toMatchObject({meetingIndex: 0, exact: true});
+    expect(resolveProvenance(agreed(meetingKey(a), 'Follow up #101/jordan'), sources, ['/area'])).toMatchObject({meetingIndex: 0, exact: true});
   });
 
   it('matches a hand-written key that still has "#"', () => {
@@ -100,13 +100,13 @@ describe('resolveProvenance', () => {
   });
 
   it('does not consult the todo\'s own tags for the fallback', () => {
-    const renamed = m('2026-09-30', '1:1 #101/mieke');
+    const renamed = m('2026-09-30', '1:1 #101/jordan');
     const sources = [{path: '/area', meetings: [m('2026-09-30', 'Sync #101/sven'), renamed]}];
-    // Agreed with Mieke, to be raised with Sven: the key names Mieke's thread, the tag Sven's.
-    const raised = agreed('2026-09-30 1:1 Mieke 101/mieke', 'Raise budget #101/sven');
+    // Agreed with Jordan, to be raised with Sven: the key names Jordan's thread, the tag Sven's.
+    const raised = agreed('2026-09-30 1:1 Jordan 101/jordan', 'Raise budget #101/sven');
     expect(resolveProvenance(raised, sources, ['/area'])).toMatchObject({meetingIndex: 1, exact: false});
     // A key without thread tags has no fallback, whatever the todo is tagged with.
-    expect(resolveProvenance(agreed('2026-09-30 1:1 Mieke', 'Raise budget #101/mieke'), sources, ['/area'])).toBeNull();
+    expect(resolveProvenance(agreed('2026-09-30 1:1 Jordan', 'Raise budget #101/jordan'), sources, ['/area'])).toBeNull();
   });
 
   it('matches a deeper tag in the key to the meeting\'s thread', () => {

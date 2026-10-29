@@ -45,10 +45,10 @@ const AREA_FILE = [
   '## Tasks',
   '',
   '## Agreements',
-  '- Feedback only in our 1:1s #sparring/mieke [created:: 2026-10-01] [who:: both]',
+  '- Feedback only in our 1:1s #sparring/jordan [created:: 2026-10-01] [who:: both]',
   '% a comment line',
   '',
-  '- Fridays are quiet #mieke [created:: 2026-10-02]',
+  '- Fridays are quiet #jordan [created:: 2026-10-02]',
   '',
   '## Meetings',
   '',
@@ -68,12 +68,12 @@ beforeEach(() => {
 });
 
 it('adds to the file and the cache', async () => {
-  await addAgreement(mockItems[0].path, buildAgreement('No calls after 6 #mieke', {today: '2026-10-24', valid: '2026-12-31', meeting: '2026-10-24 Sparring Mieke'}));
+  await addAgreement(mockItems[0].path, buildAgreement('No calls after 6 #jordan', {today: '2026-10-24', valid: '2026-12-31', meeting: '2026-10-24 Sparring Jordan'}));
   expect(mockWrites[0][0]).toBe(`${mockItems[0].path}/area.txt`);
   expect(last()).toBe(
     AREA_FILE.replace(
-      '- Fridays are quiet #mieke [created:: 2026-10-02]\n',
-      '- Fridays are quiet #mieke [created:: 2026-10-02]\n- No calls after 6 #mieke [meeting:: 2026-10-24 Sparring Mieke] [created:: 2026-10-24] [valid:: 2026-12-31]\n',
+      '- Fridays are quiet #jordan [created:: 2026-10-02]\n',
+      '- Fridays are quiet #jordan [created:: 2026-10-02]\n- No calls after 6 #jordan [meeting:: 2026-10-24 Sparring Jordan] [created:: 2026-10-24] [valid:: 2026-12-31]\n',
     ),
   );
   expect(mockItems[0].agreements).toHaveLength(3);
@@ -93,17 +93,17 @@ it('ending changes only that line (scenario 17)', async () => {
 });
 
 it('changing ends the old one and adds the new one in one write (scenario 10)', async () => {
-  await changeAgreement(ref(1), 'Fridays are quiet, except launches #mieke', null, null);
+  await changeAgreement(ref(1), 'Fridays are quiet, except launches #jordan', null, null);
   expect(mockWrites).toHaveLength(1);
-  expect(last()).toContain('- Fridays are quiet #mieke [created:: 2026-10-02] [ended:: 2026-10-24]\n- Fridays are quiet, except launches #mieke [created:: 2026-10-24]\n');
+  expect(last()).toContain('- Fridays are quiet #jordan [created:: 2026-10-02] [ended:: 2026-10-24]\n- Fridays are quiet, except launches #jordan [created:: 2026-10-24]\n');
   expect(mockItems[0].agreements.map(a => a.fields.ended)).toEqual([null, '2026-10-24', null]);
 });
 
 it('edit keeps created and unknown fields; keep sets a new valid-till', async () => {
-  await editAgreement(ref(0), 'Feedback only 1:1 #sparring/mieke', '2026-12-31');
-  expect(last()).toContain('- Feedback only 1:1 #sparring/mieke [created:: 2026-10-01] [valid:: 2026-12-31] [who:: both]\n');
+  await editAgreement(ref(0), 'Feedback only 1:1 #sparring/jordan', '2026-12-31');
+  expect(last()).toContain('- Feedback only 1:1 #sparring/jordan [created:: 2026-10-01] [valid:: 2026-12-31] [who:: both]\n');
   await keepAgreement(ref(0), null);
-  expect(last()).toContain('- Feedback only 1:1 #sparring/mieke [created:: 2026-10-01] [who:: both]\n');
+  expect(last()).toContain('- Feedback only 1:1 #sparring/jordan [created:: 2026-10-01] [who:: both]\n');
 });
 
 it('finds the line again when it moved, and refuses one that is gone', async () => {
@@ -122,6 +122,6 @@ it('refuses the Inbox', async () => {
 it('the debug bundle counts, never names', () => {
   const text = agreementsSummary([mockItems[0], item('project', 'Empty')]);
   expect(text).toBe('agreements: active=2 ended=0 files=1');
-  expect(text).not.toContain('mieke');
+  expect(text).not.toContain('jordan');
   expect(agreementsSummary(null)).toContain('not available');
 });

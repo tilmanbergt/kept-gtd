@@ -99,7 +99,7 @@ describe('activeContext', () => {
 
 describe('tallyHidden and the hidden line', () => {
   it('counts todos, the distinct loops and threads among them and the due ones', () => {
-    const hidden = [task('a #writing/novel'), task('b #writing/novel', {dueDate: TODAY}), task('c #sparring/mieke', {dueDate: '2026-10-01'}), task('d #other/x', {dueDate: '2026-10-20'}), task('e')].map(t => ({task: t}));
+    const hidden = [task('a #writing/novel'), task('b #writing/novel', {dueDate: TODAY}), task('c #sparring/jordan', {dueDate: '2026-10-01'}), task('d #other/x', {dueDate: '2026-10-20'}), task('e')].map(t => ({task: t}));
     expect(tallyHidden(hidden, {loopKinds: ['writing'], threadTypes: ['sparring']}, TODAY)).toEqual({todos: 5, loops: 1, threads: 1, items: 0, due: 2});
   });
   it('reads "Hidden by Work: 9 todos · 2 loops · 1 thread · 3 due!"; nothing hidden is no line', () => {

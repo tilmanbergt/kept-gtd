@@ -15,14 +15,14 @@ const a = (text: string, valid: string | null = null): Agreement => buildAgreeme
 const loopLine = (tag: string, status: LoopLine['status']): LoopLine => ({tag, status, mainDate: null, linkedFile: null, extraColumns: [], raw: null});
 
 const coaching = item('area', 'Coaching', {
-  threads: [{leaf: 'mieke', status: 'inactive'} as CounterpartLine, {leaf: 'sven', status: 'active'} as CounterpartLine],
+  threads: [{leaf: 'jordan', status: 'inactive'} as CounterpartLine, {leaf: 'sven', status: 'active'} as CounterpartLine],
   loops: [loopLine('proj/old', 'done'), loopLine('proj/live', 'active')],
   agreements: [
     a('Fridays are quiet', '2026-10-23'), // 0 over
-    a('Feedback in 1:1s #sparring/mieke'), // 1 counterpart inactive
-    a('Over and inactive #mieke', '2026-10-01'), // 2 both
+    a('Feedback in 1:1s #sparring/jordan'), // 1 counterpart inactive
+    a('Over and inactive #jordan', '2026-10-01'), // 2 both
     a('Sven rule #sparring/sven', '2026-12-31'), // 3 nothing
-    endedAgreement(a('Ended #sparring/mieke', '2026-01-01'), TODAY), // 4 ended: never asked
+    endedAgreement(a('Ended #sparring/jordan', '2026-01-01'), TODAY), // 4 ended: never asked
     a('Old loop #proj/old'), // 5 loop closed
     a('Live loop #proj/live'), // 6 nothing
     a('Valid today', TODAY), // 7 not over yet
@@ -40,8 +40,8 @@ describe('agreementsToReview (R25)', () => {
   it('lists active agreements with every reason that applies, grouped by file', () => {
     expect(rows).toEqual([
       'Coaching: Fridays are quiet = over',
-      'Coaching: Feedback in 1:1s #sparring/mieke = counterpartInactive',
-      'Coaching: Over and inactive #mieke = over+counterpartInactive',
+      'Coaching: Feedback in 1:1s #sparring/jordan = counterpartInactive',
+      'Coaching: Over and inactive #jordan = over+counterpartInactive',
       'Coaching: Old loop #proj/old = loopClosed',
       'Done one: Done rule = itemDone',
       'Parked: Parked rule = itemOnHold',

@@ -93,7 +93,7 @@ describe('scopeOf', () => {
 
 describe('#owe/<counterpart> (D13)', () => {
   it('names the counterparts a todo promises something to', () => {
-    expect(owedTo(['owe/sven', 'next', 'owe/sven/budget', 'owe/mieke', 'owe'])).toEqual(['sven', 'mieke']);
+    expect(owedTo(['owe/sven', 'next', 'owe/sven/budget', 'owe/jordan', 'owe'])).toEqual(['sven', 'jordan']);
     expect(owedTo(['owe', 'wf/sven'])).toEqual([]);
   });
   it('is not a flow state: it combines with #next and #someday', () => {
@@ -121,7 +121,7 @@ describe('threadOf memo (docs/dev/history/technical-design-perf-threads.md §3.5
     expect(threadOf('retro/')).toBeNull();
   });
   it('returns the same object for the same tag', () => {
-    expect(threadOf('101/mieke')).toBe(threadOf('101/mieke'));
-    expect(threadOf('101/mieke/q4')).toEqual(threadOf('101/mieke'));
+    expect(threadOf('101/jordan')).toBe(threadOf('101/jordan'));
+    expect(threadOf('101/jordan/q4')).toEqual(threadOf('101/jordan'));
   });
 });

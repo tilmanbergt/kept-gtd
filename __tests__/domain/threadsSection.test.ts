@@ -73,11 +73,11 @@ describe('writeThreadsIntoContent', () => {
   });
 
   it('appends a new leaf and a missing section', () => {
-    const next = withCounterpartStatus([], 'Mieke', 'active');
-    expect(next).toEqual([{leaf: 'mieke', status: 'active', rest: null, raw: null}]);
+    const next = withCounterpartStatus([], 'Jordan', 'active');
+    expect(next).toEqual([{leaf: 'jordan', status: 'active', rest: null, raw: null}]);
     const written = writeThreadsIntoContent('## Tasks\n- [ ] x\n', next);
-    expect(written).toBe('## Tasks\n- [ ] x\n\n## Threads\n- mieke: active\n');
-    expect(parseThreadsSpan(written).threads.map(t => [t.leaf, t.status])).toEqual([['mieke', 'active']]);
+    expect(written).toBe('## Tasks\n- [ ] x\n\n## Threads\n- jordan: active\n');
+    expect(parseThreadsSpan(written).threads.map(t => [t.leaf, t.status])).toEqual([['jordan', 'active']]);
   });
 
   it('changes every line of a duplicated leaf; the first decides the status', () => {

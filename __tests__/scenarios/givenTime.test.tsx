@@ -39,11 +39,11 @@ scenario('Given time: areas and projects by time, an all-day event as "1 day", W
 });
 
 scenario('Tend: a thread without a meeting in 14 days counts in the Tend line and shows "nothing planned"', {feature: 'Review', design: DESIGN}, () => {
-  given('on Wednesday 14.10.: Coaching\'s active thread mieke met yesterday and has nothing ahead', () => {
+  given('on Wednesday 14.10.: Coaching\'s active thread jordan met yesterday and has nothing ahead', () => {
     smokeClock();
     putFile(
       areaFile('Coaching'),
-      dataFile('area', {Scope: [], Tasks: [], Meetings: ['- 2026-10-13 10:00-11:00 Sparring Mieke #sparring/mieke'], Threads: ['- mieke: active']}, ['abbrev: Co']),
+      dataFile('area', {Scope: [], Tasks: [], Meetings: ['- 2026-10-13 10:00-11:00 Sparring Jordan #sparring/jordan'], Threads: ['- jordan: active']}, ['abbrev: Co']),
     );
   });
   when('I open Week', async () => {
@@ -52,7 +52,7 @@ scenario('Tend: a thread without a meeting in 14 days counts in the Tend line an
   });
   then('the Tend line counts one quiet thread', () => expectShows('Tend: 1 counterpart quiet ›'));
   when('I tap it', () => tap('Tend: 1 counterpart quiet ›'));
-  then('Review opens Tending threads, where mieke\'s row says "nothing planned"', () => {
+  then('Review opens Tending threads, where jordan\'s row says "nothing planned"', () => {
     expectShows('Tending threads');
     expect(readTexts().some(t => /nothing planned/.test(t))).toBe(true);
   });

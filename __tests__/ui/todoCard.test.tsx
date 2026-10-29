@@ -94,10 +94,10 @@ describe('TodoCard', () => {
   });
 
   it('the meeting it came from links to the thread overview', () => {
-    const agreed = task('Send the canvas', {fields: {...task('x').fields, meeting: '2026-10-14 Sparring Mieke sparring/mieke'}});
+    const agreed = task('Send the canvas', {fields: {...task('x').fields, meeting: '2026-10-14 Sparring Jordan sparring/jordan'}});
     const data = card(agreed, {}, {onOpenOrigin: jest.fn()});
     const r = render(agreed, data);
-    pressText(r, '↳ Sparring Mieke ›');
+    pressText(r, '↳ Sparring Jordan ›');
     expect(data.onOpenOrigin).toHaveBeenCalledTimes(1);
   });
 

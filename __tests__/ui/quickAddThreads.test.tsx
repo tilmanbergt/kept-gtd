@@ -84,11 +84,11 @@ describe('Quick Add provenance line', () => {
 });
 
 describe('useProvenance (close-out, overview and capture write through it)', () => {
-  const mieke = {date: '2026-09-30', title: '1:1 Mieke #101/mieke', tags: ['101/mieke']};
+  const jordan = {date: '2026-09-30', title: '1:1 Jordan #101/jordan', tags: ['101/jordan']};
   function probe(): {current: () => ProvenanceState} {
     let state!: ProvenanceState;
     function Probe() {
-      state = useProvenance(mieke);
+      state = useProvenance(jordan);
       return null;
     }
     act(() => {
@@ -99,9 +99,9 @@ describe('useProvenance (close-out, overview and capture write through it)', () 
 
   it('writes only the meeting field and shows no "adds"', () => {
     const p = probe();
-    expect(p.current().provenance?.[0].label.startsWith('↳ from 1:1 Mieke · ')).toBe(true);
+    expect(p.current().provenance?.[0].label.startsWith('↳ from 1:1 Jordan · ')).toBe(true);
     expect(p.current().provenance?.[0].label).not.toContain('adds');
-    expect(p.current().apply('Raise budget #101/sven')).toBe('Raise budget #101/sven [meeting:: 2026-09-30 1:1 Mieke 101/mieke]');
+    expect(p.current().apply('Raise budget #101/sven')).toBe('Raise budget #101/sven [meeting:: 2026-09-30 1:1 Jordan 101/jordan]');
   });
 
   it('✕ drops the link for the next todo only', () => {
@@ -110,7 +110,7 @@ describe('useProvenance (close-out, overview and capture write through it)', () 
     expect(p.current().provenance).toBeNull();
     expect(p.current().apply('Raise budget')).toBe('Raise budget');
     act(() => p.current().added());
-    expect(p.current().apply('Next one')).toBe('Next one [meeting:: 2026-09-30 1:1 Mieke 101/mieke]');
+    expect(p.current().apply('Next one')).toBe('Next one [meeting:: 2026-09-30 1:1 Jordan 101/jordan]');
   });
 });
 
@@ -135,12 +135,12 @@ describe('usePresetTag (docs/dev/history/technical-design-engage-in-context.md E
   });
 
   it('✕ drops it for the next todo only; no tag, no part', () => {
-    const p = probe('mieke');
+    const p = probe('jordan');
     act(() => p.current().part!.onClear());
     expect(p.current().part).toBeNull();
     expect(p.current().apply('Call')).toBe('Call');
     act(() => p.current().added());
-    expect(p.current().apply('Call')).toBe('Call #mieke');
+    expect(p.current().apply('Call')).toBe('Call #jordan');
     expect(probe(null).current().part).toBeNull();
   });
 });

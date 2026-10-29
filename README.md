@@ -11,7 +11,7 @@ text in your own Projects / Areas / Resources / Archive folders, so you can read
 anywhere, with or without the plugin.
 
 **Keep your word with people.** Most of what you promise, you promise to someone: in a 1:1, a
-retro, a coaching session. Give a meeting series a nested tag such as `#101/mieke` and Kept GTD
+retro, a coaching session. Give a meeting series a nested tag such as `#101/jordan` and Kept GTD
 keeps its thread: when you meet next, what you agreed last time, what you owe and what you are
 waiting for. A project or area opens on its Threads tab, and the Weekly Review asks once a week
 which people and series you still tend. See [Threads](docs/user/threads.md).

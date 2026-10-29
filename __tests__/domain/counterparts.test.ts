@@ -51,14 +51,14 @@ describe('scopes', () => {
 describe('counterpartsOf', () => {
   it('is one counterpart for an Area and its Projects, confirmed once', () => {
     const area = item('area', 'Atruvia', {
-      meetings: [meeting('2026-09-30', '1:1 Mieke #101/mieke', {tags: ['101/mieke']})],
-      threads: lines('- mieke: active\n'),
+      meetings: [meeting('2026-09-30', '1:1 Jordan #101/jordan', {tags: ['101/jordan']})],
+      threads: lines('- jordan: active\n'),
     });
-    const project = item('project', 'Tender', {area: 'Atruvia', tasks: [task('Raise budget #101/mieke')]});
+    const project = item('project', 'Tender', {area: 'Atruvia', tasks: [task('Raise budget #101/jordan')]});
     const [scope] = counterpartScopes([area, project]);
     const cps = counterpartsOf(scope, TYPES, NOW);
     expect(cps).toEqual([
-      {leaf: 'mieke', status: 'active', threads: [{type: '101', counterpart: 'mieke', tag: '101/mieke'}], oneOff: null, inUse: true, backInUse: false},
+      {leaf: 'jordan', status: 'active', threads: [{type: '101', counterpart: 'jordan', tag: '101/jordan'}], oneOff: null, inUse: true, backInUse: false},
     ]);
   });
 

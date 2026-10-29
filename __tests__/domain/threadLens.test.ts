@@ -67,49 +67,49 @@ describe('threadLensContext - scope and owner', () => {
 });
 
 describe('threadLensContext - how a todo relates to a thread (§1.2.1)', () => {
-  const mieke1 = m('2026-09-30', '1:1 Mieke #101/mieke', {time: '09:00', endTime: '09:30'});
-  const mieke2 = m('2026-10-06', '1:1 Mieke #101/mieke', {time: '09:00', endTime: '09:30'});
+  const jordan1 = m('2026-09-30', '1:1 Jordan #101/jordan', {time: '09:00', endTime: '09:30'});
+  const jordan2 = m('2026-10-06', '1:1 Jordan #101/jordan', {time: '09:00', endTime: '09:30'});
   const sven = m('2026-10-01', '1:1 Sven #101/sven', {time: '09:00', endTime: '09:30'});
   const team = item('area', 'Team', {
-    meetings: [mieke1, mieke2, sven],
+    meetings: [jordan1, jordan2, sven],
     tasks: [
-      agreedIn('Raise budget question #101/sven', mieke1),
-      agreedIn('Agreed only', mieke2),
-      agreedIn('Agreed and tagged #101/mieke', mieke2),
-      task('Tagged only #101/mieke'),
-      task('Leaf only #mieke #next'),
-      task('Promised #owe/mieke #next'),
+      agreedIn('Raise budget question #101/sven', jordan1),
+      agreedIn('Agreed only', jordan2),
+      agreedIn('Agreed and tagged #101/jordan', jordan2),
+      task('Tagged only #101/jordan'),
+      task('Leaf only #jordan #next'),
+      task('Promised #owe/jordan #next'),
       task('Bare owe #owe #101/sven'),
-      task('Contract #wf/mieke'),
-      agreedIn('Her feedback #wf', mieke2),
-      task('Her slides #wf #101/mieke'),
-      agreedIn("Sven's numbers #wf/sven", mieke2),
+      task('Contract #wf/jordan'),
+      agreedIn('Her feedback #wf', jordan2),
+      task('Her slides #wf #101/jordan'),
+      agreedIn("Sven's numbers #wf/sven", jordan2),
       task('Untagged bare wf #wf'),
-      task('Bare wf with a promise #wf #owe/mieke'),
+      task('Bare wf with a promise #wf #owe/jordan'),
     ],
   });
-  const sources = [sourceOf(team), inboxSource([agreedIn('Still in the Inbox', mieke2)])];
+  const sources = [sourceOf(team), inboxSource([agreedIn('Still in the Inbox', jordan2)])];
   const ctx = (tag: string, lens: 'thread' | 'counterpart' = 'thread') => threadLensContext([team], sources, INBOX, tag, lens, team.path)!;
 
   it('classifies every open todo once: waiting, then owe, then relevant', () => {
-    expect(relations(ctx('101/mieke'))).toEqual([
+    expect(relations(ctx('101/jordan'))).toEqual([
       'Raise budget question #101/sven: owe',
       'Agreed only: owe',
-      'Agreed and tagged #101/mieke: owe',
-      'Tagged only #101/mieke: relevant',
-      'Leaf only #mieke #next: relevant',
-      'Promised #owe/mieke #next: owe',
+      'Agreed and tagged #101/jordan: owe',
+      'Tagged only #101/jordan: relevant',
+      'Leaf only #jordan #next: relevant',
+      'Promised #owe/jordan #next: owe',
       'Bare owe #owe #101/sven: -',
-      'Contract #wf/mieke: waiting',
+      'Contract #wf/jordan: waiting',
       'Her feedback #wf: waiting',
-      'Her slides #wf #101/mieke: waiting',
+      'Her slides #wf #101/jordan: waiting',
       "Sven's numbers #wf/sven: owe",
       'Untagged bare wf #wf: -',
-      'Bare wf with a promise #wf #owe/mieke: owe',
+      'Bare wf with a promise #wf #owe/jordan: owe',
     ]);
   });
 
-  it('agreed with Mieke and tagged #101/sven: Relevant for Sven; #wf/sven is waiting there', () => {
+  it('agreed with Jordan and tagged #101/sven: Relevant for Sven; #wf/sven is waiting there', () => {
     const svens = ctx('101/sven');
     const of = (text: string) => svens.relationOf(team.tasks.find(t => t.text === text)!);
     expect(of('Raise budget question #101/sven')).toBe('relevant');
@@ -118,15 +118,15 @@ describe('threadLensContext - how a todo relates to a thread (§1.2.1)', () => {
   });
 
   it('resolves provenance to the meeting the todo was agreed in', () => {
-    const match = ctx('101/mieke').provenanceOf(team.tasks[1])!;
+    const match = ctx('101/jordan').provenanceOf(team.tasks[1])!;
     expect(match).toMatchObject({path: team.path, meetingIndex: 1});
-    expect(ctx('101/mieke').provenanceOf(team.tasks[3])).toBeNull();
+    expect(ctx('101/jordan').provenanceOf(team.tasks[3])).toBeNull();
   });
 
   it('the counterpart lens collects every thread of the counterpart', () => {
-    const all = ctx('101/mieke', 'counterpart');
-    expect(all.relationOf(task('x #101/mieke'))).toBe('relevant');
-    expect(all.relationOf(task('x #wf #owe/mieke'))).toBe('owe');
+    const all = ctx('101/jordan', 'counterpart');
+    expect(all.relationOf(task('x #101/jordan'))).toBe('relevant');
+    expect(all.relationOf(task('x #wf #owe/jordan'))).toBe('owe');
     expect(all.types).toEqual(['101', 'owe', 'wf']);
   });
 });

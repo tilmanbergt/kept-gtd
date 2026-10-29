@@ -111,22 +111,22 @@ scenario('A pure loop note: a free page after the loop page belongs to the loop'
 });
 
 scenario('A thread notebook\'s follow-up page: the thread and its sparring', {feature: 'Engage', design: DESIGN}, () => {
-  const THREADS = `${areaDir('Coaching')}/Meetings/sparring mieke 2026.note`;
-  const kw = '2026-10-24 Sparring Mieke #sparring/mieke';
-  given('a thread notebook with a sparring page for Mieke and a follow-up page', () => {
+  const THREADS = `${areaDir('Coaching')}/Meetings/sparring jordan 2026.note`;
+  const kw = '2026-10-24 Sparring Jordan #sparring/jordan';
+  given('a thread notebook with a sparring page for Jordan and a follow-up page', () => {
     sport();
     putFile(
       areaFile('Coaching'),
-      dataFile('area', {Scope: [], Tasks: [], Meetings: [`- 2026-10-24 10:00-11:00 Sparring Mieke #sparring/mieke → [[Meetings/sparring mieke 2026.note#${kw}]]`], Threads: ['- mieke: active']}, ['abbrev: Co']),
+      dataFile('area', {Scope: [], Tasks: [], Meetings: [`- 2026-10-24 10:00-11:00 Sparring Jordan #sparring/jordan → [[Meetings/sparring jordan 2026.note#${kw}]]`], Threads: ['- jordan: active']}, ['abbrev: Co']),
     );
     device().sdk.putNote(THREADS, [{keywords: ['2026-10-24', kw]}, {}]);
   });
   when('I open Engage on the follow-up page', () => engageOn(2, THREADS));
-  then('the owner is Thread #sparring/mieke and the moment line shows that sparring', () => {
+  then('the owner is Thread #sparring/jordan and the moment line shows that sparring', () => {
     expectShows('THREAD');
     expectShows('  · Coaching');
-    expectShows('Sparring Mieke · Sat 24.10. 10:00–11:00');
-    expect(sectionLine()).toEqual(['Section: Sparring Mieke sparring/mieke · 24.10. · from p. 1']);
+    expectShows('Sparring Jordan · Sat 24.10. 10:00–11:00');
+    expect(sectionLine()).toEqual(['Section: Sparring Jordan sparring/jordan · 24.10. · from p. 1']);
   });
 });
 
@@ -163,8 +163,8 @@ scenario('The page index can\'t be read: the single-page lookup, and the panel o
 // Capture (§6.2 16-19). The fake device has no lasso; marks go through the same capture panel and provenance.
 
 scenario('An agreement from a mark on a thread notebook\'s follow-up page: for the thread, with the sparring', {feature: 'Lasso', design: DESIGN}, () => {
-  const kw = '2026-10-24 Sparring Mieke #sparring/mieke';
-  given('Mieke\'s sparring notebook has the sparring\'s page and a follow-up page with a mark "Feedback only in our 1:1s"', () => {
+  const kw = '2026-10-24 Sparring Jordan #sparring/jordan';
+  given('Jordan\'s sparring notebook has the sparring\'s page and a follow-up page with a mark "Feedback only in our 1:1s"', () => {
     putFile(
       areaFile('Coaching'),
       dataFile(
@@ -172,14 +172,14 @@ scenario('An agreement from a mark on a thread notebook\'s follow-up page: for t
         {
           Scope: [],
           Tasks: [],
-          Meetings: [`- 2026-10-24 10:00-11:00 Sparring Mieke #sparring/mieke → [[Meetings/sparring mieke 2026.note#${kw}]]`],
-          Threads: ['- mieke: active'],
-          Marks: ['- 2026-10-25 09:00 [[Meetings/sparring mieke 2026.note]] p2 Feedback only in our 1:1s ^m-20261025-090000-000'],
+          Meetings: [`- 2026-10-24 10:00-11:00 Sparring Jordan #sparring/jordan → [[Meetings/sparring jordan 2026.note#${kw}]]`],
+          Threads: ['- jordan: active'],
+          Marks: ['- 2026-10-25 09:00 [[Meetings/sparring jordan 2026.note]] p2 Feedback only in our 1:1s ^m-20261025-090000-000'],
         },
         ['abbrev: Co'],
       ),
     );
-    device().sdk.putNote(`${areaDir('Coaching')}/Meetings/sparring mieke 2026.note`, [{keywords: ['2026-10-24', kw]}, {}]);
+    device().sdk.putNote(`${areaDir('Coaching')}/Meetings/sparring jordan 2026.note`, [{keywords: ['2026-10-24', kw]}, {}]);
   });
   when('I process the mark as an Agreement', async () => {
     await openApp({settings: settings()});
@@ -188,16 +188,16 @@ scenario('An agreement from a mark on a thread notebook\'s follow-up page: for t
     await tap(/to process/);
     await tap('Agreement');
   });
-  then('the For chips start with #sparring/mieke, and the grey line names the sparring', () => {
+  then('the For chips start with #sparring/jordan, and the grey line names the sparring', () => {
     const all = texts();
-    expect(all.indexOf('#sparring/mieke')).toBeGreaterThan(all.indexOf('For'));
-    expect(all.indexOf('#sparring/mieke')).toBeLessThan(all.indexOf('#CO Coaching'));
-    expectShows(/^↳ from Sparring Mieke/);
+    expect(all.indexOf('#sparring/jordan')).toBeGreaterThan(all.indexOf('For'));
+    expect(all.indexOf('#sparring/jordan')).toBeLessThan(all.indexOf('#CO Coaching'));
+    expectShows(/^↳ from Sparring Jordan/);
   });
   when('I tap Save & close', () => tap(/^Save & close/));
   then('the agreement records the sparring meeting', () => {
     expect(sectionLines(areaFile('Coaching'), 'Agreements')).toEqual([
-      '- Feedback only in our 1:1s #sparring/mieke [meeting:: 2026-10-24 Sparring Mieke sparring/mieke] [created:: 2026-10-25]',
+      '- Feedback only in our 1:1s #sparring/jordan [meeting:: 2026-10-24 Sparring Jordan sparring/jordan] [created:: 2026-10-25]',
     ]);
   });
 });

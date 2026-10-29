@@ -102,7 +102,7 @@ const SERIES: ReadonlyArray<{type: string; cp: string; title: string; weight: nu
   {type: 'jf', cp: 'board', title: 'Jour fixe Board: budget, roadmap, staffing and the open risks', weight: 2},
   {type: 'jf', cp: 'works', title: 'Jour fixe works council', weight: 2},
   {type: 'jf', cp: 'it', title: 'JF IT', weight: 2},
-  {type: 'sparring', cp: 'mieke', title: 'Sparring Mieke', weight: 2},
+  {type: 'sparring', cp: 'jordan', title: 'Sparring Jordan', weight: 2},
   {type: 'sparring', cp: 'sven', title: 'Sparring Sven', weight: 1},
 ];
 
@@ -270,7 +270,7 @@ export function bigScopeFiles(): BigFile[] {
   ];
 
   const threadLines = [
-    ...['anna', 'bert', 'carla', 'dirk', 'eva', 'frank', 'greta', 'hans', 'ines', 'alpha', 'beta', 'gamma', 'board', 'works', 'it', 'mieke', 'sven'].map(
+    ...['anna', 'bert', 'carla', 'dirk', 'eva', 'frank', 'greta', 'hans', 'ines', 'alpha', 'beta', 'gamma', 'board', 'works', 'it', 'jordan', 'sven'].map(
       cp => `- ${cp}: active`,
     ),
     '- ulf: inactive',
