@@ -215,3 +215,19 @@ change to carry a link); translation; any app change other than the index rule (
    most one link per target per sentence.
 3. Review steps: one target `#the-steps` for all (proposed), or a heading per step?
 4. The script test for Getting started (§6): wanted, or review only?
+
+## As built
+
+- §8 decided as proposed: first mention per section, Getting started every mention, one target
+  `review.md#the-steps` for the Review steps without a section, and the script test.
+- Rule 5 reads "the same *label* twice in one sentence": two labels with one target (Create Project
+  or Create Area, Projects and Areas tabs) each link.
+- A link to a heading of the same page is written with the page name (`week-and-month.md#given-time`):
+  the app's link rule needs it, and on GitHub it reloads the same page at the heading. Scenario test:
+  "A link to a heading of the same page jumps there, and ‹ Back returns".
+- §6's script test checks the reverse of a dictionary: Getting started may keep bold only for the
+  buttons its sentences explain (**Save**, **+ Add**), so any new bold label there must be a link.
+- The Overview's tab list starts each item with "The [Daily](daily.md) tab: …" - a link at the start
+  would add a page to the help's page list (§5.1).
+- Result: 893 page links (from 275), 667 bold texts left (from 784), nearly all buttons explained in
+  their sentence. The live dictionary is "Link targets" in `docs/dev/README.md`.

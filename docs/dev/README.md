@@ -123,7 +123,9 @@ model answers "not available" and is listed in `device().sdk.unsupported`.
 The pages in `docs/user/` are read on GitHub and shown in the plugin's help ("?" in the tab bar,
 `ui/HelpOverlay.tsx`; design: `technical-design-in-app-help.md`). The build bundles them into
 `src/generated/userDocs.ts`; the help's page list follows the groups and order of `index.md`, so a
-new page must be linked there. The app renders them with the same renderer as "What's new"
+new page must be linked there, as a list item that starts with the link (`- [Daily](daily.md): …`).
+A list item that starts with anything else (the tab list: `- The [Daily](daily.md) tab: …`) adds no
+page to the list. The app renders them with the same renderer as "What's new"
 (`domain/markdownBlocks.ts` → `ui/MarkdownBlocks.tsx`), which knows only a small subset, so the
 pages stick to it:
 
@@ -132,17 +134,79 @@ pages stick to it:
   `[text](page.md#heading-slug)` (tappable in the help, which opens the page at that heading and
   offers ‹ Back; the slug is GitHub's, `domain/helpLinks.ts`); links to web addresses show as text
 - fenced code blocks (shown in monospace, long ones continue on the next page)
-- `*italic*` for a term the page explains (*home notebook*, *counterpart*); `**bold**` for labels
-  exactly as the app shows them (**Save**, **Device**); `` `code` `` for what is typed or stored -
-  tags, file names, lines of a file. A label or term that another page describes in more detail is a
-  link to that section instead (the help draws links bold and underlined).
+- each style has one meaning (`technical-design-help-linking.md` §2): a *link* (bold and underlined
+  in the help) for what another page or section explains; `**bold**` for a label exactly as the app
+  shows it that is explained right here (**Save**, **+ Add**); `*italic*` for a term at the place
+  that defines it, and for the lead word of a definition list; `` `code` `` for what is typed or
+  stored - tags, file names, lines of a file; "quotes" for a message or line the app shows
 - no tables, images, HTML (not even `<name>` placeholders) or horizontal rules
+
+Linking rules (`technical-design-help-linking.md` §3): link every screen, panel, list, step,
+setting, chip or term another page or section explains, at its first mention in each section (`##`,
+or `###` where a page has them); Getting started links every mention (at most one link per label and
+sentence). Point at the most specific heading, using the targets below; a link to a heading of the
+same page is written with the page name (`week-and-month.md#given-time`). Not linked: what the same
+section explains, the page's own subject, **Save** / **Cancel** / **✕** / **OK**, headings. A "see
+… below" or "see Threads" becomes a link to that heading. A much-referenced thing without a section
+gets a short section on the page that owns it.
+
+Link targets for the labels that recur (add a row when you link a new one):
+
+- tabs: Projects, Areas `projects-and-areas.md`; Current `projects-and-areas.md#the-current-tab`;
+  Daily `daily.md`; Week, Month `week-and-month.md#week`, `#month`; Inbox `quick-add.md#the-inbox`;
+  Review `review.md`; Settings `settings.md`
+- Quick Add `quick-add.md`, its Todo / Meeting / Agreement / Note tabs `#adding-a-todo`,
+  `#adding-a-meeting`, `#adding-an-agreement`, `#adding-a-note`; the card
+  `#the-card-one-tap-selects`; Edit `#editing`; the grey line
+  `#the-grey-line-where-a-todo-comes-from`; note icon, clip, linked file
+  `#notes-and-files-on-a-todo-or-meeting`; filing with `#GR` `#filing-directly-with-an-abbreviation`
+- Next, w/f, Someday, Maybe, flow state `tags.md#flow-tags-for-todos`; due date `tags.md#due-dates`;
+  nested tag `tags.md#nested-tags`
+- the status line `index.md#the-status-line`; opening from a note `index.md#opening-kept-gtd-from-a-note`
+- meeting card, New from this `meetings.md#the-meeting-row-and-its-card`; context panel
+  `#the-context-panel`; F, focus block `#focus-blocks`; P / R, prep and review
+  `#preparation-and-review`; Reflect, Reflection page `#reflection-page`; M, monthly highlight
+  `week-and-month.md#month`; time field forms `week-and-month.md#meeting-length`; Given time
+  `week-and-month.md#given-time`
+- Files pane `projects-and-areas.md#files-and-linked-files`; Device, This file
+  `files-and-folders.md#files-outside-note`; Threads tab `projects-and-areas.md#threads`; Projects
+  tab of an area `#projects-of-an-area`; Notebook tab `#the-notebook-tab`; home notebook
+  `#home-notebooks`; notebook icon `#the-notebook-icon`; Home page `#the-home-page`; Status
+  `#status`; Assign to Area… `#assigning-a-project-to-an-area`; abbreviation `#abbreviations`
+- Close out… `close-out.md#where-to-start-it`; Quick archive… `close-out.md#quick-archive`;
+  Archive… on an area `close-out.md#areas`
+- thread, counterpart `threads.md`; thread overview `threads.md#opening-the-overview`; All name
+  `#thread-or-all-of-the-counterpart`; Ahead, Looking back `#ahead`, `#looking-back`; + Next sparring
+  `#-next-sparring`; Tend, Not, Set inactive `#tending-counterparts`; where a todo was agreed
+  `#where-a-todo-was-agreed`
+- loop `loops.md`; loop overview `#the-loop-overview`; loop note `#the-loop-note`; Close loop
+  `#closing-a-loop`; agreement `agreements.md`; Change, End `agreements.md#changing-and-ending`
+- Engage `engage.md`; Engage › `engage.md#opening-engage`; owner
+  `#which-owner-a-page-belongs-to`; From Thread / Next / Plan / Waiting `#the-tabs`
+- context `contexts.md`; the context chip `contexts.md#choosing-one`
+- lasso `lasso.md`; Capture Todo/Meeting `#capturing-right-away`; Mark for later, marks
+  `#marking-for-later`; n marks to process, Process › `#processing-marks`
+- Note setup `note-setups.md#what-a-setup-is` (One notebook, Own note per item); Default
+  `#the-default`; question before a note `#before-a-note-is-created`; keywords
+  `#finding-notes-again`
+- Review steps without a section (Week ahead, Meetings to close out, Inbox to zero, Stalled projects,
+  Done awaiting review, On Hold reconsideration, Neglected areas, Gmail inbox) `review.md#the-steps`;
+  Tending threads, Agreements, Someday / Maybe, Open loops their own sections
+- Settings → Folders / Features / Advanced / About `settings.md#folders`, `#features`, `#advanced`,
+  `#about` (Run Integrity Check, Reload all files, Keep tabs in memory, What's new, Upgrade notes);
+  setup assistant `settings.md#setup-assistant`; Settings → Contexts
+  `contexts.md#setting-up-contexts`; Settings → Note setups `settings.md#note-setups`; Google
+  Calendar, Gmail `features.md#google-calendar`, `#gmail`; Project close-out
+  `features.md#project-close-out`; profiles, demo space `profiles-and-demo.md#profiles`,
+  `#the-demo-space`; Debug logging, Export debug bundle `troubleshooting.md#reporting-a-problem`;
+  Obsidian `files-and-folders.md#using-kept-gtd-with-obsidian`
 
 Write labels exactly as the app shows them, and check a behaviour in the code before describing
 it. `__tests__/docs/userDocs.test.ts` fails on anything outside the subset, and the generator
 (`npm run gen`, run by every check tier and build) fails on a link to a page that doesn't exist or
 to a heading the page doesn't have (`scripts/lib/userDocs.mjs`'s `checkLinks`, with the app's slug
-rule), so the checks catch most slips.
+rule), and `scripts/test-userdocs.mjs` fails on bold in Getting started that is not a link (only
+buttons the sentence explains may stay bold), so the checks catch most slips.
 
 ## Code tour
 
