@@ -1064,9 +1064,21 @@ per setup (and the Default on its own), and its Heading style (`noteHeadingStyle
 (`FeaturesTab.tsx`) holds the module switches - `settings.modules` (`closeOut`, on by default; read
 through `domain/features.ts`'s `featuresOf`/`modulesOf`, which fill a missing key from its default,
 and `ui/featureStore.ts`'s `useFeatures`; close-out off passes no `onStartCloseOut` to Current and
-Review, so a Done project archives directly) - and the Experimental switches. Advanced holds Profiles, "Reload all files", "Run Integrity Check", "Touch test", "Keep tabs in
-memory" and "Performance tracing". About shows version and build, the changelog ("What's new", also offered
+Review, so a Done project archives directly) - and the Experimental switches. Advanced holds Profiles, "Reload all files", "Run Integrity Check", "Touch test", "Check device
+files" (only while Debug logging is on: `storage/deviceCheck.ts` - the folders it can list, the
+launch file and page, Open buttons for files outside `Note/`), "Keep tabs in memory" and
+"Performance tracing". About shows version and build, the changelog ("What's new", also offered
 once after an update), Debug logging and "Export debug bundle".
+
+**Setup assistant** (`screens/settings/SetupAssistant.tsx`, decisions in
+`domain/setupAssistant.ts`, writes in `storage/setupAssistant.ts`): Folders (existing PARA folders
+suggested, what exists shown), Notes (the Default's notebook or none), Features (Simple or
+Everything), Look around first (demo space), then Finish, drawn in Settings in place of its tabs.
+Finish saves through `patchSettings` (refused while settings are unreadable), creates only the
+missing folders and reports them; Skip only sets `setupAssistant: 'done'`. App lands on it on the
+first reorient while `setupAssistant` is 'pending', which `migrateExperimentalFlags` sets only on a
+fresh install; Run setup assistant on the Folders tab starts it any time. ? Help goes through
+`ui/helpStore.ts`. Detail: `docs/dev/history/technical-design-easy-start.md` §5.
 
 **Persistence.** `GtdParaSettings` (`domain/settings.ts`, defaults in `DEFAULT_SETTINGS`) is one
 JSON blob in AsyncStorage (`storage/settingsStorage.ts`); load fills missing fields from the

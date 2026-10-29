@@ -313,3 +313,16 @@ built); demo space → `foundation`; setup assistant → `settings`; Device tab,
   disabled while the folder fields differ from the stored settings. The Create demo space text moved to
   `fileChangeText.ts` (`demoSpaceCreatedText`) for ProfilesSection and the assistant. The debug bundle
   shows `setup assistant pending|done`.
+- **S5b** `supernote/fileSystem.ts` was split as `docs/dev/history/technical-design-filesystem-split.md`
+  describes (its own As built has the details): devicePaths, hostContext, hostCall (`callHost`),
+  noteFileApi, diagnosticFiles, fileSystem and the internal fileNative. `INTERNAL_STORAGE` has one home,
+  `supernote/devicePaths.ts`; `useThisFile`, `deviceCheck` and `deviceRoots` read the launch path and the
+  page from `supernote/hostContext.ts`.
+- **S6** The CHANGELOG keeps the file's own section names (New, Changed, Upgrade notes) rather than
+  "Added". README's feature list names the easy start, linking from anywhere and the linked help.
+  `design-overview.md` §2.1 (help links), §2.6 (Device tab, This file), §2.12 (setup assistant, Check
+  device files) and §2.13/§3 (the supernote/ modules) are current; it has no §5. Coverage: no area fell
+  more than 0.7 points; the baselines that grew were raised, none lowered.
+- **Scenarios of §9**: 1 `__tests__/scenarios/helpLinks.test.tsx`; 2 `scripts/test-userdocs.mjs` (link
+  check); 3 `__tests__/userDocsExamples.test.ts`; 4-7 `__tests__/scenarios/setupAssistant.test.tsx`; 8-10
+  `__tests__/scenarios/deviceLinks.test.tsx`; S0's check `__tests__/scenarios/deviceCheck.test.tsx`.

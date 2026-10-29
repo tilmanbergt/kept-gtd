@@ -36,6 +36,15 @@ or your project/area files are stored.
 - The demo space's sparring partner is now **Jordan** (`#sparring/jordan`), with a promise
   `#owe/jordan` to show I owe outside a meeting.
 
+### Upgrade notes
+- Help pages link to each other; the demo's sparring partner is now Jordan - recreate the demo space
+  to see it (delete `Note/kept-gtd-demo`, then **Create demo space** in Settings → Advanced).
+- One new setting, the setup assistant's state, saved per profile. An existing install keeps it
+  "done" and never sees the assistant by itself (Run setup assistant in Settings → Folders starts it);
+  only a fresh install starts with it. Going back to 0.22 ignores it.
+- No change to your project, area or Inbox files: a linked file outside `Note` is written with its
+  full path, `+[[/storage/emulated/0/Document/Book.pdf#page=12]]`, as lasso links from a PDF already are.
+
 ## [0.22.0] — 2026-10-29
 
 ### New
