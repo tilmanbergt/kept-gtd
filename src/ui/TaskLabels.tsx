@@ -12,15 +12,13 @@
  * when `onOpenWaitingFor` is passed
  * (docs/dev/history/technical-design-tending-threads.md §3.7). Taps on other
  * labels go to the row (start editing), since they have no onPress of their
- * own. In the touch test (ui/touchDiag/touchProbe.ts) that label reports its
- * press events.
+ * own.
  */
 import React from 'react';
 import {StyleSheet, Text} from 'react-native';
 import {TaskLabel} from '../domain/taskLabels';
 import {LABEL_GAP} from './taskRowLayout';
 import {FONT} from './theme';
-import {probeSpan, useTouchProbe} from './touchDiag/touchProbe';
 
 interface Props {
   labels: TaskLabel[];
@@ -28,7 +26,6 @@ interface Props {
 }
 
 export default function TaskLabels({labels, onOpenWaitingFor}: Props): React.JSX.Element | null {
-  const probe = useTouchProbe();
   if (labels.length === 0) return null;
   return (
     <>
@@ -37,7 +34,7 @@ export default function TaskLabels({labels, onOpenWaitingFor}: Props): React.JSX
         return (
           <React.Fragment key={`${label.kind}-${index}`}>
             {LABEL_GAP}
-            <Text style={[styles.label, opens && styles.link]} onPress={opens} suppressHighlighting {...(opens ? probeSpan(probe, 'label') : {})}>
+            <Text style={[styles.label, opens && styles.link]} onPress={opens} suppressHighlighting>
               {label.text}
             </Text>
           </React.Fragment>

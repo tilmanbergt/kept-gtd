@@ -68,7 +68,7 @@ Measured on: Supernote A5 X, plugin firmware Chauvet 2.27.42, `sn-plugin-lib` 0.
 
 ## 7. Files outside Note
 
-Checked with Settings → Advanced → Check device files (`storage/deviceCheck.ts`). Source:
+Checked on the device in 0.23 with a diagnostic screen since removed. Source:
 `docs/dev/history/technical-design-easy-start.md` §7.
 
 - **Listing**: `listFolderEntries('/storage/emulated/0')` lists every top-level folder - the

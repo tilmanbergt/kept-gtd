@@ -23,7 +23,6 @@ import {counterpartScopes} from '../domain/counterparts';
 import {Agreement, isActiveAgreement} from '../domain/agreements';
 import {getCachedData} from './dataCache';
 import {errorMessage} from '../utils/errorMessage';
-import {getTouchEntries, isAppWideTouchLog} from '../utils/touchDiagStore';
 import {didNoteSetupMigrationFail} from './noteSetupMigrationState';
 import {getSettingsUnreadable} from './settingsUnreadable';
 
@@ -122,7 +121,6 @@ export async function buildDebugInfo(settings: GtdParaSettings, now: Date = new 
   lines.push(loopsLine());
   lines.push(agreementsSummary(getCachedData()?.items ?? null));
   lines.push(`log file: ${isFileLoggingOn() ? `ON (${LOG_FILE_NAME})` : 'OFF'}`);
-  lines.push(`touch test: log touches everywhere ${isAppWideTouchLog() ? 'ON' : 'OFF'} · records ${getTouchEntries().length}`);
   const errors = getRecentErrors(10);
   lines.push(`recent errors (${errors.length}):`);
   errors.forEach(e => lines.push(`  ${e}`));

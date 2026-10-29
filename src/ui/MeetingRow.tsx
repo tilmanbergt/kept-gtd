@@ -27,8 +27,6 @@
  *   end with the other icons. A focus block shows a filled F before its title
  *   in both layouts (docs/dev/history/technical-design-time-and-place.md §3.1);
  *   its note icon shows only where a setup would place its note (or it has one).
- * - In the touch test (ui/touchDiag/touchProbe.ts) the row, source, note
- *   and clip targets also report their press events; nowhere else.
  */
 import React from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
@@ -45,7 +43,6 @@ import {ClipIcon, TrackingBoxIcon} from './icons';
 import {renderTaggableText} from './TaggableText';
 import {FONT} from './theme';
 import {perfCount, usePerfRender} from '../utils/perf';
-import {probePressable, probeSpan, useTouchProbe} from './touchDiag/touchProbe';
 
 /**
  * What a screen supplies to switch a meeting list's prep/review icons on: the
@@ -127,8 +124,6 @@ function MeetingRowV2({
   borderColor,
 }: MeetingRowProps): React.JSX.Element {
   const twoLine = layout === 'twoLine';
-  const probe = useTouchProbe();
-  const sourceProbe = source?.onPress ? probeSpan(probe, 'source') : {};
   const cell = meetingTimeCell(meeting, span, time);
   const continuesBefore = span?.part === 'middle' || span?.part === 'last';
   const continuesAfter = span?.part === 'first' || span?.part === 'middle';
@@ -145,7 +140,7 @@ function MeetingRowV2({
     <Text style={[v2.title, titleWraps && v2.titleWrapped, focusBlock && v2.flex, {color: textColor}]} numberOfLines={titleWraps ? 2 : 1}>
       {done ? '✓ ' : ''}
       {continuesBefore ? '◂ ' : ''}
-      {renderTaggableText(meetingDisplayTitle(meeting), {contextTag, onToggleContext, ownerPath, probe})}
+      {renderTaggableText(meetingDisplayTitle(meeting), {contextTag, onToggleContext, ownerPath})}
       {continuesAfter ? ' ▸' : ''}
     </Text>
   );
@@ -170,7 +165,7 @@ function MeetingRowV2({
         done && v2.rowDone,
         dimmed && v2.rowDimmed,
       ]}>
-      <Pressable onPress={onPress} disabled={!onPress} style={v2.main} {...(onPress ? probePressable(probe, 'row') : {})}>
+      <Pressable onPress={onPress} disabled={!onPress} style={v2.main}>
         <View style={[v2.timeCol, {width: TIME_COLUMN_DP[time][layout]}]}>
           <Text style={[v2.time, {color: textColor}]} numberOfLines={1}>
             {twoLine ? cell.line1 : cell.oneLine}
@@ -186,7 +181,7 @@ function MeetingRowV2({
             <>
               {title}
               {source && (
-                <Text onPress={source.onPress} style={[v2.sub, {color: textColor}]} numberOfLines={1} {...sourceProbe}>
+                <Text onPress={source.onPress} style={[v2.sub, {color: textColor}]} numberOfLines={1}>
                   {source.name}
                 </Text>
               )}
@@ -195,7 +190,7 @@ function MeetingRowV2({
             <View style={v2.oneLineBody}>
               <View style={v2.flex}>{title}</View>
               {source && (
-                <Text onPress={source.onPress} style={[v2.abbrev, {color: textColor}]} numberOfLines={1} {...sourceProbe}>
+                <Text onPress={source.onPress} style={[v2.abbrev, {color: textColor}]} numberOfLines={1}>
                   #{source.abbrev}
                 </Text>
               )}
@@ -216,14 +211,14 @@ function MeetingRowV2({
         )}
       </Pressable>
       {noteShown && (
-        <Pressable onPress={meeting.notePath ? note.onOpen : note.onCreate} hitSlop={8} style={v2.target} {...probePressable(probe, 'note')}>
+        <Pressable onPress={meeting.notePath ? note.onOpen : note.onCreate} hitSlop={8} style={v2.target}>
           <View style={[v2.action, twoLine && v2.actionTwo]}>
             <Text style={[v2.noteText, {color: textColor}]}>{meeting.notePath ? '📓' : '+📓'}</Text>
           </View>
         </Pressable>
       )}
       {file && file.linkedFile ? (
-        <Pressable onPress={() => file.onOpen?.(file.linkedFile)} hitSlop={8} style={v2.target} {...probePressable(probe, 'clip')}>
+        <Pressable onPress={() => file.onOpen?.(file.linkedFile)} hitSlop={8} style={v2.target}>
           <View style={[v2.action, twoLine && v2.actionTwo]}>
             <ClipIcon color={textColor} />
           </View>

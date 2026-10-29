@@ -23,10 +23,6 @@ interface Props {
   onTogglePerfTracing: () => void;
   onToggleKeepTabsAlive: () => void;
   onRunIntegrityCheck: () => void;
-  onOpenTouchTest: () => void;
-  /** Debug logging is on: the diagnostic "Check device files" shows. */
-  debugLogging: boolean;
-  onOpenDeviceCheck: () => void;
   textColor: string;
   borderColor: string;
 }
@@ -65,24 +61,6 @@ export default function AdvancedTab(p: Props): React.JSX.Element {
             Scans every Project/Area/Archive/Inbox for broken note links and note names that break Obsidian links, and writes a report to EXPORT/kept-gtd/debug.
           </Text>
         </View>
-        <View style={styles.field}>
-          <Pressable onPress={p.onOpenTouchTest} hitSlop={8} style={styles.button}>
-            <Text style={[styles.buttonText, {color: textColor}]}>Touch test</Text>
-          </Pressable>
-          <Text style={[styles.hint, {color: textColor}]}>
-            Finds out why a tap doesn't register: tap sample rows with finger or pen and see which taps arrive and what they hit. Changes nothing.
-          </Text>
-        </View>
-        {p.debugLogging && (
-          <View style={styles.field}>
-            <Pressable onPress={p.onOpenDeviceCheck} hitSlop={8} style={styles.button}>
-              <Text style={[styles.buttonText, {color: textColor}]}>Check device files</Text>
-            </Pressable>
-            <Text style={[styles.hint, {color: textColor}]}>
-              Lists the device's top folders, the SD card and the file Kept was opened from, with buttons to open sample files. Changes nothing.
-            </Text>
-          </View>
-        )}
         <SettingSwitch
           label="Keep tabs in memory"
           on={p.keepTabsAlive}

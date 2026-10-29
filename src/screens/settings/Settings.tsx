@@ -39,14 +39,12 @@ import {perfEnable} from '../../utils/perf';
 import {requestEinkRefresh} from '../../utils/screenRefresh';
 import AboutTab from './AboutTab';
 import AdvancedTab from './AdvancedTab';
-import DeviceCheckScreen from './DeviceCheckScreen';
 import FeaturesTab from './FeaturesTab';
 import ContextsTab from './contexts/ContextsTab';
 import {useContextsDraft} from './contexts/useContextsDraft';
 import {CalendarTab, FoldersTab, GmailTab} from './DraftTabs';
 import {styles} from './settingsStyles';
 import SetupAssistant from './SetupAssistant';
-import TouchTestScreen from './TouchTestScreen';
 import NoteSetupsTab from './noteSetups/NoteSetupsTab';
 import {useMyStylePngs} from './noteSetups/useMyStylePngs';
 import {useNoteSetupDraft} from './noteSetups/useNoteSetupDraft';
@@ -102,10 +100,6 @@ export default function Settings({initialTab, onSwitchProfile, startSetup = fals
   const [integrityResult, setIntegrityResult] = useState<Result | null>(null);
   const [fileNameFixes, setFileNameFixes] = useState<FileFix[]>([]);
   const confirmFileNameFix = useStatusConfirm('Settings.fileNameFix');
-  // Advanced → Touch test, drawn in place of the settings while open.
-  const [touchTestOpen, setTouchTestOpen] = useState(false);
-  // Advanced → Check device files (debug logging on), drawn in place of the settings while open.
-  const [deviceCheckOpen, setDeviceCheckOpen] = useState(false);
   const [setupOpen, setSetupOpen] = useState(startSetup);
   // "Reload all files" (Advanced).
   const [reloading, setReloading] = useState(false);
@@ -237,28 +231,6 @@ export default function Settings({initialTab, onSwitchProfile, startSetup = fals
     );
   }
 
-  if (touchTestOpen) {
-    return (
-      <TouchTestScreen
-        onClose={() => {
-          setTouchTestOpen(false);
-          requestEinkRefresh();
-        }}
-      />
-    );
-  }
-
-  if (deviceCheckOpen) {
-    return (
-      <DeviceCheckScreen
-        onClose={() => {
-          setDeviceCheckOpen(false);
-          requestEinkRefresh();
-        }}
-      />
-    );
-  }
-
   if (setupOpen) {
     return (
       <View style={[styles.container, styles.background]}>
@@ -325,9 +297,6 @@ export default function Settings({initialTab, onSwitchProfile, startSetup = fals
               onTogglePerfTracing={() => toggleNow('perfTracing')}
               onToggleKeepTabsAlive={() => toggleNow('keepTabsAlive')}
               onRunIntegrityCheck={handleRunIntegrityCheck}
-              onOpenTouchTest={() => setTouchTestOpen(true)}
-              debugLogging={values.debugLogging}
-              onOpenDeviceCheck={() => setDeviceCheckOpen(true)}
               textColor={textColor}
               borderColor={borderColor}
             />

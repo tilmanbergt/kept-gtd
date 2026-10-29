@@ -4,11 +4,19 @@
  * (`/storage` entries other than the internal storage's own names). Read once
  * per session; a failed read leaves the internal storage alone.
  */
-import {listFolderEntries} from '../supernote/fileSystem';
+import {FolderEntry, listFolderEntries} from '../supernote/fileSystem';
 import {errorMessage} from '../utils/errorMessage';
 import {log, logWarn} from '../utils/log';
 import {INTERNAL_STORAGE} from '../supernote/devicePaths';
-import {sdCardCandidates, STORAGE_ROOT} from './deviceCheck';
+
+export const STORAGE_ROOT = '/storage';
+/** Entries of `/storage` that are the internal storage under other names, not an SD card. */
+const NOT_SD = new Set(['emulated', 'self']);
+
+/** The folders of a `/storage` listing that can be an SD card. */
+export function sdCardCandidates(entries: FolderEntry[]): FolderEntry[] {
+  return entries.filter(e => e.isFolder && !NOT_SD.has(e.name));
+}
 
 export interface DeviceRoots {
   internal: string;

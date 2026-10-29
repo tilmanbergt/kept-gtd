@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-140 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+136 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -1083,26 +1083,6 @@ Test: `__tests__/scenarios/givenTime.test.tsx`
 
 ## Settings
 
-### Check device files lists the folders, the SD card and the file Kept was opened from
-
-- **Given** a PDF in Document/Garden, an EPUB on an SD card, and debug logging on
-- **When** I open Kept from page 12 of Book.pdf and tap Settings → Advanced → Check device files
-- **Then** each listing shows its top folders, the SD card included, and the file with its page
-- **When** I tap Open (last page) on the PDF
-- **Then** the host is asked to open it at its last page
-- **When** I tap Open this file at page 11
-- **Then** the host is asked to open the launch file at that page
-- **And** Close returns to Advanced
-
-Test: `__tests__/scenarios/deviceCheck.test.tsx` · design: `docs/dev/history/technical-design-easy-start.md`
-
-### Check device files is hidden while debug logging is off
-
-- **When** I open Settings → Advanced with debug logging off
-- **Then** there is no Check device files
-
-Test: `__tests__/scenarios/deviceCheck.test.tsx` · design: `docs/dev/history/technical-design-easy-start.md`
-
 ### Close-out off: a Done project archives directly from its page
 
 - **Given** Project close-out is switched off and project "Website" is Done
@@ -1193,31 +1173,6 @@ Test: `__tests__/scenarios/setupAssistant.test.tsx` · design: `docs/dev/history
 - **And** Run setup assistant waits while the Folders fields have unsaved changes
 
 Test: `__tests__/scenarios/setupAssistant.test.tsx` · design: `docs/dev/history/technical-design-easy-start.md`
-
-### Record taps in the touch test without changing anything
-
-- **Given** the Inbox has the todo "Call Anna"
-- **When** I open Settings → Advanced → Touch test
-- **Then** sample rows show, numbered, and none of my todos
-- **When** I tap the title of row 1, then a spot where nothing reacts
-- **Then** the first tap counts as handled on the title, the second as no target
-- **When** I tap the checkbox of row 1 and then Save log
-- **Then** a CSV with the three touches is in EXPORT/kept-gtd/debug, and the status line says so
-- **And** the Inbox is untouched: the tapped checkbox ticked nothing
-- **When** I tap Close
-- **Then** Settings → Advanced shows again
-
-Test: `__tests__/scenarios/touchTest.test.tsx` · design: `docs/dev/history/technical-design-touch-test.md`
-
-### Log touches on every screen while "Log touches everywhere" is on
-
-- **Given** an empty PARA folder
-- **When** I switch on "Log touches everywhere" in the touch test, close it and tap twice on Daily
-- **Then** the log has one line per tap, with numbers only
-- **When** I switch it off again
-- **Then** no touch handler is attached to the app any more
-
-Test: `__tests__/scenarios/touchTest.test.tsx` · design: `docs/dev/history/technical-design-touch-test.md`
 
 ## Smoke
 

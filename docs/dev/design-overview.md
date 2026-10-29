@@ -1064,9 +1064,7 @@ per setup (and the Default on its own), and its Heading style (`noteHeadingStyle
 (`FeaturesTab.tsx`) holds the module switches - `settings.modules` (`closeOut`, on by default; read
 through `domain/features.ts`'s `featuresOf`/`modulesOf`, which fill a missing key from its default,
 and `ui/featureStore.ts`'s `useFeatures`; close-out off passes no `onStartCloseOut` to Current and
-Review, so a Done project archives directly) - and the Experimental switches. Advanced holds Profiles, "Reload all files", "Run Integrity Check", "Touch test", "Check device
-files" (only while Debug logging is on: `storage/deviceCheck.ts` - the folders it can list, the
-launch file and page, Open buttons for files outside `Note/`), "Keep tabs in memory" and
+Review, so a Done project archives directly) - and the Experimental switches. Advanced holds Profiles, "Reload all files", "Run Integrity Check", "Keep tabs in memory" and
 "Performance tracing". About shows version and build, the changelog ("What's new", also offered
 once after an update), Debug logging and "Export debug bundle".
 
@@ -1127,14 +1125,6 @@ when asked for:
   navigation, reopen and cold start, ending after 1.5 s of quiet (15 s at most), written as JSONL
   to `EXPORT/kept-gtd/debug/perf/` with data-volume stats (`storage/perfStats.ts`). Off costs one
   check per call. Analysis: `node scripts/perf-report.js`.
-- **Touch test** (`screens/settings/TouchTestScreen.tsx`, classification in
-  `domain/touchDiag.ts`): real `TaskRow`s and `MeetingRow`s with sample entries down to the
-  bottom edge; an observe-only root view (`ui/touchDiag/TouchObserver.tsx`, never the
-  responder) records every touch, the rows report press events through a context only the test
-  provides (`ui/touchDiag/touchProbe.ts`), and each touch is classified handled, cancelled,
-  noTarget or swallowed. One numbers-only log line per touch; "Save log" writes CSV to
-  `EXPORT/kept-gtd/debug/`. "Log touches everywhere" (`ui/touchDiag/AppTouchObserver.tsx`, not
-  persisted) logs raw touches app-wide. Detail: `docs/dev/history/technical-design-touch-test.md`.
 - **Stale build**: `supernote/pluginRuntime.ts` checks whether an older Kept build is still
   loaded in the host process. The required plugin firmware unloads it on install, so there is no
   warning: the count goes into the debug bundle and one `pluginRuntime: stale builds` log line per

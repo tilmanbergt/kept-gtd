@@ -10,6 +10,10 @@ or your project/area files are stored.
 
 ## [Unreleased]
 
+### Removed
+- **Touch test** and **Check device files** in Settings → Advanced: both diagnostics have done their
+  job. Touch logs already written stay in `EXPORT/kept-gtd/debug` until you delete them.
+
 ## [0.23.0] — 2026-10-29
 
 ### New
