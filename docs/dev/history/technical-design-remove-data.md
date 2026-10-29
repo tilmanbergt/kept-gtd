@@ -1,6 +1,7 @@
 # Technical design — remove Kept's data
 
-Status: **DRAFT** for review. Part of 0.24.0 (launch preparation and clean-ups).
+Status: **APPROVED** (§7 decided as proposed; placed on the Data tab of
+`technical-design-settings-tabs.md`, which is built first). Part of 0.24.0.
 
 ## 1. Why
 
@@ -23,8 +24,9 @@ picks. Leaving the device clean is part of keeping one's word - the plugin's int
 
 ## 2. Requirements
 
-- **R1 One place**: Settings → Advanced → **Remove Kept's data…**, always shown (not only with debug
-  logging). It opens a screen in place of the settings, like Check device files.
+- **R1 One place**: Settings → Data → **Remove Kept's data…**, under Profiles, always shown. It opens
+  a screen in place of the settings, like the setup assistant. Greyed while the folder fields have
+  unsaved changes (settings-tabs T2).
 - **R2 Inventory first**: before anything is removed, the screen lists every kind of data (§3) with
   what it is, where it is, how much (files, entries) and a checkbox. Kinds with nothing in them are
   shown greyed with "nothing here", so the list itself says what Kept ever stores.
@@ -150,11 +152,10 @@ under 600 lines.
 9. Another plugin's key in the host store survives.
 10. The native rules refuse a path outside the fixed roots and any other file name.
 
-## 7. Open points for review
+## 7. Decisions
 
-1. Row 10 (profiles) and row 9 (data files) off by default, everything else on - agreed?
-2. Row 9 also in the Archive folder, or only Projects, Areas and the Inbox? Proposed: all three
-   plus the Archive, so nothing of Kept's format is left.
-3. Offer **Start fresh** at all, or only **Close Kept**? Start fresh is also the honest first-start
-   test on the device. Proposed: both.
-4. Should Check device files (debug only) move next to it, or stay where it is? Proposed: stays.
+1. Profiles (row 10) and data files (row 9) are off by default, everything else on.
+2. Row 9 covers the Projects, Areas and Archive folders and the Inbox.
+3. The result screen offers both **Start fresh** and **Close Kept**.
+4. Check device files and the Touch test are removed in the settings restructure, not kept next to
+   this.
