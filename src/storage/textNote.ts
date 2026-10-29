@@ -42,7 +42,7 @@ export interface CreateTextNoteParams {
 /**
  * createNote (page 0) -> textbox on page 0 -> for each further page:
  * insertNotePage (appends at index i) -> textbox on page i. Sequential on
- * purpose (insertNotePage can hang; see fileSystem.ts's timeout). If a call
+ * purpose (insertNotePage can hang; see noteFileApi.ts's timeout). If a call
  * fails partway the plugin cannot delete the half-written file - the error
  * propagates and the caller reports the path.
  */

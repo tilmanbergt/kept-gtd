@@ -5,7 +5,7 @@
  * whole feature is about resuming a still-alive plugin instance's screen
  * state, and a fresh process has no such state to return to, so a persisted
  * record would have nothing to resume anyway. Same lifetime as
- * storage/dataCache.ts's cache and fileSystem.ts's remembered launch path:
+ * storage/dataCache.ts's cache and hostContext.ts's remembered launch path:
  * the JS process.
  */
 import {normalizeNotePath, ReturnRecord} from '../domain/returnContext';

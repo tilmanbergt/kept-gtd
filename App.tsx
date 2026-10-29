@@ -346,7 +346,7 @@ function AppShell({onProfileSwitched}: {onProfileSwitched: () => void}): React.J
         // Runs on cold start AND on every sidebar-button press (this whole
         // reorient() is re-invoked from the onButtonPress handler below),
         // i.e. every time the plugin is (re)opened - see
-        // rememberLaunchNotePath's own doc comment in fileSystem.ts.
+        // rememberLaunchNotePath's own doc comment in supernote/hostContext.ts.
         rememberLaunchNotePath(currentPath);
         noteLaunchChanged();
         if (loadedSettings.debugLogging === true && currentPath) void logNoteTitlesDiagnostic(currentPath);

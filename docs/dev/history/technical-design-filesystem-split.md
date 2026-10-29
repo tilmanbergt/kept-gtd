@@ -251,3 +251,16 @@ body; a factory that spreads `jest.requireActual` counts only the names it overr
 - **Re-export kept**: `subscribeFolderChanges` is still exported by fileSystem.ts, from fileNative.ts -
   the listeners must sit with the native binding the lower modules share, and fileSystem.ts is where
   callers look for folder events. No other re-export is left.
+
+### R4: housekeeping
+
+- Feature areas: fileSystem, fileNative, devicePaths and hostCall in `files`; noteFileApi and hostContext
+  in `note-setups` (where currentPage.ts was); diagnosticFiles in `settings` (debug logging and the
+  debug bundle). The strict rule passes.
+- fileSystem.ts (now under 500 lines) left `scripts/code-health-baseline.json`, which lists no file any
+  more.
+- design-overview.md §2.13 states the placement rule and the modules; §3 asks a new `supernote/` export
+  to follow it and a wrapped SDK call to use `callHost`. Comments elsewhere that named fileSystem.ts for
+  something that moved now name its module.
+- Final sizes: fileSystem.ts 464, noteFileApi.ts 424, hostCall.ts 127, hostContext.ts 118,
+  fileNative.ts 79, diagnosticFiles.ts 76, devicePaths.ts 51 lines.

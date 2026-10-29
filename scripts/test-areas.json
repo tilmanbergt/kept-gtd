@@ -173,7 +173,7 @@
         "src/screens/notebook/**",
         "src/domain/{noteSetups,noteSetupText,noteSetupMigration,pageLayout,homeNotebook,noteCreationPlan,noteFindability,notebookContents,pageSection,pageOrder,notePageEntry,sharedNotePages,keywordLength,noteRelocation,returnContext}.ts",
         "src/storage/{homeNotebook*,noteSetupMigrationState,itemNotePlan,noteTargets,noteFindability,notePieceMetrics,notebookContents,notebookPages,pageSection,notePageEntry,sharedNotePages,standaloneNotes,noteLinks,noteOwnerOf,noteTitlesDiagnostic}.ts",
-        "src/supernote/{noteElements,noteTitles,textboxMetrics,currentPage}.ts",
+        "src/supernote/{noteElements,noteTitles,textboxMetrics,noteFileApi,hostContext}.ts",
         "src/ui/{HomeNotebookButton,NoteTemplatePreview,NudgePad}.tsx",
         "src/ui/{useHomeNotebook*,useNoteCreateConfirm,useNoteSetupsNotice}.ts*"
       ]
@@ -236,7 +236,7 @@
       "sources": [
         "src/storage/{dataCache,dataFileWrite,projectFile,writeConflicts,integrityCheck,fileNaming,fileNameFix,linkedFiles,itemMutations,deviceRoots}.ts",
         "src/domain/{markdown,writeGuard,fileName,fileNameFix,fileChangeText,integrityCheck,taskLine,taskEdit,types,linkTargets}.ts",
-        "src/supernote/{fileSystem,pluginPermissions}.ts",
+        "src/supernote/{fileSystem,fileNative,devicePaths,hostCall,pluginPermissions}.ts",
         "src/ui/{FileBrowserPane,LoadErrorNotice}.tsx",
         "src/ui/{fileBrowserGroup,useWriteConflicts,useCachedItems,useCachedInbox,useThisFile}.ts",
         "src/ui/fileBrowser/**"
@@ -253,6 +253,7 @@
         "src/screens/settings/**",
         "src/domain/{settings,profiles,profileCopy,demoSpace,buildVersionText,helpTopics,helpLinks,markdownBlocks,features,redact,touchDiag,setupAssistant}.ts",
         "src/storage/{settings*,profiles,profileKeys,demoSpace,debugBundle,perfStats,touchLog,deviceCheck,setupAssistant}.ts",
+        "src/supernote/diagnosticFiles.ts",
         "src/ui/{HelpOverlay,MarkdownBlocks}.tsx",
         "src/ui/{useSettings,useSettingsUnreadableNotice,useProfileCopyNotice,useWhatsNewNotice,featureStore,helpStore}.ts",
         "src/ui/touchDiag/**",

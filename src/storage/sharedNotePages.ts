@@ -1,6 +1,6 @@
 /**
  * Shared Note Pages - the page engine (docs/dev/history/technical-design-shared-note-pages.md
- * §4). Wraps the PluginFileAPI calls `supernote/fileSystem.ts` exposes
+ * §4). Wraps the PluginFileAPI calls `supernote/noteFileApi.ts` exposes
  * (`insertNotePage`/`insertKeyWord`/`getKeyWords`/`deleteKeyWord`/
  * `getNoteTotalPageNum`/`createNote`/`ensureFolderExists`/`listFolderEntries`)
  * into the four device-facing operations this feature needs, handing every
@@ -16,7 +16,7 @@
  * The four functions §4 names (`ensureSharedNoteFile`/`findKeywordPage`/
  * `insertItemPage`/`renameKeywordAt`), and `insertPageAt`, record one attempt +
  * success/failure + timing entry per call via `recordDebugLogEntry`
- * (`supernote/fileSystem.ts`'s on-device diagnostic file), so §10's open
+ * (`supernote/hostCall.ts`, one log line per call), so §10's open
  * risks can be checked on the device without `adb logcat`. Their
  * `try`/`catch` only adds the log entry and always rethrows the original
  * error unchanged. `writeRecreatedNotice` uses a plain `log()` instead.

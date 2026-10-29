@@ -7,9 +7,8 @@
  * `element.title` (sn-plugin-lib model/Element.ts's `Title`), not on the
  * element itself.
  *
- * `fileSystem.ts`'s `Element` stays as it is; the title part is typed here.
- * `getTitles` lives here too, because fileSystem.ts may not grow
- * (scripts/code-health-baseline.json).
+ * `noteFileApi.ts`'s `Element` stays as it is; the title part is typed here,
+ * and `getTitles` sits next to it.
  */
 import {NOTE_HEADING_USERDATA} from '../domain/meetingNoteBlock';
 import {TITLE_ELEMENT_TYPE} from '../domain/noteFindability';

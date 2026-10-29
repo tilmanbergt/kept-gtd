@@ -1135,9 +1135,16 @@ a caught error comes from `utils/errorMessage.ts`'s `errorMessage(e)`.
 
 ### 2.13 Platform and UI foundations
 
-**Device layer** (`src/supernote/`). `fileSystem.ts` wraps the native `GtdParaFile` module and
-`sn-plugin-lib`'s file APIs (list, stat, read, write, move, merge, note pages and keywords,
-`openPath`); `lasso.ts`/`lassoRead.ts`/`strokeRecognition.ts` the lasso; `noteElements.ts` and
+**Device layer** (`src/supernote/`). The device's files and host calls are split by one placement
+rule (`docs/dev/history/technical-design-filesystem-split.md` §3): a fixed device path or how a path is
+shown → `devicePaths.ts` (`INTERNAL_STORAGE`, MyStyle, the export folders, `displayPath`); where the
+user is - the open note, the launch file, the current page → `hostContext.ts`; logging a host call →
+`hostCall.ts` (`recordDebugLogEntry`, and `callHost`, the one shape of a wrapped SDK call: permission
+check, start line, the call under its timeout, failed/done line, recorded outcome); a `.note`'s pages,
+keywords and elements → `noteFileApi.ts`; writing under `EXPORT/kept-gtd/debug` → `diagnosticFiles.ts`;
+everything else - list, stat, read, write, move, merge, delete, temp folders, `openPath` →
+`fileSystem.ts`. `fileNative.ts` is internal to `supernote/`: the native `GtdParaFile` binding and the
+folder-change listeners, so no module imports `fileSystem.ts` back; `lasso.ts`/`lassoRead.ts`/`strokeRecognition.ts` the lasso; `noteElements.ts` and
 `sdkElements.ts` note elements; `pdfNative.ts` the native PDF writer (`GtdParaPdf`);
 `textboxMetrics.ts` native text measurement; `pluginRuntime.ts` the runtime guard. Other native
 modules: `GmailImapModule` (§2.11).
@@ -1371,6 +1378,8 @@ place it happens.
 - Comments say what the code does and why, never when or what it replaced: no dates, no "used
   to", "previously", "no longer" (`scripts/code-health.mjs` reports them). History lives in git
   and `docs/dev/history/`.
+- A new export of `src/supernote/` goes where the placement rule of §2.13 puts it; a wrapped SDK call
+  uses `hostCall.ts`'s `callHost` unless it does more than its shape (createNote, openPath).
 - A new source file stays at or below 1,000 lines. Longer existing files are listed in
   `scripts/code-health-baseline.json` and may only shrink (`--update-baseline` ratchets them
   down).
