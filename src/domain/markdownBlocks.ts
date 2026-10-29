@@ -5,7 +5,7 @@
  *
  * Supported: `#`-`######` headings, `-`/`*`/`1.` list items (one nesting
  * level; wrapped continuation lines join the item), paragraphs,
- * `> quotes` (rendered as paragraphs), inline `**bold**`, `` `code` `` and
+ * `> quotes` (rendered as paragraphs), inline `**bold**`, `*italic*`, `` `code` `` and
  * `[text](url)` (a link to another help page, `page.md` or `page.md#heading`,
  * keeps its target as `link`; any other link shows as its text;
  * docs/dev/history/technical-design-easy-start.md §2.1), and fenced code blocks (lines between
@@ -22,7 +22,7 @@ export interface HelpLinkTarget {
   anchor: string | null;
 }
 
-export type InlineSpan = {text: string; bold?: boolean; code?: boolean; link?: HelpLinkTarget};
+export type InlineSpan = {text: string; bold?: boolean; italic?: boolean; code?: boolean; link?: HelpLinkTarget};
 
 /** The only link targets that stay links: a help page, optionally with a heading anchor. */
 const PAGE_LINK = /^([a-z0-9-]+)\.md(?:#([a-z0-9-]+))?$/;
@@ -47,7 +47,7 @@ const HEADING = /^(#{1,6})\s+(.*)$/;
 const ITEM = /^(\s*)([-*+]|\d+[.)])\s+(.*)$/;
 
 /** Plain or link spans of a text without bold or code: a page link keeps its target, other links become their text. */
-function linkSpans(text: string, extra: {bold?: boolean}): InlineSpan[] {
+function linkSpans(text: string, extra: {bold?: boolean; italic?: boolean}): InlineSpan[] {
   const spans: InlineSpan[] = [];
   const re = /\[([^\]]+)\]\(([^)\s]+)\)/g;
   let last = 0;
@@ -62,16 +62,17 @@ function linkSpans(text: string, extra: {bold?: boolean}): InlineSpan[] {
   return spans;
 }
 
-/** Splits one line of text into bold / code / link / plain spans. */
+/** Splits one line of text into bold / italic / code / link / plain spans. A single `*` with a space after it ("5 * 3") stays text. */
 export function parseInline(text: string): InlineSpan[] {
   const spans: InlineSpan[] = [];
-  const re = /(\*\*([^*]+)\*\*|`([^`]+)`)/g;
+  const re = /(\*\*([^*]+)\*\*|\*([^*\s](?:[^*]*[^*\s])?)\*|`([^`]+)`)/g;
   let last = 0;
   let m: RegExpExecArray | null;
   while ((m = re.exec(text)) !== null) {
     if (m.index > last) {spans.push(...linkSpans(text.slice(last, m.index), {}));}
     if (m[2] !== undefined) {spans.push(...linkSpans(m[2], {bold: true}));}
-    else {spans.push({text: m[3], code: true});}
+    else if (m[3] !== undefined) {spans.push(...linkSpans(m[3], {italic: true}));}
+    else {spans.push({text: m[4], code: true});}
     last = m.index + m[0].length;
   }
   if (last < text.length) {spans.push(...linkSpans(text.slice(last), {}));}
@@ -79,7 +80,7 @@ export function parseInline(text: string): InlineSpan[] {
   const merged: InlineSpan[] = [];
   for (const span of spans) {
     const prev = merged[merged.length - 1];
-    if (prev && !prev.link && !span.link && !prev.code && !span.code && !!prev.bold === !!span.bold) {
+    if (prev && !prev.link && !span.link && !prev.code && !span.code && !!prev.bold === !!span.bold && !!prev.italic === !!span.italic) {
       merged[merged.length - 1] = {...prev, text: prev.text + span.text};
     } else {
       merged.push(span);

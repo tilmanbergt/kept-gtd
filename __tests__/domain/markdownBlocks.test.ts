@@ -78,3 +78,18 @@ describe('help page links', () => {
     expect(helpLinkTarget('Daily.md')).toBeNull();
   });
 });
+
+describe('italics', () => {
+  it('*term* is italic, a link inside it keeps its target, "5 * 3" stays text', () => {
+    expect(parseInline('A *home notebook* and *[Tags](tags.md)*, 5 * 3 * 2.')).toEqual([
+      {text: 'A '},
+      {text: 'home notebook', italic: true},
+      {text: ' and '},
+      {text: 'Tags', italic: true, link: {page: 'tags', anchor: null}},
+      {text: ', 5 * 3 * 2.'},
+    ]);
+  });
+  it('bold still wins over italics', () => {
+    expect(parseInline('**Save** *now*')).toEqual([{text: 'Save', bold: true}, {text: ' '}, {text: 'now', italic: true}]);
+  });
+});

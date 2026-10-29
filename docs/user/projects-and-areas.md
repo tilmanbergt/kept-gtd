@@ -1,6 +1,6 @@
 # Projects and Areas
 
-In PARA, a **project** is something with a clear end ("Garden renovation", "Team offsite"). An **area** is a responsibility without an end ("Health", "Home", "Team"). Kept GTD gives each its own folder.
+In PARA, a *project* is something with a clear end ("Garden renovation", "Team offsite"). An *area* is a responsibility without an end ("Health", "Home", "Team"). Kept GTD gives each its own folder.
 
 ## Creating one
 
@@ -12,11 +12,11 @@ You can also simply create a folder yourself - in the Supernote's file manager o
 
 Every row on the Projects and Areas tabs ends with the notebook icon of its home notebook (see "Home notebooks" below). Tapping a project or area opens it on the **Current** tab:
 
-- **Header**: name, kind and the abbreviation (tap to change it); **Notebook** opens its home notebook, or creates it (see "Home notebooks" below); **Engage ›** opens [Engage](engage.md) for this project or area
+- **Header**: name, kind and the abbreviation (tap to change it); **Notebook** opens its home notebook, or creates it (see "Home notebooks" below); [Engage ›](engage.md) opens [Engage](engage.md) for this project or area
 - **Scope**: one to three sentences about what this project or area is about. Tap to edit.
-- **Given time** ([Week and Month](week-and-month.md#given-time)): `Given time · this week 3 h · this month 11 h` - the meetings and focus blocks scheduled in it (an area counts its projects' too); all-day events count as 8 h a day
+- [Given time](week-and-month.md#given-time): `Given time · this week 3 h · this month 11 h` - the meetings and focus blocks scheduled in it (an area counts its projects' too); all-day events count as 8 h a day
 - **Status**: Active, On Hold, Done (projects only) - and Close out… or Archive…
-- **Files pane**: up to four tabs. On a project: **Threads** (open when the page opens), **Loops**, **Notebook** and **Files**. On an area: **Threads**, **Projects** (its projects at a glance), **Notebook** and **Files**. **Notebook** shows the home notebook with its years and contents; it is there while the Default note setup uses one notebook. Inside **Files** a second row picks the place: **Project**, **Area** (once one is assigned), **Resources** and **Device** on a project; **Area**, **Resources** and **Device** on an area. **Device** shows the Supernote's folders next to `Note`, such as `Document` (see [Files outside Note](files-and-folders.md#files-outside-note)). **Files** opens on the page's own folder.
+- **Files pane**: up to four tabs. On a project: **Threads** (open when the page opens), **Loops**, **Notebook** and **Files**. On an area: **Threads**, **Projects** (its projects at a glance), **Notebook** and **Files**. **Notebook** shows the home notebook with its years and contents; it is there while the Default note setup uses one notebook. Inside **Files** a second row picks the place: **Project**, **Area** (once one is assigned), **Resources** and [Device](files-and-folders.md#files-outside-note) on a project; **Area**, **Resources** and **Device** on an area. **Device** shows the Supernote's folders next to `Note`, such as `Document`. **Files** opens on the page's own folder.
 - **Todos** and **Meetings**, grouped and paged, with Quick Add above them. Todos are grouped Next, Waiting For, Plan (no flow state: planned, not yet next), Someday and Maybe. Tapping a todo or meeting shows its card in Quick Add's place: for a todo done, the flow chips, linking a file, moving it and delete (see [Quick Add](quick-add.md)); for a meeting the prep or review tick, **Reflect** once it is over, linking a file and moving it (see [Meetings](meetings.md))
 - **◇ Agreements 2 ›** at the end of the todos, when the project or area has agreements of its own (untagged, or with no thread or loop tag). Tap it to list them in the same column; **‹ Todos** goes back. Quick Add's **Agreement** tab adds one here, see [Agreements](agreements.md)
 
@@ -73,21 +73,21 @@ Tap a counterpart's name to open its overview (see [Threads](threads.md)).
 
 Tap **Filter** on its row to filter the Todos and Meetings on the right: only todos you owe it, wait for from it or that are relevant for it (the same three ways as in its overview), and only its meetings. A todo agreed in your sparring with Jordan but tagged `#wf/lena` shows under both jordan and lena. The row's pill turns into **Filter ✕** and a pill `jordan ✕` above Quick Add shows the filter; tap either to show everything.
 
-While a counterpart is filtered, its row offers **Set inactive**. With open todos you first decide for each one under **I owe**, **Waiting for**, **Relevant** and **Someday / Maybe**: **Done**, **Cancel** or **Keep** (Keep is preselected). Its active agreements follow under **Agreements**: **Keep** or **End**, or **End all**. **Set inactive** then applies them. With nothing open, one confirmation is enough. An inactive counterpart leaves the Weekly Review and the tag suggestions; its overview keeps working.
+While a counterpart is filtered, its row offers [Set inactive](threads.md#tending-counterparts). With open todos you first decide for each one under **I owe**, **Waiting for**, **Relevant** and [Someday / Maybe](review.md#someday--maybe): **Done**, **Cancel** or **Keep** (Keep is preselected). Its active agreements follow under **Agreements**: **Keep** or **End**, or **End all**. **Set inactive** then applies them. With nothing open, one confirmation is enough. An inactive counterpart leaves the Weekly Review and the tag suggestions; its overview keeps working.
 
 ## Home notebooks
 
-Every project and area has one obvious place to write: its **home notebook**. It is the notebook of the **Default** note setup, made for that project or area - with the standard name `{name} {year}`, "Garden renovation 2026.note" in the project's own folder. One tap takes you there; then Kept gets out of the way.
+Every project and area has one obvious place to write: its *home notebook*. It is the notebook of the [Default](note-setups.md#the-default) note setup, made for that project or area - with the standard name `{name} {year}`, "Garden renovation 2026.note" in the project's own folder. One tap takes you there; then Kept gets out of the way.
 
-The home notebook exists only while the Default uses **One notebook** (Settings → Note setups → Default → Notes). With **Own note per item** there are no notebook icons, no Notebook tab and no "Go to" line. The Inbox has no home notebook.
+The home notebook exists only while the Default uses [One notebook](note-setups.md#what-a-setup-is) (Settings → Note setups → Default → Notes). With [Own note per item](note-setups.md#what-a-setup-is) there are no notebook icons, no Notebook tab and no "Go to" line. The Inbox has no home notebook.
 
 ### The notebook icon
 
 A small notebook icon sits at the end of every row on the **Projects** and **Areas** tabs, and as **Notebook** at the top of a project's or area's page.
 
-- **Plain notebook**: the notebook exists. A tap opens it on the page you last looked at in Supernote.
-- **Notebook with +**: it doesn't exist yet. A tap asks first - "new file Garden renovation 2026.note" with **Create** - then creates it and opens its first page. Afterwards the status line names the new file and its folder.
-- **A new year**: with `{year}` in the name, this year's notebook may be missing while last year's is there. Then the status line offers **Create 2027** and **Open 2026**.
+- *Plain notebook*: the notebook exists. A tap opens it on the page you last looked at in Supernote.
+- *Notebook with +*: it doesn't exist yet. A tap asks first - "new file Garden renovation 2026.note" with **Create** - then creates it and opens its first page. Afterwards the status line names the new file and its folder.
+- *A new year*: with `{year}` in the name, this year's notebook may be missing while last year's is there. Then the status line offers **Create 2027** and **Open 2026**.
 
 Creating a note only works when Kept was opened from a note (a limit of the Supernote).
 
@@ -126,8 +126,8 @@ Kept keeps the name of each project and area in its file (`name:` at the top). W
 
 "Garden renovation is now Garden makeover. Rename Garden renovation 2026.note to Garden makeover 2026.note?" **Rename** · **Not now**
 
-**Rename** renames this year's notebook and updates every link into it: the notes of todos and meetings, page links and marks. Notebooks of earlier years keep their names. **Not now** asks again the next time Kept starts. **Run Integrity Check** (Settings → Advanced) also lists such renamed folders.
+**Rename** renames this year's notebook and updates every link into it: the notes of todos and meetings, page links and marks. Notebooks of earlier years keep their names. **Not now** asks again the next time Kept starts. [Run Integrity Check](settings.md#advanced) (Settings → Advanced) also lists such renamed folders.
 
 ## Closing out and archiving
 
-For a project the button is **Close out…**: a short wizard that checks nothing is left open, moves results to the area or Resources, can create one PDF of all the project's notes, and then archives it. For an area, **Archive…** shows where its folder goes and moves it to the Archive after you confirm. See [Closing out a project](close-out.md).
+For a project the button is [Close out…](close-out.md#where-to-start-it): a short wizard that checks nothing is left open, moves results to the area or Resources, can create one PDF of all the project's notes, and then archives it. For an area, **Archive…** shows where its folder goes and moves it to the Archive after you confirm.

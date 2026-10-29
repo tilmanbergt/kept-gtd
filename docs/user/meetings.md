@@ -7,7 +7,7 @@ A meeting has a date, an optional time or length, and a title that can carry tag
 - [Daily](daily.md): today and tomorrow
 - **Week**: the week grid; tap a day for the full list
 - **Month**: only monthly highlights (the **M** mark); a focus block marked **M** shows with its name and an **F**, the others only in the day's list; tap a day for all its meetings
-- **Current**: all meetings of that project or area, upcoming and past
+- [Current](projects-and-areas.md#the-current-tab): all meetings of that project or area, upcoming and past
 
 ## Focus blocks
 
@@ -17,11 +17,11 @@ A focus block is time you give yourself for a [loop](loops.md), a [thread](threa
 - The card says **Focus** instead of **Meeting** and links its loop or thread (for example `workshop offsite ›`).
 - Focus blocks have no prep or review mark, no Reflection page, and never appear in "Meetings to close out".
 - Their note follows a Note setup that matches their tags. Without one, the note button opens the project's or area's home notebook instead of creating a note.
-- They count in **Given time** on Week and Month, see [Week and Month](week-and-month.md#given-time).
+- They count in [Given time](week-and-month.md#given-time) on Week and Month.
 
 ## The context panel
 
-Tap a meeting or focus block on Daily, Week or Month: its card shows, and below it the **context panel** with everything around it.
+Tap a meeting or focus block on Daily, Week or Month: its card shows, and below it the *context panel* with everything around it.
 
 - A thread's meeting: **I owe**, **Next**, **Planned** (todos without a flow state, such as agenda points), **Waiting for** and **Agreed last time**. The panel lists all of them, also what Daily leaves out - todos without **Next** and Waiting for todos with a later date - so you have the whole context for the session.
 - A loop's meeting or block: what is next and planned, what you wait for and what came out of its meetings.
@@ -39,7 +39,7 @@ On Week the panel has a line on top, for example "‹ Back to Week 42 · Thu 15.
 
 A meeting row shows the time, the title (tap a tag in it as anywhere else), where the meeting lives, a small prep/review mark (see below), the note icon and - only when a file is linked - the clip, which opens that file.
 
-Tap the title, or the small mark, to select the meeting: the row gets a black bar and the meeting's **card** takes Quick Add's place, in the same box. Tap **Edit** or the title on the card - or the row a second time - to change its title, date or time; **Save** brings you back to the card. **✕** closes the card; Quick Add comes back with whatever you had started to type. This works wherever a meeting list has Quick Add: Daily, the day panel of Week and Month, a project's or area's Meetings, the Inbox, the Review's Inbox step and the Ahead list of a thread or loop overview.
+Tap the title, or the small mark, to select the meeting: the row gets a black bar and the meeting's *card* takes Quick Add's place, in the same box. Tap **Edit** or the title on the card - or the row a second time - to change its title, date or time; **Save** brings you back to the card. **✕** closes the card; Quick Add comes back with whatever you had started to type. This works wherever a meeting list has Quick Add: Daily, the day panel of Week and Month, a project's or area's Meetings, the Inbox, the Review's Inbox step and the Ahead list of a thread or loop overview.
 
 The card shows:
 
@@ -66,7 +66,7 @@ For meetings that need preparing or following up, switch on **Prepare before** a
 
 You tick it on the meeting's card: select the meeting, then tap **P** or **R**. When you edit a meeting, its title shows without `#prepped` and `#reviewed`, and **Save** keeps the tick as it is.
 
-Past meetings that still need a review appear in the Review step **Meetings to close out** (last 7 days).
+Past meetings that still need a review appear in the Review step [Meetings to close out](review.md#the-steps) (last 7 days).
 
 ## Reflection page
 
@@ -74,10 +74,10 @@ After a meeting, you may want to reflect on it in your own handwriting: how did 
 
 Tap the **Reflect** icon on the selected meeting's card. The first time, the status line asks, for example "Sparring: reflection page in Coaching 2026.note, after the meeting's page" - tap **Add page**. When the meeting has no page yet, it says "…: pages for the meeting and its reflection in …" and **Add pages** creates both. After that the icon is filled and opens the page.
 
-- **Where it goes**: in the meeting's note, after the meeting's page and every page you added to it by hand, before the next meeting's or todo's page. In a meeting's own note it is the last page.
-- **What is on it**: the Reflection page of the meeting's Note setup, or the Default's - at first just the date and title as a heading. Add your guiding questions as texts of your own, see [Note setups](note-setups.md).
-- **Finding it**: its keyword is `reflection` with the meeting's date and title (for example `reflection 2026-10-14 Sparring Jordan`), plus the meeting's tags. When you rename the meeting, the keyword follows the next time you open the page from Kept.
-- **Part of the meeting**: on the reflection page, Engage and lasso capture treat it as the meeting's page - todos you capture there were agreed in that meeting, and Engage opens on **From Thread** (see [Engage](engage.md)).
+- *Where it goes*: in the meeting's note, after the meeting's page and every page you added to it by hand, before the next meeting's or todo's page. In a meeting's own note it is the last page.
+- *What is on it*: the Reflection page of the meeting's Note setup, or the Default's - at first just the date and title as a heading. Add your guiding questions as texts of your own, see [Note setups](note-setups.md).
+- *Finding it*: its keyword is `reflection` with the meeting's date and title (for example `reflection 2026-10-14 Sparring Jordan`), plus the meeting's tags. When you rename the meeting, the keyword follows the next time you open the page from Kept.
+- *Part of the meeting*: on the reflection page, Engage and lasso capture treat it as the meeting's page - todos you capture there were agreed in that meeting, and Engage opens on **From Thread** (see [Engage](engage.md)).
 
 You also reach it from the Review step **Meetings to close out**, from a past meeting in a thread overview, and from Engage on the meeting's page: **Reflect ›** after the meeting (see [Engage](engage.md)).
 

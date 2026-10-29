@@ -13,9 +13,9 @@ You find them in **Settings → Note setups**.
 - **Notes** (where the notes go):
   - **Own note per item**: every todo or meeting gets its own note in the project's `Todos` or `Meetings` folder.
   - **One notebook**: every meeting and todo of the setup gets a page in one note, in date order (see below).
-  - A Loop setup always has its **loop note**: one note per loop in the loop's Area or Project folder.
+  - A Loop setup always has its *loop note*: one note per loop in the loop's Area or Project folder.
 - **Tracking**: **Prepare before** and **Review after** for the setup's meetings, see [Meetings](meetings.md).
-- **Pages**: a **Meeting page**, a **Todo page** and a **Reflection page** (the page you write your reflection on after a meeting, see [Meetings](meetings.md)), and for a Loop setup a **First page** (the loop's own page at the start of its loop note).
+- **Pages**: a **Meeting page**, a **Todo page** and a [Reflection page](meetings.md#reflection-page) (the page you write your reflection on after a meeting), and for a Loop setup a **First page** (the loop's own page at the start of its loop note).
 
 Items no setup covers use the **Default**, pinned at the top of the list: its pages, its tracking and where its notes go. Inbox items always get a note of their own.
 
@@ -62,7 +62,7 @@ Left, the page as it will look, with its background; tap a piece to select it. R
   - **Related items**: open todos and meetings that share a tag with the item - a tag about what it is about, like `#garden` or `#sparring/jordan`; `#next`, `#now`, `#someday`, `#maybe` and Waiting For don't count
   - **Linked file**: a link to the file linked to the item
   - **Since last time** (Meeting page), see below
-  - your own **texts**: **+ New text** writes one, for example "Agenda" or "Decisions"; **Edit** changes it. Deleting a text that is on the page asks first.
+  - your own *texts*: **+ New text** writes one, for example "Agenda" or "Decisions"; **Edit** changes it. Deleting a text that is on the page asks first.
 - **Background**: your templates from the MyStyle folder; the picture shows the choice at once.
 
 **Done** goes back to the setup's page; **Save** there stores everything. A new Meeting page starts with Date & title, Time and Linked file; a Todo page with Title and Linked file; a First page with Date & title and Linked file; a Reflection page with Date & title only - add your guiding questions as your own texts, for example "What did I notice?" or "What do I try next time?".
@@ -71,7 +71,7 @@ Left, the page as it will look, with its background; tap a piece to select it. R
 
 Tap **Default** at the top of the list. It has **Notes** (own note per item, or one notebook for everything no setup covers), **Tracking** and its pages, each with **Edit ›**. Its pages are the Default layout of every setup that uses it, Loop setups' First pages included. Its **Reflection page** starts with Date & title as a heading; the guiding questions are yours to add.
 
-A new install starts with **One notebook** named `{name} {year}` in each project's or area's own folder: every note of a project or area goes into one file per year. This notebook is each project's and area's home notebook ([Projects and Areas](projects-and-areas.md)); the Default then also has a **Home page**, the first page of every new home notebook (Title, Scope and Latest goals). A setup whose notebook has the same name and folder shares this file.
+A new install starts with **One notebook** named `{name} {year}` in each project's or area's own folder: every note of a project or area goes into one file per year. This notebook is each project's and area's home notebook ([Projects and Areas](projects-and-areas.md)); the Default then also has a [Home page](projects-and-areas.md#the-home-page), the first page of every new home notebook (Title, Scope and Latest goals). A setup whose notebook has the same name and folder shares this file.
 
 ## Heading style
 
@@ -107,7 +107,7 @@ If you rename a Project or Area or change its abbreviation, new pages go into a 
 
 An item can carry the tags of more than one setup, for example a todo `#workshop/offsite #sparring/jordan`.
 
-- A **meeting** goes to a **Thread** setup first, a **todo** to a **Loop** setup first (if the loop is active in that Area or Project; otherwise the todo gets a note of its own). Among setups of the same kind, the list order decides.
+- A *meeting* goes to a **Thread** setup first, a *todo* to a **Loop** setup first (if the loop is active in that Area or Project; otherwise the todo gets a note of its own). Among setups of the same kind, the list order decides.
 - When they lead to different notes, the question before the note is created offers the next one as a second button, for example **In Sparring** (or **Own note**). Tap the message to see every place.
 - Your choice is kept with the item, so it is asked once. The note's pages are filled from the layout of the setup you picked.
 
@@ -129,11 +129,11 @@ A notebook - and a loop note - reads like a timeline. A new page goes where it b
 ## Finding notes again
 
 - A note of its own is named after its item, for example `2026-10-04 - Site visit with Marco marco`, so the Supernote's file search finds it. File names leave out `#` and the other characters listed in [Your files and folders](files-and-folders.md).
-- A page in a notebook gets a **keyword**: the meeting's date and title, or the todo's text, including its tags - for example `2026-10-04 Site visit with Marco #marco`. The Supernote's keyword search then finds every page about Marco. A keyword can have at most 43 characters, so a longer title is shortened for the keyword: its tags are left out (they are keywords of their own), and if it is still too long, it is cut with "…". The page is found the same way every time.
-- A note of its own, and a page in a notebook, also gets the item's tags as **keywords** (without `#next`, `#wf` and the other tags Kept uses itself), for example `marco`. A note from the **Note** tab in Quick Add gets the tags of its title as keywords the same way.
-- Notes and pages of meetings and todos also get a **date keyword**: the meeting's date, or the day the todo was created (if it has a `created` date), for example `2026-10-04`. The keyword search matches part of a keyword, so searching `2026-10` finds everything from October 2026.
+- A page in a notebook gets a *keyword*: the meeting's date and title, or the todo's text, including its tags - for example `2026-10-04 Site visit with Marco #marco`. The Supernote's keyword search then finds every page about Marco. A keyword can have at most 43 characters, so a longer title is shortened for the keyword: its tags are left out (they are keywords of their own), and if it is still too long, it is cut with "…". The page is found the same way every time.
+- A note of its own, and a page in a notebook, also gets the item's tags as *keywords* (without `#next`, `#wf` and the other tags Kept uses itself), for example `marco`. A note from the **Note** tab in Quick Add gets the tags of its title as keywords the same way.
+- Notes and pages of meetings and todos also get a *date keyword*: the meeting's date, or the day the todo was created (if it has a `created` date), for example `2026-10-04`. The keyword search matches part of a keyword, so searching `2026-10` finds everything from October 2026.
 - These keywords are kept up to date whenever you open the note from Kept, while it is still refreshed. A keyword that is only a date on such a page belongs to Kept and is replaced; tag keywords are only ever added, never removed, so keywords you add yourself stay.
-- With headings switched on, the note's **table of contents** lists every meeting of a notebook by date and title.
+- With headings switched on, the note's *table of contents* lists every meeting of a notebook by date and title.
 
 ## Coming from Tag Rules
 
@@ -141,7 +141,7 @@ Up to 0.14, Tag Rules did this job, one rule per kind of item. On the first star
 
 - Rules that share a tag become one setup; a meeting rule and a todo rule on `#sparring` are one Sparring setup with a Meeting page and a Todo page.
 - A rule's pieces, texts and background become its page's own layout, so pages look as before. The Default rules become the Default's pages.
-- **Every note you have stays where it is** and keeps opening as before.
-- One thing changes on purpose: in a setup with a notebook, all its meetings **and** todos get pages in that notebook from now on, also those that used to get a note of their own.
+- *Every note you have stays where it is* and keeps opening as before.
+- One thing changes on purpose: in a setup with a notebook, all its meetings *and* todos get pages in that notebook from now on, also those that used to get a note of their own.
 - Project and Area rules are gone - they never had an effect.
 - A card above the list says what was merged and what changed for new notes; **OK** clears it. Your Tag Rules stay stored unchanged, so going back to 0.14 still works.

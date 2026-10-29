@@ -24,8 +24,8 @@ Where the notes of todos and meetings go and how they look, see [Note setups](no
 
 Switch parts of Kept GTD on or off, see [Features and integrations](features.md):
 
-- **Project close-out**: the checklist, outcomes and archive PDF when a project is done. Off: Done projects are archived directly.
-- **Experimental**: the Google Calendar and Gmail integrations, and **Notebook contents** - the headings list on a project's or area's Notebook tab (see [Projects and Areas](projects-and-areas.md), "Home notebooks")
+- [Project close-out](features.md#project-close-out): the checklist, outcomes and archive PDF when a project is done. Off: Done projects are archived directly.
+- **Experimental**: the Google Calendar and Gmail integrations, and [Notebook contents](projects-and-areas.md#contents-experimental) - the headings list on a project's or area's Notebook tab (see [Projects and Areas](projects-and-areas.md), "Home notebooks")
 
 Switches on this tab take effect immediately.
 
@@ -44,5 +44,5 @@ Switches on this tab take effect immediately.
 ## About
 
 - the version of the installed build (a test build shows the coming version and its stage, for example `0.15.0 beta`), build number and device
-- **Debug logging** and **Export debug bundle**, see [Troubleshooting](troubleshooting.md)
+- [Debug logging](troubleshooting.md#reporting-a-problem) and [Export debug bundle](troubleshooting.md#reporting-a-problem)
 - **What's new**: the release notes of this and earlier versions

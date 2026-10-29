@@ -14,7 +14,7 @@ Kept GTD is a calm GTD and PARA workspace for the Supernote. Your projects, area
 
 The chip next to **?** shows the current context (Everything, Work, Home …); tap it to switch, see [Contexts](contexts.md).
 
-**?** opens this help, starting at the page for the tab you are on. Underlined words are links to other pages; **‹ Back** returns to where you were. **✕ Close** in the help closes it again; the tab behind it stays exactly as it was. ✕ closes the plugin. When you open Kept, it reads the files you changed outside it again. To read all files again, use **Reload all files** in Settings → Advanced.
+**?** opens this help, starting at the page for the tab you are on. Underlined words are links to other pages; **‹ Back** returns to where you were. **✕ Close** in the help closes it again; the tab behind it stays exactly as it was. ✕ closes the plugin. When you open Kept, it reads the files you changed outside it again. To read all files again, use [Reload all files](settings.md#advanced) in Settings → Advanced.
 
 ## Opening Kept GTD from a note
 

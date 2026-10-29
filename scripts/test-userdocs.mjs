@@ -84,6 +84,8 @@ t('real docs/user: every page listed in index.md, every link resolves', () => {
   const docs = buildUserDocs(files);
   assert.ok(docs.pages.index, 'index.md exists');
   assert.ok(!docs.groups.some(g => g.title === 'More'), 'a page is missing from index.md');
+  const listed = docs.groups.flatMap(g => g.pageIds);
+  assert.equal(listed.length, new Set(listed).size, 'a page is in two groups of index.md (a linked list item outside the page groups?)');
   assert.deepEqual(checkLinks(files, pageAnchors), []);
 });
 

@@ -21,17 +21,17 @@ Kept keeps everything in four folders inside your `Note` folder:
 
 Kept creates these folders when it first needs them, for example when you create your first project. Nothing else is created behind your back.
 
-Already have a folder system? Point **Settings → Folders** at it and tap **Save**. Every subfolder of your projects folder is then a project, every subfolder of your areas folder an area. Nothing is moved or renamed. See [Your files, folders and Obsidian](files-and-folders.md).
+Already have a folder system? Point [Settings → Folders](settings.md#folders) at it and tap **Save**. Every subfolder of your projects folder is then a project, every subfolder of your areas folder an area. Nothing is moved or renamed. See [Your files, folders and Obsidian](files-and-folders.md).
 
 ## Projects and areas
 
-A **project** has an end, like "Garden renovation". An **area** is a responsibility without an end, like "Home". Create them on the **Projects** and **Areas** tabs: write the name and tap **Create Project** or **Create Area**. Tap one to open its page. See [Projects and Areas](projects-and-areas.md).
+A *project* has an end, like "Garden renovation". An *area* is a responsibility without an end, like "Home". Create them on the **Projects** and **Areas** tabs: write the name and tap [Create Project](projects-and-areas.md#creating-one) or [Create Area](projects-and-areas.md#creating-one). Tap one to open its page.
 
 ## Todos
 
 Open a project and add todos with [Quick Add](quick-add.md), the small form above its lists: write "Measure the raised beds", tap **+ Add**.
 
-- Mark the next step with the **Next** chip. The todo gets the tag `#next`, and **Daily** shows it - that is the list for today ([Daily](daily.md)).
+- Mark the next step with the **Next** chip. The todo gets the tag `#next`, and [Daily](daily.md) shows it - that is the list for today.
 - Give a todo a due date: it shows on Daily from the day before.
 - Waiting for someone? The **w/f** chip, or a tag like `#wf/marco` for "waiting for Marco".
 - Not now? **Someday** or **Maybe** parks it out of the way.
@@ -50,13 +50,13 @@ By default all notes of a project go into one notebook per year, its home notebo
 
 ## Capture while you write
 
-While you write in any note, select handwriting with the lasso and tap **Capture Todo/Meeting**: Kept recognizes it and opens Quick Add with the text. No time to sort? [Mark for later](lasso.md#marking-for-later) keeps the selection with one tap, and you file it later from the Inbox. See [Lasso](lasso.md).
+While you write in any note, select handwriting with the lasso and tap [Capture Todo/Meeting](lasso.md#capturing-right-away): Kept recognizes it and opens Quick Add with the text. No time to sort? [Mark for later](lasso.md#marking-for-later) keeps the selection with one tap, and you file it later from the Inbox.
 
-Everything you add without a project lands in the **Inbox** (see [Quick Add and capture](quick-add.md)).
+Everything you add without a project lands in the [Inbox](quick-add.md#the-inbox).
 
 ## Once a week
 
-The **Review** tab walks you through a weekly review, one step at a time: empty the Inbox, check that every project has a next step, look at what you parked. See [Weekly Review](review.md).
+The [Review](review.md) tab walks you through a weekly review, one step at a time: empty the Inbox, check that every project has a next step, look at what you parked.
 
 ## When you want more
 
@@ -65,4 +65,4 @@ The **Review** tab walks you through a weekly review, one step at a time: empty 
 - [Agreements](agreements.md): what you settled with someone, kept where it belongs.
 - [Engage](engage.md): your next action, in a small panel over the note you work in.
 - [Contexts](contexts.md): Work, Home - see only what fits where you are.
-- **Settings → Features** switches parts on or off, see [Features and integrations](features.md).
+- [Settings → Features](settings.md#features) switches parts on or off, see [Features and integrations](features.md).

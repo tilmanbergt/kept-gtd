@@ -128,10 +128,14 @@ new page must be linked there. The app renders them with the same renderer as "W
 pages stick to it:
 
 - headings, paragraphs, `-` and `1.` lists with at most one nested level, `>` quotes
-- `**bold**`, `` `code` ``, links to other pages in the folder as `[text](page.md)` or
+- `**bold**`, `*italic*`, `` `code` ``, links to other pages in the folder as `[text](page.md)` or
   `[text](page.md#heading-slug)` (tappable in the help, which opens the page at that heading and
   offers ‹ Back; the slug is GitHub's, `domain/helpLinks.ts`); links to web addresses show as text
 - fenced code blocks (shown in monospace, long ones continue on the next page)
+- `*italic*` for a term the page explains (*home notebook*, *counterpart*); `**bold**` for labels
+  exactly as the app shows them (**Save**, **Device**); `` `code` `` for what is typed or stored -
+  tags, file names, lines of a file. A label or term that another page describes in more detail is a
+  link to that section instead (the help draws links bold and underlined).
 - no tables, images, HTML (not even `<name>` placeholders) or horizontal rules
 
 Write labels exactly as the app shows them, and check a behaviour in the code before describing

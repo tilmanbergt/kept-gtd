@@ -1,6 +1,6 @@
 # Threads
 
-A nested tag such as `#sparring/jordan` ties todos and meetings together. Its first part is the **type** (`sparring`), its second part the **counterpart** (`jordan`: a person, a team, a group or a process), and both together are the **thread**. The thread overview shows everything around one thread or counterpart: what is coming up, what you owe, what you are waiting for and what was agreed in past meetings.
+A nested tag such as `#sparring/jordan` ties todos and meetings together. Its first part is the *type* (`sparring`), its second part the *counterpart* (`jordan`: a person, a team, a group or a process), and both together are the *thread*. The thread overview shows everything around one thread or counterpart: what is coming up, what you owe, what you are waiting for and what was agreed in past meetings.
 
 ## Which items belong to a thread
 
@@ -36,7 +36,7 @@ Tap a nested tag in a todo or meeting, on any screen: Daily, Week, Month, Inbox,
 
 ## The place it covers
 
-The overview belongs to the project or area of the row you tapped. It shows that area together with the projects assigned to it; a project with an assigned area shows its whole area. A project without an area and the Inbox each stand on their own. So `#sparring/jordan` in one area is a different thread from `#sparring/jordan` in another. A todo counts where it is filed: one agreed in a meeting but sent to the Inbox shows in the meeting's thread once you file it into that project or area. The header shows the tag and where you are, for example `#sparring/jordan in Coaching`. **Engage ›** opens [Engage](engage.md) for the thread (not for `#wf/…` and `#owe/…`, which name a person rather than a thread).
+The overview belongs to the project or area of the row you tapped. It shows that area together with the projects assigned to it; a project with an assigned area shows its whole area. A project without an area and the Inbox each stand on their own. So `#sparring/jordan` in one area is a different thread from `#sparring/jordan` in another. A todo counts where it is filed: one agreed in a meeting but sent to the Inbox shows in the meeting's thread once you file it into that project or area. The header shows the tag and where you are, for example `#sparring/jordan in Coaching`. [Engage ›](engage.md) opens [Engage](engage.md) for the thread (not for `#wf/…` and `#owe/…`, which name a person rather than a thread).
 
 ## Thread or all of the counterpart
 
@@ -54,7 +54,7 @@ The upper list on the left:
 - **Waiting for**: open todos you are waiting for Jordan on
 - **Agreements**: the thread's active agreements, shown after **Waiting for** (see [Agreements](agreements.md))
 - **Relevant**: open todos with the thread's tag or `#jordan` that are neither of the above
-- a last, quiet row such as **1 someday ›**: the thread's Someday and Maybe todos are not listed, only counted. Tap it to open the Weekly Review's step **Someday / Maybe** with just these todos, see [Weekly Review](review.md).
+- a last, quiet row such as **1 someday ›**: the thread's Someday and Maybe todos are not listed, only counted. Tap it to open the Weekly Review's step [Someday / Maybe](review.md#someday--maybe) with just these todos.
 
 A list with nothing in it is left out. [Engage](engage.md) for the thread holds the same todos. Tapping one of its meetings shows the meeting's card in Quick Add's place: its prep or review tick and **Reflect** (see [Meetings](meetings.md)).
 
@@ -93,7 +93,7 @@ The header of **Ahead** offers **+ Next sparring**: it copies the thread's lates
 A todo agreed in a meeting carries the meeting at the end of its line, for example `[meeting:: 2026-09-30 Sparring Jordan sparring/jordan]`: the meeting's date and title, written without `#` so Obsidian doesn't count the meeting's tags as tags of the todo. Kept writes it, always with the grey line in Quick Add first, from:
 
 - Quick Add in the thread overview
-- the Review step **Meetings to close out**, see [Weekly Review](review.md)
+- the Review step [Meetings to close out](review.md#the-steps)
 - the lasso, when you capture from a page of a meeting's note or process a mark made there: the meeting's own note, a page linked to the meeting, or its page in a shared note, see [Lasso](lasso.md)
 
 When you rename a meeting later, Kept still finds its todos by the meeting's date and its thread tag, which the line names (`sparring/jordan` above). Lines in other files are never rewritten.
@@ -102,7 +102,7 @@ When you rename a meeting later, Kept still finds its todos by the meeting's dat
 
 The counterparts you work with belong to an area together with its projects, or to a project without an area. `#sparring/jordan` in the Coaching area and in one of its projects is one counterpart; the same name in another area is a different one. Only nested tags whose type is a tag of one of your Thread setups (see [Note setups](note-setups.md)), and `#wf/name` and `#owe/name`, make counterparts; other nested tags such as `#tax/2026` don't.
 
-A counterpart you use for the first time is **new**: Kept asks you, in the Weekly Review's [Tending threads](review.md#tending-threads) and on the Current page's [Threads tab](projects-and-areas.md#threads), whether to **Tend** it (it stays active) or **Not** (it is set aside, inactive). Nothing is decided for you. Your answer is one line in the area's file (`area.txt`), or in the project's file for a project without an area:
+A counterpart you use for the first time is *new*: Kept asks you, in the Weekly Review's [Tending threads](review.md#tending-threads) and on the Current page's [Threads tab](projects-and-areas.md#threads), whether to **Tend** it (it stays active) or **Not** (it is set aside, inactive). Nothing is decided for you. Your answer is one line in the area's file (`area.txt`), or in the project's file for a project without an area:
 
 `## Threads`
 `- jordan: active`
@@ -116,7 +116,7 @@ See [Projects and Areas](projects-and-areas.md) for the Threads tab and [Weekly 
 
 ## Since last time on a meeting note
 
-A Meeting page can have the piece **Since last time**: on the meeting's note it prints what happened in the meeting's thread since the previous meeting of that thread - what was agreed then, the agreements made then, what you owe, wait for and should raise, and what got done since. See [Note setups](note-setups.md).
+A Meeting page can have the piece [Since last time](note-setups.md#since-last-time): on the meeting's note it prints what happened in the meeting's thread since the previous meeting of that thread - what was agreed then, the agreements made then, what you owe, wait for and should raise, and what got done since.
 
 ## Naming shared notes by type
 

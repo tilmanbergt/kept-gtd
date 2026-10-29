@@ -14,8 +14,9 @@ or your project/area files are stored.
 - **Check device files** in Settings → Advanced (shown while Debug logging is on): lists the device's
   top folders, the SD card and the file Kept was opened from, with buttons to open sample files - for
   bug reports about files outside `Note`.
-- **Help pages link to each other**: tap an underlined link to open that page, at the heading it
-  names; **‹ Back** in the help's header walks back through the pages you came from.
+- **Help pages link to each other**: tap a link (bold and underlined) to open that page, at the heading
+  it names; **‹ Back** in the help's header walks back through the pages you came from. Terms the help
+  explains are in italics, buttons and labels stay bold.
 
 - **Link files from anywhere**: the Files pane has a **Device** tab with the Supernote's folders next to
   `Note` (`Document`, `EXPORT`, `INBOX`, `MyStyle`, `SCREENSHOT`, `Download`) and the SD card when one is

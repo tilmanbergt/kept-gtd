@@ -30,7 +30,7 @@ Choose the **Meeting** tab, write the title, set the date and the time. For the 
 
 ## The grey line: where a todo comes from
 
-Where a todo is agreed in a meeting - in a thread overview, in the Review step **Meetings to close out**, or when you capture from a meeting's note page - Quick Add shows one grey line in its fourth row, for example `↳ from Sparring Jordan · Wed 30.9.`. The new todo then records that meeting at the end of its line; its tags stay as you type them. In a thread overview the line also names the thread's tag, which new todos get (for example `#sparring/jordan ✕`). Each part has its own ✕: tap it to add this one todo without it. See [Threads](threads.md).
+Where a todo is agreed in a meeting - in a thread overview, in the Review step [Meetings to close out](review.md#the-steps), or when you capture from a meeting's note page - Quick Add shows one grey line in its fourth row, for example `↳ from Sparring Jordan · Wed 30.9.`. The new todo then records that meeting at the end of its line; its tags stay as you type them. In a thread overview the line also names the thread's tag, which new todos get (for example `#sparring/jordan ✕`). Each part has its own ✕: tap it to add this one todo without it. See [Threads](threads.md).
 
 ## Adding an agreement
 
@@ -46,13 +46,13 @@ Every project and area has a short abbreviation, for example `GR` for "Garden re
 
 ## The Inbox
 
-Whatever you add without a project or area lands in the Inbox: from Daily, Week and Month, from a lasso capture you don't file right away, and marks from notes outside your projects and areas. The **Inbox** tab shows all of it, grouped into Next, Waiting For, Someday, Maybe and Other; **Hide done tasks** keeps it short. The Files pane on the left lets you look into your projects, areas and resources, and the Supernote's other folders (**Device**), while you sort.
+Whatever you add without a project or area lands in the Inbox: from Daily, Week and Month, from a lasso capture you don't file right away, and marks from notes outside your projects and areas. The **Inbox** tab shows all of it, grouped into Next, Waiting For, Someday, Maybe and Other; **Hide done tasks** keeps it short. The Files pane on the left lets you look into your projects, areas and resources, and the Supernote's other folders ([Device](files-and-folders.md#files-outside-note)), while you sort.
 
-To empty the Inbox, tap each item and, on its card, either finish it, delete it, or move it with the arrow next to its place (or an abbreviation tag while editing, see above). The [Weekly Review](review.md) has a step **Inbox to zero** for exactly this.
+To empty the Inbox, tap each item and, on its card, either finish it, delete it, or move it with the arrow next to its place (or an abbreviation tag while editing, see above). The [Weekly Review](review.md) has a step [Inbox to zero](review.md#the-steps) for exactly this.
 
 ## The card: one tap selects
 
-Tap a todo or a meeting in a list with Quick Add: the row gets a black bar and the item's **card** takes Quick Add's place, in the same box. Everything you can do with the item at once is on its card; nothing is saved until you tap a button there. **✕** closes the card, and Quick Add comes back with whatever you had started to type.
+Tap a todo or a meeting in a list with Quick Add: the row gets a black bar and the item's *card* takes Quick Add's place, in the same box. Everything you can do with the item at once is on its card; nothing is saved until you tap a button there. **✕** closes the card, and Quick Add comes back with whatever you had started to type.
 
 The todo card shows:
 
@@ -82,4 +82,4 @@ When you opened Kept from a note or a document - a PDF, an EPUB - Quick Add's To
 
 ## Capturing handwriting with the lasso
 
-Select handwriting in any note and tap **Capture Todo/Meeting** in the lasso toolbar: Kept recognizes it and opens the same form, with **Save & next**, **Save & view** and **Save & close**. [Mark for later](lasso.md#marking-for-later) saves a selection for later without opening Kept. Open marks show as a card **n marks to process** on the Inbox tab. Both are explained in [Lasso: capture and mark for later](lasso.md).
+Select handwriting in any note and tap [Capture Todo/Meeting](lasso.md#capturing-right-away) in the lasso toolbar: Kept recognizes it and opens the same form, with **Save & next**, **Save & view** and **Save & close**. [Mark for later](lasso.md#marking-for-later) saves a selection for later without opening Kept. Open marks show as a card **n marks to process** on the Inbox tab. Both are explained in [Lasso: capture and mark for later](lasso.md).

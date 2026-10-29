@@ -16,7 +16,7 @@ Notes that Kept creates for todos and meetings go into `Todos` and `Meetings` fo
 
 ## File names
 
-The names of files Kept creates leave out `\ / : * ? " < > |` (not allowed in file names) and `# [ ] ^`, which break links in Obsidian. They are replaced by a space, so `Plan [v2] #team` becomes `Plan v2 team`. Project and area names can't contain these characters at all. Files you named yourself are left as they are. Notes created by older versions can still have such names: **Run Integrity Check** in Settings → Advanced lists them, and **Fix file names** renames them all at once and updates their links (see [Settings](settings.md#advanced)).
+The names of files Kept creates leave out `\ / : * ? " < > |` (not allowed in file names) and `# [ ] ^`, which break links in Obsidian. They are replaced by a space, so `Plan [v2] #team` becomes `Plan v2 team`. Project and area names can't contain these characters at all. Files you named yourself are left as they are. Notes created by older versions can still have such names: [Run Integrity Check](settings.md#advanced) in Settings → Advanced lists them, and **Fix file names** renames them all at once and updates their links.
 
 ## The Inbox folder
 
@@ -67,7 +67,7 @@ Turn the back garden into a vegetable garden before winter.
 
 ## Editing by hand
 
-You can edit these files in any text editor, on Windows too, for example on your computer via Supernote Cloud, or in Obsidian through the Supernote Cloud Sync plugin's Paired folder. Afterwards, open Kept again: it reads the files that changed. If a change doesn't show up (a sync can keep a file's old time and size), tap **Reload all files** in Settings → Advanced. Keep the section headings (`## Tasks`, `## Meetings`, `## Marks`, `## Threads`) as they are.
+You can edit these files in any text editor, on Windows too, for example on your computer via Supernote Cloud, or in Obsidian through the Supernote Cloud Sync plugin's Paired folder. Afterwards, open Kept again: it reads the files that changed. If a change doesn't show up (a sync can keep a file's old time and size), tap [Reload all files](settings.md#advanced) in Settings → Advanced. Keep the section headings (`## Tasks`, `## Meetings`, `## Marks`, `## Threads`) as they are.
 
 If you edit a file while Kept is open, Kept reads it again before it saves:
 
@@ -165,6 +165,6 @@ A file inside `Note` is stored as a path inside `Note`, like every linked file; 
 
 ## What Kept GTD keeps elsewhere
 
-- **Settings** are stored inside the plugin. Profiles save them as files, see [Profiles](profiles-and-demo.md).
-- **Pictures and handwriting of lasso marks** are kept in the plugin's own storage until the mark is processed, see [Lasso](lasso.md).
-- **Exports** go to `EXPORT/kept-gtd`: `profiles` for profile files, `debug` for logs, debug bundles and reports.
+- *Settings* are stored inside the plugin. Profiles save them as files, see [Profiles](profiles-and-demo.md).
+- *Pictures and handwriting of lasso marks* are kept in the plugin's own storage until the mark is processed, see [Lasso](lasso.md).
+- *Exports* go to `EXPORT/kept-gtd`: `profiles` for profile files, `debug` for logs, debug bundles and reports.

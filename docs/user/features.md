@@ -1,12 +1,12 @@
 # Features and integrations
 
-**Settings → Features** switches parts of Kept GTD on or off. A switch takes effect at once, on every tab. Switching something off only hides it: your files and its settings stay as they are, and switching it on again brings everything back.
+[Settings → Features](settings.md#features) switches parts of Kept GTD on or off. A switch takes effect at once, on every tab. Switching something off only hides it: your files and its settings stay as they are, and switching it on again brings everything back.
 
 ## Project close-out
 
-On by default. When a project is done, **Close out…** walks you through a checklist, where its outcomes go and an archive PDF before the folder moves to the Archive (see [Closing out a project](close-out.md)).
+On by default. When a project is done, [Close out…](close-out.md#where-to-start-it) walks you through a checklist, where its outcomes go and an archive PDF before the folder moves to the Archive.
 
-Off: a Done project shows **Archive…** on its page and **Archive** in the Weekly Review's step **Done awaiting review**, and moves to the Archive after one confirmation, without the checklist and the PDF. A close-out you started earlier stays in the project's file.
+Off: a Done project shows **Archive…** on its page and **Archive** in the Weekly Review's step [Done awaiting review](review.md#the-steps), and moves to the Archive after one confirmation, without the checklist and the PDF. A close-out you started earlier stays in the project's file.
 
 ## Experimental
 
@@ -14,11 +14,11 @@ These depend on outside services or on reading your notebooks, and may be slow o
 
 - **Google Calendar**: your Google Calendar in Daily, Week, Month, Inbox, Projects/Areas and Review, see "Google Calendar and Gmail" below
 - **Gmail**: the Gmail inbox step in the Weekly Review, see below
-- **Notebook contents**: the headings list on a project's or area's Notebook tab, see [Projects and Areas](projects-and-areas.md)
+- [Notebook contents](projects-and-areas.md#contents-experimental): the headings list on a project's or area's Notebook tab
 
 ## Google Calendar and Gmail (experimental)
 
-Both integrations are **experimental**: they depend on Google's services, can be slow on the Supernote and may stop working when Google changes something. They are off until you switch them on above, under Experimental. Switching one off only hides it; its settings are kept.
+Both integrations are *experimental*: they depend on Google's services, can be slow on the Supernote and may stop working when Google changes something. They are off until you switch them on above, under Experimental. Switching one off only hides it; its settings are kept.
 
 The Supernote needs a network connection for both. Kept GTD only connects when you tap Load or Refresh.
 
@@ -36,7 +36,7 @@ Keep the secret address private - anyone who has it can read your calendar. You 
 
 ## Gmail
 
-Kept reads your Gmail inbox over IMAP with an **app password**, not your normal password.
+Kept reads your Gmail inbox over IMAP with an *app password*, not your normal password.
 
 1. In your Google account, turn on 2-step verification (required for app passwords) and create an app password.
 2. Switch on **Gmail** under Experimental.

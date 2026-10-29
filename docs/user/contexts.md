@@ -1,6 +1,6 @@
 # Contexts
 
-A **context** is a place you work in - Work, Home, a café with only the Supernote. It decides what Daily, Week, Month, Projects, Areas and the Weekly Review show, so the day in front of you holds only what fits where you are. A context like Home may show almost nothing: that is rest, not a gap.
+A *context* is a place you work in - Work, Home, a café with only the Supernote. It decides what Daily, Week, Month, Projects, Areas and the Weekly Review show, so the day in front of you holds only what fits where you are. A context like Home may show almost nothing: that is rest, not a gap.
 
 ## Choosing one
 
@@ -12,24 +12,24 @@ The context stays until you choose another, also after closing Kept GTD. Each pr
 
 A context has a **Shows** list and a **Hides** list. Each holds areas, projects and tags:
 
-- an **area** brings its projects, and the loops and threads in them;
-- a **project** is just that project;
-- a **tag** brings every todo and meeting with that tag or a tag under it: `#sparring` also brings `#sparring/jordan`. Loop and thread tags work the same way.
+- an *area* brings its projects, and the loops and threads in them;
+- a *project* is just that project;
+- a *tag* brings every todo and meeting with that tag or a tag under it: `#sparring` also brings `#sparring/jordan`. Loop and thread tags work the same way.
 
 The rules:
 
-- **Hides wins**: what Hides names is left out, even when Shows names it too.
+- *Hides wins*: what Hides names is left out, even when Shows names it too.
 - A context with a Shows list shows only what that list names. Projects and areas no context mentions show only under **Everything**.
 - A context with an empty Shows list shows everything except what Hides names ("everything but work").
-- The **Inbox** always shows, in every context. Todos that are due follow the context like any other; the hidden line warns about hidden ones that are due: "3 due!".
+- The [Inbox](quick-add.md#the-inbox) always shows, in every context. Todos that are due follow the context like any other; the hidden line warns about hidden ones that are due: "3 due!".
 - **Meetings** are never hidden. Meetings outside the context are drawn faint (dimmed), or shown as usual if you choose that for the context.
 
 ## Where it applies
 
-- **Daily**: the next todos of the context; meetings outside it dimmed.
+- [Daily](daily.md): the next todos of the context; meetings outside it dimmed.
 - **Week and Month**: meetings outside it dimmed; [Given time](week-and-month.md#given-time) counts only what the context shows.
 - **Projects and Areas**: only the context's projects and areas.
-- **Weekly Review**: each step lists the context's items and todos. The overview shows "+2 in other contexts" next to a step's count. **Reviewed** and the reminder dot count every context: reviewing a step under Home marks it reviewed for all.
+- [Weekly Review](review.md): each step lists the context's items and todos. The overview shows "+2 in other contexts" next to a step's count. **Reviewed** and the reminder dot count every context: reviewing a step under Home marks it reviewed for all.
 
 Not filtered: the Inbox tab, a project's or area's own page (Current), Settings, Engage, and the thread and loop overviews.
 
@@ -45,4 +45,4 @@ In **Settings → Contexts**, tap **+ New context** and type its name; **Save** 
 
 Tap **Everything** (not its ○) to set the same threshold for Everything: 1 h a week and 2 h a month unless you change it. A context without its own threshold uses Everything's. Everything's threshold is saved as soon as you tap it.
 
-When you rename a project's or area's folder and Kept GTD offers to rename its [home notebook](projects-and-areas.md#home-notebooks), its contexts follow the new name. Otherwise **Run Integrity Check** (Settings → Advanced) lists contexts that name a project or area that isn't there any more.
+When you rename a project's or area's folder and Kept GTD offers to rename its [home notebook](projects-and-areas.md#home-notebooks), its contexts follow the new name. Otherwise [Run Integrity Check](settings.md#advanced) (Settings → Advanced) lists contexts that name a project or area that isn't there any more.

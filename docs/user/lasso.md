@@ -47,9 +47,9 @@ The mark is listed in the project or area the note belongs to; marks from other 
 
 Open marks show as a card **n marks to process** under Quick Add:
 
-- on the **Inbox** tab: all marks,
-- on the **Current** tab: the marks of that project or area,
-- in the [Weekly Review](review.md) step **Inbox to zero**: all marks, and they count toward the step.
+- on the [Inbox](quick-add.md#the-inbox) tab: all marks,
+- on the [Current](projects-and-areas.md#the-current-tab) tab: the marks of that project or area,
+- in the [Weekly Review](review.md) step [Inbox to zero](review.md#the-steps): all marks, and they count toward the step.
 
 **Process ›** opens the marks screen. The left column lists the marks by note, each with its picture, page, date and time, and whether it has been recognized yet. Recognition starts when you open the screen and runs ahead for the next marks; each mark is recognized only once.
 

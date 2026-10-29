@@ -8,9 +8,9 @@ Kept keeps agreements next to the todos and meetings they belong to, so you see 
 
 Like a todo, an agreement belongs where its tags say:
 
-- **A thread**: tagged with the thread, for example `#sparring/jordan`, or with the plain `#jordan`. It shows in the thread's overview, and in **All jordan**.
-- **A loop**: tagged with the loop, for example `#workshop/offsite`. It shows in the loop's overview.
-- **A project or area**: no thread or loop tag. It shows on its page.
+- *A thread*: tagged with the thread, for example `#sparring/jordan`, or with the plain `#jordan`. It shows in the thread's overview, and in **All jordan**.
+- *A loop*: tagged with the loop, for example `#workshop/offsite`. It shows in the loop's overview.
+- *A project or area*: no thread or loop tag. It shows on its page.
 
 It is written into the file that owns this place: for a thread the area's `area.txt` (or the project's `project.txt` when the project has no area), for a loop the file the loop lives in, for a project or area its own file. Agreements are never kept in the Inbox.
 
@@ -46,16 +46,16 @@ Agreements are never deleted: the old wording stays in your file.
 
 ## Where agreements show
 
-- **Engage**: the tab **Agreements** lists the owner's active ones; a tap shows **Change** and **End** in the row. **From Thread** lists the agreements made in each meeting.
-- **Thread and loop overviews**: a block **Agreements** in **Ahead**, after **Waiting for**. In **Looking back** a row such as **2 agreements ended ›** lists the ended ones on the right, and a past meeting lists the **Agreements made** in it.
-- **A project's or area's page**: when it has agreements of its own, its todo list ends with **◇ Agreements 2 ›**. Tap it to list them in that column; **‹ Todos** goes back.
+- [Engage](engage.md): the tab **Agreements** lists the owner's active ones; a tap shows **Change** and **End** in the row. **From Thread** lists the agreements made in each meeting.
+- *Thread and loop overviews*: a block **Agreements** in **Ahead**, after **Waiting for**. In **Looking back** a row such as **2 agreements ended ›** lists the ended ones on the right, and a past meeting lists the **Agreements made** in it.
+- *A project's or area's page*: when it has agreements of its own, its todo list ends with **◇ Agreements 2 ›**. Tap it to list them in that column; **‹ Todos** goes back.
 
 ## Reviewing and closing out
 
-- **Weekly Review**: the step **Agreements** lists those past their date, with someone you set inactive, of a closed loop, or in a project that is done or on hold: **Keep** (with a new valid-till date), **Change** or **End**. See [Weekly Review](review.md).
-- **Setting someone inactive**: after the open todos, their agreements: **Keep** or **End**, or **End all**. **Tending threads** in the Review lists a counterpart's active agreements.
+- [Weekly Review](review.md): the step **Agreements** lists those past their date, with someone you set inactive, of a closed loop, or in a project that is done or on hold: **Keep** (with a new valid-till date), **Change** or **End**.
+- *Setting someone inactive*: after the open todos, their agreements: **Keep** or **End**, or **End all**. [Tending threads](review.md#tending-threads) in the Review lists a counterpart's active agreements.
 - **Closing out a project**: the checklist warns "2 active agreements" with **End all**. It does not block archiving; agreements you keep stay in the archived file. See [Closing out a project](close-out.md).
-- **Since last time** on a meeting note lists the agreements made in the previous meeting.
+- [Since last time](note-setups.md#since-last-time) on a meeting note lists the agreements made in the previous meeting.
 
 ## In your files
 

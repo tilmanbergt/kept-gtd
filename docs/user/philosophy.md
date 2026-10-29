@@ -14,15 +14,15 @@ A screen full of tasks says, without words, that all of it needs doing soon. Kep
 
 Kept adds as little of its own as possible and uses the Supernote's own features instead:
 
-- **notes** for everything you write by hand: meeting notes, notes for a todo, project notes
-- **templates** from your MyStyle folder as backgrounds for those notes
-- **keywords** on note pages, so the Supernote's keyword search finds them
-- **links** from todos and meetings to their notes and files, opened with one tap
-- **the lasso** to turn handwriting into a todo or meeting
+- *notes* for everything you write by hand: meeting notes, notes for a todo, project notes
+- *templates* from your MyStyle folder as backgrounds for those notes
+- *keywords* on note pages, so the Supernote's keyword search finds them
+- *links* from todos and meetings to their notes and files, opened with one tap
+- *the lasso* to turn handwriting into a todo or meeting
 
 ## The whole life of a project
 
-A project in Kept has a clear path: you create it, give it a scope, work through its todos and meetings, mark it done, and then **close it out**. Closing out checks that nothing is left open, moves results to the area or to Resources, and can turn all its notes into one PDF with a table of contents - a record you can keep and read anywhere, also away from the Supernote. Then the folder moves into the Archive, sorted by year. See [Closing out a project](close-out.md).
+A project in Kept has a clear path: you create it, give it a scope, work through its todos and meetings, mark it done, and then *close it out*. Closing out checks that nothing is left open, moves results to the area or to Resources, and can turn all its notes into one PDF with a table of contents - a record you can keep and read anywhere, also away from the Supernote. Then the folder moves into the Archive, sorted by year. See [Closing out a project](close-out.md).
 
 ## Keeping your word clean
 
@@ -30,7 +30,7 @@ Kept is inspired by Werner Erhard's and Michael Jensen's work on integrity, in p
 
 For a task list, integrity is the most practical of the four: your word is whole when you either keep what you said you would do, or consciously renegotiate it. What breaks integrity is the silent slip - something that quietly stopped being true without you owning it.
 
-That is why Kept asks you to say clearly what is **next** ([Tags](tags.md#flow-tags-for-todos)), and to give your time to it on purpose: a [focus block](meetings.md#focus-blocks) in your schedule is a promise to yourself, and [Given time](week-and-month.md#given-time) on Week and Month shows honestly where your time went. A list of things you might get to is not your word about anything. A few clearly chosen next steps are.
+That is why Kept asks you to say clearly what is *next* ([Tags](tags.md#flow-tags-for-todos)), and to give your time to it on purpose: a [focus block](meetings.md#focus-blocks) in your schedule is a promise to yourself, and [Given time](week-and-month.md#given-time) on Week and Month shows honestly where your time went. A list of things you might get to is not your word about anything. A few clearly chosen next steps are.
 
 Changing a commitment - moving a due date, putting a project on hold, setting a thread inactive - is a real decision, not a typo fix. Kept makes these separate, visible actions.
 
@@ -38,7 +38,7 @@ Most of your word is given to someone: in a 1:1, a retro, a coaching session, a 
 
 ## Every entry is a choice
 
-There are no recurring meetings and no repeating todos, on purpose. Every meeting and every todo in Kept is there because you entered it, for that one occasion. A series that continues by itself stays on your list whether or not you still mean it - and then it is no longer your word. Entering each one keeps every item a conscious choice and a real commitment. Kept helps you enter things quickly (**New from this**, copying a calendar event, the -1 / Today / +1 / +7 date buttons), but it never enters them for you.
+There are no recurring meetings and no repeating todos, on purpose. Every meeting and every todo in Kept is there because you entered it, for that one occasion. A series that continues by itself stays on your list whether or not you still mean it - and then it is no longer your word. Entering each one keeps every item a conscious choice and a real commitment. Kept helps you enter things quickly ([New from this](meetings.md#the-meeting-row-and-its-card), copying a calendar event, the -1 / Today / +1 / +7 date buttons), but it never enters them for you.
 
 ## Room for rest
 

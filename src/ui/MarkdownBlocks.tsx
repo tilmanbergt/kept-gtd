@@ -4,7 +4,8 @@
  * Used by Settings → About's "What's new" and the in-app Help.
  *
  * A link to another help page (domain/markdownBlocks.ts's `link`) is an
- * underlined nested Text that calls `onLink`; without `onLink` (What's new)
+ * bold, underlined nested Text that calls `onLink`, so it stands out from bold
+ * labels; without `onLink` (What's new)
  * it is plain text (docs/dev/history/technical-design-easy-start.md §2.3).
  * The underline changes no metrics, so the heights below hold for links too.
  *
@@ -61,7 +62,7 @@ function Spans({spans, textColor, onLink}: {spans: InlineSpan[]; textColor: stri
         return (
           <Text
             key={i}
-            style={[span.bold && styles.bold, span.code && styles.code, link && styles.link, {color: textColor}]}
+            style={[span.bold && styles.bold, span.italic && styles.italic, span.code && styles.code, link && styles.link, {color: textColor}]}
             onPress={link ? () => onLink!(link) : undefined}>
             {span.text}
           </Text>
@@ -176,7 +177,8 @@ const styles = StyleSheet.create({
   },
   itemText: {flex: 1},
   bold: {fontWeight: '700'},
-  link: {textDecorationLine: 'underline'},
+  italic: {fontStyle: 'italic'},
+  link: {fontWeight: '700', textDecorationLine: 'underline'},
   code: {fontFamily: 'monospace'},
   codeBox: {borderLeftWidth: 2, paddingHorizontal: CODE_PAD, paddingVertical: CODE_PAD},
   codeText: {fontFamily: 'monospace', fontSize: FONT.small, lineHeight: CODE_LINE},

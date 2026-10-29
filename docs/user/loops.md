@@ -1,6 +1,6 @@
 # Loops
 
-A **loop** is a todo that needed more than one step: a team workshop with a room to book, invites and an agenda; a book to read; a trip; a new e-bike that first needs a few offers. A loop is a small project that lives inside an Area or a Project, without a folder of its own. Its todos stay on the Area's page, and the loop keeps them together until you close it.
+A *loop* is a todo that needed more than one step: a team workshop with a room to book, invites and an agenda; a book to read; a trip; a new e-bike that first needs a few offers. A loop is a small project that lives inside an Area or a Project, without a folder of its own. Its todos stay on the Area's page, and the loop keeps them together until you close it.
 
 Threads you tend, loops you close: a thread (see [Threads](threads.md)) is an ongoing relationship, a loop has an end.
 
@@ -13,10 +13,10 @@ A loop is named by a nested tag, `#<kind>/<name>`, for example `#workshop/offsit
 
 ## Starting a loop
 
-Type only the loop's tag into [Quick Add](quick-add.md), for example `#workshop/offsite`. The button turns into **+ Add loop**, and the date field becomes the loop's **main date**: the day it is all about, like the workshop day. A file you attach becomes the loop's linked file. After the tap, the status line says the loop has started.
+Type only the loop's tag into [Quick Add](quick-add.md), for example `#workshop/offsite`. The button turns into **+ Add loop**, and the date field becomes the loop's *main date*: the day it is all about, like the workshop day. A file you attach becomes the loop's linked file. After the tap, the status line says the loop has started.
 
 - `#next` doesn't change this: a todo that is only a loop tag is the loop.
-- With `#someday` or `#maybe`, it stays a todo: a **loop idea**: a loop tag together with `#someday`. When you take someday or maybe off - in Quick Add or in the [Weekly Review](review.md#open-loops) - it becomes the loop.
+- With `#someday` or `#maybe`, it stays a todo: a *loop idea*: a loop tag together with `#someday`. When you take someday or maybe off - in Quick Add or in the [Weekly Review](review.md#open-loops) - it becomes the loop.
 - A todo with words and a loop tag, like `Book the workshop room #workshop/offsite`, is a todo of that loop.
 - A todo you already have can become a loop: edit it and replace its text with the loop's tag. **Save** turns into **Make loop**; its due date becomes the main date, and its own note and linked file come along.
 - In the Inbox, a loop tag on its own stays a todo; it becomes the loop when you file it into an Area or Project.
@@ -36,8 +36,8 @@ On an Area's page, the **Projects** tab lists the loops after the projects; a Pr
 
 Tap a loop row, or a loop tag in any todo or meeting of its Area or Project, to see everything of the loop:
 
-- The header: the loop's name and kind, where it lives, and its main date with the days to go. **File ›** opens the linked file (**Link file** while it has none), **Edit** loads the loop into Quick Add, **Engage ›** opens [Engage](engage.md) for the loop.
-- **Ahead**: the loop's next meetings, then its open todos - first the ones agreed in its meetings (also one that is still running), then the ones waiting for someone, then the rest. Someday and Maybe todos are only counted, in a last row such as **1 someday ›**, which opens the Weekly Review's step **Someday / Maybe** with just these todos. **+ Next workshop** (the loop's kind) fills Quick Add with the next meeting, copied from the last one.
+- The header: the loop's name and kind, where it lives, and its main date with the days to go. **File ›** opens the linked file (**Link file** while it has none), **Edit** loads the loop into Quick Add, [Engage ›](engage.md) opens [Engage](engage.md) for the loop.
+- **Ahead**: the loop's next meetings, then its open todos - first the ones agreed in its meetings (also one that is still running), then the ones waiting for someone, then the rest. Someday and Maybe todos are only counted, in a last row such as **1 someday ›**, which opens the Weekly Review's step [Someday / Maybe](review.md#someday--maybe) with just these todos. **+ Next workshop** (the loop's kind) fills Quick Add with the next meeting, copied from the last one.
 - **Looking back**: its past meetings, each with what was agreed in it, and what was done since the last one. A past meeting also offers **Reflect ›** for its [Reflection page](meetings.md).
 - Quick Add on the right adds to the loop: a new todo, meeting or agreement gets the loop's tag on its own and goes to the loop's Area or Project.
 - **Agreements**: the loop's active agreements show in **Ahead** after the waiting todos; ended ones are counted in **Looking back**, see [Agreements](agreements.md).
@@ -70,7 +70,7 @@ A loop ends as **Done** (it reached its end) or **Dropped** (it stops here). **C
 
 ## In the Weekly Review
 
-The step **Open loops** lists the loops that need a look, per area and project: those without a next action and nothing planned, and those past their main date. See [Weekly Review](review.md).
+The step [Open loops](review.md#open-loops) lists the loops that need a look, per area and project: those without a next action and nothing planned, and those past their main date.
 
 ## In your files
 

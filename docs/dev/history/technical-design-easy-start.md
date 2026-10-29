@@ -290,3 +290,11 @@ built); demo space → `foundation`; setup assistant → `settings`; Device tab,
     overviews, Engage. The Review steps and Gmail don't show it. The launch file is read again after
     every reopen (`noteLaunchChanged` from App's `reorient`).
   - **The Review's Inbox step** also got the Device tab and This-file rows (L1: "in the Inbox").
+- **Help typography (asked for after S4)**: links are bold and underlined, so they stand out from the
+  bold labels. The markdown subset gains `*italic*` (`domain/markdownBlocks.ts`; a `*` followed by a
+  space stays text). In `docs/user` every bold text was looked at: labels as the app shows them stay
+  bold; a label or term with its own section elsewhere became a link to it on its first mention per page
+  (Create Project → "Creating one", Run Integrity Check → Settings "Advanced", Settings → Folders …,
+  dropping a "see …" to the same page right after it); terms the page explains became italics; a tag
+  became `code`. The rule is in `docs/dev/README.md` "Writing user docs"; `scripts/test-userdocs.mjs`
+  also fails when a page lands in two groups of the help's list.

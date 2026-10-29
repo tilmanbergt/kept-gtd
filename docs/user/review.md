@@ -19,7 +19,7 @@ Tap a step to open it. Inside a step:
 - **Tending threads**: the people, teams and series you work with (counterparts, see [Threads](threads.md)), per area or project. See below.
 - **Agreements**: agreements that need a decision - past their date, with someone you set inactive, of a closed loop, or in a project that is done or on hold. Only shown when there is one. See below.
 - **Gmail inbox**: only with the experimental Gmail integration, see [Features and integrations](features.md)
-- **Inbox to zero**: file or finish everything in the Inbox - tap an item for its card, where the arrow next to **Inbox** moves it (see [Quick Add](quick-add.md)). Open lasso marks count too; the card **n marks to process** opens them, see [Lasso](lasso.md)
+- **Inbox to zero**: file or finish everything in the Inbox - tap an item for its card, where the arrow next to [Inbox](quick-add.md#the-inbox) moves it. Open lasso marks count too; the card **n marks to process** opens them, see [Lasso](lasso.md)
 - **Stalled projects**: active projects without a next action: no open `#next` todo ([Tags](tags.md#flow-tags-for-todos)) and nothing you wait for. Planned todos (no flow state), Someday and Maybe don't count. The step lists them - the plan first - and **→ Next** makes one the next action with one tap.
 - **Open loops**: your loops (see [Loops](loops.md)), per area or project. See below.
 - **Done awaiting review**: projects marked Done - close them out or archive them
@@ -40,7 +40,7 @@ On the left:
 
 Each row has two lines: the counterpart, then `last 30.9. · next 14.10.` and what is open (`w/f 18 d`); `nothing planned` when no meeting is set up for the next 14 days. One-off counterparts (only `#wf/name` or `#owe/name`) show `w/f only`, `owe only` or `w/f · owe only` instead of meeting dates.
 
-Tap a counterpart to see it on the right: Quick Add, then **Tend** and **Not** for a new one, **Open overview ›** and **Set inactive** for an active one, its next meetings (or **+ Next sparring**, which puts the next meeting into Quick Add), what you owe, wait for and should raise, its active agreements, and its last three meetings. **Open overview ›** opens its thread overview over the Review; **‹ Review** brings you back to the step as you left it. **Set inactive** first goes through its open todos (Done, Cancel or Keep each one) and its agreements (Keep or End each one, or **End all**), see [Projects and Areas](projects-and-areas.md).
+Tap a counterpart to see it on the right: Quick Add, then **Tend** and **Not** for a new one, **Open overview ›** and [Set inactive](threads.md#tending-counterparts) for an active one, its next meetings (or **+ Next sparring**, which puts the next meeting into Quick Add), what you owe, wait for and should raise, its active agreements, and its last three meetings. **Open overview ›** opens its thread overview over the Review; **‹ Review** brings you back to the step as you left it. **Set inactive** first goes through its open todos (Done, Cancel or Keep each one) and its agreements (Keep or End each one, or **End all**), see [Projects and Areas](projects-and-areas.md).
 
 The recap counts counterparts confirmed, set inactive and next meetings added.
 
@@ -63,7 +63,7 @@ Rows you decided on stay listed with a checkmark. The step only shows in the ove
 
 ## Someday / Maybe
 
-Someday and Maybe todos stay out of the way during the week: the thread and loop overviews and [Engage](engage.md) only count them. This step is where you look at them again. On the left they are grouped by project or area; tap one to see it on the right with **#next** (work on it soon), **To plan** (back into the plan, without Someday or Maybe), **Done** and **Cancel**.
+Someday and Maybe todos stay out of the way during the week: the thread and loop overviews and [Engage](engage.md) only count them. This step is where you look at them again. On the left they are grouped by project or area; tap one to see it on the right with `#next` (work on it soon), **To plan** (back into the plan, without Someday or Maybe), **Done** and **Cancel**.
 
 Opened from an overview's **n someday ›** or from Engage's **Also here**, the step shows "Only #sparring/jordan · Show all" (the name of where you came from) and lists just those todos; **Show all** lists every one. Leaving the step ends the filter. The recap counts the todos made `#next`.
 
