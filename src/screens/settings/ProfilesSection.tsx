@@ -14,7 +14,7 @@ import {demoSpaceCreatedText} from '../../domain/fileChangeText';
 import {createDemoSpace} from '../../storage/demoSpace';
 import {ensureDefaultProfileFile, listProfiles, ProfileInfo, saveActiveProfile} from '../../storage/profiles';
 import {getSettingsUnreadable, subscribeSettingsUnreadable} from '../../storage/settingsUnreadable';
-import {displayPath, PROFILES_FOLDER_PATH} from '../../supernote/fileSystem';
+import {displayPath, PROFILES_FOLDER_PATH} from '../../supernote/devicePaths';
 import PillButton from '../../ui/PillButton';
 import {useStatus} from '../../ui/status/StatusProvider';
 import {FONT, SPACING} from '../../ui/theme';

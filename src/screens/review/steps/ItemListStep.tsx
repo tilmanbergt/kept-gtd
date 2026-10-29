@@ -6,7 +6,7 @@ import {archiveDoneText, emptyFolderConfirmNote} from '../../../domain/fileChang
 import {findCachedItem} from '../../../storage/dataCache';
 import {ReviewAggregate, ReviewItemRef, ReviewProjectEntry, ReviewShelvedTaskEntry} from '../../../storage/reviewAggregate';
 import {SettableStatus, setItemStatus} from '../../../storage/statusControl';
-import {displayPath} from '../../../supernote/fileSystem';
+import {displayPath} from '../../../supernote/devicePaths';
 import {log} from '../../../utils/log';
 import {requestEinkRefresh} from '../../../utils/screenRefresh';
 import {COLUMN_WIDTH_PX, itemEntryHeight} from '../../../ui/itemEntryRow';

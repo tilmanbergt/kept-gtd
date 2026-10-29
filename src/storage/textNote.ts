@@ -12,7 +12,7 @@
  */
 import {DEFAULT_PIECE_FONT_SIZE, NOTE_PAGE_HEIGHT_PX, NOTE_PAGE_WIDTH_PX} from '../domain/pageLayout';
 import {TextPage} from '../domain/textPagination';
-import {createNote, insertElements, insertNotePage} from '../supernote/fileSystem';
+import {createNote, insertElements, insertNotePage} from '../supernote/noteFileApi';
 import {buildTextboxElement} from '../supernote/noteElements';
 import {log} from '../utils/log';
 

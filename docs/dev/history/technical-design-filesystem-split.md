@@ -229,3 +229,25 @@ body; a factory that spreads `jest.requireActual` counts only the names it overr
   forgotten on a throw) and getNoteSystemTemplates (no response envelope) stay hand-written; createNote,
   openPath and getCurrentNotePath use `SdkResponse<T>` instead of their inline types. The R0 tests pass
   with no assertion changed.
+
+### R3: importers and mocks
+
+- A throwaway codemod (TypeScript's parser, not committed) rewrote the named imports of
+  `supernote/fileSystem`, `supernote/currentPage` and `storage/deviceCheck`'s `INTERNAL_STORAGE` to the
+  owning modules, and split every `jest.mock('…/supernote/fileSystem')` factory by owner: a factory that
+  spread `jest.requireActual('…/fileSystem')` spreads the owning module's `requireActual` in each part;
+  a full factory keeps exactly the keys it had. 47 source files and 38 test files changed; 52 new
+  `jest.mock` factories name a split module. supernote/currentPage.ts is deleted; deviceCheck.ts no
+  longer re-exports `INTERNAL_STORAGE`. Three test files that used `import * as fs` were adjusted by
+  hand: the R0 test builds `fs` from the three modules (no assertion changed), loopNotes and
+  noteCreationPlan read `insertKeyWord` from noteFileApi.
+- **Bypassed mocks**: the 31 test files with a full fileSystem factory were run with a trap that throws
+  when a split module loads for real. Six had relied on the full factory to keep note and host calls out
+  (their names were simply missing, so undefined): entryMove, agreementsWrite, homeNotebookRename,
+  captureScreen, itemsListHomeNotebooks and notebookTab now mock `noteFileApi`, `hostCall` and
+  `hostContext` (agreementsWrite also `diagnosticFiles`) with empty factories - the same state as
+  before. captureScreen's `hostContext` factory keeps `getCurrentPageNum` real, as the separate
+  currentPage.ts was. After that, no trapped module loads in those files.
+- **Re-export kept**: `subscribeFolderChanges` is still exported by fileSystem.ts, from fileNative.ts -
+  the listeners must sit with the native binding the lower modules share, and fileSystem.ts is where
+  callers look for folder events. No other re-export is left.

@@ -32,7 +32,12 @@ jest.mock('../../src/supernote/pluginPermissions', () => ({
 
 import {forgetPermissionGrants, logFileCallFailure} from '../../src/supernote/pluginPermissions';
 import {log, logError, logWarn} from '../../src/utils/log';
-import * as fs from '../../src/supernote/fileSystem';
+import * as fileSystem from '../../src/supernote/fileSystem';
+import * as hostContext from '../../src/supernote/hostContext';
+import * as noteFileApi from '../../src/supernote/noteFileApi';
+
+/** Every wrapped host call, wherever it lives. */
+const fs = {...fileSystem, ...noteFileApi, ...hostContext};
 
 const ok = <T>(result: T) => ({success: true, result});
 const fail = (message: string) => ({success: false, error: {code: 1, message}});
@@ -109,7 +114,7 @@ const CASES: Case[] = [
     failLog: {fn: 'logFileCallFailure', args: ['getElements: failed', P, 'MSG']}, record: 'getElements',
   },
   {
-    name: 'insertElements', api: 'PluginFileAPI', sdk: 'insertElements', run: () => fs.insertElements(P, 0, [{uuid: 'a'} as fs.Element]), permission: 'write',
+    name: 'insertElements', api: 'PluginFileAPI', sdk: 'insertElements', run: () => fs.insertElements(P, 0, [{uuid: 'a'} as noteFileApi.Element]), permission: 'write',
     fallback: 'Could not insert the elements.', good: true, returns: undefined, refused: false,
     startLine: ['insertElements: start', P, 'page=0', '1 elements'], doneLine: ['insertElements: done', P],
     failLog: {fn: 'logFileCallFailure', args: ['insertElements: failed', P, 'MSG']}, record: 'insertElements',

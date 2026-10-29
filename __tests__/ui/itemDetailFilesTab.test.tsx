@@ -34,6 +34,11 @@ jest.mock('../../src/storage/settingsStorage', () => {
   return {loadSettings: async () => stored, saveSettings: async () => undefined, patchSettings: async () => stored};
 });
 jest.mock('../../src/supernote/diagnosticFiles', () => ({appendDebugLogFile: async () => undefined, writePerfTraceFile: async () => undefined}));
+jest.mock('../../src/supernote/hostContext', () => ({
+  ...jest.requireActual('../../src/supernote/hostContext'),
+  getCurrentNotePath: async () => null,
+  rememberLaunchNotePath: () => undefined,
+}));
 jest.mock('../../src/supernote/fileSystem', () => {
   const files: Record<string, string> = {
     '/storage/emulated/0/Note/2 Areas/Home/area.txt': '---\nkind: area\nstatus: active\n---\n\n## Tasks\n\n## Meetings\n',
@@ -60,26 +65,24 @@ jest.mock('../../src/supernote/fileSystem', () => {
     '2 Areas': ['Home'],
   };
   return {
-    ...jest.requireActual('../../src/supernote/fileSystem'),
-    getCurrentNotePath: async () => null,
-    rememberLaunchNotePath: () => undefined,
-    setOpenPathObserver: () => undefined,
-    getPrivateTempDir: async () => '/tmp/gtdpara',
-    deleteTempTree: async () => undefined,
-    statFiles: async () => null,
-    fileExists: async (path: string) => path in files,
-    listFolderEntries: async (folder: string) => {
+  ...jest.requireActual('../../src/supernote/fileSystem'),
+  setOpenPathObserver: () => undefined,
+  getPrivateTempDir: async () => '/tmp/gtdpara',
+  deleteTempTree: async () => undefined,
+  statFiles: async () => null,
+  fileExists: async (path: string) => path in files,
+  listFolderEntries: async (folder: string) => {
       const names = folders[folder.split('/').pop() ?? ''] ?? [];
       return names.map(name => ({name, path: `${folder}/${name}`, isFolder: true}));
     },
-    readTextFile: async (path: string) => {
+  readTextFile: async (path: string) => {
       if (path in files) return files[path];
       throw new Error(`no file ${path}`);
     },
-    writeTextFile: async (path: string, text: string) => {
+  writeTextFile: async (path: string, text: string) => {
       files[path] = text;
     },
-  };
+};
 });
 
 import React from 'react';

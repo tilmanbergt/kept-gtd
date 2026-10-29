@@ -7,7 +7,8 @@
 import {listFolderEntries} from '../supernote/fileSystem';
 import {errorMessage} from '../utils/errorMessage';
 import {log, logWarn} from '../utils/log';
-import {INTERNAL_STORAGE, sdCardCandidates, STORAGE_ROOT} from './deviceCheck';
+import {INTERNAL_STORAGE} from '../supernote/devicePaths';
+import {sdCardCandidates, STORAGE_ROOT} from './deviceCheck';
 
 export interface DeviceRoots {
   internal: string;

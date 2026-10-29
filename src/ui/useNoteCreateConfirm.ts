@@ -11,7 +11,7 @@
 import {useCallback} from 'react';
 import {noteChoiceText} from '../domain/fileChangeText';
 import {NoteCreateConfirm, NoteCreationPlan} from '../domain/noteCreationPlan';
-import {displayPath} from '../supernote/fileSystem';
+import {displayPath} from '../supernote/devicePaths';
 import {useStatusChoice} from './useStatusChoice';
 
 export function useNoteCreateConfirm(name: string): NoteCreateConfirm {

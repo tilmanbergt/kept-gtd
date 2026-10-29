@@ -15,7 +15,8 @@ import {HOME_PAGE_KEYWORD, HomeNotebookYear, homeNotebookName, homeNotebookYears
 import {layoutFor, NoteSetupDefaults} from '../domain/noteSetups';
 import {todayIso} from '../domain/meetingTime';
 import {GtdParaSettings, resolvePaths} from '../domain/settings';
-import {fileExists, insertKeyWord, listFolderEntries, openPath, statFiles} from '../supernote/fileSystem';
+import {fileExists, listFolderEntries, openPath, statFiles} from '../supernote/fileSystem';
+import {insertKeyWord} from '../supernote/noteFileApi';
 import {errorMessage} from '../utils/errorMessage';
 import {log, logWarn} from '../utils/log';
 import {CachedItem} from './dataCache';

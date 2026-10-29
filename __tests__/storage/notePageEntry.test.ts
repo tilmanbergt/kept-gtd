@@ -2,7 +2,7 @@
 const mockKeywordCalls: Array<[string, number[]]> = [];
 let mockKeywords: Array<{page: number; keyword: string}> | Error = [];
 jest.mock('../../src/utils/log', () => ({log: jest.fn(), logWarn: jest.fn(), logError: jest.fn()}));
-jest.mock('../../src/supernote/fileSystem', () => ({
+jest.mock('../../src/supernote/noteFileApi', () => ({
   getKeyWords: async (path: string, pages: number[]) => {
     mockKeywordCalls.push([path, pages]);
     if (mockKeywords instanceof Error) throw mockKeywords;

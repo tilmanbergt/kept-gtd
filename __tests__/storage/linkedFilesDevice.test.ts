@@ -1,5 +1,13 @@
-jest.mock('../../src/supernote/fileSystem', () => ({listFolderEntries: jest.fn(), openPath: jest.fn(), getRememberedLaunchNotePath: jest.fn()}));
-jest.mock('../../src/supernote/currentPage', () => ({getCurrentPageNum: jest.fn()}));
+jest.mock('../../src/supernote/fileSystem', () => ({
+  listFolderEntries: jest.fn(),
+  openPath: jest.fn(),
+}));
+jest.mock('../../src/supernote/hostContext', () => ({
+  getRememberedLaunchNotePath: jest.fn(),
+}));
+jest.mock('../../src/supernote/hostContext', () => ({
+  getCurrentPageNum: jest.fn(),
+}));
 
 import {DEFAULT_SETTINGS, resolvePaths} from '../../src/domain/settings';
 import {linkRootPath, locateLinkedFile, pickedPath, toLinkedFile} from '../../src/storage/linkedFiles';

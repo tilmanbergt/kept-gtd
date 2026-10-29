@@ -5,7 +5,7 @@
  * storage/textNote.ts from the start; storage/meetingNoteContent.ts's two copies
  * are to be migrated later (Phase 3, behaviour-identical).
  */
-import {createElement, Element, ELEMENT_TYPE_TEXT, toRect} from './fileSystem';
+import {createElement, Element, ELEMENT_TYPE_TEXT, toRect} from './noteFileApi';
 
 export interface TextboxElementSpec {
   text: string;

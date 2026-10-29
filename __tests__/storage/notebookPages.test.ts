@@ -8,6 +8,8 @@ const mockGetElements = jest.fn(async (page: number, _path: string) =>
 );
 jest.mock('../../src/supernote/fileSystem', () => ({
   statFiles: async (paths: string[]) => paths.map(path => (mockMtime === null ? {path, exists: false, lastModified: 0, size: -1} : {path, exists: true, lastModified: mockMtime, size: 1})),
+}));
+jest.mock('../../src/supernote/noteFileApi', () => ({
   getElements: (page: number, path: string) => mockGetElements(page, path),
 }));
 const mockGetTitles = jest.fn(async (_path: string, _pages: number[]) => [

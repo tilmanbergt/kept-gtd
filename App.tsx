@@ -58,14 +58,8 @@ import {activeContext, EVERYTHING_LABEL} from './src/domain/contexts';
 import {useSettings} from './src/ui/useSettings';
 import {clearReturnRecord, getReturnRecord, recordPluginOpen} from './src/storage/returnRecord';
 import {loadSettings} from './src/storage/settingsStorage';
-import {
-  FolderEntry,
-  getCurrentNotePath,
-  rememberLaunchNotePath,
-  deleteTempTree,
-  getPrivateTempDir,
-  setOpenPathObserver,
-} from './src/supernote/fileSystem';
+import {FolderEntry, deleteTempTree, getPrivateTempDir, setOpenPathObserver} from './src/supernote/fileSystem';
+import {getCurrentNotePath, rememberLaunchNotePath} from './src/supernote/hostContext';
 import {appendDebugLogFile, writePerfTraceFile} from './src/supernote/diagnosticFiles';
 import {log, logError} from './src/utils/log';
 import {BUILD_INFO} from './src/generated/buildInfo';

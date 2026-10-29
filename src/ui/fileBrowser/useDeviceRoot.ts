@@ -7,7 +7,7 @@
 import {useEffect, useState} from 'react';
 import {deviceEntryVisible} from '../../domain/linkTargets';
 import {DeviceRoots, listDeviceRoots} from '../../storage/deviceRoots';
-import {INTERNAL_STORAGE} from '../../storage/deviceCheck';
+import {INTERNAL_STORAGE} from '../../supernote/devicePaths';
 import {FolderEntry} from '../../supernote/fileSystem';
 import type {FileBrowserRoot} from '../FileBrowserPane';
 

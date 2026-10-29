@@ -15,7 +15,7 @@ import {featuresOf} from '../domain/features';
 import {redactText} from '../domain/redact';
 import {BUILD_INFO} from '../generated/buildInfo';
 import {writeDebugBundleFile} from '../supernote/diagnosticFiles';
-import {getRememberedLaunchNotePath} from '../supernote/fileSystem';
+import {getRememberedLaunchNotePath} from '../supernote/hostContext';
 import {getRuntimeDiagnostics} from '../supernote/pluginRuntime';
 import {getRecentErrors, getRecentLogLines, isFileLoggingOn, LOG_FILE_NAME} from '../utils/logSink';
 import {collectPerfStats} from './perfStats';

@@ -1,6 +1,6 @@
 // docs/dev/history/technical-design-tending-threads.md §3.4, D11, D12, D14: provenance key, line and resolution.
 jest.mock('sn-plugin-lib', () => ({PluginManager: {}}));
-jest.mock('../../src/supernote/fileSystem', () => ({}));
+
 import {deriveMeetingFields, parseTasksSpan, serializeTaskLine} from '../../src/domain/markdown';
 import {buildTask} from '../../src/storage/itemMutations';
 import {__provenanceStatsForTests, applyProvenance, meetingKey, normalizeMeetingKey, provenanceLabel, resolveProvenance} from '../../src/domain/provenance';

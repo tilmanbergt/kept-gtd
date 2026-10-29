@@ -52,9 +52,12 @@ const AREAS = '/storage/emulated/0/Note/2 Areas';
 const mockFiles: Record<string, string> = {};
 const mockNote: {path: string | null} = {path: null};
 const mockOpenedNotes: Array<[string, number]> = [];
+jest.mock('../../src/supernote/hostContext', () => ({
+  ...jest.requireActual('../../src/supernote/hostContext'),
+  getCurrentNotePath: async () => mockNote.path,
+}));
 jest.mock('../../src/supernote/fileSystem', () => ({
   ...jest.requireActual('../../src/supernote/fileSystem'),
-  getCurrentNotePath: async () => mockNote.path,
   statFiles: async () => null,
   fileExists: async (path: string) => path in mockFiles,
   listFolderEntries: async (folder: string) =>

@@ -16,7 +16,8 @@
  */
 import {fitKeyword} from '../domain/keywordLength';
 import {GtdParaSettings} from '../domain/settings';
-import {createNote, insertKeyWord, listFolderEntries} from '../supernote/fileSystem';
+import {createNote, insertKeyWord} from '../supernote/noteFileApi';
+import {listFolderEntries} from '../supernote/fileSystem';
 import {getNoteTemplate, sanitizeFileNameComponent} from './noteLinks';
 import {log} from '../utils/log';
 

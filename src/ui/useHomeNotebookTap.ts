@@ -30,7 +30,8 @@ import {
 } from '../storage/homeNotebooks';
 import {findCachedItem} from '../storage/dataCache';
 import {loadSettings} from '../storage/settingsStorage';
-import {displayPath, fileExists} from '../supernote/fileSystem';
+import {displayPath} from '../supernote/devicePaths';
+import {fileExists} from '../supernote/fileSystem';
 import {errorMessage} from '../utils/errorMessage';
 import {log, logError} from '../utils/log';
 import {rememberItemName} from '../storage/homeNotebookRename';

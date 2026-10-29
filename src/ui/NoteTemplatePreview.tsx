@@ -38,7 +38,7 @@ import {
   pieceIsHeading,
   PieceType,
 } from '../domain/pageLayout';
-import {MYSTYLE_FOLDER} from '../supernote/fileSystem';
+import {MYSTYLE_FOLDER} from '../supernote/devicePaths';
 import {COLORS, FONT} from './theme';
 
 export const PIECE_TYPE_LABELS: Record<PieceType, string> = {

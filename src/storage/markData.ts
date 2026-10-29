@@ -10,13 +10,7 @@
  * (pending-icons.json): a busy note or error 105 must never block a save.
  */
 import {isMarkId, MarkDataFile, parseMarkDataFile} from '../domain/marks';
-import {
-  deletePrivateDataTree,
-  getPrivateDataDir,
-  listFolderEntries,
-  readTextFile,
-  writeTextFile,
-} from '../supernote/fileSystem';
+import {deletePrivateDataTree, getPrivateDataDir, listFolderEntries, readTextFile, writeTextFile} from '../supernote/fileSystem';
 import {log, logError, logWarn} from '../utils/log';
 import {errorMessage} from '../utils/errorMessage';
 

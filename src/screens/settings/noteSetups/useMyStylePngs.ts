@@ -4,7 +4,8 @@
  * all files).
  */
 import {useCallback, useEffect, useState} from 'react';
-import {listFolderEntries, MYSTYLE_FOLDER} from '../../../supernote/fileSystem';
+import {listFolderEntries} from '../../../supernote/fileSystem';
+import {MYSTYLE_FOLDER} from '../../../supernote/devicePaths';
 import {errorMessage} from '../../../utils/errorMessage';
 
 export interface MyStyleBackgrounds {

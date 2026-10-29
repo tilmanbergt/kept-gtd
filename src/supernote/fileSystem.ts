@@ -7,28 +7,7 @@ import {recordDebugLogEntry} from './hostCall';
 import {nativeFileModule, notifyFolderChanged, parentFolder} from './fileNative';
 import {SdkResponse} from './sdkElements';
 
-// The modules split off this file (docs/dev/history/technical-design-filesystem-split.md):
-// re-exported until every importer points at its own module.
-export {INTERNAL_STORAGE, MYSTYLE_FOLDER, GTDPARA_EXPORT_ROOT, DEBUG_LOG_FOLDER_PATH, PROFILES_FOLDER_PATH, PERF_LOG_FOLDER, displayPath} from './devicePaths';
-export {getCurrentNotePath, rememberLaunchNotePath, getRememberedLaunchNotePath, getRememberedColdStartNotePath} from './hostContext';
-export {recordDebugLogEntry} from './hostCall';
-export {
-  ELEMENT_TYPE_TEXT,
-  ELEMENT_TYPE_LINK,
-  toRect,
-  getNoteSystemTemplates,
-  createNote,
-  insertNotePage,
-  insertKeyWord,
-  getKeyWords,
-  deleteKeyWord,
-  getNoteTotalPageNum,
-  createElement,
-  getElements,
-  insertElements,
-  deleteElements,
-} from './noteFileApi';
-export type {NoteTemplate, KeyWord, Element, Rect, ElementTextBox, ElementLink} from './noteFileApi';
+// The folder-change listeners live with the native binding (fileNative.ts, internal); this is their public face.
 export {subscribeFolderChanges} from './fileNative';
 
 export interface FolderEntry {

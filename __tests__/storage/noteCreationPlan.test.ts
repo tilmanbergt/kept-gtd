@@ -16,24 +16,28 @@ jest.mock('../../src/supernote/fileSystem', () => {
       .map(f => ({name: f.slice(f.lastIndexOf('/') + 1), isFolder: false})),
   );
   return {
-    listFolderEntries,
-    fileExists: jest.fn(async (path: string) => mockFiles.has(path)),
-    createNote: jest.fn(async (path: string) => {
+  listFolderEntries,
+  fileExists: jest.fn(async (path: string) => mockFiles.has(path)),
+  ensureFolderExists: jest.fn(async () => undefined),
+  statFiles: jest.fn(async () => null),
+  openPath: jest.fn(async () => undefined),
+};
+});
+jest.mock('../../src/supernote/noteFileApi', () => ({
+  createNote: jest.fn(async (path: string) => {
       mockFiles.add(path);
     }),
-    ensureFolderExists: jest.fn(async () => undefined),
-    insertKeyWord: jest.fn(async () => undefined),
-    statFiles: jest.fn(async () => null),
-    openPath: jest.fn(async () => undefined),
-    displayPath: (p: string) => p.replace(/^\/storage\/emulated\/0\//, ''),
-    getElements: jest.fn(async () => []),
-    insertElements: jest.fn(async () => undefined),
-    deleteElements: jest.fn(async () => undefined),
-    createElement: jest.fn(async () => ({})),
-    ELEMENT_TYPE_LINK: 600,
-    MYSTYLE_FOLDER: '/storage/emulated/0/MyStyle',
-  };
-});
+  insertKeyWord: jest.fn(async () => undefined),
+  getElements: jest.fn(async () => []),
+  insertElements: jest.fn(async () => undefined),
+  deleteElements: jest.fn(async () => undefined),
+  createElement: jest.fn(async () => ({})),
+  ELEMENT_TYPE_LINK: 600,
+}));
+jest.mock('../../src/supernote/devicePaths', () => ({
+  displayPath: (p: string) => p.replace(/^\/storage\/emulated\/0\//, ''),
+  MYSTYLE_FOLDER: '/storage/emulated/0/MyStyle',
+}));
 
 jest.mock('../../src/storage/sharedNotePages', () => ({
   ensureSharedNoteFile: jest.fn(async (folder: string, name: string) => {
@@ -66,6 +70,7 @@ import {deriveMeetingFields, deriveTaskFields} from '../../src/domain/markdown';
 import {openOrCreateMeetingNote, openOrCreateTodoNote} from '../../src/storage/meetingNoteContent';
 import * as sharedPages from '../../src/storage/sharedNotePages';
 import * as fs from '../../src/supernote/fileSystem';
+import * as notes from '../../src/supernote/noteFileApi';
 
 const AREA = '/storage/emulated/0/Note/2 Areas/Coaching';
 
@@ -186,7 +191,7 @@ describe('first-time note in the Default notebook (docs/dev/history/technical-de
     const file = `${AREA}/Coaching ${new Date().getFullYear()}.note`;
     expect(r.plans[0]).toMatchObject({kind: 'new-shared-file', setupName: null});
     expect(result.outcome?.absolutePath).toBe(file);
-    expect(fs.insertKeyWord).toHaveBeenCalledWith(file, 0, 'home');
+    expect(notes.insertKeyWord).toHaveBeenCalledWith(file, 0, 'home');
     expect(sharedPages.insertItemPage).toHaveBeenCalledWith(file, expect.any(String), expect.any(String), expect.any(String));
   });
 
@@ -194,12 +199,12 @@ describe('first-time note in the Default notebook (docs/dev/history/technical-de
     const settings = {...withDefaultNotebook(), noteSetups: [coachingRule({notebook: {name: '{name} {year}', folder: ''}})]};
     await openOrCreateMeetingNote(meeting('Session #coaching/lena'), AREA, settings, null, {confirmCreate: recorder(true).confirm});
     // The meeting's own date decides the year.
-    expect(fs.insertKeyWord).toHaveBeenCalledWith(`${AREA}/Coaching 2026.note`, 0, 'home');
+    expect(notes.insertKeyWord).toHaveBeenCalledWith(`${AREA}/Coaching 2026.note`, 0, 'home');
   });
 
   it('a setup’s own notebook gets no Home page', async () => {
     await openOrCreateMeetingNote(meeting('Session #coaching/lena'), AREA, withDefaultNotebook(), null, {confirmCreate: recorder(true).confirm});
-    expect(fs.insertKeyWord).not.toHaveBeenCalledWith(expect.any(String), 0, 'home');
+    expect(notes.insertKeyWord).not.toHaveBeenCalledWith(expect.any(String), 0, 'home');
   });
 });
 
@@ -222,7 +227,7 @@ describe('keywords on own notes (cleanup 0.5 S7)', () => {
     });
     const file = `${AREA}/Todos/Call Marco marco team jf.note`;
     expect(mockFiles.has(file)).toBe(true);
-    expect((fs.insertKeyWord as jest.Mock).mock.calls).toEqual([
+    expect((notes.insertKeyWord as jest.Mock).mock.calls).toEqual([
       [file, 0, 'marco'],
       [file, 0, 'team/jf'],
     ]);
@@ -231,17 +236,17 @@ describe('keywords on own notes (cleanup 0.5 S7)', () => {
   it('a note without free tags gets no keyword', async () => {
     const r = recorder(true);
     await openOrCreateTodoNote(task('Call #next'), AREA, settingsWith([]), null, {confirmCreate: r.confirm});
-    expect(fs.insertKeyWord).not.toHaveBeenCalled();
+    expect(notes.insertKeyWord).not.toHaveBeenCalled();
   });
 
   it('a recreated own note gets its keywords again', async () => {
     const r = recorder(true);
     await openOrCreateTodoNote(task('Call #marco', 'Todos/Call marco.note'), AREA, settingsWith([]), null, {confirmCreate: r.confirm});
-    expect(fs.insertKeyWord).toHaveBeenCalledWith(`${AREA}/Todos/Call marco.note`, 0, 'marco');
+    expect(notes.insertKeyWord).toHaveBeenCalledWith(`${AREA}/Todos/Call marco.note`, 0, 'marco');
   });
 
   it('a failing keyword does not fail the note', async () => {
-    (fs.insertKeyWord as jest.Mock).mockRejectedValueOnce(new Error('no permission'));
+    (notes.insertKeyWord as jest.Mock).mockRejectedValueOnce(new Error('no permission'));
     const r = recorder(true);
     const result = await openOrCreateMeetingNote(meeting('Kickoff #acme'), AREA, settingsWith([]), null, {confirmCreate: r.confirm});
     expect(result.meeting.notePath).toBe('Meetings/2026-10-02 - Kickoff acme.note');
@@ -252,7 +257,7 @@ describe('keywords on own notes (cleanup 0.5 S7)', () => {
     await openOrCreateMeetingNote(meeting('Session #coaching/lena'), AREA, settingsWith([coachingRule()]), null, {
       confirmCreate: r.confirm,
     });
-    expect(fs.insertKeyWord).not.toHaveBeenCalled();
+    expect(notes.insertKeyWord).not.toHaveBeenCalled();
   });
 });
 

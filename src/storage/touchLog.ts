@@ -3,7 +3,8 @@
  * next to the Integrity Check report in EXPORT/kept-gtd/debug. Written only
  * when the user taps "Save log". Positions and classes only, no content.
  */
-import {DEBUG_LOG_FOLDER_PATH, writeTextFile} from '../supernote/fileSystem';
+import {DEBUG_LOG_FOLDER_PATH} from '../supernote/devicePaths';
+import {writeTextFile} from '../supernote/fileSystem';
 
 /** Writes `csv` and returns the file name (timestamped, so runs never collide). */
 export async function saveTouchLog(csv: string): Promise<string> {

@@ -30,15 +30,19 @@ const mockEnsureShared = jest.fn(async (folder: string, fileName: string) => {
 const mockInsertKeyWord = jest.fn(async (_p: string, _page: number, _keyword: string) => undefined);
 const mockPopulateHome = jest.fn(async (_p: string, _item: unknown) => undefined);
 const mockStatFiles = jest.fn(async (paths: string[]) => paths.map(path => ({path, exists: mockFiles.has(path), lastModified: 0, size: 0})));
-jest.mock('../../src/supernote/fileSystem', () => ({
+jest.mock('../../src/supernote/devicePaths', () => ({
   displayPath: (p: string) => p.replace(/^\/storage\/emulated\/0\//, ''),
+}));
+jest.mock('../../src/supernote/fileSystem', () => ({
   statFiles: (paths: string[]) => mockStatFiles(paths),
   fileExists: async (p: string) => mockFiles.has(p),
   openPath: (p: string, page?: number) => mockOpenPath(p, page),
-  insertKeyWord: (p: string, page: number, keyword: string) => mockInsertKeyWord(p, page, keyword),
   subscribeFolderChanges: () => () => undefined,
   listFolderEntries: async (folder: string) =>
     [...mockFiles].filter(f => f.startsWith(`${folder}/`) && !f.slice(folder.length + 1).includes('/')).map(f => ({name: f.slice(folder.length + 1), path: f, isFolder: false})),
+}));
+jest.mock('../../src/supernote/noteFileApi', () => ({
+  insertKeyWord: (p: string, page: number, keyword: string) => mockInsertKeyWord(p, page, keyword),
 }));
 jest.mock('../../src/storage/sharedNotePages', () => ({ensureSharedNoteFile: (folder: string, fileName: string) => mockEnsureShared(folder, fileName)}));
 const mockRemember = jest.fn(async (_itemPath: string) => undefined);

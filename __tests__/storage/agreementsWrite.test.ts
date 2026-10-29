@@ -13,6 +13,11 @@ jest.mock('@react-native-async-storage/async-storage', () =>
 jest.mock('sn-plugin-lib', () => ({PluginCommAPI: {}, PluginFileAPI: {}, PluginManager: {}, NativePluginManager: {}, PluginNoteAPI: {}}));
 jest.mock('../../src/utils/log', () => ({log: jest.fn(), logWarn: jest.fn(), logError: jest.fn()}));
 jest.mock('../../src/domain/meetingTime', () => ({...jest.requireActual('../../src/domain/meetingTime'), todayIso: () => '2026-10-24'}));
+// The fileSystem mock below replaced the whole module, the note and host calls included; they live in their own modules now.
+jest.mock('../../src/supernote/noteFileApi', () => ({}));
+jest.mock('../../src/supernote/diagnosticFiles', () => ({}));
+jest.mock('../../src/supernote/hostCall', () => ({}));
+jest.mock('../../src/supernote/hostContext', () => ({}));
 jest.mock('../../src/supernote/fileSystem', () => ({
   readTextFile: async (path: string) => {
     const written = [...mockWrites].reverse().find(([p]) => p === path);

@@ -17,7 +17,7 @@ import {findCachedItem, setCachedInbox} from '../../../storage/dataCache';
 import {InboxFilingTarget, resolveFilingPick} from '../../../storage/inboxFiling';
 import {itemTarget, moveMeeting, moveTask} from '../../../storage/entryMove';
 import {useEntryMoveUi} from '../../../ui/useEntryMoveUi';
-import {INTERNAL_STORAGE} from '../../../storage/deviceCheck';
+import {INTERNAL_STORAGE} from '../../../supernote/devicePaths';
 import {linkedFileStatus, locateLinkedFile, openLinkedFile, pickedPath, toLinkedFile} from '../../../storage/linkedFiles';
 import {openOrCreateMeetingNote, openOrCreateTodoNote} from '../../../storage/meetingNoteContent';
 import {useNoteCreateConfirm} from '../../../ui/useNoteCreateConfirm';

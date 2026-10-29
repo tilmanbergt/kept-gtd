@@ -31,21 +31,9 @@ import {
   pieceWidthPx,
 } from '../domain/pageLayout';
 import {estimatePieceTextHeight} from '../domain/meetingNoteBlock';
-import {
-  createElement,
-  createNote,
-  deleteKeyWord,
-  ELEMENT_TYPE_TEXT,
-  ensureFolderExists,
-  getKeyWords,
-  getNoteTotalPageNum,
-  insertElements,
-  insertKeyWord,
-  insertNotePage,
-  listFolderEntries,
-  recordDebugLogEntry,
-  toRect,
-} from '../supernote/fileSystem';
+import {createElement, createNote, deleteKeyWord, ELEMENT_TYPE_TEXT, getKeyWords, getNoteTotalPageNum, insertElements, insertKeyWord, insertNotePage, toRect} from '../supernote/noteFileApi';
+import {ensureFolderExists, listFolderEntries} from '../supernote/fileSystem';
+import {recordDebugLogEntry} from '../supernote/hostCall';
 import {log, logError} from '../utils/log';
 import {errorMessage} from '../utils/errorMessage';
 

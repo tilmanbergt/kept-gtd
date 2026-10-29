@@ -16,7 +16,7 @@ import {TITLE_ELEMENT_TYPE} from '../domain/noteFindability';
 import {NoteHeadingStyle} from '../domain/settings';
 import {PluginFileAPI} from 'sn-plugin-lib';
 import {log, logError} from '../utils/log';
-import {createElement, Element, Rect} from './fileSystem';
+import {createElement, Element, Rect} from './noteFileApi';
 import {ensureFileReadPermission} from './pluginPermissions';
 
 export const ELEMENT_TYPE_TITLE = TITLE_ELEMENT_TYPE;

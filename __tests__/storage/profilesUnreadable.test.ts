@@ -5,8 +5,10 @@ jest.mock('@react-native-async-storage/async-storage', () =>
 );
 jest.mock('../../src/utils/log', () => ({log: jest.fn(), logWarn: jest.fn(), logError: jest.fn()}));
 const mockFiles = new Map<string, string>();
-jest.mock('../../src/supernote/fileSystem', () => ({
+jest.mock('../../src/supernote/devicePaths', () => ({
   PROFILES_FOLDER_PATH: '/EXPORT/kept-gtd/profiles',
+}));
+jest.mock('../../src/supernote/fileSystem', () => ({
   ensureFolderExists: async () => undefined,
   listFolderEntries: async () => [],
   readTextFile: async (path: string) => mockFiles.get(path) ?? null,

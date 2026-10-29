@@ -7,8 +7,7 @@
  */
 import {useEffect, useState, useSyncExternalStore} from 'react';
 import {thisFileTargets, ThisFileTargets} from '../domain/linkTargets';
-import {getCurrentPageNum} from '../supernote/currentPage';
-import {getRememberedLaunchNotePath} from '../supernote/fileSystem';
+import {getCurrentPageNum, getRememberedLaunchNotePath} from '../supernote/hostContext';
 
 let launchTick = 0;
 const listeners = new Set<() => void>();

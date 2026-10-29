@@ -29,6 +29,11 @@ jest.mock('../../src/storage/settingsStorage', () => {
   return {loadSettings: async () => stored, saveSettings: async () => undefined, patchSettings: async () => stored};
 });
 jest.mock('../../src/supernote/diagnosticFiles', () => ({appendDebugLogFile: async () => undefined, writePerfTraceFile: async () => undefined}));
+jest.mock('../../src/supernote/hostContext', () => ({
+  ...jest.requireActual('../../src/supernote/hostContext'),
+  getCurrentNotePath: async () => null,
+  rememberLaunchNotePath: () => undefined,
+}));
 jest.mock('../../src/supernote/fileSystem', () => {
   const now = new Date();
   const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
@@ -52,22 +57,20 @@ jest.mock('../../src/supernote/fileSystem', () => {
     '/storage/emulated/0/Note/2 Areas/0 Inbox/Inbox.txt': '---\nkind: inbox\n---\n\n## Tasks\n\n## Meetings\n',
   };
   return {
-    ...jest.requireActual('../../src/supernote/fileSystem'),
-    getCurrentNotePath: async () => null,
-    rememberLaunchNotePath: () => undefined,
-    setOpenPathObserver: () => undefined,
-    getPrivateTempDir: async () => '/tmp/gtdpara',
-    deleteTempTree: async () => undefined,
-    statFiles: async () => null,
-    fileExists: async (path: string) => path in files,
-    listFolderEntries: async (folder: string) =>
+  ...jest.requireActual('../../src/supernote/fileSystem'),
+  setOpenPathObserver: () => undefined,
+  getPrivateTempDir: async () => '/tmp/gtdpara',
+  deleteTempTree: async () => undefined,
+  statFiles: async () => null,
+  fileExists: async (path: string) => path in files,
+  listFolderEntries: async (folder: string) =>
       folder.endsWith('2 Areas') ? [{name: 'Coaching', path: `${folder}/Coaching`, isFolder: true}] : [],
-    readTextFile: async (path: string) => {
+  readTextFile: async (path: string) => {
       if (path in files) return files[path];
       throw new Error(`no file ${path}`);
     },
-    writeTextFile: async () => undefined,
-  };
+  writeTextFile: async () => undefined,
+};
 });
 
 import React from 'react';

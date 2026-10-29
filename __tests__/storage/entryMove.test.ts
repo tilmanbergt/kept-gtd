@@ -17,8 +17,13 @@ jest.mock('../../src/supernote/fileSystem', () => ({
     mockExisting.add(to);
     mockMoves.push([from, to]);
   },
+}));
+jest.mock('../../src/supernote/devicePaths', () => ({
   displayPath: (path: string) => path,
 }));
+// The fileSystem factory above replaced the whole module, note and host calls included; they live in their own modules now.
+jest.mock('../../src/supernote/noteFileApi', () => ({}));
+jest.mock('../../src/supernote/hostContext', () => ({}));
 
 // An in-memory cache and file layer: each "file" is the entry list saved for a folder.
 type Entries = {tasks: Task[]; meetings: Meeting[]};

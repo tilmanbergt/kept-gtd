@@ -27,7 +27,7 @@
 import {ResolvedParaPaths} from '../domain/settings';
 import {parsePageAnchor, stripPageAnchor} from '../domain/sharedNotePages';
 import {listFolderEntries, openPath} from '../supernote/fileSystem';
-import {INTERNAL_STORAGE} from './deviceCheck';
+import {INTERNAL_STORAGE} from '../supernote/devicePaths';
 
 /**
  * Turns a stored linkedFile value into an absolute path (without any page).

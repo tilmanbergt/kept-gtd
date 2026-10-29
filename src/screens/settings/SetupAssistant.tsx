@@ -24,7 +24,7 @@ import {
 import {GtdParaSettings} from '../../domain/settings';
 import {createDemoSpace} from '../../storage/demoSpace';
 import {BaseScan, finishSetup, scanBaseFolder, skipSetup} from '../../storage/setupAssistant';
-import {displayPath} from '../../supernote/fileSystem';
+import {displayPath} from '../../supernote/devicePaths';
 import {requestHelp} from '../../ui/helpStore';
 import PillButton from '../../ui/PillButton';
 import {useStatus, useStatusApi} from '../../ui/status/StatusProvider';

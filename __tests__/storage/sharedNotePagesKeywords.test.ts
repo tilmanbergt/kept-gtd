@@ -9,7 +9,7 @@ jest.mock('@react-native-async-storage/async-storage', () =>
   require('@react-native-async-storage/async-storage/jest/async-storage-mock'),
 );
 jest.mock('sn-plugin-lib', () => ({PluginCommAPI: {recycleElement: jest.fn()}}));
-jest.mock('../../src/supernote/fileSystem', () => ({
+jest.mock('../../src/supernote/noteFileApi', () => ({
   getNoteTotalPageNum: jest.fn(async () => 2),
   getKeyWords: jest.fn(async () => {
     mockCalls.push('getKeyWords');
@@ -29,6 +29,8 @@ jest.mock('../../src/supernote/fileSystem', () => ({
   deleteKeyWord: jest.fn(async (_f: string, _p: number, index: number) => {
     mockCalls.push(`deleteKeyWord ${index}`);
   }),
+}));
+jest.mock('../../src/supernote/hostCall', () => ({
   recordDebugLogEntry: jest.fn(async () => undefined),
 }));
 

@@ -6,7 +6,7 @@
 import React from 'react';
 import {Pressable, Text, View} from 'react-native';
 import {PageLayout} from '../../../domain/pageLayout';
-import {MYSTYLE_FOLDER} from '../../../supernote/fileSystem';
+import {MYSTYLE_FOLDER} from '../../../supernote/devicePaths';
 import {common} from '../../../ui/commonStyles';
 import PagedSection from '../../../ui/PagedSection';
 import {MyStyleBackgrounds} from './useMyStylePngs';

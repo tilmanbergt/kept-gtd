@@ -1,6 +1,6 @@
 // docs/dev/history/technical-design-split-by-tag.md §3.5: the status-slot confirm hook.
 
-jest.mock('../../src/supernote/fileSystem', () => ({
+jest.mock('../../src/supernote/devicePaths', () => ({
   displayPath: (p: string) => p.replace(/^\/storage\/emulated\/0\//, ''),
 }));
 
