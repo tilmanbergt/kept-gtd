@@ -51,7 +51,7 @@ The upper list on the left:
 
 - **Next meetings**: meetings of the thread that aren't over yet, soonest first
 - **I owe**: open todos agreed in the thread's meetings or tagged `#owe/jordan`
-- **Waiting for**: open todos you are waiting for jordan on
+- **Waiting for**: open todos you are waiting for Jordan on
 - **Agreements**: the thread's active agreements, shown after **Waiting for** (see [Agreements](agreements.md))
 - **Relevant**: open todos with the thread's tag or `#jordan` that are neither of the above
 - a last, quiet row such as **1 someday ›**: the thread's Someday and Maybe todos are not listed, only counted. Tap it to open the Weekly Review's step **Someday / Maybe** with just these todos, see [Weekly Review](review.md).
