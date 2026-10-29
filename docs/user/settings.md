@@ -4,7 +4,7 @@ Settings has six tabs: Data, Contexts, Note setups, Features, Advanced and About
 
 ## Data
 
-Setting up and tidying up in one place: your folders on the left, the setup assistant and your profiles on the right.
+Setting up and tidying up in one place: your folders on the left, the setup assistant, your profiles and Remove Kept's data on the right.
 
 ### Folders
 
@@ -28,6 +28,26 @@ On the first start after installing, Kept opens the setup assistant once. It is 
 ### Profiles
 
 Your [profiles](profiles-and-demo.md#profiles): **Save** the active one, **Switch** to another, and [Create demo space](profiles-and-demo.md#the-demo-space). The list redraws once it has found the profile files.
+
+### Remove Kept's data
+
+For when you stop using Kept, give the device away, or want to start over: **Remove Kept's data…** shows everything Kept has put on this device and removes what you check. Uninstalling the plugin alone doesn't do this: the settings, the Gmail app password and the calendar link stay ([Uninstalling Kept](troubleshooting.md#uninstalling-kept)).
+
+The list, each with where it is and how much there is:
+
+- *Settings*; *Gmail app password and calendar link* (for every profile); *Recent tags, recent places, calendar cache*: stored inside the plugin. Checking Settings checks the other two as well; you can uncheck them again.
+- *Lasso mark pictures and temporary files*: the plugin's private folder. [Open marks](lasso.md#processing-marks) lose their picture and handwriting - the line says how many; process them first.
+- *Debug and performance logs*: `EXPORT/kept-gtd/debug`.
+- *Demo space*: `Note/kept-gtd-demo` and the profile Demo. While the demo profile is active, it goes only together with the settings.
+- *Old gtdpara folders* and *Leftover save copies*: only listed when there are some.
+- *Kept's data files*, unchecked: `project.txt`, `area.txt` and `Inbox.txt` in your Projects, Areas and Archive folders. Your todos, meetings and agreements are in them - copy them first if you want to keep them. The folders, notes and every other file stay.
+- *Saved profiles*, unchecked: `EXPORT/kept-gtd/profiles`.
+
+While the settings go and the profiles stay, **Save the active profile first** (on) keeps your setup in a profile file. The Gmail app password and the calendar link are never in profile files - write them down.
+
+Under "Stays on your device" the screen lists what it never touches: the notes Kept created (they hold your handwriting), Kept's mark icons, keywords and headings inside notes, empty folders and archive PDFs.
+
+**Remove…** asks once in the [status line](index.md#the-status-line); the Supernote may then ask you to allow deleting files. Files go first and the settings last, one line per kind: removed, partly removed, or failed with the reason. If something fails, the settings stay, so **Remove…** can finish the rest later. When the settings are gone, Kept is as on a first install: **Start fresh** opens the [setup assistant](settings.md#setup-assistant), **Close Kept** closes it - then uninstall it in the Supernote's settings if you want.
 
 ## Contexts
 

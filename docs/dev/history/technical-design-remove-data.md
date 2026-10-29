@@ -159,3 +159,17 @@ under 600 lines.
 3. The result screen offers both **Start fresh** and **Close Kept**.
 4. Check device files and the Touch test are removed in the settings restructure, not kept next to
    this.
+
+## As built
+
+- D1 and D2 are one commit: the scan and the removal share their targets (`RemovalTargets`).
+- The settings step is *skipped* (kept) when any earlier step failed: they say where the folders
+  are, so a second run finds the rest. The result line says so.
+- Save the active profile first writes an (empty) secrets entry when none existed; the settings step
+  removes it with the settings, so no `gtdpara:` key is left.
+- The private folder's `tmp/` is cleared with the existing `deleteTempTree`, `data/` with
+  `deletePrivateDataTree`; neither can reach the private folder itself.
+- A refused FILE:DELETE fails every step and removes nothing, the store included.
+- `EXPORT/kept-gtd` itself goes once its `debug` and `profiles` folders are both gone.
+- The native methods could not be compiled in the cloud session; the first `./buildPlugin.ps1`
+  compiles them.

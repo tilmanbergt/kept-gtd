@@ -168,3 +168,5 @@ A file inside `Note` is stored as a path inside `Note`, like every linked file; 
 - *Settings* are stored inside the plugin. Profiles save them as files, see [Profile files](profiles-and-demo.md#profile-files).
 - *Pictures and handwriting of lasso marks* are kept in the plugin's own storage until the mark is processed, see [Where marks are stored](lasso.md#where-marks-are-stored).
 - *Exports* go to `EXPORT/kept-gtd`: `profiles` for [profile files](profiles-and-demo.md#profile-files), `debug` for logs, [debug bundles](troubleshooting.md#reporting-a-problem) and reports.
+
+[Remove Kept's data](settings.md#remove-kepts-data) in Settings → Data shows all of these and removes what you check.

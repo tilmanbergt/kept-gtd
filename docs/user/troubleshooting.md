@@ -24,6 +24,12 @@ The Supernote asks you before Kept may use a permission, each time right before 
 
 Kept also tells you whenever it changes files: before a move, an overwrite or a delete it shows what will happen, and afterwards what was done.
 
+## Uninstalling Kept
+
+Uninstalling the plugin removes the plugin, not its data. Your folders and notes stay - they are yours. The settings, the Gmail app password and the calendar link stay inside the Supernote too: when you install Kept again, everything is back. Only the permissions are asked for again.
+
+To leave nothing of Kept behind, first use [Remove Kept's data](settings.md#remove-kepts-data) in Settings → Data, then uninstall.
+
 ## Reporting a problem
 
 Reports are very welcome - they are the main way Kept gets better. Please report on GitHub: github.com/tilmanbergt/kept-gtd, then **Issues → New issue → Bug report**.

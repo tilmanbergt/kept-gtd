@@ -10,6 +10,13 @@ or your project/area files are stored.
 
 ## [Unreleased]
 
+### New
+- **Remove Kept's data** in Settings → Data: shows everything Kept has put on the device - settings,
+  the Gmail app password and calendar link, caches, lasso mark pictures, logs, the demo space, old
+  gtdpara folders - and removes what you check. Your data files and saved profiles are offered too,
+  unchecked. Notes are never touched. Afterwards Start fresh opens the setup assistant, or Close Kept
+  before you uninstall: uninstalling alone keeps the settings and passwords on the device.
+
 ### Changed
 - **Settings has six tabs** instead of eight. **Data** holds your folders on the left and, on the
   right, Run setup assistant and the profiles - setting up in one place. The Google Calendar link and

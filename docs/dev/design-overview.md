@@ -1062,8 +1062,15 @@ edit one draft (`useSettingsDraft.ts`); each block's Save (`saveFields(scope)`) 
 fields over what is stored. A folder Save clears the cache (the next screen builds it again) and a
 changed Inbox folder name moves the folder first (`storage/inboxFolder.ts`, refused when the target
 exists, not moved when Base or Areas change in the same save); a Gmail Save clears the Gmail list.
-**Data** (`DataTab.tsx`) has the folder fields left, Run setup assistant and Profiles right; both wait
-while the folder fields are unsaved (`draft.unsaved('folders')`). Note setups save per setup (and
+**Data** (`DataTab.tsx`) has the folder fields left, Run setup assistant, Profiles and Remove Kept's
+data right; they wait while the folder fields are unsaved (`draft.unsaved('folders')`). **Remove
+Kept's data** (`RemoveDataScreen.tsx`, `docs/dev/history/technical-design-remove-data.md`): the kinds
+and rules are pure (`domain/dataRemoval.ts`); `storage/dataRemoval.ts` scans (only `gtdpara:` store
+keys, never the whole store) and removes in the order files, private folders, store - settings last
+and kept when an earlier step failed; deletes in shared storage go through the native
+`deleteKeptTree` / `deleteKeptFile`, which refuse anything outside Kept's own folders and data-file
+names. Start fresh remounts the app like a profile switch; with no stored settings the load is a
+first install. Note setups save per setup (and
 the Default on its own), and its Heading style (`noteHeadingStyle`) at once; the switches on
 Features and Advanced write immediately. **Features** (`FeaturesTab.tsx`) holds the module switches
 - `settings.modules` (`closeOut`, on by default; read through `domain/features.ts`'s

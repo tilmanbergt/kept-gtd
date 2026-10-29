@@ -197,7 +197,8 @@ Link targets for the labels that recur (add a row when you link a new one):
   `#advanced`; What's new, Upgrade notes: `#about`); Debug logging and Export debug bundle on
   Advanced `settings.md#reporting-a-problem`; the calendar link and Gmail account
   `settings.md#google-calendar-and-gmail`; setup assistant `settings.md#setup-assistant`; the
-  profiles list `settings.md#profiles`; Settings → Contexts
+  profiles list `settings.md#profiles`; Remove Kept's data `settings.md#remove-kepts-data`;
+  uninstalling `troubleshooting.md#uninstalling-kept`; Settings → Contexts
   `contexts.md#setting-up-contexts`; Settings → Note setups `settings.md#note-setups`; Google
   Calendar, Gmail `features.md#google-calendar`, `#gmail`; Project close-out
   `features.md#project-close-out`; profiles, demo space `profiles-and-demo.md#profiles`,
