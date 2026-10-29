@@ -1,6 +1,6 @@
 # Technical design — linking the help pages
 
-Status: **DRAFT (2026-10-30)** for review. Part of 0.23.0 "Easy start", after S6, on
+Status: **APPROVED** (open points decided as proposed, §8). Part of 0.23.0 "Easy start", after S6, on
 `feature/easy-start`. Builds on `docs/dev/history/technical-design-easy-start.md` (H1-H4, and its As
 built "Help typography").
 
@@ -49,7 +49,7 @@ anyway). Bold never marks emphasis; italics never mark a label.
    the same place.
 5. **Not linked**: a label explained in the same section; the page's own subject in its own sections;
    buttons that only confirm, cancel or close (**Save**, **Cancel**, **✕**, **OK**); headings; the same
-   target twice in one sentence.
+   label twice in one sentence (two labels with one target, like Create Project or Create Area, each link).
 6. **Cross-references in prose become links**: `see "Home notebooks" below`, `("Which owner a page
    belongs to" in Engage)`, `see the next section` → a link to that heading (a link to a heading of the
    same page works too, and Back returns).

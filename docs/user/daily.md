@@ -1,18 +1,18 @@
 # Daily
 
-Daily is the page for today. It shows your schedule for today and tomorrow and the todos that matter now - in the current context (see [Contexts](contexts.md)).
+Daily is the page for today. It shows your schedule for today and tomorrow and the todos that matter now - in the current [context](contexts.md).
 
 ## What appears on Daily
 
 A todo appears on Daily when it is open and one of these is true:
 
-- it is marked **Next** (`#next`, see [Tags](tags.md#flow-tags-for-todos))
-- it is due today, tomorrow or overdue
-- it is marked **Waiting for** and has no date, or its date is today or earlier
+- it is marked [Next](tags.md#flow-tags-for-todos) (`#next`)
+- it is [due](tags.md#due-dates) today, tomorrow or overdue
+- it is marked [Waiting for](tags.md#flow-tags-for-todos) and has no date, or its date is today or earlier
 
-Todos marked Someday or Maybe never appear on Daily. Todos are grouped by project or area, the Inbox first; Waiting for todos come last in their group.
+Todos marked Someday or Maybe never appear on Daily. Todos are grouped by project or area, the [Inbox](quick-add.md#the-inbox) first; Waiting for todos come last in their group.
 
-With a context active, Daily shows only the todos of the projects, areas and tags the context shows. The Inbox always shows; todos that are due follow the context too. The last line counts the rest, for example "Hidden by Home: 4 todos · 1 due! · Show" - "due!" counts hidden todos due today or earlier; **Show** shows everything until you switch tabs. Meetings outside the context stay in the list, dimmed.
+With a [context](contexts.md#what-a-context-shows) active, Daily shows only the todos of the projects, areas and tags the context shows. The Inbox always shows; todos that are due follow the context too. The last line counts the rest, for example "Hidden by Home: 4 todos · 1 due! · Show" - "due!" counts hidden todos due today or earlier; **Show** shows everything until you switch tabs. Meetings outside the context stay in the list, dimmed.
 
 ## Labels
 
@@ -20,12 +20,12 @@ After a todo's title, short labels show what matters about it: `#next`, `#w/f Le
 
 ## Schedule and cards
 
-The left column is the schedule with the tabs **Today** and **Tomorrow** (and **Google** when the Google Calendar integration is on): meetings and focus blocks (see [Meetings](meetings.md)).
+The left column is the schedule with the tabs **Today** and **Tomorrow** (and **Google** when the [Google Calendar](features.md#google-calendar) integration is on): [meetings](meetings.md) and [focus blocks](meetings.md#focus-blocks).
 
-Tap a meeting or focus block to see its card in Quick Add's place, and its *context panel* in place of the todos: what you owe, what is next, what you are waiting for and what was agreed last time (see [Meetings](meetings.md)). **+ Quick Add to meeting** at the end of the panel adds a todo to it. Tap it again, **Edit** or the title on the card to change it. Daily has no [Files pane](projects-and-areas.md#files-and-linked-files), so linking a file happens on the project's page.
+Tap a meeting or focus block to see its [card](meetings.md#the-meeting-row-and-its-card) in [Quick Add](quick-add.md)'s place, and its [context panel](meetings.md#the-context-panel) in place of the todos: what you owe, what is next, what you are waiting for and what was agreed last time. **+ Quick Add to meeting** at the end of the panel adds a todo to it. Tap it again, [Edit](quick-add.md#editing) or the title on the card to change it. Daily has no [Files pane](projects-and-areas.md#files-and-linked-files), so linking a file happens on the project's page.
 
 Todos work the same way: a tap shows the todo's [card](quick-add.md#the-card-one-tap-selects), with done, the flow chips, its note and delete.
 
 ## Filtering by a tag
 
-Tap a tag inside a todo or meeting (for example `#lena`) to show only items with that tag. A nested tag such as `#sparring/jordan` opens its thread overview instead, see [Threads](threads.md). If the tag is the abbreviation of a project or area (for example `#GR`), Daily shows all of that project's items. Tap the tag again to remove the filter.
+Tap a tag inside a todo or meeting (for example `#lena`) to show only items with that tag. A [nested tag](tags.md#nested-tags) such as `#sparring/jordan` opens its [thread overview](threads.md#opening-the-overview) instead. If the tag is the [abbreviation](projects-and-areas.md#abbreviations) of a project or area (for example `#GR`), Daily shows all of that project's items. Tap the tag again to remove the filter.

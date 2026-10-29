@@ -9,8 +9,10 @@ export function pageTitle(markdown, fallback) {
 
 /**
  * Groups from index.md: each `## Heading` starts a group, each list item
- * linking to `page.md` adds that page (first link of the item). Pages not in
- * `pageIds` are skipped.
+ * that starts with a link to `page.md` adds that page. A list item that only
+ * links further on (the tabs list: `- **Daily**: … [Daily](daily.md)`) adds
+ * nothing (docs/dev/history/technical-design-help-linking.md §5.1). Pages not
+ * in `pageIds` are skipped.
  */
 export function parseIndexGroups(indexMarkdown, pageIds) {
   const known = new Set(pageIds);
@@ -23,7 +25,7 @@ export function parseIndexGroups(indexMarkdown, pageIds) {
       groups.push(current);
       continue;
     }
-    const item = /^\s*[-*]\s+.*?\[[^\]]+\]\(([^)#\s]+)\.md(?:#[^)]*)?\)/.exec(line);
+    const item = /^\s*[-*]\s+\[[^\]]+\]\(([^)#\s]+)\.md(?:#[^)]*)?\)/.exec(line);
     if (item && current && known.has(item[1]) && !current.pageIds.includes(item[1])) {
       current.pageIds.push(item[1]);
     }

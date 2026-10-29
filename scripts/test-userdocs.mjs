@@ -32,8 +32,9 @@ t('index groups', () => {
     '- [Daily](daily.md#focus)',
     '- [Gone](missing.md)',
     '- [External](https://example.com)',
+    '- **Week**: the week ahead, see [Week](week-and-month.md#week)',
   ].join('\r\n');
-  assert.deepEqual(parseIndexGroups(index, ['getting-started', 'philosophy', 'daily']), [
+  assert.deepEqual(parseIndexGroups(index, ['getting-started', 'philosophy', 'daily', 'week-and-month']), [
     {title: 'Start here', pageIds: ['getting-started', 'philosophy']},
     {title: 'Daily use', pageIds: ['daily']},
   ]);
@@ -87,6 +88,19 @@ t('real docs/user: every page listed in index.md, every link resolves', () => {
   const listed = docs.groups.flatMap(g => g.pageIds);
   assert.equal(listed.length, new Set(listed).size, 'a page is in two groups of index.md (a linked list item outside the page groups?)');
   assert.deepEqual(checkLinks(files, pageAnchors), []);
+});
+
+t('real docs/user: Getting started links every label it names', () => {
+  // docs/dev/history/technical-design-help-linking.md §3 rule 3, §6: bold stays only for a button
+  // the same sentence explains; everything else Getting started names is a link.
+  const BUTTONS_EXPLAINED_IN_PLACE = ['Save', '+ Add'];
+  const markdown = readFileSync(join(ROOT, 'docs', 'user', 'getting-started.md'), 'utf8');
+  const bold = [...markdown.replace(/`[^`]*`/g, '').matchAll(/\*\*([^*]+)\*\*/g)].map(m => m[1]);
+  assert.deepEqual(
+    bold.filter(b => !BUTTONS_EXPLAINED_IN_PLACE.includes(b)),
+    [],
+    'unlinked bold in getting-started.md: link it (docs/dev/README.md "Link targets") or explain the button in the sentence',
+  );
 });
 
 console.log(`userDocs: ${n} checks passed`);

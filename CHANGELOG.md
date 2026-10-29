@@ -33,6 +33,9 @@ or your project/area files are stored.
   areas, todos, meetings, notes, capture, the weekly review - each step linking to its page. "The
   tabs at a glance" and "Opening Kept GTD from a note" moved to the help's Overview. Every help page
   uses examples from the demo space and links the terms it builds on.
+- **Help links everywhere**: every screen, panel, step and setting a help page names links to the
+  section that explains it, Getting started links every step to its details, and the Overview's tab
+  list links each tab. A new Overview section explains the status line.
 - The demo space's sparring partner is now **Jordan** (`#sparring/jordan`), with a promise
   `#owe/jordan` to show I owe outside a meeting.
 
