@@ -19,68 +19,68 @@ const agreedIn = (text: string, mt: Meeting, extra: Partial<Task> = {}): Task =>
 const loopLine = (tag: string): LoopLine => ({tag, status: 'active', mainDate: null, linkedFile: null, extraColumns: [], raw: null});
 const texts = (refs: Array<{task: Task}>) => refs.map(r => r.task.text);
 
-const spar1 = m('2026-09-30', 'Sparring Mieke #sparring/mieke', {time: '10:00', endTime: '11:00'});
-const spar2 = m('2026-10-06', 'Sparring Mieke #sparring/mieke', {time: '10:00', endTime: '11:00'});
-const sparNext = m('2026-10-23', 'Sparring Mieke #sparring/mieke', {time: '10:00', endTime: '11:00'});
+const spar1 = m('2026-09-30', 'Sparring Jordan #sparring/jordan', {time: '10:00', endTime: '11:00'});
+const spar2 = m('2026-10-06', 'Sparring Jordan #sparring/jordan', {time: '10:00', endTime: '11:00'});
+const sparNext = m('2026-10-23', 'Sparring Jordan #sparring/jordan', {time: '10:00', endTime: '11:00'});
 const loopPast = m('2026-10-01', 'Kickoff #proj/offsite', {time: '09:00', endTime: '10:00'});
 const loopRunning = m('2026-10-08', 'Planning #proj/offsite', {time: '11:30', endTime: '12:30'});
 
 const coaching = item('area', 'Coaching', {
   meetings: [spar1, spar2, sparNext, loopPast, loopRunning, m('2026-10-08', 'Retro demand', {time: '14:00', endTime: '15:00'})],
   loops: [loopLine('proj/offsite')],
-  threads: [{leaf: 'mieke', status: 'active'} as CounterpartLine],
+  threads: [{leaf: 'jordan', status: 'active'} as CounterpartLine],
   tasks: [
-    task('Read article #mieke #next'), // 0 leaf, relevant
+    task('Read article #jordan #next'), // 0 leaf, relevant
     agreedIn('Book follow-up #next', spar2), // 1 agreed, owe
-    task('Tagged plan #sparring/mieke'), // 2 tagged, relevant
+    task('Tagged plan #sparring/jordan'), // 2 tagged, relevant
     agreedIn('Draft feedback', spar2), // 3 agreed plan, owe
-    task('Promise #owe/mieke'), // 4 owe
-    task('Org chart #wf/mieke'), // 5 waiting
+    task('Promise #owe/jordan'), // 4 owe
+    task('Org chart #wf/jordan'), // 5 waiting
     agreedIn('Parked #someday', spar2), // 6 someday
-    task('Other person #sparring/sven #next'), // 7 not Mieke's
+    task('Other person #sparring/sam #next'), // 7 not Jordan's
     agreedIn('Old agreement', spar1), // 8 agreed in the earlier meeting
     task('Venue #proj/offsite'), // 9 loop tagged
     agreedIn('Catering', loopPast), // 10 loop, agreed in a past meeting
     agreedIn('Name tags', loopRunning), // 11 loop, agreed in the running meeting
     task('Leaf only #offsite'), // 12 not the loop's
-    task('Maybe later #maybe #mieke'), // 13 maybe
+    task('Maybe later #maybe #jordan'), // 13 maybe
     task('Loose #next'), // 14 item's
   ],
 });
-const website = item('project', 'Website', {area: 'Coaching', tasks: [task('Check copy #sparring/mieke #next')]});
+const website = item('project', 'Website', {area: 'Coaching', tasks: [task('Check copy #sparring/jordan #next')]});
 const inboxMeeting = m('2026-10-08', 'Dentist', {time: '13:00', endTime: '13:30'});
 const source: EngageSource = {
   items: [coaching, website],
-  inbox: {path: INBOX, tasks: [task('Inbox thing #sparring/mieke')], meetings: [inboxMeeting]},
+  inbox: {path: INBOX, tasks: [task('Inbox thing #sparring/jordan')], meetings: [inboxMeeting]},
   loopKinds: ['proj'],
   threadTypes: ['sparring'],
 };
-const mieke = {kind: 'thread' as const, scopeOwnerPath: coaching.path, tag: 'sparring/mieke'};
+const jordan = {kind: 'thread' as const, scopeOwnerPath: coaching.path, tag: 'sparring/jordan'};
 const offsite = {kind: 'loop' as const, itemPath: coaching.path, tag: 'proj/offsite'};
 const area = {kind: 'item' as const, itemPath: coaching.path};
 
 describe('ownerTodos - thread (E1)', () => {
-  const refs = ownerTodos(mieke, source);
+  const refs = ownerTodos(jordan, source);
 
   it('holds the overview\'s thread lens: tagged, leaf, agreed, #owe/<cp>, #wf/<cp>', () => {
     expect(texts(refs)).toEqual(
-      expect.arrayContaining(['Read article #mieke #next', 'Book follow-up #next', 'Tagged plan #sparring/mieke', 'Promise #owe/mieke', 'Org chart #wf/mieke', 'Check copy #sparring/mieke #next']),
+      expect.arrayContaining(['Read article #jordan #next', 'Book follow-up #next', 'Tagged plan #sparring/jordan', 'Promise #owe/jordan', 'Org chart #wf/jordan', 'Check copy #sparring/jordan #next']),
     );
     const byText = (t: string) => refs.find(r => r.task.text === t)!;
     expect(byText('Book follow-up #next').relation).toBe('owe');
     expect(byText('Book follow-up #next').agreedIn).toEqual({itemPath: coaching.path, meetingIndex: 1});
-    expect(byText('Promise #owe/mieke').relation).toBe('owe');
-    expect(byText('Org chart #wf/mieke').relation).toBe('waiting');
-    expect(byText('Read article #mieke #next').relation).toBe('relevant');
+    expect(byText('Promise #owe/jordan').relation).toBe('owe');
+    expect(byText('Org chart #wf/jordan').relation).toBe('waiting');
+    expect(byText('Read article #jordan #next').relation).toBe('relevant');
   });
 
   it('leaves out another counterpart and the Inbox (not the owner)', () => {
-    expect(texts(refs)).not.toContain('Other person #sparring/sven #next');
-    expect(texts(refs)).not.toContain('Inbox thing #sparring/mieke');
+    expect(texts(refs)).not.toContain('Other person #sparring/sam #next');
+    expect(texts(refs)).not.toContain('Inbox thing #sparring/jordan');
   });
 
   it('lists leaf-tagged meetings of the lens', () => {
-    expect(ownerMeetings(mieke, source).map(e => e.meeting.date)).toEqual(['2026-09-30', '2026-10-06', '2026-10-23']);
+    expect(ownerMeetings(jordan, source).map(e => e.meeting.date)).toEqual(['2026-09-30', '2026-10-06', '2026-10-23']);
   });
 });
 
@@ -101,16 +101,16 @@ describe('ownerTodos - loop (E2) and item (E3)', () => {
 
 describe('optionsOf - order (E5)', () => {
   it('a thread: I owe before relevant in Next and Plan, file order inside', () => {
-    const o = optionsOf(mieke, source, NOW);
-    expect(texts(o.next)).toEqual(['Book follow-up #next', 'Read article #mieke #next', 'Check copy #sparring/mieke #next']);
-    expect(texts(o.plan)).toEqual(['Draft feedback', 'Promise #owe/mieke', 'Old agreement', 'Tagged plan #sparring/mieke']);
+    const o = optionsOf(jordan, source, NOW);
+    expect(texts(o.next)).toEqual(['Book follow-up #next', 'Read article #jordan #next', 'Check copy #sparring/jordan #next']);
+    expect(texts(o.plan)).toEqual(['Draft feedback', 'Promise #owe/jordan', 'Old agreement', 'Tagged plan #sparring/jordan']);
   });
 
   it('an Area keeps file order', () => {
     expect(texts(optionsOf(area, source, NOW).next)).toEqual([
-      'Read article #mieke #next',
+      'Read article #jordan #next',
       'Book follow-up #next',
-      'Other person #sparring/sven #next',
+      'Other person #sparring/sam #next',
       'Loose #next',
     ]);
   });
@@ -118,12 +118,12 @@ describe('optionsOf - order (E5)', () => {
 
 describe('optionsOf - Also here (E7) and Next here (E8)', () => {
   it('counts someday + maybe together; waiting has its own tab', () => {
-    expect(optionsOf(mieke, source, NOW).alsoHere).toEqual({someday: 2});
-    expect(texts(optionsOf(mieke, source, NOW).waiting)).toEqual(['Org chart #wf/mieke']);
+    expect(optionsOf(jordan, source, NOW).alsoHere).toEqual({someday: 2});
+    expect(texts(optionsOf(jordan, source, NOW).waiting)).toEqual(['Org chart #wf/jordan']);
   });
 
   it('the owner\'s next meeting that is not over, any date; a running one counts until its end', () => {
-    expect(optionsOf(mieke, source, NOW).nextMeeting?.meeting).toBe(sparNext);
+    expect(optionsOf(jordan, source, NOW).nextMeeting?.meeting).toBe(sparNext);
     expect(optionsOf(offsite, source, NOW).nextMeeting?.meeting).toBe(loopRunning);
     expect(optionsOf(offsite, source, new Date(2026, 9, 8, 12, 31).getTime()).nextMeeting).toBeNull();
   });
@@ -149,14 +149,14 @@ describe('ownerOfTodo (E4)', () => {
   it('loop > own thread tag > the thread of the meeting it was agreed in > item', () => {
     const of = (index: number) => ownerOfTodo({itemPath: coaching.path, task: coaching.tasks[index]}, source);
     expect(of(11)).toEqual(offsite);
-    expect(of(2)).toEqual(mieke);
-    expect(of(3)).toEqual(mieke);
+    expect(of(2)).toEqual(jordan);
+    expect(of(3)).toEqual(jordan);
     expect(of(14)).toEqual(area);
     // A plain leaf names no thread of its own.
     expect(of(0)).toEqual(area);
   });
 
   it('a Project\'s todo is in its Area\'s thread', () => {
-    expect(threadOfTodo(website.path, website.tasks[0], source)).toEqual(mieke);
+    expect(threadOfTodo(website.path, website.tasks[0], source)).toEqual(jordan);
   });
 });

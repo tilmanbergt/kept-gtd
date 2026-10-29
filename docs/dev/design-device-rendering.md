@@ -93,6 +93,7 @@ top-aligned, so if a prediction is too large the spare space sits at the bottom 
 | Google Calendar event | `ui/GoogleCalendarPanel.tsx` | **37 (fixed)** | `GOOGLE_EVENT_ROW_PX = MEETING_ROW_HEIGHT.oneLine`, same time column as a meeting row. |
 | Week chip | `ui/MeetingChip.tsx` | **34 (fixed)** | `MEETING_CHIP_HEIGHT`. The Week grid shows 4 rows × 2 chips per weekday and 2 × 2 per weekend day, under a 30 dp day header (`WEEK_DAY_HEADER_HEIGHT`). |
 | File/folder entry | `ui/FileBrowserPane.tsx` → `fileEntryHeight()` | **42** / **64** | `FILE_ENTRY_CHROME_PX 20` (`paddingVertical 5` on both the row and the text, × 2) + lines × 22, max 2 lines. |
+| This-file row (Files pane, while linking) | `ui/fileBrowser/ThisFileRows.tsx` | **42 (fixed)** | `THIS_FILE_ROW_PX`, one line, above the list: two rows take 84 dp from the list box, which measures itself. |
 | Project/Area entry, Projects/Areas tabs | `screens/ItemsList.tsx` → `itemEntryHeight()` | **38** / **60** | Padding 8 × 2 + lines × 22, max 2 lines, `#ABBR` included in the estimate. |
 | Project/Area entry, Review lists | `ui/itemEntryRow.ts` → `itemEntryHeight()` | **34** / **56** | Padding 6 × 2 + lines × 22. |
 | Task group header (Project, Inbox) | `screens/ProjectDataPanel.tsx`, `screens/InboxScreen.tsx` | **30** | `SUBHEADING_ROW_PX`: `marginTop 10` + small line ~18 + `marginBottom 4`, rounded down. |
@@ -191,7 +192,7 @@ state (`ui/quickAdd/QuickAddFrame.tsx`, `QUICK_ADD_HEIGHT`); budget it as one bl
 | Row 1 | 30 | Todo / Meeting / Agreement / Note tabs; + Add, Cancel · Save, or the card's heading with ✕ · Edit |
 | Row 2 | 36 | Main text input and date (or valid till) |
 | Row 3 | 34 | Flow chips or time, tag chips |
-| Row 4 | 34 | More tag chips, the provenance line, or (a loop's own edit only) the edit commands |
+| Row 4 | 34 | More tag chips, the provenance line and/or the This-file line (`ui/quickAdd/ThisFileLine.tsx`: clip, file name, two chips of ~31), or (a loop's own edit only) the edit commands |
 
 Box total = `border 1 + padding 10 + 30 + 6 + 36 + 6 + 34 + 6 + 34 + padding 10 + border 1` =
 **174 dp**, whatever it shows - create, edit, or an item card (`ui/itemCard/`) in the same rows. Chips in rows 3 and 4 use 4 dp vertical padding: their label draws

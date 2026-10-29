@@ -15,7 +15,8 @@
  */
 import {headingText, PageElementForHeading, PageRect} from '../domain/notebookContents';
 import {PageKeyword} from '../domain/sharedNotePages';
-import {getElements, statFiles} from '../supernote/fileSystem';
+import {getElements} from '../supernote/noteFileApi';
+import {statFiles} from '../supernote/fileSystem';
 import {ElementWithTitle, getTitles, NoteTitle} from '../supernote/noteTitles';
 import {recycleElements} from '../supernote/sdkElements';
 import {log} from '../utils/log';

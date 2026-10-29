@@ -9,8 +9,10 @@ export function pageTitle(markdown, fallback) {
 
 /**
  * Groups from index.md: each `## Heading` starts a group, each list item
- * linking to `page.md` adds that page (first link of the item). Pages not in
- * `pageIds` are skipped.
+ * that starts with a link to `page.md` adds that page. A list item that only
+ * links further on (the tabs list: `- **Daily**: … [Daily](daily.md)`) adds
+ * nothing (docs/dev/history/technical-design-help-linking.md §5.1). Pages not
+ * in `pageIds` are skipped.
  */
 export function parseIndexGroups(indexMarkdown, pageIds) {
   const known = new Set(pageIds);
@@ -23,7 +25,7 @@ export function parseIndexGroups(indexMarkdown, pageIds) {
       groups.push(current);
       continue;
     }
-    const item = /^\s*[-*]\s+.*?\[[^\]]+\]\(([^)#\s]+)\.md(?:#[^)]*)?\)/.exec(line);
+    const item = /^\s*[-*]\s+\[[^\]]+\]\(([^)#\s]+)\.md(?:#[^)]*)?\)/.exec(line);
     if (item && current && known.has(item[1]) && !current.pageIds.includes(item[1])) {
       current.pageIds.push(item[1]);
     }
@@ -48,6 +50,52 @@ export function buildUserDocs(files) {
     pages[f.id] = {title: f.id === 'index' ? 'Overview' : pageTitle(f.markdown, f.id), markdown: f.markdown.replace(/\r\n/g, '\n')};
   }
   return {groups, pages};
+}
+
+/** The text of a page outside fenced code blocks and inline code: where links are links. */
+function linkableText(markdown) {
+  let inCode = false;
+  return markdown
+    .replace(/\r\n/g, '\n')
+    .split('\n')
+    .filter(line => {
+      if (/^\s*```/.test(line)) {
+        inCode = !inCode;
+        return false;
+      }
+      return !inCode;
+    })
+    .map(line => line.replace(/`[^`]*`/g, ''))
+    .join('\n');
+}
+
+/**
+ * Broken links between help pages (docs/dev/history/technical-design-easy-start.md §2.5):
+ * a `x.md` link whose page isn't bundled, or a `x.md#anchor` that matches no heading of that
+ * page. `anchorsOf(markdown)` lists a page's heading slugs (src/domain/helpLinks.ts's
+ * pageAnchors, so the check uses the app's rule). Web addresses are ignored; any other
+ * relative target counts as broken, since the app can't open it. Returns
+ * `"<page>.md: <target> (<reason>)"` lines.
+ */
+export function checkLinks(files, anchorsOf) {
+  const byId = new Map(files.map(f => [f.id, f.markdown]));
+  const anchors = new Map();
+  const anchorsOfPage = id => {
+    if (!anchors.has(id)) anchors.set(id, new Set(anchorsOf(byId.get(id))));
+    return anchors.get(id);
+  };
+  const broken = [];
+  for (const f of files) {
+    for (const m of linkableText(f.markdown).matchAll(/\[[^\]]+\]\(([^)\s]+)\)/g)) {
+      const target = m[1];
+      if (/^(https?:|mailto:)/.test(target)) continue;
+      const link = /^([a-z0-9-]+)\.md(?:#(.*))?$/.exec(target);
+      if (!link) broken.push(`${f.id}.md: ${target} (not a help page)`);
+      else if (!byId.has(link[1])) broken.push(`${f.id}.md: ${target} (no such page)`);
+      else if (link[2] !== undefined && !anchorsOfPage(link[1]).has(link[2])) broken.push(`${f.id}.md: ${target} (no such heading)`);
+    }
+  }
+  return broken;
 }
 
 export function renderUserDocsTs(docs) {

@@ -10,14 +10,14 @@ const DESIGN = 'technical-design-time-and-place.md';
 
 afterEach(() => jest.useRealTimers());
 
-const WORK: ContextDef = {id: 'c1', name: 'Work', shows: [{kind: 'item', itemKind: 'area', name: 'Atruvia'}], hides: [], outsideMeetings: 'dim'};
+const WORK: ContextDef = {id: 'c1', name: 'Work', shows: [{kind: 'item', itemKind: 'area', name: 'Team'}], hides: [], outsideMeetings: 'dim'};
 const HOME: ContextDef = {id: 'c2', name: 'Home', shows: [{kind: 'item', itemKind: 'area', name: 'Garden'}], hides: [], outsideMeetings: 'dim'};
 const SETTINGS = {contexts: [WORK, HOME]};
 
 function space(): void {
   smokeClock();
   putFile(
-    areaFile('Atruvia'),
+    areaFile('Team'),
     dataFile(
       'area',
       {
@@ -28,7 +28,7 @@ function space(): void {
       ['dailyFocus: true', 'abbrev: AT'],
     ),
   );
-  putFile(projectFile('Tender'), dataFile('project', {Scope: [], Tasks: ['- [ ] Price list'], Meetings: []}, ['area: Atruvia', 'abbrev: TEN']));
+  putFile(projectFile('Tender'), dataFile('project', {Scope: [], Tasks: ['- [ ] Price list'], Meetings: []}, ['area: Team', 'abbrev: TEN']));
   putFile(areaFile('Garden'), dataFile('area', {Scope: [], Tasks: ['- [ ] Buy bulbs #next'], Meetings: ['- 2026-10-14 17:00 Neighbour chat']}, ['dailyFocus: true', 'abbrev: GA']));
   putFile(projectFile('Shed'), dataFile('project', {Scope: [], Tasks: ['- [ ] Plan the shed'], Meetings: []}, ['area: Garden', 'abbrev: SH']));
   putFile(INBOX_FILE, dataFile('inbox', {Tasks: ['- [ ] Call the plumber #next'], Meetings: []}));
@@ -42,7 +42,7 @@ async function chooseContext(name: string, tab = 'Daily'): Promise<void> {
 }
 
 scenario('A context filters Daily: hidden todos, dimmed meetings, the hidden line and Show', {feature: 'Contexts', design: DESIGN}, () => {
-  given('contexts Work (Area Atruvia) and Home (Area Garden)', space);
+  given('contexts Work (Area Team) and Home (Area Garden)', space);
   when('I open Daily, tap the chip in the tab bar, choose Home in Settings → Contexts and go back to Daily', async () => {
     await openApp({settings: SETTINGS});
     await tapTab('Daily');
@@ -52,13 +52,13 @@ scenario('A context filters Daily: hidden todos, dimmed meetings, the hidden lin
     expectShows('Home ›');
     expectShows('Context: Home');
   });
-  and('Atruvia\'s todos are hidden, its overdue one too; Garden\'s and the Inbox show', () => {
+  and('Team\'s todos are hidden, its overdue one too; Garden\'s and the Inbox show', () => {
     expectNotShows(/^Prepare offer/);
     expectNotShows(/^Send the report/);
     expectShows(/^Buy bulbs/);
     expectShows(/^Call the plumber/);
   });
-  and('Atruvia\'s meeting is still listed (dimmed), and the hidden line counts the hidden todos and warns of the due one', () => {
+  and('Team\'s meeting is still listed (dimmed), and the hidden line counts the hidden todos and warns of the due one', () => {
     expectShows(/^Steering committee/);
     expectShows('Hidden by Home: 3 todos · 1 due! ·');
   });
@@ -83,9 +83,9 @@ scenario('A context filters Areas, Projects and Review; Reviewed stays global', 
     await openApp({settings: {...SETTINGS, activeContextId: 'c2'}});
     await tapTab('Areas');
   });
-  then('only Garden is listed, and the hidden line counts Atruvia', () => {
+  then('only Garden is listed, and the hidden line counts Team', () => {
     expect(readTexts().some(t => t.includes('Garden'))).toBe(true);
-    expect(readTexts().some(t => t.includes('Atruvia'))).toBe(false);
+    expect(readTexts().some(t => t.includes('Team'))).toBe(false);
     expectShows('Hidden by Home: 1 area ·');
   });
   when('I open Review', () => tapTab('Review'));
@@ -111,16 +111,16 @@ scenario('A context filters Areas, Projects and Review; Reviewed stays global', 
 });
 
 scenario('Quick Add says when the entry lands outside the context', {feature: 'Contexts', design: DESIGN}, () => {
-  given('Home is active and Atruvia has the abbreviation AT', space);
+  given('Home is active and Team has the abbreviation AT', space);
   when('I add "Prepare offer #AT" on Daily', async () => {
     await openApp({settings: {...SETTINGS, activeContextId: 'c2'}});
     await tapTab('Daily');
     await type('New task', 'Prepare the slides #AT');
-    await tap(/^\+ Add to Atruvia/);
+    await tap(/^\+ Add to Team/);
   });
-  then('it is in Atruvia\'s file, and the status line says "Saved to Atruvia · hidden by Home"', () => {
-    expect(sectionLines(areaFile('Atruvia'), 'Tasks')).toContainEqual(expect.stringMatching(/^- \[ \] Prepare the slides/));
-    expect(readTexts().some(t => t.includes('Saved to Atruvia · hidden by Home'))).toBe(true);
+  then('it is in Team\'s file, and the status line says "Saved to Team · hidden by Home"', () => {
+    expect(sectionLines(areaFile('Team'), 'Tasks')).toContainEqual(expect.stringMatching(/^- \[ \] Prepare the slides/));
+    expect(readTexts().some(t => t.includes('Saved to Team · hidden by Home'))).toBe(true);
   });
 });
 
@@ -155,10 +155,10 @@ scenario('Settings → Contexts: create Café, then choose it from the chip', {f
 });
 
 scenario('Settings → Contexts: a context that shows one Area, named and saved from the top row', {feature: 'Contexts', design: DESIGN}, () => {
-  given('the areas Home and Atruvia, each with a next todo', () => {
+  given('the areas Home and Team, each with a next todo', () => {
     smokeClock();
     putFile(areaFile('Home'), dataFile('area', {Scope: [], Tasks: ['- [ ] Laundry #next'], Meetings: []}));
-    putFile(areaFile('Atruvia'), dataFile('area', {Scope: [], Tasks: ['- [ ] Prepare offer #next'], Meetings: []}));
+    putFile(areaFile('Team'), dataFile('area', {Scope: [], Tasks: ['- [ ] Prepare offer #next'], Meetings: []}));
   });
   when('I create "Home" with Shows on the Area Home and tap Save', async () => {
     await openApp();
@@ -177,7 +177,7 @@ scenario('Settings → Contexts: a context that shows one Area, named and saved 
     await tapLabel('Use Home');
     await tapTab('Daily');
   });
-  then('Daily shows Home\'s todo and hides Atruvia\'s', () => {
+  then('Daily shows Home\'s todo and hides Team\'s', () => {
     expectShows(/^Laundry/);
     expectNotShows(/^Prepare offer/);
   });

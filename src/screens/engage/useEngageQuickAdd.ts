@@ -39,8 +39,8 @@ interface Input {
 
 export interface EngageQuickAdd {
   provenance: QuickAddAdds;
-  onAddTask: (text: string, destination: Destination) => Promise<void>;
-  onAddMeeting: (fields: MeetingQuickAddFields, destination: Destination) => Promise<void>;
+  onAddTask: (text: string, destination: Destination, linkedFile?: string) => Promise<void>;
+  onAddMeeting: (fields: MeetingQuickAddFields, destination: Destination, linkedFile?: string) => Promise<void>;
   agreements: AgreementActions;
   /** Whether the Agreement tab is offered (an owner with a file of its own). */
   canAddAgreement: boolean;
@@ -76,12 +76,12 @@ export function useEngageQuickAdd({owner, source, options, page, actions}: Input
   const seedItem = seed && source ? source.items.find(i => i.path === seed.itemPath) : undefined;
   return {
     provenance: [...(origin.provenance ?? []), ...(preset.part ? [preset.part] : [])],
-    onAddTask: async (text, destination) => {
-      await actions.addTask(preset.apply(origin.apply(text)), destination);
+    onAddTask: async (text, destination, linkedFile) => {
+      await actions.addTask(preset.apply(origin.apply(text)), destination, linkedFile);
       added();
     },
-    onAddMeeting: async (fields, destination) => {
-      await actions.addMeeting(ownerTag ? {...fields, title: titleWithLoopTag(fields.title, ownerTag)} : fields, destination);
+    onAddMeeting: async (fields, destination, linkedFile) => {
+      await actions.addMeeting(ownerTag ? {...fields, title: titleWithLoopTag(fields.title, ownerTag)} : fields, destination, linkedFile);
       setSeed(null);
     },
     agreements,

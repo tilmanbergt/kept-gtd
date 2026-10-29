@@ -10,7 +10,7 @@
  */
 import {isNoteTemplateManagedElement} from '../domain/meetingNoteBlock';
 import {headingText} from '../domain/notebookContents';
-import {getElements, getNoteTotalPageNum} from '../supernote/fileSystem';
+import {getElements, getNoteTotalPageNum} from '../supernote/noteFileApi';
 import {ElementWithTitle, getTitles, NoteTitle} from '../supernote/noteTitles';
 import {recycleElements} from '../supernote/sdkElements';
 import {errorMessage} from '../utils/errorMessage';

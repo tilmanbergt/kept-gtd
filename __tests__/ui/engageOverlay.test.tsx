@@ -52,9 +52,12 @@ const AREAS = '/storage/emulated/0/Note/2 Areas';
 const mockFiles: Record<string, string> = {};
 const mockNote: {path: string | null} = {path: null};
 const mockOpenedNotes: Array<[string, number]> = [];
+jest.mock('../../src/supernote/hostContext', () => ({
+  ...jest.requireActual('../../src/supernote/hostContext'),
+  getCurrentNotePath: async () => mockNote.path,
+}));
 jest.mock('../../src/supernote/fileSystem', () => ({
   ...jest.requireActual('../../src/supernote/fileSystem'),
-  getCurrentNotePath: async () => mockNote.path,
   statFiles: async () => null,
   fileExists: async (path: string) => path in mockFiles,
   listFolderEntries: async (folder: string) =>
@@ -436,8 +439,8 @@ describe('EngageOverlay in context (docs/dev/history/technical-design-engage-in-
   };
   // 9:00 today: the sparring in three days is "Next here", the retro at 10:00 today is "Today next".
   const nineToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 9, 0).getTime();
-  const past = `${iso(-1)} 10:00-11:00 Sparring Mieke #sparring/mieke`;
-  const key = meetingKey({date: iso(-1), title: 'Sparring Mieke #sparring/mieke'});
+  const past = `${iso(-1)} 10:00-11:00 Sparring Jordan #sparring/jordan`;
+  const key = meetingKey({date: iso(-1), title: 'Sparring Jordan #sparring/jordan'});
   let spy: jest.SpyInstance;
 
   beforeEach(() => {
@@ -452,11 +455,11 @@ describe('EngageOverlay in context (docs/dev/history/technical-design-engage-in-
       `- [ ] Book follow-up #next [meeting:: ${key}]`,
       `- [ ] Org chart #wf [meeting:: ${key}]`,
       `- [ ] Parked #someday [meeting:: ${key}]`,
-      '- [ ] Read article #mieke #next',
+      '- [ ] Read article #jordan #next',
       '',
       '## Meetings',
       `- ${past} → [[Meetings/Sparring.note]]`,
-      `- ${iso(3)} 10:00-11:00 Sparring Mieke #sparring/mieke`,
+      `- ${iso(3)} 10:00-11:00 Sparring Jordan #sparring/jordan`,
       `- ${iso(0)} 10:00-11:00 Retro demand`,
     ]);
     mockNote.path = `${COACHING}/Meetings/Sparring.note`;
@@ -468,11 +471,11 @@ describe('EngageOverlay in context (docs/dev/history/technical-design-engage-in-
     expect(r.root.findAll(n => n.props.accessibilityLabel === 'Thread').length).toBeGreaterThan(0); // the kind badge
     // An agreed plan todo is also in Plan (D6: the overlap is accepted).
     expect(texts(r)).toEqual(expect.arrayContaining(['From Thread 3', 'Next 2', 'Plan 1']));
-    expect(texts(r).some(t => t.endsWith(' · Sparring Mieke'))).toBe(true);
+    expect(texts(r).some(t => t.endsWith(' · Sparring Jordan'))).toBe(true);
     expect(rendered(r)).toContain('Draft feedback');
     expect(rendered(r)).toContain('· waiting');
     expect(rendered(r)).not.toContain('Parked');
-    expect(texts(r).some(t => t.startsWith('Next here: ') && t.endsWith('Sparring Mieke ›'))).toBe(true);
+    expect(texts(r).some(t => t.startsWith('Next here: ') && t.endsWith('Sparring Jordan ›'))).toBe(true);
     expect(texts(r).filter(t => t.startsWith('Today next'))).toEqual(['Today next: 10:00 Retro demand · in 1 h']);
     expect(rendered(r)).toContain('Also here: ');
     // Waiting has its own tab (docs/dev/history/technical-design-meetings-0.21.md R11).
@@ -488,7 +491,7 @@ describe('EngageOverlay in context (docs/dev/history/technical-design-engage-in-
     expect(texts(r)).toEqual(expect.arrayContaining(['From Thread 3', 'Next 3']));
     await press(r, 'Next 3');
     const rows = r.root.findAll(n => n.props.header === '' && Array.isArray(n.props.rows))[0].props.rows.map((row: {todo: {task: {text: string}}}) => row.todo.task.text);
-    expect(rows).toEqual(['Draft feedback #next', 'Book follow-up #next', 'Read article #mieke #next']);
+    expect(rows).toEqual(['Draft feedback #next', 'Book follow-up #next', 'Read article #jordan #next']);
     act(() => r.unmount());
   });
 
@@ -500,9 +503,9 @@ describe('EngageOverlay in context (docs/dev/history/technical-design-engage-in-
       await settle();
     };
     await link('1 someday');
-    expect(onExit).toHaveBeenCalledWith({kind: 'someday', owner: {kind: 'thread', scopeOwnerPath: COACHING, tag: 'sparring/mieke'}, label: '#sparring/mieke', keys: [`${COACHING}#3`]});
+    expect(onExit).toHaveBeenCalledWith({kind: 'someday', owner: {kind: 'thread', scopeOwnerPath: COACHING, tag: 'sparring/jordan'}, label: '#sparring/jordan', keys: [`${COACHING}#3`]});
     await link('Overview ›');
-    expect(onExit).toHaveBeenLastCalledWith({kind: 'overview', owner: {kind: 'thread', scopeOwnerPath: COACHING, tag: 'sparring/mieke'}});
+    expect(onExit).toHaveBeenLastCalledWith({kind: 'overview', owner: {kind: 'thread', scopeOwnerPath: COACHING, tag: 'sparring/jordan'}});
     await press(r, 'Next here: ');
     expect(mockNoteOpen.calls).toBe(1);
     expect(onClose).toHaveBeenCalledTimes(1);
@@ -510,9 +513,9 @@ describe('EngageOverlay in context (docs/dev/history/technical-design-engage-in-
   });
 
   it('Today next merges into Next here when it is the same meeting', async () => {
-    area('Coaching', ['## Meetings', `- ${iso(0)} 10:00-11:00 Sparring Mieke #sparring/mieke`, '', '## Tasks', '- [ ] Read article #mieke #next']);
+    area('Coaching', ['## Meetings', `- ${iso(0)} 10:00-11:00 Sparring Jordan #sparring/jordan`, '', '## Tasks', '- [ ] Read article #jordan #next']);
     mockNote.path = null;
-    const {r} = await open({via: 'ownerPage', owner: {kind: 'thread', scopeOwnerPath: COACHING, tag: 'sparring/mieke'}});
+    const {r} = await open({via: 'ownerPage', owner: {kind: 'thread', scopeOwnerPath: COACHING, tag: 'sparring/jordan'}});
     expect(texts(r).some(t => t.startsWith('Next here: ') && t.endsWith('· next today ›'))).toBe(true);
     expect(texts(r).some(t => t.startsWith('Today next:'))).toBe(false);
     expect(texts(r).some(t => t.startsWith('From Thread'))).toBe(false);

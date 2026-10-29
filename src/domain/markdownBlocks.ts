@@ -5,15 +5,33 @@
  *
  * Supported: `#`-`######` headings, `-`/`*`/`1.` list items (one nesting
  * level; wrapped continuation lines join the item), paragraphs,
- * `> quotes` (rendered as paragraphs), inline `**bold**`, `` `code` `` and
- * `[text](url)` (shown as text), and fenced code blocks (lines between
+ * `> quotes` (rendered as paragraphs), inline `**bold**`, `*italic*`, `` `code` `` and
+ * `[text](url)` (a link to another help page, `page.md` or `page.md#heading`,
+ * keeps its target as `link`; any other link shows as its text;
+ * docs/dev/history/technical-design-easy-start.md §2.1), and fenced code blocks (lines between
  * two ``` fences, kept verbatim; long ones are split into chunks of
  * CODE_CHUNK_LINES so a pager can place them). Anything else is shown as
  * plain text.
  * Pure; no RN imports.
  */
 
-export type InlineSpan = {text: string; bold?: boolean; code?: boolean};
+export interface HelpLinkTarget {
+  /** A docs/user page id (file name without `.md`). */
+  page: string;
+  /** A heading slug (domain/helpLinks.ts's headingSlug), or null for the page top. */
+  anchor: string | null;
+}
+
+export type InlineSpan = {text: string; bold?: boolean; italic?: boolean; code?: boolean; link?: HelpLinkTarget};
+
+/** The only link targets that stay links: a help page, optionally with a heading anchor. */
+const PAGE_LINK = /^([a-z0-9-]+)\.md(?:#([a-z0-9-]+))?$/;
+
+/** The help page a link target points to, or null for anything else (web addresses, images, other files). */
+export function helpLinkTarget(target: string): HelpLinkTarget | null {
+  const m = PAGE_LINK.exec(target);
+  return m ? {page: m[1], anchor: m[2] ?? null} : null;
+}
 
 export type MarkdownBlock =
   | {kind: 'heading'; level: number; spans: InlineSpan[]}
@@ -28,21 +46,47 @@ const FENCE = /^\s*```/;
 const HEADING = /^(#{1,6})\s+(.*)$/;
 const ITEM = /^(\s*)([-*+]|\d+[.)])\s+(.*)$/;
 
-/** Splits one line of text into bold / code / plain spans; links become their text. */
-export function parseInline(text: string): InlineSpan[] {
-  const withoutLinks = text.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, '$1');
+/** Plain or link spans of a text without bold or code: a page link keeps its target, other links become their text. */
+function linkSpans(text: string, extra: {bold?: boolean; italic?: boolean}): InlineSpan[] {
   const spans: InlineSpan[] = [];
-  const re = /(\*\*([^*]+)\*\*|`([^`]+)`)/g;
+  const re = /\[([^\]]+)\]\(([^)\s]+)\)/g;
   let last = 0;
   let m: RegExpExecArray | null;
-  while ((m = re.exec(withoutLinks)) !== null) {
-    if (m.index > last) {spans.push({text: withoutLinks.slice(last, m.index)});}
-    if (m[2] !== undefined) {spans.push({text: m[2], bold: true});}
-    else {spans.push({text: m[3], code: true});}
+  while ((m = re.exec(text)) !== null) {
+    if (m.index > last) {spans.push({text: text.slice(last, m.index), ...extra});}
+    const link = helpLinkTarget(m[2]);
+    spans.push(link ? {text: m[1], ...extra, link} : {text: m[1], ...extra});
     last = m.index + m[0].length;
   }
-  if (last < withoutLinks.length) {spans.push({text: withoutLinks.slice(last)});}
-  return spans.length > 0 ? spans : [{text: ''}];
+  if (last < text.length) {spans.push({text: text.slice(last), ...extra});}
+  return spans;
+}
+
+/** Splits one line of text into bold / italic / code / link / plain spans. A single `*` with a space after it ("5 * 3") stays text. */
+export function parseInline(text: string): InlineSpan[] {
+  const spans: InlineSpan[] = [];
+  const re = /(\*\*([^*]+)\*\*|\*([^*\s](?:[^*]*[^*\s])?)\*|`([^`]+)`)/g;
+  let last = 0;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(text)) !== null) {
+    if (m.index > last) {spans.push(...linkSpans(text.slice(last, m.index), {}));}
+    if (m[2] !== undefined) {spans.push(...linkSpans(m[2], {bold: true}));}
+    else if (m[3] !== undefined) {spans.push(...linkSpans(m[3], {italic: true}));}
+    else {spans.push({text: m[4], code: true});}
+    last = m.index + m[0].length;
+  }
+  if (last < text.length) {spans.push(...linkSpans(text.slice(last), {}));}
+  // A link that stays text joins its neighbours, so a line without page links is the spans it always was.
+  const merged: InlineSpan[] = [];
+  for (const span of spans) {
+    const prev = merged[merged.length - 1];
+    if (prev && !prev.link && !span.link && !prev.code && !span.code && !!prev.bold === !!span.bold && !!prev.italic === !!span.italic) {
+      merged[merged.length - 1] = {...prev, text: prev.text + span.text};
+    } else {
+      merged.push(span);
+    }
+  }
+  return merged.length > 0 ? merged : [{text: ''}];
 }
 
 export function parseMarkdownBlocks(markdown: string): MarkdownBlock[] {

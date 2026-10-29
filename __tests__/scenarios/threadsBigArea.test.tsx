@@ -32,7 +32,7 @@ function putBigScope(edit: (name: string, content: string) => string = (_n, c) =
 async function openAtruvia(): Promise<void> {
   await openApp({settings: bigSettings()});
   await tapTab('Areas');
-  await tap(/^Atruvia/);
+  await tap(/^Team/);
 }
 
 /** The roster entries the Threads list was handed, in row order (the list pages them on the device). */
@@ -59,11 +59,11 @@ const goldenLines = () => {
 const rosterBuilds = () => device().logs.filter(l => l.text.startsWith('tendingRoster: built')).length;
 
 scenario('A big Area\'s Threads tab shows the same counterparts and signals as before, built once', {feature: 'Threads', design: 'technical-design-perf-threads.md'}, () => {
-  given('area "Atruvia" with 2 projects, 26 counterparts, 133 meetings and 97 todos (half agreed in a meeting, some in the Inbox and in area "Zen", two with a renamed meeting)', () => {
+  given('area "Team" with 2 projects, 26 counterparts, 133 meetings and 97 todos (half agreed in a meeting, some in the Inbox and in area "Zen", two with a renamed meeting)', () => {
     clock();
     putBigScope();
   });
-  when('I open Atruvia\'s page', openAtruvia);
+  when('I open Team\'s page', openAtruvia);
   and('I unfold the inactive counterparts', () => tap(/^\d+ inactive ▸$/));
   then('the Threads tab lists New, Active and Inactive counterparts with the recorded last/next, I-owe and Waiting', () => {
     expect(rosterLines(threadEntries())).toEqual(goldenLines());
@@ -81,13 +81,13 @@ scenario('A big Area\'s Threads tab shows the same counterparts and signals as b
 
 scenario('Renaming a meeting in Quick Add updates the Threads tab of the big Area', {feature: 'Threads', design: 'technical-design-perf-threads.md'}, () => {
   const meetingDay = bigDay(9);
-  given('area "Atruvia" of the big data set also has a todo agreed in "1:1 Ines" on a day only "1:1 Vera" has a meeting', () => {
+  given('area "Team" of the big data set also has a todo agreed in "1:1 Ines" on a day only "1:1 Vera" has a meeting', () => {
     clock();
     putBigScope((name, content) =>
-      name === 'Atruvia' ? content.replace('## Tasks\n\n', `## Tasks\n\n- [ ] Ines: book the room [meeting:: ${meetingDay} 1:1 Ines 101/ines]\n`) : content,
+      name === 'Team' ? content.replace('## Tasks\n\n', `## Tasks\n\n- [ ] Ines: book the room [meeting:: ${meetingDay} 1:1 Ines 101/ines]\n`) : content,
     );
   });
-  when('I open Atruvia\'s page', openAtruvia);
+  when('I open Team\'s page', openAtruvia);
   then('Ines has no next meeting and owes nothing', () => {
     const ines = threadEntries().find(e => e.counterpart.leaf === 'ines')!;
     expect([ines.nextMeeting, ines.oweCount]).toEqual([null, 0]);
@@ -99,7 +99,7 @@ scenario('Renaming a meeting in Quick Add updates the Threads tab of the big Are
     await tap('Save');
   });
   then('the file has the new title', () => {
-    expect(sectionLines(`${bigScopeFiles().find(f => f.name === 'Atruvia')!.path}`, 'Meetings')).toContain(`- ${meetingDay} 10:00-11:00 1:1 Ines #101/ines`);
+    expect(sectionLines(`${bigScopeFiles().find(f => f.name === 'Team')!.path}`, 'Meetings')).toContain(`- ${meetingDay} 10:00-11:00 1:1 Ines #101/ines`);
   });
   and('Ines shows the meeting as next, and the todo agreed in it as one more I-owe', () => {
     const ines = threadEntries().find(e => e.counterpart.leaf === 'ines')!;

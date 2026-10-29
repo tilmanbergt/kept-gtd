@@ -20,7 +20,7 @@ import {notePieceUserData} from '../domain/meetingNoteBlock';
 import {planPageKeywords} from '../domain/noteFindability';
 import {NoteHeadingStyle} from '../domain/settings';
 import {PageLayout, pieceIsHeading} from '../domain/pageLayout';
-import {deleteKeyWord, getElements, getKeyWords, insertElements, insertKeyWord} from '../supernote/fileSystem';
+import {deleteKeyWord, getElements, getKeyWords, insertElements, insertKeyWord} from '../supernote/noteFileApi';
 import {buildTitleElement, ElementWithTitle} from '../supernote/noteTitles';
 import {recycleElements} from '../supernote/sdkElements';
 import {errorMessage} from '../utils/errorMessage';

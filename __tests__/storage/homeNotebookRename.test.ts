@@ -6,6 +6,10 @@ const mockAreaPath = '/n/2 Areas/People Leadership';
 const mockOtherPath = '/n/1 Projects/Hiring';
 const mockFiles = new Set<string>([`${mockAreaPath}/Leadership 2026.note`]);
 const mockMoves: Array<[string, string]> = [];
+// The fileSystem mock below replaced the whole module, the note and host calls included; they live in their own modules now.
+jest.mock('../../src/supernote/noteFileApi', () => ({}));
+jest.mock('../../src/supernote/hostCall', () => ({}));
+jest.mock('../../src/supernote/hostContext', () => ({}));
 jest.mock('../../src/supernote/fileSystem', () => ({
   fileExists: async (p: string) => mockFiles.has(p),
   moveFile: async (from: string, to: string) => {

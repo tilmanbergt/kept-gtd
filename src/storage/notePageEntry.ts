@@ -7,7 +7,7 @@
  * (storage/threadProvenance.ts).
  */
 import {ALL_PAGE_ENTRY_KINDS, notePageCandidates, PageEntry, PageEntryKind, PageEntrySource, sharedPageHit} from '../domain/notePageEntry';
-import {getKeyWords} from '../supernote/fileSystem';
+import {getKeyWords} from '../supernote/noteFileApi';
 import {errorMessage} from '../utils/errorMessage';
 import {logError} from '../utils/log';
 

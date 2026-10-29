@@ -9,6 +9,10 @@
  * (noteSetups/), Contexts saves each context itself, and the switches on Features, Advanced and About write immediately and
  * update the draft too, so a later Save can't write an old value back.
  *
+ * The setup assistant (SetupAssistant.tsx) is drawn in place of the tabs while
+ * it runs: started by App on a fresh install (`startSetup`), or with Run setup
+ * assistant on the Folders tab.
+ *
  * `initialTab` lets another screen land on a tab (e.g. a Google Calendar
  * panel's "Open Calendar Settings"). It is read once: a tab switch away from
  * Settings unmounts it.
@@ -35,11 +39,13 @@ import {perfEnable} from '../../utils/perf';
 import {requestEinkRefresh} from '../../utils/screenRefresh';
 import AboutTab from './AboutTab';
 import AdvancedTab from './AdvancedTab';
+import DeviceCheckScreen from './DeviceCheckScreen';
 import FeaturesTab from './FeaturesTab';
 import ContextsTab from './contexts/ContextsTab';
 import {useContextsDraft} from './contexts/useContextsDraft';
 import {CalendarTab, FoldersTab, GmailTab} from './DraftTabs';
 import {styles} from './settingsStyles';
+import SetupAssistant from './SetupAssistant';
 import TouchTestScreen from './TouchTestScreen';
 import NoteSetupsTab from './noteSetups/NoteSetupsTab';
 import {useMyStylePngs} from './noteSetups/useMyStylePngs';
@@ -68,9 +74,13 @@ interface Props {
   initialTab?: SettingsTab;
   /** Switches the active profile (App.tsx resets and remounts the app) - docs/dev/history/technical-design-profiles-demo-space.md. */
   onSwitchProfile?: (id: string) => Promise<void>;
+  /** Opens with the setup assistant running (a fresh install, read once). */
+  startSetup?: boolean;
+  /** The assistant closed: `finished` after Finish (App then opens the Projects tab), false after Skip. */
+  onSetupClosed?: (finished: boolean) => void;
 }
 
-export default function Settings({initialTab, onSwitchProfile}: Props): React.JSX.Element {
+export default function Settings({initialTab, onSwitchProfile, startSetup = false, onSetupClosed}: Props): React.JSX.Element {
   const {isDarkMode, textColor, placeholderColor} = useThemeColors();
   // Settings keeps its own, slightly lighter border shade.
   const borderColor = isDarkMode ? '#444444' : '#cccccc';
@@ -94,6 +104,9 @@ export default function Settings({initialTab, onSwitchProfile}: Props): React.JS
   const confirmFileNameFix = useStatusConfirm('Settings.fileNameFix');
   // Advanced → Touch test, drawn in place of the settings while open.
   const [touchTestOpen, setTouchTestOpen] = useState(false);
+  // Advanced → Check device files (debug logging on), drawn in place of the settings while open.
+  const [deviceCheckOpen, setDeviceCheckOpen] = useState(false);
+  const [setupOpen, setSetupOpen] = useState(startSetup);
   // "Reload all files" (Advanced).
   const [reloading, setReloading] = useState(false);
   const [reloadResult, setReloadResult] = useState<{kind: 'success' | 'error'; text: string} | null>(null);
@@ -235,6 +248,43 @@ export default function Settings({initialTab, onSwitchProfile}: Props): React.JS
     );
   }
 
+  if (deviceCheckOpen) {
+    return (
+      <DeviceCheckScreen
+        onClose={() => {
+          setDeviceCheckOpen(false);
+          requestEinkRefresh();
+        }}
+      />
+    );
+  }
+
+  if (setupOpen) {
+    return (
+      <View style={[styles.container, styles.background]}>
+        <View style={styles.content}>
+          <SetupAssistant
+            current={values}
+            onDone={saved => {
+              setSetupOpen(false);
+              if (saved) {
+                setValues(saved);
+                setFeatures(featuresOf(saved));
+              } else {
+                setValues(v => ({...v, setupAssistant: 'done'}));
+              }
+              requestEinkRefresh();
+              onSetupClosed?.(saved !== null);
+            }}
+            textColor={textColor}
+            borderColor={borderColor}
+            placeholderColor={placeholderColor}
+          />
+        </View>
+      </View>
+    );
+  }
+
   const tabProps = {textColor, borderColor, placeholderColor};
   return (
     <View style={[styles.container, styles.background]}>
@@ -242,7 +292,7 @@ export default function Settings({initialTab, onSwitchProfile}: Props): React.JS
         <MiniTabs tabs={settingsTabs} activeKey={activeTab} onChange={setActiveTab} textColor={textColor} borderColor={borderColor} />
 
         <View style={styles.tabBody}>
-          {activeTab === 'folders' && <FoldersTab draft={draft} {...tabProps} />}
+          {activeTab === 'folders' && <FoldersTab draft={draft} onRunSetup={() => setSetupOpen(true)} {...tabProps} />}
           {activeTab === 'contexts' && <ContextsTab draft={contextsDraft} values={values} {...tabProps} />}
           {activeTab === 'calendar' && <CalendarTab draft={draft} {...tabProps} />}
           {activeTab === 'gmail' && <GmailTab draft={draft} {...tabProps} />}
@@ -276,6 +326,8 @@ export default function Settings({initialTab, onSwitchProfile}: Props): React.JS
               onToggleKeepTabsAlive={() => toggleNow('keepTabsAlive')}
               onRunIntegrityCheck={handleRunIntegrityCheck}
               onOpenTouchTest={() => setTouchTestOpen(true)}
+              debugLogging={values.debugLogging}
+              onOpenDeviceCheck={() => setDeviceCheckOpen(true)}
               textColor={textColor}
               borderColor={borderColor}
             />

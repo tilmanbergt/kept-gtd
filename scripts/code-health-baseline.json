@@ -1,5 +1,3 @@
 {
-  "maxLines": {
-    "src/supernote/fileSystem.ts": 1248
-  }
+  "maxLines": {}
 }

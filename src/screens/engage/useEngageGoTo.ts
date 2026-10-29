@@ -11,7 +11,7 @@ import {homeNotebookGoTo} from '../../domain/homeNotebook';
 import {findCachedItem} from '../../storage/dataCache';
 import {homeNotebookOf, loadHomeNotebookYears} from '../../storage/homeNotebooks';
 import {loadSettings} from '../../storage/settingsStorage';
-import {getCurrentNotePath} from '../../supernote/fileSystem';
+import {getCurrentNotePath} from '../../supernote/hostContext';
 import {errorMessage} from '../../utils/errorMessage';
 import {log, logWarn} from '../../utils/log';
 

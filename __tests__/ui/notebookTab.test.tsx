@@ -31,6 +31,10 @@ jest.mock('../../src/storage/notebookContents', () => ({loadContents: (p: string
 jest.mock('../../src/ui/useCachedItems', () => ({useCachedItems: () => mockItems}));
 const mockItems = [{path: '/n/2 Areas/Lead', name: 'Lead', tasks: [], meetings: []}];
 let mockFiles: string[] = [];
+// The fileSystem mock below replaced the whole module, the note and host calls included; they live in their own modules now.
+jest.mock('../../src/supernote/noteFileApi', () => ({}));
+jest.mock('../../src/supernote/hostCall', () => ({}));
+jest.mock('../../src/supernote/hostContext', () => ({}));
 jest.mock('../../src/supernote/fileSystem', () => ({
   listFolderEntries: async (folder: string) => mockFiles.map(name => ({name, path: `${folder}/${name}`, isFolder: false})),
 }));

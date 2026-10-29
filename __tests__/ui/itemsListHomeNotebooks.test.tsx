@@ -19,8 +19,14 @@ jest.mock('../../src/storage/settingsStorage', () => ({
     return {...s.DEFAULT_SETTINGS, noteSetupDefaults: {...setups.seedNoteSetupDefaults(), notebook: {name: '{name} {year}', folder: ''}}};
   },
 }));
-jest.mock('../../src/supernote/fileSystem', () => ({
+jest.mock('../../src/supernote/devicePaths', () => ({
   displayPath: (p: string) => p,
+}));
+// The fileSystem mock below replaced the whole module, the note and host calls included; they live in their own modules now.
+jest.mock('../../src/supernote/noteFileApi', () => ({}));
+jest.mock('../../src/supernote/hostCall', () => ({}));
+jest.mock('../../src/supernote/hostContext', () => ({}));
+jest.mock('../../src/supernote/fileSystem', () => ({
   statFiles: async (paths: string[]) => paths.map(path => ({path, exists: path.includes('/Garden/'), lastModified: 0, size: 0})),
   subscribeFolderChanges: () => () => undefined,
 }));

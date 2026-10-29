@@ -12,7 +12,7 @@ import {BUILD_INFO} from '../../generated/buildInfo';
 import {CHANGELOG} from '../../generated/changelog';
 import {exportDebugBundle} from '../../storage/debugBundle';
 import {loadSettings} from '../../storage/settingsStorage';
-import {DEBUG_LOG_FOLDER_PATH, displayPath} from '../../supernote/fileSystem';
+import {DEBUG_LOG_FOLDER_PATH, displayPath} from '../../supernote/devicePaths';
 import {getRuntimeDiagnostics, RuntimeDiagnostics} from '../../supernote/pluginRuntime';
 import MarkdownPager from '../../ui/MarkdownBlocks';
 import MiniTabs, {MiniTabDef} from '../../ui/MiniTabs';

@@ -153,7 +153,7 @@ export default function SetupFields(props: {draft: NoteSetupDraft} & Colors): Re
       </View>
       <Text style={[setupStyles.fieldHint, {color: textColor}]}>
         {setup.kind === 'thread'
-          ? 'Tended with someone: #sparring/peter is the thread with Peter.'
+          ? 'Tended with someone: #sparring/marco is the thread with Marco.'
           : 'A small project of its own: #workshop/offsite is one loop.'}
       </Text>
 

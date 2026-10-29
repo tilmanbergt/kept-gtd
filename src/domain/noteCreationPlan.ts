@@ -28,7 +28,7 @@ export type NoteCreationPlanKind =
 
 export interface NoteCreationPlan {
   kind: NoteCreationPlanKind;
-  /** The file, relative to the item's Project/Area folder - e.g. "Meetings/Coaching sabina 2026.note". */
+  /** The file, relative to the item's Project/Area folder - e.g. "Meetings/Coaching lena 2026.note". */
   file: string;
   /** The same file as an absolute path (for the detail text's full location). */
   absolutePath: string;

@@ -10,6 +10,44 @@ or your project/area files are stored.
 
 ## [Unreleased]
 
+### New
+- **Check device files** in Settings → Advanced (shown while Debug logging is on): lists the device's
+  top folders, the SD card and the file Kept was opened from, with buttons to open sample files - for
+  bug reports about files outside `Note`.
+- **Help pages link to each other**: tap a link (bold and underlined) to open that page, at the heading
+  it names; **‹ Back** in the help's header walks back through the pages you came from. Terms the help
+  explains are in italics, buttons and labels stay bold.
+- **Link files from anywhere**: the Files pane has a **Device** tab with the Supernote's folders next to
+  `Note` (`Document`, `EXPORT`, `INBOX`, `MyStyle`, `SCREENSHOT`, `Download`) and the SD card when one is
+  in - link a PDF from `Document` to a todo or meeting.
+- **This file**: opened from a note or a document, the Files pane offers **This file · p. 12** and
+  **This file** at the top while you link a file, and Quick Add shows a line to link it to every new
+  todo or meeting - on by default for a PDF or EPUB, off for a note.
+- **Setup assistant**: on the first start after installing, four short steps - your folders (existing
+  ones like `Projects` or `1 Projects` are suggested, nothing is moved), where notes go, Simple or
+  Everything, and the demo space. Finish shows which folders it creates, creates only those and opens
+  the Projects tab. Any time later: **Run setup assistant** in Settings → Folders.
+
+### Changed
+- **Getting started** is a short walk through Kept for simple needs - your folders, projects and
+  areas, todos, meetings, notes, capture, the weekly review - each step linking to its page. "The
+  tabs at a glance" and "Opening Kept GTD from a note" moved to the help's Overview. Every help page
+  uses examples from the demo space and links the terms it builds on.
+- **Help links everywhere**: every screen, panel, step and setting a help page names links to the
+  section that explains it, Getting started links every step to its details, and the Overview's tab
+  list links each tab. A new Overview section explains the status line.
+- The demo space's sparring partner is now **Jordan** (`#sparring/jordan`), with a promise
+  `#owe/jordan` to show I owe outside a meeting.
+
+### Upgrade notes
+- Help pages link to each other; the demo's sparring partner is now Jordan - recreate the demo space
+  to see it (delete `Note/kept-gtd-demo`, then **Create demo space** in Settings → Advanced).
+- One new setting, the setup assistant's state, saved per profile. An existing install keeps it
+  "done" and never sees the assistant by itself (Run setup assistant in Settings → Folders starts it);
+  only a fresh install starts with it. Going back to 0.22 ignores it.
+- No change to your project, area or Inbox files: a linked file outside `Note` is written with its
+  full path, `+[[/storage/emulated/0/Document/Book.pdf#page=12]]`, as lasso links from a PDF already are.
+
 ## [0.22.0] — 2026-10-29
 
 ### New

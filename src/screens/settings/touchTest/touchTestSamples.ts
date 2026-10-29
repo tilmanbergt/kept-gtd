@@ -28,10 +28,10 @@ const TEMPLATES: Template[] = [
   },
   {kind: 'task', line: n => `- [ ] ${n} Call about the offer #phone #office #errand`},
   {kind: 'task', line: n => `- [ ] ${n} Draft the budget #next #wf/meier [due:: ${isoDateOffset(3)}] +[[Files/Budget.pdf]]`},
-  {kind: 'task', line: n => `- [ ] ${n} Prepare questions #sparring/mieke`},
+  {kind: 'task', line: n => `- [ ] ${n} Prepare questions #sparring/jordan`},
   {kind: 'meeting', layout: 'oneLine', line: n => `- ${isoDateOffset(0)} 09:30-10:00 ${n} Stand-up`},
   {kind: 'task', line: n => `- [ ] ${n} Collect points for #retro/team → [[Notes/Retro.note]]`},
-  {kind: 'meeting', layout: 'twoLine', line: n => `- ${isoDateOffset(0)} 14:00-15:00 ${n} Planning #sparring/mieke → [[Meetings/Planning.note]]`},
+  {kind: 'meeting', layout: 'twoLine', line: n => `- ${isoDateOffset(0)} 14:00-15:00 ${n} Planning #sparring/jordan → [[Meetings/Planning.note]]`},
 ];
 
 /** Row `index` (0-based) of the endlessly repeating sample set, numbered `index + 1`. */

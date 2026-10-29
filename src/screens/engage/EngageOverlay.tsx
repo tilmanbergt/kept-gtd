@@ -290,6 +290,7 @@ export default function EngageOverlay({request, onClose, onOpenGtdpara, onExit}:
                 layoutKey="engage"
                 onAddTask={quickAdd.onAddTask}
                 onAddMeeting={quickAdd.onAddMeeting}
+                thisFileLine
                 provenance={quickAdd.provenance}
                 meetingSeed={quickAdd.meetingSeed}
                 agreements={{handlers: quickAdd.agreements.handlers, editTarget: quickAdd.agreements.editTarget, onCancelEdit: actions.edit.cancel}}

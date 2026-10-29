@@ -3,24 +3,34 @@
  * layer over the tab body (App.tsx renders it inside StatusFrame, so the
  * TabBar and the status slot stay visible and the tab screens stay mounted
  * underneath). Left: Overview + the groups/pages of docs/user/index.md;
- * right: the selected page, paged like "What's new".
+ * right: the selected page, paged like "What's new". Links between pages are
+ * tappable and ‹ Back walks back through the pages read
+ * (docs/dev/history/technical-design-easy-start.md §2.4; the history lives in
+ * screens/useAppOverlays.tsx).
  */
 import React, {useMemo} from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
 import {HELP_OVERVIEW_PAGE, stripLeadingTitle} from '../domain/helpTopics';
 import {USER_DOCS} from '../generated/userDocs';
+import {HelpLinkTarget} from '../domain/markdownBlocks';
 import MarkdownPager from './MarkdownBlocks';
 import {COLORS, FONT, SPACING, useThemeColors} from './theme';
 
 interface Props {
   pageId: string;
+  /** The block to open the page at; `key` changes with every navigation, so the same row can be jumped to again. */
+  jumpTo: {key: number; row: number};
   onSelectPage: (pageId: string) => void;
+  onLink: (link: HelpLinkTarget) => void;
+  /** Shown while there is a page to go back to. */
+  onBack: (() => void) | null;
+  onFirstRowChange: (row: number) => void;
   onClose: () => void;
 }
 
 const ROW_HEIGHT = 40;
 
-export default function HelpOverlay({pageId, onSelectPage, onClose}: Props): React.JSX.Element {
+export default function HelpOverlay({pageId, jumpTo, onSelectPage, onLink, onBack, onFirstRowChange, onClose}: Props): React.JSX.Element {
   const {textColor, borderColor} = useThemeColors();
   const page = USER_DOCS.pages[pageId] ?? USER_DOCS.pages[HELP_OVERVIEW_PAGE];
   const shownId = USER_DOCS.pages[pageId] ? pageId : HELP_OVERVIEW_PAGE;
@@ -45,6 +55,11 @@ export default function HelpOverlay({pageId, onSelectPage, onClose}: Props): Rea
       <View style={[styles.left, {borderColor}]}>
         <View style={[styles.leftHeader, {borderColor}]}>
           <Text style={[styles.helpTitle, {color: textColor}]}>Help</Text>
+          {onBack && (
+            <Pressable onPress={onBack} hitSlop={10} style={styles.closeButton}>
+              <Text style={[styles.closeText, {color: textColor}]}>‹ Back</Text>
+            </Pressable>
+          )}
           <Pressable onPress={onClose} hitSlop={10} style={styles.closeButton}>
             <Text style={[styles.closeText, {color: textColor}]}>✕ Close</Text>
           </Pressable>
@@ -63,6 +78,9 @@ export default function HelpOverlay({pageId, onSelectPage, onClose}: Props): Rea
             markdown={markdown}
             header={page.title}
             resetKey={shownId}
+            jumpTo={jumpTo}
+            onLink={onLink}
+            onFirstRowChange={onFirstRowChange}
             emptyHint="This page is empty."
             textColor={textColor}
             borderColor={borderColor}
@@ -94,7 +112,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     marginBottom: SPACING.xs,
   },
-  helpTitle: {fontSize: FONT.medium, fontWeight: '700'},
+  helpTitle: {fontSize: FONT.medium, fontWeight: '700', flex: 1},
   closeButton: {paddingHorizontal: SPACING.sm, paddingVertical: 4},
   closeText: {fontSize: FONT.medium, fontWeight: '600'},
   groupTitle: {

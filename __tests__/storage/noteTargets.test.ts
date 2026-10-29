@@ -49,13 +49,13 @@ describe('placeNoteCandidates', () => {
   });
 
   it('a todo of an active loop: the loop note first, then the notebook', () => {
-    const placed = placeNoteCandidates(input(['workshop/offsite', 'sparring/peter']));
-    expect(placed.map(noteFileKey)).toEqual(['2026-11 workshop offsite.note', 'Sparring/sparring peter 2026.note']);
+    const placed = placeNoteCandidates(input(['workshop/offsite', 'sparring/marco']));
+    expect(placed.map(noteFileKey)).toEqual(['2026-11 workshop offsite.note', 'Sparring/sparring marco 2026.note']);
     expect(placed[0].loopNote?.loop.tag).toBe('workshop/offsite');
   });
 
   it('a meeting: the notebook first', () => {
-    const placed = placeNoteCandidates(input(['workshop/offsite', 'sparring/peter'], {pageKind: 'meeting'}));
+    const placed = placeNoteCandidates(input(['workshop/offsite', 'sparring/marco'], {pageKind: 'meeting'}));
     expect(placed.map(p => p.candidate.setup?.name)).toEqual(['Sparring', 'Workshop']);
   });
 
@@ -90,23 +90,23 @@ describe('placeNoteCandidates', () => {
       ],
     };
     mockAbbrev = 'CO';
-    expect(placeNoteCandidates(input(['sparring/peter'], {settings: named, pageKind: 'meeting'}))[0].shared?.fileName).toBe('CO sparring peter 2026');
+    expect(placeNoteCandidates(input(['sparring/marco'], {settings: named, pageKind: 'meeting'}))[0].shared?.fileName).toBe('CO sparring marco 2026');
     expect(placeNoteCandidates(input(['workshop/offsite'], {settings: named}))[0].shared?.fileName).toBe('Coaching offsite');
     mockAbbrev = null;
-    expect(placeNoteCandidates(input(['sparring/peter'], {settings: named, pageKind: 'meeting'}))[0].shared?.fileName).toBe('Coaching sparring peter 2026');
+    expect(placeNoteCandidates(input(['sparring/marco'], {settings: named, pageKind: 'meeting'}))[0].shared?.fileName).toBe('Coaching sparring marco 2026');
   });
 
   it('Inbox: the best setup, its own note', () => {
-    const placed = placeNoteCandidates(input(['sparring/peter'], {forceOwn: true}));
+    const placed = placeNoteCandidates(input(['sparring/marco'], {forceOwn: true}));
     expect(placed.map(p => [p.candidate.setup?.name, p.candidate.target, p.shared])).toEqual([['Sparring', 'own', null]]);
   });
 });
 
 describe('layoutForLink', () => {
-  const tags = ['workshop/offsite', 'sparring/peter'];
+  const tags = ['workshop/offsite', 'sparring/marco'];
 
   it('a page in the notebook uses the Thread setup layout, even when the loop is the default place', () => {
-    expect(layoutForLink({...input(tags), linkedFile: 'Sparring/sparring peter 2026.note'})).toBe(sparringTodo);
+    expect(layoutForLink({...input(tags), linkedFile: 'Sparring/sparring marco 2026.note'})).toBe(sparringTodo);
   });
 
   it('a page in the loop note uses the Loop setup layout', () => {

@@ -134,20 +134,21 @@ export function buildDemoFiles(today: Date): DemoFile[] {
   });
   // A sparring thread with agreements, and a loop with a meeting today
   // (docs/dev/history/technical-design-engage-in-context.md §5).
-  const sparring = 'Sparring Mieke #sparring/mieke';
+  const sparring = 'Sparring Jordan #sparring/jordan';
   const agreed = (offset: number) => `[meeting:: ${meetingKey({date: d(offset), title: sparring})}]`;
   const planning = 'Offsite planning #workshop/offsite';
   area('Coaching', {
     abbrev: 'CO',
     scope: 'Sparring and workshops: people grow, agreements are kept.',
     tasks: [
-      `- [ ] Send Mieke the role canvas #next ${agreed(-7)}`,
+      `- [ ] Send Jordan the role canvas #next ${agreed(-7)}`,
       `- [ ] Draft feedback for the team lead ${agreed(-7)}`,
-      `- [ ] Org chart from Mieke #wf ${agreed(-7)}`,
+      `- [ ] Org chart from Jordan #wf ${agreed(-7)}`,
       `- [ ] Old point from the first session ${agreed(-14)}`,
-      "- [ ] Read Mieke's article #mieke #next",
-      '- [ ] Contract draft #wf/mieke',
-      '- [ ] Invite Mieke to the forum #sparring/mieke #someday',
+      "- [ ] Read Jordan's article #jordan #next",
+      '- [ ] Contract draft #wf/jordan',
+      `- [ ] Send Jordan the book tip #owe/jordan [due:: ${d(4)}]`,
+      '- [ ] Invite Jordan to the forum #sparring/jordan #someday',
       '- [ ] Book the workshop room #workshop/offsite #next',
       `- [ ] Print the handouts [meeting:: ${meetingKey({date: d(0), title: planning})}]`,
     ],
@@ -157,9 +158,9 @@ export function buildDemoFiles(today: Date): DemoFile[] {
       `- ${d(7)} 10:00-11:00 ${sparring}`,
       `- ${d(0)} 11:00-12:00 ${planning}`,
       `- ${d(1)} 09:00-10:30 Prepare the workshop #workshop/offsite #focusblock`,
-      `- ${d(6)} 16:00-16:45 Think through the sparring #sparring/mieke #focusblock`,
+      `- ${d(6)} 16:00-16:45 Think through the sparring #sparring/jordan #focusblock`,
     ],
-    sections: ['## Threads', '', '- mieke: active', '', '## Loops', '', `- workshop/offsite: active, ${d(14)}`, ''],
+    sections: ['## Threads', '', '- jordan: active', '', '## Loops', '', `- workshop/offsite: active, ${d(14)}`, ''],
   });
   // A home notebook a loop shares (docs/dev/history/technical-design-engage-page-owner.md §6): the Races
   // setup names its loop notes like the Default, so loop race/marathon's note is "Sport <year>.note".

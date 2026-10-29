@@ -144,7 +144,7 @@ scenario('A second tap edits; Save writes it and shows the card again', {feature
 });
 
 scenario('Tick R and M on the card: only the tags change', {feature: 'Meetings', design: 'technical-design-item-card.md'}, () => {
-  const line = `- ${lastWeek} 10:00-11:00 Sparring Mieke #sparring/mieke`;
+  const line = `- ${lastWeek} 10:00-11:00 Sparring Jordan #sparring/jordan`;
   given('area "Coaching" has a sparring session last week, tracked for review', () => {
     putFile(areaFile('Coaching'), dataFile('area', {Scope: [], Tasks: [], Meetings: [line]}, ['abbrev: Co']));
   });
@@ -152,7 +152,7 @@ scenario('Tick R and M on the card: only the tags change', {feature: 'Meetings',
     await openApp({settings: sparringSettings()});
     await tapTab('Areas');
     await tap(/^Coaching/);
-    await tap(/^Sparring Mieke/);
+    await tap(/^Sparring Jordan/);
     await tapLabel('Reviewed');
     await tapLabel('Month highlight');
   });
@@ -303,8 +303,8 @@ scenario('Todo card: the meeting a todo was agreed in opens its thread', {featur
       areaFile('Coaching'),
       dataFile('area', {
         Scope: [],
-        Tasks: [`- [ ] Send Mieke the role canvas [meeting:: ${lastWeek} Sparring Mieke sparring/mieke]`],
-        Meetings: [`- ${lastWeek} 10:00-11:00 Sparring Mieke #sparring/mieke`],
+        Tasks: [`- [ ] Send Jordan the role canvas [meeting:: ${lastWeek} Sparring Jordan sparring/jordan]`],
+        Meetings: [`- ${lastWeek} 10:00-11:00 Sparring Jordan #sparring/jordan`],
       }),
     );
   });
@@ -312,12 +312,12 @@ scenario('Todo card: the meeting a todo was agreed in opens its thread', {featur
     await openApp();
     await tapTab('Areas');
     await tap(/^Coaching/);
-    await tap('Send Mieke the role canvas');
+    await tap('Send Jordan the role canvas');
   });
-  then('its card names the meeting', () => expectShows('↳ Sparring Mieke ›'));
-  when('I tap it', () => tap('↳ Sparring Mieke ›'));
+  then('its card names the meeting', () => expectShows('↳ Sparring Jordan ›'));
+  when('I tap it', () => tap('↳ Sparring Jordan ›'));
   then('the thread overview opens', () => {
     expectShows('Looking back');
-    expectShows('#sparring/mieke');
+    expectShows('#sparring/jordan');
   });
 });

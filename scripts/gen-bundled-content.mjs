@@ -37,7 +37,8 @@ import {
   targetVersion,
   unreleasedIsEmpty,
 } from './lib/versioning.mjs';
-import {buildUserDocs, renderUserDocsTs} from './lib/userDocs.mjs';
+import {buildUserDocs, checkLinks, renderUserDocsTs} from './lib/userDocs.mjs';
+import {importTs} from './lib/tsModule.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const P = {
@@ -102,7 +103,7 @@ function gitInfo(version) {
   return {commit, dirty, release: tagged && !dirty && commit !== 'unknown'};
 }
 
-function generate({build, stage = 'alpha'}) {
+async function generate({build, stage = 'alpha'}) {
   if (!BUILD_STAGES.includes(stage)) throw new Error(`unknown stage "${stage}" (${BUILD_STAGES.join(', ')})`);
   const version = packageVersion();
   const nextVersion = packageNextVersion();
@@ -145,6 +146,11 @@ function generate({build, stage = 'alpha'}) {
         .filter(f => f.endsWith('.md'))
         .map(f => ({id: f.slice(0, -3), markdown: read(join(P.userDocsDir, f))}))
     : [];
+  // Every link between help pages and every heading anchor must resolve (technical-design-easy-start.md §2.5),
+  // checked with the app's own slug rule.
+  const {pageAnchors} = await importTs(join(ROOT, 'src', 'domain', 'helpLinks.ts'));
+  const broken = checkLinks(docFiles, pageAnchors);
+  if (broken.length > 0) throw new Error(`broken help links:\n  ${broken.join('\n  ')}`);
   writeIfChanged(join(P.generatedDir, 'userDocs.ts'), renderUserDocsTs(buildUserDocs(docFiles)));
 
   if (build) {
@@ -212,7 +218,7 @@ function setNext(version) {
   console.log(`Next version set to ${version}: builds are now labelled ${version}-alpha / ${version}-beta`);
 }
 
-function main(argv) {
+async function main(argv) {
   const [cmd, a, b] = argv;
   switch (cmd) {
     case undefined:
@@ -250,9 +256,7 @@ function main(argv) {
   }
 }
 
-try {
-  main(process.argv.slice(2));
-} catch (e) {
+main(process.argv.slice(2)).catch(e => {
   console.error(`gen-bundled-content: ${e.message}`);
   process.exit(1);
-}
+});

@@ -33,7 +33,7 @@ export interface AgreementCardOptions {
 export interface AgreementCardData {
   ref: AgreementRef;
   heading: string;
-  /** "↳ Sparring Mieke ›" with what it opens, or null. */
+  /** "↳ Sparring Jordan ›" with what it opens, or null. */
   madeIn: {label: string; onPress?: () => void} | null;
   title: string;
   tags: string[];

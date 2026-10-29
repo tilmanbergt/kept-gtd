@@ -26,8 +26,8 @@ describe('threadTypesOf', () => {
 });
 
 describe('scopes', () => {
-  const area = item('area', 'Atruvia');
-  const inArea = item('project', 'Tender', {area: 'Atruvia'});
+  const area = item('area', 'Team');
+  const inArea = item('project', 'Tender', {area: 'Team'});
   const lone = item('project', 'Solo');
   const orphan = item('project', 'Orphan', {area: 'Gone'});
   const done = item('project', 'Old', {status: 'done'});
@@ -43,22 +43,22 @@ describe('scopes', () => {
 
   it('lists Areas with their Projects, then lone Projects; Active and On Hold owners only', () => {
     const scopes = counterpartScopes(items);
-    expect(scopes.map(s => s.owner.name)).toEqual(['Atruvia', 'Solo', 'Orphan']);
-    expect(scopes[0].members.map(m => m.name)).toEqual(['Atruvia', 'Tender']);
+    expect(scopes.map(s => s.owner.name)).toEqual(['Team', 'Solo', 'Orphan']);
+    expect(scopes[0].members.map(m => m.name)).toEqual(['Team', 'Tender']);
   });
 });
 
 describe('counterpartsOf', () => {
   it('is one counterpart for an Area and its Projects, confirmed once', () => {
-    const area = item('area', 'Atruvia', {
-      meetings: [meeting('2026-09-30', '1:1 Mieke #101/mieke', {tags: ['101/mieke']})],
-      threads: lines('- mieke: active\n'),
+    const area = item('area', 'Team', {
+      meetings: [meeting('2026-09-30', '1:1 Jordan #101/jordan', {tags: ['101/jordan']})],
+      threads: lines('- jordan: active\n'),
     });
-    const project = item('project', 'Tender', {area: 'Atruvia', tasks: [task('Raise budget #101/mieke')]});
+    const project = item('project', 'Tender', {area: 'Team', tasks: [task('Raise budget #101/jordan')]});
     const [scope] = counterpartScopes([area, project]);
     const cps = counterpartsOf(scope, TYPES, NOW);
     expect(cps).toEqual([
-      {leaf: 'mieke', status: 'active', threads: [{type: '101', counterpart: 'mieke', tag: '101/mieke'}], oneOff: null, inUse: true, backInUse: false},
+      {leaf: 'jordan', status: 'active', threads: [{type: '101', counterpart: 'jordan', tag: '101/jordan'}], oneOff: null, inUse: true, backInUse: false},
     ]);
   });
 
@@ -93,13 +93,13 @@ describe('counterpartsOf', () => {
   });
 
   it('lists status lines nobody uses, and merges a stray section in a member Project (owner wins)', () => {
-    const area = item('area', 'Atruvia', {threads: lines('- old: inactive\n- sven: active\n')});
-    const project = item('project', 'Tender', {area: 'Atruvia', threads: lines('- sven: inactive\n- stray: active\n'), tasks: [task('x #101/sven')]});
+    const area = item('area', 'Team', {threads: lines('- old: inactive\n- sam: active\n')});
+    const project = item('project', 'Tender', {area: 'Team', threads: lines('- sam: inactive\n- stray: active\n'), tasks: [task('x #101/sam')]});
     const cps = counterpartsOf(counterpartScopes([area, project])[0], TYPES, NOW);
     expect(cps.map(c => [c.leaf, c.status, c.inUse])).toEqual([
       ['old', 'inactive', false],
+      ['sam', 'active', true],
       ['stray', 'active', false],
-      ['sven', 'active', true],
     ]);
   });
 

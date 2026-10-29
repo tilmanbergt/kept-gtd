@@ -20,7 +20,7 @@ import {Meeting} from './types';
 export const REFLECTION_KEYWORD_PREFIX = 'reflection ';
 
 /**
- * `reflection 2026-10-14 Sparring Mieke #sparring/mieke`, fitted to the keyword
+ * `reflection 2026-10-14 Sparring Jordan #sparring/jordan`, fitted to the keyword
  * limit (`fitKeyword` leaves the tags out first). Built from the display title,
  * so state tags (`#prepped`, `#reviewed`, `#monthly`) never appear.
  */
@@ -30,7 +30,7 @@ export function reflectionKeyword(meeting: Pick<Meeting, 'date' | 'title'>): str
 
 /**
  * The reflection keyword a meeting linked under `pageKeyword` (its stored
- * meeting-page keyword, `2026-10-14 Sparring Mieke #sparring/mieke`) had when
+ * meeting-page keyword, `2026-10-14 Sparring Jordan #sparring/jordan`) had when
  * the reflection was written - what a reflection page still carries after the
  * meeting was renamed and before it was opened again.
  */

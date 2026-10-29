@@ -14,27 +14,27 @@ const src = (items: EngageItem[]): EngageSource => ({items, inbox: {path: '/Note
 const m = (date: string, title: string, extra: Partial<Meeting> = {}) => meeting(date, title, {time: '10:00', endTime: '11:00', ...deriveMeetingFields(title), ...extra});
 const entry = (it: EngageItem, meetingIndex: number): MeetingEntryRef => ({item: itemRefOf(it), meetingIndex, meeting: it.meetings[meetingIndex]});
 const texts = (refs: Array<{task: {text: string}}>) => refs.map(r => r.task.text);
-const KEY_LAST = '2026-10-09 1:1 Mieke sparring/mieke';
+const KEY_LAST = '2026-10-09 1:1 Jordan sparring/jordan';
 
 describe('meetingContextOf: thread', () => {
   const coaching = item('area', 'Coaching', {
-    meetings: [m('2026-10-09', '1:1 Mieke #sparring/mieke'), m('2026-10-19', '1:1 Mieke #sparring/mieke')],
+    meetings: [m('2026-10-09', '1:1 Jordan #sparring/jordan'), m('2026-10-19', '1:1 Jordan #sparring/jordan')],
     tasks: [
       task('Send the slides #next', {fields: {due: null, created: null, completion: null, meeting: KEY_LAST, extra: []}}),
-      task('Read her draft #sparring/mieke #next'),
-      task('Old habit #sparring/mieke #now'),
-      task('Her feedback #wf/mieke'),
-      task('Someday #sparring/mieke #someday'),
+      task('Read her draft #sparring/jordan #next'),
+      task('Old habit #sparring/jordan #now'),
+      task('Her feedback #wf/jordan'),
+      task('Someday #sparring/jordan #someday'),
     ],
   });
   const model = meetingContextOf(entry(coaching, 1), src([coaching]), NOW);
   it('names the thread and lists I owe, Next (#now as #next), Waiting for and Agreed last time', () => {
     expect(model.mode).toBe('owner');
-    expect(model.owner).toEqual({kind: 'thread', scopeOwnerPath: coaching.path, tag: 'sparring/mieke'});
-    expect(model.ownerTitle?.name).toBe('#sparring/mieke');
+    expect(model.owner).toEqual({kind: 'thread', scopeOwnerPath: coaching.path, tag: 'sparring/jordan'});
+    expect(model.ownerTitle?.name).toBe('#sparring/jordan');
     expect(texts(model.owe)).toEqual(['Send the slides #next']);
-    expect(texts(model.next)).toEqual(['Read her draft #sparring/mieke #next', 'Old habit #sparring/mieke #now']);
-    expect(texts(model.waiting)).toEqual(['Her feedback #wf/mieke']);
+    expect(texts(model.next)).toEqual(['Read her draft #sparring/jordan #next', 'Old habit #sparring/jordan #now']);
+    expect(texts(model.waiting)).toEqual(['Her feedback #wf/jordan']);
     expect(model.agreed?.caption).toBe('Agreed last time');
     expect(model.agreed?.group.meeting.meeting.date).toBe('2026-10-09');
   });
@@ -94,17 +94,17 @@ describe('meetingContextOf: plain meeting', () => {
 });
 
 describe('quickAddPartsFor', () => {
-  const mtg = m('2026-10-19', '1:1 Mieke #sparring/mieke');
-  const thread = {kind: 'thread' as const, scopeOwnerPath: '/x', tag: 'sparring/mieke'};
+  const mtg = m('2026-10-19', '1:1 Jordan #sparring/jordan');
+  const thread = {kind: 'thread' as const, scopeOwnerPath: '/x', tag: 'sparring/jordan'};
   const loop = {kind: 'loop' as const, itemPath: '/x', tag: 'writing/novel'};
   const itemOwner = {kind: 'item' as const, itemPath: '/x'};
   it('before: the thread or loop tag only; a plain meeting nothing', () => {
-    expect(quickAddPartsFor(thread, mtg, 'before')).toEqual({presetTag: 'sparring/mieke', provenance: null});
+    expect(quickAddPartsFor(thread, mtg, 'before')).toEqual({presetTag: 'sparring/jordan', provenance: null});
     expect(quickAddPartsFor(loop, mtg, 'before')).toEqual({presetTag: 'writing/novel', provenance: null});
     expect(quickAddPartsFor(itemOwner, mtg, 'before')).toEqual({presetTag: null, provenance: null});
   });
   it('during and after: also the meeting', () => {
-    expect(quickAddPartsFor(thread, mtg, 'during')).toEqual({presetTag: 'sparring/mieke', provenance: mtg});
+    expect(quickAddPartsFor(thread, mtg, 'during')).toEqual({presetTag: 'sparring/jordan', provenance: mtg});
     expect(quickAddPartsFor(itemOwner, mtg, 'after')).toEqual({presetTag: null, provenance: mtg});
   });
   it('no owner or moment: nothing', () => {

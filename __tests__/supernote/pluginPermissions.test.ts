@@ -99,7 +99,8 @@ describe('scenario 9: a failed file call forgets the grants', () => {
     });
     await ensureFileWritePermission();
     (log as jest.Mock).mockClear();
-    await expect(fileSystem.appendDebugLogFile('log.txt', 'line\n', 1000)).rejects.toThrow('ENOSPC');
+    const diagnosticFiles: typeof import('../../src/supernote/diagnosticFiles') = require('../../src/supernote/diagnosticFiles');
+    await expect(diagnosticFiles.appendDebugLogFile('log.txt', 'line\n', 1000)).rejects.toThrow('ENOSPC');
     expect(log).not.toHaveBeenCalled();
     await ensureFileWritePermission();
     expect(mockManager.hasPermission).toHaveBeenCalledTimes(2);

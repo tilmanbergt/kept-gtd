@@ -68,7 +68,7 @@ export function tagsOfOtherSetups(setups: readonly NoteSetup[], ownId: string | 
 
 /**
  * The tags the picker offers (§6.2): the types of the tags in use first
- * (`sparring` of `#sparring/peter`), then the plain tags, each once; the
+ * (`sparring` of `#sparring/marco`), then the plain tags, each once; the
  * setup's own tags stay in (shown as picked), tags of another setup are
  * left out. `recent` is most recently used first.
  */

@@ -49,11 +49,11 @@ scenario('Focus block from Quick Add: F on, the tag in the file, an F row and a 
 });
 
 scenario('No close-out for focus blocks', {feature: 'Meetings', design: DESIGN}, () => {
-  given('area Coaching with yesterday\'s "Sparring Mieke" and the focus block "Sparring prep", both of a setup that tracks review', () => {
+  given('area Coaching with yesterday\'s "Sparring Jordan" and the focus block "Sparring prep", both of a setup that tracks review', () => {
     smokeClock();
     putFile(
       areaFile('Coaching'),
-      dataFile('area', {Scope: [], Tasks: [], Meetings: ['- 2026-10-13 10:00-11:00 Sparring Mieke #sparring/mieke', '- 2026-10-13 14:00-15:00 Sparring prep #sparring/mieke #focusblock']}),
+      dataFile('area', {Scope: [], Tasks: [], Meetings: ['- 2026-10-13 10:00-11:00 Sparring Jordan #sparring/jordan', '- 2026-10-13 14:00-15:00 Sparring prep #sparring/jordan #focusblock']}),
     );
   });
   when('I open Review → Meetings to close out', async () => {
@@ -62,7 +62,7 @@ scenario('No close-out for focus blocks', {feature: 'Meetings', design: DESIGN},
     await tap(/^Meetings to close out/);
   });
   then('it lists the meeting and not the focus block', () => {
-    expectShows(/^Sparring Mieke/);
+    expectShows(/^Sparring Jordan/);
     expectNotShows(/^Sparring prep/);
   });
   and('nothing was logged as an error', () => expect(loggedErrors()).toEqual([]));

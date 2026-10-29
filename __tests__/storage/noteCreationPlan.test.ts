@@ -16,24 +16,28 @@ jest.mock('../../src/supernote/fileSystem', () => {
       .map(f => ({name: f.slice(f.lastIndexOf('/') + 1), isFolder: false})),
   );
   return {
-    listFolderEntries,
-    fileExists: jest.fn(async (path: string) => mockFiles.has(path)),
-    createNote: jest.fn(async (path: string) => {
+  listFolderEntries,
+  fileExists: jest.fn(async (path: string) => mockFiles.has(path)),
+  ensureFolderExists: jest.fn(async () => undefined),
+  statFiles: jest.fn(async () => null),
+  openPath: jest.fn(async () => undefined),
+};
+});
+jest.mock('../../src/supernote/noteFileApi', () => ({
+  createNote: jest.fn(async (path: string) => {
       mockFiles.add(path);
     }),
-    ensureFolderExists: jest.fn(async () => undefined),
-    insertKeyWord: jest.fn(async () => undefined),
-    statFiles: jest.fn(async () => null),
-    openPath: jest.fn(async () => undefined),
-    displayPath: (p: string) => p.replace(/^\/storage\/emulated\/0\//, ''),
-    getElements: jest.fn(async () => []),
-    insertElements: jest.fn(async () => undefined),
-    deleteElements: jest.fn(async () => undefined),
-    createElement: jest.fn(async () => ({})),
-    ELEMENT_TYPE_LINK: 600,
-    MYSTYLE_FOLDER: '/storage/emulated/0/MyStyle',
-  };
-});
+  insertKeyWord: jest.fn(async () => undefined),
+  getElements: jest.fn(async () => []),
+  insertElements: jest.fn(async () => undefined),
+  deleteElements: jest.fn(async () => undefined),
+  createElement: jest.fn(async () => ({})),
+  ELEMENT_TYPE_LINK: 600,
+}));
+jest.mock('../../src/supernote/devicePaths', () => ({
+  displayPath: (p: string) => p.replace(/^\/storage\/emulated\/0\//, ''),
+  MYSTYLE_FOLDER: '/storage/emulated/0/MyStyle',
+}));
 
 jest.mock('../../src/storage/sharedNotePages', () => ({
   ensureSharedNoteFile: jest.fn(async (folder: string, name: string) => {
@@ -66,6 +70,7 @@ import {deriveMeetingFields, deriveTaskFields} from '../../src/domain/markdown';
 import {openOrCreateMeetingNote, openOrCreateTodoNote} from '../../src/storage/meetingNoteContent';
 import * as sharedPages from '../../src/storage/sharedNotePages';
 import * as fs from '../../src/supernote/fileSystem';
+import * as notes from '../../src/supernote/noteFileApi';
 
 const AREA = '/storage/emulated/0/Note/2 Areas/Coaching';
 
@@ -112,21 +117,21 @@ beforeEach(() => {
 describe('first-time note on a split-by-tag rule', () => {
   it('plans a new shared file named from the placeholders and creates it on confirm', async () => {
     const r = recorder(true);
-    const result = await openOrCreateMeetingNote(meeting('Session #coaching/sabina'), AREA, settingsWith([coachingRule()]), null, {
+    const result = await openOrCreateMeetingNote(meeting('Session #coaching/lena'), AREA, settingsWith([coachingRule()]), null, {
       confirmCreate: r.confirm,
     });
     expect(r.plans).toHaveLength(1);
-    expect(r.plans[0]).toMatchObject({kind: 'new-shared-file', file: 'Meetings/Coaching sabina 2026.note', setupName: 'Coaching'});
+    expect(r.plans[0]).toMatchObject({kind: 'new-shared-file', file: 'Meetings/Coaching lena 2026.note', setupName: 'Coaching'});
     expect(result.changed).toBe(true);
     expect(result.cancelled).toBe(false);
-    expect(result.meeting.notePath).toBe('Meetings/Coaching sabina 2026.note#2026-10-02 Session #coaching/sabina');
-    expect(mockFiles.has(`${AREA}/Meetings/Coaching sabina 2026.note`)).toBe(true);
+    expect(result.meeting.notePath).toBe('Meetings/Coaching lena 2026.note#2026-10-02 Session #coaching/lena');
+    expect(mockFiles.has(`${AREA}/Meetings/Coaching lena 2026.note`)).toBe(true);
   });
 
   it('plans a new page when the file exists', async () => {
-    mockFiles.add(`${AREA}/Meetings/Coaching sabina 2026.note`);
+    mockFiles.add(`${AREA}/Meetings/Coaching lena 2026.note`);
     const r = recorder(true);
-    await openOrCreateMeetingNote(meeting('Session 2 #coaching/sabina'), AREA, settingsWith([coachingRule()]), null, {
+    await openOrCreateMeetingNote(meeting('Session 2 #coaching/lena'), AREA, settingsWith([coachingRule()]), null, {
       confirmCreate: r.confirm,
     });
     expect(r.plans[0].kind).toBe('new-page');
@@ -141,21 +146,21 @@ describe('first-time note on a split-by-tag rule', () => {
   });
 
   it('asks before linking to a page that already has this keyword', async () => {
-    const file = `${AREA}/Meetings/Coaching sabina 2026.note`;
+    const file = `${AREA}/Meetings/Coaching lena 2026.note`;
     mockFiles.add(file);
-    mockKeywordPages.set(file, new Map([['2026-10-02 Session #coaching/sabina', 3]]));
+    mockKeywordPages.set(file, new Map([['2026-10-02 Session #coaching/lena', 3]]));
     const r = recorder(true);
-    const result = await openOrCreateMeetingNote(meeting('Session #coaching/sabina'), AREA, settingsWith([coachingRule()]), null, {
+    const result = await openOrCreateMeetingNote(meeting('Session #coaching/lena'), AREA, settingsWith([coachingRule()]), null, {
       confirmCreate: r.confirm,
     });
-    expect(r.plans[0]).toMatchObject({kind: 'link-page', keyword: '2026-10-02 Session #coaching/sabina'});
+    expect(r.plans[0]).toMatchObject({kind: 'link-page', keyword: '2026-10-02 Session #coaching/lena'});
     expect(result.outcome?.page).toBe(3);
     expect(sharedPages.insertItemPage).not.toHaveBeenCalled();
   });
 
   it('✕ writes nothing and opens nothing', async () => {
     const r = recorder(false);
-    const m = meeting('Session #coaching/sabina');
+    const m = meeting('Session #coaching/lena');
     const result = await openOrCreateMeetingNote(m, AREA, settingsWith([coachingRule()]), null, {confirmCreate: r.confirm});
     expect(result).toMatchObject({changed: false, cancelled: true, outcome: null});
     expect(result.meeting).toBe(m);
@@ -166,7 +171,7 @@ describe('first-time note on a split-by-tag rule', () => {
 
   it('Inbox items stay own notes, with the confirm', async () => {
     const r = recorder(true);
-    await openOrCreateMeetingNote(meeting('Session #coaching/sabina'), AREA, settingsWith([coachingRule()]), null, {
+    await openOrCreateMeetingNote(meeting('Session #coaching/lena'), AREA, settingsWith([coachingRule()]), null, {
       confirmCreate: r.confirm,
       forceOwnTarget: true,
     });
@@ -186,31 +191,31 @@ describe('first-time note in the Default notebook (docs/dev/history/technical-de
     const file = `${AREA}/Coaching ${new Date().getFullYear()}.note`;
     expect(r.plans[0]).toMatchObject({kind: 'new-shared-file', setupName: null});
     expect(result.outcome?.absolutePath).toBe(file);
-    expect(fs.insertKeyWord).toHaveBeenCalledWith(file, 0, 'home');
+    expect(notes.insertKeyWord).toHaveBeenCalledWith(file, 0, 'home');
     expect(sharedPages.insertItemPage).toHaveBeenCalledWith(file, expect.any(String), expect.any(String), expect.any(String));
   });
 
   it('a setup whose notebook is the home notebook shares the file, Home page included', async () => {
     const settings = {...withDefaultNotebook(), noteSetups: [coachingRule({notebook: {name: '{name} {year}', folder: ''}})]};
-    await openOrCreateMeetingNote(meeting('Session #coaching/sabina'), AREA, settings, null, {confirmCreate: recorder(true).confirm});
+    await openOrCreateMeetingNote(meeting('Session #coaching/lena'), AREA, settings, null, {confirmCreate: recorder(true).confirm});
     // The meeting's own date decides the year.
-    expect(fs.insertKeyWord).toHaveBeenCalledWith(`${AREA}/Coaching 2026.note`, 0, 'home');
+    expect(notes.insertKeyWord).toHaveBeenCalledWith(`${AREA}/Coaching 2026.note`, 0, 'home');
   });
 
   it('a setup’s own notebook gets no Home page', async () => {
-    await openOrCreateMeetingNote(meeting('Session #coaching/sabina'), AREA, withDefaultNotebook(), null, {confirmCreate: recorder(true).confirm});
-    expect(fs.insertKeyWord).not.toHaveBeenCalledWith(expect.any(String), 0, 'home');
+    await openOrCreateMeetingNote(meeting('Session #coaching/lena'), AREA, withDefaultNotebook(), null, {confirmCreate: recorder(true).confirm});
+    expect(notes.insertKeyWord).not.toHaveBeenCalledWith(expect.any(String), 0, 'home');
   });
 });
 
 describe('first-time own note', () => {
   it('confirms even without a matching rule, with the collision-free name', async () => {
-    mockFiles.add(`${AREA}/Todos/Call Sabina.note`);
+    mockFiles.add(`${AREA}/Todos/Call Lena.note`);
     const r = recorder(true);
-    const result = await openOrCreateTodoNote(task('Call Sabina #next'), AREA, settingsWith([]), null, {confirmCreate: r.confirm});
-    expect(r.plans[0]).toMatchObject({kind: 'new-own-file', file: 'Todos/Call Sabina (2).note', setupName: null});
-    expect(result.task.notePath).toBe('Todos/Call Sabina (2).note');
-    expect(mockFiles.has(`${AREA}/Todos/Call Sabina (2).note`)).toBe(true);
+    const result = await openOrCreateTodoNote(task('Call Lena #next'), AREA, settingsWith([]), null, {confirmCreate: r.confirm});
+    expect(r.plans[0]).toMatchObject({kind: 'new-own-file', file: 'Todos/Call Lena (2).note', setupName: null});
+    expect(result.task.notePath).toBe('Todos/Call Lena (2).note');
+    expect(mockFiles.has(`${AREA}/Todos/Call Lena (2).note`)).toBe(true);
   });
 });
 
@@ -222,7 +227,7 @@ describe('keywords on own notes (cleanup 0.5 S7)', () => {
     });
     const file = `${AREA}/Todos/Call Marco marco team jf.note`;
     expect(mockFiles.has(file)).toBe(true);
-    expect((fs.insertKeyWord as jest.Mock).mock.calls).toEqual([
+    expect((notes.insertKeyWord as jest.Mock).mock.calls).toEqual([
       [file, 0, 'marco'],
       [file, 0, 'team/jf'],
     ]);
@@ -231,17 +236,17 @@ describe('keywords on own notes (cleanup 0.5 S7)', () => {
   it('a note without free tags gets no keyword', async () => {
     const r = recorder(true);
     await openOrCreateTodoNote(task('Call #next'), AREA, settingsWith([]), null, {confirmCreate: r.confirm});
-    expect(fs.insertKeyWord).not.toHaveBeenCalled();
+    expect(notes.insertKeyWord).not.toHaveBeenCalled();
   });
 
   it('a recreated own note gets its keywords again', async () => {
     const r = recorder(true);
     await openOrCreateTodoNote(task('Call #marco', 'Todos/Call marco.note'), AREA, settingsWith([]), null, {confirmCreate: r.confirm});
-    expect(fs.insertKeyWord).toHaveBeenCalledWith(`${AREA}/Todos/Call marco.note`, 0, 'marco');
+    expect(notes.insertKeyWord).toHaveBeenCalledWith(`${AREA}/Todos/Call marco.note`, 0, 'marco');
   });
 
   it('a failing keyword does not fail the note', async () => {
-    (fs.insertKeyWord as jest.Mock).mockRejectedValueOnce(new Error('no permission'));
+    (notes.insertKeyWord as jest.Mock).mockRejectedValueOnce(new Error('no permission'));
     const r = recorder(true);
     const result = await openOrCreateMeetingNote(meeting('Kickoff #acme'), AREA, settingsWith([]), null, {confirmCreate: r.confirm});
     expect(result.meeting.notePath).toBe('Meetings/2026-10-02 - Kickoff acme.note');
@@ -249,10 +254,10 @@ describe('keywords on own notes (cleanup 0.5 S7)', () => {
 
   it('shared pages are unchanged: no extra keyword call', async () => {
     const r = recorder(true);
-    await openOrCreateMeetingNote(meeting('Session #coaching/sabina'), AREA, settingsWith([coachingRule()]), null, {
+    await openOrCreateMeetingNote(meeting('Session #coaching/lena'), AREA, settingsWith([coachingRule()]), null, {
       confirmCreate: r.confirm,
     });
-    expect(fs.insertKeyWord).not.toHaveBeenCalled();
+    expect(notes.insertKeyWord).not.toHaveBeenCalled();
   });
 });
 
@@ -283,11 +288,11 @@ describe('existing link', () => {
   });
 
   it('keeps using the stored file even when the rule would pick another one now', async () => {
-    const file = `${AREA}/Meetings/Coaching sabina 2026.note`;
+    const file = `${AREA}/Meetings/Coaching lena 2026.note`;
     mockFiles.add(file);
-    mockKeywordPages.set(file, new Map([['2027-01-10 Session #coaching/sabina', 0]]));
+    mockKeywordPages.set(file, new Map([['2027-01-10 Session #coaching/lena', 0]]));
     const r = recorder(true);
-    const m = meeting('Session #coaching/sabina', '2027-01-10', 'Meetings/Coaching sabina 2026.note#2027-01-10 Session #coaching/sabina');
+    const m = meeting('Session #coaching/lena', '2027-01-10', 'Meetings/Coaching lena 2026.note#2027-01-10 Session #coaching/lena');
     const result = await openOrCreateMeetingNote(m, AREA, settingsWith([coachingRule()]), null, {confirmCreate: r.confirm});
     expect(r.plans).toHaveLength(0);
     expect(fs.openPath).toHaveBeenCalledWith(file, 0);
@@ -295,31 +300,31 @@ describe('existing link', () => {
   });
 
   it('renames the keyword in place when the title changed', async () => {
-    const file = `${AREA}/Meetings/Coaching sabina 2026.note`;
+    const file = `${AREA}/Meetings/Coaching lena 2026.note`;
     mockFiles.add(file);
-    mockKeywordPages.set(file, new Map([['2026-10-02 Session #coaching/sabina', 2]]));
-    const m = meeting('Session #coaching/sabine', '2026-10-02', 'Meetings/Coaching sabina 2026.note#2026-10-02 Session #coaching/sabina');
+    mockKeywordPages.set(file, new Map([['2026-10-02 Session #coaching/lena', 2]]));
+    const m = meeting('Session #coaching/sabine', '2026-10-02', 'Meetings/Coaching lena 2026.note#2026-10-02 Session #coaching/lena');
     const result = await openOrCreateMeetingNote(m, AREA, settingsWith([coachingRule()]), null, {confirmCreate: recorder(true).confirm});
     expect(sharedPages.renameKeywordAt).toHaveBeenCalled();
-    expect(result.meeting.notePath).toBe('Meetings/Coaching sabina 2026.note#2026-10-02 Session #coaching/sabine');
+    expect(result.meeting.notePath).toBe('Meetings/Coaching lena 2026.note#2026-10-02 Session #coaching/sabine');
     expect(result.outcome?.page).toBe(2);
   });
 
   it('asks before adding a page whose keyword is gone', async () => {
-    mockFiles.add(`${AREA}/Meetings/Coaching sabina 2026.note`);
+    mockFiles.add(`${AREA}/Meetings/Coaching lena 2026.note`);
     const r = recorder(false);
-    const m = meeting('Session #coaching/sabina', '2026-10-02', 'Meetings/Coaching sabina 2026.note#2026-10-02 Session #coaching/sabina');
+    const m = meeting('Session #coaching/lena', '2026-10-02', 'Meetings/Coaching lena 2026.note#2026-10-02 Session #coaching/lena');
     const result = await openOrCreateMeetingNote(m, AREA, settingsWith([coachingRule()]), null, {confirmCreate: r.confirm});
-    expect(r.plans[0]).toMatchObject({kind: 'recreate-page', file: 'Meetings/Coaching sabina 2026.note'});
+    expect(r.plans[0]).toMatchObject({kind: 'recreate-page', file: 'Meetings/Coaching lena 2026.note'});
     expect(result.cancelled).toBe(true);
     expect(sharedPages.insertItemPage).not.toHaveBeenCalled();
   });
 
   it('asks before recreating a deleted shared file', async () => {
     const r = recorder(true);
-    const m = meeting('Session #coaching/sabina', '2026-10-02', 'Meetings/Coaching sabina 2026.note#2026-10-02 Session #coaching/sabina');
+    const m = meeting('Session #coaching/lena', '2026-10-02', 'Meetings/Coaching lena 2026.note#2026-10-02 Session #coaching/lena');
     await openOrCreateMeetingNote(m, AREA, settingsWith([coachingRule()]), null, {confirmCreate: r.confirm});
-    expect(r.plans[0]).toMatchObject({kind: 'recreate-shared-file', file: 'Meetings/Coaching sabina 2026.note'});
+    expect(r.plans[0]).toMatchObject({kind: 'recreate-shared-file', file: 'Meetings/Coaching lena 2026.note'});
     expect(sharedPages.writeRecreatedNotice).toHaveBeenCalled();
   });
 

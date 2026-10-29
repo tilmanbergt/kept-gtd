@@ -7,7 +7,7 @@
  * only while they have rows; which tab shows is the reducer's
  * (domain/engageFlow.ts).
  *
- * - From: one caption row per meeting ("Tue 14.10. · Sparring Mieke",
+ * - From: one caption row per meeting ("Tue 14.10. · Sparring Jordan",
  *   28 dp, so fewer rows fit on a page with captions), then its rows by
  *   state: `#next` → tap to work on it; Waiting For → Done; plan → #next;
  *   done → struck, no action; an agreement → Change / End.

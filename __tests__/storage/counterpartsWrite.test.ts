@@ -33,20 +33,20 @@ beforeEach(() => {
   mockWrites.length = 0;
   mockUpdates.length = 0;
   mockItems = [
-    item('area', 'Atruvia', {rawContent: '---\nkind: area\nstatus: active\n---\n\n## Scope\n\n## Tasks\n\n## Meetings\n'}),
-    item('project', 'Tender', {area: 'Atruvia', rawContent: '---\nkind: project\nstatus: active\narea: Atruvia\n---\n'}),
+    item('area', 'Team', {rawContent: '---\nkind: area\nstatus: active\n---\n\n## Scope\n\n## Tasks\n\n## Meetings\n'}),
+    item('project', 'Tender', {area: 'Team', rawContent: '---\nkind: project\nstatus: active\narea: Team\n---\n'}),
     item('project', 'Solo', {rawContent: '---\nkind: project\nstatus: active\n---\n\n## Tasks\n'}),
   ];
 });
 
 it('writes a Project with an Area into the Area file', async () => {
-  const owner = await setCounterpartStatus(mockItems[1].path, 'mieke', 'active');
+  const owner = await setCounterpartStatus(mockItems[1].path, 'jordan', 'active');
   expect(owner).toBe(mockItems[0].path);
   expect(mockWrites).toHaveLength(1);
   expect(mockWrites[0][0]).toBe(`${mockItems[0].path}/area.txt`);
-  expect(mockWrites[0][1]).toContain('## Meetings\n\n## Threads\n- mieke: active\n');
+  expect(mockWrites[0][1]).toContain('## Meetings\n\n## Threads\n- jordan: active\n');
   expect(mockUpdates).toEqual([mockItems[0].path]);
-  expect(mockItems[0].threads.map(t => t.leaf)).toEqual(['mieke']);
+  expect(mockItems[0].threads.map(t => t.leaf)).toEqual(['jordan']);
 });
 
 it('writes a Project without an Area into its own file and keeps other lines', async () => {

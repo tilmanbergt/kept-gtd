@@ -3,7 +3,7 @@
  * "Working on" - or "Next action" for the owner's only `#next` shown without
  * being chosen (Addendum "Next and Plan tabs") - its title, a details line
  * (due date or Waiting For with its follow-up) and the meeting it was agreed
- * in as a link to that meeting's note ("From Sparring Mieke · 14.10. ›"), a
+ * in as a link to that meeting's note ("From Sparring Jordan · 14.10. ›"), a
  * large check box on the right that marks it done, and the buttons
  * (docs/dev/history/technical-design-meetings-0.21.md R15): w/f <Counterpart>
  * (Waiting For on the owner thread's counterpart, "w/f" without one), Do

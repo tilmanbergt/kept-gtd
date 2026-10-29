@@ -9,7 +9,7 @@ import {Meeting} from '../../src/domain/types';
 import {meeting} from '../../test-helpers/fixtures';
 
 const at = (day: number, h: number, m = 0) => new Date(2026, 9, day, h, m).getTime();
-const timed = meeting('2026-10-24', 'Sparring Mieke #sparring/mieke', {time: '10:00', endTime: '11:00', tags: ['sparring/mieke']});
+const timed = meeting('2026-10-24', 'Sparring Jordan #sparring/jordan', {time: '10:00', endTime: '11:00', tags: ['sparring/jordan']});
 
 describe('momentByTime (R2)', () => {
   it.each([

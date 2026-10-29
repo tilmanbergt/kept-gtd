@@ -1,8 +1,13 @@
 /**
  * Renders the markdown subset of domain/markdownBlocks.ts, paged without
  * scrolling (docs/dev/history/technical-design-about-debug-experimental.md §3.5).
- * Used by Settings → About's "What's new"; meant to be reused by the in-app
- * Help later.
+ * Used by Settings → About's "What's new" and the in-app Help.
+ *
+ * A link to another help page (domain/markdownBlocks.ts's `link`) is an
+ * bold, underlined nested Text that calls `onLink`, so it stands out from bold
+ * labels; without `onLink` (What's new)
+ * it is plain text (docs/dev/history/technical-design-easy-start.md §2.3).
+ * The underline changes no metrics, so the heights below hold for links too.
  *
  * Each block is one PagedSection row. Row heights are estimated with the
  * app's shared line estimator against the measured column width, so a page
@@ -10,7 +15,7 @@
  */
 import React, {useMemo, useState} from 'react';
 import {LayoutChangeEvent, StyleSheet, Text, View} from 'react-native';
-import {blockText, InlineSpan, MarkdownBlock, parseMarkdownBlocks} from '../domain/markdownBlocks';
+import {blockText, HelpLinkTarget, InlineSpan, MarkdownBlock, parseMarkdownBlocks} from '../domain/markdownBlocks';
 import PagedSection from './PagedSection';
 import {activeLineEstimator} from '../domain/textLineEstimator';
 import {FONT} from './theme';
@@ -47,19 +52,27 @@ export function markdownBlockHeight(block: MarkdownBlock, widthPx: number): numb
   return Math.ceil(lines * lineHeight * SAFETY) + BLOCK_GAP + (heading ? HEADING_TOP : 0);
 }
 
-function Spans({spans, textColor}: {spans: InlineSpan[]; textColor: string}): React.JSX.Element {
+export type OnHelpLink = (link: HelpLinkTarget) => void;
+
+function Spans({spans, textColor, onLink}: {spans: InlineSpan[]; textColor: string; onLink?: OnHelpLink}): React.JSX.Element {
   return (
     <>
-      {spans.map((span, i) => (
-        <Text key={i} style={[span.bold && styles.bold, span.code && styles.code, {color: textColor}]}>
-          {span.text}
-        </Text>
-      ))}
+      {spans.map((span, i) => {
+        const link = onLink ? span.link : undefined;
+        return (
+          <Text
+            key={i}
+            style={[span.bold && styles.bold, span.italic && styles.italic, span.code && styles.code, link && styles.link, {color: textColor}]}
+            onPress={link ? () => onLink!(link) : undefined}>
+            {span.text}
+          </Text>
+        );
+      })}
     </>
   );
 }
 
-export function MarkdownBlockView({block, textColor}: {block: MarkdownBlock; textColor: string}): React.JSX.Element {
+export function MarkdownBlockView({block, textColor, onLink}: {block: MarkdownBlock; textColor: string; onLink?: OnHelpLink}): React.JSX.Element {
   if (block.kind === 'code') {
     return (
       <View style={[styles.codeBox, {borderColor: textColor}]}>
@@ -70,7 +83,7 @@ export function MarkdownBlockView({block, textColor}: {block: MarkdownBlock; tex
   if (block.kind === 'heading') {
     return (
       <Text style={[styles.heading, {color: textColor}]}>
-        <Spans spans={block.spans} textColor={textColor} />
+        <Spans spans={block.spans} textColor={textColor} onLink={onLink} />
       </Text>
     );
   }
@@ -79,14 +92,14 @@ export function MarkdownBlockView({block, textColor}: {block: MarkdownBlock; tex
       <View style={[styles.itemRow, {paddingLeft: block.depth * NESTED_INDENT}]}>
         <Text style={[styles.marker, {color: textColor}]}>{block.marker}</Text>
         <Text style={[styles.body, styles.itemText, {color: textColor}]}>
-          <Spans spans={block.spans} textColor={textColor} />
+          <Spans spans={block.spans} textColor={textColor} onLink={onLink} />
         </Text>
       </View>
     );
   }
   return (
     <Text style={[styles.body, styles.paragraph, {color: textColor}]}>
-      <Spans spans={block.spans} textColor={textColor} />
+      <Spans spans={block.spans} textColor={textColor} onLink={onLink} />
     </Text>
   );
 }
@@ -97,12 +110,18 @@ interface Props {
   /** Changes when a different document is shown, so paging starts at page 1 again. */
   resetKey: string;
   emptyHint?: string;
+  /** Taps on links to help pages; without it links show as plain text. */
+  onLink?: OnHelpLink;
+  /** Opens the page that holds this block (a heading anchor, or where Back returns to); a new `key` jumps again. */
+  jumpTo?: {key: string | number; row: number} | null;
+  /** The index of the first block on screen, whenever it changes. */
+  onFirstRowChange?: (row: number) => void;
   textColor: string;
   borderColor: string;
 }
 
 /** Fills its (bounded, flex) parent; pages with ‹ › in the header line. */
-export default function MarkdownPager({markdown, header, resetKey, emptyHint, textColor, borderColor}: Props): React.JSX.Element {
+export default function MarkdownPager({markdown, header, resetKey, emptyHint, onLink, jumpTo, onFirstRowChange, textColor, borderColor}: Props): React.JSX.Element {
   const blocks = useMemo(() => parseMarkdownBlocks(markdown), [markdown]);
   const [width, setWidth] = useState(0);
   const onLayout = (e: LayoutChangeEvent) => {
@@ -110,6 +129,8 @@ export default function MarkdownPager({markdown, header, resetKey, emptyHint, te
     if (w !== width) {setWidth(w);}
   };
   const rows = useMemo(() => blocks.map((block, index) => ({block, index})), [blocks]);
+  // The width is part of the key: a jump waits for the measured column, whose width decides the pages.
+  const jump = useMemo(() => (jumpTo && width > 0 ? {key: `${jumpTo.key}|${width}`, index: jumpTo.row} : null), [jumpTo, width]);
   return (
     <View style={styles.root} onLayout={onLayout}>
       {width > 0 && (
@@ -118,9 +139,11 @@ export default function MarkdownPager({markdown, header, resetKey, emptyHint, te
           rows={rows}
           rowHeight={row => markdownBlockHeight(row.block, width)}
           resetKey={`${resetKey}|${width}`}
+          jumpTo={jump}
+          onFirstRowChange={onFirstRowChange}
           renderRow={row => (
             <View key={row.index} style={styles.blockBox}>
-              <MarkdownBlockView block={row.block} textColor={textColor} />
+              <MarkdownBlockView block={row.block} textColor={textColor} onLink={onLink} />
             </View>
           )}
           emptyHint={emptyHint}
@@ -154,6 +177,8 @@ const styles = StyleSheet.create({
   },
   itemText: {flex: 1},
   bold: {fontWeight: '700'},
+  italic: {fontStyle: 'italic'},
+  link: {fontWeight: '700', textDecorationLine: 'underline'},
   code: {fontFamily: 'monospace'},
   codeBox: {borderLeftWidth: 2, paddingHorizontal: CODE_PAD, paddingVertical: CODE_PAD},
   codeText: {fontFamily: 'monospace', fontSize: FONT.small, lineHeight: CODE_LINE},

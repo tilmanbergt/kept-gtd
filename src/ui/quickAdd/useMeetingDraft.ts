@@ -28,7 +28,9 @@ interface Input {
   initialMonthly?: boolean;
   /** See QuickAddWidget's `isMeetingDateVisible` prop. */
   isMeetingDateVisible?: (date: string) => boolean;
-  onAddMeeting: (fields: MeetingQuickAddFields, destination: Destination) => Promise<void>;
+  onAddMeeting: (fields: MeetingQuickAddFields, destination: Destination, linkedFile?: string) => Promise<void>;
+  /** The linked file a new meeting gets (Quick Add's This-file line), read at + Add. */
+  linkedFileForAdd?: () => string | undefined;
   onSaveEditMeeting?: (fields: MeetingQuickAddFields, nextLinkedFile: string) => Promise<void | boolean>;
   /** Called on every user change of the title (the capture panel's "typed since the seed"). */
   onUserEdit?: () => void;
@@ -173,7 +175,7 @@ export function useMeetingDraft(core: QuickAddCore, input: Input) {
     setError(null);
     setPending(true);
     input
-      .onAddMeeting(composed.fields, destination)
+      .onAddMeeting(composed.fields, destination, input.linkedFileForAdd?.())
       .then(() => {
         setDraft({...makeMeetingDraft(initialDate, initialMonthly), title: prefill});
         const end = {start: prefill.length, end: prefill.length};

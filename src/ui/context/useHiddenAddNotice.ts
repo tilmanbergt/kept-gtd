@@ -1,7 +1,7 @@
 /**
  * After Quick Add filed an entry where the active context doesn't show it
  * (docs/dev/history/technical-design-time-and-place.md §3.3): "Saved to
- * Atruvia · hidden by Home" in the status slot, so nothing seems lost.
+ * Team · hidden by Home" in the status slot, so nothing seems lost.
  * Asked by the filtered screens (Daily, Week, Month) after a successful add;
  * a warning, so it shows over Quick Add's own "Added …" line.
  */

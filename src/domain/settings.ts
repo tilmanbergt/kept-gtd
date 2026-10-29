@@ -203,6 +203,12 @@ export interface GtdParaSettings {
    */
   notebookContentsEnabled: boolean;
   /**
+   * The setup assistant (docs/dev/history/technical-design-easy-start.md §5): 'pending' only on a
+   * fresh install (domain/features.ts's migrateExperimentalFlags), until it is finished or skipped;
+   * it then opens once by itself. Per profile.
+   */
+  setupAssistant: 'pending' | 'done';
+  /**
    * The last release version whose "Updated to x.y.z" notice the user
    * acknowledged (tapped What's new or ✕). '' = none yet.
    */
@@ -264,6 +270,7 @@ export const DEFAULT_SETTINGS: GtdParaSettings = {
   givenTimeMinMinutes: {week: 60, month: 120},
   debugLogging: false,
   notebookContentsEnabled: true,
+  setupAssistant: 'done',
   lastSeenVersion: '',
   focusRetiredNoticeSeen: false,
   activeProfileId: 'production',

@@ -23,6 +23,7 @@ import CaptureScreen, {CaptureRequest, CaptureReturnTo} from './src/screens/Capt
 import EngageOverlay from './src/screens/engage/EngageOverlay';
 import {setOpenMarksHandler} from './src/ui/marksNav';
 import {getEngageRequest, requestEngage, subscribeEngage} from './src/ui/engageStore';
+import {noteLaunchChanged} from './src/ui/useThisFile';
 import {MarkScope} from './src/domain/marks';
 import MarkOutcomeScreen from './src/ui/MarkOutcomeScreen';
 import {logStaleBuilds} from './src/supernote/pluginRuntime';
@@ -57,16 +58,9 @@ import {activeContext, EVERYTHING_LABEL} from './src/domain/contexts';
 import {useSettings} from './src/ui/useSettings';
 import {clearReturnRecord, getReturnRecord, recordPluginOpen} from './src/storage/returnRecord';
 import {loadSettings} from './src/storage/settingsStorage';
-import {
-  FolderEntry,
-  getCurrentNotePath,
-  rememberLaunchNotePath,
-  appendDebugLogFile,
-  deleteTempTree,
-  getPrivateTempDir,
-  setOpenPathObserver,
-  writePerfTraceFile,
-} from './src/supernote/fileSystem';
+import {FolderEntry, deleteTempTree, getPrivateTempDir, setOpenPathObserver} from './src/supernote/fileSystem';
+import {getCurrentNotePath, rememberLaunchNotePath} from './src/supernote/hostContext';
+import {appendDebugLogFile, writePerfTraceFile} from './src/supernote/diagnosticFiles';
 import {log, logError} from './src/utils/log';
 import {BUILD_INFO} from './src/generated/buildInfo';
 import {perfBegin, perfConfigure, perfEnable, perfMark, usePerfRender} from './src/utils/perf';
@@ -206,6 +200,13 @@ function AppShell({onProfileSwitched}: {onProfileSwitched: () => void}): React.J
   // initializer - see that screen's module doc comment for why a watched
   // effect isn't needed (a tab switch away always unmounts it first).
   const [settingsTab, setSettingsTab] = useState<SettingsTab>('folders');
+  // A fresh install starts on Settings with the setup assistant running, once
+  // (docs/dev/history/technical-design-easy-start.md §5.5).
+  const [setupAtStart, setSetupAtStart] = useState(false);
+  // Once: leaving Settings ends the start (Run setup assistant on Settings → Folders stays).
+  useEffect(() => {
+    if (activeTab !== 'settings') setSetupAtStart(false);
+  }, [activeTab]);
 
   // Help and the other overlays over the tab body (screens/useAppOverlays.tsx).
   const overlays = useAppOverlays(mode === 'tabs', activeTab);
@@ -345,8 +346,9 @@ function AppShell({onProfileSwitched}: {onProfileSwitched: () => void}): React.J
         // Runs on cold start AND on every sidebar-button press (this whole
         // reorient() is re-invoked from the onButtonPress handler below),
         // i.e. every time the plugin is (re)opened - see
-        // rememberLaunchNotePath's own doc comment in fileSystem.ts.
+        // rememberLaunchNotePath's own doc comment in supernote/hostContext.ts.
         rememberLaunchNotePath(currentPath);
+        noteLaunchChanged();
         if (loadedSettings.debugLogging === true && currentPath) void logNoteTitlesDiagnostic(currentPath);
         if (cancelled || routedByLassoButtonRef.current || routedByEngageButtonRef.current) return;
 
@@ -413,7 +415,12 @@ function AppShell({onProfileSwitched}: {onProfileSwitched: () => void}): React.J
         // old note by hand later can't resurrect it.
         if (landing.clearRecord) clearReturnRecord();
 
-        if (landing.kind === 'item') {
+        if (loadedSettings.setupAssistant === 'pending' && !hasLandedRef.current) {
+          log('App: reorient landing on the setup assistant');
+          setSetupAtStart(true);
+          setSettingsTab('folders');
+          setActiveTab('settings');
+        } else if (landing.kind === 'item') {
           const enclosing = landing.item;
           log('App: reorienting to current note\'s item', enclosing.kind, enclosing.path);
           setCurrentItem({kind: enclosing.kind, name: enclosing.name, path: enclosing.path});
@@ -782,7 +789,15 @@ function AppShell({onProfileSwitched}: {onProfileSwitched: () => void}): React.J
           />
         ))}
       {activeTab === 'settings' && (
-        <Settings initialTab={settingsTab} onSwitchProfile={switchToProfile} />
+        <Settings
+          initialTab={settingsTab}
+          onSwitchProfile={switchToProfile}
+          startSetup={setupAtStart}
+          onSetupClosed={finished => {
+            setSetupAtStart(false);
+            if (finished) setActiveTab('projects');
+          }}
+        />
       )}
     </>
   );

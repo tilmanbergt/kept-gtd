@@ -21,40 +21,40 @@ function withFields(text: string, fields: Partial<Task['fields']>, extra: Partia
   return task(text, {fields: {...emptyTaskFields(), ...fields}, ...extra});
 }
 
-const mieke1 = m('2026-09-30', '1:1 Mieke #101/mieke', {time: '10:00', endTime: '11:00'});
-const mieke2 = m('2026-10-14', '1:1 Mieke #101/mieke', {time: '10:00', endTime: '11:00'});
-const sven = m('2026-09-28', '1:1 Sven #101/sven');
-const raise = withFields('Raise budget question #101/sven', {meeting: meetingKey(mieke1)});
+const jordan1 = m('2026-09-30', '1:1 Jordan #101/jordan', {time: '10:00', endTime: '11:00'});
+const jordan2 = m('2026-10-14', '1:1 Jordan #101/jordan', {time: '10:00', endTime: '11:00'});
+const sam = m('2026-09-28', '1:1 Sam #101/sam');
+const raise = withFields('Raise budget question #101/sam', {meeting: meetingKey(jordan1)});
 
-const area = item('area', 'Atruvia', {
-  meetings: [mieke1, mieke2, sven],
+const area = item('area', 'Team', {
+  meetings: [jordan1, jordan2, sam],
   tasks: [
     raise,
-    withFields('Contract back #wf/mieke', {created: '2026-09-20'}),
-    withFields('Slides #wf/mieke', {created: '2026-10-01'}),
+    withFields('Contract back #wf/jordan', {created: '2026-09-20'}),
+    withFields('Slides #wf/jordan', {created: '2026-10-01'}),
     task('Unrelated #retro/team'),
   ],
-  threads: parseThreadsSpan('## Threads\n- mieke: active\n- sven: active\n- gone: inactive\n').threads,
+  threads: parseThreadsSpan('## Threads\n- jordan: active\n- sam: active\n- gone: inactive\n').threads,
 });
 const tender = item('project', 'Tender', {
-  area: 'Atruvia',
-  tasks: [task('Ask Anna #wf/anna'), task('Send Bert the deck #owe/bert'), task('Promise Sven #owe/sven')],
+  area: 'Team',
+  tasks: [task('Ask Anna #wf/anna'), task('Send Bert the deck #owe/bert'), task('Promise Sam #owe/sam')],
 });
 const lone = item('project', 'Solo', {meetings: [m('2026-10-02', 'Retro #retro/alpha')]});
-const onlyInbox = {path: INBOX, tasks: [task('Inbox only #wf/ivan'), task('#101/mieke from inbox')], meetings: []};
+const onlyInbox = {path: INBOX, tasks: [task('Inbox only #wf/ivan'), task('#101/jordan from inbox')], meetings: []};
 const items = [area, tender, lone];
 
 describe('counterpartMatcher (§1.2.1)', () => {
-  it('a todo agreed with Mieke but tagged #101/sven belongs to both', () => {
-    const forMieke = counterpartMatcher(items, onlyInbox, '101/mieke', tender.path)!;
-    const forSven = counterpartMatcher(items, onlyInbox, '101/sven', tender.path)!;
-    expect(forMieke.task(raise)).toBe(true);
+  it('a todo agreed with Jordan but tagged #101/sam belongs to both', () => {
+    const forJordan = counterpartMatcher(items, onlyInbox, '101/jordan', tender.path)!;
+    const forSven = counterpartMatcher(items, onlyInbox, '101/sam', tender.path)!;
+    expect(forJordan.task(raise)).toBe(true);
     expect(forSven.task(raise)).toBe(true);
-    expect(forMieke.task(tender.tasks[2])).toBe(false);
+    expect(forJordan.task(tender.tasks[2])).toBe(false);
     expect(forSven.task(tender.tasks[2])).toBe(true);
-    expect(forMieke.task(area.tasks[1])).toBe(true);
-    expect(forMieke.meeting(mieke1)).toBe(true);
-    expect(forMieke.meeting(sven)).toBe(false);
+    expect(forJordan.task(area.tasks[1])).toBe(true);
+    expect(forJordan.meeting(jordan1)).toBe(true);
+    expect(forJordan.meeting(sam)).toBe(false);
   });
 });
 
@@ -62,25 +62,25 @@ describe('buildTendingRoster', () => {
   const roster = buildTendingRoster(items, onlyInbox, TYPES, NOW);
 
   it('has one scope per Area and lone Project, and no Inbox counterparts (D18)', () => {
-    expect(roster.map(r => r.owner.name)).toEqual(['Atruvia', 'Solo']);
+    expect(roster.map(r => r.owner.name)).toEqual(['Team', 'Solo']);
     const leaves = roster.flatMap(r => [...r.confirm, ...r.active, ...r.inactive].map(e => e.counterpart.leaf));
     expect(leaves).not.toContain('ivan');
   });
 
   it('splits confirm / active / inactive', () => {
-    const [atruvia, solo] = roster;
-    expect(atruvia.confirm.map(e => e.counterpart.leaf)).toEqual(['anna', 'bert', 'team']);
-    expect(atruvia.active.map(e => e.counterpart.leaf)).toEqual(['mieke', 'sven']);
-    expect(atruvia.inactive.map(e => e.counterpart.leaf)).toEqual(['gone']);
+    const [team, solo] = roster;
+    expect(team.confirm.map(e => e.counterpart.leaf)).toEqual(['anna', 'bert', 'team']);
+    expect(team.active.map(e => e.counterpart.leaf)).toEqual(['jordan', 'sam']);
+    expect(team.inactive.map(e => e.counterpart.leaf)).toEqual(['gone']);
     expect(solo.confirm.map(e => e.counterpart.leaf)).toEqual(['alpha']);
   });
 
   it('gives the overview signals: last, next, I owe, oldest Waiting for', () => {
-    const mieke = roster[0].active[0];
-    expect(mieke).toMatchObject({lastMeeting: '2026-09-30', nextMeeting: '2026-10-14', oweCount: 1, waitingCount: 2, oldestWaitingDays: 18});
+    const jordan = roster[0].active[0];
+    expect(jordan).toMatchObject({lastMeeting: '2026-09-30', nextMeeting: '2026-10-14', oweCount: 1, waitingCount: 2, oldestWaitingDays: 18});
     const svenEntry = roster[0].active[1];
     expect(svenEntry).toMatchObject({lastMeeting: '2026-09-28', nextMeeting: null, oweCount: 1, waitingCount: 0, oldestWaitingDays: null});
-    expect(svenEntry.overview.ahead.relevant.map(e => e.task.text)).toEqual(['Raise budget question #101/sven']);
+    expect(svenEntry.overview.ahead.relevant.map(e => e.task.text)).toEqual(['Raise budget question #101/sam']);
   });
 
   it('marks one-offs and opens them through wf/ or owe/', () => {
@@ -94,7 +94,7 @@ describe('buildTendingRoster', () => {
 describe('buildScopeRoster on a big scope: work per build', () => {
   const big = bigScopeCache();
   const types = threadTypesOf(BIG_SETUP_TAGS.map(s => ({enabled: true, kind: s.kind, tags: [s.tag]})));
-  const scope = counterpartScopes(big.items).find(s => s.owner === big.atruvia)!;
+  const scope = counterpartScopes(big.items).find(s => s.owner === big.team)!;
   const allMeetings = [...big.items.flatMap(i => i.meetings), ...big.inbox.meetings];
   const distinctMeetings = new Set(allMeetings.map(x => `${x.date}|${x.title}`)).size;
   const withMeeting =

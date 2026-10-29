@@ -6,7 +6,9 @@ const mockLoadPageIndex = jest.fn(async (_path: string) => {
   return {mtimeMs: 1, totalPages: 9, ...mockIndex};
 });
 let mockKeywords: Array<{page: number; keyword: string}> = [];
-jest.mock('../../src/supernote/fileSystem', () => ({getKeyWords: async () => mockKeywords}));
+jest.mock('../../src/supernote/noteFileApi', () => ({
+  getKeyWords: async () => mockKeywords,
+}));
 jest.mock('../../src/utils/log', () => ({log: jest.fn(), logWarn: jest.fn(), logError: jest.fn()}));
 
 import {pageSectionOf} from '../../src/storage/pageSection';

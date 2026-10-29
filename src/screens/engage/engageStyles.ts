@@ -28,7 +28,7 @@ export const ENGAGE_ROW_H = 64;
 /** At most five rows per page (D16). */
 export const ENGAGE_ROWS_PER_PAGE = 5;
 export const ENGAGE_LIST_VIEWPORT = ENGAGE_ROW_H * ENGAGE_ROWS_PER_PAGE;
-/** A From group's caption row ("Tue 14.10. · Sparring Mieke"); captions take room inside the same viewport. */
+/** A From group's caption row ("Tue 14.10. · Sparring Jordan"); captions take room inside the same viewport. */
 export const ENGAGE_CAPTION_H = 28;
 /** The width the line estimator is tuned for (ui/taskRowLayout.ts); the panel is wider, so estimates err long. */
 export {TASK_COLUMN_WIDTH_PX as ENGAGE_TEXT_WIDTH} from '../../ui/taskRowLayout';

@@ -12,11 +12,11 @@ import {
 import {buildAgreement, endedAgreement} from '../../src/domain/agreements';
 
 const TODAY = '2026-10-24';
-const a = buildAgreement('Feedback only in our 1:1s #sparring/mieke', {today: '2026-10-14', valid: '2026-12-31', meeting: null});
+const a = buildAgreement('Feedback only in our 1:1s #sparring/jordan', {today: '2026-10-14', valid: '2026-12-31', meeting: null});
 
 it('plain text drops the tags', () => {
   expect(agreementPlainText(a)).toBe('Feedback only in our 1:1s');
-  expect(agreementPlainText({text: '#mieke'})).toBe('#mieke');
+  expect(agreementPlainText({text: '#jordan'})).toBe('#jordan');
 });
 
 it('row detail: since, till, over, ended', () => {

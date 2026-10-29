@@ -87,8 +87,15 @@ jest.mock('../../src/storage/marks', () => ({
     };
   },
 }));
-jest.mock('../../src/supernote/fileSystem', () => ({
+jest.mock('../../src/supernote/hostContext', () => ({
   getCurrentNotePath: async () => '/Note/2 Areas/0 Inbox/Todos/Test.note',
+  // The current page stays the real call, as it was when it had a module of its own.
+  getCurrentPageNum: jest.requireActual('../../src/supernote/hostContext').getCurrentPageNum,
+}));
+// The fileSystem mock below replaced the whole module, the note and host calls included; they live in their own modules now.
+jest.mock('../../src/supernote/noteFileApi', () => ({}));
+jest.mock('../../src/supernote/hostCall', () => ({}));
+jest.mock('../../src/supernote/fileSystem', () => ({
   getPrivateDataDir: async () => '/private/data',
   getPrivateTempDir: async () => '/private/tmp',
   openPath: async () => undefined,

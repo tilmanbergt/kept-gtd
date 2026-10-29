@@ -58,9 +58,12 @@ export async function storeSettings(patch: Partial<GtdParaSettings> = {}): Promi
   );
 }
 
-/** Opens gtdpara, as from the sidebar button; `fromNote` is the note it was opened from. */
-export async function openApp(options: {fromNote?: string; settings?: Partial<GtdParaSettings>} = {}): Promise<void> {
-  if (!(await AsyncStorage.getItem(SETTINGS_KEY)) || options.settings) await storeSettings(options.settings);
+/**
+ * Opens gtdpara, as from the sidebar button; `fromNote` is the note it was opened from. `fresh`: a
+ * first start after installing - no settings are stored beforehand.
+ */
+export async function openApp(options: {fromNote?: string; settings?: Partial<GtdParaSettings>; fresh?: boolean} = {}): Promise<void> {
+  if (!options.fresh && (!(await AsyncStorage.getItem(SETTINGS_KEY)) || options.settings)) await storeSettings(options.settings);
   device().sdk.currentFile = options.fromNote ?? null;
   mounted = render(<App />);
   await settle();
@@ -99,6 +102,11 @@ export async function reopenApp(options: {fromNote?: string} = {}): Promise<void
 }
 
 /** Every text on screen, in order. */
+/** The settings as stored now (what a restart would load). */
+export async function storedSettings(): Promise<GtdParaSettings> {
+  return {...DEFAULT_SETTINGS, ...JSON.parse((await AsyncStorage.getItem(SETTINGS_KEY)) ?? '{}')};
+}
+
 export function texts(): string[] {
   return screen
     .queryAllByText(/./)

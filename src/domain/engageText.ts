@@ -65,7 +65,7 @@ export function sectionLineText(title: {text: string; detail: string}, page: num
 /** The moment switch's labels (docs/dev/history/technical-design-meetings-0.21.md R1). */
 export const MOMENT_LABELS = {before: 'Before', during: 'During', after: 'After'} as const;
 
-/** The meeting line's left part (R1): "Sparring Mieke · today 10:00–11:00", "Offsite · Tue 14.10.". */
+/** The meeting line's left part (R1): "Sparring Jordan · today 10:00–11:00", "Offsite · Tue 14.10.". */
 export function momentLineText(meeting: Pick<Meeting, 'title' | 'date' | 'time' | 'endTime'>, today: string): string {
   const day = meeting.date === today ? 'today' : formatDayHeader(meeting.date, today);
   const time = meeting.time ? ` ${formatTime(meeting.time)}${meeting.endTime ? `–${formatTime(meeting.endTime)}` : ''}` : '';
@@ -77,12 +77,12 @@ export function nextMeetingButtonText(type: string): string {
   return `+ Next ${type}`;
 }
 
-/** The Now box's Waiting For button (R15): "w/f Mieke", or "w/f" without a counterpart. */
+/** The Now box's Waiting For button (R15): "w/f Jordan", or "w/f" without a counterpart. */
 export function waitingForButtonText(counterpart: string | null): string {
   return counterpart ? `w/f ${titleCaseSlug(counterpart)}` : ENGAGE_TEXT.waitingFor;
 }
 
-/** The Now box's link to the meeting a todo was agreed in (R15): "From Sparring Mieke · 14.10. ›". */
+/** The Now box's link to the meeting a todo was agreed in (R15): "From Sparring Jordan · 14.10. ›". */
 export function nowMeetingText(key: string, today: string): string {
   const m = /^(\d{4}-\d{2}-\d{2})\s+(.*)$/.exec(key.trim());
   if (!m) return `From ${key.trim()} ›`;
@@ -143,13 +143,13 @@ export function tabLabel(tab: 'from' | 'next' | 'plan' | 'waiting' | 'agreements
   return `${tab === 'from' ? fromTabName(ownerKind) : TAB_NAMES[tab]} ${rows}`;
 }
 
-/** A meeting's title without tags ("Sparring Mieke"). */
+/** A meeting's title without tags ("Sparring Jordan"). */
 function plainMeetingTitle(meeting: Pick<Meeting, 'title'>): string {
   const display = meetingDisplayTitle(meeting);
   return stripAllTags(display) || display;
 }
 
-/** A From group's caption (R10): "Tue 14.10. · Sparring Mieke", "today · Sparring Mieke". */
+/** A From group's caption (R10): "Tue 14.10. · Sparring Jordan", "today · Sparring Jordan". */
 export function fromCaption(meeting: Pick<Meeting, 'title' | 'date'>, today: string): string {
   return `${meeting.date === today ? 'today' : formatDayHeader(meeting.date, today)} · ${plainMeetingTitle(meeting)}`;
 }
@@ -164,7 +164,7 @@ export function alsoHereParts(someday: number): {someday: string | null} {
   return {someday: someday > 0 ? `${someday} someday` : null};
 }
 
-/** "Next here: Thu 23.10. 10:00 Sparring Mieke ›" (E8), with "· next today" when it is also today's next meeting. */
+/** "Next here: Thu 23.10. 10:00 Sparring Jordan ›" (E8), with "· next today" when it is also today's next meeting. */
 export function nextHereText(meeting: Pick<Meeting, 'title' | 'date' | 'time'>, today: string, alsoToday: boolean): string {
   const when = `${formatDayHeader(meeting.date, today)}${meeting.time ? ` ${formatTime(meeting.time)}` : ''}`;
   return `Next here: ${when} ${plainMeetingTitle(meeting)}${alsoToday ? ' · next today' : ''} ›`;

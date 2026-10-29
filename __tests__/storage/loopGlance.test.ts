@@ -9,7 +9,7 @@ const TODAY = '2026-10-10';
 const NOW = new Date('2026-10-10T12:00:00');
 
 describe('buildLoopGlance', () => {
-  const owner = item('area', 'Atruvia', {
+  const owner = item('area', 'Team', {
     loops: [
       {...newLoopLine('workshop/offsite'), mainDate: null},
       newLoopLine('workshop/piplanning', '2026-11-14'),
@@ -62,17 +62,17 @@ describe('buildLoopGlance', () => {
 
 describe('buildLoopRoster', () => {
   it('groups active loops per scope and flags the ones needing a look', () => {
-    const area = item('area', 'Atruvia', {loops: [newLoopLine('workshop/past', '2026-10-01'), newLoopLine('workshop/idle')]});
+    const area = item('area', 'Team', {loops: [newLoopLine('workshop/past', '2026-10-01'), newLoopLine('workshop/idle')]});
     const project = item('project', 'Garden', {
-      area: 'Atruvia',
+      area: 'Team',
       loops: [newLoopLine('buy/soil')],
       tasks: [task('Order #buy/soil #next')],
     });
     const roster = buildLoopRoster([area, project], KINDS, TODAY, NOW);
     expect(roster).toHaveLength(1);
     expect(roster[0].loops.map(l => [l.glance.line.tag, l.owner.name, l.attention])).toEqual([
-      ['workshop/past', 'Atruvia', 'pastMainDate'],
-      ['workshop/idle', 'Atruvia', 'noNext'],
+      ['workshop/past', 'Team', 'pastMainDate'],
+      ['workshop/idle', 'Team', 'noNext'],
       ['buy/soil', 'Garden', null],
     ]);
     expect(loopRosterCount(roster)).toBe(2);

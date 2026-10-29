@@ -37,9 +37,9 @@ describe('engageText', () => {
     expect(nothingLeftText('launch')).toBe('Nothing left in launch.');
     expect(noNextPromptText('Website')).toBe('Website has no next action. Pick one:');
     expect(['done', 'someday', 'unnext', 'next', 'waiting'].map(k => ackLabel(k as 'done'))).toEqual(['Done:', 'Someday:', 'No longer #next:', 'Now #next:', 'Waiting for:']);
-    expect(waitingForButtonText('mieke')).toBe('w/f Mieke');
+    expect(waitingForButtonText('jordan')).toBe('w/f Jordan');
     expect(waitingForButtonText(null)).toBe('w/f');
-    expect(momentLineText({title: 'Sparring Mieke #sparring/mieke', date: '2026-10-24', time: '10:00', endTime: '11:00'}, '2026-10-24')).toBe('Sparring Mieke · today 10:00–11:00');
+    expect(momentLineText({title: 'Sparring Jordan #sparring/jordan', date: '2026-10-24', time: '10:00', endTime: '11:00'}, '2026-10-24')).toBe('Sparring Jordan · today 10:00–11:00');
     expect(momentLineText({title: 'Offsite', date: '2026-10-14', time: '', endTime: ''}, '2026-10-24')).toBe('Offsite · Wed 14.10.');
     expect(loopLineText('2026-10-02', 3, '2026-10-24')).toBe('Loop since 2.10. · 3 open');
     expect(loopLineText(null, 0, '2026-10-24')).toBe('0 open');
@@ -80,17 +80,17 @@ describe('Engage in context labels (docs/dev/history/technical-design-engage-in-
     expect(tabLabel('from', 2, 'item')).toBe('From meetings 2');
     expect(tabLabel('waiting', 2)).toBe('Waiting 2');
     expect(tabLabel('agreements', 1)).toBe('Agreements 1');
-    expect(fromCaption({title: 'Sparring Mieke #sparring/mieke', date: '2026-10-14'}, '2026-10-08')).toBe('Wed 14.10. · Sparring Mieke');
-    expect(fromCaption({title: 'Sparring Mieke', date: '2026-10-08'}, '2026-10-08')).toBe('today · Sparring Mieke');
+    expect(fromCaption({title: 'Sparring Jordan #sparring/jordan', date: '2026-10-14'}, '2026-10-08')).toBe('Wed 14.10. · Sparring Jordan');
+    expect(fromCaption({title: 'Sparring Jordan', date: '2026-10-08'}, '2026-10-08')).toBe('today · Sparring Jordan');
     expect(fromMeetingText({date: '2026-10-14'}, '2026-10-24')).toBe('from 14.10.');
     expect(alsoHereParts(1)).toEqual({someday: '1 someday'});
     expect(alsoHereParts(0)).toEqual({someday: null});
   });
 
   it('Next here: day, time, title; "· next today" when merged', () => {
-    const m = {title: 'Sparring Mieke #sparring/mieke', date: '2026-10-23', time: '10:00'};
-    expect(nextHereText(m, '2026-10-08', false)).toBe('Next here: Fri 23.10. 10:00 Sparring Mieke ›');
-    expect(nextHereText({...m, time: ''}, '2026-10-08', true)).toBe('Next here: Fri 23.10. Sparring Mieke · next today ›');
+    const m = {title: 'Sparring Jordan #sparring/jordan', date: '2026-10-23', time: '10:00'};
+    expect(nextHereText(m, '2026-10-08', false)).toBe('Next here: Fri 23.10. 10:00 Sparring Jordan ›');
+    expect(nextHereText({...m, time: ''}, '2026-10-08', true)).toBe('Next here: Fri 23.10. Sparring Jordan · next today ›');
   });
 
   it('Today next: relative only under 3 hours', () => {

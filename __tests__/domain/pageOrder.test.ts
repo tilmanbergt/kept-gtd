@@ -96,7 +96,7 @@ describe('afterItemIndex (meeting reflection, R3)', () => {
     );
   const after = (pages: Page[], itemPage: number) => afterItemIndex(marksOf(pages), itemPage);
   const loopPage: Page = ['loop workshop/offsite'];
-  const reflection: Page = ['reflection 2026-10-14 Sparring Mieke'];
+  const reflection: Page = ['reflection 2026-10-14 Sparring Jordan'];
 
   it('goes right after a one-page item', () => {
     expect(after([meeting('2026-10-14', 'Sparring'), meeting('2026-10-20', 'Check-in')], 0)).toBe(1);

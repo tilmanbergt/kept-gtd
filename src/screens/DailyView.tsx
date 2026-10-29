@@ -246,6 +246,7 @@ export default function DailyView({onOpenItem, onOpenInbox, onOpenCalendarSettin
 
   const quickAdd = (
     <QuickAddWidget
+      thisFileLine
       layoutKey="daily"
       {...context.widget}
       initialDate={calendarTab === 'tomorrow' ? tomorrowDate : todayDate}

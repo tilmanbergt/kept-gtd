@@ -90,6 +90,8 @@ import {useNoteDraft} from './quickAdd/useNoteDraft';
 import {useQuickAddCore} from './quickAdd/useQuickAddCore';
 import {useQuickAddStatus} from './quickAdd/useQuickAddStatus';
 import {useTaskDraft} from './quickAdd/useTaskDraft';
+import ThisFileLine from './quickAdd/ThisFileLine';
+import {useThisFileChoice} from './quickAdd/useThisFileChoice';
 
 export type {CaptureSaveMode, CaptureSeed, MeetingQuickAddFields, QuickAddEditTarget, QuickFilePayload} from './quickAdd/types';
 export {editTargetFor} from './quickAdd/types';
@@ -123,8 +125,15 @@ interface Props extends AgreementHandlers {
    */
   isMeetingDateVisible?: (date: string) => boolean;
 
-  onAddTask: (text: string, destination: Destination) => Promise<void>;
-  onAddMeeting: (fields: MeetingQuickAddFields, destination: Destination) => Promise<void>;
+  /** `linkedFile`: the This-file line's choice (only with `thisFileLine`), already relative to the base folder where it lies inside it. */
+  onAddTask: (text: string, destination: Destination, linkedFile?: string) => Promise<void>;
+  onAddMeeting: (fields: MeetingQuickAddFields, destination: Destination, linkedFile?: string) => Promise<void>;
+  /**
+   * Create mode, Todo and Meeting tabs: offer the note or document Kept was opened from as the new
+   * entry's linked file (ui/quickAdd/ThisFileLine.tsx). Set only where `onAddTask`/`onAddMeeting`
+   * pass `linkedFile` on to the entry they build.
+   */
+  thisFileLine?: boolean;
 
   /** The item being edited, or null/absent (create mode). Build it with `editTargetFor`. */
   editTarget?: QuickAddEditTarget | null;
@@ -240,12 +249,14 @@ function QuickAddWidget(props: Props): React.JSX.Element {
 
   const core = useQuickAddCore({fixedDestination, editingItemPath});
   const {displayType, isEditing, editFields, pending, setError, setPending} = core;
+  const thisFile = useThisFileChoice(!!props.thisFileLine && !isEditing);
   const task = useTaskDraft(core, {
     fixedDestination,
     editingItemPath,
     editingLoop: editTarget?.kind === 'loop',
     loopsEnabled: true,
     onAddTask: props.onAddTask,
+    linkedFileForAdd: thisFile.linkedFile,
     onSaveEditTask: props.onSaveEditTask,
   });
   const meeting = useMeetingDraft(core, {
@@ -254,6 +265,7 @@ function QuickAddWidget(props: Props): React.JSX.Element {
     initialMonthly: props.initialMonthly,
     isMeetingDateVisible: props.isMeetingDateVisible,
     onAddMeeting: props.onAddMeeting,
+    linkedFileForAdd: thisFile.linkedFile,
     onSaveEditMeeting: props.onSaveEditMeeting,
   });
   const note = useNoteDraft(core, {onAddNote, noteFolderPath});
@@ -469,11 +481,22 @@ function QuickAddWidget(props: Props): React.JSX.Element {
   ) : null;
   // R4 of the Todo tab: the provenance line while creating (K6), the
   // commands while editing without a card, else the second tag row.
+  const provenanceLine = provenance && provenance.length > 0 && !isEditing ? <ProvenanceLine parts={provenance} textColor={textColor} /> : undefined;
+  const thisFileLine = thisFile.targets ? (
+    <ThisFileLine targets={thisFile.targets} mode={thisFile.mode} onChange={thisFile.setMode} textColor={textColor} borderColor={borderColor} />
+  ) : undefined;
   const taskRow4 = taskCommands
     ? editCommands
     : editKind === 'task'
       ? undefined
-      : provenance && provenance.length > 0 && !isEditing ? <ProvenanceLine parts={provenance} textColor={textColor} /> : undefined;
+      : thisFileLine
+        ? (
+            <>
+              {thisFileLine}
+              {provenanceLine}
+            </>
+          )
+        : provenanceLine;
   // R4 of the Agreement tab: "↳ replaces …" while changing one (its ✕ cancels), the screen's line while creating.
   const replaces = editTarget?.kind === 'agreementChange' ? editTarget.replaces.agreement : null;
   const agreementRow4 =
@@ -513,7 +536,7 @@ function QuickAddWidget(props: Props): React.JSX.Element {
               core={core}
               meeting={meeting}
               layoutKey={layoutKey}
-              row4={editKind === 'meeting' && !meetingCard ? editCommands : undefined}
+              row4={editKind === 'meeting' && !meetingCard ? editCommands : editKind === null ? thisFileLine : undefined}
               {...colors}
             />
           )}

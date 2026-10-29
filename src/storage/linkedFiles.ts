@@ -18,10 +18,16 @@
  * and `paths.resources`. Areas themselves never have an assigned Area of
  * their own (`area` is always null there), so this parameter is simply
  * omitted/null for an Area's own locate calls - the check is inert.
+ *
+ * Files outside the base folder (the Device tab, a This-file row, a lasso
+ * source in `Document/`; docs/dev/history/technical-design-easy-start.md §6)
+ * are stored with their absolute path; `toLinkedFile` keeps every path under
+ * the base relative.
  */
 import {ResolvedParaPaths} from '../domain/settings';
 import {parsePageAnchor, stripPageAnchor} from '../domain/sharedNotePages';
 import {listFolderEntries, openPath} from '../supernote/fileSystem';
+import {INTERNAL_STORAGE} from '../supernote/devicePaths';
 
 /**
  * Turns a stored linkedFile value into an absolute path (without any page).
@@ -59,10 +65,20 @@ export function openLinkedFile(paths: ResolvedParaPaths, linkedFile: string): Pr
  */
 export function linkRootPath(rootKey: string, paths: ResolvedParaPaths, itemPath: string, area: string | null): string {
   if (rootKey === 'resources') return paths.resources;
+  if (rootKey === 'device') return INTERNAL_STORAGE;
   if (rootKey === 'area') return area ? `${paths.areas}/${area}` : '';
   if (rootKey === 'projectFiles') return paths.projects;
   if (rootKey === 'browse') return paths.base;
   return itemPath;
+}
+
+/**
+ * The absolute path an arm's pick names: `relativePath` under `rootPath`, or
+ * `relativePath` itself when it is already absolute (an SD card on the Device
+ * tab, a This-file row). A `#page=n` at its end stays.
+ */
+export function pickedPath(rootPath: string, relativePath: string): string {
+  return relativePath.startsWith('/') ? relativePath : `${rootPath.replace(/\/+$/, '')}/${relativePath}`;
 }
 
 export function toLinkedFile(paths: ResolvedParaPaths, absolutePath: string): string {
@@ -99,8 +115,8 @@ export async function linkedFileStatus(
 
 /** Where linkedFile's *containing folder* lives, for the Files pane's auto-navigate: which root (Project/Area Files, the assigned Area's Files, or Resources) and the folder-only path relative to that root. */
 export interface LinkedFileLocation {
-  root: 'item' | 'resources' | 'area';
-  /** Folder path relative to the item's own root (root: 'item'), the assigned Area's own folder (root: 'area'), or paths.resources (root: 'resources'). '' = the root itself. */
+  root: 'item' | 'resources' | 'area' | 'device';
+  /** Folder path relative to the item's own root (root: 'item'), the assigned Area's own folder (root: 'area'), paths.resources (root: 'resources') or the internal storage (root: 'device'). '' = the root itself. */
   folderPath: string;
   fileName: string;
 }
@@ -122,16 +138,12 @@ function relativeLocation(root: string, absolutePath: string): {folderPath: stri
  * Resolves `linkedFile` to a {root, folderPath, fileName} the Files pane can
  * auto-navigate to: `itemPath` (this Task/Meeting's own Project/Area folder)
  * first, then `areaFolderPath` (a Project's assigned Area's folder, if any -
- * technical-design-project-area-assignment.md §6), then `paths.resources`.
- * Returns null if `linkedFile` resolves under none of those - shouldn't
- * happen for anything this plugin wrote (every linkedFile is picked from one
- * of those roots), but a hand-edited file is possible, same defensive
- * posture as domain/markdown.ts's parser generally. (An Area's own tasks
- * linking to a file under one of *its* assigned Projects' folders - the
- * reverse direction, via the Project Files tab §4.4 adds to an Area's own
- * Files pane - isn't covered by any of these three roots either; picking
- * such a file still links it, it just won't auto-locate on re-edit, same
- * "returns null" fallback as any other not-yet-covered source.)
+ * technical-design-project-area-assignment.md §6), then `paths.resources`,
+ * then anywhere on the internal storage (the Device tab,
+ * docs/dev/history/technical-design-easy-start.md §6.2) - which covers an
+ * Area's file inside one of its Projects' folders too. Returns null only for
+ * a file outside the internal storage (an SD card): it still opens, it just
+ * doesn't auto-locate on re-edit.
  */
 export function locateLinkedFile(
   paths: ResolvedParaPaths,
@@ -151,6 +163,10 @@ export function locateLinkedFile(
 
   const underResources = relativeLocation(paths.resources, absolutePath);
   if (underResources) return {root: 'resources', ...underResources};
+
+  // Anywhere else on the internal storage: the Device tab (an SD card has no locate).
+  const onDevice = relativeLocation(INTERNAL_STORAGE, absolutePath);
+  if (onDevice) return {root: 'device', ...onDevice};
 
   return null;
 }

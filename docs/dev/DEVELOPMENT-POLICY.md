@@ -159,6 +159,10 @@ A change is not done while the docs describe the old behavior.
   - Update every page that describes the changed behavior; add a page for a new area of use and
     link it from `index.md`.
   - Use labels exactly as the app shows them; check every claim against the code.
+  - Examples use names, projects and tags from the demo space (`domain/demoSpace.ts`: Jordan,
+    Lena, Sam, Marco; Garden renovation, Team offsite, Coaching, Team …), never people or
+    companies from real work. `__tests__/userDocsExamples.test.ts` fails on a nested tag the demo
+    doesn't have (a short list of placeholders such as `#wf/name` aside).
   - Only the device-safe markdown subset (see `docs/dev/README.md` "Writing user docs"): no
     tables, images, HTML or deeper list nesting. `__tests__/docs/userDocs.test.ts` enforces this.
   - If a new tab or screen gets its own page, add the mapping in `domain/helpTopics.ts`.

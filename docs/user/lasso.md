@@ -4,30 +4,30 @@ Select handwriting with the lasso in any note or PDF, and Kept GTD turns it into
 
 The lasso toolbar has two Kept GTD buttons:
 
-- **Capture Todo/Meeting** opens Kept with the selection recognized, ready to save.
-- **Mark for later** saves the selection as a mark in one tap, without opening Kept. Use it when there is no time to sort, for example in a meeting.
+- [Capture Todo/Meeting](lasso.md#capturing-right-away) opens Kept with the selection recognized, ready to save.
+- [Mark for later](lasso.md#marking-for-later) saves the selection as a mark in one tap, without opening Kept. Use it when there is no time to sort, for example in a meeting.
 
 ## Capturing right away
 
 1. Select handwriting (or a text box) with the lasso and tap **Capture Todo/Meeting**.
 2. The screen **New from Lasso** shows the selection as a picture and the recognized text below it. The text appears as soon as recognition is done, usually after a few seconds. If you start typing before that, your text is kept.
-3. Choose **Todo** or **Meeting**, correct the text, and pick flow chips, tags and a due date as in [Quick Add](quick-add.md).
-4. **File to** shows where the item goes: the project or area the note belongs to, otherwise the Inbox. The chips offer the Inbox, that place and the ones you saved to lately; **More…** shows all of them. Writing an abbreviation like `#GR` in the text files it there, too.
+3. Choose **Todo** or **Meeting**, correct the text, and pick [flow chips](tags.md#flow-tags-for-todos), tags and a [due date](tags.md#due-dates) as in [Quick Add](quick-add.md).
+4. **File to** shows where the item goes: the project or area the note belongs to, otherwise the [Inbox](quick-add.md#the-inbox). The chips offer the Inbox, that place and the ones you saved to lately; **More…** shows all of them. Writing an [abbreviation](projects-and-areas.md#abbreviations) like `#GR` in the text files it there, too.
 5. Save with one of the three buttons under the text.
 
-- **Save & next** saves and goes on: to the next open mark, if there is one, otherwise to an empty form for another item.
+- **Save & next** saves and goes on: to the next [open mark](lasso.md#processing-marks), if there is one, otherwise to an empty form for another item.
 - **Save & view** saves and opens the project or area.
 - **Save & close** saves and closes Kept.
 
-**Link to this page** (on by default) gives the new item a link to the page you captured from: its clip opens the note at that page. The item's own note icon still creates its own note.
+**Link to this page** (on by default) gives the new item a link to the page you captured from: its clip opens the note at that page. The item's own [note icon](quick-add.md#notes-and-files-on-a-todo-or-meeting) still creates its own note.
 
-When the page belongs to a meeting - the meeting's own note, a page linked to it, its page or its Reflection page in a shared note, or a page you wrote after one of those - a todo you save records that meeting at the end of its line; no tag is added. Your own heading, or a todo's page, ends the meeting's pages; a cancelled meeting records nothing (see "Which owner a page belongs to" in [Engage](engage.md)). The grey line in Quick Add shows it first; ✕ drops it. See [Threads](threads.md).
+When the page belongs to a meeting - the meeting's own note, a page linked to it, its page or its [Reflection page](meetings.md#reflection-page) in a shared note, or a page you wrote after one of those - a todo you save records that meeting at the end of its line; no tag is added. Your own heading, or a todo's page, ends the meeting's pages; a cancelled meeting records nothing (see [Which owner a page belongs to](engage.md#which-owner-a-page-belongs-to)). The [grey line](quick-add.md#the-grey-line-where-a-todo-comes-from) in Quick Add shows it first; ✕ drops it. See [Where a todo was agreed](threads.md#where-a-todo-was-agreed).
 
-The lasso selection is removed once something is saved. **Mark for later** on this screen turns the selection into a mark instead.
+The lasso selection is removed once something is saved. [Mark for later](lasso.md#marking-for-later) on this screen turns the selection into a mark instead.
 
 ## Capturing an agreement
 
-When the page belongs to someone - a meeting's page, or a note of a project or area - the panel has a third kind, **Agreement**, next to Todo and Meeting. An agreement is one item, so **Split lines** isn't offered. Below the tags, **For** replaces **File to**: the thread or loop of the page's meeting comes first (for example `#sparring/mieke`) - without a meeting, the thread or loop of the todo's or loop's page the page follows - then the project or area of the note; **More…** offers every other one. The agreement gets that thread's or loop's tag and, on a meeting's page, records the meeting (the grey line, ✕ drops it). It goes into the file of the area or project that owns it, never into the Inbox. See [Agreements](agreements.md).
+When the page belongs to someone - a meeting's page, or a note of a project or area - the panel has a third kind, [Agreement](agreements.md), next to Todo and Meeting. An agreement is one item, so [Split lines](lasso.md#several-todos-from-one-selection) isn't offered. Below the tags, **For** replaces **File to**: the [thread](threads.md) or [loop](loops.md) of the page's meeting comes first (for example `#sparring/jordan`) - without a meeting, the thread or loop of the todo's or loop's page the page follows - then the project or area of the note; **More…** offers every other one. The agreement gets that thread's or loop's tag and, on a meeting's page, records the meeting (the [grey line](quick-add.md#the-grey-line-where-a-todo-comes-from), ✕ drops it). It goes into the file of the area or project that owns it, never into the Inbox. See [Who an agreement belongs to](agreements.md#who-an-agreement-belongs-to).
 
 ## Several todos from one selection
 
@@ -41,15 +41,15 @@ A list with boxes, dashes, dots or numbers in front of the lines becomes one tod
 
 **Mark for later** keeps a picture and the handwriting of the selection, and puts a small bookmark icon into the note so you can see what is marked. Nothing is recognized yet, so the tap is quick.
 
-The mark is listed in the project or area the note belongs to; marks from other notes and PDFs go to the Inbox.
+The mark is listed in the project or area the note belongs to; marks from other notes and PDFs go to the [Inbox](quick-add.md#the-inbox). How to work through them: [Processing marks](lasso.md#processing-marks).
 
 ## Processing marks
 
 Open marks show as a card **n marks to process** under Quick Add:
 
-- on the **Inbox** tab: all marks,
-- on the **Current** tab: the marks of that project or area,
-- in the Weekly Review step **Inbox to zero**: all marks, and they count toward the step.
+- on the [Inbox](quick-add.md#the-inbox) tab: all marks,
+- on the [Current](projects-and-areas.md#the-current-tab) tab: the marks of that project or area,
+- in the [Weekly Review](review.md) step [Inbox to zero](review.md#the-steps): all marks, and they count toward the step.
 
 **Process ›** opens the marks screen. The left column lists the marks by note, each with its picture, page, date and time, and whether it has been recognized yet. Recognition starts when you open the screen and runs ahead for the next marks; each mark is recognized only once.
 
@@ -63,11 +63,11 @@ One mark creates items of one kind: several todos, one meeting or one agreement.
 
 ## Closing out and archiving
 
-The [close-out](close-out.md) checklist warns about open marks of the project, with **Process ›** next to each. Open marks don't block archiving: they move to the Inbox and still find their note in the archive.
+The [close-out](close-out.md#the-five-steps) checklist warns about open marks of the project, with **Process ›** next to each. Open marks don't block [archiving](close-out.md#where-things-end-up): they move to the [Inbox](quick-add.md#the-inbox) and still find their note in the archive.
 
 ## Where marks are stored
 
-A mark is one line in a `## Marks` section of the project's `project.txt`, the area's `area.txt` or `Inbox.txt`:
+A mark is one line in a `## Marks` section of the project's `project.txt`, the area's `area.txt` or `Inbox.txt` ([Inside project.txt](files-and-folders.md#inside-projecttxt)):
 
 ```
 ## Marks
@@ -77,6 +77,6 @@ A mark is one line in a `## Marks` section of the project's `project.txt`, the a
 
 Date and time, the note, the page and an id. Deleting the line by hand discards the mark. The picture and the handwriting are kept in the plugin's own storage on the device, not in your folders, and are removed once the mark is processed.
 
-If a picture is missing (for example after the plugin was removed and installed again), the mark still works: type the text yourself.
+If a picture is missing (for example after the plugin was removed and installed again, see [What Kept GTD keeps elsewhere](files-and-folders.md#what-kept-gtd-keeps-elsewhere)), the mark still works: type the text yourself.
 
 Marks made with version 0.14 or older (or an early 0.15 beta) and not processed yet are not recognized: the marks screen says "Marked with an older Kept GTD - type the text from the picture." Type the text from the picture and save as usual.

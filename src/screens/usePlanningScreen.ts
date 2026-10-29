@@ -170,16 +170,16 @@ export function usePlanningScreen({logTag}: Options) {
   };
 
   const hiddenNotice = useHiddenAddNotice(logTag);
-  const handleAddTask = async (text: string, destination: Destination): Promise<void> => {
-    const task = buildTask(text);
+  const handleAddTask = async (text: string, destination: Destination, linkedFile?: string): Promise<void> => {
+    const task = buildTask(text, {linkedFile});
     const {nextInbox} = await addTaskToDestination(task, destination, {inbox, inboxPath});
     if (nextInbox) setCachedInbox(nextInbox);
     log(`${logTag}: added task`, destinationLabel(destination));
     hiddenNotice(destination, {kind: 'task', tags: task.tags});
   };
 
-  const handleAddMeeting = async (fields: MeetingQuickAddFields, destination: Destination): Promise<void> => {
-    const meeting = buildMeeting(fields);
+  const handleAddMeeting = async (fields: MeetingQuickAddFields, destination: Destination, linkedFile?: string): Promise<void> => {
+    const meeting = buildMeeting(fields, {linkedFile});
     const {nextInbox} = await addMeetingToDestination(meeting, destination, {inbox, inboxPath});
     if (nextInbox) setCachedInbox(nextInbox);
     log(`${logTag}: added meeting`, destinationLabel(destination));

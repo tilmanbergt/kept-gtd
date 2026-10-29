@@ -51,7 +51,7 @@ function render(destination: Destination, onAddTask = jest.fn(async () => undefi
   return r;
 }
 
-const AREA: Destination = {type: 'item', kind: 'area', name: 'Atruvia', path: '/a'};
+const AREA: Destination = {type: 'item', kind: 'area', name: 'Team', path: '/a'};
 
 function type(r: TestRenderer.ReactTestRenderer, text: string) {
   act(() => r.root.findAllByType(TextInput)[0].props.onChangeText(text));

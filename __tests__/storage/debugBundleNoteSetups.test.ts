@@ -12,7 +12,7 @@ import {noteSetupsLine, summarizeSettings} from '../../src/storage/debugBundle';
 const settings: GtdParaSettings = {
   ...DEFAULT_SETTINGS,
   noteSetups: [
-    {...createNoteSetup('1', 'thread'), name: 'Sparring Peter', tags: ['sparring'], notebook: {name: 'x', folder: ''}},
+    {...createNoteSetup('1', 'thread'), name: 'Sparring Marco', tags: ['sparring'], notebook: {name: 'x', folder: ''}},
     {...createNoteSetup('2', 'thread'), name: 'Clients', tags: ['client'], enabled: false},
     {...createNoteSetup('3', 'loop'), name: 'Workshop', tags: ['workshop']},
   ],
@@ -30,6 +30,6 @@ describe('noteSetupsLine', () => {
   it('is part of the settings summary and carries no names or tags', () => {
     const text = summarizeSettings(settings).join('\n');
     expect(text).toContain('note setups: thread 1');
-    expect(text).not.toMatch(/Sparring|Peter|sparring|workshop|client/);
+    expect(text).not.toMatch(/Sparring|Marco|sparring|workshop|client/);
   });
 });

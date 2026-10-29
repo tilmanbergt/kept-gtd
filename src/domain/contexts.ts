@@ -166,12 +166,12 @@ export function hiddenLineText(contextName: string, tally: HiddenTally, itemNoun
   return parts.length > 0 ? `Hidden by ${contextName}: ${parts.join(' · ')}` : null;
 }
 
-/** "Saved to Atruvia · hidden by Home" (§3.3): an entry Quick Add filed where the active context doesn't show it. */
+/** "Saved to Team · hidden by Home" (§3.3): an entry Quick Add filed where the active context doesn't show it. */
 export function hiddenAddText(ownerName: string, contextName: string): string {
   return `Saved to ${ownerName} · hidden by ${contextName}`;
 }
 
-/** The chip menu's one-line summary: "Shows Atruvia, #reading · hides #computer"; "Shows everything". */
+/** The chip menu's one-line summary: "Shows Team, #reading · hides #computer"; "Shows everything". */
 export function contextSummary(ctx: ContextDef): string {
   const label = (e: ContextEntry) => (e.kind === 'item' ? e.name : `#${e.tag}`);
   const shows = ctx.shows.length > 0 ? `Shows ${ctx.shows.map(label).join(', ')}` : 'Shows everything';

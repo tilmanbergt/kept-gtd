@@ -44,7 +44,7 @@ import {conversionsOf, installLoopConversion, LoopEvent, subscribeLoopEvents} fr
 import {newLoopLine} from '../../src/domain/loopsSection';
 import {item, task} from '../../test-helpers/fixtures';
 
-const PATH = '/Note/2 Areas/Atruvia';
+const PATH = '/Note/2 Areas/Team';
 
 function flush(): Promise<void> {
   return new Promise(resolve => setTimeout(resolve, 0));
@@ -59,7 +59,7 @@ beforeEach(() => {
 
 describe('conversionsOf', () => {
   it('takes open bare loop todos whose loop has no line, one per loop', () => {
-    const it1 = item('area', 'Atruvia', {
+    const it1 = item('area', 'Team', {
       tasks: [
         task('#workshop/teamoffsite #next'),
         task('#workshop/teamoffsite'),
@@ -90,7 +90,7 @@ describe('the conversion after a save', () => {
   });
 
   it('writes the loop line instead of the todo, with main date and file, and says so', async () => {
-    mockItem = item('area', 'Atruvia', {
+    mockItem = item('area', 'Team', {
       path: PATH,
       rawContent: '## Tasks\n- [ ] Keep me\n- [ ] #workshop/teamoffsite [due:: 2026-11-14]\n',
       tasks: [task('Keep me'), task('#workshop/teamoffsite', {dueDate: '2026-11-14', linkedFile: 'Offsite brief.pdf'})],
@@ -105,11 +105,11 @@ describe('the conversion after a save', () => {
     expect(content).not.toContain('- [ ] #workshop/teamoffsite');
     expect(content).toContain('## Loops\n- workshop/teamoffsite: active, 2026-11-14, [[Offsite brief.pdf]]');
     expect(mockApplied).toEqual([PATH]);
-    expect(events).toEqual([{kind: 'started', tag: 'workshop/teamoffsite', owner: 'Atruvia', noteMovedTo: null}]);
+    expect(events).toEqual([{kind: 'started', tag: 'workshop/teamoffsite', owner: 'Team', noteMovedTo: null}]);
   });
 
   it('moves the todo own note to the loop note name', async () => {
-    mockItem = item('area', 'Atruvia', {
+    mockItem = item('area', 'Team', {
       path: PATH,
       tasks: [task('#buy/ebike', {dueDate: '2026-11-30', notePath: 'Todos/Buy e-bike.note'})],
     });
@@ -117,12 +117,12 @@ describe('the conversion after a save', () => {
     await flush();
     await flush();
     expect(mockMoves).toEqual([[`${PATH}/Todos/Buy e-bike.note`, `${PATH}/2026-11 buy ebike.note`]]);
-    expect(events[0]).toEqual({kind: 'started', tag: 'buy/ebike', owner: 'Atruvia', noteMovedTo: '2026-11 buy ebike.note'});
+    expect(events[0]).toEqual({kind: 'started', tag: 'buy/ebike', owner: 'Team', noteMovedTo: '2026-11 buy ebike.note'});
   });
 
   it('keeps the note where it is when the name is taken', async () => {
     mockExisting.add(`${PATH}/buy ebike.note`);
-    mockItem = item('area', 'Atruvia', {path: PATH, tasks: [task('#buy/ebike', {notePath: 'Todos/x.note'})]});
+    mockItem = item('area', 'Team', {path: PATH, tasks: [task('#buy/ebike', {notePath: 'Todos/x.note'})]});
     mockHook?.(PATH);
     await flush();
     await flush();
@@ -131,7 +131,7 @@ describe('the conversion after a save', () => {
   });
 
   it('writes nothing when nothing is a loop itself', async () => {
-    mockItem = item('area', 'Atruvia', {path: PATH, tasks: [task('Book room #workshop/teamoffsite')]});
+    mockItem = item('area', 'Team', {path: PATH, tasks: [task('Book room #workshop/teamoffsite')]});
     mockHook?.(PATH);
     await flush();
     expect(mockWrites).toEqual([]);

@@ -41,7 +41,7 @@ import {resolvePaths} from '../domain/settings';
 import {assignedProjects, assignProjectToArea, unassignProject} from '../storage/areaAssignment';
 import {archiveItem, archiveLeavesEmptyFolder, archiveTargetsFor, describeAreaArchiveBlock} from '../storage/archive';
 import {archiveDoneText, emptyFolderConfirmNote} from '../domain/fileChangeText';
-import {displayPath} from '../supernote/fileSystem';
+import {displayPath} from '../supernote/devicePaths';
 import {CachedItem, ensureItemCached, findCachedItem} from '../storage/dataCache';
 import {useOnScreenShow} from './screenActivity';
 import {loadSettings} from '../storage/settingsStorage';

@@ -35,13 +35,13 @@ const workshopLoop: LoopRef = {kind: 'workshop', name: 'offsite', tag: 'workshop
 describe('tag matching', () => {
   it('matches the tag and nested tags, never a longer word or child -> parent', () => {
     expect(tagMatchesSetupTag('coaching', 'coaching')).toBe(true);
-    expect(tagMatchesSetupTag('coaching/sabina', 'coaching')).toBe(true);
+    expect(tagMatchesSetupTag('coaching/lena', 'coaching')).toBe(true);
     expect(tagMatchesSetupTag('coachingx', 'coaching')).toBe(false);
-    expect(tagMatchesSetupTag('coaching', 'coaching/sabina')).toBe(false);
+    expect(tagMatchesSetupTag('coaching', 'coaching/lena')).toBe(false);
   });
 
   it('setupSubtag and setupTypeTag pick the first nested / matched item tag', () => {
-    expect(setupSubtag(['x', 'Coaching/Sabina', 'coaching/tom'], ['coaching'])).toBe('sabina');
+    expect(setupSubtag(['x', 'Coaching/Lena', 'coaching/tom'], ['coaching'])).toBe('lena');
     expect(setupSubtag(['coaching'], ['coaching'])).toBe('');
     expect(setupTypeTag(['retro/alpha', 'sparring/max'], ['sparring', 'retro'])).toBe('retro');
     expect(setupTypeTag(['other'], ['sparring'])).toBe('');
@@ -54,11 +54,11 @@ describe('matchingSetups', () => {
   const c = setup('3', 'thread', ['team']);
 
   it('nested tags match, disabled setups are left out, list order is kept', () => {
-    expect(matchingSetups(['team/jf', 'sparring/peter', 'retro'], [a, b, c]).map(s => s.id)).toEqual(['1', '3']);
+    expect(matchingSetups(['team/jf', 'sparring/marco', 'retro'], [a, b, c]).map(s => s.id)).toEqual(['1', '3']);
   });
 
   it('matches case-insensitively', () => {
-    expect(matchingSetups(['Sparring/Peter'], [{...a, tags: ['Sparring']}]).map(s => s.id)).toEqual(['1']);
+    expect(matchingSetups(['Sparring/Marco'], [{...a, tags: ['Sparring']}]).map(s => s.id)).toEqual(['1']);
   });
 
   it('no tags, no match', () => {
@@ -71,7 +71,7 @@ describe('noteCandidates', () => {
   const jf = setup('2', 'thread', ['jf']);
   const workshop = setup('3', 'loop', ['workshop'], {notebook: {name: '{tag}', folder: ''}});
   const all = [sparring, jf, workshop];
-  const tags = ['workshop/offsite', 'sparring/peter'];
+  const tags = ['workshop/offsite', 'sparring/marco'];
 
   function targets(cs: NoteCandidate[]): string[] {
     return cs.map(c => `${c.setup?.id ?? 'default'}:${c.target}`);
@@ -214,7 +214,7 @@ describe('validateNotebookFolder', () => {
 
   it('nested folders, backslashes and outer slashes', () => {
     expect(validateNotebookFolder('Coaching/2026')).toEqual({ok: true, folder: 'Coaching/2026'});
-    expect(validateNotebookFolder(' \\Sparring\\Peter\\ ')).toEqual({ok: true, folder: 'Sparring/Peter'});
+    expect(validateNotebookFolder(' \\Sparring\\Marco\\ ')).toEqual({ok: true, folder: 'Sparring/Marco'});
   });
 
   it('refuses .., a leading dot, empty segments, illegal characters, too deep, too long', () => {

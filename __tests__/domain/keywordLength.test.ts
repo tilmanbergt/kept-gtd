@@ -9,7 +9,7 @@ jest.mock('@react-native-async-storage/async-storage', () =>
   require('@react-native-async-storage/async-storage/jest/async-storage-mock'),
 );
 jest.mock('sn-plugin-lib', () => ({PluginCommAPI: {recycleElement: jest.fn()}}));
-jest.mock('../../src/supernote/fileSystem', () => ({}));
+
 
 describe('fitKeyword', () => {
   it('measures 43 characters, an umlaut counting as one', () => {

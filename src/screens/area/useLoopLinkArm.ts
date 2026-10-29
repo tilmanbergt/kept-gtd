@@ -9,7 +9,7 @@
 import {useEffect, useState} from 'react';
 import {ResolvedParaPaths} from '../../domain/settings';
 import {findCachedItem} from '../../storage/dataCache';
-import {linkRootPath, toLinkedFile} from '../../storage/linkedFiles';
+import {linkRootPath, pickedPath, toLinkedFile} from '../../storage/linkedFiles';
 import {setLoopLinkedFile} from '../../storage/loops';
 import {LinkTarget} from '../../ui/FileBrowserPane';
 import {takeLoopLink, useLoopLinkRequest} from '../../ui/loopLinkStore';
@@ -36,7 +36,7 @@ export function useLoopLinkArm(
           mode: 'arming',
           label: `Pick a file for loop ${tag}`,
           onPick: (rootKey, relativePath) => {
-            const linkedFile = toLinkedFile(paths, `${linkRootPath(rootKey, paths, itemPath, area).replace(/\/+$/, '')}/${relativePath}`);
+            const linkedFile = toLinkedFile(paths, pickedPath(linkRootPath(rootKey, paths, itemPath, area), relativePath));
             setTag(null);
             run(() => setLoopLinkedFile(itemPath, tag, linkedFile));
           },

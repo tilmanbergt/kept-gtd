@@ -17,7 +17,8 @@ import {findCachedItem, setCachedInbox} from '../../../storage/dataCache';
 import {InboxFilingTarget, resolveFilingPick} from '../../../storage/inboxFiling';
 import {itemTarget, moveMeeting, moveTask} from '../../../storage/entryMove';
 import {useEntryMoveUi} from '../../../ui/useEntryMoveUi';
-import {linkedFileStatus, locateLinkedFile, openLinkedFile, toLinkedFile} from '../../../storage/linkedFiles';
+import {INTERNAL_STORAGE} from '../../../supernote/devicePaths';
+import {linkedFileStatus, locateLinkedFile, openLinkedFile, pickedPath, toLinkedFile} from '../../../storage/linkedFiles';
 import {openOrCreateMeetingNote, openOrCreateTodoNote} from '../../../storage/meetingNoteContent';
 import {useNoteCreateConfirm} from '../../../ui/useNoteCreateConfirm';
 import {useMeetingCard} from '../../../ui/itemCard/useMeetingCard';
@@ -71,6 +72,7 @@ export function inboxStepEntries(inbox: ProjectFileState | null): {
   };
 }
 
+import {useDeviceRoot} from '../../../ui/fileBrowser/useDeviceRoot';
 export default function InboxStep({
   data,
   onOpenItem,
@@ -188,7 +190,7 @@ export default function InboxStep({
   const selectInboxMeeting = (meetingIndex: number) => selectEditTarget({type: 'meeting', index: meetingIndex});
 
   const rootPathFor = (root: string): string | null =>
-    root === 'resources' ? paths?.resources ?? null : root === 'browse' ? paths?.base ?? null : null;
+    root === 'resources' ? paths?.resources ?? null : root === 'browse' ? paths?.base ?? null : root === 'device' ? INTERNAL_STORAGE : null;
 
   /** Arming's pick for intent 'link': the picked file becomes the row's linked file. */
   const handleInboxLinkPick = (root: string, relativePath: string) => {
@@ -197,7 +199,7 @@ export default function InboxStep({
     action
       .run(async () => {
         if (!paths || !rootPath || !arm) throw new Error(INBOX_NOT_LOADED);
-        const linkedFile = toLinkedFile(paths, `${rootPath.replace(/\/+$/, '')}/${relativePath}`);
+        const linkedFile = toLinkedFile(paths, pickedPath(rootPath, relativePath));
         if (arm.type === 'task') await changeTask(arm.index, t => ({...t, linkedFile}));
         else await changeMeeting(arm.index, m => ({...m, linkedFile}));
         log('ReviewScreen: linked inbox item', arm.type, arm.index, '->', relativePath);
@@ -338,7 +340,7 @@ export default function InboxStep({
         if (!location) return null;
         return {
           mode: 'locating' as const,
-          root: 'resources',
+          root: location.root === 'device' ? 'device' : 'resources',
           folderPath: location.folderPath,
           fileName: location.fileName,
           fileMissing: inboxLinkedFileMissing,
@@ -350,6 +352,7 @@ export default function InboxStep({
   // Browse lists active Projects/Areas only; Resources is disabled while file-arming.
   const inboxZeroActiveOnly = (entry: FolderEntry) => findCachedItem(entry.path)?.status === 'active';
   const inboxZeroIsFileArming = inboxZeroArmTarget?.intent === 'file';
+  const inboxZeroDeviceRoot = useDeviceRoot(inboxZeroIsFileArming);
   const inboxZeroFileBrowserRoots: FileBrowserRoot[] = paths
     ? [
         {key: 'resources', label: 'Resources', rootPath: paths.resources, disabled: inboxZeroIsFileArming},
@@ -364,6 +367,7 @@ export default function InboxStep({
           entryFilter: inboxZeroActiveOnly,
           onNavigateToItem: (kind, name, path) => onOpenItem({kind, name, path}),
         },
+        inboxZeroDeviceRoot,
       ]
     : [];
 
@@ -374,6 +378,7 @@ return (
         <FileBrowserPane
           roots={inboxZeroFileBrowserRoots}
           linkTarget={inboxZeroLinkTarget}
+          thisFileRows
           textColor={textColor}
           borderColor={borderColor}
         />

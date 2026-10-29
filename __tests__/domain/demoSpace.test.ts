@@ -62,13 +62,14 @@ describe('demo space', () => {
     const coaching = byPath('2 Areas/Coaching/area.txt');
     const tasks = parseTasksSpan(coaching).tasks;
     const meetings = parseMeetingsSpan(coaching).meetings;
-    expect(tasks.filter(t => t.fields.meeting === '2026-09-24 Sparring Mieke sparring/mieke').map(t => t.text)).toEqual([
-      'Send Mieke the role canvas #next',
+    expect(tasks.filter(t => t.fields.meeting === '2026-09-24 Sparring Jordan sparring/jordan').map(t => t.text)).toEqual([
+      'Send Jordan the role canvas #next',
       'Draft feedback for the team lead',
-      'Org chart from Mieke #wf',
+      'Org chart from Jordan #wf',
     ]);
     expect(meetings.find(m => m.title.startsWith('Offsite planning'))!.date).toBe('2026-10-01');
-    expect(coaching).toContain('- mieke: active');
+    expect(coaching).toContain('- jordan: active');
+    expect(tasks.map(t => t.text)).toContain('Send Jordan the book tip #owe/jordan');
     expect(coaching).toContain('- workshop/offsite: active, 2026-10-15');
   });
 
@@ -95,7 +96,7 @@ describe('demo space: contexts and focus blocks (docs/dev/history/technical-desi
   const files = buildDemoFiles(today);
   it('has three focus blocks: a project\'s, a loop\'s and a thread\'s', () => {
     const blocks = files.flatMap(f => parseMeetingsSpan(f.content).meetings).filter(m => m.tags.includes('focusblock'));
-    expect(blocks.map(m => m.tags.filter(t => t !== 'focusblock'))).toEqual([[], ['workshop/offsite'], ['sparring/mieke']]);
+    expect(blocks.map(m => m.tags.filter(t => t !== 'focusblock'))).toEqual([[], ['workshop/offsite'], ['sparring/jordan']]);
   });
   it('the demo profile has the contexts Work and Home, with Everything active', () => {
     const settings = demoProfileSettings();

@@ -21,8 +21,8 @@ describe('reflectionKeyword', () => {
   });
 
   it('is fitted to the keyword limit, the tags going first', () => {
-    const kw = reflectionKeyword(meeting('2026-10-14', 'Sparring Mieke #sparring/mieke'));
-    expect(kw).toBe('reflection 2026-10-14 Sparring Mieke');
+    const kw = reflectionKeyword(meeting('2026-10-14', 'Sparring Jordan #sparring/jordan'));
+    expect(kw).toBe('reflection 2026-10-14 Sparring Jordan');
     const long = reflectionKeyword(meeting('2026-10-14', 'A very long sparring session title about roles and canvases'));
     expect(long.length).toBeLessThanOrEqual(KEYWORD_MAX_LENGTH);
     expect(long.startsWith('reflection 2026-10-14 ')).toBe(true);
@@ -34,7 +34,7 @@ describe('reflectionKeyword', () => {
   });
 
   it('is what the stored meeting-page keyword gives, before a rename was opened', () => {
-    expect(reflectionKeywordOfPageKeyword('2026-10-14 Sparring Mieke #sparring/mieke')).toBe('reflection 2026-10-14 Sparring Mieke');
+    expect(reflectionKeywordOfPageKeyword('2026-10-14 Sparring Jordan #sparring/jordan')).toBe('reflection 2026-10-14 Sparring Jordan');
   });
 });
 
@@ -52,24 +52,24 @@ describe('reflectionPageOf', () => {
     const keywords = pages.flatMap((kws, page) => kws.map(keyword => ({page, keyword})));
     return reflectionPageOf(keywords, pageMarks(keywords, pages.length), itemPage);
   };
-  const sparring = ['2026-10-14 Sparring Mieke', '2026-10-14'];
-  const checkin = ['2026-10-20 Check-in Mieke', '2026-10-20'];
+  const sparring = ['2026-10-14 Sparring Jordan', '2026-10-14'];
+  const checkin = ['2026-10-20 Check-in Jordan', '2026-10-20'];
 
   it('finds the reflection after the meeting and its hand-added pages', () => {
-    expect(find([sparring, [], ['reflection 2026-10-14 Sparring Mieke'], checkin], 0)).toEqual({page: 2, keyword: 'reflection 2026-10-14 Sparring Mieke'});
+    expect(find([sparring, [], ['reflection 2026-10-14 Sparring Jordan'], checkin], 0)).toEqual({page: 2, keyword: 'reflection 2026-10-14 Sparring Jordan'});
   });
 
   it('does not look beyond the next item', () => {
-    expect(find([sparring, [], checkin, ['reflection 2026-10-20 Check-in Mieke']], 0)).toBeNull();
+    expect(find([sparring, [], checkin, ['reflection 2026-10-20 Check-in Jordan']], 0)).toBeNull();
   });
 
   it('finds it by prefix after the meeting was renamed', () => {
-    expect(find([sparring, ['reflection 2026-10-14 Sparring Mieke']], 0)?.page).toBe(1);
+    expect(find([sparring, ['reflection 2026-10-14 Sparring Jordan']], 0)?.page).toBe(1);
   });
 
   it('does not take the meeting page itself, nor look past a pinned page', () => {
     expect(find([['reflection 2026-10-14 X', '2026-10-14']], 0)).toBeNull();
-    expect(find([sparring, ['home'], ['reflection 2026-10-14 Sparring Mieke']], 0)).toBeNull();
+    expect(find([sparring, ['home'], ['reflection 2026-10-14 Sparring Jordan']], 0)).toBeNull();
   });
 });
 

@@ -5,24 +5,24 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-130 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+140 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
 ### An agreement in the thread overview: it shows in the block "Agreements", another thread's does not
 
-- **Given** area "Coaching" has an agreement tagged #mieke and one tagged #sparring/sven
-- **When** I open Mieke's thread overview
+- **Given** area "Coaching" has an agreement tagged #jordan and one tagged #sparring/sam
+- **When** I open Jordan's thread overview
 - **Then** Ahead lists the block "Agreements" with the first one only
-- **When** I switch to All mieke
+- **When** I switch to All jordan
 - **Then** the agreement shows there too
 
 Test: `__tests__/scenarios/agreements.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md`
 
 ### Add an agreement from the thread overview with valid till end of year
 
-- **Given** area "Coaching" has a past sparring session with Mieke and no agreements
-- **When** I open Mieke's thread overview, choose the Agreement tab and type "No calls after six"
+- **Given** area "Coaching" has a past sparring session with Jordan and no agreements
+- **When** I open Jordan's thread overview, choose the Agreement tab and type "No calls after six"
 - **And** I tap "valid till" and choose "end of year", then + Add
 - **Then** the area file has the agreement with the thread tag, the meeting it was made in, today and the valid-till date
 - **And** the status slot says where it went, and the overview lists it
@@ -31,8 +31,8 @@ Test: `__tests__/scenarios/agreements.test.tsx` · design: `docs/dev/history/tec
 
 ### Change an agreement: the old one is ended, the new one added; Cancel changes nothing
 
-- **Given** area "Coaching" has the agreement "Feedback only in our 1:1s" with Mieke
-- **When** I open Mieke's thread overview, tap the agreement and Change on its card, then Cancel
+- **Given** area "Coaching" has the agreement "Feedback only in our 1:1s" with Jordan
+- **When** I open Jordan's thread overview, tap the agreement and Change on its card, then Cancel
 - **Then** the file is unchanged
 - **When** I tap Change again, edit the words to "Feedback only in our 1:1s, except urgent" and tap + Add
 - **Then** the old line is ended today and the new one is added after it, made in the meeting the overview shows
@@ -42,8 +42,8 @@ Test: `__tests__/scenarios/agreements.test.tsx` · design: `docs/dev/history/tec
 
 ### End an agreement: asked once, then ended today
 
-- **Given** area "Coaching" has the agreement "Feedback only in our 1:1s" with Mieke
-- **When** I tap it in Mieke's thread overview, tap End on its card and confirm
+- **Given** area "Coaching" has the agreement "Feedback only in our 1:1s" with Jordan
+- **When** I tap it in Jordan's thread overview, tap End on its card and confirm
 - **Then** the line gets [ended:: today]
 - **And** the overview shows "1 agreement ended ›" in Looking back
 
@@ -52,31 +52,31 @@ Test: `__tests__/scenarios/agreements.test.tsx` · design: `docs/dev/history/tec
 ### A hand-edited Agreements section keeps every other line byte for byte when one agreement is ended
 
 - **Given** area "Coaching" has two agreements, one with the unknown field [who:: both], a comment line and a blank line between them
-- **When** I end the first one in Mieke's thread overview
+- **When** I end the first one in Jordan's thread overview
 - **Then** only that line changed; everything else is byte-identical
 
 Test: `__tests__/scenarios/agreements.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md`
 
 ### A Project page lists its own agreements; a thread's agreement shows in the thread overview instead
 
-- **Given** project "Leadership program" has one untagged agreement and one tagged #sparring/mieke
+- **Given** project "Leadership program" has one untagged agreement and one tagged #sparring/jordan
 - **When** I open the project
 - **Then** its todo list ends with "◇ Agreements 1 ›"
 - **When** I tap it
 - **Then** the column lists the untagged agreement, with "‹ Todos" back
-- **When** I open Mieke's thread overview from the meeting
+- **When** I open Jordan's thread overview from the meeting
 - **Then** the tagged one shows there
 
 Test: `__tests__/scenarios/agreements.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md`
 
 ### Review step "Agreements": keep one past its date for three more months, end one with an inactive thread
 
-- **Given** area "Coaching" has "Fridays are quiet" valid till yesterday, Mieke set inactive and an active agreement with her
+- **Given** area "Coaching" has "Fridays are quiet" valid till yesterday, Jordan set inactive and an active agreement with her
 - **When** I open Review and the step "Agreements"
 - **Then** it lists both, with "till … – over" and "thread inactive"
 - **When** I keep "Fridays are quiet" with "+3 m"
 - **Then** its valid-till is three months ahead
-- **When** I end the agreement with Mieke
+- **When** I end the agreement with Jordan
 - **Then** it is ended today, and both rows carry a checkmark
 
 Test: `__tests__/scenarios/agreements.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md`
@@ -108,11 +108,11 @@ Test: `__tests__/scenarios/keptGtd.test.tsx`
 
 ### A context filters Daily: hidden todos, dimmed meetings, the hidden line and Show
 
-- **Given** contexts Work (Area Atruvia) and Home (Area Garden)
+- **Given** contexts Work (Area Team) and Home (Area Garden)
 - **When** I open Daily, tap the chip in the tab bar, choose Home in Settings → Contexts and go back to Daily
 - **Then** the chip names Home, and the status line says so
-- **And** Atruvia's todos are hidden, its overdue one too; Garden's and the Inbox show
-- **And** Atruvia's meeting is still listed (dimmed), and the hidden line counts the hidden todos and warns of the due one
+- **And** Team's todos are hidden, its overdue one too; Garden's and the Inbox show
+- **And** Team's meeting is still listed (dimmed), and the hidden line counts the hidden todos and warns of the due one
 - **When** I tap Show
 - **Then** everything shows
 - **When** I switch to Week and back to Daily
@@ -124,7 +124,7 @@ Test: `__tests__/scenarios/contexts.test.tsx`
 
 - **Given** contexts Work and Home, Home active
 - **When** I open Areas
-- **Then** only Garden is listed, and the hidden line counts Atruvia
+- **Then** only Garden is listed, and the hidden line counts Team
 - **When** I open Review
 - **Then** Stalled projects counts Home's project and "+1 in other contexts"
 - **When** I open the step
@@ -136,9 +136,9 @@ Test: `__tests__/scenarios/contexts.test.tsx`
 
 ### Quick Add says when the entry lands outside the context
 
-- **Given** Home is active and Atruvia has the abbreviation AT
+- **Given** Home is active and Team has the abbreviation AT
 - **When** I add "Prepare offer #AT" on Daily
-- **Then** it is in Atruvia's file, and the status line says "Saved to Atruvia · hidden by Home"
+- **Then** it is in Team's file, and the status line says "Saved to Team · hidden by Home"
 
 Test: `__tests__/scenarios/contexts.test.tsx`
 
@@ -156,11 +156,11 @@ Test: `__tests__/scenarios/contexts.test.tsx`
 
 ### Settings → Contexts: a context that shows one Area, named and saved from the top row
 
-- **Given** the areas Home and Atruvia, each with a next todo
+- **Given** the areas Home and Team, each with a next todo
 - **When** I create "Home" with Shows on the Area Home and tap Save
 - **Then** the Areas list counts the choice and the context is listed
 - **When** I tap its radio and open Daily
-- **Then** Daily shows Home's todo and hides Atruvia's
+- **Then** Daily shows Home's todo and hides Team's
 
 Test: `__tests__/scenarios/contexts.test.tsx`
 
@@ -205,7 +205,7 @@ Test: `__tests__/scenarios/dailySlim.test.tsx`
 
 ### Daily: tapping a thread meeting shows its card and the context panel
 
-- **Given** "1:1 Mieke #sparring/mieke" today at 15:00, an owed todo from the last 1:1, a waiting todo and an agreement
+- **Given** "1:1 Jordan #sparring/jordan" today at 15:00, an owed todo from the last 1:1, a waiting todo and an agreement
 - **When** I tap the meeting on Daily
 - **Then** the card shows and the panel lists I owe, Waiting for and Agreed last time
 - **When** I close the card
@@ -223,7 +223,7 @@ Test: `__tests__/scenarios/meetingContext.test.tsx`
 
 ### Quick Add to meeting before it starts: an agenda item with the thread tag
 
-- **Given** the thread meeting "1:1 Mieke" today at 15:00
+- **Given** the thread meeting "1:1 Jordan" today at 15:00
 - **When** I tap it, use + Quick Add to meeting and add "Bring the numbers"
 - **Then** the todo carries the thread tag and no meeting field
 - **And** the card is back and the panel lists it
@@ -232,7 +232,7 @@ Test: `__tests__/scenarios/meetingContext.test.tsx`
 
 ### Quick Add to meeting during it: the meeting is recorded
 
-- **Given** the thread meeting "1:1 Mieke" today 9:30-10:30, running now
+- **Given** the thread meeting "1:1 Jordan" today 9:30-10:30, running now
 - **When** I add "Send the contract" through + Quick Add to meeting
 - **Then** the todo has the thread tag and [meeting:: …] of this meeting
 
@@ -240,7 +240,7 @@ Test: `__tests__/scenarios/meetingContext.test.tsx`
 
 ### Quick Add to meeting opens the Todo tab and names where it adds, without an abbreviation in the text
 
-- **Given** the thread meeting "1:1 Mieke" today at 15:00, and Quick Add left on its Meeting tab
+- **Given** the thread meeting "1:1 Jordan" today at 15:00, and Quick Add left on its Meeting tab
 - **When** I switch Quick Add to Meeting, tap the meeting and + Quick Add to meeting
 - **Then** the Todo tab shows, its button reads "+ Add to Coaching" and the text is empty
 
@@ -248,7 +248,7 @@ Test: `__tests__/scenarios/meetingContext.test.tsx`
 
 ### A todo in the panel opens its card and edit form; Save and ✕ return to the meeting
 
-- **Given** the thread meeting "1:1 Mieke" today at 15:00 with "Send the slides" owed
+- **Given** the thread meeting "1:1 Jordan" today at 15:00 with "Send the slides" owed
 - **When** I tap the meeting, then "Send the slides" in the panel
 - **Then** the todo's card shows in Quick Add's place; the panel stays
 - **When** I close the todo's card
@@ -260,7 +260,7 @@ Test: `__tests__/scenarios/meetingContext.test.tsx`
 
 ### ✕ Close in the panel's header closes the meeting: Daily shows its next todos again
 
-- **Given** the thread meeting "1:1 Mieke" today at 15:00
+- **Given** the thread meeting "1:1 Jordan" today at 15:00
 - **When** I tap the meeting, then ✕ Close next to Overview ›
 - **Then** the card and the panel are gone; Next todos shows
 
@@ -268,7 +268,7 @@ Test: `__tests__/scenarios/meetingContext.test.tsx`
 
 ### The panel gives the full context: Next, Planned and a Waiting for dated later, which Daily leaves out
 
-- **Given** the thread meeting "1:1 Mieke" today, an agenda point without a flow state and a Waiting for due on 30.10.
+- **Given** the thread meeting "1:1 Jordan" today, an agenda point without a flow state and a Waiting for due on 30.10.
 - **When** I open Daily
 - **Then** Next todos lists neither the agenda point nor the later Waiting for
 - **When** I tap the meeting
@@ -278,7 +278,7 @@ Test: `__tests__/scenarios/meetingContext.test.tsx`
 
 ### Tapping the title on a card opens its edit form, like Edit
 
-- **Given** the thread meeting "1:1 Mieke" today with "Send the slides" owed
+- **Given** the thread meeting "1:1 Jordan" today with "Send the slides" owed
 - **When** I tap "Send the slides" in the panel, then the title on its card
 - **Then** the todo's edit form shows with Save
 
@@ -330,7 +330,7 @@ Test: `__tests__/scenarios/smoke/daily.test.tsx`
 
 ### Engage before the meeting: Before is chosen, the strip offers prep and the last note, From Thread shows the last session
 
-- **Given** it is 09:30 and today's sparring with Mieke is at 10:00; on 14.10. "Draft feedback" and "Org chart from Mieke" were agreed and "Send role canvas" is done
+- **Given** it is 09:30 and today's sparring with Jordan is at 10:00; on 14.10. "Draft feedback" and "Org chart from Jordan" were agreed and "Send role canvas" is done
 - **When** I open Engage on today's meeting page
 - **Then** the meeting line shows the meeting with Before chosen
 - **And** the strip offers Mark prepped and Note from last meeting ›
@@ -377,9 +377,9 @@ Test: `__tests__/scenarios/engageMoment.test.tsx` · design: `docs/dev/history/t
 
 Test: `__tests__/scenarios/engageMoment.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md`
 
-### The Waiting tab lists what I wait for from Mieke, where it was agreed, with Done
+### The Waiting tab lists what I wait for from Jordan, where it was agreed, with Done
 
-- **Given** "Org chart from Mieke #wf/mieke" was agreed on 14.10. and "Budget numbers #wf/mieke" not in a meeting
+- **Given** "Org chart from Jordan #wf/jordan" was agreed on 14.10. and "Budget numbers #wf/jordan" not in a meeting
 - **When** I open Engage on the meeting page and choose Waiting
 - **Then** it lists both, the first "from 14.10."; "Also here" counts no waiting
 - **When** I tap Done on the first
@@ -389,7 +389,7 @@ Test: `__tests__/scenarios/engageMoment.test.tsx` · design: `docs/dev/history/t
 
 ### + Next sparring only when no session follows today's
 
-- **Given** it is 10:20 during today's sparring, and no sparring with Mieke is planned after it
+- **Given** it is 10:20 during today's sparring, and no sparring with Jordan is planned after it
 - **When** I open Engage on the meeting page
 - **Then** the strip offers + Next sparring
 - **When** I tap it
@@ -416,18 +416,18 @@ Test: `__tests__/scenarios/engageMoment.test.tsx` · design: `docs/dev/history/t
 
 Test: `__tests__/scenarios/engageMoment.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md`
 
-### On a todo's page, w/f Mieke turns #next into Waiting For, with Undo
+### On a todo's page, w/f Jordan turns #next into Waiting For, with Undo
 
-- **Given** area "Coaching" has "Send Mieke the role canvas #next #sparring/mieke" with its own note
-- **When** I open Engage on the todo's note and tap w/f Mieke
-- **Then** the line carries #wf/mieke instead of #next
+- **Given** area "Coaching" has "Send Jordan the role canvas #next #sparring/jordan" with its own note
+- **When** I open Engage on the todo's note and tap w/f Jordan
+- **Then** the line carries #wf/jordan instead of #next
 - **And** the ack offers Undo, and the todo is on the Waiting tab
 
 Test: `__tests__/scenarios/engageMoment.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md`
 
 ### An Inbox meeting's page: no Agreement tab, agreements are never kept in the Inbox
 
-- **Given** the Inbox has a meeting "Call with Sven" today with its own note
+- **Given** the Inbox has a meeting "Call with Sam" today with its own note
 - **When** I open Engage on its page and open Quick Add if offered
 - **Then** Quick Add has no Agreement tab
 
@@ -444,7 +444,7 @@ Test: `__tests__/scenarios/focusBlocks.test.tsx`
 
 ### Engage on the meeting's page offers the reflection; on the reflection page it opens on what came out of the thread's meetings
 
-- **Given** the todo "Send Mieke the role canvas" was agreed in the sparring session three days ago; in the notebook the session's page is followed by a page added by hand, then the page of the todo "Prepare the workshop"
+- **Given** the todo "Send Jordan the role canvas" was agreed in the sparring session three days ago; in the notebook the session's page is followed by a page added by hand, then the page of the todo "Prepare the workshop"
 - **When** I open Engage on the meeting's page
 - **Then** the strip offers "Reflect ›" (the meeting is over: After)
 - **When** I tap it and confirm
@@ -529,9 +529,9 @@ Test: `__tests__/scenarios/pageSection.test.tsx`
 
 ### A thread notebook's follow-up page: the thread and its sparring
 
-- **Given** a thread notebook with a sparring page for Mieke and a follow-up page
+- **Given** a thread notebook with a sparring page for Jordan and a follow-up page
 - **When** I open Engage on the follow-up page
-- **Then** the owner is Thread #sparring/mieke and the moment line shows that sparring
+- **Then** the owner is Thread #sparring/jordan and the moment line shows that sparring
 
 Test: `__tests__/scenarios/pageSection.test.tsx`
 
@@ -561,6 +561,35 @@ Test: `__tests__/scenarios/pageSection.test.tsx`
 - **And** the line reads "Section: Coach call · 24.10. · from p. 3"
 
 Test: `__tests__/scenarios/smoke/engagePage.test.tsx`
+
+## Help
+
+### Follow links between help pages and walk back with ‹ Back
+
+- **Given** Kept is open on the Projects tab
+- **When** I open the help
+- **Then** it shows Projects and Areas, without ‹ Back
+- **When** I pick Overview in the list and tap its link Threads
+- **Then** the Threads page opens, with ‹ Back
+- **When** I tap ‹ Back twice
+- **Then** Projects and Areas shows again and there is nothing more to go back to
+- **When** I pick Quick Add and capture, page to its link Mark for later and tap it
+- **Then** the Lasso page opens on the screen with its heading Marking for later
+- **When** I tap ‹ Back
+- **Then** Quick Add and capture shows again on the screen with the link
+- **And** after ✕ Close and opening the help again there is no ‹ Back
+
+Test: `__tests__/scenarios/helpLinks.test.tsx` · design: `docs/dev/history/technical-design-easy-start.md`
+
+### A link to a heading of the same page jumps there, and ‹ Back returns
+
+- **Given** the help shows Projects and Areas at its top
+- **When** I page to its link home notebook and tap it
+- **Then** the same page shows its section Home notebooks, with ‹ Back
+- **When** I tap ‹ Back
+- **Then** the page shows the link again and there is nothing more to go back to
+
+Test: `__tests__/scenarios/helpLinks.test.tsx` · design: `docs/dev/history/technical-design-help-linking.md`
 
 ## Inbox
 
@@ -600,7 +629,7 @@ Test: `__tests__/scenarios/interruptions.test.tsx` · design: `docs/dev/history/
 
 ### Capture an agreement from a mark on a meeting's page: it goes to the thread's area with the meeting
 
-- **Given** today's sparring with Mieke has its page, and a mark on that page says "Feedback only in our 1:1s"
+- **Given** today's sparring with Jordan has its page, and a mark on that page says "Feedback only in our 1:1s"
 - **When** I process the mark and choose Agreement
 - **Then** Split lines is not offered; it is for the thread first, with the meeting in the grey line
 - **When** I tap Save & close
@@ -610,9 +639,9 @@ Test: `__tests__/scenarios/agreements.test.tsx` · design: `docs/dev/history/tec
 
 ### An agreement from a mark on a thread notebook's follow-up page: for the thread, with the sparring
 
-- **Given** Mieke's sparring notebook has the sparring's page and a follow-up page with a mark "Feedback only in our 1:1s"
+- **Given** Jordan's sparring notebook has the sparring's page and a follow-up page with a mark "Feedback only in our 1:1s"
 - **When** I process the mark as an Agreement
-- **Then** the For chips start with #sparring/mieke, and the grey line names the sparring
+- **Then** the For chips start with #sparring/jordan, and the grey line names the sparring
 - **When** I tap Save & close
 - **Then** the agreement records the sparring meeting
 
@@ -664,7 +693,7 @@ Test: `__tests__/scenarios/focusBlocks.test.tsx`
 
 ### No close-out for focus blocks
 
-- **Given** area Coaching with yesterday's "Sparring Mieke" and the focus block "Sparring prep", both of a setup that tracks review
+- **Given** area Coaching with yesterday's "Sparring Jordan" and the focus block "Sparring prep", both of a setup that tracks review
 - **When** I open Review → Meetings to close out
 - **Then** it lists the meeting and not the focus block
 - **And** nothing was logged as an error
@@ -702,7 +731,7 @@ Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/techn
 
 ### Reflect on a sparring session: the page comes after the meeting's page and the pages added to it by hand
 
-- **Given** area "Coaching" has a sparring session three days ago and a check-in since; in "sparring mieke <year>.note" the session's page is followed by two pages added by hand, then the check-in's page
+- **Given** area "Coaching" has a sparring session three days ago and a check-in since; in "sparring jordan <year>.note" the session's page is followed by two pages added by hand, then the check-in's page
 - **When** I open Coaching and tap the sparring session
 - **Then** its card offers Reflect and R (not reviewed yet)
 - **When** I tap Reflect and confirm the new page
@@ -725,7 +754,7 @@ Test: `__tests__/scenarios/meetingReflection.test.tsx` · design: `docs/dev/hist
 
 ### A renamed meeting finds its reflection again
 
-- **Given** the sparring session has a reflection page, and its title was changed to "Sparring Mieke roles" since
+- **Given** the sparring session has a reflection page, and its title was changed to "Sparring Jordan roles" since
 - **When** I tap the session
 - **Then** the card's Reflect is filled: the page exists
 - **When** I tap it
@@ -824,12 +853,12 @@ Test: `__tests__/scenarios/smoke/profiles.test.tsx`
 
 ### The Current pages of the big data set show what was recorded before the performance work
 
-- **Given** the big data set: area "Atruvia" with projects "Tender" and "Migration", area "Zen", project "Solo" and the Inbox
-- **When** I open Atruvia's page
+- **Given** the big data set: area "Team" with projects "Tender" and "Migration", area "Zen", project "Solo" and the Inbox
+- **When** I open Team's page
 - **Then** it shows the recorded texts and list rows, also on each Quick Add tab
 - **When** I open Zen's page
 - **Then** it shows the recorded texts and list rows
-- **When** I open project Tender (in Atruvia) and project Solo
+- **When** I open project Tender (in Team) and project Solo
 - **Then** both show the recorded texts and list rows
 
 Test: `__tests__/scenarios/currentPageGolden.test.tsx` · design: `docs/dev/history/technical-design-perf-current-page.md`
@@ -837,7 +866,7 @@ Test: `__tests__/scenarios/currentPageGolden.test.tsx` · design: `docs/dev/hist
 ### Opening an Area page renders each part a bounded number of times and reads no settings it knows
 
 - **Given** the big data set and the app started
-- **When** I open Zen's page, then Atruvia's from the Areas list, then Zen's again
+- **When** I open Zen's page, then Team's from the Areas list, then Zen's again
 - **Then** Quick Add, the page and its parts render at most as often as recorded
 - **And** the settings are read at most as often as recorded
 
@@ -846,7 +875,7 @@ Test: `__tests__/scenarios/currentPagePerf.test.tsx` · design: `docs/dev/histor
 ### An Area page lists its folder only when the Files tab is opened
 
 - **Given** the big data set and the app started
-- **When** I open Atruvia's page (the Threads tab is shown)
+- **When** I open Team's page (the Threads tab is shown)
 - **Then** its folder is not listed
 - **When** I tap Files
 - **Then** the folder is listed once and its entries show
@@ -855,7 +884,7 @@ Test: `__tests__/scenarios/currentPagePerf.test.tsx` · design: `docs/dev/histor
 
 ### Hiding done todos on an Area page changes the Todos list and nothing else, and is kept
 
-- **Given** the big data set and Atruvia's page open
+- **Given** the big data set and Team's page open
 - **When** I tap "Hide done tasks"
 - **Then** the Todos list offers to show the done ones again, and neither Quick Add nor the left pane rendered
 - **And** after opening Zen and coming back, done todos are still hidden
@@ -1032,11 +1061,11 @@ Test: `__tests__/scenarios/smoke/daily.test.tsx`
 
 ### Tend: a thread without a meeting in 14 days counts in the Tend line and shows "nothing planned"
 
-- **Given** on Wednesday 14.10.: Coaching's active thread mieke met yesterday and has nothing ahead
+- **Given** on Wednesday 14.10.: Coaching's active thread jordan met yesterday and has nothing ahead
 - **When** I open Week
 - **Then** the Tend line counts one quiet thread
 - **When** I tap it
-- **Then** Review opens Tending threads, where mieke's row says "nothing planned"
+- **Then** Review opens Tending threads, where jordan's row says "nothing planned"
 - **And** no error was logged
 
 Test: `__tests__/scenarios/givenTime.test.tsx`
@@ -1053,6 +1082,26 @@ Test: `__tests__/scenarios/givenTime.test.tsx`
 Test: `__tests__/scenarios/givenTime.test.tsx`
 
 ## Settings
+
+### Check device files lists the folders, the SD card and the file Kept was opened from
+
+- **Given** a PDF in Document/Garden, an EPUB on an SD card, and debug logging on
+- **When** I open Kept from page 12 of Book.pdf and tap Settings → Advanced → Check device files
+- **Then** each listing shows its top folders, the SD card included, and the file with its page
+- **When** I tap Open (last page) on the PDF
+- **Then** the host is asked to open it at its last page
+- **When** I tap Open this file at page 11
+- **Then** the host is asked to open the launch file at that page
+- **And** Close returns to Advanced
+
+Test: `__tests__/scenarios/deviceCheck.test.tsx` · design: `docs/dev/history/technical-design-easy-start.md`
+
+### Check device files is hidden while debug logging is off
+
+- **When** I open Settings → Advanced with debug logging off
+- **Then** there is no Check device files
+
+Test: `__tests__/scenarios/deviceCheck.test.tsx` · design: `docs/dev/history/technical-design-easy-start.md`
 
 ### Close-out off: a Done project archives directly from its page
 
@@ -1113,6 +1162,38 @@ Test: `__tests__/scenarios/keptGtd.test.tsx`
 
 Test: `__tests__/scenarios/keptGtd.test.tsx`
 
+### A fresh install opens the setup assistant; Finish saves the folders found and creates only the missing ones
+
+- **Given** Note holds a folder "Projects" with 3 project folders and nothing else of PARA
+- **When** Kept starts for the first time
+- **Then** Settings shows the assistant on its Folders step, suggesting Projects
+- **When** I go through Notes (keep one notebook) and Features (Everything) to Finish
+- **Then** Finish lists exactly the folders it will create
+- **When** I tap Finish
+- **Then** the folders are created, Projects is kept as it is, and the Projects tab says what happened
+- **And** the settings hold the choices
+
+Test: `__tests__/scenarios/setupAssistant.test.tsx` · design: `docs/dev/history/technical-design-easy-start.md`
+
+### Skip closes the assistant without saving or creating anything
+
+- **When** Kept starts for the first time and I tap ? Help
+- **Then** the help opens at Getting started, "Your folders"
+- **When** I close the help and tap Skip
+- **Then** Settings shows its tabs, no folder was created, and the assistant is done
+
+Test: `__tests__/scenarios/setupAssistant.test.tsx` · design: `docs/dev/history/technical-design-easy-start.md`
+
+### An existing install opens on Daily as before; Run setup assistant starts it from Settings → Folders, Simple with own notes
+
+- **When** Kept starts with stored settings
+- **Then** it lands on Daily, without the assistant
+- **When** I tap Run setup assistant on Settings → Folders, choose own notes and Simple, and Finish
+- **Then** close-out, Calendar, Gmail and Notebook contents are off and the Default has no notebook
+- **And** Run setup assistant waits while the Folders fields have unsaved changes
+
+Test: `__tests__/scenarios/setupAssistant.test.tsx` · design: `docs/dev/history/technical-design-easy-start.md`
+
 ### Record taps in the touch test without changing anything
 
 - **Given** the Inbox has the todo "Call Anna"
@@ -1163,8 +1244,8 @@ Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/techn
 
 ### A big Area's Threads tab shows the same counterparts and signals as before, built once
 
-- **Given** area "Atruvia" with 2 projects, 26 counterparts, 133 meetings and 97 todos (half agreed in a meeting, some in the Inbox and in area "Zen", two with a renamed meeting)
-- **When** I open Atruvia's page
+- **Given** area "Team" with 2 projects, 26 counterparts, 133 meetings and 97 todos (half agreed in a meeting, some in the Inbox and in area "Zen", two with a renamed meeting)
+- **When** I open Team's page
 - **And** I unfold the inactive counterparts
 - **Then** the Threads tab lists New, Active and Inactive counterparts with the recorded last/next, I-owe and Waiting
 - **And** the roster was built once for this open
@@ -1173,8 +1254,8 @@ Test: `__tests__/scenarios/threadsBigArea.test.tsx` · design: `docs/dev/history
 
 ### Renaming a meeting in Quick Add updates the Threads tab of the big Area
 
-- **Given** area "Atruvia" of the big data set also has a todo agreed in "1:1 Ines" on a day only "1:1 Vera" has a meeting
-- **When** I open Atruvia's page
+- **Given** area "Team" of the big data set also has a todo agreed in "1:1 Ines" on a day only "1:1 Vera" has a meeting
+- **When** I open Team's page
 - **Then** Ines has no next meeting and owes nothing
 - **When** I rename that meeting to "1:1 Ines #101/ines" in Quick Add
 - **Then** the file has the new title
@@ -1216,7 +1297,7 @@ Test: `__tests__/scenarios/givenTime.test.tsx`
 
 ### Given time sums a counterpart's threads into one row
 
-- **Given** on Wednesday 14.10.: Atruvia with Retro, Review and Replenishment with "value" this week, 1 h each
+- **Given** on Wednesday 14.10.: Team with Retro, Review and Replenishment with "value" this week, 1 h each
 - **When** I open Week
 - **Then** Loops and counterparts lists "value" once, with 3 h and its three series
 - **And** no error was logged
@@ -1225,7 +1306,7 @@ Test: `__tests__/scenarios/givenTime.test.tsx`
 
 ### Week: a day header opens the day, a chip the card and panel, "‹ Back to Week 42" the normal side
 
-- **Given** "1:1 Mieke" on Thursday 15.10.
+- **Given** "1:1 Jordan" on Thursday 15.10.
 - **When** I open Week and tap Thursday's header
 - **Then** the day panel shows
 - **When** I tap the chip
@@ -1237,7 +1318,7 @@ Test: `__tests__/scenarios/meetingContext.test.tsx`
 
 ### Month: a day, then a meeting in it, then "‹ Back to October 2026"
 
-- **Given** "1:1 Mieke" on 15.10.
+- **Given** "1:1 Jordan" on 15.10.
 - **When** I open Month, tap the 15th and the meeting in its day panel
 - **Then** the card and panel show with the back row
 - **When** I tap the day link
@@ -1306,6 +1387,41 @@ Test: `__tests__/scenarios/review.test.tsx` · design: `docs/dev/history/technic
 Test: `__tests__/scenarios/smoke/review.test.tsx`
 
 ## Your files
+
+### Link a PDF from Document on the Device tab; re-editing finds it there
+
+- **Given** project "Garden renovation" has the todo "Order soil", Document holds Book.pdf, and the device has Android and DCIM folders
+- **When** I tap the todo on the project page, tap +clip on its card and open the Device tab
+- **Then** the Device tab lists the Supernote folders only: Document, not Android or DCIM
+- **When** I open Document and tap Book.pdf
+- **Then** the todo links the PDF by its full path
+- **And** selecting the todo again shows the Device tab at Document
+
+Test: `__tests__/scenarios/deviceLinks.test.tsx` · design: `docs/dev/history/technical-design-easy-start.md`
+
+### This file: link the PDF Kept was opened from, with its page, in the Files pane and from Quick Add
+
+- **Given** project "Garden renovation" has the todo "Order soil" and Document holds Book.pdf
+- **When** I open Kept from page 12 of Book.pdf, open the project and tap +clip on the todo
+- **Then** the Files pane shows both This-file rows on top
+- **When** I tap "This file · p. 12"
+- **Then** the todo links the PDF at page 12
+- **When** I close the card and add the todo "Read chapter 3" with Quick Add
+- **Then** the new todo links the page too: the line is on by default for a document
+
+Test: `__tests__/scenarios/deviceLinks.test.tsx` · design: `docs/dev/history/technical-design-easy-start.md`
+
+### This file from a note: Quick Add starts off and links the note relative to Note; from Home nothing is offered
+
+- **Given** project "Garden renovation" has the todo "Order soil" and the note Ideas.note
+- **When** I open Kept from page 2 of Ideas.note and open the project
+- **Then** Quick Add shows the note, switched off
+- **When** I switch on "no page" and add the todo "Sketch the beds"
+- **Then** the todo links the note by its path inside Note, without a page
+- **When** I reopen Kept from Home, open the project and tap +clip on "Order soil"
+- **Then** neither Quick Add nor the Files pane offers This file
+
+Test: `__tests__/scenarios/deviceLinks.test.tsx` · design: `docs/dev/history/technical-design-easy-start.md`
 
 ### A hand-edited project file keeps everything Kept GTD does not own when a todo is added
 

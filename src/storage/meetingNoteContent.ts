@@ -27,7 +27,7 @@
  * the note-*creation* call sites set - see either freeze function's own doc
  * comment for why creation always bypasses it.
  *
- * Built entirely on the file-level `supernote/fileSystem.ts` wrappers
+ * Built entirely on the file-level `supernote/noteFileApi.ts` wrappers
  * (getElements/insertElements/deleteElements/createElement), never
  * PluginNoteAPI's insertText/insertTextLink convenience calls - see §5.1 for
  * why (no userData field on those; no file-path param, suggesting an
@@ -76,16 +76,8 @@ import {NoteCreateConfirm, NoteCreationPlan} from '../domain/noteCreationPlan';
 import {joinNotePath, meetingPageKeyword, parseSharedNoteAnchor, todoPageKeyword} from '../domain/sharedNotePages';
 import {DEFAULT_SETTINGS, GtdParaSettings, NoteHeadingStyle, ResolvedParaPaths, resolvePaths} from '../domain/settings';
 import {Meeting, Task} from '../domain/types';
-import {
-  createElement,
-  deleteElements,
-  Element,
-  ELEMENT_TYPE_LINK,
-  fileExists,
-  getElements,
-  insertElements,
-  openPath,
-} from '../supernote/fileSystem';
+import {createElement, deleteElements, Element, ELEMENT_TYPE_LINK, getElements, insertElements} from '../supernote/noteFileApi';
+import {fileExists, openPath} from '../supernote/fileSystem';
 import {buildTextboxElement} from '../supernote/noteElements';
 import {log} from '../utils/log';
 import {contextTagsOf} from '../domain/flowState';

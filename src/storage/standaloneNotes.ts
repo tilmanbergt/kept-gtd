@@ -8,7 +8,7 @@
  * (any folder under the item's own Project-/Area-root, `folderPath` below),
  * and has no representation at all in project.txt/area.txt.
  *
- * Tags are real Supernote page-keywords (supernote/fileSystem.ts's
+ * Tags are real Supernote page-keywords (supernote/noteFileApi.ts's
  * insertKeyWord), not this app's own `#context` markdown-tag convention -
  * the caller (QuickAddWidget) has already parsed `#tag` tokens out of the
  * typed title and hands them here as a plain string array; `title` is
@@ -16,7 +16,8 @@
  */
 import {fitKeyword} from '../domain/keywordLength';
 import {GtdParaSettings} from '../domain/settings';
-import {createNote, insertKeyWord, listFolderEntries} from '../supernote/fileSystem';
+import {createNote, insertKeyWord} from '../supernote/noteFileApi';
+import {listFolderEntries} from '../supernote/fileSystem';
 import {getNoteTemplate, sanitizeFileNameComponent} from './noteLinks';
 import {log} from '../utils/log';
 

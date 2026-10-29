@@ -6,7 +6,7 @@
  * shared-page keyword `<date> <display title>` (domain/sharedNotePages.ts's
  * `meetingPageKeyword`) with `#`, `[` and `]` left out: the brackets would end
  * the field, and Obsidian reads a `#tag` inside a field as a tag of the todo.
- * The tag text stays (`2026-10-08 1:1 Mieke mh 101/mieke`), so two meetings
+ * The tag text stays (`2026-10-08 1:1 Jordan mh 101/jordan`), so two meetings
  * with the same title on one day but different thread tags keep different
  * keys. Resolution (decisions D11, D14): an exact key match among the
  * meetings of the todo's own scope, then among all meetings; failing that

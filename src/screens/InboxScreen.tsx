@@ -98,12 +98,12 @@ import {Meeting, Task} from '../domain/types';
 import {findCachedItem, getCachedData, rebuildCache, setCachedInbox} from '../storage/dataCache';
 import {InboxFilingTarget, resolveFilingPick} from '../storage/inboxFiling';
 import {EntrySource, itemTarget, moveMeeting, moveTask} from '../storage/entryMove';
-import {addMeetingToDestination, addTaskToDestination} from '../storage/itemMutations';
+import {addMeetingToDestination, addTaskToDestination, applyMeetingEdit, applyTaskEdit, buildMeeting, buildTask} from '../storage/itemMutations';
 import {useEntryMoveUi} from '../ui/useEntryMoveUi';
-import {linkedFileStatus, locateLinkedFile, openLinkedFile, toLinkedFile} from '../storage/linkedFiles';
+import {INTERNAL_STORAGE} from '../supernote/devicePaths';
+import {linkedFileStatus, locateLinkedFile, openLinkedFile, pickedPath, toLinkedFile} from '../storage/linkedFiles';
 import {openOrCreateMeetingNote, openOrCreateTodoNote} from '../storage/meetingNoteContent';
 import {useNoteCreateConfirm} from '../ui/useNoteCreateConfirm';
-import {applyMeetingEdit, applyTaskEdit, buildMeeting, buildTask} from '../storage/itemMutations';
 import {loadProjectFile, saveMeetings, saveTasks} from '../storage/projectFile';
 import {loadSettings, saveSettings} from '../storage/settingsStorage';
 import {FolderEntry} from '../supernote/fileSystem';
@@ -173,6 +173,7 @@ type ArmTarget = {type: 'task' | 'meeting'; index: number; intent: 'link' | 'fil
 
 const inboxSource = (inboxPath: string): EntrySource => ({kind: 'inbox', path: inboxPath});
 
+import {useDeviceRoot} from '../ui/fileBrowser/useDeviceRoot';
 export default function InboxScreen({
   onOpenCalendarSettings,
   onOpenItem,
@@ -384,8 +385,8 @@ export default function InboxScreen({
     });
   };
 
-  const handleAddTask = async (text: string, destination: Destination): Promise<void> => {
-    const newTask: Task = buildTask(text);
+  const handleAddTask = async (text: string, destination: Destination, linkedFile?: string): Promise<void> => {
+    const newTask: Task = buildTask(text, {linkedFile});
     if (destination.type === 'inbox') {
       await saveInboxTasks(tasks => [...tasks, newTask]);
       log('InboxScreen: added task');
@@ -484,8 +485,8 @@ export default function InboxScreen({
     });
   };
 
-  const handleAddMeeting = async (fields: MeetingQuickAddFields, destination: Destination): Promise<void> => {
-    const newMeeting: Meeting = buildMeeting(fields);
+  const handleAddMeeting = async (fields: MeetingQuickAddFields, destination: Destination, linkedFile?: string): Promise<void> => {
+    const newMeeting: Meeting = buildMeeting(fields, {linkedFile});
     if (destination.type === 'inbox') {
       await saveInboxMeetings(meetings => [...meetings, newMeeting]);
       log('InboxScreen: added meeting');
@@ -555,14 +556,13 @@ export default function InboxScreen({
    * browsing any other root.
    */
   const rootPathFor = (root: string): string | null =>
-    root === 'resources' ? paths?.resources ?? null : root === 'browse' ? paths?.base ?? null : null;
+    root === 'resources' ? paths?.resources ?? null : root === 'browse' ? paths?.base ?? null : root === 'device' ? INTERNAL_STORAGE : null;
 
   const handlePickLinkedFile = useCallback(
     (root: string, relativePath: string) => {
       const rootPath = rootPathFor(root);
       if (!paths || !armTarget || !rootPath) return;
-      const absolutePath = `${rootPath.replace(/\/+$/, '')}/${relativePath}`;
-      const linkedFile = toLinkedFile(paths, absolutePath);
+      const linkedFile = toLinkedFile(paths, pickedPath(rootPath, relativePath));
       if (armTarget.type === 'task') {
         runTaskAction(() =>
           saveInboxTasks(tasksNext => {
@@ -633,7 +633,7 @@ export default function InboxScreen({
         if (!location) return null;
         return {
           mode: 'locating' as const,
-          root: 'resources',
+          root: location.root === 'device' ? 'device' : 'resources',
           folderPath: location.folderPath,
           fileName: location.fileName,
           fileMissing: linkedFileMissing,
@@ -652,6 +652,7 @@ export default function InboxScreen({
   // (see ui/FileBrowserPane.tsx's `disabled` doc comment): the tab set itself
   // never changes shape, only which tabs you can switch to.
   const isFileArming = armTarget?.intent === 'file';
+  const deviceRoot = useDeviceRoot(isFileArming);
   const fileBrowserRoots: FileBrowserRoot[] = paths
     ? [
         {key: 'resources', label: 'Resources', rootPath: paths.resources, disabled: isFileArming},
@@ -666,6 +667,7 @@ export default function InboxScreen({
           entryFilter: activeOnly,
           onNavigateToItem: (kind, name, path) => onOpenItem?.(kind, {name, path, isFolder: true}),
         },
+        deviceRoot,
       ]
     : [];
 
@@ -741,6 +743,7 @@ export default function InboxScreen({
             <FileBrowserPane
               roots={fileBrowserRoots}
               linkTarget={linkTarget}
+              thisFileRows
               textColor={textColor}
               borderColor={borderColor}
             />
@@ -752,6 +755,7 @@ export default function InboxScreen({
                 Tasks- or Meetings-exclusive, so it doesn't belong under
                 either section's own heading. */}
             <QuickAddWidget
+              thisFileLine
               fixedDestination={FIXED_INBOX_DESTINATION}
               onAddTask={handleAddTask}
               onAddMeeting={handleAddMeeting}

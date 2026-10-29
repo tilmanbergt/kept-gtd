@@ -1,21 +1,21 @@
 # Closing out a project
 
-When a project is finished, Kept GTD helps you end it cleanly: nothing left open, results where they belong, and a complete record in the Archive. This is the **close-out**.
+When a project is finished, Kept GTD helps you end it cleanly: nothing left open, results where they belong, and a complete record in the Archive. This is the *close-out*.
 
 ## Where to start it
 
-- On the project's **Current** tab, tap **Close out…** in the status section.
-- In the Weekly Review, the step **Done awaiting review** lists all projects marked Done. Each has **Close out…** and **Quick archive…**.
+- On the project's [Current](projects-and-areas.md#the-current-tab) tab, tap **Close out…** in the [status section](projects-and-areas.md#status).
+- In the Weekly Review, the step [Done awaiting review](review.md#the-steps) lists all projects marked Done. Each has **Close out…** and [Quick archive…](close-out.md#quick-archive).
 
-Close-out can be switched off in **Settings → Features** (**Project close-out**); then a Done project offers **Archive…** on its page and **Archive** in the Weekly Review, and is archived directly after one confirmation. See [Features](features.md).
+Close-out can be switched off in [Settings → Features](settings.md#features) ([Project close-out](features.md#project-close-out)); then a Done project offers **Archive…** on its page and **Archive** in the Weekly Review, and is archived directly after one confirmation.
 
-You can leave the close-out at any time. Every decision is saved in the project's file (in a `## Close-out` section), so next time it continues where you stopped.
+You can leave the close-out at any time. Every decision is saved in the project's file (in a `## Close-out` section, see [Inside project.txt](files-and-folders.md#inside-projecttxt)), so next time it continues where you stopped.
 
-If Kept is stopped while **Archive now** runs (the Supernote switches off, for example), nothing is lost. If the project is still in Projects, open **Close out…** again and tap **Archive now**: it finishes the steps that are left. If the folder had already moved, the project is fully archived; only `status:` in its `project.txt` may still say `active`, which you can change by hand or leave. **Run Integrity Check** in Settings → Advanced tells you which of the two it is.
+If Kept is stopped while **Archive now** runs (the Supernote switches off, for example), nothing is lost. If the project is still in Projects, open **Close out…** again and tap **Archive now**: it finishes the steps that are left. If the folder had already moved, the project is fully archived; only `status:` in its `project.txt` may still say `active`, which you can change by hand or leave. [Run Integrity Check](settings.md#advanced) in Settings → Advanced tells you which of the two it is.
 
 ## The five steps
 
-1. **Checklist**: shows the project's area, when it was done and where it will go in the Archive. It lists what still needs attention. Open todos and future meetings block archiving; handle them right there: a todo with Done, Cancel, → Area or → Inbox, a meeting with Cancel, → Area or → Inbox. A moved item takes its own note along (Kept asks first); a page in a shared note stays where it is and stays linked. A folder of the same name already in the Archive also blocks; rename one of them by hand. Meetings that were not closed out, links from other folders into it, open lasso marks and active agreements are shown as warnings. **Process ›** next to a mark opens it for processing; marks left at archiving move to the Inbox (see [Lasso](lasso.md)). **End all** next to the agreements ends them today; agreements you leave stay in the archived file as they are (see [Agreements](agreements.md)). **Change…** next to the area assigns another area, or none. **Edit** next to "Done on" changes the done date, which decides the archive year.
+1. **Checklist**: shows the project's area, when it was done and [where it will go in the Archive](close-out.md#where-things-end-up). It lists what still needs attention. Open todos and future meetings block archiving; handle them right there: a todo with Done, Cancel, → Area or → Inbox, a meeting with Cancel, → Area or → Inbox. A moved item takes its own note along (Kept asks first); a page in a [shared note](note-setups.md#what-a-setup-is) stays where it is and stays linked. A folder of the same name already in the Archive also blocks; rename one of them by hand. Meetings that were not [closed out](meetings.md#preparation-and-review), links from other folders into it, open [lasso marks](lasso.md#marking-for-later) and active [agreements](agreements.md) are shown as warnings. **Process ›** next to a mark opens it for [processing](lasso.md#processing-marks); marks left at archiving move to the [Inbox](quick-add.md#the-inbox). **End all** next to the agreements ends them today; agreements you leave stay in the archived file as they are (see [Reviewing and closing out](agreements.md#reviewing-and-closing-out)). **Change…** next to the area [assigns another area](projects-and-areas.md#assigning-a-project-to-an-area), or none. **Edit** next to "Done on" changes the done date, which decides the archive year.
 2. **Contents**: every file of the project, grouped the way the PDF will be. Notes and images are included by default. PDFs stay separate files and are only listed; other file types can't be included. Tick or untick what goes in.
 3. **Outcomes**: which files live on after the project, for example a finished document. Choose a folder in the area or in Resources for each, or leave it in the archive. Nothing moves yet.
 4. **PDF**: **Create PDF** turns all included notes into one PDF with a table of contents that links to each part. **Open PDF to check** opens it in the Supernote's reader. Confirm with **I checked the PDF - it looks right**. If you change contents or outcomes later, you have to check the PDF again. **Create again** first asks whether to replace the existing PDF; nothing is written until you tap **Replace**. While it is being made, the PDF and its page images stay in Kept's own private folder; only the finished PDF appears in the project folder.
@@ -32,10 +32,10 @@ A project without an area goes directly into `4 Archive/<year>/`. The PDF is mea
 
 ## Quick archive
 
-**Quick archive…** (in the Review's Done step) runs only the checklist and then archives - no PDF and no moving of outcomes. Use it for small projects that don't need a record.
+**Quick archive…** (in the Review's [Done step](review.md#the-steps)) runs only the [checklist](close-out.md#the-five-steps) and then archives - no PDF and no moving of outcomes. Use it for small projects that don't need a record.
 
 ## Areas
 
-Areas have no close-out. **Archive…** on an area's Current tab (or **Archive** in the Review) first shows where the folder goes, then moves it to `4 Archive/<year>/`. Open lasso marks of the area move to the Inbox first. An area that still has active or on-hold projects can't be archived.
+Areas have no close-out. **Archive…** on an area's [Current](projects-and-areas.md#the-current-tab) tab (or **Archive** in the [Review](review.md#the-steps)) first shows where the folder goes, then moves it to `4 Archive/<year>/`. Open [lasso marks](lasso.md#marking-for-later) of the area move to the [Inbox](quick-add.md#the-inbox) first. An area that still has active or on-hold [projects](projects-and-areas.md#projects-of-an-area) can't be archived.
 
 If that area folder already exists in the Archive (for example because done projects of the area were archived before), the area's contents are added to it. The area's old folder is then empty; the confirmation names it and says it will be deleted, and the Supernote asks you once to allow deleting. If you say no, the empty folder simply stays and Kept tells you so.

@@ -59,7 +59,11 @@ files".
 the help (`ui/HelpOverlay.tsx`), the **thread overview** (`screens/thread/ThreadOverview.tsx`)
 or the **loop overview** (`screens/loop/LoopOverview.tsx`).
 Opening one closes the other; a tab tap, leaving the tab shell and the overlay's own close
-(help: ✕ Close; overview: "‹ <tab name>") close it, and closing requests an e-ink refresh. An
+(help: ✕ Close; overview: "‹ <tab name>") close it, and closing requests an e-ink refresh.
+Links between help pages (`[text](page.md#heading)`, `domain/markdownBlocks.ts`'s `link` spans,
+anchors by `domain/helpLinks.ts`'s GitHub slug) open the page at that heading; the help keeps the
+places read since it opened (`{pageId, row}`, at most 20) for its **‹ Back**, and forgets them on
+close. The help generator fails on a link to a missing page or heading (`scripts/lib/userDocs.mjs`). An
 overview is opened from any row through the module store `ui/overviewStore.ts`
 (`openOverview({tag, ownerPath, lens})`), so no list threads props for it; useAppOverlays opens
 the loop overview when the tag is a loop tag (§2.6) and the owner a cached Project or Area,
@@ -222,7 +226,7 @@ Ship the tender by end of quarter.
 | `## Meetings` | one meeting per line | `parseMeetingsSpan` / `writeMeetingsIntoContent` |
 | `## Weekly Goals`, `## Monthly Goals` | retired goals of earlier versions | not parsed; no save owns them, so they stay byte for byte (§3) |
 | `## Marks` | open "Mark for later" lines (§2.10) | `parseMarksSpan`, `domain/marks.ts` |
-| `## Threads` | counterpart status lines `- mieke: active` (§2.6); `area.txt`, or `project.txt` of a Project without an Area, never `Inbox.txt` | `domain/threadsSection.ts` (`parseThreadsSpan` / `writeThreadsIntoContent`) |
+| `## Threads` | counterpart status lines `- jordan: active` (§2.6); `area.txt`, or `project.txt` of a Project without an Area, never `Inbox.txt` | `domain/threadsSection.ts` (`parseThreadsSpan` / `writeThreadsIntoContent`) |
 | `## Loops` | loop status lines `- workshop/offsite: active, 2026-11-14, [[file]]` (§2.6) | `domain/loopsSection.ts` (`parseLoopsSpan` / `writeLoopsIntoContent`) |
 | `## Agreements` | agreement lines `- text #tags [meeting::] [created::] [valid::] [ended::]`; unknown fields, other lines and blank lines kept, an unchanged line written back as read; never in `Inbox.txt` | `domain/agreements.ts` (`parseAgreementsSpan` / `writeAgreementsIntoContent`), written only through `storage/agreements.ts` |
 | `## Close-out` | the close-out plan (§2.9) | `domain/closeOut/plan.ts` via `readSectionLines` |
@@ -574,7 +578,15 @@ own note (missing).
 carries `#page=N`); edit mode shows it with ⚠ when missing and ✕ to remove it; a new link is set
 by arming the Files pane from the row and tapping a file. `locateLinkedFile` finds the root and
 folder for auto-locate. Gmail email notes and attachments become linked files under Resources
-(§2.11). Detail: `docs/dev/history/technical-design-linked-files.md`.
+(§2.11). The Files pane's **Device** tab (`ui/fileBrowser/useDeviceRoot.ts`, roots from
+`storage/deviceRoots.ts`) offers the Supernote's own folders next to `Note` and an SD card; a file
+outside the base folder is stored with its absolute path (`toLinkedFile`), and every arm's pick goes
+through `pickedPath`. While a file is linked, the **This-file** rows (`ui/fileBrowser/ThisFileRows.tsx`)
+offer the note or document Kept was opened from (`ui/useThisFile.ts`, pure targets in
+`domain/linkTargets.ts`), with or without its page; Quick Add's This-file line
+(`ui/quickAdd/ThisFileLine.tsx`, prop `thisFileLine`) hands the same choice to the screen's add handler
+as its third argument, `linkedFile`. Detail: `docs/dev/history/technical-design-linked-files.md`,
+`docs/dev/history/technical-design-easy-start.md` §6.
 
 **Note setups.** `domain/noteSetups.ts` defines `NoteSetup`s (stored in `settings.noteSetups`,
 edited in Settings → Note setups, `screens/settings/noteSetups/`): one per thing tracked - a
@@ -1052,9 +1064,21 @@ per setup (and the Default on its own), and its Heading style (`noteHeadingStyle
 (`FeaturesTab.tsx`) holds the module switches - `settings.modules` (`closeOut`, on by default; read
 through `domain/features.ts`'s `featuresOf`/`modulesOf`, which fill a missing key from its default,
 and `ui/featureStore.ts`'s `useFeatures`; close-out off passes no `onStartCloseOut` to Current and
-Review, so a Done project archives directly) - and the Experimental switches. Advanced holds Profiles, "Reload all files", "Run Integrity Check", "Touch test", "Keep tabs in
-memory" and "Performance tracing". About shows version and build, the changelog ("What's new", also offered
+Review, so a Done project archives directly) - and the Experimental switches. Advanced holds Profiles, "Reload all files", "Run Integrity Check", "Touch test", "Check device
+files" (only while Debug logging is on: `storage/deviceCheck.ts` - the folders it can list, the
+launch file and page, Open buttons for files outside `Note/`), "Keep tabs in memory" and
+"Performance tracing". About shows version and build, the changelog ("What's new", also offered
 once after an update), Debug logging and "Export debug bundle".
+
+**Setup assistant** (`screens/settings/SetupAssistant.tsx`, decisions in
+`domain/setupAssistant.ts`, writes in `storage/setupAssistant.ts`): Folders (existing PARA folders
+suggested, what exists shown), Notes (the Default's notebook or none), Features (Simple or
+Everything), Look around first (demo space), then Finish, drawn in Settings in place of its tabs.
+Finish saves through `patchSettings` (refused while settings are unreadable), creates only the
+missing folders and reports them; Skip only sets `setupAssistant: 'done'`. App lands on it on the
+first reorient while `setupAssistant` is 'pending', which `migrateExperimentalFlags` sets only on a
+fresh install; Run setup assistant on the Folders tab starts it any time. ? Help goes through
+`ui/helpStore.ts`. Detail: `docs/dev/history/technical-design-easy-start.md` §5.
 
 **Persistence.** `GtdParaSettings` (`domain/settings.ts`, defaults in `DEFAULT_SETTINGS`) is one
 JSON blob in AsyncStorage (`storage/settingsStorage.ts`); load fills missing fields from the
@@ -1123,9 +1147,16 @@ a caught error comes from `utils/errorMessage.ts`'s `errorMessage(e)`.
 
 ### 2.13 Platform and UI foundations
 
-**Device layer** (`src/supernote/`). `fileSystem.ts` wraps the native `GtdParaFile` module and
-`sn-plugin-lib`'s file APIs (list, stat, read, write, move, merge, note pages and keywords,
-`openPath`); `lasso.ts`/`lassoRead.ts`/`strokeRecognition.ts` the lasso; `noteElements.ts` and
+**Device layer** (`src/supernote/`). The device's files and host calls are split by one placement
+rule (`docs/dev/history/technical-design-filesystem-split.md` §3): a fixed device path or how a path is
+shown → `devicePaths.ts` (`INTERNAL_STORAGE`, MyStyle, the export folders, `displayPath`); where the
+user is - the open note, the launch file, the current page → `hostContext.ts`; logging a host call →
+`hostCall.ts` (`recordDebugLogEntry`, and `callHost`, the one shape of a wrapped SDK call: permission
+check, start line, the call under its timeout, failed/done line, recorded outcome); a `.note`'s pages,
+keywords and elements → `noteFileApi.ts`; writing under `EXPORT/kept-gtd/debug` → `diagnosticFiles.ts`;
+everything else - list, stat, read, write, move, merge, delete, temp folders, `openPath` →
+`fileSystem.ts`. `fileNative.ts` is internal to `supernote/`: the native `GtdParaFile` binding and the
+folder-change listeners, so no module imports `fileSystem.ts` back; `lasso.ts`/`lassoRead.ts`/`strokeRecognition.ts` the lasso; `noteElements.ts` and
 `sdkElements.ts` note elements; `pdfNative.ts` the native PDF writer (`GtdParaPdf`);
 `textboxMetrics.ts` native text measurement; `pluginRuntime.ts` the runtime guard. Other native
 modules: `GmailImapModule` (§2.11).
@@ -1359,6 +1390,8 @@ place it happens.
 - Comments say what the code does and why, never when or what it replaced: no dates, no "used
   to", "previously", "no longer" (`scripts/code-health.mjs` reports them). History lives in git
   and `docs/dev/history/`.
+- A new export of `src/supernote/` goes where the placement rule of §2.13 puts it; a wrapped SDK call
+  uses `hostCall.ts`'s `callHost` unless it does more than its shape (createNote, openPath).
 - A new source file stays at or below 1,000 lines. Longer existing files are listed in
   `scripts/code-health-baseline.json` and may only shrink (`--update-baseline` ratchets them
   down).

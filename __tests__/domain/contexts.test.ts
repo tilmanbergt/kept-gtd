@@ -19,12 +19,12 @@ import {deriveMeetingFields} from '../../src/domain/markdown';
 import {task} from '../../test-helpers/fixtures';
 
 const TODAY = '2026-10-14';
-const atruvia = {kind: 'area' as const, name: 'Atruvia', area: null};
-const tender = {kind: 'project' as const, name: 'Tender', area: 'Atruvia'};
+const team = {kind: 'area' as const, name: 'Team', area: null};
+const tender = {kind: 'project' as const, name: 'Tender', area: 'Team'};
 const garden = {kind: 'area' as const, name: 'Garden', area: null};
 const solo = {kind: 'project' as const, name: 'Solo', area: null};
 const ctx = (extra: Partial<ContextDef>): ContextDef => ({id: 'c1', name: 'Work', shows: [], hides: [], outsideMeetings: 'dim', ...extra});
-const work = ctx({shows: [{kind: 'item', itemKind: 'area', name: 'Atruvia'}, {kind: 'tag', tag: 'retro'}]});
+const work = ctx({shows: [{kind: 'item', itemKind: 'area', name: 'Team'}, {kind: 'tag', tag: 'retro'}]});
 
 describe('contextMatcher', () => {
   it('Everything shows all', () => {
@@ -35,7 +35,7 @@ describe('contextMatcher', () => {
   });
   it('an Area entry matches the Area and its Projects; others only under Everything (Q1)', () => {
     const m = contextMatcher(work);
-    expect(m.itemShown(atruvia)).toBe(true);
+    expect(m.itemShown(team)).toBe(true);
     expect(m.itemShown(tender)).toBe(true);
     expect(m.itemShown(garden)).toBe(false);
     expect(m.itemShown(solo)).toBe(false);
@@ -53,20 +53,20 @@ describe('contextMatcher', () => {
     expect(m.taskShown(garden, task('Later', {dueDate: '2026-10-20'}), TODAY)).toBe(false);
   });
   it('Hides wins over Shows', () => {
-    const m = contextMatcher(ctx({shows: [{kind: 'item', itemKind: 'area', name: 'Atruvia'}], hides: [{kind: 'tag', tag: 'computer'}]}));
-    expect(m.taskShown(atruvia, task('Report #computer #next'), TODAY)).toBe(false);
-    expect(m.taskShown(atruvia, task('Call #next'), TODAY)).toBe(true);
-    expect(contextMatcher(ctx({shows: [{kind: 'item', itemKind: 'project', name: 'Tender'}], hides: [{kind: 'item', itemKind: 'area', name: 'Atruvia'}]})).itemShown(tender)).toBe(false);
+    const m = contextMatcher(ctx({shows: [{kind: 'item', itemKind: 'area', name: 'Team'}], hides: [{kind: 'tag', tag: 'computer'}]}));
+    expect(m.taskShown(team, task('Report #computer #next'), TODAY)).toBe(false);
+    expect(m.taskShown(team, task('Call #next'), TODAY)).toBe(true);
+    expect(contextMatcher(ctx({shows: [{kind: 'item', itemKind: 'project', name: 'Tender'}], hides: [{kind: 'item', itemKind: 'area', name: 'Team'}]})).itemShown(tender)).toBe(false);
   });
   it('an empty Shows list shows everything but Hides ("everything but work")', () => {
-    const m = contextMatcher(ctx({hides: [{kind: 'item', itemKind: 'area', name: 'Atruvia'}]}));
+    const m = contextMatcher(ctx({hides: [{kind: 'item', itemKind: 'area', name: 'Team'}]}));
     expect(m.itemShown(garden)).toBe(true);
     expect(m.itemShown(solo)).toBe(true);
     expect(m.itemShown(tender)).toBe(false);
   });
   it('meetings outside are dimmed, or shown as usual; never hidden; the Inbox shows', () => {
     const m = contextMatcher(work);
-    expect(m.meetingState(atruvia, deriveMeetingFields('Steering'))).toBe('shown');
+    expect(m.meetingState(team, deriveMeetingFields('Steering'))).toBe('shown');
     expect(m.meetingState(garden, deriveMeetingFields('Neighbour chat'))).toBe('dimmed');
     expect(m.meetingState(garden, deriveMeetingFields('Retro #retro'))).toBe('shown');
     expect(m.meetingState('inbox', deriveMeetingFields('Dentist'))).toBe('shown');
@@ -99,7 +99,7 @@ describe('activeContext', () => {
 
 describe('tallyHidden and the hidden line', () => {
   it('counts todos, the distinct loops and threads among them and the due ones', () => {
-    const hidden = [task('a #writing/novel'), task('b #writing/novel', {dueDate: TODAY}), task('c #sparring/mieke', {dueDate: '2026-10-01'}), task('d #other/x', {dueDate: '2026-10-20'}), task('e')].map(t => ({task: t}));
+    const hidden = [task('a #writing/novel'), task('b #writing/novel', {dueDate: TODAY}), task('c #sparring/jordan', {dueDate: '2026-10-01'}), task('d #other/x', {dueDate: '2026-10-20'}), task('e')].map(t => ({task: t}));
     expect(tallyHidden(hidden, {loopKinds: ['writing'], threadTypes: ['sparring']}, TODAY)).toEqual({todos: 5, loops: 1, threads: 1, items: 0, due: 2});
   });
   it('reads "Hidden by Work: 9 todos · 2 loops · 1 thread · 3 due!"; nothing hidden is no line', () => {
@@ -107,7 +107,7 @@ describe('tallyHidden and the hidden line', () => {
     expect(hiddenLineText('Home', {todos: 0, loops: 0, threads: 0, items: 1, due: 0}, {one: 'area', many: 'areas'})).toBe('Hidden by Home: 1 area');
     expect(hiddenLineText('Home', {todos: 0, loops: 0, threads: 0, items: 0, due: 0})).toBeNull();
   });
-  it('the Quick Add notice', () => expect(hiddenAddText('Atruvia', 'Home')).toBe('Saved to Atruvia · hidden by Home'));
+  it('the Quick Add notice', () => expect(hiddenAddText('Team', 'Home')).toBe('Saved to Team · hidden by Home'));
 });
 
 describe('editing contexts', () => {
@@ -122,16 +122,16 @@ describe('editing contexts', () => {
   });
   it('a renamed item is renamed in every context; nothing named returns the same array', () => {
     const contexts = [work];
-    const renamed = renameItemInContexts(contexts, 'area', 'Atruvia', 'Atruvia AG');
-    expect(renamed[0].shows[0]).toEqual({kind: 'item', itemKind: 'area', name: 'Atruvia AG'});
-    expect(renameItemInContexts(contexts, 'project', 'Atruvia', 'x')).toBe(contexts);
+    const renamed = renameItemInContexts(contexts, 'area', 'Team', 'Team AG');
+    expect(renamed[0].shows[0]).toEqual({kind: 'item', itemKind: 'area', name: 'Team AG'});
+    expect(renameItemInContexts(contexts, 'project', 'Team', 'x')).toBe(contexts);
   });
   it('unknown item entries are listed, and reported by the Integrity Check', () => {
-    expect(unknownContextEntries([work], [garden])).toEqual([{context: 'Work', entry: {kind: 'item', itemKind: 'area', name: 'Atruvia'}}]);
-    expect(unknownContextEntries([work], [atruvia])).toEqual([]);
+    expect(unknownContextEntries([work], [garden])).toEqual([{context: 'Work', entry: {kind: 'item', itemKind: 'area', name: 'Team'}}]);
+    expect(unknownContextEntries([work], [team])).toEqual([]);
     const findings = checkUnknownContextEntries([work], [{itemKind: 'area', itemPath: '/a/Garden', itemName: 'Garden', inArchive: false, area: null, abbrev: null}]);
     expect(findings.map(f => f.checkId)).toEqual(['unknownContextEntry']);
-    expect(findings[0].message).toContain('Area "Atruvia"');
+    expect(findings[0].message).toContain('Area "Team"');
   });
 });
 

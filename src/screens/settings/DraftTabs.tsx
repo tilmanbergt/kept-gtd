@@ -5,6 +5,8 @@
 import React from 'react';
 import {Pressable, Text, TextInput, View} from 'react-native';
 import {DEFAULT_SETTINGS, resolvePaths} from '../../domain/settings';
+import {peekSettings} from '../../storage/settingsSnapshot';
+import PillButton from '../../ui/PillButton';
 import CheckToggle from './CheckToggle';
 import {styles} from './settingsStyles';
 import {FIELDS, SettingsDraft} from './useSettingsDraft';
@@ -16,11 +18,23 @@ interface TabProps {
   placeholderColor: string;
 }
 
-/** The base root and each PARA folder, with the resolved path under each. */
-export function FoldersTab({draft, textColor, borderColor, placeholderColor}: TabProps): React.JSX.Element {
+/**
+ * Run setup assistant on top (docs/dev/history/technical-design-easy-start.md §5.5; disabled while
+ * the folder fields have unsaved changes, which it would not keep), then the base root and each PARA
+ * folder, with the resolved path under each.
+ */
+export function FoldersTab({draft, onRunSetup, textColor, borderColor, placeholderColor}: TabProps & {onRunSetup: () => void}): React.JSX.Element {
   const paths = resolvePaths(draft.values);
+  const stored = peekSettings();
+  const unsaved = !!stored && FIELDS.some(field => draft.values[field.key] !== stored[field.key]);
   return (
     <>
+      <View style={styles.field}>
+        <PillButton label="Run setup assistant" onPress={onRunSetup} disabled={unsaved} textColor={textColor} borderColor={borderColor} />
+        <Text style={[styles.pathPreview, {color: textColor}]}>
+          {unsaved ? 'Save or reset your changes below first.' : 'Folders, notes and features in four steps; shows what it creates before it does.'}
+        </Text>
+      </View>
       {FIELDS.map(field => (
         <View key={field.key} style={styles.field}>
           <Text style={[styles.label, {color: textColor}]}>{field.label}</Text>

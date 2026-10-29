@@ -1,14 +1,14 @@
 # Profiles and the demo space
 
-A **profile** is a complete configuration: which folders Kept GTD uses, your contexts, Note setups, review dates, the calendar and Gmail setup and the experimental switches. You can keep several and switch between them - for example your real setup and a demo setup for trying things out.
+A *profile* is a complete configuration: which [folders](settings.md#folders) Kept GTD uses, your [contexts](contexts.md), [Note setups](note-setups.md), review dates, the [calendar and Gmail](features.md#google-calendar-and-gmail-experimental) setup and the [experimental switches](features.md#experimental). You can keep several and switch between them - for example your real setup and a demo setup for trying things out.
 
 ## Profiles
 
-Go to **Settings → Advanced**. The Profiles list shows every profile; the active one has a ●.
+Go to [Settings → Advanced](settings.md#advanced). The Profiles list shows every profile; the active one has a ●.
 
 - **Save** writes the active profile to its file.
-- **Restore** appears instead of **Save** only when Kept could not read its stored settings: it puts the settings from the active profile's file back (see [Troubleshooting](troubleshooting.md)).
-- **Switch** changes to another profile, after you confirm in the status line. Kept saves the current profile first, then loads the other one and starts the app fresh with it.
+- **Restore** appears instead of **Save** only when Kept could not read its stored settings: it puts the settings from the active profile's file back (see [Troubleshooting](troubleshooting.md#common-situations)).
+- **Switch** changes to another profile, after you confirm in the [status line](index.md#the-status-line). Kept saves the current profile first, then loads the other one and starts the app fresh with it.
 - While a profile other than Production is active, its name (for example `DEMO`) is shown in the tab bar. Tap it to get back to the profile list.
 
 The first time you open the list, your current setup is saved as `production.json`, so you can always switch back to it.
@@ -17,21 +17,21 @@ The first time you open the list, your current setup is saved as `production.jso
 
 Switches with the profile: folders, contexts and the active context, Note setups, review state, calendar and Gmail setup, experimental switches, recent tags.
 
-Stays the same for all profiles: keep tabs in memory, performance tracing, debug logging.
+Stays the same for all profiles: [keep tabs in memory, performance tracing](settings.md#advanced), [debug logging](troubleshooting.md#reporting-a-problem).
 
 ## Profile files
 
 Profiles are files in `EXPORT/kept-gtd/profiles`, one `.json` file per profile. To import a profile, copy its file into that folder and tap **Refresh list**. To share your Note setups or folder setup, share the file.
 
-Before Kept GTD 0.20, the plugin was called gtdpara and kept its profiles in `EXPORT/gtdpara/profiles`. On its first start, Kept copies them into `EXPORT/kept-gtd/profiles`, as long as that folder holds no profile yet, and the status line says how many it copied. The demo profile is not copied; it is written again when you create the demo space. The old folder is left as it is; once your profiles are in the new one, you can delete `EXPORT/gtdpara`.
+Before Kept GTD 0.20, the plugin was called gtdpara and kept its profiles in `EXPORT/gtdpara/profiles`. On its first start, Kept copies them into `EXPORT/kept-gtd/profiles`, as long as that folder holds no profile yet, and the [status line](index.md#the-status-line) says how many it copied. The demo profile is not copied; it is written again when you create the demo space. The old folder is left as it is; once your profiles are in the new one, you can delete `EXPORT/gtdpara`.
 
 The Gmail app password and the calendar link are never written into these files. They stay inside the plugin, separately for each profile.
 
 ## The demo space
 
-**Create demo space** writes a small fictional setup to `Note/kept-gtd-demo`: five projects (one on hold, one done), five areas and an Inbox (in `2 Areas/0 Inbox`), with todos, meetings, focus blocks, tags and two contexts, **Work** and **Home** (the chip starts at Everything). Dates are set relative to today, so it always looks current. It also adds the profile "Demo" that points to these folders. In the demo, every note of a project or area goes into its home notebook ([Projects and Areas](projects-and-areas.md)) - create one with the notebook icon on "Garden renovation" to see its Home page. The area "Coaching" has a sparring thread with Mieke (past meetings, agreed todos) and a loop with a meeting today, to try [Engage](engage.md). The area "Sport" has a loop `#race/marathon` whose note is Sport's home notebook, and yesterday's "Coach call": open its note, add a page after it and write a heading to see which section a page belongs to ("Which owner a page belongs to" in [Engage](engage.md)). A demo profile from an earlier version keeps its Note setups: there, add a Loop setup on the tag `race` with the notebook name `{name} {year}` in Settings → Note setups.
+**Create demo space** writes a small fictional setup to `Note/kept-gtd-demo`: five projects (one on hold, one done), five areas and an Inbox (in `2 Areas/0 Inbox`), with todos, meetings, [focus blocks](meetings.md#focus-blocks), tags and two [contexts](contexts.md), **Work** and **Home** (the [chip](contexts.md#choosing-one) starts at Everything). Dates are set relative to today, so it always looks current. It also adds the profile "Demo" that points to these folders. In the demo, every note of a project or area goes into its [home notebook](projects-and-areas.md#home-notebooks) - create one with the [notebook icon](projects-and-areas.md#the-notebook-icon) on "Garden renovation" to see its [Home page](projects-and-areas.md#the-home-page). The area "Coaching" has a sparring [thread](threads.md) with Jordan, `#sparring/jordan` (past meetings, agreed todos) and a [loop](loops.md) with a meeting today, to try [Engage](engage.md). The area "Sport" has a loop `#race/marathon` whose note is Sport's home notebook, and yesterday's "Coach call": open its note, add a page after it and write a heading to see which section a page belongs to ([Which owner a page belongs to](engage.md#which-owner-a-page-belongs-to)). A demo profile from an earlier version keeps its Note setups: there, add a Loop setup on the tag `race` with the notebook name `{name} {year}` in [Settings → Note setups](note-setups.md#editing-a-setup).
 
-Existing files are never overwritten. To start the demo from scratch, delete the `Note/kept-gtd-demo` folder and create it again.
+Existing files are never overwritten, so a demo space created with an earlier version keeps its names (its sparring partner has another name) until you create it again. To start the demo from scratch, delete the `Note/kept-gtd-demo` folder and create it again.
 
 The demo space is useful for:
 

@@ -11,7 +11,7 @@ text in your own Projects / Areas / Resources / Archive folders, so you can read
 anywhere, with or without the plugin.
 
 **Keep your word with people.** Most of what you promise, you promise to someone: in a 1:1, a
-retro, a coaching session. Give a meeting series a nested tag such as `#101/mieke` and Kept GTD
+retro, a coaching session. Give a meeting series a nested tag such as `#sparring/jordan` and Kept GTD
 keeps its thread: when you meet next, what you agreed last time, what you owe and what you are
 waiting for. A project or area opens on its Threads tab, and the Weekly Review asks once a week
 which people and series you still tend. See [Threads](docs/user/threads.md).
@@ -53,12 +53,15 @@ More in [Why Kept GTD works this way](docs/user/philosophy.md).
 
 ## Features at a glance
 
-- **Threads**: tap a nested tag like `#retro/alpha` for everything around a person, team or meeting
+- **An easy start**: a setup assistant on the first start (your folders - existing ones are found,
+  nothing is moved - where notes go, simple or everything, the demo space), and a Getting started
+  page that walks you in
+- **Threads**: tap a nested tag like `#sparring/jordan` for everything around a person, team or meeting
   series - next meetings, what you owe, what you wait for, what is relevant, what was agreed in
   past meetings and what got done since
 - **Tending threads**: confirm the people and series you work with per area, see what you owe and
   wait for on a Threads tab, tend them in the Weekly Review, print "since last time" on a meeting note
-- **Loops**: small projects inside an area or project, named by a tag like `#workshop/teamoffsite` -
+- **Loops**: small projects inside an area or project, named by a tag like `#workshop/offsite` -
   one tap starts one, its todos are grouped together, it has one note from start to end, and it
   closes when nothing is open
 - **Contexts** (Work, Home, Café): one chip in the tab bar filters Daily, Week, Month, Projects,
@@ -77,7 +80,8 @@ More in [Why Kept GTD works this way](docs/user/philosophy.md).
 - **Quick Add** for todos, meetings and notes, with tags, due dates and refiling - one box of one
   height; tap a todo or meeting and its card takes the box's place, with everything you can do
   with it
-- **Projects & Areas** with status, scope, abbreviations and linked files
+- **Projects & Areas** with status, scope, abbreviations and linked files - from your folders or
+  anywhere on the Supernote (`Document`, the SD card), and the PDF you are reading at its page
 - **Home notebooks**: one notebook per project and area (and year), one tap away from every list -
   with a Home page (title and scope), a Notebook tab with its years and (experimental) its headings,
   and a rename offer when you renamed the folder elsewhere
@@ -92,7 +96,7 @@ More in [Why Kept GTD works this way](docs/user/philosophy.md).
 - Experimental **Google Calendar** (ICS link) and **Gmail** (IMAP, in the Weekly Review) integrations
 
 The **[user guide](docs/user/index.md)** explains every view and setting, and the ideas behind
-them. The same pages are built into the plugin: tap **?** in the tab bar. See [CHANGELOG.md](CHANGELOG.md)
+them. The same pages are built into the plugin: tap **?** in the tab bar; they link to each other. See [CHANGELOG.md](CHANGELOG.md)
 for what changed in each version, including which features are still experimental.
 
 ## Install

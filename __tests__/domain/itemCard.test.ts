@@ -12,9 +12,9 @@ const reviewOnly = {...sparring, tracking: {trackPrep: false, trackReview: true}
 const config = (setup = sparring): NoteSetupConfig => ({setups: [setup], defaults: {pages: {}, tracking: {trackPrep: false, trackReview: false}, notebook: null}});
 
 const m = (date: string, title: string, extra: Partial<Meeting> = {}) => meeting(date, title, {time: '10:00', endTime: '11:00', ...deriveMeetingFields(title), ...extra});
-const ahead = m('2026-10-23', 'Sparring #sparring/mieke');
-const todayLater = m('2026-10-21', 'Sparring #sparring/mieke', {time: '15:00', endTime: '16:00'});
-const over = m('2026-10-18', 'Sparring #sparring/mieke');
+const ahead = m('2026-10-23', 'Sparring #sparring/jordan');
+const todayLater = m('2026-10-21', 'Sparring #sparring/jordan', {time: '15:00', endTime: '16:00'});
+const over = m('2026-10-18', 'Sparring #sparring/jordan');
 
 const model = (mtg: Meeting, extra: Partial<MeetingCardInput> = {}) =>
   meetingCardModel({meeting: mtg, setups: config(), nowMs, reflection: 'none', ownerName: 'Coaching', canLink: false, canRefile: false, ...extra});
@@ -34,13 +34,13 @@ describe('meetingCardModel', () => {
     expect(model(todayLater).heading).toBe('Meeting · today');
     expect(model(over).heading).toBe('Meeting · over');
     expect(model({...over, cancelled: true}).heading).toBe('Meeting · cancelled');
-    expect(model(ahead).thread).toEqual({tag: 'sparring/mieke', label: '#sparring/mieke ›'});
+    expect(model(ahead).thread).toEqual({tag: 'sparring/jordan', label: '#sparring/jordan ›'});
     expect(model(m('2026-10-23', 'Plain #team')).thread).toBeNull();
   });
 
   it('R2: the title without state tags, and when (today without a date)', () => {
-    const ticked = m('2026-10-18', 'Sparring #sparring/mieke #reviewed #monthly');
-    expect(model(ticked).title).toBe('Sparring #sparring/mieke');
+    const ticked = m('2026-10-18', 'Sparring #sparring/jordan #reviewed #monthly');
+    expect(model(ticked).title).toBe('Sparring #sparring/jordan');
     expect(model(todayLater).when).toBe('today 15:00-16:00');
     expect(model(ahead).when).toMatch(/23\.10\. 10:00-11:00$/);
   });
@@ -48,7 +48,7 @@ describe('meetingCardModel', () => {
   it('R3: P before, R after, only when the setup tracks that phase', () => {
     expect(model(ahead).checkpoint).toEqual({kind: 'prep', done: false, label: 'P'});
     expect(model(over).checkpoint).toEqual({kind: 'review', done: false, label: 'R'});
-    expect(model(m('2026-10-18', 'Sparring #sparring/mieke #reviewed')).checkpoint?.done).toBe(true);
+    expect(model(m('2026-10-18', 'Sparring #sparring/jordan #reviewed')).checkpoint?.done).toBe(true);
     expect(model(ahead, {setups: config(reviewOnly)}).checkpoint).toBeNull();
     expect(model({...over, cancelled: true}).checkpoint).toBeNull();
   });
@@ -96,8 +96,8 @@ describe('todoCardModel', () => {
   });
 
   it('R1: the meeting it was agreed in, linking to its thread when the key has one', () => {
-    const agreed = todo('Send the canvas', {fields: {...task('x').fields, meeting: '2026-10-14 Sparring Mieke sparring/mieke'}});
-    expect(agreed.origin).toEqual({label: '↳ Sparring Mieke ›', threadTag: 'sparring/mieke'});
+    const agreed = todo('Send the canvas', {fields: {...task('x').fields, meeting: '2026-10-14 Sparring Jordan sparring/jordan'}});
+    expect(agreed.origin).toEqual({label: '↳ Sparring Jordan ›', threadTag: 'sparring/jordan'});
     const plain = todo('Send the canvas', {fields: {...task('x').fields, meeting: '2026-10-14 Team sync'}});
     expect(plain.origin).toEqual({label: '↳ Team sync', threadTag: null});
     expect(todo('Send the canvas').origin).toBeNull();

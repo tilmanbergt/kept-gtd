@@ -80,7 +80,7 @@ import {resolveFilingPick} from '../storage/inboxFiling';
 import {itemTarget, moveMeeting, moveTask} from '../storage/entryMove';
 import {useEntryMoveUi} from '../ui/useEntryMoveUi';
 import {addMeetingToDestination, addTaskToDestination, applyMeetingEdit, applyTaskEdit, buildMeeting, buildTask} from '../storage/itemMutations';
-import {linkedFileStatus, linkRootPath, locateLinkedFile, openLinkedFile, toLinkedFile} from '../storage/linkedFiles';
+import {linkedFileStatus, linkRootPath, locateLinkedFile, openLinkedFile, pickedPath, toLinkedFile} from '../storage/linkedFiles';
 import {saveMeetings, saveTasks} from '../storage/projectFile';
 import {loadSettings} from '../storage/settingsStorage';
 import {useSettings} from '../ui/useSettings';
@@ -357,8 +357,7 @@ export default function ProjectDataPanel({
   const handlePickLinkedFile = useCallback(
     (rootKey: string, relativePath: string) => {
       if (!paths || !armTarget || armTarget.intent !== 'link') return;
-      const absolutePath = `${rootPathFor(rootKey).replace(/\/+$/, '')}/${relativePath}`;
-      const linkedFile = toLinkedFile(paths, absolutePath);
+      const linkedFile = toLinkedFile(paths, pickedPath(rootPathFor(rootKey), relativePath));
       if (armTarget.type === 'task' && state) {
         const next = state.tasks.slice();
         if (next[armTarget.index]) {
@@ -469,8 +468,8 @@ export default function ProjectDataPanel({
   const runWidgetSave = widgetAction.runSave;
   const runWidgetAction = widgetAction.run;
 
-  const handleAddTask = async (text: string, destination: Destination): Promise<void> => {
-    const newTask: Task = buildTask(text);
+  const handleAddTask = async (text: string, destination: Destination, linkedFile?: string): Promise<void> => {
+    const newTask: Task = buildTask(text, {linkedFile});
     // A "+ next" seed's item is where its meeting goes; todos stay here.
     if (destination.type === 'item' && destination.path !== path && destination !== seedDestination) {
       // Abbreviation quick-file recognized a different Project/Area's
@@ -482,8 +481,8 @@ export default function ProjectDataPanel({
     await withTasks([...state.tasks, newTask]);
   };
 
-  const handleAddMeeting = async (fields: MeetingQuickAddFields, destination: Destination): Promise<void> => {
-    const newMeeting: Meeting = buildMeeting(fields);
+  const handleAddMeeting = async (fields: MeetingQuickAddFields, destination: Destination, linkedFile?: string): Promise<void> => {
+    const newMeeting: Meeting = buildMeeting(fields, {linkedFile});
     if (destination.type === 'item' && destination.path !== path) {
       await addMeetingToDestination(newMeeting, destination, {inbox: null, inboxPath: null});
     } else {
@@ -570,7 +569,7 @@ export default function ProjectDataPanel({
         if (!location) return null;
         return {
           mode: 'locating' as const,
-          root: location.root === 'item' ? 'project' : location.root === 'area' ? 'area' : 'resources',
+          root: location.root === 'item' ? 'project' : location.root,
           folderPath: location.folderPath,
           fileName: location.fileName,
           fileMissing: linkedFileMissing,
@@ -713,6 +712,7 @@ export default function ProjectDataPanel({
         <CounterpartFilterPill leaf={counterpartFilter.leaf} onClear={onClearCounterpartFilter} textColor={textColor} borderColor={borderColor} />
       )}
       <QuickAddWidget
+        thisFileLine
         layoutKey="current"
         fixedDestination={widgetDestination}
         meetingSeed={meetingSeed}

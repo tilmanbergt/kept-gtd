@@ -16,23 +16,27 @@ jest.mock('../../src/supernote/fileSystem', () => {
       .map(f => ({name: f.slice(f.lastIndexOf('/') + 1), isFolder: false})),
   );
   return {
-    listFolderEntries,
-    fileExists: jest.fn(async (path: string) => mockFiles.has(path)),
-    createNote: jest.fn(async (path: string) => {
+  listFolderEntries,
+  fileExists: jest.fn(async (path: string) => mockFiles.has(path)),
+  ensureFolderExists: jest.fn(async () => undefined),
+  openPath: jest.fn(async () => undefined),
+};
+});
+jest.mock('../../src/supernote/noteFileApi', () => ({
+  createNote: jest.fn(async (path: string) => {
       mockFiles.add(path);
     }),
-    ensureFolderExists: jest.fn(async () => undefined),
-    insertKeyWord: jest.fn(async () => undefined),
-    openPath: jest.fn(async () => undefined),
-    displayPath: (p: string) => p.replace(/^\/storage\/emulated\/0\//, ''),
-    getElements: jest.fn(async () => []),
-    insertElements: jest.fn(async () => undefined),
-    deleteElements: jest.fn(async () => undefined),
-    createElement: jest.fn(async () => ({})),
-    ELEMENT_TYPE_LINK: 600,
-    MYSTYLE_FOLDER: '/storage/emulated/0/MyStyle',
-  };
-});
+  insertKeyWord: jest.fn(async () => undefined),
+  getElements: jest.fn(async () => []),
+  insertElements: jest.fn(async () => undefined),
+  deleteElements: jest.fn(async () => undefined),
+  createElement: jest.fn(async () => ({})),
+  ELEMENT_TYPE_LINK: 600,
+}));
+jest.mock('../../src/supernote/devicePaths', () => ({
+  displayPath: (p: string) => p.replace(/^\/storage\/emulated\/0\//, ''),
+  MYSTYLE_FOLDER: '/storage/emulated/0/MyStyle',
+}));
 
 jest.mock('../../src/storage/sharedNotePages', () => ({
   ensureSharedNoteFile: jest.fn(async (folder: string, name: string) => {
@@ -78,6 +82,7 @@ import {deriveMeetingFields, deriveTaskFields} from '../../src/domain/markdown';
 import {NoteCreationPlan} from '../../src/domain/noteCreationPlan';
 import {openOrCreateLoopNote, openOrCreateMeetingNote, openOrCreateTodoNote} from '../../src/storage/meetingNoteContent';
 import * as fs from '../../src/supernote/fileSystem';
+import * as notes from '../../src/supernote/noteFileApi';
 
 const AREA = '/storage/emulated/0/Note/2 Areas/Coaching';
 const LOOP_NOTE = `${AREA}/2026-11 workshop offsite.note`;
@@ -111,7 +116,7 @@ describe('loop notes', () => {
     const result = await openOrCreateMeetingNote(meeting('Kickoff #workshop/offsite'), AREA, settingsWith([]), null, {confirmCreate: confirm});
     expect(plans[0]).toMatchObject({kind: 'new-shared-file', file: '2026-11 workshop offsite.note'});
     expect(mockFiles.has(LOOP_NOTE)).toBe(true);
-    expect(fs.insertKeyWord).toHaveBeenCalledWith(LOOP_NOTE, 0, 'loop workshop/offsite');
+    expect(notes.insertKeyWord).toHaveBeenCalledWith(LOOP_NOTE, 0, 'loop workshop/offsite');
     expect(result.meeting.notePath).toBe('2026-11 workshop offsite.note#2026-10-02 Kickoff #workshop/offsite');
   });
 
@@ -119,7 +124,7 @@ describe('loop notes', () => {
     mockFiles.add(LOOP_NOTE);
     await openOrCreateMeetingNote(meeting('Prep #workshop/offsite'), AREA, settingsWith([]), null, {confirmCreate: confirm});
     expect(plans[0]).toMatchObject({kind: 'new-page', file: '2026-11 workshop offsite.note'});
-    expect(fs.insertKeyWord).not.toHaveBeenCalled();
+    expect(notes.insertKeyWord).not.toHaveBeenCalled();
   });
 
   it('a meeting goes to a Thread setup matched through another tag first; without an active loop the item gets its own note', async () => {

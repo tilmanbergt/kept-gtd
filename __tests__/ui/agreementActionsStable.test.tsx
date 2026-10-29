@@ -1,7 +1,7 @@
 // docs/dev/history/technical-design-perf-current-page.md §3.2: Quick Add's agreement handlers keep their
 // identity across renders, so the memoized widget skips a parent's re-render.
 jest.mock('sn-plugin-lib', () => ({PluginManager: {}, PluginCommAPI: {}, PluginFileAPI: {}, PluginNoteAPI: {}}));
-jest.mock('../../src/supernote/fileSystem', () => ({}));
+
 jest.mock('../../src/utils/log', () => ({log: jest.fn(), logWarn: jest.fn(), logError: jest.fn()}));
 jest.mock('../../src/utils/screenRefresh', () => ({requestEinkRefresh: jest.fn(), useEinkRefreshOnLoad: jest.fn()}));
 

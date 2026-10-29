@@ -56,20 +56,20 @@ afterAll(() => {
 });
 
 scenario('The Current pages of the big data set show what was recorded before the performance work', {feature: 'Projects and Areas', design: 'technical-design-perf-current-page.md'}, () => {
-  given('the big data set: area "Atruvia" with projects "Tender" and "Migration", area "Zen", project "Solo" and the Inbox', () => {
+  given('the big data set: area "Team" with projects "Tender" and "Migration", area "Zen", project "Solo" and the Inbox', () => {
     clock();
     for (const f of bigScopeFiles()) putFile(f.path, f.content);
   });
-  when('I open Atruvia\'s page', async () => {
+  when('I open Team\'s page', async () => {
     await openApp({settings: bigScopeSettings()});
     await tapTab('Areas');
-    await tap(/^Atruvia/);
+    await tap(/^Team/);
   });
   then('it shows the recorded texts and list rows, also on each Quick Add tab', async () => {
-    check('atruvia');
+    check('team');
     for (const tab of ['Meeting', 'Agreement', 'Note', 'Todo']) {
       await tap(tab);
-      check(`atruvia:${tab}`);
+      check(`team:${tab}`);
     }
   });
   when('I open Zen\'s page', async () => {
@@ -77,7 +77,7 @@ scenario('The Current pages of the big data set show what was recorded before th
     await tap(/^Zen/);
   });
   then('it shows the recorded texts and list rows', () => check('zen'));
-  when('I open project Tender (in Atruvia) and project Solo', async () => {
+  when('I open project Tender (in Team) and project Solo', async () => {
     await tapTab('Projects');
     await tap(/^Tender/);
     check('tender');

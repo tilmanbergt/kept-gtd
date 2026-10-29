@@ -1,7 +1,9 @@
 // docs/dev/history/technical-design-engage.md §3.4: the open note page → owner and current todo.
 let mockKeywords: Array<{page: number; keyword: string}> = [];
 jest.mock('../../src/utils/log', () => ({log: jest.fn(), logWarn: jest.fn(), logError: jest.fn()}));
-jest.mock('../../src/supernote/fileSystem', () => ({getKeyWords: async () => mockKeywords}));
+jest.mock('../../src/supernote/noteFileApi', () => ({
+  getKeyWords: async () => mockKeywords,
+}));
 jest.mock('../../src/storage/loopNotes', () => ({
   loopNoteOf: (ownerPath: string, tag: string) => ({absolutePath: `${ownerPath}/${tag.replace('/', ' ')}.note`}),
 }));

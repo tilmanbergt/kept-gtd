@@ -42,13 +42,8 @@ import {todayIso} from '../domain/meetingTime';
 import {GtdParaSettings, resolvePaths} from '../domain/settings';
 import {GtdParaKind, Meeting, Task} from '../domain/types';
 import {collectArchivedItems} from '../domain/closeOut/archiveScan';
-import {
-  fileExists,
-  folderExists,
-  listFolderEntries,
-  statFiles,
-  writeIntegrityCheckReport,
-} from '../supernote/fileSystem';
+import {fileExists, folderExists, listFolderEntries, statFiles} from '../supernote/fileSystem';
+import {writeIntegrityCheckReport} from '../supernote/diagnosticFiles';
 import {ensureFileReadPermission} from '../supernote/pluginPermissions';
 import {log, logError} from '../utils/log';
 import {stripPageAnchor} from '../domain/sharedNotePages';

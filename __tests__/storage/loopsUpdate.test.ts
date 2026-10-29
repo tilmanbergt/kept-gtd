@@ -34,13 +34,13 @@ import {setLoopStatus, updateLoop} from '../../src/storage/loops';
 import {item, meeting, task} from '../../test-helpers/fixtures';
 
 const owner = () =>
-  item('area', 'Atruvia', {
+  item('area', 'Team', {
     tasks: [task('Book room #workshop/offsite', {notePath: '2026-11 workshop offsite.note#page=2'})],
     meetings: [meeting('2026-11-01', 'Kickoff #workshop/offsite')],
     loops: [newLoopLine('workshop/offsite', '2026-11-14')],
   });
 const edit = (line: string) => parseLoopEdit(line, ['workshop'])!;
-const NOTE = '/Note/2 Areas/Atruvia/2026-11 workshop offsite.note';
+const NOTE = '/Note/2 Areas/Team/2026-11 workshop offsite.note';
 
 beforeEach(() => {
   mockWrites.length = 0;
@@ -54,7 +54,7 @@ describe('updateLoop', () => {
   it('saves a new main date in the same month without asking', async () => {
     mockExisting.add(NOTE);
     const ask = jest.fn(async () => true);
-    expect(await updateLoop('/Note/2 Areas/Atruvia', 'workshop/offsite', edit('#workshop/offsite [due:: 2026-11-20]'), '', ask)).toBe(true);
+    expect(await updateLoop('/Note/2 Areas/Team', 'workshop/offsite', edit('#workshop/offsite [due:: 2026-11-20]'), '', ask)).toBe(true);
     expect(ask).not.toHaveBeenCalled();
     expect(mockMoves).toEqual([]);
     expect(mockWrites[0][1]).toContain('- workshop/offsite: active, 2026-11-20');
@@ -63,9 +63,9 @@ describe('updateLoop', () => {
   it('asks before moving the note to its new month, and links follow', async () => {
     mockExisting.add(NOTE);
     const ask = jest.fn(async () => true);
-    await updateLoop('/Note/2 Areas/Atruvia', 'workshop/offsite', edit('#workshop/offsite [due:: 2026-12-02]'), '', ask);
+    await updateLoop('/Note/2 Areas/Team', 'workshop/offsite', edit('#workshop/offsite [due:: 2026-12-02]'), '', ask);
     expect(ask).toHaveBeenCalledTimes(1);
-    expect(mockMoves).toEqual([[NOTE, '/Note/2 Areas/Atruvia/2026-12 workshop offsite.note']]);
+    expect(mockMoves).toEqual([[NOTE, '/Note/2 Areas/Team/2026-12 workshop offsite.note']]);
     expect(mockWrites[0][1]).toContain('→ [[2026-12 workshop offsite.note#page=2]]');
   });
 
@@ -73,9 +73,9 @@ describe('updateLoop', () => {
     mockExisting.add(NOTE);
     mockFailWrite = true;
     await expect(
-      updateLoop('/Note/2 Areas/Atruvia', 'workshop/offsite', edit('#workshop/offsite [due:: 2026-12-02]'), '', async () => true),
+      updateLoop('/Note/2 Areas/Team', 'workshop/offsite', edit('#workshop/offsite [due:: 2026-12-02]'), '', async () => true),
     ).rejects.toThrow('disk full');
-    const moved = '/Note/2 Areas/Atruvia/2026-12 workshop offsite.note';
+    const moved = '/Note/2 Areas/Team/2026-12 workshop offsite.note';
     expect(mockMoves).toEqual([
       [NOTE, moved],
       [moved, NOTE],
@@ -84,10 +84,10 @@ describe('updateLoop', () => {
 
   it('renames the tag after a confirm; declining saves nothing', async () => {
     const no = jest.fn(async () => false);
-    expect(await updateLoop('/Note/2 Areas/Atruvia', 'workshop/offsite', edit('#workshop/team [due:: 2026-11-14]'), '', no)).toBe(false);
+    expect(await updateLoop('/Note/2 Areas/Team', 'workshop/offsite', edit('#workshop/team [due:: 2026-11-14]'), '', no)).toBe(false);
     expect(mockWrites).toEqual([]);
     const yes = jest.fn(async () => true);
-    expect(await updateLoop('/Note/2 Areas/Atruvia', 'workshop/offsite', edit('#workshop/team [due:: 2026-11-14]'), '', yes)).toBe(true);
+    expect(await updateLoop('/Note/2 Areas/Team', 'workshop/offsite', edit('#workshop/team [due:: 2026-11-14]'), '', yes)).toBe(true);
     const written = mockWrites[0][1];
     expect(written).toContain('- workshop/team: active, 2026-11-14');
     expect(written).toContain('Book room #workshop/team');
@@ -96,8 +96,8 @@ describe('updateLoop', () => {
 
   it('refuses a tag that has a loop already', async () => {
     mockItem = {...owner(), loops: [newLoopLine('workshop/offsite'), newLoopLine('workshop/team')]};
-    await expect(updateLoop('/Note/2 Areas/Atruvia', 'workshop/offsite', edit('#workshop/team'), '', async () => true)).rejects.toThrow(
-      'Loop workshop/team exists already in Atruvia.',
+    await expect(updateLoop('/Note/2 Areas/Team', 'workshop/offsite', edit('#workshop/team'), '', async () => true)).rejects.toThrow(
+      'Loop workshop/team exists already in Team.',
     );
   });
 });
@@ -105,14 +105,14 @@ describe('updateLoop', () => {
 describe('setLoopStatus', () => {
   const NOW = new Date('2026-12-01T12:00:00');
   it('refuses to close while a todo is open', async () => {
-    await expect(setLoopStatus('/Note/2 Areas/Atruvia', 'workshop/offsite', 'done', NOW)).rejects.toThrow('1 open todo - move, retag or finish them first');
+    await expect(setLoopStatus('/Note/2 Areas/Team', 'workshop/offsite', 'done', NOW)).rejects.toThrow('1 open todo - move, retag or finish them first');
     expect(mockWrites).toEqual([]);
   });
   it('closes and reopens a loop with nothing open', async () => {
     mockItem = {...owner(), tasks: [task('Book room #workshop/offsite', {done: true})]};
-    await setLoopStatus('/Note/2 Areas/Atruvia', 'workshop/offsite', 'dropped', NOW);
+    await setLoopStatus('/Note/2 Areas/Team', 'workshop/offsite', 'dropped', NOW);
     expect(mockWrites[0][1]).toContain('- workshop/offsite: dropped, 2026-11-14');
-    await setLoopStatus('/Note/2 Areas/Atruvia', 'workshop/offsite', 'active', NOW);
+    await setLoopStatus('/Note/2 Areas/Team', 'workshop/offsite', 'active', NOW);
     expect(mockWrites[1][1]).toContain('- workshop/offsite: active, 2026-11-14');
   });
 });

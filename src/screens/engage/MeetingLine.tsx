@@ -1,7 +1,7 @@
 /**
  * One meeting line of the Engage panel
  * (docs/dev/history/technical-design-engage-in-context.md E8, E9):
- * - `next`: "Next here: Thu 23.10. 10:00 Sparring Mieke ›" under the header,
+ * - `next`: "Next here: Thu 23.10. 10:00 Sparring Jordan ›" under the header,
  *   the owner's next meeting; a tap opens its note and the panel goes.
  * - `today`: "Today next: 14:00 Retro demand · in 40 min" above the footer,
  *   quiet and not tappable - information for choosing what fits the time.

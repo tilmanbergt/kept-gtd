@@ -33,6 +33,12 @@ jest.mock('../../src/storage/settingsStorage', () => {
   };
   return {loadSettings: async () => stored, saveSettings: async () => undefined, patchSettings: async () => stored};
 });
+jest.mock('../../src/supernote/diagnosticFiles', () => ({appendDebugLogFile: async () => undefined, writePerfTraceFile: async () => undefined}));
+jest.mock('../../src/supernote/hostContext', () => ({
+  ...jest.requireActual('../../src/supernote/hostContext'),
+  getCurrentNotePath: async () => null,
+  rememberLaunchNotePath: () => undefined,
+}));
 jest.mock('../../src/supernote/fileSystem', () => {
   const files: Record<string, string> = {
     '/storage/emulated/0/Note/2 Areas/Home/area.txt': '---\nkind: area\nstatus: active\n---\n\n## Tasks\n\n## Meetings\n',
@@ -59,28 +65,24 @@ jest.mock('../../src/supernote/fileSystem', () => {
     '2 Areas': ['Home'],
   };
   return {
-    ...jest.requireActual('../../src/supernote/fileSystem'),
-    getCurrentNotePath: async () => null,
-    rememberLaunchNotePath: () => undefined,
-    setOpenPathObserver: () => undefined,
-    getPrivateTempDir: async () => '/tmp/gtdpara',
-    deleteTempTree: async () => undefined,
-    appendDebugLogFile: async () => undefined,
-    writePerfTraceFile: async () => undefined,
-    statFiles: async () => null,
-    fileExists: async (path: string) => path in files,
-    listFolderEntries: async (folder: string) => {
+  ...jest.requireActual('../../src/supernote/fileSystem'),
+  setOpenPathObserver: () => undefined,
+  getPrivateTempDir: async () => '/tmp/gtdpara',
+  deleteTempTree: async () => undefined,
+  statFiles: async () => null,
+  fileExists: async (path: string) => path in files,
+  listFolderEntries: async (folder: string) => {
       const names = folders[folder.split('/').pop() ?? ''] ?? [];
       return names.map(name => ({name, path: `${folder}/${name}`, isFolder: true}));
     },
-    readTextFile: async (path: string) => {
+  readTextFile: async (path: string) => {
       if (path in files) return files[path];
       throw new Error(`no file ${path}`);
     },
-    writeTextFile: async (path: string, text: string) => {
+  writeTextFile: async (path: string, text: string) => {
       files[path] = text;
     },
-  };
+};
 });
 
 import React from 'react';
@@ -147,19 +149,19 @@ describe('one Files tab on the Project/Area page', () => {
     const r = await openPage('Areas', /^Home /);
     // The header carries "Engage ›" for this Area (docs/dev/history/technical-design-engage.md §3.7).
     expect(r.root.findAll(n => n.props.label === 'Engage ›' && n.props.owner === undefined && typeof n.props.onPress === 'function')).toHaveLength(1);
-    expect(await filesOf(r)).toEqual({top: ['Threads', 'Projects', 'Files'], places: ['Area', 'Resources'], active: 'project'});
+    expect(await filesOf(r)).toEqual({top: ['Threads', 'Projects', 'Files'], places: ['Area', 'Resources', 'Device'], active: 'project'});
     act(() => r.unmount());
   });
 
   it('a Project with an Area: Threads · Loops · Files, with Project · Area · Resources', async () => {
     const r = await openPage('Projects', /^Garden /);
-    expect(await filesOf(r)).toEqual({top: ['Threads', 'Loops', 'Files'], places: ['Project', 'Area', 'Resources'], active: 'project'});
+    expect(await filesOf(r)).toEqual({top: ['Threads', 'Loops', 'Files'], places: ['Project', 'Area', 'Resources', 'Device'], active: 'project'});
     act(() => r.unmount());
   });
 
   it('a Project without an Area: Project · Resources', async () => {
     const r = await openPage('Projects', /^Allotment /, true);
-    expect(await filesOf(r)).toEqual({top: ['Threads', 'Loops', 'Files'], places: ['Project', 'Resources'], active: 'project'});
+    expect(await filesOf(r)).toEqual({top: ['Threads', 'Loops', 'Files'], places: ['Project', 'Resources', 'Device'], active: 'project'});
     act(() => r.unmount());
   });
 });
