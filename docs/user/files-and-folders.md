@@ -4,7 +4,7 @@ Everything Kept GTD knows lives in ordinary files that you can read and edit you
 
 ## The folder layout
 
-With the default settings ([Settings → Folders](settings.md#folders) changes them):
+With the default settings ([Settings → Data](settings.md#folders) changes them):
 
 - `Note/1 Projects/<project>/project.txt`
 - `Note/2 Areas/<area>/area.txt`
@@ -20,7 +20,7 @@ The names of files Kept creates leave out `\ / : * ? " < > |` (not allowed in fi
 
 ## The Inbox folder
 
-The Inbox has its own folder inside the Areas folder, so the `Note` folder holds only your PARA folders. Kept doesn't treat it as an area: it isn't listed on the [Areas](projects-and-areas.md) tab or in refile. You can change its name in [Settings → Folders](settings.md#folders).
+The Inbox has its own folder inside the Areas folder, so the `Note` folder holds only your PARA folders. Kept doesn't treat it as an area: it isn't listed on the [Areas](projects-and-areas.md) tab or in refile. You can change its name in [Settings → Data](settings.md#folders).
 
 Up to version 0.1.0 the Inbox lived directly in `Note` (`Inbox.txt` plus `Todos` and `Meetings` folders). Versions 0.2 to 0.8 moved these into the Inbox folder on their first start; from 0.9.0 on Kept no longer does. If you still have them in `Note`, move them into the Inbox folder by hand; [Run Integrity Check](settings.md#advanced) in Settings → Advanced points them out.
 

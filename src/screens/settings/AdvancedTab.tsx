@@ -1,20 +1,18 @@
 /**
- * Settings → Advanced (docs/dev/history/technical-design-about-debug-experimental.md §3.6):
- * Profiles and the tools (Reload all files, Integrity Check, Touch test, Keep
- * tabs in memory, Performance tracing; Check device files while Debug logging
- * is on, docs/dev/history/technical-design-easy-start.md §7); the Experimental switches live on
- * Settings → Features. Presentational: Settings.tsx owns the values and the
- * handlers, every switch saves immediately.
+ * Settings → Advanced (docs/dev/history/technical-design-settings-tabs.md T5): left, Reporting a
+ * problem (Debug logging, Export debug bundle); right, the tools (Reload all files, Integrity
+ * Check, Keep tabs in memory, Performance tracing). Settings.tsx owns the values and the
+ * handlers; every switch saves immediately.
  */
 import React from 'react';
 import {ActivityIndicator, Pressable, StyleSheet, Text, View} from 'react-native';
 import {FONT, SPACING} from '../../ui/theme';
-import ProfilesSection from './ProfilesSection';
+import ReportingSection from './ReportingSection';
 import SettingSwitch from './SettingSwitch';
 
 interface Props {
-  activeProfileId: string;
-  onSwitchProfile?: (id: string) => Promise<void>;
+  debugLogging: boolean;
+  onToggleDebugLogging: () => void;
   perfTracing: boolean;
   keepTabsAlive: boolean;
   integrityCheckRunning: boolean;
@@ -32,12 +30,7 @@ export default function AdvancedTab(p: Props): React.JSX.Element {
   return (
     <View style={styles.row}>
       <View style={[styles.column, styles.columnLeft]}>
-        <ProfilesSection
-          activeProfileId={p.activeProfileId}
-          onSwitchProfile={p.onSwitchProfile}
-          textColor={textColor}
-          borderColor={borderColor}
-        />
+        <ReportingSection debugLogging={p.debugLogging} onToggleDebugLogging={p.onToggleDebugLogging} textColor={textColor} borderColor={borderColor} />
       </View>
       <View style={[styles.divider, {backgroundColor: borderColor}]} />
       <View style={styles.column}>

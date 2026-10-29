@@ -1,11 +1,10 @@
 /**
- * The Settings tabs that edit the shared draft (useSettingsDraft.ts) and are
- * written by Save: Folders, Calendar and Gmail.
+ * The settings edited in fields (useSettingsDraft.ts), each block with its own Save: the folders
+ * (Data tab), the Google Calendar link and the Gmail account (Features tab).
  */
 import React from 'react';
 import {Pressable, Text, TextInput, View} from 'react-native';
 import {DEFAULT_SETTINGS, resolvePaths} from '../../domain/settings';
-import {peekSettings} from '../../storage/settingsSnapshot';
 import PillButton from '../../ui/PillButton';
 import CheckToggle from './CheckToggle';
 import {styles} from './settingsStyles';
@@ -18,23 +17,11 @@ interface TabProps {
   placeholderColor: string;
 }
 
-/**
- * Run setup assistant on top (docs/dev/history/technical-design-easy-start.md §5.5; disabled while
- * the folder fields have unsaved changes, which it would not keep), then the base root and each PARA
- * folder, with the resolved path under each.
- */
-export function FoldersTab({draft, onRunSetup, textColor, borderColor, placeholderColor}: TabProps & {onRunSetup: () => void}): React.JSX.Element {
+/** The base root and each PARA folder, with the resolved path under each; Save and Reset to defaults below. */
+export function FolderFields({draft, textColor, borderColor, placeholderColor}: TabProps): React.JSX.Element {
   const paths = resolvePaths(draft.values);
-  const stored = peekSettings();
-  const unsaved = !!stored && FIELDS.some(field => draft.values[field.key] !== stored[field.key]);
   return (
     <>
-      <View style={styles.field}>
-        <PillButton label="Run setup assistant" onPress={onRunSetup} disabled={unsaved} textColor={textColor} borderColor={borderColor} />
-        <Text style={[styles.pathPreview, {color: textColor}]}>
-          {unsaved ? 'Save or reset your changes below first.' : 'Folders, notes and features in four steps; shows what it creates before it does.'}
-        </Text>
-      </View>
       {FIELDS.map(field => (
         <View key={field.key} style={styles.field}>
           <Text style={[styles.label, {color: textColor}]}>{field.label}</Text>
@@ -50,12 +37,27 @@ export function FoldersTab({draft, onRunSetup, textColor, borderColor, placehold
           {field.pathKey && <Text style={[styles.pathPreview, {color: textColor}]}>→ {paths[field.pathKey]}</Text>}
         </View>
       ))}
+      <Pressable style={styles.saveButton} onPress={() => draft.saveFields('folders')}>
+        <Text style={styles.saveButtonText}>Save</Text>
+      </Pressable>
+      <Pressable onPress={draft.resetFolders} style={styles.resetButton}>
+        <Text style={[styles.resetText, {color: textColor}]}>Reset to defaults</Text>
+      </Pressable>
     </>
   );
 }
 
-/** The Google Calendar ICS link. */
-export function CalendarTab({draft, textColor, borderColor, placeholderColor}: TabProps): React.JSX.Element {
+/** A block's own Save on Features (calendar, Gmail): small, under its fields. */
+function BlockSave({onPress, textColor, borderColor}: {onPress: () => void; textColor: string; borderColor: string}): React.JSX.Element {
+  return (
+    <View style={styles.field}>
+      <PillButton label="Save" primary onPress={onPress} textColor={textColor} borderColor={borderColor} />
+    </View>
+  );
+}
+
+/** The Google Calendar ICS link, with its own Save. */
+export function CalendarFields({draft, textColor, borderColor, placeholderColor}: TabProps): React.JSX.Element {
   const setUrl = (text: string) => draft.patch({googleCalendarIcsUrl: text});
   return (
     <View style={styles.field}>
@@ -75,12 +77,13 @@ export function CalendarTab({draft, textColor, borderColor, placeholderColor}: T
       <Text style={[styles.pathPreview, {color: textColor}]}>
         The first sync will ask for network access - fetches only today through +30 days.
       </Text>
+      <BlockSave onPress={() => draft.saveFields('calendar')} textColor={textColor} borderColor={borderColor} />
     </View>
   );
 }
 
-/** Gmail address, app password (pasted - nobody types Google's generated 16 characters), IMAP host. */
-export function GmailTab({draft, textColor, borderColor, placeholderColor}: TabProps): React.JSX.Element {
+/** Gmail address, app password (pasted - nobody types Google's generated 16 characters), IMAP host, with their own Save. */
+export function GmailFields({draft, textColor, borderColor, placeholderColor}: TabProps): React.JSX.Element {
   const {values, update} = draft;
   return (
     <View style={styles.field}>
@@ -133,6 +136,7 @@ export function GmailTab({draft, textColor, borderColor, placeholderColor}: TabP
         onPress={() => draft.patch({gmailHideHandled: !values.gmailHideHandled})}
         textColor={textColor}
       />
+      <BlockSave onPress={() => draft.saveFields('gmail')} textColor={textColor} borderColor={borderColor} />
     </View>
   );
 }

@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-136 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+141 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -819,7 +819,7 @@ Test: `__tests__/scenarios/keptGtd.test.tsx`
 ### The demo space lives in Note/kept-gtd-demo
 
 - **Given** an empty PARA folder
-- **When** I create the demo space in Settings → Advanced and switch to it
+- **When** I create the demo space in Settings → Data and switch to it
 - **Then** its folders are under Note/kept-gtd-demo and nothing is written under Note/gtdpara-demo
 
 Test: `__tests__/scenarios/keptGtd.test.tsx`
@@ -827,7 +827,7 @@ Test: `__tests__/scenarios/keptGtd.test.tsx`
 ### Try things in the demo space without touching the real files, then switch back
 
 - **Given** my real PARA folder has project "Website" and an empty Inbox
-- **When** I create the demo space in Settings → Advanced and switch to it
+- **When** I create the demo space in Settings → Data and switch to it
 - **Then** the tab bar shows the boxed D and Projects shows the demo projects, not "Website"
 - **And** the chip opens Settings → Contexts with Work and Home; Daily has Garden renovation's focus block today
 - **When** I add the todo "Try the demo" in the Inbox
@@ -841,7 +841,7 @@ Test: `__tests__/scenarios/profiles.test.tsx` · design: `docs/dev/history/techn
 ### Switch to the demo space and back (smoke)
 
 - **Given** the smoke space on Wednesday 14.10.2026
-- **When** I create the demo space in Settings → Advanced and switch to it
+- **When** I create the demo space in Settings → Data and switch to it
 - **Then** Daily shows the demo's content under the inverted tab bar with its D
 - **When** I switch back to Production
 - **Then** Daily shows the smoke space again
@@ -1137,10 +1137,57 @@ Test: `__tests__/scenarios/keptGtd.test.tsx`
 ### Export debug bundle writes a file named after Kept GTD
 
 - **Given** an empty PARA folder
-- **When** I tap Export debug bundle on Settings → About
+- **When** I tap Export debug bundle on Settings → Advanced
 - **Then** one kept-gtd-debug file is in EXPORT/kept-gtd/debug, it says Kept GTD, and the status line names it
 
 Test: `__tests__/scenarios/keptGtd.test.tsx`
+
+### Settings opens on Data, with six tabs
+
+- **Given** Kept is open
+- **When** I open Settings
+- **Then** the six tabs show, and Data holds the folders, the setup assistant and the profiles
+
+Test: `__tests__/scenarios/settingsTabs.test.tsx`
+
+### An unsaved folder field holds back the setup assistant until Save
+
+- **Given** Settings → Data is open
+- **When** I change the Projects folder without saving
+- **Then** Run setup assistant waits and says why
+- **When** I tap Save under the folder fields
+- **Then** the folder is stored and the assistant can start again
+
+Test: `__tests__/scenarios/settingsTabs.test.tsx`
+
+### The Gmail account sits on Features while Gmail is on, and stays stored while it is off
+
+- **Given** Gmail is set up for jordan@example.com and switched off
+- **When** I open Settings → Features
+- **Then** there is no Gmail block
+- **When** I switch Gmail on
+- **Then** its block shows the stored address
+- **And** the address is still stored
+
+Test: `__tests__/scenarios/settingsTabs.test.tsx`
+
+### Debug logging and the debug bundle are on Advanced; About invites reports
+
+- **Given** Kept is open
+- **When** I open Settings → Advanced
+- **Then** it shows Reporting a problem next to the tools
+- **When** I open About
+- **Then** it invites reports and points to Advanced, without the debug switches
+
+Test: `__tests__/scenarios/settingsTabs.test.tsx`
+
+### The profile chip in the tab bar opens the profiles on Data
+
+- **Given** the profile "work" is active
+- **When** I tap the chip WORK in the tab bar
+- **Then** Settings shows Data with the profiles
+
+Test: `__tests__/scenarios/settingsTabs.test.tsx`
 
 ### A fresh install opens the setup assistant; Finish saves the folders found and creates only the missing ones
 
@@ -1164,11 +1211,11 @@ Test: `__tests__/scenarios/setupAssistant.test.tsx` · design: `docs/dev/history
 
 Test: `__tests__/scenarios/setupAssistant.test.tsx` · design: `docs/dev/history/technical-design-easy-start.md`
 
-### An existing install opens on Daily as before; Run setup assistant starts it from Settings → Folders, Simple with own notes
+### An existing install opens on Daily as before; Run setup assistant starts it from Settings → Data, Simple with own notes
 
 - **When** Kept starts with stored settings
 - **Then** it lands on Daily, without the assistant
-- **When** I tap Run setup assistant on Settings → Folders, choose own notes and Simple, and Finish
+- **When** I tap Run setup assistant on Settings → Data, choose own notes and Simple, and Finish
 - **Then** close-out, Calendar, Gmail and Notebook contents are off and the Default has no notebook
 - **And** Run setup assistant waits while the Folders fields have unsaved changes
 

@@ -65,7 +65,7 @@ interface Props {
   onOpenItem: (kind: 'project' | 'area', entry: FolderEntry) => void;
   /** Switches to the Inbox tab: an Inbox row's group header or source has no Project/Area to open. */
   onOpenInbox?: () => void;
-  /** Switches to Settings → Calendar (the Google tab's empty state). */
+  /** Switches to Settings → Features, where the calendar link goes (the Google tab's empty state). */
   onOpenCalendarSettings?: () => void;
 }
 

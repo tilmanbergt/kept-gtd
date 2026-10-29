@@ -1,11 +1,13 @@
 /**
- * Settings → Advanced → Profiles (docs/dev/history/technical-design-profiles-demo-space.md §3.6):
+ * Settings → Data → Profiles (docs/dev/history/technical-design-profiles-demo-space.md §3.6):
  * the profile files in EXPORT/kept-gtd/profiles, Save for the active one,
  * Switch (after a confirm in the status slot) for the others, and
  * Restore for the active one while the stored settings are unreadable
  * (storage/settingsUnreadable.ts), and
  * "Create demo space". The actual switch - reset caches, remount the app -
- * is done by App.tsx via `onSwitchProfile`.
+ * is done by App.tsx via `onSwitchProfile`. `locked` greys Switch while the folder fields
+ * beside it have unsaved changes (technical-design-settings-tabs.md T2); the screen refreshes
+ * once the list has loaded, so it is never left half drawn (T3).
  */
 import React, {useCallback, useEffect, useState, useSyncExternalStore} from 'react';
 import {ActivityIndicator, Pressable, StyleSheet, Text, View} from 'react-native';
@@ -20,18 +22,21 @@ import {useStatus} from '../../ui/status/StatusProvider';
 import {FONT, SPACING} from '../../ui/theme';
 import {logError} from '../../utils/log';
 import {errorMessage} from '../../utils/errorMessage';
+import {requestEinkRefresh} from '../../utils/screenRefresh';
 
 interface Props {
   activeProfileId: string;
   /** Performs the switch (App.tsx); resolves after the app has been reset, or rejects with a message. */
   onSwitchProfile?: (id: string) => Promise<void>;
+  /** Unsaved folder fields beside the list: Switch waits. */
+  locked?: boolean;
   textColor: string;
   borderColor: string;
 }
 
 type Message = {kind: 'success' | 'error'; text: string} | null;
 
-export default function ProfilesSection({activeProfileId, onSwitchProfile, textColor, borderColor}: Props): React.JSX.Element {
+export default function ProfilesSection({activeProfileId, onSwitchProfile, locked = false, textColor, borderColor}: Props): React.JSX.Element {
   const [profiles, setProfiles] = useState<ProfileInfo[] | null>(null);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<Message>(null);
@@ -47,6 +52,8 @@ export default function ProfilesSection({activeProfileId, onSwitchProfile, textC
       setProfiles([]);
       setMessage({kind: 'error', text: `Profiles: ${errorMessage(e)}`});
     }
+    // The list arrives after the first draw; without a refresh e-ink can leave it half drawn.
+    requestEinkRefresh();
   }, []);
 
   useEffect(() => {
@@ -148,7 +155,7 @@ export default function ProfilesSection({activeProfileId, onSwitchProfile, textC
                 ) : (
                   <PillButton
                     label="Switch"
-                    disabled={busy || !!p.error || !onSwitchProfile}
+                    disabled={busy || locked || !!p.error || !onSwitchProfile}
                     onPress={() => setConfirmId(p.id)}
                     textColor={textColor}
                     borderColor={borderColor}

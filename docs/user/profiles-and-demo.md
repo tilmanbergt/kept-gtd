@@ -4,7 +4,7 @@ A *profile* is a complete configuration: which [folders](settings.md#folders) Ke
 
 ## Profiles
 
-Go to [Settings → Advanced](settings.md#advanced). The Profiles list shows every profile; the active one has a ●.
+Go to [Settings → Data](settings.md#profiles). The Profiles list shows every profile; the active one has a ●.
 
 - **Save** writes the active profile to its file.
 - **Restore** appears instead of **Save** only when Kept could not read its stored settings: it puts the settings from the active profile's file back (see [Troubleshooting](troubleshooting.md#common-situations)).

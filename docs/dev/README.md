@@ -192,9 +192,12 @@ Link targets for the labels that recur (add a row when you link a new one):
 - Review steps without a section (Week ahead, Meetings to close out, Inbox to zero, Stalled projects,
   Done awaiting review, On Hold reconsideration, Neglected areas, Gmail inbox) `review.md#the-steps`;
   Tending threads, Agreements, Someday / Maybe, Open loops their own sections
-- Settings → Folders / Features / Advanced / About `settings.md#folders`, `#features`, `#advanced`,
-  `#about` (Run Integrity Check, Reload all files, Keep tabs in memory, What's new, Upgrade notes);
-  setup assistant `settings.md#setup-assistant`; Settings → Contexts
+- Settings → Data (folders) / Features / Advanced / About `settings.md#folders`, `#features`,
+  `#advanced`, `#about` (Run Integrity Check, Reload all files, Keep tabs in memory: `#tools` or
+  `#advanced`; What's new, Upgrade notes: `#about`); Debug logging and Export debug bundle on
+  Advanced `settings.md#reporting-a-problem`; the calendar link and Gmail account
+  `settings.md#google-calendar-and-gmail`; setup assistant `settings.md#setup-assistant`; the
+  profiles list `settings.md#profiles`; Settings → Contexts
   `contexts.md#setting-up-contexts`; Settings → Note setups `settings.md#note-setups`; Google
   Calendar, Gmail `features.md#google-calendar`, `#gmail`; Project close-out
   `features.md#project-close-out`; profiles, demo space `profiles-and-demo.md#profiles`,

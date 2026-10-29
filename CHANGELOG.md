@@ -10,6 +10,19 @@ or your project/area files are stored.
 
 ## [Unreleased]
 
+### Changed
+- **Settings has six tabs** instead of eight. **Data** holds your folders on the left and, on the
+  right, Run setup assistant and the profiles - setting up in one place. The Google Calendar link and
+  the Gmail account moved onto **Features**, next to their switches, each with its own Save. Debug
+  logging and Export debug bundle moved to **Advanced** under "Reporting a problem"; About invites you
+  to report problems and ideas.
+- While a folder field has unsaved changes, Run setup assistant and Switch (profiles) wait until you
+  save or reset it, so the change can't be lost.
+
+### Fixed
+- The profile list redraws once it has found the profile files, so it is no longer left half drawn
+  on e-ink.
+
 ### Removed
 - **Touch test** and **Check device files** in Settings → Advanced: both diagnostics have done their
   job. Touch logs already written stay in `EXPORT/kept-gtd/debug` until you delete them.

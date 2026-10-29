@@ -1055,18 +1055,25 @@ at its old place with an error. Credentials: `gmailEmail`, `gmailAppPassword` (s
 
 ### 2.12 Settings, profiles and diagnostics
 
-**Settings screen** (`screens/settings/`): mini-tabs Folders, Contexts, Calendar, Gmail (the last
-two only while switched on), Note setups, Features, Advanced, About. Folders, Calendar and Gmail edit
-one draft (`useSettingsDraft.ts`) that only Save writes; every Save clears the cache (the next
-screen builds it again) and the Gmail list, and a changed Inbox folder name moves the folder first (`storage/inboxFolder.ts`, refused
-when the target exists, not moved when Base or Areas change in the same save). Note setups save
-per setup (and the Default on its own), and its Heading style (`noteHeadingStyle`) at once; the switches on Features, Advanced and About write immediately. **Features**
-(`FeaturesTab.tsx`) holds the module switches - `settings.modules` (`closeOut`, on by default; read
-through `domain/features.ts`'s `featuresOf`/`modulesOf`, which fill a missing key from its default,
-and `ui/featureStore.ts`'s `useFeatures`; close-out off passes no `onStartCloseOut` to Current and
-Review, so a Done project archives directly) - and the Experimental switches. Advanced holds Profiles, "Reload all files", "Run Integrity Check", "Keep tabs in memory" and
-"Performance tracing". About shows version and build, the changelog ("What's new", also offered
-once after an update), Debug logging and "Export debug bundle".
+**Settings screen** (`screens/settings/`; `docs/dev/history/technical-design-settings-tabs.md`):
+mini-tabs Data, Contexts, Note setups, Features, Advanced, About; Settings opens on Data. The folder
+fields (Data) and the Google Calendar and Gmail blocks (Features, shown while their switch is on)
+edit one draft (`useSettingsDraft.ts`); each block's Save (`saveFields(scope)`) writes only its own
+fields over what is stored. A folder Save clears the cache (the next screen builds it again) and a
+changed Inbox folder name moves the folder first (`storage/inboxFolder.ts`, refused when the target
+exists, not moved when Base or Areas change in the same save); a Gmail Save clears the Gmail list.
+**Data** (`DataTab.tsx`) has the folder fields left, Run setup assistant and Profiles right; both wait
+while the folder fields are unsaved (`draft.unsaved('folders')`). Note setups save per setup (and
+the Default on its own), and its Heading style (`noteHeadingStyle`) at once; the switches on
+Features and Advanced write immediately. **Features** (`FeaturesTab.tsx`) holds the module switches
+- `settings.modules` (`closeOut`, on by default; read through `domain/features.ts`'s
+`featuresOf`/`modulesOf`, which fill a missing key from its default, and `ui/featureStore.ts`'s
+`useFeatures`; close-out off passes no `onStartCloseOut` to Current and Review, so a Done project
+archives directly) - and the Experimental switches. **Advanced** holds Reporting a problem (Debug
+logging, "Export debug bundle", `ReportingSection.tsx`) and the tools ("Reload all files", "Run
+Integrity Check", "Keep tabs in memory", "Performance tracing"). **About** shows version and build,
+an invitation to report problems, and the changelog ("What's new", also offered once after an
+update).
 
 **Setup assistant** (`screens/settings/SetupAssistant.tsx`, decisions in
 `domain/setupAssistant.ts`, writes in `storage/setupAssistant.ts`): Folders (existing PARA folders

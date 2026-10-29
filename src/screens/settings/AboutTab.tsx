@@ -1,32 +1,24 @@
 /**
  * Settings → About (docs/dev/history/technical-design-about-debug-experimental.md §3.5):
  * left - wordmark, name and slogan (docs/dev/history/technical-design-kept-gtd.md §3.2),
- * version/build/device, Debug logging switch, Export debug bundle;
+ * version/build/device and an invitation to report problems and ideas (the debug tools are on
+ * Advanced, docs/dev/history/technical-design-settings-tabs.md T6);
  * right - "What's new" from the bundled CHANGELOG, paged, no scrolling.
  */
 import React, {useEffect, useMemo, useState} from 'react';
-import {ActivityIndicator, Image, Pressable, StyleSheet, Text, View} from 'react-native';
-import {GtdParaSettings} from '../../domain/settings';
+import {Image, StyleSheet, Text, View} from 'react-native';
 import {buildVersionText} from '../../domain/buildVersionText';
 import {BUILD_INFO} from '../../generated/buildInfo';
 import {CHANGELOG} from '../../generated/changelog';
-import {exportDebugBundle} from '../../storage/debugBundle';
-import {loadSettings} from '../../storage/settingsStorage';
-import {DEBUG_LOG_FOLDER_PATH, displayPath} from '../../supernote/devicePaths';
 import {getRuntimeDiagnostics, RuntimeDiagnostics} from '../../supernote/pluginRuntime';
 import MarkdownPager from '../../ui/MarkdownBlocks';
 import MiniTabs, {MiniTabDef} from '../../ui/MiniTabs';
-import PillButton from '../../ui/PillButton';
-import {useStatus} from '../../ui/status/StatusProvider';
 import {FONT, SPACING} from '../../ui/theme';
-import {LOG_FILE_NAME} from '../../utils/logSink';
 
 /** The Unreleased changelog section's heading: the release it is for, when the build knows it. */
 function unreleasedHeader(): string {
   return BUILD_INFO.nextVersion ? `${BUILD_INFO.nextVersion} (in progress)` : 'Not yet released';
 }
-import {logError} from '../../utils/log';
-import {errorMessage} from '../../utils/errorMessage';
 import {formatDate} from '../../domain/dateFormat';
 
 const PROJECT_URL = 'github.com/tilmanbergt/kept-gtd';
@@ -36,20 +28,13 @@ const FORMERLY = 'Formerly gtdpara';
 const WORDMARK = require('../../../assets/wordmark.png');
 
 interface Props {
-  debugLogging: boolean;
-  onToggleDebugLogging: () => void;
   textColor: string;
   borderColor: string;
 }
 
-const shortFolder = displayPath;
-
-export default function AboutTab({debugLogging, onToggleDebugLogging, textColor, borderColor}: Props): React.JSX.Element {
+export default function AboutTab({textColor, borderColor}: Props): React.JSX.Element {
   const b = BUILD_INFO;
   const [diag, setDiag] = useState<RuntimeDiagnostics | null>(null);
-  const [exporting, setExporting] = useState(false);
-  const [result, setResult] = useState<{kind: 'success' | 'error'; text: string} | null>(null);
-  useStatus('Settings.about.export', result ? {...result, onDismiss: () => setResult(null)} : null);
 
   useEffect(() => {
     let cancelled = false;
@@ -67,23 +52,6 @@ export default function AboutTab({debugLogging, onToggleDebugLogging, textColor,
   );
   const [selectedVersion, setSelectedVersion] = useState<string>(CHANGELOG[0]?.version ?? '');
   const selected = CHANGELOG.find(r => r.version === selectedVersion) ?? CHANGELOG[0];
-
-  const handleExport = async () => {
-    setResult(null);
-    setExporting(true);
-    try {
-      const settings: GtdParaSettings = await loadSettings();
-      const path = await exportDebugBundle(settings);
-      const name = path.slice(path.lastIndexOf('/') + 1);
-      setResult({kind: 'success', text: `Saved ${shortFolder(DEBUG_LOG_FOLDER_PATH)}/${name} - check it before sharing.`});
-    } catch (e) {
-      const message = errorMessage(e);
-      logError('AboutTab: export debug bundle failed', message);
-      setResult({kind: 'error', text: `Export failed: ${message}`});
-    } finally {
-      setExporting(false);
-    }
-  };
 
   const device = diag ? [diag.manufacturer, diag.model].filter(Boolean).join(' ') : '';
   const builtDate = b.builtAt.slice(0, 10);
@@ -112,36 +80,11 @@ export default function AboutTab({debugLogging, onToggleDebugLogging, textColor,
 
         <View style={[styles.hr, {backgroundColor: borderColor}]} />
 
-        <Text style={[styles.heading, {color: textColor}]}>Reporting a problem</Text>
-        <View style={styles.field}>
-          <Pressable onPress={onToggleDebugLogging} hitSlop={8} style={styles.button}>
-            <Text style={[styles.buttonText, {color: textColor}]}>
-              Debug logging: {debugLogging ? 'ON (tap to turn off)' : 'OFF (tap to turn on)'}
-            </Text>
-          </Pressable>
-          <Text style={[styles.hint, {color: textColor}]}>
-            Also writes every log line to {shortFolder(DEBUG_LOG_FOLDER_PATH)}/{LOG_FILE_NAME}, so it survives a crash. Turn on,
-            reproduce the problem, then export.
-          </Text>
-        </View>
-        <View style={styles.field}>
-          <View style={styles.inline}>
-            <PillButton
-              label="Export debug bundle"
-              primary
-              disabled={exporting}
-              onPress={handleExport}
-              textColor={textColor}
-              borderColor={borderColor}
-            />
-            {exporting && <ActivityIndicator style={styles.spinner} />}
-          </View>
-          <Text style={[styles.hint, {color: textColor}]}>
-            Saves one text file with version, device, a settings summary (no names), counts and the recent log to{' '}
-            {shortFolder(DEBUG_LOG_FOLDER_PATH)}. Passwords, calendar links and e-mail addresses are removed; file paths stay,
-            so please look through it before attaching it to a GitHub issue.
-          </Text>
-        </View>
+        <Text style={[styles.heading, {color: textColor}]}>Problems and ideas</Text>
+        <Text style={[styles.hint, {color: textColor}]}>
+          Reports are very welcome - they are how Kept GTD gets better. Open an issue at {PROJECT_URL}: a bug report, an idea, a question. For a
+          bug, Settings → Advanced → Reporting a problem saves a debug bundle to attach.
+        </Text>
       </View>
 
       <View style={[styles.vr, {backgroundColor: borderColor}]} />

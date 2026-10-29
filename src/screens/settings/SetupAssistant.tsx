@@ -45,7 +45,7 @@ const STEP_HELP: Array<[string, string | null]> = [
   ['profiles-and-demo', 'the-demo-space'],
   ['settings', 'setup-assistant'],
 ];
-const CHANGE_LATER = ['Settings → Folders', 'Settings → Note setups → Default', 'Settings → Features', 'Settings → Advanced'];
+const CHANGE_LATER = ['Settings → Data', 'Settings → Note setups → Default', 'Settings → Features', 'Settings → Data'];
 const SCAN_DELAY_MS = 500;
 const FINISHED_STATUS_ID = 'SetupAssistant.finished';
 
@@ -212,7 +212,7 @@ export default function SetupAssistant({current, onDone, textColor, borderColor,
         <>
           <Text style={text}>Start simple or with everything switched on?</Text>
           {option('Simple', choices.features === 'simple', () => setChoices(c => ({...c, features: 'simple'})), 'Project close-out, Google Calendar, Gmail and Notebook contents off.')}
-          {option('Everything', choices.features === 'everything', () => setChoices(c => ({...c, features: 'everything'})), 'All on. Google Calendar and Gmail still need their addresses in Settings.')}
+          {option('Everything', choices.features === 'everything', () => setChoices(c => ({...c, features: 'everything'})), 'All on. Google Calendar and Gmail still need their addresses in Settings → Features.')}
         </>
       );
     }
@@ -223,7 +223,7 @@ export default function SetupAssistant({current, onDone, textColor, borderColor,
           <View style={styles.buttons}>
             <PillButton label="Create demo space" onPress={handleDemo} disabled={busy} {...pill} />
           </View>
-          <Text style={text}>To switch to it, open Settings → Advanced → Profiles and tap Switch next to Demo; switch back to Production the same way.</Text>
+          <Text style={text}>To switch to it, open Settings → Data → Profiles and tap Switch next to Demo; switch back to Production the same way.</Text>
         </>
       );
     }

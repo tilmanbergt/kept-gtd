@@ -90,3 +90,11 @@ All touched files stay in the feature area `settings`; nothing grows past 600 li
 5. Advanced holds Debug logging and Export debug bundle; About invites reporting and names Advanced.
 6. The profile chip in the tab bar opens Settings on Data.
 7. No touch probe or touch log remains (code health: no file imports `touchDiag`).
+
+## As built
+
+- T-b and T-c are one commit: the help pages change with the screens they describe.
+- `unsaved(scope)` compares with the draft's own loaded-or-saved baseline, not the global
+  settings snapshot, so it works the same wherever the draft lives.
+- Reset to defaults now resets only the folder fields (it used to reset the whole draft).
+- The profile list asks for an e-ink refresh after every listing (first load and Refresh list).

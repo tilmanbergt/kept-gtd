@@ -10,10 +10,10 @@ scenario('Try things in the demo space without touching the real files, then swi
     putFile(projectFile('Website'), dataFile('project', {Scope: [], Tasks: ['- [ ] Write copy #next'], Meetings: []}, ['abbrev: WEB']));
     putFile(INBOX_FILE, dataFile('inbox', {Tasks: [], Meetings: []}));
   });
-  when('I create the demo space in Settings → Advanced and switch to it', async () => {
+  when('I create the demo space in Settings → Data and switch to it', async () => {
     await openApp();
     await tapTab('Settings');
-    await tap('Advanced');
+    await tap('Data');
     await tap('Create demo space');
     expectShows(/demo files written to Note\/kept-gtd-demo, profile "Demo" added\./);
     await tap('Switch');
