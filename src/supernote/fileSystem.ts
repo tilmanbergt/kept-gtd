@@ -434,6 +434,39 @@ export async function deletePrivateDataTree(path: string): Promise<boolean> {
 }
 
 /**
+ * Remove Kept's data (docs/dev/history/technical-design-remove-data.md §4): deletes one of Kept's
+ * own folders in shared storage, or something inside one - the native side refuses every other
+ * path. The caller asks for FILE:DELETE once for the whole removal, after the user confirmed it.
+ * Throws when the build lacks the call or the delete fails.
+ */
+export async function deleteKeptTree(path: string): Promise<void> {
+  if (!GtdParaFile?.deleteKeptTree) throw new Error('Removing data needs Kept GTD 0.24 or later.');
+  try {
+    await GtdParaFile.deleteKeptTree(path);
+    notifyFolderChanged(parentFolder(path));
+  } catch (e) {
+    // The code only: paths and native messages can hold project names.
+    logError('deleteKeptTree: failed', (e as {code?: string} | null)?.code ?? 'no code');
+    throw e;
+  }
+}
+
+/**
+ * Deletes one of Kept's data files (`project.txt`, `area.txt`, `Inbox.txt`) or a leftover
+ * `.…gtdpara-tmp` save copy; the native side refuses every other file name and every folder.
+ * Same permission rule and errors as deleteKeptTree.
+ */
+export async function deleteKeptFile(path: string): Promise<void> {
+  if (!GtdParaFile?.deleteKeptFile) throw new Error('Removing data needs Kept GTD 0.24 or later.');
+  try {
+    await GtdParaFile.deleteKeptFile(path);
+  } catch (e) {
+    logError('deleteKeptFile: failed', (e as {code?: string} | null)?.code ?? 'no code');
+    throw e;
+  }
+}
+
+/**
  * Deletes an EMPTY folder in shared storage. Only call this after the user
  * confirmed it (storage/deletions.ts's deleteEmptyFoldersConfirmed does
  * both): it requests FILE:DELETE with `reason` - a text naming what will be

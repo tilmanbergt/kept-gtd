@@ -91,3 +91,13 @@ Checked on the device in 0.23 with a diagnostic screen since removed. Source:
   builds end up loaded in one process. Every build gets a higher `versionCode`, and
   `supernote/pluginRuntime.ts` reports stale builds in the debug bundle. Source:
   `docs/dev/history/technical-design-host-update-crash.md`.
+
+## 9. Uninstalling
+
+- Uninstalling the plugin keeps what it stored in the host's key–value store (`AsyncStorage`: the
+  settings, the profile secrets, recent tags and places, the calendar cache); a reinstall finds
+  everything again, including the Gmail app password and the calendar link. Only the runtime
+  permissions are reset: the next start asks for them again. Seen on the device with 0.23.0.
+- The SDK gives a plugin no uninstall event (`sn-plugin-lib` has start and stop listeners only), so
+  Kept can't clean up when it is removed. Settings → Data → Remove Kept's data does it on request
+  (`docs/dev/history/technical-design-remove-data.md`).
