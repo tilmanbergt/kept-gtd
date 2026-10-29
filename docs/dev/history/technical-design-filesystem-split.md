@@ -120,3 +120,75 @@ Device test: nothing new to look at. The normal 0.23 device test covers it (open
 - fileSystem.ts logs full paths (log('…: start', path)). The policy prefers counts and ids. Changing it changes what debug bundles show, so it gets its own decision.
 - domain/settings.ts (baseRoot), domain/demoSpace.ts and storage/profiles.ts hard-code /storage/emulated/0/.... domain/ cannot import supernote/, so a shared constant would need to live in domain/.
 - Merging Element and SdkElement.
+
+## As built
+
+### R-pre: re-inventory (branch head after S5, fileSystem.ts 1,247 lines)
+
+S4 and S5 added no function to fileSystem.ts: S4's new device helpers live in `storage/deviceRoots.ts`,
+`ui/useThisFile.ts` and `storage/linkedFiles.ts`'s `pickedPath`; K1-K5 all answered yes, so openPath and
+listFolderEntries got no fallback. 79 files import fileSystem.ts; 54 `jest.mock('…/supernote/fileSystem')`
+factories exist. Counts below are from a throwaway script (import lists, and names inside a factory's
+body; a factory that spreads `jest.requireActual` counts only the names it overrides).
+
+| Export | Importers | Mock factories naming it | Module |
+|---|---|---|---|
+| `MYSTYLE_FOLDER` | 4 | 2 | devicePaths |
+| `GTDPARA_EXPORT_ROOT` | 0 | 0 | devicePaths |
+| `DEBUG_LOG_FOLDER_PATH` | 2 | 0 | devicePaths |
+| `PROFILES_FOLDER_PATH` | 2 | 1 | devicePaths |
+| `displayPath` | 12 | 6 | devicePaths |
+| `PERF_LOG_FOLDER` | 0 | 0 | devicePaths |
+| `getCurrentNotePath` | 5 | 11 | hostContext |
+| `rememberLaunchNotePath` | 1 | 9 | hostContext |
+| `getRememberedLaunchNotePath` | 4 | 1 | hostContext |
+| `getRememberedColdStartNotePath` | 0 | 0 | hostContext |
+| `recordDebugLogEntry` | 1 | 1 | hostCall |
+| `NoteTemplate` | 0 | 0 | noteFileApi |
+| `KeyWord` | 0 | 0 | noteFileApi |
+| `ELEMENT_TYPE_TEXT` | 1 | 0 | noteFileApi |
+| `ELEMENT_TYPE_LINK` | 1 | 2 | noteFileApi |
+| `Element` | 1 | 0 | noteFileApi |
+| `Rect` | 0 | 0 | noteFileApi |
+| `toRect` | 1 | 0 | noteFileApi |
+| `ElementTextBox` | 0 | 0 | noteFileApi |
+| `ElementLink` | 0 | 0 | noteFileApi |
+| `getNoteSystemTemplates` | 0 | 0 | noteFileApi |
+| `createNote` | 5 | 2 | noteFileApi |
+| `insertNotePage` | 2 | 1 | noteFileApi |
+| `insertKeyWord` | 6 | 5 | noteFileApi |
+| `getKeyWords` | 3 | 6 | noteFileApi |
+| `deleteKeyWord` | 2 | 2 | noteFileApi |
+| `getNoteTotalPageNum` | 2 | 1 | noteFileApi |
+| `createElement` | 2 | 3 | noteFileApi |
+| `getElements` | 4 | 5 | noteFileApi |
+| `insertElements` | 4 | 3 | noteFileApi |
+| `deleteElements` | 1 | 2 | noteFileApi |
+| `writePerfTraceFile` | 1 | 9 | diagnosticFiles |
+| `writeIntegrityCheckReport` | 1 | 0 | diagnosticFiles |
+| `appendDebugLogFile` | 1 | 9 | diagnosticFiles |
+| `writeDebugBundleFile` | 1 | 0 | diagnosticFiles |
+| `FolderEntry` | 18 | 0 | fileSystem |
+| `subscribeFolderChanges` | 2 | 5 | fileSystem |
+| `listFolderEntries` | 16 | 29 | fileSystem |
+| `FileStat` | 1 | 0 | fileSystem |
+| `statFiles` | 4 | 19 | fileSystem |
+| `fileExists` | 13 | 17 | fileSystem |
+| `folderExists` | 5 | 1 | fileSystem |
+| `openPath` | 9 | 9 | fileSystem |
+| `OpenPathObserver` | 0 | 0 | fileSystem |
+| `setOpenPathObserver` | 1 | 9 | fileSystem |
+| `readTextFile` | 7 | 26 | fileSystem |
+| `writeTextFile` | 8 | 26 | fileSystem |
+| `ensureFolderExists` | 10 | 6 | fileSystem |
+| `writeBinaryFile` | 1 | 0 | fileSystem |
+| `moveFolder` | 3 | 1 | fileSystem |
+| `moveFile` | 6 | 7 | fileSystem |
+| `moveFolderMerge` | 1 | 1 | fileSystem |
+| `getPrivateTempDir` | 4 | 11 | fileSystem |
+| `deleteTempTree` | 2 | 9 | fileSystem |
+| `getPrivateDataDir` | 2 | 2 | fileSystem |
+| `deletePrivateDataTree` | 1 | 1 | fileSystem |
+| `deleteEmptyFolder` | 1 | 0 | fileSystem |
+| `INTERNAL_STORAGE` (storage/deviceCheck.ts) | 5 | 0 | devicePaths |
+| `getCurrentPageNum` (supernote/currentPage.ts, file deleted) | see R1 | see R1 | hostContext |
