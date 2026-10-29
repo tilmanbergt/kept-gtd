@@ -33,6 +33,7 @@ jest.mock('../../src/storage/settingsStorage', () => {
   };
   return {loadSettings: async () => stored, saveSettings: async () => undefined, patchSettings: async () => stored};
 });
+jest.mock('../../src/supernote/diagnosticFiles', () => ({appendDebugLogFile: async () => undefined, writePerfTraceFile: async () => undefined}));
 jest.mock('../../src/supernote/fileSystem', () => {
   const files: Record<string, string> = {
     '/storage/emulated/0/Note/2 Areas/Home/area.txt': '---\nkind: area\nstatus: active\n---\n\n## Tasks\n\n## Meetings\n',
@@ -65,8 +66,6 @@ jest.mock('../../src/supernote/fileSystem', () => {
     setOpenPathObserver: () => undefined,
     getPrivateTempDir: async () => '/tmp/gtdpara',
     deleteTempTree: async () => undefined,
-    appendDebugLogFile: async () => undefined,
-    writePerfTraceFile: async () => undefined,
     statFiles: async () => null,
     fileExists: async (path: string) => path in files,
     listFolderEntries: async (folder: string) => {

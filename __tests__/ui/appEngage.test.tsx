@@ -37,6 +37,7 @@ jest.mock('../../src/storage/settingsStorage', () => {
   const stored = {...s.DEFAULT_SETTINGS, lastSeenVersion: '99.0.0'};
   return {loadSettings: async () => stored, saveSettings: async () => undefined, patchSettings: async () => stored};
 });
+jest.mock('../../src/supernote/diagnosticFiles', () => ({appendDebugLogFile: async () => undefined, writePerfTraceFile: async () => undefined}));
 jest.mock('../../src/supernote/fileSystem', () => ({
   ...jest.requireActual('../../src/supernote/fileSystem'),
   getCurrentNotePath: async () => '/storage/emulated/0/Note/Sparring.note',
@@ -44,8 +45,6 @@ jest.mock('../../src/supernote/fileSystem', () => ({
   setOpenPathObserver: () => undefined,
   getPrivateTempDir: async () => '/tmp/gtdpara',
   deleteTempTree: async () => undefined,
-  appendDebugLogFile: async () => undefined,
-  writePerfTraceFile: async () => undefined,
   statFiles: async () => null,
   fileExists: async () => false,
   listFolderEntries: async () => [],

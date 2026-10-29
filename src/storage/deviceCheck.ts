@@ -7,12 +7,14 @@
  * The result holds top-level folder names for the screen; the log gets counts
  * only.
  */
+import {INTERNAL_STORAGE} from '../supernote/devicePaths';
 import {FolderEntry, getRememberedLaunchNotePath, listFolderEntries} from '../supernote/fileSystem';
 import {getCurrentPageNum} from '../supernote/currentPage';
 import {errorMessage} from '../utils/errorMessage';
 import {log, logWarn} from '../utils/log';
 
-export const INTERNAL_STORAGE = '/storage/emulated/0';
+// The one device root (supernote/devicePaths.ts), also offered here until its importers point there.
+export {INTERNAL_STORAGE};
 export const STORAGE_ROOT = '/storage';
 /** Entries of `/storage` that are the internal storage under other names, not an SD card. */
 const NOT_SD = new Set(['emulated', 'self']);

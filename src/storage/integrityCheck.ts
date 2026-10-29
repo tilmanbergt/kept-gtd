@@ -47,8 +47,8 @@ import {
   folderExists,
   listFolderEntries,
   statFiles,
-  writeIntegrityCheckReport,
 } from '../supernote/fileSystem';
+import {writeIntegrityCheckReport} from '../supernote/diagnosticFiles';
 import {ensureFileReadPermission} from '../supernote/pluginPermissions';
 import {log, logError} from '../utils/log';
 import {stripPageAnchor} from '../domain/sharedNotePages';

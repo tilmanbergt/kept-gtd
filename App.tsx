@@ -62,12 +62,11 @@ import {
   FolderEntry,
   getCurrentNotePath,
   rememberLaunchNotePath,
-  appendDebugLogFile,
   deleteTempTree,
   getPrivateTempDir,
   setOpenPathObserver,
-  writePerfTraceFile,
 } from './src/supernote/fileSystem';
+import {appendDebugLogFile, writePerfTraceFile} from './src/supernote/diagnosticFiles';
 import {log, logError} from './src/utils/log';
 import {BUILD_INFO} from './src/generated/buildInfo';
 import {perfBegin, perfConfigure, perfEnable, perfMark, usePerfRender} from './src/utils/perf';

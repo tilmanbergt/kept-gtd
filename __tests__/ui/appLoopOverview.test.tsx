@@ -34,6 +34,7 @@ jest.mock('../../src/storage/settingsStorage', () => {
   return {loadSettings: async () => stored, saveSettings: async () => undefined, patchSettings: async () => stored};
 });
 const mockWritten: Array<[string, string]> = [];
+jest.mock('../../src/supernote/diagnosticFiles', () => ({appendDebugLogFile: async () => undefined, writePerfTraceFile: async () => undefined}));
 jest.mock('../../src/supernote/fileSystem', () => {
   const now = new Date();
   const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
@@ -66,8 +67,6 @@ jest.mock('../../src/supernote/fileSystem', () => {
     setOpenPathObserver: () => undefined,
     getPrivateTempDir: async () => '/tmp/gtdpara',
     deleteTempTree: async () => undefined,
-    appendDebugLogFile: async () => undefined,
-    writePerfTraceFile: async () => undefined,
     statFiles: async () => null,
     fileExists: async (path: string) => path in files,
     listFolderEntries: async (folder: string) =>

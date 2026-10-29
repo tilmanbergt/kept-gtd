@@ -192,3 +192,27 @@ body; a factory that spreads `jest.requireActual` counts only the names it overr
 | `deleteEmptyFolder` | 1 | 0 | fileSystem |
 | `INTERNAL_STORAGE` (storage/deviceCheck.ts) | 5 | 0 | devicePaths |
 | `getCurrentPageNum` (supernote/currentPage.ts, file deleted) | see R1 | see R1 | hostContext |
+
+### R1: move
+
+- Code and comments moved unchanged; the only edits are the module headers, imports, `export` on the
+  helpers below, `MYSTYLE_FOLDER`/`GTDPARA_EXPORT_ROOT` built from `INTERNAL_STORAGE`, and `displayPath`
+  as "strip `INTERNAL_STORAGE/`" instead of the literal regex (same result).
+- **A seventh, internal module `supernote/fileNative.ts`** holds the native `GtdParaFile` binding
+  (`nativeFileModule()`) and the folder-change listeners (`notifyFolderChanged`, `parentFolder`,
+  `subscribeFolderChanges`), instead of fileSystem.ts exporting them as `@internal` helpers (§3). With
+  R1's re-exports, `noteFileApi → fileSystem` and `diagnosticFiles → fileSystem` were import cycles,
+  and the many test factories that spread `jest.requireActual('…/fileSystem')` failed on them (a
+  re-exported getter read before its module was loaded). fileNative.ts imports none of the others, so
+  the direction stays `devicePaths ← hostContext ← hostCall ← fileSystem ← noteFileApi`, with
+  `fileNative` under fileSystem, noteFileApi and diagnosticFiles. It is marked `@internal supernote/
+  only`; no check enforces that yet (only supernote/ files import it).
+- **diagnosticFiles.ts is not re-exported**: it imports fileSystem's `writeTextFile`, so a re-export
+  would be a cycle again. Its three importers (App.tsx, storage/debugBundle.ts,
+  storage/integrityCheck.ts) point at it in R1 already, and the nine UI tests that stubbed
+  `appendDebugLogFile`/`writePerfTraceFile` in their fileSystem factory now stub them with a
+  `diagnosticFiles` factory (same stubs); pluginPermissions.test reads `appendDebugLogFile` from
+  diagnosticFiles.
+- `withTimeout` is exported from hostCall.ts for insertNotePage until R2 moves the timeout into
+  `callHost`. `supernote/currentPage.ts` re-exports `getCurrentPageNum` from hostContext.ts until R3;
+  storage/deviceCheck.ts re-exports `INTERNAL_STORAGE` from devicePaths.ts until R3.
