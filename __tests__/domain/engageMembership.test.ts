@@ -1,7 +1,7 @@
 // docs/dev/history/technical-design-engage-in-context.md §2.4, §2.5, §5: Engage holds what the overviews hold,
 // "I owe" first, the Agreed tab, "Also here", and the meeting lines.
 import {EngageSource, ownerMeetings, ownerOfTodo, ownerTodos, threadOfTodo} from '../../src/domain/engageOwner';
-import {focusOwnerLines, optionsOf, todayNextMeeting} from '../../src/domain/engageOptions';
+import {optionsOf, todayNextMeeting} from '../../src/domain/engageOptions';
 import {LoopLine} from '../../src/domain/loopsSection';
 import {deriveMeetingFields} from '../../src/domain/markdown';
 import {meetingKey} from '../../src/domain/provenance';
@@ -158,18 +158,5 @@ describe('ownerOfTodo (E4)', () => {
 
   it('a Project\'s todo is in its Area\'s thread', () => {
     expect(threadOfTodo(website.path, website.tasks[0], source)).toEqual(mieke);
-  });
-});
-
-describe('focusOwnerLines - a thread with only agreed todos gets its line', () => {
-  it('lists the tended thread from an agreed todo', () => {
-    const agreedOnly = item('area', 'Coaching', {
-      dailyFocus: true,
-      meetings: [spar2],
-      threads: [{leaf: 'mieke', status: 'active'} as CounterpartLine],
-      tasks: [agreedIn('Book follow-up #next', spar2)],
-    });
-    const lines = focusOwnerLines('daily', null, {...source, items: [agreedOnly]}, NOW);
-    expect(lines.map(l => l.owner)).toEqual([mieke, {kind: 'item', itemPath: agreedOnly.path}]);
   });
 });

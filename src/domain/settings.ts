@@ -9,6 +9,8 @@ import type {LegacyTagRule, MigrationReport} from './noteSetupMigration';
 import type {EngageOwner, EngageTodoKey} from './engageOwner';
 import type {NoteSetup, NoteSetupDefaults} from './noteSetups';
 import {ReviewStepsMap} from './reviewSteps';
+import {DEFAULT_MODULES, Modules} from './features';
+import type {ContextDef, MinMinutes} from './contexts';
 
 export interface GtdParaSettings {
   baseRoot: string;
@@ -23,25 +25,27 @@ export interface GtdParaSettings {
    */
   inboxFolder: string;
   /**
-   * Focus slot counts (see storage/focusSlots.ts): how many Projects/Areas
-   * can be marked daily/weekly-focused at once, independently per
-   * kind/scope. Weekly isn't consumed by any view yet (reserved for a
-   * future week view) but is configurable and enforced the same way daily
-   * is, so the data/UI is already in place when that view is built.
+   * @deprecated retired 0.22, kept for rollback (remove ≥ 0.24): the focus
+   * slot counts of 0.21.1 (docs/dev/history/technical-design-time-and-place.md
+   * §3.7). Nothing reads them; they stay in DEFAULT_SETTINGS so the stored
+   * settings and profile files keep them for 0.21.1.
    */
   dailyFocusProjectCount: number;
+  /** @deprecated retired 0.22, kept for rollback (remove ≥ 0.24). */
   dailyFocusAreaCount: number;
+  /** @deprecated retired 0.22, kept for rollback (remove ≥ 0.24). */
   weeklyFocusProjectCount: number;
+  /** @deprecated retired 0.22, kept for rollback (remove ≥ 0.24). */
   weeklyFocusAreaCount: number;
-  /** Monthly focus slots (docs/dev/history/technical-design-monthly-view.md) - default 2 projects + 3 areas. */
+  /** @deprecated retired 0.22, kept for rollback (remove ≥ 0.24). */
   monthlyFocusProjectCount: number;
+  /** @deprecated retired 0.22, kept for rollback (remove ≥ 0.24). */
   monthlyFocusAreaCount: number;
   /**
    * Per-step review tracking for the Weekly Review (docs/dev/technical-design-
    * review-hub.md). One record per step id: when "Reviewed" was last tapped on it, the recap
    * counts of its last recorded visit, and (backlog steps only) when the hub
-   * last saw it empty. Plugin meta, not PARA content (same reasoning as the
-   * focus counts above) - a passive marker only (domain/reviewSteps.ts's
+   * last saw it empty. Plugin meta, not PARA content - a passive marker only (domain/reviewSteps.ts's
    * isReviewOverdue drives the Review tab's badge), never an active
    * reminder/notification. Written only through storage/settingsStorage.ts's
    * updateReviewSteps.
@@ -70,15 +74,8 @@ export interface GtdParaSettings {
    */
   googleCalendarIcsUrl: string;
   /**
-   * Whether Daily's focus mode is currently on (docs/dev/technical-design-now-
-   * focus-mode.md §4) - the one piece of durable state focus mode needs.
-   * "Sessions are held lightly": there is no session id, no start
-   * timestamp, no membership list - just this flag plus whichever tasks
-   * currently carry `#now`. Read once, in App.tsx's reorient(), to decide
-   * whether reopening the plugin should land straight back on focus mode
-   * instead of the normal enclosing-item lookup. Set true by Daily's "Focus
-   * mode" entry action, set false by focus mode's own exit action - see
-   * App.tsx's onEnterFocusMode/onExitFocusMode.
+   * @deprecated retired 0.22, kept for rollback (remove ≥ 0.24): 0.21.1's
+   * focus mode flag. Nothing reads or writes it.
    */
   focusModeActive: boolean;
   /**
@@ -180,6 +177,23 @@ export interface GtdParaSettings {
    */
   experimentalGoogleCalendar: boolean;
   experimentalGmail: boolean;
+  /**
+   * Module switches (Settings → Features, docs/dev/history/technical-design-daily-slim.md
+   * §3.6): `closeOut` - Project close-out, on by default. Per profile. Read
+   * through domain/features.ts's featuresOf/modulesOf, which fill a missing
+   * key from its default, so stored settings without the map need no migration.
+   */
+  modules: Modules;
+  /**
+   * Contexts (docs/dev/history/technical-design-time-and-place.md §3.3,
+   * domain/contexts.ts): Work, Home, Café - what Daily, Week, Month, Projects,
+   * Areas and Review show. Per profile; edited in Settings → Contexts.
+   */
+  contexts: ContextDef[];
+  /** The active context's id; '' = Everything. Per profile; chosen from the tab bar's chip. */
+  activeContextId: string;
+  /** Everything's Given time threshold for loops and counterparts (a context without its own uses it too). Per profile. */
+  givenTimeMinMinutes: MinMinutes;
   /** Debug logging: also append every log line to a rotating file in the debug folder (utils/logSink.ts). */
   debugLogging: boolean;
   /**
@@ -193,6 +207,11 @@ export interface GtdParaSettings {
    * acknowledged (tapped What's new or ✕). '' = none yet.
    */
   lastSeenVersion: string;
+  /**
+   * The one-time "Focus is retired" line (docs/dev/history/technical-design-time-and-place.md
+   * R7) was dismissed. Device-wide: it is about the update, not a profile.
+   */
+  focusRetiredNoticeSeen: boolean;
   /**
    * Which profile is active (docs/dev/history/technical-design-profiles-demo-space.md) -
    * the file name of its JSON in EXPORT/kept-gtd/profiles, without ".json".
@@ -239,9 +258,14 @@ export const DEFAULT_SETTINGS: GtdParaSettings = {
   keepTabsAlive: true,
   experimentalGoogleCalendar: false,
   experimentalGmail: false,
+  modules: DEFAULT_MODULES,
+  contexts: [],
+  activeContextId: '',
+  givenTimeMinMinutes: {week: 60, month: 120},
   debugLogging: false,
   notebookContentsEnabled: true,
   lastSeenVersion: '',
+  focusRetiredNoticeSeen: false,
   activeProfileId: 'production',
 };
 

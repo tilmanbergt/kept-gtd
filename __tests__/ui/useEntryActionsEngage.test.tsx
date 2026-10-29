@@ -66,7 +66,7 @@ describe('useEntryActions for Engage', () => {
     await act(async () => {
       await actions!.setTaskFlow(entry(1), null);
     });
-    expect(mockStore.tasks[1]).toMatchObject({text: 'Brief', flowState: null, now: false});
+    expect(mockStore.tasks[1]).toMatchObject({text: 'Brief', flowState: null});
     await act(async () => {
       await actions!.setTaskFlow(entry(0), 'someday');
     });

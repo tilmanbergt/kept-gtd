@@ -10,17 +10,21 @@
 import {useState} from 'react';
 import {meetingCardModel, MeetingCardModel, ReflectionLookup} from '../../domain/itemCard';
 import {deriveMeetingFields} from '../../domain/markdown';
+import {isFocusBlock, setFocusBlock} from '../../domain/focusBlock';
 import {isHighlight, setHighlight} from '../../domain/monthHighlight';
 import {meetingDisplayTitle, toggleMeetingTracking} from '../../domain/meetingTracking';
 import {EMPTY_NOTE_SETUP_CONFIG, noteSetupConfig} from '../../domain/noteSetups';
 import {GtdParaSettings} from '../../domain/settings';
 import {Meeting} from '../../domain/types';
 import {MeetingNoteInboxInput} from '../../storage/meetingNoteAggregate';
+import {findCachedItem} from '../../storage/dataCache';
+import {homeNotebookOf} from '../../storage/homeNotebooks';
 import {openOrCreateReflectionPage} from '../../storage/reflectionPage';
 import {log} from '../../utils/log';
 import {requestEinkRefresh} from '../../utils/screenRefresh';
 import {openOverview} from '../overviewStore';
 import {useActionError} from '../useActionError';
+import {useHomeNotebookTap} from '../useHomeNotebookTap';
 import {useNoteCreateConfirm} from '../useNoteCreateConfirm';
 import {useReflectionLookup} from '../useReflectionLookup';
 import {useStatusConfirm} from '../useStatusConfirm';
@@ -67,6 +71,8 @@ export interface MeetingCardData {
   onClose: () => void;
   onCheckpoint: () => void;
   onMonthly: () => void;
+  /** The F toggle; absent: no F on the card. */
+  onFocusBlock?: () => void;
   onNote: () => void;
   onReflect: () => void;
   onOpenFile?: () => void;
@@ -84,6 +90,7 @@ export function useMeetingCard(options: MeetingCardOptions): MeetingCardData | n
   const confirm = useStatusConfirm(`${name}.cancelMeeting`);
   const action = useActionError(`${name}.card`, `${name}: card action failed`);
   const reflection = useReflectionLookup(selection?.meeting ?? null, selection?.itemPath ?? null, name);
+  const tapHomeNotebook = useHomeNotebookTap(`${name}.card`);
   const [busy, setBusy] = useState(false);
   if (!selection) return null;
 
@@ -98,7 +105,12 @@ export function useMeetingCard(options: MeetingCardOptions): MeetingCardData | n
     ownerName: selection.ownerName,
     canLink: !!options.onArmLink,
     canRefile: !!options.onArmRefile,
+    inbox: selection.inbox,
   });
+  // A focus block placed by no setup opens its owner's home notebook; without one it has no note action.
+  const cachedOwner = model.note === 'home' && settings ? findCachedItem(itemPath) : undefined;
+  const homeNotebook = cachedOwner && settings ? homeNotebookOf(cachedOwner, settings) : null;
+  if (model.note === 'home' && !homeNotebook) model.note = null;
 
   /** Runs one card write; the e-ink screen refreshes afterwards. */
   const write = (label: string, change: (m: Meeting) => Meeting) => {
@@ -157,7 +169,12 @@ export function useMeetingCard(options: MeetingCardOptions): MeetingCardData | n
         const title = setHighlight(m.title, !isHighlight(m));
         return {...m, title, ...deriveMeetingFields(title)};
       }),
-    onNote: options.onNote,
+    onFocusBlock: () =>
+      write('switched F', m => {
+        const title = setFocusBlock(m.title, !isFocusBlock(m));
+        return {...m, title, ...deriveMeetingFields(title)};
+      }),
+    onNote: homeNotebook ? () => tapHomeNotebook(homeNotebook) : options.onNote,
     onReflect,
     onOpenFile: linkedFile && options.onOpenFile ? () => options.onOpenFile?.(linkedFile) : undefined,
     onUnlink: () => write('unlinked the file', m => ({...m, linkedFile: ''})),

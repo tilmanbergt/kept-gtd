@@ -12,7 +12,7 @@ The lasso toolbar has two Kept GTD buttons:
 1. Select handwriting (or a text box) with the lasso and tap **Capture Todo/Meeting**.
 2. The screen **New from Lasso** shows the selection as a picture and the recognized text below it. The text appears as soon as recognition is done, usually after a few seconds. If you start typing before that, your text is kept.
 3. Choose **Todo** or **Meeting**, correct the text, and pick flow chips, tags and a due date as in [Quick Add](quick-add.md).
-4. **File to** shows where the item goes: the project or area the note belongs to, otherwise the Inbox. The chips offer the Inbox, that place, your focused projects and areas and the ones you saved to lately; **More…** shows all of them. Writing an abbreviation like `#GR` in the text files it there, too.
+4. **File to** shows where the item goes: the project or area the note belongs to, otherwise the Inbox. The chips offer the Inbox, that place and the ones you saved to lately; **More…** shows all of them. Writing an abbreviation like `#GR` in the text files it there, too.
 5. Save with one of the three buttons under the text.
 
 - **Save & next** saves and goes on: to the next open mark, if there is one, otherwise to an empty form for another item.

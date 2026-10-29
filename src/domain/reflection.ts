@@ -9,6 +9,7 @@
  * so domain/pageOrder.ts reads it as a continuation page of the meeting: a later
  * meeting's page still goes after it, and it stays part of the meeting.
  */
+import {isFocusBlock} from './focusBlock';
 import {fitKeyword} from './keywordLength';
 import {meetingAutoUpdateCutoffMs} from './meetingTime';
 import {meetingDisplayTitle} from './meetingTracking';
@@ -62,8 +63,9 @@ export function reflectionPageOf(
   return null;
 }
 
-/** Whether a reflection is offered for `meeting` (R2): it is over and not cancelled. */
-export function reflectionOffered(meeting: Pick<Meeting, 'date' | 'time' | 'cancelled'> & Partial<Pick<Meeting, 'endTime' | 'days'>>, nowMs: number): boolean {
+/** Whether a reflection is offered for `meeting` (R2): it is over, not cancelled and no focus block (D8). */
+export function reflectionOffered(meeting: Pick<Meeting, 'date' | 'time' | 'cancelled'> & Partial<Pick<Meeting, 'endTime' | 'days' | 'tags'>>, nowMs: number): boolean {
+  if (meeting.tags && isFocusBlock({tags: meeting.tags})) return false;
   return !meeting.cancelled && nowMs > meetingAutoUpdateCutoffMs(meeting);
 }
 

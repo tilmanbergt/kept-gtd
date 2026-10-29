@@ -43,7 +43,7 @@ type AgreementRow = {kind: 'head'; key: string; label: string} | {kind: 'agreeme
 
 /** The live list of agreements to review, or null until settings are loaded. */
 export function useAgreementReview(data: ReviewData): AgreementReviewGroup[] | null {
-  const {items, settings} = data;
+  const {contextItems: items, settings} = data;
   return useMemo(() => (settings ? agreementsToReview(items, settings.noteSetups, todayIso()) : null), [items, settings]);
 }
 

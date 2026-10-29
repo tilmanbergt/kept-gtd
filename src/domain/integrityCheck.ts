@@ -32,6 +32,7 @@ import {GtdParaKind, INBOX_FILE_NAME, Meeting, Task} from './types';
 import {parseFrontMatter, parseMarksSpan} from './markdown';
 import {HomeNotebookSpec, readStoredName, renameCase, renamedNotebookMove, renameFindingText} from './homeNotebook';
 import {resolveMarkPath} from './marks';
+import {ContextDef, unknownContextEntries} from './contexts';
 
 export interface IntegrityFinding {
   checkId: string;
@@ -565,6 +566,26 @@ export const WHOLE_RUN_CHECKS: Record<string, WholeRunCheck> = {
 /** Runs every registered whole-run check once, given every scanned item's summary. */
 export function runWholeRunChecks(items: ScannedItemSummary[]): IntegrityFinding[] {
   return Object.values(WHOLE_RUN_CHECKS).flatMap(check => check(items));
+}
+
+/**
+ * Context entries naming a Project or Area that exists nowhere live
+ * (docs/dev/history/technical-design-time-and-place.md §3.3): a renamed or
+ * archived folder. Report only - the entry stays until the user edits the
+ * context in Settings → Contexts.
+ */
+export function checkUnknownContextEntries(contexts: readonly ContextDef[], items: ScannedItemSummary[]): IntegrityFinding[] {
+  const live = items.filter(i => !i.inArchive && (i.itemKind === 'project' || i.itemKind === 'area'));
+  const known = live.map(i => ({kind: i.itemKind as 'project' | 'area', name: i.itemName, area: i.area}));
+  return unknownContextEntries(contexts, known).map(({context, entry}) => ({
+    checkId: 'unknownContextEntry',
+    itemKind: entry.kind === 'item' ? entry.itemKind : 'area',
+    itemPath: '',
+    entityKind: 'item',
+    entityLabel: context,
+    notePath: '',
+    message: `Context "${context}" names ${entry.kind === 'item' ? `${entry.itemKind === 'area' ? 'Area' : 'Project'} "${entry.name}"` : 'an item'}, which isn't in your Projects or Areas (renamed or archived?). Edit it in Settings → Contexts.`,
+  }));
 }
 
 /** Just what the leftovers check needs from a folder listing - domain stays free of supernote/ types. */

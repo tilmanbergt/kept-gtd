@@ -1,6 +1,6 @@
-// docs/dev/history/technical-design-engage.md §3.2: options of an owner and the focus screens' owner lines.
+// docs/dev/history/technical-design-engage.md §3.2: options of an owner; the schedule screen's owner lines (time-and-place D28).
 import {EngageItem, EngageSource} from '../../src/domain/engageOwner';
-import {effectiveFocus, engageFlowText, engageListsOf, focusOwnerLines, nextPromptOf, optionsOf, ownersLeft} from '../../src/domain/engageOptions';
+import {engageFlowText, engageListsOf, nextPromptOf, optionsOf, scheduleOwnerLines} from '../../src/domain/engageOptions';
 import {LoopLine} from '../../src/domain/loopsSection';
 import {ownerLineText} from '../../src/domain/engageText';
 import {item, meeting, task} from '../../test-helpers/fixtures';
@@ -26,7 +26,7 @@ describe('optionsOf', () => {
   });
   const loop = {kind: 'loop' as const, itemPath: loopItem.path, tag: 'proj/launch'};
 
-  it('#next (and #now) and the plan, file order; waiting-for/someday/maybe never', () => {
+  it('#next (a retired #now too) and the plan, file order; waiting-for/someday/maybe never', () => {
     const o = optionsOf(loop, src([loopItem]), NOW);
     expect(texts(o.next)).toEqual(['Brief #proj/launch #next', 'Now thing #proj/launch #now']);
     expect(texts(o.plan)).toEqual(['Plan #proj/launch', 'Book room #proj/launch']);
@@ -52,42 +52,37 @@ describe('optionsOf', () => {
   });
 });
 
-describe('focus', () => {
+describe('scheduleOwnerLines', () => {
+  // NOW is Fri 2026-10-16, 12:00.
   const area = item('area', 'Coaching', {
-    dailyFocus: true,
-    weeklyFocus: true,
     loops: [loopLine('proj/launch')],
     threads: [{leaf: 'anna', status: 'active', rest: null, raw: null}],
-    tasks: [task('Brief #proj/launch #next'), task('Ask Anna #sparring/anna'), task('Loose #next'), task('Bob #sparring/bob #next')],
+    tasks: [task('Brief #proj/launch #next'), task('Loose #next')],
+    meetings: [
+      meeting('2026-10-16', 'Sparring Anna #sparring/anna', {tags: ['sparring/anna'], time: '15:00', endTime: '16:00'}),
+      meeting('2026-10-16', 'Launch block #proj/launch #focusblock', {tags: ['proj/launch', 'focusblock'], time: '13:00', endTime: '14:00'}),
+      meeting('2026-10-16', 'Morning #sparring/anna', {tags: ['sparring/anna'], time: '09:00', endTime: '10:00'}),
+      meeting('2026-10-16', 'Again Anna #sparring/anna', {tags: ['sparring/anna'], time: '17:00', endTime: '18:00'}),
+      meeting('2026-10-17', 'Tomorrow', {time: '09:00', endTime: '10:00'}),
+    ],
   });
-  const web = item('project', 'Website', {area: 'Coaching', weeklyFocus: true, tasks: [task('Copy #next'), task('Anna again #sparring/anna #next')]});
-  const solo = item('project', 'Solo', {dailyFocus: true, weeklyFocus: true, tasks: [task('Solo plan')]});
-  const idle = item('project', 'Idle', {dailyFocus: true, tasks: [task('Waiting #wf/x')]});
-  const held = item('project', 'Held', {status: 'on-hold', dailyFocus: true, tasks: [task('Held #next')]});
-  const s = src([area, web, solo, idle, held]);
-
-  it('effective focus: daily when any Active item has it, else weekly', () => {
-    expect(effectiveFocus(s)).toBe('daily');
-    expect(effectiveFocus(src([web]))).toBe('weekly');
+  const web = item('project', 'Website', {
+    tasks: [task('Copy plan')],
+    meetings: [meeting('2026-10-16', 'Fair'), meeting('2026-10-16', 'Cancelled', {time: '14:00', cancelled: true})],
   });
 
-  it('daily lines: Projects first, then Areas; loops, tended threads, then the item; empty ones left out', () => {
-    expect(focusOwnerLines('daily', null, s, NOW).map(ownerLineText)).toEqual([
-      'Project · Solo · pick next ›',
+  it('today\'s meetings and focus blocks that are not over, by time, all-day last, one line per owner', () => {
+    expect(scheduleOwnerLines(src([area, web]), NOW).map(ownerLineText)).toEqual([
       'Loop · launch · 1 next ›',
-      'Thread · #sparring/anna · 1 next ›', // its scope includes Website's #next
-      'Area · Coaching · 2 next ›',
+      'Thread · #sparring/anna · pick next ›',
+      'Project · Website · pick next ›',
     ]);
-    expect(ownersLeft('daily', s, NOW)).toBe(4);
   });
 
-  it('ring order around the current owner: same counterpart, then same scope, then the rest; current left out', () => {
-    const current = {kind: 'item' as const, itemPath: web.path};
-    const lines = focusOwnerLines('weekly', current, s, NOW).map(l => l.name);
-    // Website (a Project) comes first in focus order, so its thread leads its scope's block.
-    expect(lines).toEqual(['#sparring/anna', 'launch', 'Coaching', 'Solo']);
-    const fromThread = focusOwnerLines('weekly', {kind: 'thread', scopeOwnerPath: '/elsewhere', tag: 'sparring/anna'}, s, NOW).map(l => l.name);
-    expect(fromThread[0]).toBe('#sparring/anna');
+  it('leaves the current owner out, and is empty with nothing scheduled', () => {
+    const current = {kind: 'loop' as const, itemPath: area.path, tag: 'proj/launch'};
+    expect(scheduleOwnerLines(src([area, web]), NOW, current).map(l => l.name)).toEqual(['#sparring/anna', 'Website']);
+    expect(scheduleOwnerLines(src([item('project', 'Quiet', {tasks: [task('x #next')]})]), NOW)).toEqual([]);
   });
 });
 

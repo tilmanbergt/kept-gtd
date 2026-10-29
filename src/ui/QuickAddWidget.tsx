@@ -6,7 +6,8 @@
  * whose contents follow the tab and whether an item is being edited:
  *   R1 Tabs + main button - Todo/Meeting(/Agreement/Note) on the left; create: [M] + Add
  *                  ("+ Add to <Name>" when a recognized abbreviation #tag
- *                  files it elsewhere, technical-design-abbrev-quick-file.md);
+ *                  files it elsewhere, technical-design-abbrev-quick-file.md,
+ *                  or the screen adds elsewhere, `addToName`);
  *                  edit: Cancel · Save ("Save to <Name>" with such a tag:
  *                  saved and moved in one step).
  *   R2 Input     - todo text + due date, or meeting title + date, or note title.
@@ -218,6 +219,11 @@ interface Props extends AgreementHandlers {
   /** Create mode, Todo and Agreement tabs: one grey line saying what the screen adds to the new entry, a ✕ per part (ui/quickAdd/ProvenanceLine.tsx). */
   provenance?: QuickAddAdds | null;
 
+  /** Create mode: "+ Add to <Name>" where the destination is not the screen's own (the context panel's meeting, §10 C4). A recognized abbreviation tag still wins. */
+  addToName?: string;
+  /** Shows the Todo tab whenever it changes to a new non-null value (the context panel's Quick Add, §10 C4). */
+  showTodoKey?: string | null;
+
   /** Task input only; defaults to "New task" everywhere. */
   placeholder?: string;
   textColor: string;
@@ -281,9 +287,15 @@ function QuickAddWidget(props: Props): React.JSX.Element {
       setError(null);
     },
     seed: fields => {
-      if (!taskOnly) meeting.showDraft({title: fields.title, date: fields.date, time: formatMeetingWhen(fields), monthly: false}, null);
+      if (!taskOnly) meeting.showDraft({title: fields.title, date: fields.date, time: formatMeetingWhen(fields), monthly: false, focusBlock: fields.focusBlock === true}, null);
     },
   });
+
+  const showTodoKey = props.showTodoKey ?? null;
+  useEffect(() => {
+    if (showTodoKey !== null && !isEditing) core.setActiveType('task');
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only when the key changes
+  }, [showTodoKey]);
 
   // Note has no filing concept - never matched.
   const abbrevTarget = displayType === 'task' ? task.abbrevTarget : displayType === 'meeting' ? meeting.abbrevTarget : null;
@@ -342,7 +354,7 @@ function QuickAddWidget(props: Props): React.JSX.Element {
       draftTitle = insertTagAtPosition(displayTitle, origin.abbrev, null).text;
     }
     meeting.showDraft(
-      {title: draftTitle, date: fields.date, time: fields.time, monthly: false},
+      {title: draftTitle, date: fields.date, time: fields.time, monthly: false, focusBlock: false},
       `Copied "${truncateItemName(displayTitle, 16)}" - adjust, then Add`,
     );
     onCancelEdit();
@@ -350,10 +362,13 @@ function QuickAddWidget(props: Props): React.JSX.Element {
 
   const buttonMark = useQuickAddStatus(core, task, meeting, note, agreement);
 
-  // The "M" box left of + Add (meeting tab only) - see ui/HighlightMark.tsx.
+  // The "M" and "F" boxes left of + Add (meeting tab only) - see ui/HighlightMark.tsx.
   const monthlyToggle =
     displayType === 'meeting' ? (
-      <HighlightMark on={meeting.fields.monthly} variant="toggle" onPress={meeting.toggleMonthly} disabled={pending} textColor={textColor} />
+      <>
+        <HighlightMark on={meeting.fields.monthly} variant="toggle" onPress={meeting.toggleMonthly} disabled={pending} textColor={textColor} />
+        <HighlightMark on={meeting.fields.focusBlock} letter="F" variant="toggle" onPress={meeting.toggleFocusBlock} disabled={pending} textColor={textColor} />
+      </>
     ) : null;
   const loopMode = task.loopMode;
   // A recognized abbreviation tag while editing: Save files the item there
@@ -382,7 +397,15 @@ function QuickAddWidget(props: Props): React.JSX.Element {
     />
   ) : (
     <CreateActions
-      label={loopMode.kind === 'add' ? '+ Add loop' : abbrevTarget ? `+ Add to ${truncateItemName(abbrevTarget.name)}` : '+ Add'}
+      label={
+        loopMode.kind === 'add'
+          ? '+ Add loop'
+          : abbrevTarget
+            ? `+ Add to ${truncateItemName(abbrevTarget.name)}`
+            : props.addToName
+              ? `+ Add to ${truncateItemName(props.addToName)}`
+              : '+ Add'
+      }
       onPress={
         displayType === 'meeting'
           ? meeting.submitCreate

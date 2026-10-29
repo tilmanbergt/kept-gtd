@@ -137,7 +137,8 @@ describe('the Projects tab on an Area page', () => {
     expect(texts(garden)).toEqual(expect.arrayContaining(['Garden', 'last — · next —', '2 open · 1 next']));
     await act(async () => garden.root.findAll(n => typeof n.props.onPress === 'function')[0].props.onPress());
     await settle();
-    expect(texts(r)).toEqual(expect.arrayContaining(['Garden', 'Project']));
+    expect(texts(r)).toContain('Garden');
+    expect(r.root.findAll(n => n.props.accessibilityLabel === 'Project').length).toBeGreaterThan(0); // the kind badge
     expect(filesTabs(r).props.tabs.map((t: {label: string}) => t.label)).toEqual(['Threads', 'Loops', 'Files']);
     act(() => r.unmount());
   });

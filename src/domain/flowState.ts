@@ -34,12 +34,18 @@ export function isWaitingForTag(tag: string): boolean {
   );
 }
 
-/** First match wins, in FLOW_STATE_WORDS' priority order - see the module doc comment. */
+/**
+ * First match wins, in FLOW_STATE_WORDS' priority order - see the module doc
+ * comment. A bare `#now` without another flow word reads as `next`: focus
+ * mode is retired, the tag stays in files written for it and still means
+ * "next" (docs/dev/history/technical-design-time-and-place.md §3.7).
+ */
 export function deriveFlowState(tags: string[]): FlowState {
   for (const word of FLOW_STATE_WORDS) {
     const matches = word === 'waiting-for' ? isWaitingForTag : (tag: string) => tag === word || tag.startsWith(`${word}:`);
     if (tags.some(matches)) return word;
   }
+  if (hasBareTag(tags, 'now')) return 'next';
   return null;
 }
 
@@ -109,14 +115,12 @@ export function setFlowStateTag(text: string, next: FlowState, waitingOnSlug?: s
   return stripped ? `${stripped} ${tag}` : tag;
 }
 
-// Bare (value-less) reserved tags - `#now` (docs/dev/history/technical-design-now-focus-mode.md
-// §2) and, since docs/dev/history/technical-design-meeting-tracking.md, `#prepped`/
-// `#reviewed`. Unlike flow-state tags, a bare tag never carries a `:value`
-// suffix, and it is additive on top of everything else rather than exclusive
-// with it. One derive/set/strip trio (`hasBareTag`/`setBareTag`/
-// `stripBareTags` below) serves all of them instead of one regex-and-helper
-// pair per word - deriveNow/setNowTag are now thin wrappers over it, so their
-// call sites are unchanged.
+// Bare (value-less) reserved tags - `#prepped`/`#reviewed`
+// (docs/dev/history/technical-design-meeting-tracking.md), `#monthly`,
+// `#focusblock`, and the retired `#now`. Unlike flow-state tags, a bare tag
+// never carries a `:value` suffix, and it is additive on top of everything
+// else rather than exclusive with it. One derive/set/strip trio
+// (`hasBareTag`/`setBareTag`/`stripBareTags` below) serves all of them.
 //
 // The trailing lookahead mirrors domain/markdown.ts's TAG_RE (`[\w-]*`, nested
 // `/[\w-]+` segments, then an optional `:[\w-]+`): `#now` must be the WHOLE
@@ -138,7 +142,7 @@ export function isSomedayMaybe(task: Pick<Task, 'flowState'>): boolean {
  * show up as a tappable filter tag and a suggestion chip).
  */
 // 'monthly' = the Month view's meeting highlight flag (docs/dev/history/technical-design-monthly-view.md §2.4).
-export const RESERVED_BARE_TAGS: readonly string[] = ['next', 'someday', 'maybe', 'now', 'prepped', 'reviewed', 'monthly'];
+export const RESERVED_BARE_TAGS: readonly string[] = ['next', 'someday', 'maybe', 'now', 'prepped', 'reviewed', 'monthly', 'focusblock'];
 
 /**
  * Whether `tags` (already-extracted, lowercased - see domain/markdown.ts's
@@ -175,14 +179,13 @@ export function stripBareTags(text: string, tags: readonly string[]): string {
   return out.replace(/\s{2,}/g, ' ').trim();
 }
 
-/** Whether `tags` includes a bare `now` tag - a thin wrapper over hasBareTag, see the block comment above. */
-export function deriveNow(tags: string[]): boolean {
-  return hasBareTag(tags, 'now');
-}
-
-/** Adds/removes `#now` - the #now counterpart to setFlowStateTag/setDueTag, a thin wrapper over setBareTag. Called for the double-tap on a row's `#next`/`#now` label (ui/TaskLabels.tsx) and to strip `#now` for display (domain/taskLabels.ts). */
-export function setNowTag(text: string, value: boolean): string {
-  return setBareTag(text, 'now', value);
+/**
+ * `text` without a retired `#now` (it reads as `#next`, see deriveFlowState):
+ * for display next to the `#next` label, and when the user moves the todo off
+ * Next - otherwise `#now` would keep it there. Nothing else rewrites it.
+ */
+export function withoutNow(text: string): string {
+  return setBareTag(text, 'now', false);
 }
 
 /**

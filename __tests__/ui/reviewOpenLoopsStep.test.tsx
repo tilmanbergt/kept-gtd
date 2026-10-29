@@ -139,7 +139,8 @@ describe('Review: Open loops', () => {
     await settle();
 
     const md = r.root.findAll(n => n.props.header === 'Open loops' && Array.isArray(n.props.rows))[0];
-    expect(md.props.rows.map((row: {label: string}) => row.label)).toEqual(['Coaching', 'offsite', 'live']);
+    // live has a next todo, so it needs no look and is not listed (time-and-place §10 C3); its detail still renders.
+    expect(md.props.rows.map((row: {label: string}) => row.label)).toEqual(['Coaching', 'offsite']);
 
     const offsite = await detail(r, `${AREA}|workshop/offsite`);
     expect(texts(offsite)).toEqual(expect.arrayContaining(['○ offsite', 'workshop · in Coaching', 'Open overview ›', 'Close loop', '0 open · no next action']));

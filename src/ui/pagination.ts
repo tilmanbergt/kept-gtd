@@ -91,31 +91,11 @@ export const PAGE_SIZE = {
    * googleCalendarProject, the closest "Google panel inside a
    * partial-height stacked section" case. */
   googleCalendarInbox: 9,
-  /** Daily view's Focus/Projects/Areas panel (technical-design-daily-
-   * focus-panel.md §4/§7.3) - one fixed row budget shared by all
-   * three mini-tabs, so the panel's own height never grows or shrinks
-   * per-tab: Focus tab's total slot count (`dailyFocusProjectCount +
-   * dailyFocusAreaCount`, defaults 3 + 2) is this many rows, and the
-   * Projects/Areas tabs page their `FileBrowserPane` at the same size via
-   * `FileBrowserRoot.pageSize`. A flat constant rather than computed from
-   * those settings at render time - matches every other entry here being a
-   * plain tuned integer, at the accepted cost that a changed focus-count
-   * setting won't resize the panel to match (the design doc's §7.3 flags
-   * this trade-off explicitly). */
-  dailyFocusPanel: 5,
   /** Week view's Google mini-tab (docs/dev/history/technical-design-weekly-view.md §7) -
    * independent of `googleCalendarDaily`/`googleCalendarReview`/etc, same
    * "on-device tuning of one shouldn't silently move another" rule those
    * follow. */
   googleCalendarWeekly: 14,
-  /** Week view's WeeklyFocusPanel (docs/dev/history/technical-design-weekly-view.md §7) -
-   * the weekly-focus counterpart of `dailyFocusPanel` above, independent of
-   * it since the two panels' configured slot counts
-   * (weeklyFocusProjectCount/weeklyFocusAreaCount default to 5/3, vs daily's
-   * 3/2) and available column space differ. Also doubles as the Projects/
-   * Areas mini-tabs' own browse-list page size within this panel (5 is too
-   * short to browse through). */
-  weeklyFocusPanel: 10,
 } as const;
 
 /** A `jumpTo` value, used by `usePagedByHeight` below - see the module doc
@@ -145,8 +125,7 @@ export interface PagedByHeight<T> {
  * The app's pagination hook (docs/dev/history/technical-design-pagination-fixed-height.md
  * §1.1) - fits as many rows as their real `rowHeight` allows into a fixed-
  * height box, instead of a fixed row count. Used by ui/PagedSection.tsx
- * and, via ui/FileBrowserPane.tsx, by the fixed focus-slot lists
- * (ui/DailyFocusPanel.tsx/ui/WeeklyFocusPanel.tsx).
+ * and ui/FileBrowserPane.tsx.
  *
  * No `totalPages` - deliberately; the page count is never computed in
  * advance. `pageStarts` below is grown lazily, one

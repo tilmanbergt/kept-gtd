@@ -16,10 +16,8 @@ import {
   loadProjectFile,
   saveFrontMatter,
   saveMeetings,
-  saveMonthlyGoals,
   saveScope,
   saveTasks,
-  saveWeeklyGoals,
 } from '../../src/storage/projectFile';
 import {frontMatterOf} from '../../src/storage/dataCache';
 
@@ -49,14 +47,6 @@ const SAVES: Array<[string, (raw: string) => Promise<string>]> = [
     return saveMeetings('project', DIR, raw, s.meetings, s.meetingExtraLines);
   }],
   ['scope', async raw => saveScope('project', DIR, raw, 'New scope')],
-  ['weekly goals', async raw => {
-    const s = await loadProjectFile('project', DIR);
-    return saveWeeklyGoals('project', DIR, raw, s.weeklyGoals, s.weeklyGoalsExtraLines);
-  }],
-  ['monthly goals', async raw => {
-    const s = await loadProjectFile('project', DIR);
-    return saveMonthlyGoals('project', DIR, raw, s.monthlyGoals, s.monthlyGoalsExtraLines);
-  }],
   ['front matter', async raw => {
     const s = await loadProjectFile('project', DIR);
     return saveFrontMatter('project', DIR, raw, {...frontMatterOf(s), dailyFocus: true});

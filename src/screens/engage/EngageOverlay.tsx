@@ -40,7 +40,6 @@ import {requestEinkRefresh, useEinkRefreshOnLoad} from '../../utils/screenRefres
 import AckLine from './AckLine';
 import AlsoHereLine from './AlsoHereLine';
 import BackLine from './BackLine';
-import Celebration from './Celebration';
 import EngageFooter from './EngageFooter';
 import EngageHeader from './EngageHeader';
 import GoToLine from './GoToLine';
@@ -202,15 +201,8 @@ export default function EngageOverlay({request, onClose, onOpenGtdpara, onExit}:
     if (!source) return <Text style={[styles.caption, {color: textColor}]}>…</Text>;
     const ackLine = ack ? <AckLine ack={ack} onUndo={undo} textColor={textColor} /> : null;
     switch (screen.kind) {
-      case 'selectFocus':
-        return <OwnerList ring={screen.ring} lines={view.lines} onChoose={line => choose(line.owner)} textColor={textColor} borderColor={borderColor} />;
-      case 'focusDone':
-        return (
-          <>
-            {ackLine}
-            <Celebration names={view.focusNames} textColor={textColor} />
-          </>
-        );
+      case 'schedule':
+        return <OwnerList lines={view.lines} onChoose={line => choose(line.owner)} textColor={textColor} borderColor={borderColor} />;
       case 'ownerEmpty':
         return (
           <>
@@ -315,12 +307,8 @@ export default function EngageOverlay({request, onClose, onOpenGtdpara, onExit}:
   const lists = view.lists;
   const nothingToPick = screen.kind === 'options' && lists !== null && !lists.nowTodo && lists.next.length === 0 && lists.plan.length === 0;
   const select =
-    screen.kind === 'focusDone'
-      ? {kind: 'new' as const, onPress: () => press('selectNewFocus', () => dispatch({type: 'selectNewFocus'}))}
-      : screen.kind === 'ownerEmpty' || nothingToPick
-        ? {kind: 'next' as const, onPress: () => press('selectFocus', () => dispatch({type: 'selectFocus'}))}
-        : undefined;
-  const onFocusScreen = screen.kind === 'selectFocus';
+    screen.kind === 'ownerEmpty' || nothingToPick ? {onPress: () => press('selectSchedule', () => dispatch({type: 'selectSchedule'}))} : undefined;
+  const onScheduleScreen = screen.kind === 'schedule';
   // The meeting lines (E8, E9) on the owner's screens; the two merge when they name the same meeting.
   const ownerScreen = screen.kind === 'options' || screen.kind === 'ownerEmpty';
   const pageEntry = ownerScreen && owner ? page?.entry ?? null : null;
@@ -339,9 +327,9 @@ export default function EngageOverlay({request, onClose, onOpenGtdpara, onExit}:
         <View style={[styles.panel, {backgroundColor: background, borderColor: textColor, minHeight: panelHeight}]} onLayout={onPanelLayout}>
           <EngageHeader
             title={view.title}
-            heading={onFocusScreen || screen.kind === 'focusDone' || !owner ? ENGAGE_TEXT.heading : undefined}
+            heading={onScheduleScreen || !owner ? ENGAGE_TEXT.heading : undefined}
             onClose={onClose}
-            onBack={onFocusScreen && owner ? () => dispatch({type: 'back'}) : undefined}
+            onBack={onScheduleScreen && owner ? () => dispatch({type: 'back'}) : undefined}
             textColor={textColor}
           />
           {ownerScreen && owner && state.section ? <SectionLine section={state.section} textColor={textColor} /> : null}
@@ -394,7 +382,7 @@ export default function EngageOverlay({request, onClose, onOpenGtdpara, onExit}:
           ) : null}
           <EngageFooter
             select={select}
-            closeIsMain={screen.kind === 'ownerEmpty' || screen.kind === 'focusDone'}
+            closeIsMain={screen.kind === 'ownerEmpty'}
             onOpenGtdpara={() => press('openGtdpara', onOpenGtdpara)}
             onClose={() => press('close', onClose)}
             textColor={textColor}

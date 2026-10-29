@@ -46,7 +46,7 @@
 import {ExistingAbbrev, generateDefaultAbbrev} from '../domain/abbrev';
 import {GtdParaSettings, ResolvedParaPaths, resolvePaths} from '../domain/settings';
 import {FrontMatterFields} from '../domain/markdown';
-import {ItemStatus, Mark, Meeting, MonthlyGoal, Task, WeeklyGoal} from '../domain/types';
+import {ItemStatus, Mark, Meeting, Task} from '../domain/types';
 import {CounterpartLine} from '../domain/threadsSection';
 import {LoopLine} from '../domain/loopsSection';
 import {Agreement} from '../domain/agreements';
@@ -54,7 +54,7 @@ import {FileStat, listFolderEntries, statFiles} from '../supernote/fileSystem';
 import {ensureFileReadPermission} from '../supernote/pluginPermissions';
 import {log, logError} from '../utils/log';
 import {perfEnd, perfMark, perfStart} from '../utils/perf';
-import {dataFilePath, loadProjectFile, parseProjectFileContent, ProjectFileState, saveFrontMatter} from './projectFile';
+import {dataFilePath, loadProjectFile, NO_RETAINED_FOCUS, parseProjectFileContent, ProjectFileState, RetainedFocus, retainedFocusOf, saveFrontMatter} from './projectFile';
 import {errorMessage} from '../utils/errorMessage';
 import {setDataFileReloadListener, takeMergedWrite} from './dataFileWrite';
 
@@ -69,12 +69,6 @@ export interface CachedItem {
   meetingExtraLines: string[];
   /** From the `## Scope` span (docs/dev/history/technical-design-item-scope.md) - see storage/projectFile.ts's ProjectFileState doc comment. '' until a scope is set, even though the heading itself is scaffolded from item creation. */
   scope: string;
-  /** From the `## Weekly Goals` span (docs/dev/history/technical-design-weekly-goals.md) - see storage/projectFile.ts's ProjectFileState doc comment. */
-  weeklyGoals: WeeklyGoal[];
-  weeklyGoalsExtraLines: string[];
-  /** From the `## Monthly Goals` span (docs/dev/history/technical-design-monthly-view.md §2.2). */
-  monthlyGoals: MonthlyGoal[];
-  monthlyGoalsExtraLines: string[];
   /** From the `## Marks` span (docs/dev/history/technical-design-lasso-0.8.md §3.1) - open "Mark for later" lines whose note lives in this item's folder. */
   marks: Mark[];
   marksExtraLines: string[];
@@ -87,11 +81,10 @@ export interface CachedItem {
   /** From the `## Agreements` span (docs/dev/history/technical-design-meetings-0.21.md §2.1). Written only through storage/agreements.ts. */
   agreements: Agreement[];
   agreementsExtraLines: string[];
-  /** From the frontmatter block - see domain/markdown.ts's parseFrontMatter, storage/focusSlots.ts and storage/statusControl.ts. */
+  /** From the frontmatter block - see domain/markdown.ts's parseFrontMatter and storage/statusControl.ts. */
   status: ItemStatus;
-  dailyFocus: boolean;
-  weeklyFocus: boolean;
-  monthlyFocus: boolean;
+  /** Retired focus flags, written back only - see storage/projectFile.ts's RetainedFocus. */
+  focusFlags: RetainedFocus;
   /** Which Resources subfolder this item's Files pane defaults its "Resources" root to, or null - see technical-design-linked-files.md §3.1. */
   defaultResourceFolder: string | null;
   /** The Area this Project supports, by bare folder name, or null - Projects only, always null for Areas (technical-design-project-area-assignment.md §2). */
@@ -270,10 +263,6 @@ async function loadOneItem(kind: 'project' | 'area', name: string, path: string)
       taskExtraLines: [],
       meetingExtraLines: [],
       scope: '',
-      weeklyGoals: [],
-      weeklyGoalsExtraLines: [],
-      monthlyGoals: [],
-      monthlyGoalsExtraLines: [],
       marks: [],
       marksExtraLines: [],
       threads: [],
@@ -283,9 +272,7 @@ async function loadOneItem(kind: 'project' | 'area', name: string, path: string)
       agreements: [],
       agreementsExtraLines: [],
       status: 'active',
-      dailyFocus: false,
-      weeklyFocus: false,
-      monthlyFocus: false,
+      focusFlags: NO_RETAINED_FOCUS,
       defaultResourceFolder: null,
       area: null,
       abbrev: null,
@@ -760,40 +747,6 @@ export function updateItemAgreements(path: string, rawContent: string, agreement
   notifyCacheChanged();
 }
 
-/** Write-through after saving an item's Weekly Goals span - see updateItemTasks. */
-export function updateItemWeeklyGoals(
-  path: string,
-  rawContent: string,
-  weeklyGoals: WeeklyGoal[],
-  weeklyGoalsExtraLines: string[],
-): void {
-  const item = cached?.items.find(i => i.path === path);
-  if (!item) return;
-  item.rawContent = rawContent;
-  item.weeklyGoals = weeklyGoals;
-  item.weeklyGoalsExtraLines = weeklyGoalsExtraLines;
-  item.loadError = undefined;
-  reparseIfMerged(item);
-  notifyCacheChanged();
-}
-
-/** Write-through after saving an item's Monthly Goals span - see updateItemTasks. */
-export function updateItemMonthlyGoals(
-  path: string,
-  rawContent: string,
-  monthlyGoals: MonthlyGoal[],
-  monthlyGoalsExtraLines: string[],
-): void {
-  const item = cached?.items.find(i => i.path === path);
-  if (!item) return;
-  item.rawContent = rawContent;
-  item.monthlyGoals = monthlyGoals;
-  item.monthlyGoalsExtraLines = monthlyGoalsExtraLines;
-  item.loadError = undefined;
-  reparseIfMerged(item);
-  notifyCacheChanged();
-}
-
 /**
  * Write-through for a save that changed ONLY a section no cached field is
  * parsed from (the close-out plan's `## Close-out` section -
@@ -836,9 +789,7 @@ export function applyInboxRawContent(rawContent: string): void {
 export type FrontMatterSource = Pick<
   CachedItem,
   | 'status'
-  | 'dailyFocus'
-  | 'weeklyFocus'
-  | 'monthlyFocus'
+  | 'focusFlags'
   | 'defaultResourceFolder'
   | 'area'
   | 'abbrev'
@@ -855,9 +806,7 @@ export type FrontMatterSource = Pick<
 export function frontMatterOf(item: FrontMatterSource): FrontMatterFields {
   return {
     status: item.status,
-    dailyFocus: item.dailyFocus,
-    weeklyFocus: item.weeklyFocus,
-    monthlyFocus: item.monthlyFocus,
+    ...item.focusFlags,
     defaultResourceFolder: item.defaultResourceFolder,
     area: item.area,
     abbrev: item.abbrev,
@@ -871,9 +820,7 @@ export function updateItemFrontMatter(path: string, rawContent: string, fm: Fron
   if (!item) return;
   item.rawContent = rawContent;
   item.status = fm.status;
-  item.dailyFocus = fm.dailyFocus;
-  item.weeklyFocus = fm.weeklyFocus;
-  item.monthlyFocus = fm.monthlyFocus;
+  item.focusFlags = retainedFocusOf(fm);
   item.frontMatterExtraLines = fm.extraLines;
   item.defaultResourceFolder = fm.defaultResourceFolder;
   item.area = fm.area;

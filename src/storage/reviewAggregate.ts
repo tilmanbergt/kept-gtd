@@ -39,24 +39,6 @@
  *   together.
  * - neglectedAreas: the Areas counterpart of stalledProjects, same
  *   rule and shelvedTasks treatment.
- * - unfocusedNextItems (docs/dev/history/technical-design-daily-todo-filter.md,
- *   docs/dev/history/technical-design-review-monthly-focus.md §1): Active Projects
- *   AND Areas, not currently focused *at all* (`domain/destination.ts`'s
- *   `isFocused` - neither daily, weekly NOR monthly), that have at least one
- *   open #next task WITHOUT a due date - the items whose #next work is
- *   otherwise quiet, since storage/dailyAggregate.ts shows a #next task
- *   only for a daily- or weekly-focused item. Weekly-focused items don't
- *   count as unfocused: storage/weeklyAggregate.ts's focus cards already
- *   surface a count for them on the Week view. A #next task that already carries a due date is
- *   excluded - it's not actually quiet: storage/dailyAggregate.ts's own
- *   `isDueSoonOrOverdue` check means it'll surface on Daily on its own once
- *   due, so flagging it here too would be noise; the review step is for
- *   tasks with no other route back onto Daily's radar. Each entry carries
- *   its own nextTasks (nextTasksFor below) so the "Unfocused next items"
- *   review step can offer per-task Someday/Maybe/Done/Cancel/Set-due-date
- *   actions plus a whole-item "Add to Daily/Weekly focus" action. Can never
- *   overlap with stalledProjects/neglectedAreas: those require *zero*
- *   actionable open tasks, and a #next task always counts as actionable.
  * - meetingsToClose (docs/dev/history/technical-design-meeting-tracking.md): meetings whose
  *   Note setup tracks "review after", that are over, not yet `#reviewed`, and
  *   within the last REVIEW_LOOKBACK_DAYS. The predicate is domain/
@@ -68,13 +50,13 @@
  *   §2.10): active and on-hold Projects/Areas with open Someday/Maybe todos,
  *   for the "Someday / Maybe" step; archived items are never in the cache.
  */
+import {ContextMatcher} from '../domain/contexts';
 import {AgreementReviewGroup, agreementsToReview as reviewAgreements} from '../domain/agreementReview';
 import {NoteSetup} from '../domain/noteSetups';
 import {engageSourceOf} from './engageAggregate';
-import {isFocused} from '../domain/destination';
 import {isSomedayMaybe} from '../domain/flowState';
 import {countMeetingsInRange} from '../domain/meetingSpan';
-import {meetingTimestampMs, splitAndSortMeetings} from '../domain/meetingTime';
+import {meetingTimestampMs, splitAndSortMeetings, todayIso} from '../domain/meetingTime';
 import {isReviewOutstanding} from '../domain/meetingTracking';
 import {EMPTY_NOTE_SETUP_CONFIG, NoteSetupConfig} from '../domain/noteSetups';
 import {ReviewStepId} from '../domain/reviewSteps';
@@ -117,12 +99,6 @@ export interface ReviewNextTaskEntry {
   task: Task;
 }
 
-export interface ReviewUnfocusedNextEntry {
-  item: ReviewItemRef;
-  /** This item's own open (#next, not done/cancelled, no due date) tasks - see nextTasksFor. */
-  nextTasks: ReviewNextTaskEntry[];
-}
-
 export interface ReviewSomedayEntry {
   item: ReviewItemRef;
   /** This item's own open Someday/Maybe todos - see somedayTasksFor. */
@@ -135,8 +111,6 @@ export interface ReviewAggregate {
   doneProjects: ReviewItemRef[];
   onHoldItems: ReviewItemRef[];
   neglectedAreas: ReviewProjectEntry[];
-  /** Active Projects/Areas, not focused at all (not daily, weekly or monthly), with ≥1 open #next task that has no due date yet - see the module doc comment's "unfocusedNextItems" note. */
-  unfocusedNextItems: ReviewUnfocusedNextEntry[];
   /** Open Someday/Maybe todos of active and on-hold Projects/Areas, per item in file order (docs/dev/history/technical-design-engage-in-context.md §2.10). */
   somedayItems: ReviewSomedayEntry[];
   /** Past meetings still owing their tracked review, most recent first - see the module doc comment's "meetingsToClose" note. */
@@ -164,7 +138,7 @@ function nextUpcomingMeetings(item: ReviewItemRef, meetings: Meeting[], now: Dat
  * drifting from this file's own definition.
  */
 export function isActionableOpenTask(task: Task): boolean {
-  return !task.done && !task.cancelled && (task.flowState === 'next' || task.flowState === 'waiting-for' || task.now);
+  return !task.done && !task.cancelled && (task.flowState === 'next' || task.flowState === 'waiting-for');
 }
 
 const NOT_NEXT_ORDER = [null, 'someday', 'maybe'];
@@ -182,25 +156,6 @@ export function shelvedTasksFor(item: ReviewItemRef, tasks: Task[]): ReviewShelv
     .map((task, taskIndex) => ({item, taskIndex, task}))
     .filter(({task}) => !task.done && !task.cancelled && !isActionableOpenTask(task))
     .sort((a, b) => NOT_NEXT_ORDER.indexOf(a.task.flowState) - NOT_NEXT_ORDER.indexOf(b.task.flowState));
-}
-
-/**
- * This item's own open (#next, not done, not cancelled), NOT-YET-DUE tasks -
- * the set the "Unfocused next items" review step surfaces per item. A task
- * that already has a due date is excluded - see this module's own doc
- * comment's "unfocusedNextItems" note for why - so setting one on a task from
- * that review step (screens/ReviewScreen.tsx's handleSetTaskDueDate) is
- * exactly how a task leaves this list without being Someday/Maybe/Done/
- * Cancelled: the same live recompute that drops a task the moment it's
- * resolved also drops one the moment it's scheduled. Exported so
- * ReviewScreen.tsx can recompute a frozen card's task list live against the
- * current cache, same reason isActionableOpenTask/shelvedTasksFor are
- * exported.
- */
-export function nextTasksFor(item: ReviewItemRef, tasks: Task[]): ReviewNextTaskEntry[] {
-  return tasks
-    .map((task, taskIndex) => ({item, taskIndex, task}))
-    .filter(({task}) => !task.done && !task.cancelled && task.flowState === 'next' && task.dueDate === null);
 }
 
 /** This item's own open Someday/Maybe todos, file order - the "Someday / Maybe" step's rows, recomputed live like nextTasksFor. */
@@ -221,7 +176,6 @@ export function buildReviewAggregate(
   const doneProjects: ReviewItemRef[] = [];
   const onHoldItems: ReviewItemRef[] = [];
   const neglectedAreas: ReviewProjectEntry[] = [];
-  const unfocusedNextItems: ReviewUnfocusedNextEntry[] = [];
   const meetingsToClose: ReviewMeetingEntry[] = [];
   const somedayItems: ReviewSomedayEntry[] = [];
   const failedItems: ReviewAggregate['failedItems'] = [];
@@ -268,13 +222,6 @@ export function buildReviewAggregate(
           neglectedAreas.push(entry);
         }
       }
-
-      if (!isFocused(cachedItem)) {
-        const nextTasks = nextTasksFor(item, cachedItem.tasks);
-        if (nextTasks.length > 0) {
-          unfocusedNextItems.push({item, nextTasks});
-        }
-      }
     }
   }
 
@@ -288,17 +235,61 @@ export function buildReviewAggregate(
     doneProjects,
     onHoldItems,
     neglectedAreas,
-    unfocusedNextItems,
     somedayItems,
     meetingsToClose,
     failedItems,
   };
 }
 
-/** One step's number on the Review hub. `of` is only set where the count reads "N of M" (Focus reset's filled weekly+monthly slots). */
+/** One step's number on the Review hub. */
 export interface ReviewStepCount {
   n: number;
-  of?: number;
+  /** What the active context leaves out of the step: the hub's "+n in other contexts" (Q2). */
+  elsewhere?: number;
+}
+
+/**
+ * The aggregate under the active context (docs/dev/history/technical-design-time-and-place.md
+ * §3.3, Q2): each step lists the context's items and todos; meetings to close
+ * out keep the ones the context shows. Week ahead keeps every meeting (the
+ * Week view dims, never hides). Everything (`matcher.context` null) returns
+ * the aggregate itself.
+ */
+export function filterReviewAggregate(aggregate: ReviewAggregate, matcher: ContextMatcher, items: readonly CachedItem[], now: Date = new Date()): ReviewAggregate {
+  if (!matcher.context) return aggregate;
+  const byPath = new Map(items.map(i => [i.path, i] as const));
+  const shown = (ref: ReviewItemRef) => {
+    const item = byPath.get(ref.path);
+    return !item || matcher.itemShown(item);
+  };
+  const today = todayIso(now);
+  return {
+    ...aggregate,
+    stalledProjects: aggregate.stalledProjects.filter(e => shown(e.item)),
+    doneProjects: aggregate.doneProjects.filter(shown),
+    onHoldItems: aggregate.onHoldItems.filter(shown),
+    neglectedAreas: aggregate.neglectedAreas.filter(e => shown(e.item)),
+    somedayItems: aggregate.somedayItems
+      .map(e => {
+        const item = byPath.get(e.item.path);
+        return item ? {...e, tasks: e.tasks.filter(t => matcher.taskShown(item, t.task, today))} : e;
+      })
+      .filter(e => e.tasks.length > 0),
+    meetingsToClose: aggregate.meetingsToClose.filter(e => {
+      const item = byPath.get(e.item.path);
+      return !item || matcher.meetingState(item, e.meeting) === 'shown';
+    }),
+  };
+}
+
+/** `counts` with each step's `elsewhere` set from the counts without the context (`all`). */
+export function withElsewhere(counts: Record<ReviewStepId, ReviewStepCount>, all: Record<ReviewStepId, ReviewStepCount>): Record<ReviewStepId, ReviewStepCount> {
+  const out = {...counts};
+  for (const id of Object.keys(counts) as ReviewStepId[]) {
+    const elsewhere = all[id].n - counts[id].n;
+    if (elsewhere > 0) out[id] = {...counts[id], elsewhere};
+  }
+  return out;
 }
 
 /**
@@ -314,8 +305,7 @@ export interface ReviewStepCount {
  * meetings are still open). Week ahead counts gtdpara meetings only - Google
  * Calendar events sit in a separate async cache; the Inbox's meetings in
  * that week come in as `weekAheadInboxCount`, for the same reason as
- * `inboxOpenCount`. Unfocused next items counts
- * TASKS, not projects: the tasks are that step's selectable rows.
+ * `inboxOpenCount`.
  *
  * `gmailInboxCount` is passed in for the same reason `inboxOpenCount` is -
  * the Gmail inbox (storage/gmailInboxCache.ts) is its own module-level
@@ -326,13 +316,6 @@ export interface ReviewStepCount {
 export function buildReviewStepCounts(
   aggregate: ReviewAggregate,
   inboxOpenCount: number,
-  items: CachedItem[],
-  settings: {
-    weeklyFocusProjectCount: number;
-    weeklyFocusAreaCount: number;
-    monthlyFocusProjectCount: number;
-    monthlyFocusAreaCount: number;
-  },
   gmailInboxCount: number,
   weekAheadInboxCount = 0,
   tendingCount = 0,
@@ -354,19 +337,7 @@ export function buildReviewStepCounts(
     done: {n: aggregate.doneProjects.length},
     onHold: {n: aggregate.onHoldItems.length},
     neglected: {n: aggregate.neglectedAreas.length},
-    unfocusedNext: {n: aggregate.unfocusedNextItems.reduce((sum, entry) => sum + entry.nextTasks.length, 0)},
     somedayMaybe: {n: aggregate.somedayItems.reduce((sum, entry) => sum + entry.tasks.length, 0)},
-    // "Focus reset" (id kept as 'weeklyFocus' - see domain/reviewSteps.ts)
-    // sets weekly AND monthly focus, so its "N of M" counts both levels'
-    // filled slots against both levels' limits.
-    weeklyFocus: {
-      n: items.filter(item => item.weeklyFocus).length + items.filter(item => item.monthlyFocus).length,
-      of:
-        settings.weeklyFocusProjectCount +
-        settings.weeklyFocusAreaCount +
-        settings.monthlyFocusProjectCount +
-        settings.monthlyFocusAreaCount,
-    },
   };
 }
 

@@ -25,7 +25,7 @@ scenario('Weekly Review: get the Inbox to zero by filing one todo and finishing 
   });
   when('I tap "Reviewed ›" and go back to the overview', async () => {
     await tap('Reviewed ›');
-    expectShows(/Step 5 of 12 — Stalled projects/);
+    expectShows(/Step 5 of 10 — Stalled projects/);
     await tap('Overview');
   });
   then('the overview says "2 inbox items cleared" and the Inbox step has nothing left to review', () => {

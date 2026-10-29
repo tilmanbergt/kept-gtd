@@ -20,13 +20,16 @@ scenario('The area page shows its todos, meetings and agreements, and its folder
   when('I open Garden from Areas', async () => {
     await openApp();
     await tapTab('Areas');
-    await tap(/^★ Garden/);
+    await tap(/^Garden/);
   });
   then('Todos list "Buy bulbs" and "Repair the fence", and Meetings list "Neighbour chat"', () => {
     const todos = textsBetween('Todos', '◇ Agreements 1 ›');
     expect(todos).toEqual(expect.arrayContaining(['Buy bulbs', 'Repair the fence']));
     expect(textsBetween('◇ Agreements 1 ›')).toContain('Neighbour chat');
   });
+  and('the Given time line counts this week\'s two meetings, the focus block and "Delivery" (11 h) and this month\'s (20 h)', () =>
+    expectShows('Given time · this week 11 h · this month 20 h'),
+  );
   and('Garden\'s folder is not listed', () => {
     expect(listings(areaDir('Garden'))).toBe(0);
     expectNotShows('📄 area.txt');

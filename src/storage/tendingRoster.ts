@@ -37,6 +37,8 @@ export interface RosterEntry {
   /** Date of the next meeting that is not over yet, or null. */
   nextMeeting: string | null;
   oweCount: number;
+  /** Open `#next` todos of the counterpart (domain/givenTime.ts's needsTending). */
+  nextCount: number;
   waitingCount: number;
   /** Days since the oldest open Waiting-for todo was created; null when none has a created date. */
   oldestWaitingDays: number | null;
@@ -78,6 +80,7 @@ export function rosterEntryOf(
     lastMeeting: overview.past[0]?.entry.meeting.date ?? null,
     nextMeeting: overview.ahead.meetings[0]?.meeting.date ?? null,
     oweCount: overview.ahead.owe.length,
+    nextCount: [...overview.ahead.owe, ...overview.ahead.relevant].filter(e => e.task.flowState === 'next').length,
     waitingCount: overview.ahead.waiting.length,
     oldestWaitingDays: ages.length > 0 ? Math.max(...ages) : null,
     overview,

@@ -1,5 +1,5 @@
 import {device} from '../../test-helpers/fakeDevice/device';
-import {expectNotShows, expectShows, openApp, tap, tapTab, type} from '../../test-helpers/scenario/app';
+import {expectNotShows, expectShows, labelled, openApp, tap, tapLabel, tapTab, type} from '../../test-helpers/scenario/app';
 import {dataFile, INBOX_FILE, projectFile, putFile, sectionLines} from '../../test-helpers/scenario/files';
 import {and, given, scenario, then, when} from '../../test-helpers/scenario/scenario';
 
@@ -20,11 +20,18 @@ scenario('Try things in the demo space without touching the real files, then swi
     expectShows('Switch to profile "Demo"? The current profile is saved first.');
     await tap('Switch');
   });
-  then('the tab bar says DEMO and Projects shows the demo projects, not "Website"', async () => {
-    expectShows('DEMO');
+  then('the tab bar shows the boxed D and Projects shows the demo projects, not "Website"', async () => {
+    expect(labelled('Demo space')).not.toBeNull();
     await tapTab('Projects');
     expectShows(/Garden renovation/);
     expectNotShows(/^Website +#WEB/);
+  });
+  and('the chip opens Settings → Contexts with Work and Home; Daily has Garden renovation\'s focus block today', async () => {
+    await tap('Everything ›');
+    expect(labelled('Use Work')).not.toBeNull();
+    expect(labelled('Use Home')).not.toBeNull();
+    await tapTab('Daily');
+    expectShows(/Plan the beds/);
   });
   when('I add the todo "Try the demo" in the Inbox', async () => {
     await tapTab('Inbox');
@@ -35,13 +42,13 @@ scenario('Try things in the demo space without touching the real files, then swi
     expect(sectionLines(DEMO_INBOX, 'Tasks')).toContainEqual(expect.stringMatching(/^- \[ \] Try the demo/));
     expect(sectionLines(INBOX_FILE, 'Tasks')).toEqual([]);
   });
-  when('I tap DEMO in the tab bar and switch back to Production', async () => {
-    await tap('DEMO');
+  when('I tap the D in the tab bar and switch back to Production', async () => {
+    await tapLabel('Demo space');
     await tap('Switch');
     await tap('Switch');
   });
   then('"Website" is back, and the demo todo is not in my Inbox', async () => {
-    expectNotShows('DEMO');
+    expect(labelled('Demo space')).toBeNull();
     await tapTab('Projects');
     expectShows(/^Website +#WEB/);
     await tapTab('Inbox');

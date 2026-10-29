@@ -59,7 +59,6 @@ export default function TouchTestRows({samples, armLink, textColor, borderColor}
             linkedFile={sample.task.linkedFile}
             onOpenLinkedFile={press('clip')}
             onArmLink={armLink ? press('clip') : undefined}
-            onToggleNow={press('nowToggle')}
             contextTag={null}
             onToggleContext={press('tag')}
             ownerPath={null}

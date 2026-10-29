@@ -7,9 +7,10 @@ const texts = (t: string, context: 'flat' | 'grouped' = 'flat', contextActive = 
   taskLabels(task(t), context, TODAY, contextActive).map(l => l.text);
 
 describe('taskLabels - flat', () => {
-  it('#next and #now', () => {
+  it('#next, and a retired #now as #next', () => {
     expect(texts('Draft offer #next')).toEqual(['#next']);
-    expect(texts('Draft offer #next #now')).toEqual(['#now']);
+    expect(texts('Draft offer #next #now')).toEqual(['#next']);
+    expect(texts('Draft offer #now')).toEqual(['#next']);
   });
   it('#w/f with and without a name', () => {
     expect(texts('Signed NDA #waiting-for:meier-sohn')).toEqual(['#w/f Meier Sohn']);

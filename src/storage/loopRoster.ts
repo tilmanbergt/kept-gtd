@@ -6,11 +6,13 @@
  * scope lists the active loops of its members, by main date
  * (storage/loopGlance.ts). Pure over the warm cache.
  *
- * A loop needs a look when nothing moves it forward - no `#next`/`#now`
- * todo and no meeting ahead ("no next action") - or when its main date has
- * passed ("was <date> · close?"). The step's count is those loops.
+ * A loop needs a look when nothing moves it forward - no next action and
+ * nothing planned in the next 14 days (domain/givenTime.ts) - or when its
+ * main date has passed ("was <date> · close?"). The step lists and counts
+ * only those loops (docs/dev/history/technical-design-time-and-place.md §10 C3).
  */
 import {counterpartScopes} from '../domain/counterparts';
+import {nothingPlanned} from '../domain/givenTime';
 import {CachedItem} from './dataCache';
 import {buildLoopGlance, LoopGlanceRow} from './loopGlance';
 
@@ -31,7 +33,7 @@ export interface LoopRosterScope {
 /** Why `row` needs a look, or null. */
 export function loopAttention(row: LoopGlanceRow, today: string): LoopAttention {
   if (row.line.mainDate && row.line.mainDate < today) return 'pastMainDate';
-  if (row.stalled && row.nextMeeting === null) return 'noNext';
+  if (row.stalled && nothingPlanned(row.nextMeeting, today)) return 'noNext';
   return null;
 }
 

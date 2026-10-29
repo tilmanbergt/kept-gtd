@@ -6,7 +6,7 @@ Tags are words with a `#` in front, written straight into a todo or meeting. The
 
 Each todo has at most one of these. The chips in Quick Add set them for you.
 
-- `#next`: the next physical step. Shows on Daily when its project or area is in focus. Label: `#next`.
+- `#next`: the next physical step. Shows on Daily (in the current context, see [Contexts](contexts.md)). Label: `#next`.
 - `#wf/name`: you are waiting for someone, for example `#wf/lena`, or just `#wf` without a name. Shows on Daily until you get it (label `#w/f Lena`); give it a due date to keep it off Daily until that day. You also find them in the **Waiting For** group of their project, area or the Inbox. The older form `#waiting-for:lena` still works; Kept GTD writes `#wf/lena` the next time you edit the todo in Quick Add.
 - `#someday` and `#maybe`: parked ideas. Never on Daily; a project with only these counts as stalled in the Review.
 
@@ -31,7 +31,7 @@ Todos added with older versions get no created date, and a todo checked before t
 
 ## Now
 
-`#now` marks what you are doing right now, on top of `#next`. It drives [focus mode](daily.md).
+`#now` came from focus mode, which is retired. A todo that still has it counts as `#next` and shows `#next`; the text in your file stays. Moving the todo to Someday or Plan removes it.
 
 ## Context tags
 

@@ -1,13 +1,13 @@
 /**
  * The Settings tabs that edit the shared draft (useSettingsDraft.ts) and are
- * written by Save: Folders, Focus, Calendar and Gmail.
+ * written by Save: Folders, Calendar and Gmail.
  */
 import React from 'react';
 import {Pressable, Text, TextInput, View} from 'react-native';
 import {DEFAULT_SETTINGS, resolvePaths} from '../../domain/settings';
 import CheckToggle from './CheckToggle';
 import {styles} from './settingsStyles';
-import {FIELDS, FOCUS_COUNT_FIELDS, SettingsDraft} from './useSettingsDraft';
+import {FIELDS, SettingsDraft} from './useSettingsDraft';
 
 interface TabProps {
   draft: SettingsDraft;
@@ -34,27 +34,6 @@ export function FoldersTab({draft, textColor, borderColor, placeholderColor}: Ta
             autoCorrect={false}
           />
           {field.pathKey && <Text style={[styles.pathPreview, {color: textColor}]}>→ {paths[field.pathKey]}</Text>}
-        </View>
-      ))}
-    </>
-  );
-}
-
-/** How many Projects/Areas fit in Daily, Weekly and Monthly focus. */
-export function FocusTab({draft, textColor, borderColor, placeholderColor}: TabProps): React.JSX.Element {
-  return (
-    <>
-      {FOCUS_COUNT_FIELDS.map(field => (
-        <View key={field.key} style={styles.field}>
-          <Text style={[styles.label, {color: textColor}]}>{field.label}</Text>
-          <TextInput
-            style={[styles.input, styles.countInput, {color: textColor, borderColor}]}
-            value={draft.focusCountText[field.key]}
-            onChangeText={text => draft.updateFocusCount(field.key, text)}
-            placeholder={String(DEFAULT_SETTINGS[field.key])}
-            placeholderTextColor={placeholderColor}
-            keyboardType="number-pad"
-          />
         </View>
       ))}
     </>

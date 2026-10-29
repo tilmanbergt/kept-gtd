@@ -8,19 +8,18 @@
  *   date-only meeting (`3d`) covers every one of its days, including ones
  *   that spill in from a meeting starting before the month (up to
  *   MAX_MEETING_DAYS back) - `part` says where in its run a day sits.
- * - `focusCards` / `historicalGoals`: the shared period helpers
- *   (storage/periodFocusCards.ts, storage/periodGoals.ts), monthly scope.
+ *   `focusBlocks` counts the focus blocks among them: only a block marked M
+ *   shows as F (docs/dev/history/technical-design-time-and-place.md §10 C8).
  * - `meetingsOnDay`: EVERY meeting (highlighted or not) covering one date -
  *   the Month view's day panel, where highlights are picked.
  */
+import {isFocusBlock} from '../domain/focusBlock';
 import {entriesInRange, SpanPart, spanDayOn, spanScanStart} from '../domain/meetingSpan';
 import {meetingTimestampMs} from '../domain/meetingTime';
 import {isHighlight, monthLabel} from '../domain/monthHighlight';
 import {addDaysIso, isoWeekNumberOf, Period} from '../domain/period';
 import {CachedItem} from './dataCache';
 import {DailyInboxInput, DailyItemRef, inboxItemRef} from './dailyAggregate';
-import {buildPeriodFocusCards, PeriodFocusCardData} from './periodFocusCards';
-import {findGoalsForPeriod, GoalHistoryEntry} from './periodGoals';
 import {WeeklyMeetingEntry} from './weeklyAggregate';
 import {perfTime} from '../utils/perf';
 
@@ -44,14 +43,14 @@ export interface MonthDay {
   /** ISO week number, set on Mondays only (the Month view's week rule label). */
   isoWeek: number | null;
   highlights: MonthDayEntry[];
+  /** Focus blocks covering the day (docs/dev/history/technical-design-time-and-place.md §3.1): the row's F / F2 mark. */
+  focusBlocks: number;
 }
 
 export interface MonthlyAggregate {
   days: MonthDay[];
   /** Distinct highlighted meetings touching the month (a 3-day one counts once). */
   highlightCount: number;
-  focusCards: PeriodFocusCardData[];
-  historicalGoals: GoalHistoryEntry[];
 }
 
 function itemRefOf(cachedItem: CachedItem): DailyItemRef {
@@ -59,9 +58,6 @@ function itemRefOf(cachedItem: CachedItem): DailyItemRef {
     kind: cachedItem.kind,
     name: cachedItem.name,
     path: cachedItem.path,
-    dailyFocus: cachedItem.dailyFocus,
-    weeklyFocus: cachedItem.weeklyFocus,
-    monthlyFocus: cachedItem.monthlyFocus,
     abbrev: cachedItem.abbrev,
   };
 }
@@ -98,14 +94,14 @@ function buildMonthlyAggregateImpl(
   inbox: DailyInboxInput | null,
   inboxPath: string,
   period: Period,
-  today: Date = new Date(),
 ): MonthlyAggregate {
   // Candidates: highlights that start inside the month, or up to
   // MAX_MEETING_DAYS before it (a long run spilling into the month).
   const earliest = spanScanStart(period.start);
-  const highlights = allMeetingEntries(items, inbox, inboxPath).filter(
-    e => isHighlight(e.meeting) && e.meeting.date >= earliest && e.meeting.date <= period.end,
-  );
+  const inRange = allMeetingEntries(items, inbox, inboxPath).filter(e => e.meeting.date >= earliest && e.meeting.date <= period.end);
+  const highlights = inRange.filter(e => isHighlight(e.meeting));
+  // Only a focus block marked M counts for the day's F; the others stay in the day panel and Given time.
+  const blocks = highlights.filter(e => isFocusBlock(e.meeting));
 
   const days: MonthDay[] = [];
   const touched = new Set<WeeklyMeetingEntry>();
@@ -120,14 +116,13 @@ function buildMonthlyAggregateImpl(
       dayEntries.push({entry: e, label: monthLabel(e.meeting), part: span.part, dayNumber: span.dayNumber, dayCount: span.dayCount});
     }
     dayEntries.sort((a, b) => byDayOrder(a.entry, b.entry));
-    days.push({date, weekday, isoWeek: weekday === 0 ? isoWeekNumberOf(date) : null, highlights: dayEntries});
+    const focusBlocks = blocks.filter(e => spanDayOn(e.meeting, date) !== null).length;
+    days.push({date, weekday, isoWeek: weekday === 0 ? isoWeekNumberOf(date) : null, highlights: dayEntries, focusBlocks});
   }
 
   return {
     days,
     highlightCount: touched.size,
-    focusCards: buildPeriodFocusCards(items, period, today),
-    historicalGoals: findGoalsForPeriod(items, 'monthly', period.key),
   };
 }
 

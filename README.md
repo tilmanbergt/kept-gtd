@@ -31,8 +31,8 @@ which people and series you still tend. See [Threads](docs/user/threads.md).
 - **Your files, no lock-in.** Every Project and Area is a folder. Its todos and meetings live
   in a small plain-text file inside it (`project.txt` / `area.txt`). Any text editor can open it,
   and if you stop using Kept, your folders, notes and lists are still there.
-- **Calm and made for e-ink.** Only what matters today on Daily, only your `#now` todos in focus
-  mode. Screens are paged instead of scrolled; no notifications, no timers, no streaks.
+- **Calm and made for e-ink.** Only what matters today on Daily, only what belongs to the context
+  you are in. Screens are paged instead of scrolled; no notifications, no timers, no streaks.
 - **Built on what the Supernote already does.** Handwritten notes for todos and meetings,
   backgrounds from your own templates, keywords for the Supernote's keyword search, links to
   notes and files, and the lasso to turn handwriting into a todo or meeting.
@@ -44,10 +44,10 @@ which people and series you still tend. See [Threads](docs/user/threads.md).
   in particular [Creating Leaders: An Ontological/Phenomenological Model](https://papers.ssrn.com/abstract=1681682)
   (with Kari Granger) and its four foundations of being a leader: integrity, authenticity, being
   committed to something bigger than oneself, and being cause in the matter. Say clearly what
-  you are on the hook for, then keep it or consciously renegotiate it. `#next`, focus and `#now`
-  exist to make that visible, not to pile up more to do.
-- **Room for rest.** Nothing auto-suggests the next task. The gap after finishing something is
-  yours.
+  you are on the hook for, then keep it or consciously renegotiate it. `#next`, focus blocks and
+  Given time exist to make that visible, not to pile up more to do.
+- **Room for rest.** Nothing pushes the next task at you; Engage offers only what you already chose -
+  the same owner, your schedule. The gap after finishing something is yours.
 
 More in [Why Kept GTD works this way](docs/user/philosophy.md).
 
@@ -61,12 +61,17 @@ More in [Why Kept GTD works this way](docs/user/philosophy.md).
 - **Loops**: small projects inside an area or project, named by a tag like `#workshop/teamoffsite` -
   one tap starts one, its todos are grouped together, it has one note from start to end, and it
   closes when nothing is open
-- **Daily, Week and Month** views with meetings, due todos and next actions from what you focus on
+- **Contexts** (Work, Home, Café): one chip in the tab bar filters Daily, Week, Month, Projects,
+  Areas and the Weekly Review to what belongs there, and says what it hides
+- **Daily, Week and Month** views with your schedule, due todos and next actions; **Given time** on
+  Week and Month shows which loops, threads, projects and areas got your time
+- **Focus blocks**: time for yourself in the schedule (**F**), for a loop, thread, project or area
+- **The context panel**: tap a meeting and see what you owe, what is next, what you wait for and what
+  was agreed last time; Quick Add straight into the meeting
 - **Engage**: a second sidebar button shows a small panel over the note you work in - what you
   are working on (done, note, linked file) and the next actions of its project, area, loop or
   thread, what you owe first; what was agreed in the meeting you are in; the next meeting here
-  and today; when none is left, the plan to pick from
-- **Focus mode** (`#now`): only the few things you are doing right now
+  and today; when none is left, the plan to pick from, or today's schedule
 - **Meetings** with prep and review ticks and a **Reflection page** after the meeting's page - one
   handwritten page per meeting for how it went, never a todo
 - **Quick Add** for todos, meetings and notes, with tags, due dates and refiling - one box of one
@@ -74,7 +79,7 @@ More in [Why Kept GTD works this way](docs/user/philosophy.md).
   with it
 - **Projects & Areas** with status, scope, abbreviations and linked files
 - **Home notebooks**: one notebook per project and area (and year), one tap away from every list -
-  with a Home page (scope and goals), a Notebook tab with its years and (experimental) its headings,
+  with a Home page (title and scope), a Notebook tab with its years and (experimental) its headings,
   and a rename offer when you renamed the folder elsewhere
 - **Inbox + lasso capture** from handwriting, or **Mark for later** in one tap and process the marks later
 - **Weekly Review** hub with one clear step at a time

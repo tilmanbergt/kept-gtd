@@ -52,8 +52,11 @@ import {clearCachedGmailInbox} from './src/storage/gmailInboxCache';
 import {setActiveProfileId} from './src/storage/profileKeys';
 import {switchProfile} from './src/storage/profiles';
 import {DEFAULT_PROFILE_ID} from './src/domain/profiles';
+import {DEMO_PROFILE_ID} from './src/domain/demoSpace';
+import {activeContext, EVERYTHING_LABEL} from './src/domain/contexts';
+import {useSettings} from './src/ui/useSettings';
 import {clearReturnRecord, getReturnRecord, recordPluginOpen} from './src/storage/returnRecord';
-import {loadSettings, saveSettings} from './src/storage/settingsStorage';
+import {loadSettings} from './src/storage/settingsStorage';
 import {
   FolderEntry,
   getCurrentNotePath,
@@ -111,14 +114,11 @@ interface CurrentItem {
 }
 
 // Whether we're still resolving where to land on launch, showing the
-// full-screen Lasso-capture overlay, showing the tab shell, or showing
-// Daily's focus mode. Deliberately separate from `activeTab`/`currentItem`
-// (which persist regardless of mode) - both the capture overlay and focus
-// mode sit on top of the tab shell rather than being one of its tabs.
-// 'focus' (docs/dev/history/technical-design-now-focus-mode.md §4) is the same
-// DailyView instance as 'tabs'-mode Daily, just rendered with its
-// focusMode prop on instead of a separate screen component.
-type Mode = 'loading' | 'capture' | 'tabs' | 'focus' | 'engage';
+// full-screen Lasso-capture overlay, the tab shell or the Engage panel.
+// Deliberately separate from `activeTab`/`currentItem` (which persist
+// regardless of mode) - the capture overlay sits on top of the tab shell
+// rather than being one of its tabs.
+type Mode = 'loading' | 'capture' | 'tabs' | 'engage';
 
 // The central status slot (docs/dev/history/technical-design-status-slot.md) needs its
 // provider above every mode, so App itself is only the provider; the real
@@ -209,6 +209,16 @@ function AppShell({onProfileSwitched}: {onProfileSwitched: () => void}): React.J
 
   // Help and the other overlays over the tab body (screens/useAppOverlays.tsx).
   const overlays = useAppOverlays(mode === 'tabs', activeTab);
+  // The tab bar's context chip opens Settings → Contexts, where any context is made active
+  // (docs/dev/history/technical-design-time-and-place.md §3.3, As built).
+  const openSettingsContexts = () => {
+    overlays.closeOverlays();
+    setSettingsTab('contexts');
+    setActiveTab('settings');
+  };
+  // The tab bar's context chip and demo marker follow the settings snapshot (a switch shows at once).
+  const liveSettings = useSettings();
+  const activeCtx = liveSettings ? activeContext(liveSettings) : null;
   // A Review step asked for from an overview or Engage (screens/review/reviewNav.ts).
   useReviewStepNav(() => {
     overlays.closeOverlays();
@@ -355,10 +365,9 @@ function AppShell({onProfileSwitched}: {onProfileSwitched: () => void}): React.J
 
         // Where to land is one pure decision (domain/returnContext.ts's
         // decideLanding, docs/dev/history/technical-design-return-to-origin.md), in this
-        // priority: focus mode > resume > the note's Project/Area > Daily.
+        // priority: resume > the note's Project/Area > Daily.
         const returnRecord = getReturnRecord();
         const landing = decideLanding({
-          focusModeActive: loadedSettings.focusModeActive,
           currentPath,
           record: returnRecord,
           paths: resolvePaths(loadedSettings),
@@ -373,18 +382,6 @@ function AppShell({onProfileSwitched}: {onProfileSwitched: () => void}): React.J
           'current=' + String(currentPath),
           'recorded=' + String(returnRecord?.path ?? null),
         );
-
-        // Focus mode overrides the normal reorient entirely (
-        // docs/dev/history/technical-design-now-focus-mode.md §4): while it's on, reopening the plugin
-        // must always land back on it, never on the current note's
-        // Project/Area - "sessions are held lightly", but staying put is the
-        // one thing this flag guarantees. The return record is left alone.
-        if (landing.kind === 'focus') {
-          log('App: reorienting to focus mode (focusModeActive)');
-          hasLandedRef.current = true;
-          setMode('focus');
-          return;
-        }
 
         // Resume: the note that's open now is the one this plugin itself
         // opened last, so the user is just back from a quick look/jotting -
@@ -500,7 +497,6 @@ function AppShell({onProfileSwitched}: {onProfileSwitched: () => void}): React.J
   const navRef = useRef<{
     openInbox: () => void;
     openSettingsCalendar: () => void;
-    onEnterFocusMode: () => void;
     handleArchived: (kind: 'project' | 'area') => void;
     openCloseOut: (path: string, closeOutMode: 'full' | 'quick') => void;
     openMarks: (scope: MarkScope, returnTo: CaptureReturnTo) => void;
@@ -509,7 +505,6 @@ function AppShell({onProfileSwitched}: {onProfileSwitched: () => void}): React.J
     () => ({
       openInbox: () => navRef.current?.openInbox(),
       openSettingsCalendar: () => navRef.current?.openSettingsCalendar(),
-      onEnterFocusMode: () => navRef.current?.onEnterFocusMode(),
       handleArchived: (kind: 'project' | 'area') => navRef.current?.handleArchived(kind),
       startCloseOutFull: (path: string) => navRef.current?.openCloseOut(path, 'full'),
       openMarks: (scope: MarkScope, returnTo: CaptureReturnTo) => navRef.current?.openMarks(scope, returnTo),
@@ -547,6 +542,8 @@ function AppShell({onProfileSwitched}: {onProfileSwitched: () => void}): React.J
     if (shownBeforeRef.current.has(activeTab)) requestEinkRefresh();
     shownBeforeRef.current.add(activeTab);
   }, [activeTab, keepTabsAlive]);
+  // Project close-out off (Settings → Features): no "Close out…" on Current or
+  // in Review, so a Done project archives directly there.
   // The kept screens' elements, created once (and for Current once per
   // item): the same element object on every App render lets React skip a
   // hidden screen entirely when App re-renders on a tab tap.
@@ -559,7 +556,6 @@ function AppShell({onProfileSwitched}: {onProfileSwitched: () => void}): React.J
           onOpenItem={stableOpenItem}
           onOpenInbox={stableNav.openInbox}
           onOpenCalendarSettings={stableNav.openSettingsCalendar}
-          onEnterFocusMode={stableNav.onEnterFocusMode}
         />
       ),
       week: (
@@ -586,7 +582,7 @@ function AppShell({onProfileSwitched}: {onProfileSwitched: () => void}): React.J
           onArchived={stableNav.handleArchived}
           onOpenCalendarSettings={stableNav.openSettingsCalendar}
           onOpenItem={stableOpenItem}
-          onStartCloseOut={stableNav.startCloseOutFull}
+          onStartCloseOut={features.closeOut ? stableNav.startCloseOutFull : undefined}
         />
       ) : (
         <View style={styles.emptyCurrent}>
@@ -596,7 +592,7 @@ function AppShell({onProfileSwitched}: {onProfileSwitched: () => void}): React.J
         </View>
       ),
     }),
-    [currentItem, stableOpenItem, stableNav, textColor],
+    [currentItem, stableOpenItem, stableNav, textColor, features.closeOut],
   );
 
   const openSettingsAbout = () => {
@@ -655,41 +651,6 @@ function AppShell({onProfileSwitched}: {onProfileSwitched: () => void}): React.J
   openItemRef.current = openItem;
 
   const openDaily = () => {
-    setActiveTab('daily');
-    setMode('tabs');
-  };
-
-  // Daily's "Focus mode" button (focusMode=false) calls this to switch into
-  // focus mode (docs/dev/history/technical-design-now-focus-mode.md §4.1). Entering
-  // never itself marks anything #now - if some tasks already carry it from
-  // earlier, the filtered view already reflects that the instant it renders;
-  // otherwise focus mode's own Picker state is what's shown. Persists the
-  // flag first so a reopen mid-transition still resolves correctly.
-  const onEnterFocusMode = () => {
-    if (!settings) return;
-    const next = {...settings, focusModeActive: true};
-    setSettings(next);
-    saveSettings(next).catch(e =>
-      logError('App: saving focusModeActive=true failed', errorMessage(e)),
-    );
-    setMode('focus');
-  };
-
-  // Focus mode's own exit mark calls this (§4.2). Always ends the session
-  // outright - it does not itself clear any #now tags (
-  // docs/dev/history/technical-design-now-focus-mode.md §5 - the flag plus whatever's still #now *is*
-  // the entire state; nothing else needs resetting). Lands back on normal
-  // Daily specifically, not just "whatever tabs mode was" - activeTab was
-  // never touched while in 'focus' mode, but setting it explicitly here is
-  // cheap and removes any doubt.
-  const onExitFocusMode = () => {
-    if (settings) {
-      const next = {...settings, focusModeActive: false};
-      setSettings(next);
-      saveSettings(next).catch(e =>
-        logError('App: saving focusModeActive=false failed', errorMessage(e)),
-      );
-    }
     setActiveTab('daily');
     setMode('tabs');
   };
@@ -792,31 +753,8 @@ function AppShell({onProfileSwitched}: {onProfileSwitched: () => void}): React.J
     );
   }
 
-  // Focus mode (docs/dev/history/technical-design-now-focus-mode.md §4): the exact same
-  // DailyView instance 'tabs' mode's Daily tab renders below, just with
-  // focusMode on - no separate screen component, no separate data load.
-  // Rendered here, before the TabBar-wrapped 'tabs' branch, like 'capture'
-  // above - full-screen, no TabBar.
-  if (mode === 'focus') {
-    // The status slot sits at the very top of focus mode (D4) - it's
-    // normally empty there.
-    return (
-      <View style={styles.root}>
-        <StatusFrame>
-          <DailyView
-            focusMode
-            onExitFocusMode={onExitFocusMode}
-            onOpenItem={stableOpenItem}
-            onOpenInbox={openInbox}
-            onOpenCalendarSettings={openSettingsCalendar}
-          />
-        </StatusFrame>
-      </View>
-    );
-  }
-
   const handleClose = () => PluginManager.closePluginView();
-  navRef.current = {openInbox, openSettingsCalendar, onEnterFocusMode, handleArchived, openCloseOut, openMarks};
+  navRef.current = {openInbox, openSettingsCalendar, handleArchived, openCloseOut, openMarks};
 
   // Tabs that are never kept alive - rendered while visible, in both modes.
   const nonKeptBody = (
@@ -840,7 +778,7 @@ function AppShell({onProfileSwitched}: {onProfileSwitched: () => void}): React.J
             onOpenItem={stableOpenItem}
             onReviewRecorded={refreshSettings}
             onOpenCalendarSettings={openSettingsCalendar}
-            onStartCloseOut={openCloseOut}
+            onStartCloseOut={features.closeOut ? openCloseOut : undefined}
           />
         ))}
       {activeTab === 'settings' && (
@@ -859,6 +797,9 @@ function AppShell({onProfileSwitched}: {onProfileSwitched: () => void}): React.J
         profileLabel={
           settings && settings.activeProfileId !== DEFAULT_PROFILE_ID ? settings.activeProfileId.toUpperCase() : null
         }
+        demo={settings?.activeProfileId === DEMO_PROFILE_ID}
+        contextLabel={activeCtx ? activeCtx.name || 'Unnamed' : EVERYTHING_LABEL}
+        onContextPress={openSettingsContexts}
         onProfilePress={openSettingsAdvanced}
         helpOpen={overlays.helpOpen}
         onHelpPress={overlays.toggleHelp}
@@ -899,7 +840,6 @@ function AppShell({onProfileSwitched}: {onProfileSwitched: () => void}): React.J
                   onOpenItem={stableOpenItem}
                   onOpenInbox={openInbox}
                   onOpenCalendarSettings={openSettingsCalendar}
-                  onEnterFocusMode={onEnterFocusMode}
                 />
               )}
               {activeTab === 'week' && (
@@ -924,7 +864,7 @@ function AppShell({onProfileSwitched}: {onProfileSwitched: () => void}): React.J
                     onArchived={handleArchived}
                     onOpenCalendarSettings={openSettingsCalendar}
                     onOpenItem={stableOpenItem}
-                    onStartCloseOut={path => openCloseOut(path, 'full')}
+                    onStartCloseOut={features.closeOut ? path => openCloseOut(path, 'full') : undefined}
                   />
                 ) : (
                   <View style={styles.emptyCurrent}>

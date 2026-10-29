@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-97 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+130 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -104,6 +104,66 @@ Test: `__tests__/scenarios/closeOut.test.tsx` · design: `docs/dev/history/techn
 
 Test: `__tests__/scenarios/keptGtd.test.tsx`
 
+## Contexts
+
+### A context filters Daily: hidden todos, dimmed meetings, the hidden line and Show
+
+- **Given** contexts Work (Area Atruvia) and Home (Area Garden)
+- **When** I open Daily, tap the chip in the tab bar, choose Home in Settings → Contexts and go back to Daily
+- **Then** the chip names Home, and the status line says so
+- **And** Atruvia's todos are hidden, its overdue one too; Garden's and the Inbox show
+- **And** Atruvia's meeting is still listed (dimmed), and the hidden line counts the hidden todos and warns of the due one
+- **When** I tap Show
+- **Then** everything shows
+- **When** I switch to Week and back to Daily
+- **Then** Home filters again
+
+Test: `__tests__/scenarios/contexts.test.tsx`
+
+### A context filters Areas, Projects and Review; Reviewed stays global
+
+- **Given** contexts Work and Home, Home active
+- **When** I open Areas
+- **Then** only Garden is listed, and the hidden line counts Atruvia
+- **When** I open Review
+- **Then** Stalled projects counts Home's project and "+1 in other contexts"
+- **When** I open the step
+- **Then** it lists Shed and not Tender
+- **When** I mark it Reviewed, choose Everything and open Review's overview again
+- **Then** Stalled projects counts both and shows today's review: the mark is global
+
+Test: `__tests__/scenarios/contexts.test.tsx`
+
+### Quick Add says when the entry lands outside the context
+
+- **Given** Home is active and Atruvia has the abbreviation AT
+- **When** I add "Prepare offer #AT" on Daily
+- **Then** it is in Atruvia's file, and the status line says "Saved to Atruvia · hidden by Home"
+
+Test: `__tests__/scenarios/contexts.test.tsx`
+
+### Settings → Contexts: create Café, then choose it from the chip
+
+- **Given** a space with todos tagged #reading and #computer
+- **When** I create the context "Café" with Shows #reading and Hides #computer (its Tags list)
+- **Then** the preview counts what it shows
+- **When** I save
+- **Then** Café is listed with its count and summary
+- **When** I tap its radio
+- **Then** the chip names Café
+
+Test: `__tests__/scenarios/contexts.test.tsx`
+
+### Settings → Contexts: a context that shows one Area, named and saved from the top row
+
+- **Given** the areas Home and Atruvia, each with a next todo
+- **When** I create "Home" with Shows on the Area Home and tap Save
+- **Then** the Areas list counts the choice and the context is listed
+- **When** I tap its radio and open Daily
+- **Then** Daily shows Home's todo and hides Atruvia's
+
+Test: `__tests__/scenarios/contexts.test.tsx`
+
 ## Daily
 
 ### Add a meeting for next week from Daily
@@ -115,6 +175,115 @@ Test: `__tests__/scenarios/keptGtd.test.tsx`
 
 Test: `__tests__/scenarios/daily.test.tsx` · design: `docs/dev/history/technical-design-cache-subscription-and-shared-add-path.md`
 
+### Daily: a todo's card, then its edit, saved into its own file
+
+- **Given** the smoke space and Daily open
+- **When** I tap "Water the lawn"
+- **Then** its card shows in Quick Add's place, with its owner
+- **When** I tap Edit on the card, change the text to "Water the lawn early" and save
+- **Then** Garden's area.txt has the new text and the card shows again
+
+Test: `__tests__/scenarios/dailySlim.test.tsx`
+
+### Daily's tag filter: tapping a tag shows only its todos, the pill clears it
+
+- **Given** the smoke space with "Buy bulbs #garden" in Garden
+- **When** I open Daily and tap #garden in a row
+- **Then** only #garden todos show and the pill reads #garden
+- **When** I tap the pill
+- **Then** everything shows again
+
+Test: `__tests__/scenarios/dailySlim.test.tsx`
+
+### Quick-file from a Daily edit: "Save to <Name>" moves the todo
+
+- **Given** "Buy bulbs" in the Inbox and project Garage (#GAR)
+- **When** I edit it on Daily, add "#GAR" and tap Save to Garage
+- **Then** it is in Garage's file and not in Inbox.txt
+
+Test: `__tests__/scenarios/dailySlim.test.tsx`
+
+### Daily: tapping a thread meeting shows its card and the context panel
+
+- **Given** "1:1 Mieke #sparring/mieke" today at 15:00, an owed todo from the last 1:1, a waiting todo and an agreement
+- **When** I tap the meeting on Daily
+- **Then** the card shows and the panel lists I owe, Waiting for and Agreed last time
+- **When** I close the card
+- **Then** Next todos are back
+
+Test: `__tests__/scenarios/meetingContext.test.tsx`
+
+### Daily: a plain meeting with nothing linked shows its project
+
+- **Given** "Steering committee" today in project Website, which has the Next todo "Draft homepage"
+- **When** I tap it
+- **Then** the panel says so and lists Website's next todos
+
+Test: `__tests__/scenarios/meetingContext.test.tsx`
+
+### Quick Add to meeting before it starts: an agenda item with the thread tag
+
+- **Given** the thread meeting "1:1 Mieke" today at 15:00
+- **When** I tap it, use + Quick Add to meeting and add "Bring the numbers"
+- **Then** the todo carries the thread tag and no meeting field
+- **And** the card is back and the panel lists it
+
+Test: `__tests__/scenarios/meetingContext.test.tsx`
+
+### Quick Add to meeting during it: the meeting is recorded
+
+- **Given** the thread meeting "1:1 Mieke" today 9:30-10:30, running now
+- **When** I add "Send the contract" through + Quick Add to meeting
+- **Then** the todo has the thread tag and [meeting:: …] of this meeting
+
+Test: `__tests__/scenarios/meetingContext.test.tsx`
+
+### Quick Add to meeting opens the Todo tab and names where it adds, without an abbreviation in the text
+
+- **Given** the thread meeting "1:1 Mieke" today at 15:00, and Quick Add left on its Meeting tab
+- **When** I switch Quick Add to Meeting, tap the meeting and + Quick Add to meeting
+- **Then** the Todo tab shows, its button reads "+ Add to Coaching" and the text is empty
+
+Test: `__tests__/scenarios/meetingContext.test.tsx`
+
+### A todo in the panel opens its card and edit form; Save and ✕ return to the meeting
+
+- **Given** the thread meeting "1:1 Mieke" today at 15:00 with "Send the slides" owed
+- **When** I tap the meeting, then "Send the slides" in the panel
+- **Then** the todo's card shows in Quick Add's place; the panel stays
+- **When** I close the todo's card
+- **Then** the meeting's card is back
+- **When** I tap "Send the slides" twice, change it to "Send the final slides" and save
+- **Then** the file has the new text and the meeting's card is back
+
+Test: `__tests__/scenarios/meetingContext.test.tsx`
+
+### ✕ Close in the panel's header closes the meeting: Daily shows its next todos again
+
+- **Given** the thread meeting "1:1 Mieke" today at 15:00
+- **When** I tap the meeting, then ✕ Close next to Overview ›
+- **Then** the card and the panel are gone; Next todos shows
+
+Test: `__tests__/scenarios/meetingContext.test.tsx`
+
+### The panel gives the full context: Next, Planned and a Waiting for dated later, which Daily leaves out
+
+- **Given** the thread meeting "1:1 Mieke" today, an agenda point without a flow state and a Waiting for due on 30.10.
+- **When** I open Daily
+- **Then** Next todos lists neither the agenda point nor the later Waiting for
+- **When** I tap the meeting
+- **Then** the panel lists Next, Planned and Waiting for
+
+Test: `__tests__/scenarios/meetingContext.test.tsx`
+
+### Tapping the title on a card opens its edit form, like Edit
+
+- **Given** the thread meeting "1:1 Mieke" today with "Send the slides" owed
+- **When** I tap "Send the slides" in the panel, then the title on its card
+- **Then** the todo's edit form shows with Save
+
+Test: `__tests__/scenarios/meetingContext.test.tsx`
+
 ### Daily: tomorrow's tracked meeting offers Prepped, and Daily has no Link file
 
 - **Given** area "Coaching" has a sparring session tomorrow
@@ -123,15 +292,26 @@ Test: `__tests__/scenarios/daily.test.tsx` · design: `docs/dev/history/technica
 
 Test: `__tests__/scenarios/meetingReflection.test.tsx` · design: `docs/dev/history/technical-design-item-card.md`
 
-### Daily shows today's meetings, the todos that matter now and the focus (smoke)
+### Upgrade: 0.22 starts on a 0.21 space without writing a file or a setting
 
-- **Given** the smoke space on Wednesday 14.10.2026
+- **Given** a 0.21 space: Website with focus flags, goals and #now, Garage in no focus with a #next todo; focus mode on
+- **When** 0.22 starts
+- **Then** Daily shows every next todo - Garage's too - and "Write copy #now" as "Write copy #next"
+- **And** the one-time line says focus is retired
+- **And** no file changed
+- **And** the stored settings still hold the focus keys
+
+Test: `__tests__/scenarios/rollback.test.tsx`
+
+### Daily under a context shows today's meetings and the next todos it shows, and counts the rest (smoke)
+
+- **Given** the smoke space on Wednesday 14.10.2026 with the context Home (Area Garden) active
 - **When** I open Daily
 - **Then** the Today tab lists "Neighbour chat" and "Dentist"
-- **And** the todos are grouped under Inbox, Garage, Garden and Website, each with its label
-- **And** "Sort tools" shows because Garage is in weekly focus; "Draft homepage" doesn't, its project is in no focus
+- **And** the todos are the Inbox's, Garden's project Garage's and Garden's, each with its label; the rest is counted, Website's overdue one as "1 due!"
 - **And** Someday, Maybe and done todos don't show
-- **And** the focus panel shows Garden under Areas
+- **When** I tap Show
+- **Then** Website's next todo and its Waiting For show too
 - **When** I tap Tomorrow
 - **Then** it lists "Supplier call"
 - **And** no error was logged
@@ -252,6 +432,15 @@ Test: `__tests__/scenarios/engageMoment.test.tsx` · design: `docs/dev/history/t
 - **Then** Quick Add has no Agreement tab
 
 Test: `__tests__/scenarios/engageMoment.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md`
+
+### Engage fallback: on a note without owner, Engage lists the owners of today's remaining schedule
+
+- **Given** on Wednesday 14.10. at 10:00: Garden's "Neighbour chat" at 14:00 and a Writing focus block at 11:00, an earlier block at 8:00
+- **When** I press Engage on a note outside every Project and Area
+- **Then** it shows today's schedule: Writing (the block at 11:00), then Garden (14:00); the Inbox's Dentist has no owner
+- **And** nothing was logged as an error
+
+Test: `__tests__/scenarios/focusBlocks.test.tsx`
 
 ### Engage on the meeting's page offers the reflection; on the reflection page it opens on what came out of the thread's meetings
 
@@ -461,6 +650,27 @@ Test: `__tests__/scenarios/smoke/captureTodo.test.tsx`
 
 ## Meetings
 
+### Focus block from Quick Add: F on, the tag in the file, an F row and a Focus card
+
+- **Given** the smoke space on Wednesday and a Loop setup for #writing
+- **When** I add the meeting "Writing session #writing/novel" tomorrow 9-11 on Daily with F on
+- **Then** Inbox.txt has the line with #focusblock
+- **When** I open Tomorrow
+- **Then** the row shows the F mark and no #focusblock; the day counts it as focus, with the smoke space's own block
+- **When** I tap it
+- **Then** the card says "Focus · ahead" with "writing novel ›" and has no P or R
+
+Test: `__tests__/scenarios/focusBlocks.test.tsx`
+
+### No close-out for focus blocks
+
+- **Given** area Coaching with yesterday's "Sparring Mieke" and the focus block "Sparring prep", both of a setup that tracks review
+- **When** I open Review → Meetings to close out
+- **Then** it lists the meeting and not the focus block
+- **And** nothing was logged as an error
+
+Test: `__tests__/scenarios/focusBlocks.test.tsx`
+
 ### Tick R and M on the card: only the tags change
 
 - **Given** area "Coaching" has a sparring session last week, tracked for review
@@ -589,10 +799,11 @@ Test: `__tests__/scenarios/keptGtd.test.tsx`
 
 - **Given** my real PARA folder has project "Website" and an empty Inbox
 - **When** I create the demo space in Settings → Advanced and switch to it
-- **Then** the tab bar says DEMO and Projects shows the demo projects, not "Website"
+- **Then** the tab bar shows the boxed D and Projects shows the demo projects, not "Website"
+- **And** the chip opens Settings → Contexts with Work and Home; Daily has Garden renovation's focus block today
 - **When** I add the todo "Try the demo" in the Inbox
 - **Then** it is in the demo space's Inbox.txt, and my real Inbox.txt is untouched
-- **When** I tap DEMO in the tab bar and switch back to Production
+- **When** I tap the D in the tab bar and switch back to Production
 - **Then** "Website" is back, and the demo todo is not in my Inbox
 - **And** both profiles are saved as files in EXPORT/kept-gtd/profiles
 
@@ -602,7 +813,7 @@ Test: `__tests__/scenarios/profiles.test.tsx` · design: `docs/dev/history/techn
 
 - **Given** the smoke space on Wednesday 14.10.2026
 - **When** I create the demo space in Settings → Advanced and switch to it
-- **Then** Daily shows the demo's content
+- **Then** Daily shows the demo's content under the inverted tab bar with its D
 - **When** I switch back to Production
 - **Then** Daily shows the smoke space again
 - **And** no error was logged
@@ -651,11 +862,25 @@ Test: `__tests__/scenarios/currentPagePerf.test.tsx` · design: `docs/dev/histor
 
 Test: `__tests__/scenarios/currentPagePerf.test.tsx` · design: `docs/dev/history/technical-design-perf-current-page.md`
 
+### Focus flags, goal spans and #now survive a todo, a meeting and a status change
+
+- **Given** Website as 0.21 wrote it: all three focus flags, goals, "Write copy #now"
+- **When** I open Website and tick "Write copy"
+- **Then** only its checkbox and completion field changed; #now stays in the text
+- **When** I add the meeting "Kick-off" on 2026-10-20
+- **Then** the frontmatter and the goal spans are byte for byte as before
+- **When** I set it On Hold
+- **Then** the status line changed and the focus lines are still there, in place
+- **And** no error was logged
+
+Test: `__tests__/scenarios/rollback.test.tsx`
+
 ### The area page shows its todos, meetings and agreements, and its folder once Files is opened (smoke)
 
 - **Given** the smoke space on Wednesday 14.10.2026
 - **When** I open Garden from Areas
 - **Then** Todos list "Buy bulbs" and "Repair the fence", and Meetings list "Neighbour chat"
+- **And** the Given time line counts this week's two meetings, the focus block and "Delivery" (11 h) and this month's (20 h)
 - **And** Garden's folder is not listed
 - **When** I tap "◇ Agreements 1 ›"
 - **Then** the list shows "Water only in the morning"
@@ -728,15 +953,13 @@ Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/techn
 
 Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/technical-design-item-card.md`
 
-### Todo card: Now, a flow chip, done and delete act at once
+### Todo card: a flow chip, done and delete act at once; a retired #now leaves with Next
 
-- **Given** project "Garden renovation" has the todos "Order soil #next" and "Fix the fence"
+- **Given** project "Garden renovation" has the todos "Order soil #next #now" (left from focus mode) and "Fix the fence"
 - **When** I tap "Order soil" on the project page
-- **Then** its card shows it as Next, with Now offered
-- **When** I tap Now
-- **Then** the todo gets #now
+- **Then** its card shows it as Next, with no Now
 - **When** I tap Someday on the card
-- **Then** it is Someday, and Now went with Next
+- **Then** it is Someday, and #now went with Next
 - **When** I tick it done on the card
 - **Then** it is done with today's completion date
 - **When** I tap the row "Fix the fence", Delete on its card, and confirm
@@ -805,7 +1028,64 @@ Test: `__tests__/scenarios/quickAdd.test.tsx` · design: `docs/dev/history/techn
 
 Test: `__tests__/scenarios/smoke/daily.test.tsx`
 
+## Review
+
+### Tend: a thread without a meeting in 14 days counts in the Tend line and shows "nothing planned"
+
+- **Given** on Wednesday 14.10.: Coaching's active thread mieke met yesterday and has nothing ahead
+- **When** I open Week
+- **Then** the Tend line counts one quiet thread
+- **When** I tap it
+- **Then** Review opens Tending threads, where mieke's row says "nothing planned"
+- **And** no error was logged
+
+Test: `__tests__/scenarios/givenTime.test.tsx`
+
+### Open loops: "+ F block" fills Quick Add's Meeting tab with the loop and F on
+
+- **Given** on Wednesday 14.10.: Writing with the active loop #writing/novel, nothing planned and no next todo
+- **When** I open Review → Open loops and select the loop
+- **Then** its row says "nothing planned"
+- **When** I tap "+ F block", set 9-11 and add
+- **Then** Writing gets a focus block today with the loop tag
+- **And** no error was logged
+
+Test: `__tests__/scenarios/givenTime.test.tsx`
+
 ## Settings
+
+### Close-out off: a Done project archives directly from its page
+
+- **Given** Project close-out is switched off and project "Website" is Done
+- **When** I open Website on Current
+- **Then** its status panel offers Archive, not Close out
+- **When** I archive it and confirm
+- **Then** the folder is in the Archive and no close-out wizard opened
+
+Test: `__tests__/scenarios/features.test.tsx`
+
+### Close-out off: Review's Done step archives directly
+
+- **Given** Project close-out is switched off and project "Website" is Done
+- **When** I open Review → Done awaiting review and pick Website
+- **Then** it offers Archive, not Close out… or Quick archive…
+- **When** I archive it and confirm
+- **Then** the folder is in the Archive
+
+Test: `__tests__/scenarios/features.test.tsx`
+
+### Settings → Features shows the Experimental switches that moved from Advanced
+
+- **Given** Google Calendar was switched on before and project "Website" is Done
+- **When** I open Settings → Features
+- **Then** Project close-out is on and Google Calendar is on under Experimental
+- **When** I open Advanced
+- **Then** it no longer shows the Experimental switches
+- **When** I switch Project close-out off on Features
+- **And** open the Done project Website
+- **Then** its page offers Archive at once
+
+Test: `__tests__/scenarios/features.test.tsx`
 
 ### Unreadable settings are never replaced by the defaults unasked
 
@@ -904,25 +1184,88 @@ Test: `__tests__/scenarios/threadsBigArea.test.tsx` · design: `docs/dev/history
 
 ## Week and Month
 
-### Week shows this week's meetings and the weekly focus with its goals (smoke)
+### Month: a focus block shows with its name and F only when marked M
+
+- **Given** area Writing with the focus block "Chapter one" on 15.10. marked M and "Chapter two" on 16.10. without M
+- **When** I open Month
+- **Then** the 15th shows "Chapter one" and F; the 16th shows nothing
+
+Test: `__tests__/scenarios/focusBlocks.test.tsx`
+
+### Given time: areas and projects by time, an all-day event as "1 day", Worked on for todos done
+
+- **Given** on Wednesday 14.10.: Writing with two focus blocks this week, Garden with an all-day delivery, Website with a todo done and nothing scheduled
+- **When** I open Week
+- **Then** Given time lists Garden (1 day) above Writing (3.5 h, two blocks, its next todo)
+- **And** no loop or counterpart reaches 1 h
+- **And** Worked on lists Website with its todo done
+- **And** no error was logged
+
+Test: `__tests__/scenarios/givenTime.test.tsx`
+
+### Given time lists loops and counterparts from the threshold up, never the Inbox
+
+- **Given** on Wednesday 14.10.: Writing with 2 h for the loop novel and 30 min for the loop essay this week, and an Inbox meeting
+- **When** I open Week
+- **Then** Writing has all 2.5 h; Loops and counterparts lists novel, not essay (below 1 h); no Inbox row
+- **When** I set Everything's threshold to "all" a week in Settings → Contexts and go back to Week
+- **Then** essay shows too
+- **And** no error was logged
+
+Test: `__tests__/scenarios/givenTime.test.tsx`
+
+### Given time sums a counterpart's threads into one row
+
+- **Given** on Wednesday 14.10.: Atruvia with Retro, Review and Replenishment with "value" this week, 1 h each
+- **When** I open Week
+- **Then** Loops and counterparts lists "value" once, with 3 h and its three series
+- **And** no error was logged
+
+Test: `__tests__/scenarios/givenTime.test.tsx`
+
+### Week: a day header opens the day, a chip the card and panel, "‹ Back to Week 42" the normal side
+
+- **Given** "1:1 Mieke" on Thursday 15.10.
+- **When** I open Week and tap Thursday's header
+- **Then** the day panel shows
+- **When** I tap the chip
+- **Then** the card and the panel show, with the back row
+- **When** I tap "‹ Back to Week 42"
+- **Then** the panel is gone and the day panel is there again
+
+Test: `__tests__/scenarios/meetingContext.test.tsx`
+
+### Month: a day, then a meeting in it, then "‹ Back to October 2026"
+
+- **Given** "1:1 Mieke" on 15.10.
+- **When** I open Month, tap the 15th and the meeting in its day panel
+- **Then** the card and panel show with the back row
+- **When** I tap the day link
+- **Then** the day panel shows again
+- **When** I tap the meeting again and then "‹ Back to October 2026"
+- **Then** neither the panel nor the day panel shows
+
+Test: `__tests__/scenarios/meetingContext.test.tsx`
+
+### Week shows this week's meetings and the time given to each owner (smoke)
 
 - **Given** the smoke space on Wednesday 14.10.2026
 - **When** I open Week
-- **Then** the grid shows Wednesday 14 "Neighbour chat" and "Dentist", Thursday 15 "Supplier call" and Friday 16 "Delivery"
+- **Then** the grid shows Wednesday 14 "Neighbour chat" and "Dentist", Thursday 15 "Supplier call" and the focus block, Friday 16 "Delivery"
 - **And** not "Soil test", which is next week
-- **And** the weekly focus panel shows Garden with "Plant the bulbs" and Garage with "Clear the shelves"
+- **And** Given time lists Garden with "Delivery" as 1 day, its two timed meetings and its focus block; never the Inbox's Dentist
 - **When** I tap ›
 - **Then** the grid shows Tuesday 20 "Soil test"
 - **And** no error was logged
 
 Test: `__tests__/scenarios/smoke/weekAndMonth.test.tsx`
 
-### Month shows the highlights and the monthly focus with its goal (smoke)
+### Month shows the highlights and the time given this month (smoke)
 
 - **Given** the smoke space on Wednesday 14.10.2026
 - **When** I open Month
-- **Then** the 28th shows "Garden fair" and no other day shows a meeting, since none is a highlight
-- **And** the monthly focus panel shows Garden with "Beds ready for winter"
+- **Then** the 28th shows "Garden fair"; no other day shows a meeting or the F of the focus block on the 15th, since none is a highlight (marked M)
+- **And** Given time counts all of Garden's meetings, highlight or not, and its todo done this month
 - **When** I tap the 14th
 - **Then** the right side lists both meetings of that day
 - **And** no error was logged
@@ -955,7 +1298,7 @@ Test: `__tests__/scenarios/review.test.tsx` · design: `docs/dev/history/technic
 
 - **Given** the smoke space on Wednesday 14.10.2026
 - **When** I open Review
-- **Then** the hub lists its steps with counts: the Inbox's two todos and its meeting, the one Next todo outside focus
+- **Then** the hub lists its steps with counts: the week's schedule (focus block included), the Inbox's two todos and its meeting; no focus steps
 - **When** I open the step "Inbox to zero"
 - **Then** it shows "Call the plumber"
 - **And** no error was logged

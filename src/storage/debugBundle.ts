@@ -56,15 +56,12 @@ export function summarizeSettings(s: GtdParaSettings): string[] {
   const folderKeys = ['baseRoot', 'projectsFolder', 'areasFolder', 'resourcesFolder', 'archiveFolder', 'inboxFolder'] as const;
   const customFolders = folderKeys.some(k => (s[k] ?? '') !== DEFAULT_SETTINGS[k]);
   const f = featuresOf(s);
-  const focus = [
-    `${s.dailyFocusProjectCount}/${s.dailyFocusAreaCount}`,
-    `${s.weeklyFocusProjectCount}/${s.weeklyFocusAreaCount}`,
-    `${s.monthlyFocusProjectCount}/${s.monthlyFocusAreaCount}`,
-  ].join(' ');
   return [
-    `settings: profile ${s.activeProfileId} · folders ${customFolders ? 'custom' : 'default'} · focus d/w/m ${focus} · focusMode ${onOff(s.focusModeActive)} · engage current todo ${s.engageCurrent ? 'yes' : 'no'}`,
+    `settings: profile ${s.activeProfileId} · folders ${customFolders ? 'custom' : 'default'} · engage current todo ${s.engageCurrent ? 'yes' : 'no'}`,
     `          calendar ${s.googleCalendarIcsUrl.trim() ? 'configured' : 'not configured'}, ${onOff(f.googleCalendar)}` +
-      ` · gmail ${s.gmailEmail.trim() ? 'configured' : 'not configured'}, ${onOff(f.gmail)}`,
+      ` · gmail ${s.gmailEmail.trim() ? 'configured' : 'not configured'}, ${onOff(f.gmail)}` +
+      ` · modules: closeOut ${onOff(f.closeOut)}` +
+      ` · contexts ${(s.contexts ?? []).length}, active ${s.activeContextId ? 'yes' : 'no'}`,
     `          keepTabs ${onOff(s.keepTabsAlive)} · perfTracing ${onOff(s.perfTracing)} · debugLogging ${onOff(s.debugLogging)}` +
       ` · reviewSteps recorded ${Object.keys(s.reviewSteps ?? {}).length}`,
     noteSetupsLine(s, didNoteSetupMigrationFail()),

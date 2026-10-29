@@ -1,13 +1,12 @@
 /**
  * The overlays App.tsx draws over the tab body (design-overview.md §2.1): the
- * in-app help (docs/dev/history/technical-design-in-app-help.md §3.3) and the
+ * in-app help (docs/dev/history/technical-design-in-app-help.md §3.3), the
  * thread overview (docs/dev/history/technical-design-tending-threads.md §3.5)
  * or the loop overview (docs/dev/history/technical-design-loops.md §4.5).
  * An overlay sits inside StatusFrame, so the TabBar and the status slot stay
  * visible and the tab screens stay mounted underneath, exactly as they were.
  *
- * At most one overlay is open: opening the help closes the overview and vice
- * versa. Any change of tab and leaving the tab shell (capture, focus mode)
+ * At most one overlay is open: opening one closes the others. Any change of tab and leaving the tab shell (capture, focus mode)
  * close both; an overview requested outside the tab shell is dropped. Closing
  * an overlay requests an e-ink refresh, because the screen behind reappears
  * without a load edge of its own.

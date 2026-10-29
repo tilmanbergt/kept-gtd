@@ -96,7 +96,7 @@ scenario('An Area page lists its folder only when the Files tab is opened', {fea
   when('I tap Files', () => tap('Files', texts().filter(t => t === 'Files').length - 1));
   then('the folder is listed once and its entries show', () => {
     expect(listings(areaDir('Atruvia'))).toBe(1);
-    expectShows('Meetings');
+    expectShows('Schedule');
   });
 });
 
@@ -121,7 +121,7 @@ scenario('Hiding done todos on an Area page changes the Todos list and nothing e
     expectShows(/^Show \d+ done tasks?$/);
     const counts = renderCounts();
     expect(counts.TodosSection).toBeGreaterThan(0);
-    for (const name of ['QuickAddWidget', 'ItemDetail', 'FileBrowserPane', 'ThreadsTab', 'ItemFocusPanel', 'ItemStatusPanel']) expect([name, counts[name] ?? 0]).toEqual([name, 0]);
+    for (const name of ['QuickAddWidget', 'ItemDetail', 'FileBrowserPane', 'ThreadsTab', 'ItemScopePanel', 'ItemStatusPanel']) expect([name, counts[name] ?? 0]).toEqual([name, 0]);
   });
   and('after opening Zen and coming back, done todos are still hidden', async () => {
     await tapTab('Areas');

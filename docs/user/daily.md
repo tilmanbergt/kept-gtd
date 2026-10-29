@@ -1,39 +1,31 @@
-# Daily and focus mode
+# Daily
 
-Daily is the page for today. It shows your meetings for today and tomorrow, the todos that matter now, and the projects and areas you have in focus.
+Daily is the page for today. It shows your schedule for today and tomorrow and the todos that matter now - in the current context (see [Contexts](contexts.md)).
 
 ## What appears on Daily
 
 A todo appears on Daily when it is open and one of these is true:
 
+- it is marked **Next**
 - it is due today, tomorrow or overdue
-- it is marked **Next** and its project or area is in daily, weekly or monthly focus
-- it is in the Inbox and marked **Next**
-- it is marked **Waiting for** and has no date, or its date is today or earlier - from any project, area or the Inbox
+- it is marked **Waiting for** and has no date, or its date is today or earlier
 
-Todos marked Someday or Maybe never appear on Daily. Todos are grouped by project or area; Waiting for todos come last in their group.
+Todos marked Someday or Maybe never appear on Daily. Todos are grouped by project or area, the Inbox first; Waiting for todos come last in their group.
+
+With a context active, Daily shows only the todos of the projects, areas and tags the context shows. The Inbox always shows; todos that are due follow the context too. The last line counts the rest, for example "Hidden by Home: 4 todos · 1 due! · Show" - "due!" counts hidden todos due today or earlier; **Show** shows everything until you switch tabs. Meetings outside the context stay in the list, dimmed.
 
 ## Labels
 
-After a todo's title, short labels show what matters about it: `#next`, `#now`, `#w/f Lena` (waiting for Lena), `#due 5.10.` (with `!` when overdue). If a title is too long, it is shortened with … so the labels always fit. The same labels appear on every tab; in a list grouped by Next, Waiting For and so on, the label the heading already says is left out.
+After a todo's title, short labels show what matters about it: `#next`, `#w/f Lena` (waiting for Lena), `#due 5.10.` (with `!` when overdue). If a title is too long, it is shortened with … so the labels always fit. The same labels appear on every tab; in a list grouped by Next, Waiting For and so on, the label the heading already says is left out. A `#now` from earlier versions counts as `#next` and shows as `#next`.
 
-The left column shows meetings with the tabs **Today** and **Tomorrow** (and **Google** when the Google Calendar integration is on). Tap a meeting to see its card in Quick Add's place: the prep or review tick, **M**, its note and, once it is over, **Reflect**; tap it again or **Edit** to change it (see [Meetings](meetings.md)). Daily has no Files pane, so linking a file happens on the project's page. Todos work the same way: a tap shows the todo's card, with done, the flow chips, **Now**, its note and delete (see [Quick Add](quick-add.md)).
+## Schedule and cards
 
-## Daily focus
+The left column is the schedule with the tabs **Today** and **Tomorrow** (and **Google** when the Google Calendar integration is on): meetings and focus blocks (see [Meetings](meetings.md)).
 
-Pick which projects and areas you are working on today in the focus panel. The number of focus slots is set in **Settings → Focus** (default: 3 projects and 2 areas). A full list stays full until you remove one - there is no automatic swapping. Focus stays until you remove it. The notebook icon on a focus row opens that project's or area's home notebook ([Projects and Areas](projects-and-areas.md)).
+Tap a meeting or focus block to see its card in Quick Add's place, and its **context panel** in place of the todos: what you owe, what is next, what you are waiting for and what was agreed last time (see [Meetings](meetings.md)). **+ Quick Add to meeting** at the end of the panel adds a todo to it. Tap it again, **Edit** or the title on the card to change it. Daily has no Files pane, so linking a file happens on the project's page.
+
+Todos work the same way: a tap shows the todo's card, with done, the flow chips, its note and delete (see [Quick Add](quick-add.md)).
 
 ## Filtering by a tag
 
 Tap a tag inside a todo or meeting (for example `#lena`) to show only items with that tag. A nested tag such as `#retro/alpha` opens its thread overview instead, see [Threads](threads.md). If the tag is the abbreviation of a project or area (for example `#GR`), Daily shows all of that project's items. Tap the tag again to remove the filter.
-
-## Focus mode
-
-Focus mode is for the few things you are on the hook for right now.
-
-1. Mark todos with `#now`: double-tap the `#next` label of a todo, or tap **Focus mode** on Daily and pick from the Next todos of your focused projects and areas, then **Start focus session**.
-2. In focus mode the tabs disappear. You see Quick Add, your `#now` todos and meetings in the next four hours - nothing else.
-3. Checked-off todos stay visible until the last one is done. Then the set clears and you can pick a new one - or not.
-4. Leave focus mode with the small exit mark in the corner.
-
-If you close the plugin while in focus mode, it opens in focus mode again next time.

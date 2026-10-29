@@ -64,11 +64,8 @@ function countText(id: ReviewStepId, count: ReviewStepCount): string {
       return pluralize(count.n, 'loop');
     case 'neglected':
       return pluralize(count.n, 'area');
-    case 'unfocusedNext':
     case 'somedayMaybe':
       return pluralize(count.n, 'task');
-    case 'weeklyFocus':
-      return `${count.n} of ${count.of ?? 0} slots filled`;
   }
 }
 
@@ -139,6 +136,7 @@ function ReviewStepRow({
       </Text>
       <Text style={[styles.rowCount, {color: textColor}]} numberOfLines={1}>
         {state.kind === 'empty' ? 'nothing to review' : countText(def.id, count)}
+        {count.elsewhere ? ` · +${count.elsewhere} in other contexts` : ''}
       </Text>
       <Text style={[styles.rowLast, {color: textColor}, alarm && styles.rowLastAlarm]} numberOfLines={1}>
         {alarm ? '● ' : ''}

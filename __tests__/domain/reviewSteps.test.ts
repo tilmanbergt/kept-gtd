@@ -54,10 +54,10 @@ describe('Agreements step (docs/dev/history/technical-design-meetings-0.21.md R2
 
 describe('Someday / Maybe step (docs/dev/history/technical-design-engage-in-context.md §2.10)', () => {
 
-  it('is a ritual step after "Unfocused next items" and before "Focus reset"', () => {
+  it('is the last step, a ritual one, after "Neglected areas"', () => {
     const ids = REVIEW_STEPS.map(s => s.id);
-    expect(ids.indexOf('somedayMaybe')).toBe(ids.indexOf('unfocusedNext') + 1);
-    expect(ids.indexOf('weeklyFocus')).toBe(ids.indexOf('somedayMaybe') + 1);
+    expect(ids.indexOf('somedayMaybe')).toBe(ids.indexOf('neglected') + 1);
+    expect(ids.at(-1)).toBe('somedayMaybe');
     expect(REVIEW_STEPS.find(s => s.id === 'somedayMaybe')).toEqual({id: 'somedayMaybe', title: 'Someday / Maybe', kind: 'ritual'});
   });
 

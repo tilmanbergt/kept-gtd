@@ -5,7 +5,7 @@
  * changes only through `ownerChosen` (D14). Pure.
  */
 import {EngageOwner, EngageTodoKey, MeetingRef, OwnedTodo, sameOwner, sameTodo} from './engageOwner';
-import {EngageOptions, FocusRing} from './engageOptions';
+import {EngageOptions} from './engageOptions';
 import {SectionInfo} from './pageSection';
 import {Task} from './types';
 
@@ -17,10 +17,8 @@ export type EngageScreen =
   | {kind: 'options'}
   /** S8: nothing left in the owner. */
   | {kind: 'ownerEmpty'}
-  /** S9 / S11. */
-  | {kind: 'selectFocus'; ring: FocusRing}
-  /** S10: nothing left in today's focus. */
-  | {kind: 'focusDone'}
+  /** S9: today's schedule to choose an owner from (D28). */
+  | {kind: 'schedule'}
   /** S7: Quick Add opened. */
   | {kind: 'quickAdd'};
 
@@ -74,8 +72,6 @@ export interface EngageState {
   ack: EngageAck | null;
   /** From the last `dataChanged`: the owner has nothing left. */
   ownerEmpty: boolean;
-  /** From the last `dataChanged`: today's focus if any, else this week's. */
-  ring: FocusRing;
   /** The options screen's tab; null until the first `dataChanged` after opening or choosing an owner picks it. */
   tab: EngageTab | null;
   /** The way back to the stored current todo of another owner (Addendum "Engage follows the note"); one step only. */
@@ -91,7 +87,6 @@ export type EngageEvent =
       type: 'open';
       owner: EngageOwner | null;
       current: EngageTodoKey | null;
-      ring: FocusRing;
       back?: OwnedTodo | null;
       pageMeeting?: MeetingRef | null;
       section?: SectionInfo | null;
@@ -99,8 +94,7 @@ export type EngageEvent =
   | {type: 'picked'; key: EngageTodoKey}
   | {type: 'acted'; ack: EngageAck}
   | {type: 'undone'}
-  | {type: 'selectFocus'}
-  | {type: 'selectNewFocus'}
+  | {type: 'selectSchedule'}
   | {type: 'back'}
   | {type: 'ownerChosen'; owner: EngageOwner}
   | {type: 'expandQuickAdd'}
@@ -108,16 +102,13 @@ export type EngageEvent =
   | {type: 'selectTab'; tab: EngageTab}
   | {type: 'goBack'}
   /**
-   * The cache changed: the owner's options, the effective ring, how many
-   * owners today's focus still has, the current todo found again
+   * The cache changed: the owner's options, the current todo found again
    * (`resolveTodoKey`; null when it is gone, D7), and how many rows the
    * Next (`engageListsOf`), From, Waiting and Agreements tabs list.
    */
   | {
       type: 'dataChanged';
       options: EngageOptions | null;
-      ring: FocusRing;
-      dailyLeft: number;
       current: EngageTodoKey | null;
       nextRows: number;
       fromRows: number;
@@ -128,10 +119,9 @@ export type EngageEvent =
 export const INITIAL_ENGAGE_STATE: EngageState = {
   owner: null,
   current: null,
-  screen: {kind: 'selectFocus', ring: 'daily'},
+  screen: {kind: 'schedule'},
   ack: null,
   ownerEmpty: false,
-  ring: 'daily',
   tab: null,
   back: null,
   pageMeeting: null,
@@ -149,10 +139,9 @@ export function engageFlow(state: EngageState, event: EngageEvent): EngageState 
       return {
         owner: event.owner,
         current: event.current,
-        screen: event.owner ? {kind: 'options'} : {kind: 'selectFocus', ring: event.ring},
+        screen: event.owner ? {kind: 'options'} : {kind: 'schedule'},
         ack: null,
         ownerEmpty: false,
-        ring: event.ring,
         tab: null,
         back: event.back ?? null,
         pageMeeting: event.owner ? event.pageMeeting ?? null : null,
@@ -166,10 +155,8 @@ export function engageFlow(state: EngageState, event: EngageEvent): EngageState 
     case 'undone':
       if (!state.ack) return state;
       return {...state, current: state.ack.wasCurrent ? state.ack.key : state.current, ack: null};
-    case 'selectFocus':
-      return {...state, screen: {kind: 'selectFocus', ring: state.ring}};
-    case 'selectNewFocus':
-      return {...state, screen: {kind: 'selectFocus', ring: 'weekly'}};
+    case 'selectSchedule':
+      return {...state, screen: {kind: 'schedule'}};
     case 'back':
       return state.owner ? {...state, screen: ownerScreen(state)} : state;
     case 'ownerChosen':
@@ -198,7 +185,7 @@ function sameKey(a: EngageTodoKey | null, b: EngageTodoKey | null): boolean {
   return a === b || (sameTodo(a, b) && a!.taskText === b!.taskText);
 }
 
-/** The only place the owner-empty and all-done transitions live. */
+/** The only place the owner-empty transitions live. */
 function onDataChanged(state: EngageState, event: Extract<EngageEvent, {type: 'dataChanged'}>): EngageState {
   const ownerEmpty = event.options?.ownerEmpty ?? false;
   // The same key keeps its object, so a hook that reacts to `current` doesn't run again for nothing.
@@ -215,18 +202,13 @@ function onDataChanged(state: EngageState, event: Extract<EngageEvent, {type: 'd
       : state.tab === 'next' || (VANISHING_TABS.includes(state.tab) && rowsOf[state.tab] === 0)
         ? nextOrPlan
         : state.tab;
-  const next = {...state, ownerEmpty, ring: event.ring, current, tab};
-  const focusDone = event.ring === 'daily' && event.dailyLeft === 0;
+  const next = {...state, ownerEmpty, current, tab};
   switch (state.screen.kind) {
     case 'options':
-      if (!ownerEmpty) return next;
-      return {...next, screen: focusDone ? {kind: 'focusDone'} : {kind: 'ownerEmpty'}};
+      return ownerEmpty ? {...next, screen: {kind: 'ownerEmpty'}} : next;
     case 'ownerEmpty':
-      if (!ownerEmpty) return {...next, screen: {kind: 'options'}};
-      return focusDone ? {...next, screen: {kind: 'focusDone'}} : next;
-    case 'selectFocus':
-      return state.screen.ring === 'daily' && focusDone ? {...next, screen: {kind: 'focusDone'}} : next;
-    case 'focusDone':
+      return ownerEmpty ? next : {...next, screen: {kind: 'options'}};
+    case 'schedule':
     case 'quickAdd':
       return next;
   }

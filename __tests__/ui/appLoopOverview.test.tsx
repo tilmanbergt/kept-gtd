@@ -203,7 +203,7 @@ describe('App with a loop overview', () => {
     await settle();
     await pressText(r, 'Engage ›');
     await settle();
-    expect(texts(r)).toContain('Loop');
+    expect(r.root.findAll(n => n.props.accessibilityLabel === 'Loop').length).toBeGreaterThan(0); // the kind badge
     expect(texts(r)).toContain('Open Kept GTD');
     act(() => r.unmount());
   });

@@ -61,12 +61,13 @@ export type QuickAddEditTarget =
 
 export type EditMode = 'card' | 'edit';
 
-/** The edit target for a screen's edited todo or meeting (a todo wins), or null when nothing is edited. */
+/** The edit target for a screen's edited todo or meeting (a todo wins), or null when nothing is edited or the screen's selection adds to a meeting (`add`: Quick Add is in create mode). */
 export function editTargetFor(
   key: string | null,
   item: {task?: Task | null; meeting?: Meeting | null; loop?: boolean},
-  mode: EditMode = 'edit',
+  mode: EditMode | 'add' = 'edit',
 ): QuickAddEditTarget | null {
+  if (mode === 'add') return null;
   if (item.task) return {kind: item.loop ? 'loop' : 'task', mode, key, task: item.task};
   if (item.meeting) return {kind: 'meeting', mode, key, meeting: item.meeting};
   return null;
@@ -124,6 +125,8 @@ export interface MeetingDraft {
   time: string;
   /** The "M" toggle (docs/dev/history/technical-design-monthly-view.md §5.1) - composed into the title as `#monthly` on submit, never shown in the title field. */
   monthly: boolean;
+  /** The "F" toggle (docs/dev/history/technical-design-time-and-place.md §3.1) - composed into the title as `#focusblock` on submit, never shown in the title field. */
+  focusBlock: boolean;
 }
 
 /** An agreement being added: its words (tags inline) and its valid-till date. */
@@ -144,7 +147,7 @@ export function makeTaskDraft(): TaskDraft {
 export function makeMeetingDraft(initialDate?: string, initialMonthly = false): MeetingDraft {
   // Time starts EMPTY (most meetings get a time); a blank field is saved as
   // 1d.
-  return {title: '', date: initialDate ?? todayIso(), time: '', monthly: initialMonthly};
+  return {title: '', date: initialDate ?? todayIso(), time: '', monthly: initialMonthly, focusBlock: false};
 }
 
 export function makeNoteDraft(): NoteDraft {

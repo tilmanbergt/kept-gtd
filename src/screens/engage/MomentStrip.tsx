@@ -12,6 +12,7 @@
  * - + Next <type> opens Quick Add's Meeting tab with the thread's or loop's
  *   next meeting (domain/nextMeeting.ts's `nextMeetingOf`).
  */
+import {isFocusBlock} from '../../domain/focusBlock';
 import React, {useEffect, useState} from 'react';
 import {View} from 'react-native';
 import {EngageOwner, EngageSource, MeetingEntryRef, ownerMeetings} from '../../domain/engageOwner';
@@ -81,6 +82,7 @@ export default function MomentStrip(props: Props): React.JSX.Element | null {
     lastHasNote: !!prev?.meeting.notePath,
     nextNeeded: next !== null,
     onReflectionPage,
+    focusBlock: isFocusBlock(page.meeting),
   });
   if (list.length === 0) return null;
 

@@ -60,8 +60,6 @@ export interface EngageItem {
   area: string | null;
   abbrev: string | null;
   status: ItemStatus;
-  dailyFocus: boolean;
-  weeklyFocus: boolean;
   tasks: readonly Task[];
   meetings: readonly Meeting[];
   loops: readonly LoopLine[];

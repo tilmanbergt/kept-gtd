@@ -14,7 +14,7 @@ Every row on the Projects and Areas tabs ends with the notebook icon of its home
 
 - **Header**: name, kind and the abbreviation (tap to change it); **Notebook** opens its home notebook, or creates it (see "Home notebooks" below); **Engage ›** opens [Engage](engage.md) for this project or area
 - **Scope**: one to three sentences about what this project or area is about. Tap to edit.
-- **Focus**: daily, weekly and monthly focus, each with an optional goal for the week or month
+- **Given time**: `Given time · this week 3 h · this month 11 h` - the meetings and focus blocks scheduled in it (an area counts its projects' too); all-day events count as 8 h a day
 - **Status**: Active, On Hold, Done (projects only) - and Close out… or Archive…
 - **Files pane**: up to four tabs. On a project: **Threads** (open when the page opens), **Loops**, **Notebook** and **Files**. On an area: **Threads**, **Projects** (its projects at a glance), **Notebook** and **Files**. **Notebook** shows the home notebook with its years and contents; it is there while the Default note setup uses one notebook. Inside **Files** a second row picks the place: **Project**, **Area** (once one is assigned) and **Resources** on a project; **Area** and **Resources** on an area. **Files** opens on the page's own folder.
 - **Todos** and **Meetings**, grouped and paged, with Quick Add above them. Todos are grouped Next, Waiting For, Plan (no flow state: planned, not yet next), Someday and Maybe. Tapping a todo or meeting shows its card in Quick Add's place: for a todo done, the flow chips, linking a file, moving it and delete (see [Quick Add](quick-add.md)); for a meeting the prep or review tick, **Reflect** once it is over, linking a file and moving it (see [Meetings](meetings.md))
@@ -27,7 +27,7 @@ Every row on the Projects and Areas tabs ends with the notebook icon of its home
 - **Done** (projects only): finished. The Review step "Done awaiting review" collects these for closing out.
 - **Archived**: moved to the Archive folder.
 
-On Hold and Done take the project or area out of focus. Putting an area on hold also puts its active projects on hold.
+Putting an area on hold also puts its active projects on hold.
 
 ## Assigning a project to an area
 
@@ -83,7 +83,7 @@ The home notebook exists only while the Default uses **One notebook** (Settings 
 
 ### The notebook icon
 
-A small notebook icon sits at the end of every row on the **Projects** and **Areas** tabs, on the focus rows of **Daily**, on the focus cards of **Week** and **Month**, and as **Notebook** at the top of a project's or area's page.
+A small notebook icon sits at the end of every row on the **Projects** and **Areas** tabs, and as **Notebook** at the top of a project's or area's page.
 
 - **Plain notebook**: the notebook exists. A tap opens it on the page you last looked at in Supernote.
 - **Notebook with +**: it doesn't exist yet. A tap asks first - "new file Garden renovation 2026.note" with **Create** - then creates it and opens its first page. Afterwards the status line names the new file and its folder.
@@ -93,11 +93,11 @@ Creating a note only works when Kept was opened from a note (a limit of the Supe
 
 ### The Home page
 
-A new home notebook starts with a **Home page**: the project's or area's name as a heading, its **Scope**, and its latest monthly and weekly goal ("October 2026: …", "Week 43: …"). It is written once, when the notebook is created; after that it is your page. The Home page always stays page 1: the pages of todos and meetings go after it.
+A new home notebook starts with a **Home page**: the project's or area's name as a heading and its **Scope**. It is written once, when the notebook is created; after that it is your page. The Home page always stays page 1: the pages of todos and meetings go after it.
 
 A todo's or meeting's note that is the first one in the Default notebook creates the notebook in the same way, with the Home page first and the todo's or meeting's page after it. A note setup whose notebook has the same name and folder as the Default's puts its pages into the same file.
 
-You can change the Home page's layout in Settings → Note setups → Default → **Home page**. Besides Title and static texts it offers **Scope** and **Latest goals**.
+You can change the Home page's layout in Settings → Note setups → Default → **Home page**. Besides Title and static texts it offers **Scope**. A **Latest goals** piece placed by an earlier version stays in the layout and prints nothing.
 
 ### The Notebook tab
 
@@ -112,7 +112,7 @@ A project's or area's page has a **Notebook** tab next to Threads and Loops (Pro
 
 The pages Kept made are listed by what they belong to: the Home page by the project's name, a todo's or meeting's page by the todo or meeting. Other headings show the typed text under them; a heading on handwriting shows as **Handwritten heading**. The list is read again when the notebook changed, for example after you wrote in it and came back.
 
-Contents can be switched off in Settings → Advanced → **Notebook contents**. Then the tab shows the name, the years and Open.
+Contents can be switched off in Settings → Features → **Notebook contents**. Then the tab shows the name, the years and Open.
 
 ### Engage: Go to the notebook
 

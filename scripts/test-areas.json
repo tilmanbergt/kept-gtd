@@ -5,7 +5,7 @@
     {
       "id": "integrations",
       "name": "Integrations (experimental)",
-      "help": ["integrations.md"],
+      "help": ["features.md"],
       "tests": ["__tests__/**/*{icsParser,gmail,Gmail,googleCalendar,GoogleCalendar}*"],
       "sources": [
         "src/domain/{icsParser,googleCalendarEvent,emailNote,attachmentSummary,textPagination}.ts",
@@ -20,17 +20,25 @@
       "name": "Daily, Week and Month",
       "help": ["daily.md", "week-and-month.md"],
       "tests": [
-        "__tests__/**/*{daily,month,period,planning}*",
-        "__tests__/ui/focusedItemRowAccessory.test.tsx",
+        "__tests__/**/*{daily,month,period,planning,givenTime}*",
         "__tests__/scenarios/smoke/weekAndMonth*"
       ],
       "sources": [
         "src/screens/{DailyView,WeekView,WeekPlanner,MonthView,usePlanningScreen}.ts*",
-        "src/ui/{Daily,Period,Week,Month,Focus,DayMeetings}*",
+        "src/screens/daily/**",
+        "src/ui/{Daily,Period,Week,Month,DayMeetings}*",
         "src/storage/{daily,weekly,monthly}Aggregate.ts",
-        "src/storage/{periodFocusCards,periodGoals,focusSlots}.ts",
-        "src/domain/{period,weekDate,monthHighlight}.ts"
+        "src/domain/{period,weekDate,monthHighlight,givenTime}.ts",
+        "src/ui/period/**",
+        "src/ui/KindBadge.tsx"
       ]
+    },
+    {
+      "id": "contexts",
+      "name": "Contexts",
+      "help": ["contexts.md"],
+      "tests": ["__tests__/domain/contexts.test.ts", "__tests__/scenarios/contexts.test.tsx"],
+      "sources": ["src/domain/contexts.ts", "src/ui/context/**", "src/screens/settings/contexts/**"]
     },
     {
       "id": "engage",
@@ -142,10 +150,11 @@
       "name": "Meetings and reflection",
       "help": ["meetings.md"],
       "tests": [
-        "__tests__/**/*{meeting,Meeting,nextMeeting,reflection,Reflection}*"
+        "__tests__/**/*{meeting,Meeting,nextMeeting,reflection,Reflection,focusBlock}*"
       ],
       "sources": [
-        "src/domain/{meetingDisplay,meetingNoteBlock,meetingTime,meetingTracking,nextMeeting,reflection}.ts",
+        "src/domain/{meetingDisplay,meetingNoteBlock,meetingTime,meetingTracking,nextMeeting,reflection,focusBlock,meetingContext,meetingQuickAdd}.ts",
+        "src/ui/meetingContext/**",
         "src/storage/{meetingNoteAggregate,meetingNoteContent,reflectionPage}.ts",
         "src/ui/{MeetingChip,MeetingList,MeetingRow}.tsx",
         "src/ui/useReflectionLookup.ts",
@@ -166,7 +175,7 @@
         "src/storage/{homeNotebook*,noteSetupMigrationState,itemNotePlan,noteTargets,noteFindability,notePieceMetrics,notebookContents,notebookPages,pageSection,notePageEntry,sharedNotePages,standaloneNotes,noteLinks,noteOwnerOf,noteTitlesDiagnostic}.ts",
         "src/supernote/{noteElements,noteTitles,textboxMetrics,currentPage}.ts",
         "src/ui/{HomeNotebookButton,NoteTemplatePreview,NudgePad}.tsx",
-        "src/ui/{useHomeNotebook*,useFocusHomeNotebooks,useNoteCreateConfirm,useNoteSetupsNotice}.ts*"
+        "src/ui/{useHomeNotebook*,useNoteCreateConfirm,useNoteSetupsNotice}.ts*"
       ]
     },
     {
@@ -198,7 +207,7 @@
         "src/screens/{ItemsList,ItemDetail,ProjectDataPanel}.tsx",
         "src/screens/area/**",
         "src/screens/projectData/**",
-        "src/ui/{ItemStatusPanel,ItemFocusPanel,ItemContextBlock,ItemContextRows}.tsx",
+        "src/ui/{ItemStatusPanel,ItemScopePanel,GivenTimeLine,ItemContextBlock,ItemContextRows}.tsx",
         "src/ui/{useStatusChoice,useStatusConfirm}.ts",
         "src/storage/{areaAssignment,statusControl,projectGlance}.ts"
       ]
@@ -220,9 +229,9 @@
     {
       "id": "files",
       "name": "Your files: cache, writes, safety, integrity",
-      "help": ["files-and-folders.md", "obsidian.md"],
+      "help": ["files-and-folders.md"],
       "tests": [
-        "__tests__/**/*{dataFileWrite,writeConflicts,writeGuard,writeLeftovers,fileName,fileChangeText,oddFiles,outsideEdits,refreshCache,legacyInbox,noteMissing,meetingsRoundTrip,markdownMarks,taskLine,taskEdit,fileBrowser,fileSafety,interruptions,pluginPermissions}*"
+        "__tests__/**/*{dataFileWrite,writeConflicts,writeGuard,writeLeftovers,fileName,fileChangeText,oddFiles,outsideEdits,refreshCache,legacyInbox,noteMissing,meetingsRoundTrip,markdownMarks,taskLine,taskEdit,fileBrowser,fileSafety,interruptions,pluginPermissions,rollback,rollbackShims}*"
       ],
       "sources": [
         "src/storage/{dataCache,dataFileWrite,projectFile,writeConflicts,integrityCheck,fileNaming,fileNameFix,linkedFiles,itemMutations}.ts",

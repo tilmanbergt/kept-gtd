@@ -4,8 +4,7 @@
  * and screens/MonthView.tsx don't carry two copies:
  * loading settings/cache/Inbox and every
  * meeting action a planning screen offers (add, edit, cancel, quick-file,
- * prep/review tick, note, linked file, Month highlight + short form) plus
- * the focus toggle and goal save for either period scope.
+ * prep/review tick, note, linked file, Month highlight + short form).
  *
  * Deliberately screen-agnostic about WHICH meetings are listed: actions take
  * the entry they act on (`WeeklyMeetingEntry` - source item + index +
@@ -15,11 +14,9 @@
 import {useCallback, useEffect, useState} from 'react';
 import {AbbrevFileMatch} from '../domain/abbrev';
 import {Destination, destinationLabel} from '../domain/destination';
-import {PeriodScope} from '../domain/period';
 import {GtdParaSettings, ResolvedParaPaths} from '../domain/settings';
 import {Meeting} from '../domain/types';
-import {CachedItem, getCachedData, getCachedInbox, rebuildCache, setCachedInbox} from '../storage/dataCache';
-import {FocusScope, toggleItemFocus} from '../storage/focusSlots';
+import {getCachedData, getCachedInbox, rebuildCache, setCachedInbox} from '../storage/dataCache';
 import {itemTarget, moveMeeting} from '../storage/entryMove';
 import {useEntryMoveUi} from '../ui/useEntryMoveUi';
 import {
@@ -34,14 +31,12 @@ import {
 import {linkedFileStatus, openLinkedFile} from '../storage/linkedFiles';
 import {openOrCreateMeetingNote} from '../storage/meetingNoteContent';
 import {useNoteCreateConfirm} from '../ui/useNoteCreateConfirm';
-import {saveItemGoal} from '../storage/periodGoals';
 import {loadProjectFile} from '../storage/projectFile';
 import {loadSettings} from '../storage/settingsStorage';
 import {WeeklyMeetingEntry} from '../storage/weeklyAggregate';
 import {log, logError} from '../utils/log';
 import {useEinkRefreshOnLoad} from '../utils/screenRefresh';
 import {MeetingRowLayout, MeetingRowProps, MeetingTrackingConfig, trackingSetups} from '../ui/MeetingRow';
-import {entryDate} from '../domain/meetingSpan';
 import {MeetingQuickAddFields, QuickFilePayload} from '../ui/QuickAddWidget';
 import {useCachedItems} from '../ui/useCachedItems';
 import {useEditTarget} from '../ui/useEditTarget';
@@ -53,6 +48,8 @@ import {useActionError} from '../ui/useActionError';
 import {errorMessage} from '../utils/errorMessage';
 import {useCachedInbox} from '../ui/useCachedInbox';
 import {MeetingCardOptions} from '../ui/itemCard/useMeetingCard';
+import {useContextMatcher} from '../ui/context/useContextMatcher';
+import {useHiddenAddNotice} from '../ui/context/useHiddenAddNotice';
 
 /** Stable identity of one listed meeting (source file + index) - what `editingKey` holds. */
 export const meetingKey = (entry: WeeklyMeetingEntry) => `${entry.item.path}#${entry.meetingIndex}`;
@@ -84,6 +81,8 @@ export function usePlanningScreen({logTag}: Options) {
     select: selectEdit,
     edit: editSelected,
     saved: savedEditTarget,
+    add: addToSelected,
+    toCard: selectedToCard,
     cancel: cancelEditTarget,
     set: setEditingKey,
     flushEditRef,
@@ -170,16 +169,21 @@ export function usePlanningScreen({logTag}: Options) {
     if (nextInbox) setCachedInbox(nextInbox);
   };
 
+  const hiddenNotice = useHiddenAddNotice(logTag);
   const handleAddTask = async (text: string, destination: Destination): Promise<void> => {
-    const {nextInbox} = await addTaskToDestination(buildTask(text), destination, {inbox, inboxPath});
+    const task = buildTask(text);
+    const {nextInbox} = await addTaskToDestination(task, destination, {inbox, inboxPath});
     if (nextInbox) setCachedInbox(nextInbox);
     log(`${logTag}: added task`, destinationLabel(destination));
+    hiddenNotice(destination, {kind: 'task', tags: task.tags});
   };
 
   const handleAddMeeting = async (fields: MeetingQuickAddFields, destination: Destination): Promise<void> => {
-    const {nextInbox} = await addMeetingToDestination(buildMeeting(fields), destination, {inbox, inboxPath});
+    const meeting = buildMeeting(fields);
+    const {nextInbox} = await addMeetingToDestination(meeting, destination, {inbox, inboxPath});
     if (nextInbox) setCachedInbox(nextInbox);
     log(`${logTag}: added meeting`, destinationLabel(destination));
+    hiddenNotice(destination, {kind: 'meeting', tags: meeting.tags});
   };
 
   // Save-then-switch: every change of the selection first saves the
@@ -246,26 +250,15 @@ export function usePlanningScreen({logTag}: Options) {
     );
   };
 
-  /** Adds/removes `item` from `scope` focus - storage/focusSlots.ts's toggleItemFocus (limit check included). */
-  const toggleFocus = useCallback(
-    async (item: CachedItem, scope: FocusScope, value: boolean): Promise<void> => {
-      const currentSettings = settings ?? (await loadSettings());
-      await toggleItemFocus(items, item, scope, value, currentSettings);
-      log(`${logTag}: ${scope} focus toggled`, item.path, value);
-    },
-    [items, settings, logTag],
-  );
-
-  /** Sets (or, for empty `text`, clears) `item`'s goal for period `key` - storage/periodGoals.ts's saveItemGoal. */
-  const saveGoal = useCallback(
-    async (item: CachedItem, scope: PeriodScope, key: string, text: string): Promise<void> => {
-      await saveItemGoal(item, scope, key, text);
-      log(`${logTag}: ${scope} goal saved`, item.path, key);
-    },
-    [logTag],
-  );
-
   const trackingFor = (): MeetingTrackingConfig => ({setups: trackingSetups(settings)});
+
+  // The active context dims meetings outside it, never hides them (docs/dev/history/technical-design-time-and-place.md §3.3).
+  const contextFilter = useContextMatcher();
+  const isDimmed = (entry: WeeklyMeetingEntry): boolean => {
+    if (!contextFilter.context || contextFilter.showAll) return false;
+    const owner = entry.item.kind === 'inbox' ? 'inbox' : items.find(i => i.path === entry.item.path);
+    return !!owner && contextFilter.matcher.meetingState(owner, entry.meeting) === 'dimmed';
+  };
 
   /**
    * The selected meeting's card (docs/dev/history/technical-design-item-card.md
@@ -292,7 +285,7 @@ export function usePlanningScreen({logTag}: Options) {
 
   // --- Day panel (docs/dev/history/technical-design-meeting-lists.md §2.8) -------------
   // Shared by Week, Month and Review's week ahead: which day's panel is open
-  // on the right (null = the focus panel), plus the three ways to get there.
+  // on the right (null = Given time), plus the three ways to get there.
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   /** Day header / day row tapped: toggles that day's panel; cancels any edit. */
   const selectDay = (date: string) =>
@@ -300,11 +293,16 @@ export function usePlanningScreen({logTag}: Options) {
       setSelectedDate(prev => (prev === date ? null : date));
       setEditingKey(null);
     });
-  /** Week chip tapped: opens that meeting's day and shows its card in Quick Add's place. */
+  /** Week chip tapped: that meeting's card and context panel on the right; the day panel stays as it was (D15). */
   const openMeetingFromGrid = (entry: WeeklyMeetingEntry) =>
     afterSave(() => {
-      setSelectedDate(entryDate(entry));
       setEditingKey(meetingKey(entry), 'card');
+    });
+  /** The context panel's day link: that day's panel, the selection closed. */
+  const openDay = (date: string) =>
+    afterSave(() => {
+      setSelectedDate(date);
+      setEditingKey(null);
     });
   /** Closes the day panel (Close, or changing week/month - `then` runs after the pending edit was saved). */
   const closeDayPanel = (then?: () => void) =>
@@ -335,7 +333,8 @@ export function usePlanningScreen({logTag}: Options) {
     note: {onOpen: () => handleMeetingNote(entry), onCreate: () => handleMeetingNote(entry)},
     file: {linkedFile: entry.meeting.linkedFile, onOpen: onOpenLinkedFile},
     onPress: () => selectMeeting(entry),
-    state: editingKey === meetingKey(entry) ? (editMode === 'card' ? 'selected' : 'editing') : undefined,
+    dimmed: isDimmed(entry),
+    state: editingKey === meetingKey(entry) ? (editMode === 'edit' ? 'editing' : 'selected') : undefined,
     ownerPath: entry.item.path,
     textColor: opts.textColor,
     borderColor: opts.borderColor,
@@ -359,10 +358,12 @@ export function usePlanningScreen({logTag}: Options) {
     load,
     editingKey,
     editMode,
+    addToSelected,
+    selectedToCard,
     widgetError,
     meetingsActionError,
     // Stable identities (docs/dev/history/technical-design-render-perf-ab.md §3 B2) -
-    // these reach the React.memo'd QuickAddWidget/PeriodFocusPanel and are
+    // these reach the React.memo'd QuickAddWidget and are
     // only ever called from event handlers; each call runs the latest version.
     handleAddTask: stableAddTask,
     handleAddMeeting: stableAddMeeting,
@@ -373,15 +374,16 @@ export function usePlanningScreen({logTag}: Options) {
     handleQuickFileEdit: stableQuickFileEdit,
     handleMeetingNote,
     onOpenLinkedFile,
-    toggleFocus,
-    saveGoal,
     trackingFor,
     cardOptions,
     selectedDate,
     selectDay,
     openMeetingFromGrid,
+    openDay,
     closeDayPanel,
     dayRowProps,
+    isDimmed,
+    contextFilter,
     flushEditRef,
   };
 }

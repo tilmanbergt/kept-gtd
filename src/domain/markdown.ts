@@ -10,16 +10,14 @@
  * span, or the frontmatter block) - everything else passes through
  * unchanged.
  */
-import {deriveFlowState, deriveNow, deriveWaitingOn, isContextTag} from './flowState';
+import {deriveFlowState, deriveWaitingOn, isContextTag} from './flowState';
 import {MARKS_HEADING, parseMarkLines, serializeMarkLines} from './marks';
 import {appendTaskFields, splitTrailingFields} from './taskLine';
-import {FlowState, GtdParaKind, ItemStatus, Mark, Meeting, MonthlyGoal, Task, WeeklyGoal} from './types';
+import {FlowState, GtdParaKind, ItemStatus, Mark, Meeting, Task} from './types';
 
 const SCOPE_HEADING = '## Scope';
 const TASKS_HEADING = '## Tasks';
 const MEETINGS_HEADING = '## Meetings';
-const WEEKLY_GOALS_HEADING = '## Weekly Goals';
-const MONTHLY_GOALS_HEADING = '## Monthly Goals';
 
 const TASK_LINE_RE = /^-\s*\[([ xX-])\]\s?(.*)$/;
 // Time is optional (design-overview.md's linking spec plus the "leave the
@@ -32,10 +30,6 @@ const TASK_LINE_RE = /^-\s*\[([ xX-])\]\s?(.*)$/;
 // load - read as 1 day.
 const MEETING_LINE_RE =
   /^-\s*(?:\[(-)\]\s*)?(\d{4}-\d{2}-\d{2})(?:\s+(?:(\d{2}:\d{2})(?:-(\d{2}:\d{2}))?|([1-9]\d?)d))?\s+(.*)$/;
-// "- 2026-W37: Ship the technical design doc" - weekKey then free-text goal.
-const WEEKLY_GOAL_LINE_RE = /^-\s*(\d{4}-W\d{2}):\s?(.*)$/;
-// "- 2026-10: Finish module 2 outline" - monthKey then free-text goal.
-const MONTHLY_GOAL_LINE_RE = /^-\s*(\d{4}-\d{2}):\s?(.*)$/;
 
 // A note link is a trailing "→ [[relative/path.note]]" on a Task/Meeting
 // line (design-overview.md §3), extended here to todos as well as
@@ -108,7 +102,7 @@ function deriveDueDate(tags: string[]): string | null {
 const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
 /**
- * Derives a task's `tags`/`dueDate`/`flowState`/`waitingOn`/`now` from its
+ * Derives a task's `tags`/`dueDate`/`flowState`/`waitingOn` from its
  * `text` and its `[due:: …]` field (`fieldDue`, which wins over a legacy
  * `#due:` tag when it is a date). The same read `parseTasksSpan` does on
  * load. Used only inside domain/: everything else changes a Task through
@@ -118,14 +112,13 @@ const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 export function deriveTaskFields(
   text: string,
   fieldDue: string | null = null,
-): {tags: string[]; dueDate: string | null; flowState: FlowState; waitingOn: string | null; now: boolean} {
+): {tags: string[]; dueDate: string | null; flowState: FlowState; waitingOn: string | null} {
   const tags = extractTags(text);
   return {
     tags,
     dueDate: fieldDue && ISO_DATE_RE.test(fieldDue) ? fieldDue : deriveDueDate(tags),
     flowState: deriveFlowState(tags),
     waitingOn: deriveWaitingOn(tags),
-    now: deriveNow(tags),
   };
 }
 
@@ -411,8 +404,6 @@ export const DATA_FILE_HEADINGS = {
   scope: SCOPE_HEADING,
   tasks: TASKS_HEADING,
   meetings: MEETINGS_HEADING,
-  weeklyGoals: WEEKLY_GOALS_HEADING,
-  monthlyGoals: MONTHLY_GOALS_HEADING,
 } as const;
 
 /**
@@ -595,8 +586,7 @@ export function writeFrontMatterIntoContent(content: string, fm: FrontMatterFiel
  * way project.txt/area.txt get their own kind).
  *
  * `## Scope` (docs/dev/history/technical-design-item-scope.md) is scaffolded here
- * too - deliberately, unlike `## Weekly Goals` below, which stays lazy - so
- * a brand-new Project/Area already has the heading to type into directly
+ * too - deliberately, unlike the lazily created sections - so a brand-new Project/Area already has the heading to type into directly
  * from Obsidian, without ever opening the item in the app first. Placed
  * right after the frontmatter block, before Tasks/Meetings, matching its
  * top-of-page position on the detail screen. A file without the heading
@@ -611,7 +601,7 @@ export function ensureSkeleton(content: string, kind: GtdParaKind): string {
 
 /**
  * Parses the `## Scope` span (docs/dev/history/technical-design-item-scope.md) - a
- * single free-text value, unlike Tasks/Meetings/Weekly Goals: there's no
+ * single free-text value, unlike Tasks/Meetings: there's no
  * per-line grammar here, so the whole span *is* the value. The span's
  * lines are joined back with '\n' and trimmed - this deliberately
  * preserves a hand-edited multi-line/multi-paragraph Scope exactly as
@@ -754,106 +744,6 @@ export function writeMeetingsIntoContent(
   return setSpan(content, MEETINGS_HEADING, lines);
 }
 
-export interface ParsedWeeklyGoals {
-  goals: WeeklyGoal[];
-  /** Non-blank lines in the Weekly Goals span this plugin didn't understand - preserved verbatim on save, never shown or editable. */
-  extraLines: string[];
-}
-
-export interface ParsedMonthlyGoals {
-  goals: MonthlyGoal[];
-  /** Non-blank lines in the Monthly Goals span this plugin didn't understand - preserved verbatim on save. */
-  extraLines: string[];
-}
-
-/**
- * One generic "keyed goals span" parser (docs/dev/history/technical-design-monthly-view.md
- * §2.2) - `## Weekly Goals` (`- YYYY-Www: text`) and `## Monthly Goals`
- * (`- YYYY-MM: text`) are the same shape, differing only in heading and key
- * syntax. Deliberately sparse, unlike Tasks/Meetings: most files have zero
- * or a handful of lines here, and neither heading is scaffolded by
- * ensureSkeleton - `setSpan` appends a fresh heading the first time one is
- * actually needed.
- */
-function parseKeyedGoalsSpan(
-  content: string,
-  heading: string,
-  lineRe: RegExp,
-): {goals: Array<{key: string; text: string}>; extraLines: string[]} {
-  const {lines} = getSpan(content, heading);
-  const goals: Array<{key: string; text: string}> = [];
-  const extraLines: string[] = [];
-  for (const line of lines) {
-    if (line.trim().length === 0) continue;
-    const match = lineRe.exec(line);
-    if (!match) {
-      extraLines.push(line);
-      continue;
-    }
-    const [, key, text] = match;
-    goals.push({key, text});
-  }
-  return {goals, extraLines};
-}
-
-function writeKeyedGoalsIntoContent(
-  content: string,
-  heading: string,
-  goals: Array<{key: string; text: string}>,
-  extraLines: string[],
-): string {
-  const lines = [...goals.map(g => `- ${g.key}: ${g.text}`), ...extraLines];
-  return setSpan(content, heading, lines);
-}
-
-/**
- * Replaces `key`'s entry with `text` (added if absent), or removes it if
- * `text` is blank - so clearing a goal deletes that period's line rather
- * than leaving an empty one behind. One goal per item per period, by
- * construction - this is the only place a goal is ever added or changed.
- */
-function setKeyedGoal<T>(goals: T[], keyOf: (g: T) => string, make: (text: string) => T, key: string, text: string): T[] {
-  const trimmed = text.trim();
-  const without = goals.filter(g => keyOf(g) !== key);
-  if (trimmed.length === 0) return without;
-  return [...without, make(trimmed)];
-}
-
-/** Parses the `## Weekly Goals` span (docs/dev/history/technical-design-weekly-goals.md) - see parseKeyedGoalsSpan. */
-export function parseWeeklyGoalsSpan(content: string): ParsedWeeklyGoals {
-  const {goals, extraLines} = parseKeyedGoalsSpan(content, WEEKLY_GOALS_HEADING, WEEKLY_GOAL_LINE_RE);
-  return {goals: goals.map(g => ({weekKey: g.key, text: g.text})), extraLines};
-}
-
-/** Rebuilds only the Weekly Goals span; everything else in `content` is untouched. */
-export function writeWeeklyGoalsIntoContent(
-  content: string,
-  goals: WeeklyGoal[],
-  extraLines: string[] = [],
-): string {
-  return writeKeyedGoalsIntoContent(content, WEEKLY_GOALS_HEADING, goals.map(g => ({key: g.weekKey, text: g.text})), extraLines);
-}
-
-/** Sets/clears `weekKey`'s goal - see setKeyedGoal. */
-export function setGoalForWeek(goals: WeeklyGoal[], weekKey: string, text: string): WeeklyGoal[] {
-  return setKeyedGoal(goals, g => g.weekKey, t => ({weekKey, text: t}), weekKey, text);
-}
-
-/** Parses the `## Monthly Goals` span (docs/dev/history/technical-design-monthly-view.md §2.2). */
-export function parseMonthlyGoalsSpan(content: string): ParsedMonthlyGoals {
-  const {goals, extraLines} = parseKeyedGoalsSpan(content, MONTHLY_GOALS_HEADING, MONTHLY_GOAL_LINE_RE);
-  return {goals: goals.map(g => ({monthKey: g.key, text: g.text})), extraLines};
-}
-
-/** Rebuilds only the Monthly Goals span; everything else in `content` is untouched. */
-export function writeMonthlyGoalsIntoContent(
-  content: string,
-  goals: MonthlyGoal[],
-  extraLines: string[] = [],
-): string {
-  return writeKeyedGoalsIntoContent(content, MONTHLY_GOALS_HEADING, goals.map(g => ({key: g.monthKey, text: g.text})), extraLines);
-}
-
 /**
  * Parses the `## Marks` span (docs/dev/history/technical-design-lasso-0.8.md §3.1):
  * one line per open "Mark for later". Other lines in the section are kept.
@@ -865,14 +755,9 @@ export function parseMarksSpan(content: string): {marks: Mark[]; extraLines: str
 
 /**
  * Rebuilds only the Marks span; everything else in `content` is untouched.
- * Created lazily (appended at the end) like Weekly Goals - `ensureSkeleton`
+ * Created lazily (appended at the end) - `ensureSkeleton`
  * never writes it. With no marks left the heading stays, empty.
  */
 export function writeMarksIntoContent(content: string, marks: Mark[], extraLines: string[] = []): string {
   return setSpan(content, MARKS_HEADING, serializeMarkLines(marks, extraLines));
-}
-
-/** Sets/clears `monthKey`'s goal - see setKeyedGoal. */
-export function setGoalForMonth(goals: MonthlyGoal[], monthKey: string, text: string): MonthlyGoal[] {
-  return setKeyedGoal(goals, g => g.monthKey, t => ({monthKey, text: t}), monthKey, text);
 }

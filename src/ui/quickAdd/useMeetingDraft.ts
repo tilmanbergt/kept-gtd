@@ -13,6 +13,7 @@ import {Destination, destinationLabel} from '../../domain/destination';
 import {extractContextTags, insertTagAtPosition, removeTagFromText, stripSpaceAfterHash} from '../../domain/markdown';
 import {meetingDisplayTitle} from '../../domain/meetingTracking';
 import {validateMeetingFields} from '../../domain/meetingTime';
+import {setFocusBlock} from '../../domain/focusBlock';
 import {setHighlight} from '../../domain/monthHighlight';
 import {errorMessage} from '../../utils/errorMessage';
 import {log} from '../../utils/log';
@@ -107,6 +108,10 @@ export function useMeetingDraft(core: QuickAddCore, input: Input) {
     if (editFields?.kind === 'meeting') updateEditField({monthly: !editFields.fields.monthly});
     else setDraft(d => ({...d, monthly: !d.monthly}));
   };
+  const toggleFocusBlock = () => {
+    if (editFields?.kind === 'meeting') updateEditField({focusBlock: !editFields.fields.focusBlock});
+    else setDraft(d => ({...d, focusBlock: !d.focusBlock}));
+  };
   const insertTag = (tag: string) => {
     const {text, cursor} = insertTagAtPosition(fields.title, tag, lastSelectionRef.current?.start ?? null);
     setTitle(text);
@@ -137,8 +142,8 @@ export function useMeetingDraft(core: QuickAddCore, input: Input) {
   };
 
   /**
-   * Validates `source` and composes what the screen saves: the M toggle
-   * folded in as `#monthly`, and `stripTag` (a matched abbreviation, which
+   * Validates `source` and composes what the screen saves: the M and F
+   * toggles folded in as `#monthly` and `#focusblock`, and `stripTag` (a matched abbreviation, which
    * did its job picking the destination) removed. Shows the error and
    * returns null when the fields are not valid.
    */
@@ -148,7 +153,7 @@ export function useMeetingDraft(core: QuickAddCore, input: Input) {
       setError(result.error, result.field);
       return null;
     }
-    const title = setHighlight(stripTag ? removeTagFromText(source.title.trim(), stripTag) : source.title.trim(), source.monthly);
+    const title = setFocusBlock(setHighlight(stripTag ? removeTagFromText(source.title.trim(), stripTag) : source.title.trim(), source.monthly), source.focusBlock);
     return {fields: {title, date: source.date, time: result.time, endTime: result.endTime, days: result.days}};
   };
   /** The status text after a meeting was added at `destination`. */
@@ -246,6 +251,7 @@ export function useMeetingDraft(core: QuickAddCore, input: Input) {
     setTime,
     clearLinkedFile,
     toggleMonthly,
+    toggleFocusBlock,
     insertTag,
     removeTag,
     onSelectionChange,

@@ -15,10 +15,10 @@ describe('sectionLineText', () => {
 });
 
 describe('the section in the Engage state', () => {
-  const opened = engageFlow(INITIAL_ENGAGE_STATE, {type: 'open', owner: OWNER, current: null, ring: 'daily', section});
+  const opened = engageFlow(INITIAL_ENGAGE_STATE, {type: 'open', owner: OWNER, current: null, section});
   it('is set on opening with an owner, never without one', () => {
     expect(opened.section).toBe(section);
-    expect(engageFlow(INITIAL_ENGAGE_STATE, {type: 'open', owner: null, current: null, ring: 'daily', section}).section).toBeNull();
+    expect(engageFlow(INITIAL_ENGAGE_STATE, {type: 'open', owner: null, current: null, section}).section).toBeNull();
   });
   it('stays while working, goes when another owner is chosen', () => {
     expect(engageFlow(opened, {type: 'selectTab', tab: 'plan'}).section).toBe(section);

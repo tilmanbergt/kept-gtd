@@ -180,7 +180,7 @@ describe('the Threads tab on the Current page', () => {
     expect(texts(r)).toContain('alpha ✕');
     const todos = listRows(r, 'Todos').filter((row: {kind: string}) => row.kind === 'entry').map((row: {task: {text: string}}) => row.task.text);
     expect(todos).toEqual(['Draft agenda #retro/alpha', 'Agreed point']);
-    const meetings = listRows(r, 'Meetings').filter((row: {meeting?: unknown}) => row.meeting).map((row: {meeting: {title: string}}) => row.meeting.title);
+    const meetings = listRows(r, 'Schedule').filter((row: {meeting?: unknown}) => row.meeting).map((row: {meeting: {title: string}}) => row.meeting.title);
     expect(meetings).toEqual(['Retro #retro/alpha']);
     await pressText(r, 'alpha ✕');
     await settle();

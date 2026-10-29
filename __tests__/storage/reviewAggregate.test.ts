@@ -15,7 +15,7 @@ describe('buildReviewAggregate', () => {
     item('project', 'Finished', {status: 'done'}),
     item('area', 'Paused', {status: 'on-hold'}),
     item('area', 'Quiet', {tasks: [task('Maybe later #maybe')]}),
-    item('area', 'Focused', {weeklyFocus: true, tasks: [task('Plan #next')]}),
+    item('area', 'Planning', {tasks: [task('Plan #next')]}),
     item('project', 'Broken', {loadError: 'read failed'}),
   ];
   const agg = buildReviewAggregate(items, NOW);
@@ -39,9 +39,6 @@ describe('buildReviewAggregate', () => {
   it('done projects and on-hold items', () => {
     expect(names(agg.doneProjects)).toEqual(['Finished']);
     expect(names(agg.onHoldItems)).toEqual(['Paused']);
-  });
-  it('unfocused next items leave out focused items', () => {
-    expect(names(agg.unfocusedNextItems)).toEqual(['Busy']);
   });
   it('items that failed to load are reported, not reviewed', () => {
     expect(agg.failedItems.map(f => f.item.name)).toEqual(['Broken']);
@@ -70,14 +67,13 @@ describe('weekMeetings (the hub\'s Week ahead count)', () => {
 });
 
 describe('buildReviewStepCounts', () => {
-  const settings = {weeklyFocusProjectCount: 2, weeklyFocusAreaCount: 2, monthlyFocusProjectCount: 1, monthlyFocusAreaCount: 1};
   it('has a count for every review step', () => {
-    const counts = buildReviewStepCounts(buildReviewAggregate([], NOW), 0, [], settings, 0);
+    const counts = buildReviewStepCounts(buildReviewAggregate([], NOW), 0, 0);
     for (const def of REVIEW_STEPS) expect(counts[def.id]).toBeDefined();
   });
   it('adds the Inbox meetings to Week ahead and passes Inbox/Gmail counts through', () => {
     const p = item('project', 'P', {meetings: [meeting('2026-10-06', 'A')]});
-    const counts = buildReviewStepCounts(buildReviewAggregate([p], NOW), 4, [p], settings, 7, 2);
+    const counts = buildReviewStepCounts(buildReviewAggregate([p], NOW), 4, 7, 2);
     expect(counts.weekAhead.n).toBe(3);
     expect(counts.inbox.n).toBe(4);
     expect(counts.gmailInbox.n).toBe(7);
@@ -102,7 +98,6 @@ describe('buildReviewAggregate - Someday / Maybe (docs/dev/history/technical-des
   });
 
   it('counts the todos on the hub', () => {
-    const settings = {weeklyFocusProjectCount: 0, weeklyFocusAreaCount: 0, monthlyFocusProjectCount: 0, monthlyFocusAreaCount: 0};
-    expect(buildReviewStepCounts(agg, 0, items, settings, 0).somedayMaybe).toEqual({n: 3});
+    expect(buildReviewStepCounts(agg, 0, 0).somedayMaybe).toEqual({n: 3});
   });
 });

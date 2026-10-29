@@ -29,6 +29,12 @@
  * "?" (docs/dev/history/technical-design-in-app-help.md): opens the
  * in-app help as an overlay over the body; while it's open the "?" carries
  * the active underline instead of the current tab.
+ *
+ * Context chip (docs/dev/history/technical-design-time-and-place.md §3.3,
+ * D21): the active context's name ("Everything" without one), left of ✕;
+ * a tap opens Settings → Contexts, where a context is made active. While the demo space is
+ * open (D27) the whole bar is inverted - black, white labels - with a boxed
+ * "D" left of ✕; another non-default profile shows its id there.
 
  */
 import React from 'react';
@@ -69,6 +75,11 @@ interface Props {
    */
   profileLabel?: string | null;
   onProfilePress?: () => void;
+  /** The active context's name, or "Everything"; absent = no chip. */
+  contextLabel?: string | null;
+  onContextPress?: () => void;
+  /** The demo space is open: inverted bar and a boxed D (D27). */
+  demo?: boolean;
   /** In-app help (docs/dev/history/technical-design-in-app-help.md §3.3): "?" toggles it; drawn active while open. */
   helpOpen?: boolean;
   onHelpPress?: () => void;
@@ -83,12 +94,18 @@ export default function TabBar({
   onProfilePress,
   helpOpen,
   onHelpPress,
+  contextLabel,
+  onContextPress,
+  demo,
 }: Props): React.JSX.Element {
   usePerfRender('TabBar');
-  const {textColor, borderColor} = useThemeColors();
+  const theme = useThemeColors();
+  const textColor = demo ? COLORS.accentText : theme.textColor;
+  const borderColor = demo ? COLORS.accent : theme.borderColor;
+  const underline = demo ? COLORS.accentText : COLORS.accent;
 
   return (
-    <View style={[styles.container, {borderColor}]}>
+    <View style={[styles.container, {borderColor}, demo && styles.demo]}>
       <View style={styles.tabs}>
         {TABS.map(tab => {
           const active = tab.key === activeTab && !helpOpen;
@@ -97,7 +114,7 @@ export default function TabBar({
               key={tab.key}
               onPress={() => onSelectTab(tab.key)}
               hitSlop={8}
-              style={[styles.tabButton, active && {borderBottomColor: COLORS.accent}]}>
+              style={[styles.tabButton, active && {borderBottomColor: underline}]}>
               <Text
                 style={[
                   styles.tabText,
@@ -117,14 +134,26 @@ export default function TabBar({
         <Pressable
           onPress={onHelpPress}
           hitSlop={8}
-          style={[styles.tabButton, styles.helpButton, helpOpen && {borderBottomColor: COLORS.accent}]}>
+          style={[styles.tabButton, styles.helpButton, helpOpen && {borderBottomColor: underline}]}>
           <Text style={[styles.tabText, {color: textColor}, helpOpen && styles.tabTextActive]}>?</Text>
         </Pressable>
       ) : null}
-      {profileLabel ? (
-        <Pressable onPress={onProfilePress} hitSlop={8} style={[styles.profileMarker, {borderColor: textColor}]}>
+      {contextLabel ? (
+        <Pressable
+          onPress={onContextPress}
+          hitSlop={8}
+          accessibilityRole="button"
+          accessibilityLabel="Context"
+          style={[styles.contextChip, {borderColor: textColor}]}>
+          <Text style={[styles.contextChipText, {color: textColor}]} numberOfLines={1}>
+            {contextLabel} ›
+          </Text>
+        </Pressable>
+      ) : null}
+      {demo || profileLabel ? (
+        <Pressable onPress={onProfilePress} hitSlop={8} style={[styles.profileMarker, {borderColor: textColor}]} accessibilityLabel={demo ? 'Demo space' : undefined}>
           <Text style={[styles.profileMarkerText, {color: textColor}]} numberOfLines={1}>
-            {profileLabel}
+            {demo ? 'D' : profileLabel}
           </Text>
         </Pressable>
       ) : null}
@@ -167,6 +196,21 @@ const styles = StyleSheet.create({
   },
   badge: {
     fontSize: FONT.medium,
+  },
+  demo: {
+    backgroundColor: COLORS.accent,
+  },
+  contextChip: {
+    borderWidth: 1,
+    borderRadius: 12,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    marginRight: 8,
+    maxWidth: 150,
+  },
+  contextChipText: {
+    fontSize: FONT.small,
+    fontWeight: '600',
   },
   profileMarker: {
     borderWidth: 1.5,

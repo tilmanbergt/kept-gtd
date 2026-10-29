@@ -110,19 +110,6 @@ export interface Task {
   flowState: FlowState;
   /** Slug from a `#wf/<slug>` (or `#waiting-for:<slug>`) tag, or null - only meaningful when flowState === 'waiting-for'. */
   waitingOn: string | null;
-  /**
-   * Whether this task carries `#now` (docs/dev/history/technical-design-now-focus-mode.md
-   * §2) - "what I'm actually on the hook for right now", inside a focus-mode
-   * session. Layered on top of flowState, never a replacement for it: `#now`
-   * is deliberately not exclusive with `#next` (or with anything else),
-   * which is exactly why it's its own boolean field rather than a fifth
-   * FlowState value. Derived from a bare `#now` tag the same way
-   * dueDate/flowState/waitingOn are derived from other tags - see
-   * domain/flowState.ts's deriveNow/setNowTag. Never a second source of
-   * truth: domain/markdown.ts's parser and domain/taskEdit.ts (the only
-   * code that builds or changes a Task) derive it with the other fields.
-   */
-  now: boolean;
   notePath: string;
   /** Base-root-relative path to a linked existing file (technical-design-linked-files.md §3), or '' if none - see domain/markdown.ts's extractLinkedFile/appendLinkedFile. */
   linkedFile: string;
@@ -184,22 +171,6 @@ export interface Meeting {
 }
 
 /**
- * One Project/Area's stated intent for a single ISO week (
- * docs/dev/history/technical-design-weekly-goals.md, V2 of the Week view) - a short free-text line, not
- * a task (no done/cancelled state). One entry per `weekKey` at most; setting
- * a new goal for a week that already has one replaces it (domain/
- * markdown.ts's `setGoalForWeek`). Lives in a `## Weekly Goals` content
- * section of project.txt/area.txt (never frontmatter, never Inbox.txt -
- * Inbox can't be weekly-focused at all), parsed/written the same
- * `getSpan`/`setSpan` way `## Tasks`/`## Meetings` already are.
- */
-export interface WeeklyGoal {
-  /** ISO week key, e.g. "2026-W37" - domain/weekDate.ts's isoWeekKey(). */
-  weekKey: string;
-  text: string;
-}
-
-/**
  * One open "Mark for later" (docs/dev/history/technical-design-lasso-0.8.md §3.1):
  * a lasso selection stored for later processing. Lives as one line in the
  * `## Marks` section of the project.txt / area.txt / Inbox.txt that owns
@@ -217,17 +188,6 @@ export interface Mark {
   page: number;
   /** Text known at mark time (text boxes); null for handwriting. */
   text: string | null;
-}
-
-/**
- * One Project/Area's goal for a single calendar month (docs/dev/technical-design-
- * monthly-view.md §2.2) - the monthly twin of `WeeklyGoal`, stored in a
- * `## Monthly Goals` span as `- YYYY-MM: text`. One entry per month at most.
- */
-export interface MonthlyGoal {
-  /** "YYYY-MM", e.g. "2026-10" - domain/period.ts's monthKeyOf(). */
-  monthKey: string;
-  text: string;
 }
 
 /**

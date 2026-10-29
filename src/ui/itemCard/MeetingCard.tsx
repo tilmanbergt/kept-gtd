@@ -3,8 +3,9 @@
  * Quick Add's place after one tap on a meeting, the same four rows at the
  * same heights (ui/quickAdd/QuickAddFrame.tsx), so nothing below moves.
  *   R1 "Meeting · <phase>", the thread link, ✕, Edit
- *   R2 title (with its tags) and when
- *   R3 P/R, M, note, Reflect (once over), the linked file or +clip
+ *   R2 title (with its tags; a tap edits, like Edit) and when
+ *   R3 P/R, M, F, note, Reflect (once over), the linked file or +clip (a
+ *      focus block: no P/R and no Reflect; its note may be the home notebook)
  *   R4 the area chip (name opens it, arrow refiles), New from this, Cancel meeting
  * Every button acts at once; what shows is decided in domain/itemCard.ts.
  */
@@ -37,7 +38,12 @@ export default function MeetingCard({card, onNewFromThis, textColor, borderColor
       />
 
       <View style={[cardStyles.row, cardStyles.row2]}>
-        <Text style={[cardStyles.title, {color: textColor}, model.phase === 'cancelled' && cardStyles.struck]} numberOfLines={1}>
+        <Text
+          style={[cardStyles.title, {color: textColor}, model.phase === 'cancelled' && cardStyles.struck]}
+          numberOfLines={1}
+          onPress={card.onEdit}
+          accessibilityRole="button"
+          accessibilityHint="Edit">
           {model.title}
         </Text>
         <View style={cardStyles.spacer} />
@@ -59,9 +65,16 @@ export default function MeetingCard({card, onNewFromThis, textColor, borderColor
         <SquareButton label="Month highlight" on={model.monthly} onPress={card.onMonthly} {...colors}>
           {letter('M')}
         </SquareButton>
-        <SquareButton label={model.note === 'open' ? 'Open note' : 'Create note'} onPress={card.onNote} {...colors}>
-          {color => <NotebookIcon size={20} color={color} plus={model.note === 'create'} />}
-        </SquareButton>
+        {card.onFocusBlock ? (
+          <SquareButton label="Focus block" on={model.focusBlock} onPress={card.onFocusBlock} {...colors}>
+            {letter('F')}
+          </SquareButton>
+        ) : null}
+        {model.note ? (
+          <SquareButton label={model.note === 'open' ? 'Open note' : model.note === 'home' ? 'Home notebook' : 'Create note'} onPress={card.onNote} {...colors}>
+            {color => <NotebookIcon size={20} color={color} plus={model.note === 'create'} />}
+          </SquareButton>
+        ) : null}
         {model.reflection ? (
           <SquareButton
             label={model.reflection === 'exists' ? 'Reflection' : 'Reflect'}

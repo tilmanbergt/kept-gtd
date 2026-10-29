@@ -256,7 +256,7 @@ describe('tap routing in a row', () => {
     await settle();
     await pressText(r, 'Engage ›');
     await settle();
-    expect(texts(r)).toContain('Thread');
+    expect(r.root.findAll(n => n.props.accessibilityLabel === 'Thread').length).toBeGreaterThan(0); // the kind badge
     expect(texts(r)).toContain('Open Kept GTD');
     act(() => r.unmount());
   });

@@ -126,13 +126,10 @@ Lists are paged **by height, not by a fixed row count.**
   share a column by flex weight, e.g. Project panel Todos : Meetings = 4 : 3 and Inbox Tasks :
   Meetings = 8 : 6 (`docs/dev/history/technical-design-flex-weight-stacking.md`).
 - **Explicit `viewportHeight`.** A few callers still pass a fixed height:
-  - `ui/DailyFocusPanel.tsx`: `fileBrowserViewportHeightPx(PAGE_SIZE.dailyFocusPanel)` =
-    5 × 42 = **210 dp** for its Projects/Areas file lists.
   - `screens/ItemsList.tsx`, Areas tab, right column "On Hold": `FULL_VIEWPORT_PX` ≈ 1700, built
     from the 1872 px panel height. That is larger than the real column (about 1150 dp, see §6),
     so rows past the visible box can be cut off.
-- **`PAGE_SIZE`** in `ui/pagination.ts` still lists per-list row counts, but the only entry the
-  code reads is `PAGE_SIZE.dailyFocusPanel` (above). The other entries are not used for
+- **`PAGE_SIZE`** in `ui/pagination.ts` still lists per-list row counts; they are not used for
   paging.
 
 When a paginated list changes, check it on the device with realistic data: the last row should
@@ -165,8 +162,10 @@ See §3. Other single-line rows:
 
 | Row | File | Height (dp) | Composition |
 |---|---|---|---|
-| Focus slot row | `ui/FocusedItemRow.tsx` | **~37** | `paddingVertical 7 × 2` + medium line ~22 + border 1. |
-| Unfocused-next entry (Review) | `screens/review/steps/UnfocusedNextStep.tsx` | **34** / **56** | `UNFOCUSED_ENTRY_CHROME_PX 12` + lines × 22; header row 30, note row 28. |
+| Given time row | `ui/period/GivenTimePanel.tsx` | **57** | `GIVEN_TIME_ROW_PX`: name and time 22 + grey line 18 + `paddingVertical 7 × 2` + border 1, like a 2-line meeting row; its captions ("Loops and counterparts", "Worked on …") and hint lines 28. |
+| Context panel rows | `ui/meetingContext/MeetingContextPanel.tsx` | **task row** / **57** / **28** | todos as `TaskRow` (§3), an agreement 57 (`AGREEMENT_ROW_HEIGHT`), a caption ("I owe", "Agreed last time") 28. |
+| Hidden line | `ui/context/HiddenLine.tsx` | **~30** | `paddingVertical 6 × 2` + small line ~18; shown only while a context hides something. |
+| Tend line | `ui/period/GivenTimePanel.tsx` | **~30** | `paddingVertical 6 × 2` + small line ~18; only when something is quiet. |
 | Gmail message row (Review) | `screens/review/steps/GmailStep.tsx` | **60** | `GMAIL_ROW_PX`. |
 
 ### 5.3 Headers, buttons, chips, inputs
@@ -208,7 +207,26 @@ the exception: it grows with its multi-line text and adds rows below.
 | Screen heading (`FONT.large`, 700 weight) | Rare screen titles | **~27+** | Large line ~27 + whatever margin its row adds. |
 | `common.divider` | Thin rule between blocks | **25** | `height 1` + `marginVertical 12 × 2`. |
 
-### 5.6 The Engage panel
+### 5.6 Contexts, the context panel and Given time
+
+- **Tab bar** (§5.1): the context chip (`maxWidth 150`, small text) and, in the demo space, the boxed
+  D sit left of ✕, after the nine tabs and "?". The Settings tab strip has 8 tabs (Folders,
+  Contexts, Calendar, Gmail, Note setups, Features, Advanced, About; Calendar and Gmail only while
+  switched on). Both are checked on the device: a clipped tab label is a finding.
+- **Daily, right column** with a meeting selected: the card in Quick Add's box (174, §5.4), then
+  the context panel as one `PagedSection` (header ~31, rows above, its footer "+ Quick Add to
+  meeting" ~30) where the Next todos were, then no hidden line. 1227 − 174 − 31 − 30 ≈ 990 dp for
+  rows: about 10 todo rows of 57 plus captions per page.
+- **Week / Month, right column**: Quick Add (174) or the card, then either the back row (~30) with
+  the context panel as above, or Given time: header ~31 + rows of 57 + captions ("Loops and
+  counterparts", "Worked on …") and the hint line ("Nothing above 1 h this week") 28 each, Tend line
+  ~30, hidden line ~30. 1227 − 174 − 31 − 60 ≈ 960 dp: about 16 owner rows per page.
+- **Settings → Contexts**: the list on the left like Note setups (`SETUP_ROW_HEIGHT` rows), the editor
+  on the right: name input ~33, three chip grids (Areas, Projects, tags; chips ~32, wrapping), the
+  "outside meetings" switch, the two Given time threshold rows (MiniTabs, ~40 each) and the preview
+  line. Long chip lists page inside their grid.
+
+### 5.7 The Engage panel
 
 `screens/engage/engageStyles.ts` holds the panel's budget; its fullest screen is a meeting's
 page: header ~40, section line ~28 (`sectionLine`: small line 18 + `marginBottom 8`, shown whenever

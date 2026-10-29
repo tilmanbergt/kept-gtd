@@ -137,6 +137,19 @@ export function matchingSetups(tags: readonly string[], setups: readonly NoteSet
   return setups.filter(s => s.enabled && setupMatchesTags(s, tags));
 }
 
+/**
+ * Where a focus block's first note goes (docs/dev/history/technical-design-time-and-place.md
+ * §3.1, D8, §9.8): `meeting` when a setup matches its tags - exactly as for a
+ * meeting (loop note page, thread notebook page, own note); `home` when only
+ * the Default would place it - the owner's home notebook opens instead, the
+ * Default creates no note of its own for a focus block; `none` in the Inbox.
+ * A focus block that already has a note link opens it, whatever this says.
+ */
+export function focusBlockNoteTarget(meeting: {tags: readonly string[]}, setups: readonly NoteSetup[], inbox: boolean): 'meeting' | 'home' | 'none' {
+  if (inbox) return 'none';
+  return matchingSetups(meeting.tags, setups).length > 0 ? 'meeting' : 'home';
+}
+
 // ---- Where a first note goes (§1.2, §4.1) ----------------------------------
 
 export interface NoteCandidate {

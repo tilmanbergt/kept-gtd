@@ -49,10 +49,10 @@
  *
  * Right: ProjectDataPanel - the item's own Todos and Meetings, always
  * scoped to the project/area root.
- * Left pane, pinned to the very TOP: ui/ItemFocusPanel.tsx - the
- * Daily/Weekly focus checkboxes plus the weekly-goal line
- * (docs/dev/history/technical-design-item-goal-display.md). It is its own component
- * because it sits on the opposite side of Files from Status/Archive.
+ * Left pane, pinned to the very TOP: ui/ItemScopePanel.tsx - Scope and the
+ * Given time line (docs/dev/history/technical-design-time-and-place.md §3.4).
+ * It is its own component because it sits on the opposite side of Files from
+ * Status/Archive.
  *
  * Left pane, pinned to the very bottom: ui/ItemStatusPanel.tsx - Status +
  * Archive + Assign to Area (docs/dev/history/technical-design-inbox-tab.md §4);
@@ -61,7 +61,7 @@
  * sits flush at the bottom of the left pane regardless of how few or many
  * files/folders are showing above it, rather than trailing wherever
  * FileBrowserPane's own (unpadded, page-length-dependent) content happens to
- * end. ui/ItemFocusPanel.tsx above it, by contrast, is sized to its own
+ * end. ui/ItemScopePanel.tsx above it, by contrast, is sized to its own
  * content (no `flex: 1`) - it's pinned to the top by document order alone,
  * not by absorbing leftover space the way `filesArea` does for the bottom
  * panel.
@@ -109,6 +109,7 @@
  * remount this screen, which loads the item again; FileBrowserPane scans its
  * open folder itself whenever it (re)mounts or drills.
  */
+import {RetainedFocus} from '../storage/projectFile';
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
 import {ItemStatus} from '../domain/types';
@@ -130,7 +131,7 @@ import ClipboardTextInput from '../ui/ClipboardTextInput';
 import {common} from '../ui/commonStyles';
 import {FONT, useThemeColors} from '../ui/theme';
 import FileBrowserPane, {FileBrowserExtraTab, FileBrowserRoot, LinkTarget} from '../ui/FileBrowserPane';
-import ItemFocusPanel from '../ui/ItemFocusPanel';
+import ItemScopePanel from '../ui/ItemScopePanel';
 import ItemStatusPanel from '../ui/ItemStatusPanel';
 import ProjectDataPanel from './ProjectDataPanel';
 import ThreadsTab, {CounterpartSelection} from './thread/ThreadsTab';
@@ -144,6 +145,7 @@ import MarkWrap from '../ui/status/StatusMark';
 import {usePerfRender} from '../utils/perf';
 import {useOnScreenShow} from '../ui/screenActivity';
 import {errorMessage} from '../utils/errorMessage';
+import KindBadge from '../ui/KindBadge';
 
 /**
  * User-facing text for an invalid abbreviation candidate (domain/abbrev.ts's
@@ -184,9 +186,7 @@ interface Props {
 interface ResourceFolderState {
   rawContent: string;
   status: ItemStatus;
-  dailyFocus: boolean;
-  weeklyFocus: boolean;
-  monthlyFocus: boolean;
+  focusFlags: RetainedFocus;
   frontMatterExtraLines: string[];
   defaultResourceFolder: string | null;
   area: string | null;
@@ -199,9 +199,7 @@ function resourceFolderStateOf(item: CachedItem): ResourceFolderState {
   return {
     rawContent: item.rawContent,
     status: item.status,
-    dailyFocus: item.dailyFocus,
-    weeklyFocus: item.weeklyFocus,
-    monthlyFocus: item.monthlyFocus,
+    focusFlags: item.focusFlags,
     frontMatterExtraLines: item.frontMatterExtraLines,
     defaultResourceFolder: item.defaultResourceFolder,
     area: item.area,
@@ -274,7 +272,7 @@ export default function ItemDetail({
       if (!resourceFolderState) return;
       try {
         // Fresh from the cache, not this screen's own snapshot: another panel on this
-        // screen (ItemFocusPanel/ItemStatusPanel) may have written the file since -
+        // screen (ItemScopePanel/ItemStatusPanel) may have written the file since -
         // its rawContent/focus flags must not be overwritten with stale values.
         const current = findCachedItem(path) ?? resourceFolderState;
         const fm = {...frontMatterOf(current), defaultResourceFolder: subfolderRelativePath};
@@ -311,7 +309,7 @@ export default function ItemDetail({
         throw new Error(abbrevErrorMessage(validation));
       }
       // Fresh from the cache, not this screen's own snapshot: another panel on this
-      // screen (ItemFocusPanel/ItemStatusPanel) may have written the file since -
+      // screen (ItemScopePanel/ItemStatusPanel) may have written the file since -
       // its rawContent/focus flags must not be overwritten with stale values.
       const current = findCachedItem(path) ?? resourceFolderState;
       const fm = {...frontMatterOf(current), abbrev: trimmed};
@@ -538,9 +536,7 @@ export default function ItemDetail({
         <Text style={[styles.heading, {color: textColor}]} numberOfLines={1}>
           {name}
         </Text>
-        <Text style={[styles.kindTag, {color: textColor}]}>
-          {kind === 'project' ? 'Project' : 'Area'}
-        </Text>
+        <KindBadge label={kind === 'project' ? 'Project' : 'Area'} textColor={textColor} />
         {resourceFolderState && (
           <AbbrevPill
             abbrev={resourceFolderState.abbrev}
@@ -559,7 +555,7 @@ export default function ItemDetail({
 
       <View style={styles.body}>
         <View style={[styles.leftPane, {borderColor}]}>
-          <ItemFocusPanel
+          <ItemScopePanel
             kind={kind}
             name={name}
             path={path}
@@ -624,8 +620,8 @@ export default function ItemDetail({
 
 /**
  * Trailing `#tag` pill in the header (docs/dev/technical-design-project-area-
- * abbreviations.md) - always last, after the kindTag. Tap to edit inline,
- * mirroring ui/ItemFocusPanel.tsx's ItemScopeRow tap-to-edit pattern (draft
+ * abbreviations.md) - always last, after the kind badge. Tap to edit inline,
+ * mirroring ui/ItemScopePanel.tsx's ItemScopeRow tap-to-edit pattern (draft
  * state + Save/Cancel text buttons). Always rendered once
  * resourceFolderState has loaded - migrateMissingAbbrevs
  * (storage/dataCache.ts) guarantees every Project/Area already has a
@@ -758,11 +754,6 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     flex: 1,
   },
-  kindTag: {
-    fontSize: FONT.small,
-    opacity: 0.6,
-    marginLeft: 8,
-  },
   body: {
     flex: 1,
     flexDirection: 'row',
@@ -814,7 +805,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   // ClipboardTextInput's own inner wrap is `flex: 1` (styled for its usual
-  // full-width usage, e.g. ItemFocusPanel.tsx's Scope/Goal rows) - fine
+  // full-width usage, e.g. ItemScopePanel.tsx's Scope row) - fine
   // there, but meaningless inline in a row next to Save/Cancel with no
   // width of its own to fill. This gives it one: short, since abbreviations
   // are a handful of characters, not a sentence.

@@ -14,11 +14,9 @@ const ack = (wasCurrent: boolean): EngageAck => ({
   undo: {itemPath: '/a', taskIndex: 1, before: task('Brief #next'), afterText: 'Brief #next'},
 });
 const options = (ownerEmpty: boolean): EngageOptions => ({next: [], plan: [], from: [], waiting: [], agreements: [], alsoHere: {someday: 0}, nextMeeting: null, ownerEmpty});
-const data = (ownerEmpty: boolean, dailyLeft = 2, ring: 'daily' | 'weekly' = 'daily'): EngageEvent => ({
+const data = (ownerEmpty: boolean): EngageEvent => ({
   type: 'dataChanged',
   options: options(ownerEmpty),
-  ring,
-  dailyLeft,
   current: KEY,
   nextRows: 1,
   fromRows: 0,
@@ -29,9 +27,7 @@ const data = (ownerEmpty: boolean, dailyLeft = 2, ring: 'daily' | 'weekly' = 'da
 const S = {
   options: {kind: 'options'},
   ownerEmpty: {kind: 'ownerEmpty'},
-  daily: {kind: 'selectFocus', ring: 'daily'},
-  weekly: {kind: 'selectFocus', ring: 'weekly'},
-  focusDone: {kind: 'focusDone'},
+  daily: {kind: 'schedule'},
   quickAdd: {kind: 'quickAdd'},
 } satisfies Record<string, EngageScreen>;
 
@@ -46,22 +42,15 @@ const state = (screen: EngageScreen, extra: Partial<EngageState> = {}): EngageSt
 
 type Row = [name: string, from: EngageState, event: EngageEvent, screen: EngageScreen];
 const rows: Row[] = [
-  ['open with an owner → its options', state(S.daily, {owner: null}), {type: 'open', owner: OWNER, current: null, ring: 'daily'}, S.options],
-  ['open without an owner → today\'s focus', state(S.options), {type: 'open', owner: null, current: null, ring: 'daily'}, S.daily],
-  ['open without an owner, no daily focus → the week\'s', state(S.options), {type: 'open', owner: null, current: null, ring: 'weekly'}, S.weekly],
+  ['open with an owner → its options', state(S.daily, {owner: null}), {type: 'open', owner: OWNER, current: null}, S.options],
+  ['open without an owner → today\'s schedule', state(S.options), {type: 'open', owner: null, current: null}, S.daily],
   ['owner ran empty → S8', state(S.options), data(true), S.ownerEmpty],
-  ['owner ran empty and today\'s focus is done → S10', state(S.options), data(true, 0), S.focusDone],
-  ['owner ran empty, no daily focus → S8', state(S.options), data(true, 0, 'weekly'), S.ownerEmpty],
-  ['owner still has options → stays', state(S.options), data(false, 0), S.options],
+  ['owner still has options → stays', state(S.options), data(false), S.options],
   ['S8 gets a todo again → options', state(S.ownerEmpty), data(false), S.options],
-  ['S8 and today\'s focus done → S10', state(S.ownerEmpty), data(true, 0), S.focusDone],
-  ['S8 stays S8 while focus is left', state(S.ownerEmpty), data(true, 3), S.ownerEmpty],
-  ['S9 with nothing left today → S10', state(S.daily), data(true, 0), S.focusDone],
-  ['S11 stays when today is done', state(S.weekly), data(true, 0), S.weekly],
-  ['S10 stays', state(S.focusDone), data(false, 3), S.focusDone],
-  ['Quick Add stays open on data', state(S.quickAdd), data(true, 0), S.quickAdd],
-  ['Select next focus → the effective ring', state(S.ownerEmpty, {ring: 'weekly'}), {type: 'selectFocus'}, S.weekly],
-  ['Select new focus → the week', state(S.focusDone), {type: 'selectNewFocus'}, S.weekly],
+  ['S8 stays S8 while empty', state(S.ownerEmpty), data(true), S.ownerEmpty],
+  ['S9 stays on data', state(S.daily), data(true), S.daily],
+  ['Quick Add stays open on data', state(S.quickAdd), data(true), S.quickAdd],
+  ['Today\'s schedule → S9', state(S.ownerEmpty), {type: 'selectSchedule'}, S.daily],
   ['back from S9 → the owner\'s options', state(S.daily), {type: 'back'}, S.options],
   ['back from S9 → S8 when the owner is empty', state(S.daily, {ownerEmpty: true}), {type: 'back'}, S.ownerEmpty],
   ['back without an owner stays', state(S.daily, {owner: null}), {type: 'back'}, S.daily],
@@ -84,7 +73,7 @@ describe('engageFlow screens', () => {
 
 describe('engageFlow state', () => {
   it('open resets ack and sets the current todo', () => {
-    const next = engageFlow(state(S.options, {ack: ack(false)}), {type: 'open', owner: OWNER, current: KEY, ring: 'daily'});
+    const next = engageFlow(state(S.options, {ack: ack(false)}), {type: 'open', owner: OWNER, current: KEY});
     expect(next).toMatchObject({owner: OWNER, current: KEY, ack: null});
   });
   it('acting on the current todo clears it; Undo brings it back', () => {
@@ -104,7 +93,7 @@ describe('engageFlow state', () => {
     expect(engageFlow(state(S.options, {ack: ack(false)}), {type: 'picked', key})).toMatchObject({current: key, ack: null});
   });
   it('the owner changes only through ownerChosen', () => {
-    const events: EngageEvent[] = [data(true, 0), {type: 'selectFocus'}, {type: 'selectNewFocus'}, {type: 'back'}, {type: 'expandQuickAdd'}, {type: 'undone'}];
+    const events: EngageEvent[] = [data(true), {type: 'selectSchedule'}, {type: 'back'}, {type: 'expandQuickAdd'}, {type: 'undone'}];
     for (const event of events) expect(engageFlow(state(S.options), event).owner).toEqual(OWNER);
     expect(engageFlow(state(S.daily), {type: 'ownerChosen', owner: OTHER})).toMatchObject({owner: OTHER, current: null, ack: null});
   });
@@ -118,7 +107,7 @@ describe('engageFlow state', () => {
   it('tabs: Next when it lists anything, else Plan; an empty Next gives way to Plan; #next from Plan does not switch', () => {
     const changed = (from: EngageState, nextRows: number) =>
       engageFlow(from, {...(data(false) as Extract<EngageEvent, {type: 'dataChanged'}>), nextRows}).tab;
-    const opened = engageFlow(state(S.daily), {type: 'open', owner: OWNER, current: null, ring: 'daily'});
+    const opened = engageFlow(state(S.daily), {type: 'open', owner: OWNER, current: null});
     expect(opened.tab).toBeNull();
     expect(changed(opened, 2)).toBe('next');
     expect(changed(opened, 0)).toBe('plan');
@@ -129,12 +118,12 @@ describe('engageFlow state', () => {
   });
   it('the way back: kept from open, offered after choosing another owner, gone after a pick, taken by goBack', () => {
     const back = {owner: OTHER, key: {...KEY, itemPath: '/b'}};
-    const opened = engageFlow(state(S.options), {type: 'open', owner: OWNER, current: null, ring: 'daily', back});
+    const opened = engageFlow(state(S.options), {type: 'open', owner: OWNER, current: null, back});
     expect(opened.back).toEqual(back);
     expect(engageFlow(opened, {type: 'picked', key: KEY}).back).toBeNull();
     const returned = engageFlow(opened, {type: 'goBack'});
     expect(returned).toMatchObject({owner: OTHER, current: back.key, back: null, tab: null, screen: S.options});
-    // Choosing another owner from the focus list offers the todo worked on before.
+    // Choosing another owner from the schedule offers the todo worked on before.
     const chosen = engageFlow(state(S.daily, {current: KEY}), {type: 'ownerChosen', owner: OTHER});
     expect(chosen.back).toEqual({owner: OWNER, key: KEY});
     // The way back already offered stays, unless it is the owner chosen now.
@@ -146,8 +135,8 @@ describe('engageFlow state', () => {
     const page = {itemPath: '/a', meetingIndex: 2};
     type Rows = {nextRows?: number; fromRows?: number; waitingRows?: number; agreementRows?: number};
     const changed = (from: EngageState, counts: Rows) => engageFlow(from, {...(data(false) as Extract<EngageEvent, {type: 'dataChanged'}>), ...counts}).tab;
-    const onPage = engageFlow(state(S.daily), {type: 'open', owner: OWNER, current: null, ring: 'daily', pageMeeting: page});
-    const elsewhere = engageFlow(state(S.daily), {type: 'open', owner: OWNER, current: null, ring: 'daily'});
+    const onPage = engageFlow(state(S.daily), {type: 'open', owner: OWNER, current: null, pageMeeting: page});
+    const elsewhere = engageFlow(state(S.daily), {type: 'open', owner: OWNER, current: null});
 
     it.each([
       ['on a meeting page with From rows', onPage, {fromRows: 2}, 'from'],
@@ -182,11 +171,11 @@ describe('engageFlow state', () => {
   it('the page meeting belongs to the note owner: ownerChosen and goBack clear it; no owner, no page meeting', () => {
     const page = {itemPath: '/a', meetingIndex: 2};
     const back = {owner: OTHER, key: {...KEY, itemPath: '/b'}};
-    const opened = engageFlow(state(S.daily), {type: 'open', owner: OWNER, current: null, ring: 'daily', back, pageMeeting: page});
+    const opened = engageFlow(state(S.daily), {type: 'open', owner: OWNER, current: null, back, pageMeeting: page});
     expect(engageFlow(opened, {type: 'ownerChosen', owner: OTHER}).pageMeeting).toBeNull();
     expect(engageFlow(opened, {type: 'goBack'}).pageMeeting).toBeNull();
     expect(engageFlow(opened, {type: 'picked', key: KEY}).pageMeeting).toEqual(page);
-    expect(engageFlow(state(S.daily), {type: 'open', owner: null, current: null, ring: 'daily', pageMeeting: page}).pageMeeting).toBeNull();
+    expect(engageFlow(state(S.daily), {type: 'open', owner: null, current: null, pageMeeting: page}).pageMeeting).toBeNull();
   });
   it('undone without an ack is a no-op', () => {
     const s = state(S.options);

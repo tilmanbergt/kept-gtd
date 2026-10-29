@@ -110,10 +110,8 @@ describe('todoCardModel', () => {
     expect(card.labels).toEqual(['#next', '#due 24.10.']);
   });
 
-  it('R3: done, flow state, Now only with Next, note', () => {
-    expect(todo('Order soil #next').nowOffered).toBe(true);
-    expect(todo('Order soil #next #now').now).toBe(true);
-    expect(todo('Order soil #someday').nowOffered).toBe(false);
+  it('R3: done, flow state, note; a retired #now reads as Next', () => {
+    expect(todo('Order soil #now').flowState).toBe('next');
     expect(todo('Order soil #maybe').flowState).toBe('maybe');
     expect(todo('Order soil').note).toBe('create');
     expect(todo('Order soil', {notePath: 'Todos/x.note'}).note).toBe('open');

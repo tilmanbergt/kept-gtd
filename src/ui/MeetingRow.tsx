@@ -24,18 +24,21 @@
  *   left, the same everywhere.
  * - twoLine: line 2 shows the source; without a source a long title wraps
  *   onto line 2 instead. The M (highlight) only shows in twoLine rows, at the
- *   end with the other icons.
+ *   end with the other icons. A focus block shows a filled F before its title
+ *   in both layouts (docs/dev/history/technical-design-time-and-place.md §3.1);
+ *   its note icon shows only where a setup would place its note (or it has one).
  * - In the touch test (ui/touchDiag/touchProbe.ts) the row, source, note
  *   and clip targets also report their press events; nowhere else.
  */
 import React from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
 import {MeetingTimeMode, meetingTimeCell} from '../domain/meetingDisplay';
+import {isFocusBlock} from '../domain/focusBlock';
 import {isHighlight} from '../domain/monthHighlight';
 import {MeetingSpanDay} from '../domain/meetingSpan';
 import {meetingDisplayTitle, resolveMeetingTracking} from '../domain/meetingTracking';
 import HighlightMark from './HighlightMark';
-import {EMPTY_NOTE_SETUP_CONFIG, noteSetupConfig, NoteSetupConfig} from '../domain/noteSetups';
+import {EMPTY_NOTE_SETUP_CONFIG, focusBlockNoteTarget, noteSetupConfig, NoteSetupConfig} from '../domain/noteSetups';
 import {GtdParaSettings} from '../domain/settings';
 import {Meeting} from '../domain/types';
 import {ClipIcon, TrackingBoxIcon} from './icons';
@@ -93,6 +96,8 @@ export interface MeetingRowProps {
   /** Tap on the title or the status icon: select for editing (most lists) or select (Review close-out). */
   onPress?: () => void;
   state?: 'editing' | 'arming' | 'selected' | 'done';
+  /** Outside the active context (domain/contexts.ts): drawn faint, still tappable. */
+  dimmed?: boolean;
   /** Daily's context filter - see ui/TaskRow.tsx's identical props. */
   contextTag?: string | null;
   onToggleContext?: (tag: string) => void;
@@ -114,6 +119,7 @@ function MeetingRowV2({
   file,
   onPress,
   state,
+  dimmed,
   contextTag,
   onToggleContext,
   ownerPath,
@@ -128,18 +134,28 @@ function MeetingRowV2({
   const continuesAfter = span?.part === 'first' || span?.part === 'middle';
   const trackingState = tracking ? resolveMeetingTracking(meeting, tracking.setups) : null;
   const highlighted = isHighlight(meeting);
+  const focusBlock = isFocusBlock(meeting);
+  const noteShown = note && (!!meeting.notePath || !focusBlock || !tracking || focusBlockNoteTarget(meeting, tracking.setups.setups, false) === 'meeting');
   const done = state === 'done';
 
   // 2-line row without a source line (single-item lists): the title may use
   // both lines - 2 x 21 dp fits the same 42 dp content box.
   const titleWraps = twoLine && !source;
-  const title = (
-    <Text style={[v2.title, titleWraps && v2.titleWrapped, {color: textColor}]} numberOfLines={titleWraps ? 2 : 1}>
+  const titleText = (
+    <Text style={[v2.title, titleWraps && v2.titleWrapped, focusBlock && v2.flex, {color: textColor}]} numberOfLines={titleWraps ? 2 : 1}>
       {done ? '✓ ' : ''}
       {continuesBefore ? '◂ ' : ''}
       {renderTaggableText(meetingDisplayTitle(meeting), {contextTag, onToggleContext, ownerPath, probe})}
       {continuesAfter ? ' ▸' : ''}
     </Text>
+  );
+  const title = focusBlock ? (
+    <View style={v2.titleRow}>
+      <HighlightMark on letter="F" variant="row" textColor={textColor} />
+      {titleText}
+    </View>
+  ) : (
+    titleText
   );
 
   return (
@@ -152,6 +168,7 @@ function MeetingRowV2({
         (state === 'editing' || state === 'arming' || state === 'selected') && v2.rowMarked,
         state === 'selected' && v2.rowSelected,
         done && v2.rowDone,
+        dimmed && v2.rowDimmed,
       ]}>
       <Pressable onPress={onPress} disabled={!onPress} style={v2.main} {...(onPress ? probePressable(probe, 'row') : {})}>
         <View style={[v2.timeCol, {width: TIME_COLUMN_DP[time][layout]}]}>
@@ -198,7 +215,7 @@ function MeetingRowV2({
           </View>
         )}
       </Pressable>
-      {note && (
+      {noteShown && (
         <Pressable onPress={meeting.notePath ? note.onOpen : note.onCreate} hitSlop={8} style={v2.target} {...probePressable(probe, 'note')}>
           <View style={[v2.action, twoLine && v2.actionTwo]}>
             <Text style={[v2.noteText, {color: textColor}]}>{meeting.notePath ? '📓' : '+📓'}</Text>
@@ -231,6 +248,7 @@ const v2 = StyleSheet.create({
   },
   rowSelected: {backgroundColor: '#e8e8e8'},
   rowDone: {opacity: 0.5},
+  rowDimmed: {opacity: 0.4},
   main: {
     flex: 1,
     flexDirection: 'row',
@@ -238,6 +256,7 @@ const v2 = StyleSheet.create({
     paddingVertical: ROW_PAD_DP,
   },
   target: {paddingVertical: ROW_PAD_DP},
+  titleRow: {flexDirection: 'row', alignItems: 'center'},
   timeCol: {marginRight: 8},
   time: {
     fontSize: FONT.medium,

@@ -1,4 +1,4 @@
-import {featuresOf, migrateExperimentalFlags, shouldShowWhatsNew} from '../../src/domain/features';
+import {featuresOf, migrateExperimentalFlags, modulesOf, shouldShowWhatsNew} from '../../src/domain/features';
 
 const base = {
   experimentalGoogleCalendar: false,
@@ -9,11 +9,26 @@ const base = {
 };
 
 describe('featuresOf', () => {
-  it('is all off without settings', () => {
-    expect(featuresOf(null)).toEqual({googleCalendar: false, gmail: false});
+  it('is all off without settings, close-out on', () => {
+    expect(featuresOf(null)).toEqual({googleCalendar: false, gmail: false, closeOut: true});
   });
   it('reads the flags', () => {
-    expect(featuresOf({...base, experimentalGmail: true})).toEqual({googleCalendar: false, gmail: true});
+    expect(featuresOf({...base, experimentalGmail: true})).toEqual({googleCalendar: false, gmail: true, closeOut: true});
+  });
+  it('reads close-out from the modules map', () => {
+    expect(featuresOf({...base, modules: {closeOut: false}}).closeOut).toBe(false);
+  });
+});
+
+describe('modulesOf', () => {
+  it('fills a missing map from the defaults (stored settings from before modules existed)', () => {
+    expect(modulesOf({})).toEqual({closeOut: true});
+    expect(modulesOf(null)).toEqual({closeOut: true});
+  });
+  it('fills a partial or malformed map key by key', () => {
+    expect(modulesOf({modules: {}})).toEqual({closeOut: true});
+    expect(modulesOf({modules: {closeOut: 'no' as unknown as boolean}})).toEqual({closeOut: true});
+    expect(modulesOf({modules: {closeOut: false, later: true} as unknown as {closeOut: boolean}})).toEqual({closeOut: false});
   });
 });
 

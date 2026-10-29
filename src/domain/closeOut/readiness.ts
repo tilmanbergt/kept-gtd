@@ -19,7 +19,6 @@ export type FindingId =
   | 'openTodos'
   | 'futureMeetings'
   | 'meetingsCloseOut'
-  | 'periodRefs'
   | 'incomingLinks'
   | 'targetCollision'
   | 'unreadableNotes'
@@ -53,11 +52,6 @@ export interface ReadinessInput {
   projectPath: string;
   tasks: Task[];
   meetings: Meeting[];
-  /** Goal keys that exist on this project, e.g. ["2026-W40"] / ["2026-09"]. */
-  weeklyGoalKeys: string[];
-  monthlyGoalKeys: string[];
-  currentWeekKey: string;
-  currentMonthKey: string;
   /** YYYY-MM-DD. */
   today: string;
   now: Date;
@@ -120,15 +114,6 @@ export function evaluateReadiness(input: ReadinessInput): Finding[] {
     toCloseOut.length > 0
       ? {id: 'meetingsCloseOut', severity: 'warning', label: `${plural(toCloseOut.length, 'meeting')} not closed out`, caption: 'prep/review not ticked', items: toCloseOut.map(({m, index}) => ({index, label: `${m.date} · ${meetingDisplayTitle(m)}`}))}
       : {id: 'meetingsCloseOut', severity: 'ok', label: 'Meetings to close out', caption: 'all prepped and reviewed', items: []},
-  );
-
-  const periodItems: FindingItem[] = [];
-  if (input.weeklyGoalKeys.includes(input.currentWeekKey)) periodItems.push({label: `Goal for this week (${input.currentWeekKey})`});
-  if (input.monthlyGoalKeys.includes(input.currentMonthKey)) periodItems.push({label: `Goal for this month (${input.currentMonthKey})`});
-  out.push(
-    periodItems.length > 0
-      ? {id: 'periodRefs', severity: 'warning', label: 'Current goals will leave the Week/Month views', caption: 'warning', items: periodItems}
-      : {id: 'periodRefs', severity: 'ok', label: 'Goals, focus and month highlights', caption: 'nothing current points to this project', items: []},
   );
 
   const prefix = `${input.projectLinkedPrefix.replace(/\/+$/, '')}/`;

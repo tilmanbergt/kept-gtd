@@ -26,7 +26,7 @@ Recently used tags fill rows 3 and 4: tap one to insert it into the text, tap a 
 
 ## Adding a meeting
 
-Choose the **Meeting** tab, write the title, set the date and the time. For the time field see [Week and Month](week-and-month.md) (for example `15-16.30` or `2d`). The small **M** next to **+ Add** marks a monthly highlight.
+Choose the **Meeting** tab, write the title, set the date and the time. For the time field see [Week and Month](week-and-month.md) (for example `15-16.30` or `2d`). The small **M** next to **+ Add** marks a monthly highlight; **F** makes it a focus block, time of your own for a loop, thread, project or area (see [Meetings](meetings.md)). When a new todo or meeting lands in a project or area the current context hides, the status line says so: "Saved to Atruvia · hidden by Home".
 
 ## The grey line: where a todo comes from
 
@@ -58,7 +58,7 @@ The todo card shows:
 
 - First row: **Todo** and its state - due, overdue, waiting for someone, someday, done or deleted; the meeting it was agreed in (for example `↳ Sparring Mieke ›`, which opens that thread's overview); ✕ and **Edit**.
 - Second row: the text and its labels.
-- Third row: the box to tick it done; the flow chips **w/f**, **Maybe**, **Someday** and **Next** (tap one to set it, tap the filled one to clear it); **Now** while it is Next; the note icon.
+- Third row: the box to tick it done; the flow chips **w/f**, **Maybe**, **Someday** and **Next** (tap one to set it, tap the filled one to clear it); the note icon.
 - Fourth row: where the todo lives (tap the name to open it; where a Files pane is there, the arrow next to it moves the todo to another project or area); its linked file (tap the name to open it, ✕ removes the link), or **+** and the clip to link one where a Files pane is there; at the right the trash icon, which asks first and then removes the todo from your lists - it stays in the file, marked as cancelled.
 
 Moving an item that has a note asks first: its own note moves along into the new project's `Todos` or `Meetings` folder. A page in a shared note stays in that note, and the item keeps its link to that page.
@@ -67,7 +67,7 @@ The meeting card is described in [Meetings](meetings.md). Cards exist wherever a
 
 ## Editing
 
-**Edit** on the card, or a second tap on the selected row, opens the item in Quick Add. Change what you need, then **Save** - or **Cancel** - at the top right; **Save** brings you back to the card. Only one item is edited at a time: tapping another row saves the open edit first. With an abbreviation tag in the text, **Save** reads **Save to** followed by that project's name: it saves your changes and moves the item there in one step.
+**Edit** on the card, a tap on the card's title, or a second tap on the selected row opens the item in Quick Add. Change what you need, then **Save** - or **Cancel** - at the top right; **Save** brings you back to the card. Only one item is edited at a time: tapping another row saves the open edit first. With an abbreviation tag in the text, **Save** reads **Save to** followed by that project's name: it saves your changes and moves the item there in one step.
 
 ## Notes and files on a todo or meeting
 

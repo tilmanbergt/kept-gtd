@@ -88,11 +88,12 @@ import {Text} from 'react-native';
 import TestRenderer, {act} from 'react-test-renderer';
 import App from '../../App';
 
-const pressText = async (r: TestRenderer.ReactTestRenderer, label: string | RegExp) => {
+/** Presses the first text matching `label`, or the last with `last` (a list's pager, after the kept tabs' own). */
+const pressText = async (r: TestRenderer.ReactTestRenderer, label: string | RegExp, last = false) => {
   const matches = (text: string) => (typeof label === 'string' ? text === label : label.test(text));
   const found = r.root.findAllByType(Text).filter(t => matches([t.props.children].flat().join('')));
   expect(found.length).toBeGreaterThan(0);
-  let node: TestRenderer.ReactTestInstance | null = found[0];
+  let node: TestRenderer.ReactTestInstance | null = last ? found[found.length - 1] : found[0];
   while (node && typeof node.props.onPress !== 'function') node = node.parent;
   expect(node).not.toBeNull();
   await act(async () => node!.props.onPress());
@@ -121,7 +122,7 @@ async function openPage(tab: 'Areas' | 'Projects', name: RegExp, nextPage = fals
   await pressText(r, tab);
   await settle();
   if (nextPage) {
-    await pressText(r, '›');
+    await pressText(r, '›', true);
     await settle();
   }
   await pressText(r, name);

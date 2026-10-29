@@ -3,7 +3,9 @@
  * §3.10): ongoing relationships and series as a matter of keeping one's
  * word. Left, the roster (storage/tendingRoster.ts), frozen when the step is
  * entered: the New block on top (new counterparts and inactive ones back in
- * use, decisions D3/D20), then each scope's active counterparts (an Area
+ * use, decisions D3/D20), then each scope's active counterparts that need
+ * tending - nothing planned in 14 days and no `#next` or I-owe todo
+ * (technical-design-time-and-place.md §10 C3, domain/givenTime.ts) - (an Area
  * with its Projects, or a Project without an Area; the Inbox has none,
  * decision D18). Two lines a row: last · next meeting, or the one-off label
  * (decision D17); then I owe and the oldest Waiting for. No ranking:
@@ -19,6 +21,7 @@ import React, {useCallback, useMemo, useState} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import {Destination} from '../../../domain/destination';
 import {oneOffLabel, threadTypesOf} from '../../../domain/counterparts';
+import {needsTending, nothingPlanned} from '../../../domain/givenTime';
 import {todayIso} from '../../../domain/meetingTime';
 import {rosterCountsText, rosterMeetingText} from '../../../domain/threadText';
 import {CounterpartStatus} from '../../../domain/threadsSection';
@@ -50,7 +53,7 @@ const entryKey = (e: RosterEntry) => `${e.owner.path}|${e.counterpart.leaf}`;
 
 /** The live roster of every scope, or null until settings (the Note setups) are loaded. */
 export function useTendingRoster(data: ReviewData): RosterScope[] | null {
-  const {items, inbox, inboxPath, settings} = data;
+  const {contextItems: items, inbox, inboxPath, settings} = data;
   return useMemo(() => {
     if (!settings) return null;
     const inboxInput = inbox && inboxPath ? {path: inboxPath, tasks: inbox.tasks, meetings: inbox.meetings} : null;
@@ -58,14 +61,17 @@ export function useTendingRoster(data: ReviewData): RosterScope[] | null {
   }, [items, inbox, inboxPath, settings]);
 }
 
-/** The step's count: counterparts to confirm plus the active ones. */
-export function tendingCount(roster: RosterScope[] | null): number {
+/** The active counterparts of a scope that need tending (domain/givenTime.ts). */
+const toTend = (scope: RosterScope, today: string) => scope.active.filter(e => needsTending(e, today));
+
+/** The step's count: counterparts to confirm plus the active ones that need tending. */
+export function tendingCount(roster: RosterScope[] | null, today = todayIso()): number {
   if (!roster) return 0;
-  return roster.reduce((sum, scope) => sum + scope.confirm.filter(needsConfirm).length + scope.active.length, 0);
+  return roster.reduce((sum, scope) => sum + scope.confirm.filter(needsConfirm).length + toTend(scope, today).length, 0);
 }
 
-/** The frozen rows: the New block, then each scope's active counterparts under its name. */
-function rosterRows(roster: RosterScope[]): RosterRow[] {
+/** The frozen rows: the New block, then each scope's counterparts that need tending under its name. */
+function rosterRows(roster: RosterScope[], today: string): RosterRow[] {
   const all = roster.flatMap(scope => scope.confirm).filter(needsConfirm);
   const rows: RosterRow[] = [];
   if (all.length > 0) {
@@ -73,9 +79,10 @@ function rosterRows(roster: RosterScope[]): RosterRow[] {
     all.forEach(e => rows.push({kind: 'cp', key: entryKey(e), ownerPath: e.owner.path, leaf: e.counterpart.leaf}));
   }
   for (const scope of roster) {
-    if (scope.active.length === 0) continue;
+    const tend = toTend(scope, today);
+    if (tend.length === 0) continue;
     rows.push({kind: 'head', key: `h-${scope.owner.path}`, label: scope.owner.name});
-    scope.active.forEach(e => rows.push({kind: 'cp', key: entryKey(e), ownerPath: e.owner.path, leaf: e.counterpart.leaf}));
+    tend.forEach(e => rows.push({kind: 'cp', key: entryKey(e), ownerPath: e.owner.path, leaf: e.counterpart.leaf}));
   }
   return rows;
 }
@@ -86,7 +93,7 @@ function destinationOf(item: ThreadItemRef): Destination {
 
 export default function TendingThreadsStep({data, stepEntryToken, onAddTask, textColor, borderColor, placeholderColor}: ReviewStepProps): React.JSX.Element {
   const roster = useTendingRoster(data);
-  const source = useMemo(() => (roster ? rosterRows(roster) : null), [roster]);
+  const source = useMemo(() => (roster ? rosterRows(roster, todayIso()) : null), [roster]);
   const frozen = useFrozenStepList(source, stepEntryToken);
   const live = new Map<string, RosterEntry>();
   for (const scope of roster ?? []) for (const e of [...scope.confirm, ...scope.active, ...scope.inactive]) live.set(entryKey(e), e);
@@ -131,7 +138,8 @@ export default function TendingThreadsStep({data, stepEntryToken, onAddTask, tex
     const marker = cp?.backInUse && cp.status === 'inactive' ? 'back in use' : cp?.status === 'new' ? 'new' : null;
     const oneOff = cp?.oneOff ? oneOffLabel(cp.oneOff) : null;
     const counts = entry ? rosterCountsText(entry) : '';
-    const meeting = entry ? rosterMeetingText(entry, oneOff, today) : '';
+    const quiet = entry && !oneOff && nothingPlanned(entry.nextMeeting, today) ? ' · nothing planned' : '';
+    const meeting = entry ? `${rosterMeetingText(entry, oneOff, today)}${quiet}` : '';
     return (
       <View style={[styles.row, {borderColor}, selected && styles.rowSelected]}>
         <View style={styles.line}>
@@ -160,7 +168,7 @@ export default function TendingThreadsStep({data, stepEntryToken, onAddTask, tex
       return (
         <ReviewEmptyDetail
           title="No counterpart selected"
-          text="The people, teams and series you meet or owe something to, per Area or Project. Is the next meeting set up? Agreements followed up? Anything waiting too long? New ones: Tend or Not."
+          text="The people, teams and series with nothing planned in the next 14 days and no next or I-owe todo, per Area or Project. Set up the next meeting, add a next todo, or set it inactive. New ones: Tend or Not."
           hint="Tap a counterpart on the left to get started."
           textColor={textColor}
         />
@@ -226,7 +234,7 @@ export default function TendingThreadsStep({data, stepEntryToken, onAddTask, tex
       renderDetail={renderDetail}
       actedOnKeys={frozen.actedOn}
       resetKey={stepEntryToken}
-      emptyHint="No counterparts yet. Nested tags of your Thread setups (#retro/alpha), #wf/<name> and #owe/<name> make them."
+      emptyHint="Nothing to tend: every counterpart has something planned or a next todo. Nested tags of your Thread setups (#retro/alpha), #wf/<name> and #owe/<name> make counterparts."
       textColor={textColor}
       borderColor={borderColor}
     />

@@ -9,6 +9,8 @@
  * (`renderRow`) so its action wiring stays with its state; the planning
  * screens use screens/usePlanningScreen.ts's `dayRowProps`.
  */
+import {Meeting} from '../domain/types';
+import {scheduleCountText} from '../domain/meetingDisplay';
 import React from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
 import {formatDayHeader} from '../domain/dateFormat';
@@ -22,7 +24,7 @@ import {visibleTabs} from './featureStore';
 /** Tab key 'google' shows `googlePanel`; any other key shows the meeting list. */
 export const GOOGLE_TAB = 'google';
 
-interface Props<T, K extends string> {
+interface Props<T extends {meeting: Pick<Meeting, 'tags'>}, K extends string> {
   date: string;
   entries: T[];
   tabs: MiniTabDef<K>[];
@@ -44,7 +46,7 @@ interface Props<T, K extends string> {
   borderColor: string;
 }
 
-export default function DayMeetingsPanel<T, K extends string>({
+export default function DayMeetingsPanel<T extends {meeting: Pick<Meeting, 'tags'>}, K extends string>({
   date,
   entries,
   tabs,
@@ -58,7 +60,6 @@ export default function DayMeetingsPanel<T, K extends string>({
   textColor,
   borderColor,
 }: Props<T, K>): React.JSX.Element {
-  const count = entries.length;
   const shown = visibleTabs(tabs, activeTab, GOOGLE_TAB as K, googlePanel !== null);
   return (
     <View style={styles.root}>
@@ -83,7 +84,7 @@ export default function DayMeetingsPanel<T, K extends string>({
           <MeetingList
             listId="dayPanel"
             defaultLayout="twoLine"
-            header={`${formatDayHeader(date, todayIso())} · ${count} meeting${count === 1 ? '' : 's'}`}
+            header={`${formatDayHeader(date, todayIso())} · ${scheduleCountText(entries)}`}
             rows={entries}
             renderRow={renderRow}
             resetKey={`${date}|${listResetKey ?? ''}`}

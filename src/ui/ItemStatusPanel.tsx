@@ -2,7 +2,7 @@
  * Status (Active/On Hold/Done) + Archive + Assign to Area - the Current
  * tab's left pane, below Files (docs/dev/history/technical-design-inbox-tab.md §4).
  *
- * Focus is shown by ui/ItemFocusPanel.tsx at the TOP of the same column -
+ * Focus is shown by ui/ItemScopePanel.tsx at the TOP of the same column -
  * see that file's module doc comment (independent load, the weekly goal
  * line, and the accepted eventual-consistency window between it and this
  * component). `dailyFocus`/`weeklyFocus` stay on this component's own
@@ -15,7 +15,7 @@
  * data), this component does its own small, independent ensureItemCached
  * load - the same "independent per-section state, synchronized only through
  * the shared cache + write-through" pattern DailyFocusKindSection/ItemsList/
- * ProjectDataPanel/ui/ItemFocusPanel.tsx use side-by-side without sharing
+ * ProjectDataPanel/ui/ItemScopePanel.tsx use side-by-side without sharing
  * state directly (design-overview.md §3's "reads should prefer the cache").
  *
  * **Assign to Area** (technical-design-project-area-assignment.md §4.1,
@@ -33,6 +33,7 @@
  * mutation also builds the callback" convention ProjectDataPanel's own
  * armTarget/onPick follows.
  */
+import {RetainedFocus} from '../storage/projectFile';
 import React, {useCallback, useEffect, useState} from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
 import {ItemStatus} from '../domain/types';
@@ -78,9 +79,7 @@ interface Props {
 interface StatusPanelState {
   rawContent: string;
   status: ItemStatus;
-  dailyFocus: boolean;
-  weeklyFocus: boolean;
-  monthlyFocus: boolean;
+  focusFlags: RetainedFocus;
   frontMatterExtraLines: string[];
   defaultResourceFolder: string | null;
   /** The Area this Project supports, by bare folder name, or null - always null for Areas. */
@@ -91,7 +90,7 @@ interface StatusPanelState {
 
 /**
  * This item as every frontmatter write here should see it: fresh from the
- * shared cache when present (another panel on this screen - ItemFocusPanel,
+ * shared cache when present (another panel on this screen - ItemScopePanel,
  * ItemDetail's own resource-folder/abbrev saves - may have written the
  * file since this panel loaded), falling back to this panel's own snapshot.
  * Every write spreads the whole thing (docs/dev/history/technical-design-monthly-view.md
@@ -106,9 +105,7 @@ function statusPanelStateOf(item: CachedItem): StatusPanelState {
   return {
     rawContent: item.rawContent,
     status: item.status,
-    dailyFocus: item.dailyFocus,
-    weeklyFocus: item.weeklyFocus,
-    monthlyFocus: item.monthlyFocus,
+    focusFlags: item.focusFlags,
     frontMatterExtraLines: item.frontMatterExtraLines,
     defaultResourceFolder: item.defaultResourceFolder,
     area: item.area,
@@ -204,7 +201,7 @@ export default function ItemStatusPanel({
     if (item && state && item.rawContent !== state.rawContent) load();
   });
 
-  /** Active/On Hold/Done - never 'archived', see storage/statusControl.ts. Moving off Active clears both focus flags in the same write; moving an Area to On Hold also cascades to its assigned Active projects (statusControl.ts). `area` is carried through unchanged - a status change must never clear a Project's Area assignment. */
+  /** Active/On Hold/Done - never 'archived', see storage/statusControl.ts. Moving an Area to On Hold also cascades to its assigned Active projects (statusControl.ts). `area` is carried through unchanged - a status change must never clear a Project's Area assignment. */
   const changeStatus = useCallback(
     async (next: SettableStatus) => {
       if (!state) return;
@@ -218,9 +215,6 @@ export default function ItemStatusPanel({
               ...prev,
               rawContent: result.rawContent,
               status: result.status,
-              dailyFocus: result.dailyFocus,
-              weeklyFocus: result.weeklyFocus,
-              monthlyFocus: result.monthlyFocus,
               frontMatterExtraLines: result.frontMatterExtraLines,
             }
           : prev,

@@ -4,7 +4,8 @@
  * bounded box it's given (flex-weight stacking, docs/dev/technical-design-flex-
  * weight-stacking.md) - on the A5X that's ~50px per row for 31 days, so no
  * paging is needed. Each row: "Th 01", the day's highlights joined with
- * " // " as far as they fit on one line, then "+N" for the rest, and - on
+ * " // " as far as they fit on one line, then "+N" for the rest, an "F" (one
+ * focus block) or "F2" (two or more: "F<n>") mark, and - on
  * Mondays - a thicker top rule plus the ISO week number. Weekends are
  * shaded; the selected day is inverted. Tapping a row selects that day (the
  * screen then shows its day panel).
@@ -24,7 +25,7 @@ import {FONT} from './theme';
 const WEEKDAY_SHORT = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
 const SEPARATOR = '  //  ';
 /** Day label (64) + week-number column (40) + "+N" chip allowance (44) + paddings/gaps. */
-const ROW_CHROME_PX = 64 + 40 + 44 + 40;
+const ROW_CHROME_PX = 64 + 40 + 44 + 34 + 40;
 
 interface Props {
   days: MonthDay[];
@@ -96,6 +97,7 @@ export default function MonthDaysColumn({days, selectedDate, todayDate, onSelect
                 <Text style={[styles.moreText, {color: fg}]}>+{more}</Text>
               </View>
             )}
+            <Text style={[styles.focusMark, {color: fg}]}>{day.focusBlocks === 0 ? '' : day.focusBlocks === 1 ? 'F' : `F${day.focusBlocks}`}</Text>
             <Text style={[styles.weekNo, {color: fg}]}>{day.isoWeek != null ? `W${day.isoWeek}` : ''}</Text>
           </Pressable>
         );
@@ -128,6 +130,12 @@ const styles = StyleSheet.create({
   },
   weekendLabel: {
     opacity: 0.7,
+  },
+  focusMark: {
+    width: 34,
+    fontSize: FONT.small,
+    fontWeight: '700',
+    textAlign: 'right',
   },
   highlights: {
     flex: 1,

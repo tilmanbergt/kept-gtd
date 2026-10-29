@@ -28,7 +28,7 @@ import {AgreementCardData, useAgreementCard, useEndAgreement} from './itemCard/u
 import {AgreementHandlers} from './quickAdd/useAgreementDraft';
 import {QuickAddEditTarget} from './quickAdd/types';
 import {EntryEditKey} from './useEntryActions';
-import {useEditTarget} from './useEditTarget';
+import {cardOrEdit, useEditTarget} from './useEditTarget';
 import {useStableCallback} from './useStableCallback';
 
 export const agreementRefKey = (ref: Pick<AgreementRef, 'itemPath' | 'index'>) => `${ref.itemPath}#${ref.index}`;
@@ -50,7 +50,7 @@ export function entryAgreementEdit(edit: ReturnType<typeof useEditTarget<EntryEd
   const t = edit.target;
   return {
     current: t && (t.type === 'agreement' || t.type === 'agreementChange') ? {key: t.key, change: t.type === 'agreementChange'} : null,
-    mode: edit.mode,
+    mode: cardOrEdit(edit.mode),
     select: key => edit.select({type: 'agreement', key}),
     startChange: key => edit.start({type: 'agreementChange', key}),
     edit: edit.edit,

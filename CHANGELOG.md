@@ -10,6 +10,91 @@ or your project/area files are stored.
 
 ## [Unreleased]
 
+### New
+- **Contexts**: Work, Home, Café - set them up in **Settings → Contexts** (areas, projects and tags
+  the context shows or hides; usually just a few areas) and switch there: the chip in the tab bar names
+  the active context and opens Settings → Contexts, where ○ makes another one active. A context filters Daily, Week,
+  Month, Projects, Areas and the Weekly Review; the Inbox always shows, meetings outside it are
+  dimmed, never hidden. Every filtered tab ends with "Hidden by Work: 9 todos · Show", with "3 due!"
+  when hidden todos are due today or earlier. The Review's overview adds "+2 in other contexts"; Reviewed counts for every context.
+  Quick Add says when a new todo lands outside the context: "Saved to Atruvia · hidden by Home".
+- **Focus blocks**: time for yourself with a loop, thread, project or area. Switch on **F** next to
+  **M** in Quick Add's Meeting form (or on a meeting's card); the line gets the tag `#focusblock`,
+  so it stays an ordinary meeting in your files. Focus blocks show a filled **F** wherever meetings
+  show (on Month only when also marked **M**, then with their name), have no prep/review and no Reflection page, and never appear in "Meetings to close out".
+  Their note follows a Note setup that matches their tags; otherwise the card opens the owner's home
+  notebook instead of creating a note.
+- **The context panel**: tap a meeting or focus block on Daily, Week or Month and its card shows with
+  everything around it below: **I owe**, **Next**, **Waiting for** and **Agreed last time** (a
+  thread) or **From its meetings** (a loop). A plain meeting shows what is linked to it, or its
+  project's or area's next todos ("Nothing linked to this meeting yet"). **+ Quick Add to meeting**
+  (**+ Quick Add to block**) adds to it on the Todo tab, the button naming where ("+ Add to Coaching"):
+  before it starts the todo gets the thread's or loop's tag, during and after it also records the
+  meeting, as in Engage. The panel lists **Planned** todos and Waiting for todos dated later too - what
+  Daily leaves out - for the session's full context. Todos in the panel open their card and edit form
+  like anywhere else; **✕ Close** next to **Overview ›** closes the meeting.
+- **Given time** on Week and Month: the areas (with their projects) and projects that got time in the
+  week or month, from meetings and focus blocks (an all-day event counts as "1 day"), with blocks,
+  meetings, todos done and the next todo; then **Loops and counterparts** - a counterpart sums all its
+  threads (value: retro/value, review/value, replenishment/value) - from 1 h a week / 2 h a
+  month (a threshold each context can change in Settings → Contexts, Everything's too); **Worked on**
+  lists areas and projects with todos done but nothing scheduled. **Tend: 3 counterparts · 2 loops quiet ›**
+  counts the threads and loops that need tending and opens the Review's Tending threads.
+- A project's or area's page shows **Given time · this week 3 h · this month 11 h**.
+- Review: **Tending threads** lists new counterparts and the active ones that need tending - nothing
+  planned in the next 14 days and no next or I-owe todo; **Open loops** lists the loops with no next
+  action and nothing planned, or past their main date. Both mark "nothing planned"; **Open loops** has
+  **+ F block**, which fills Quick Add's Meeting tab with the loop and F on.
+- **Settings → Features**: switch **Project close-out** on or off. Off, a Done project is archived
+  directly from its page and from the Weekly Review, without the checklist and the PDF.
+
+### Changed
+- The kind of a project, area, loop, thread or counterpart is a small capitals badge right of its name
+  (AREA, THREAD, …): in Given time, the context panel's header, Engage's header and a project's or
+  area's page.
+- On a meeting's or todo's card above Quick Add, a tap on the title opens the edit form, like **Edit**.
+- The demo space is now marked by a boxed **D** and an inverted (black) tab bar. It has two contexts, **Work** and
+  **Home**, and three focus blocks, and no longer sets focus or goals.
+- "Using Kept GTD with Obsidian" is now part of the help page "Your files, folders and Obsidian".
+- **Week**: tapping a meeting in the grid shows its card and context panel with "‹ Back to Week 42 ·
+  Thu 15.10. · 2 meetings ›" instead of opening its day; tapping the day's header still opens the
+  day. **Month**: a meeting in the day panel opens the same way, with "‹ Back to October".
+- Lists that hold meetings and focus blocks are called **Schedule**: Week's left tab, the day
+  panel's tab, a project's or area's page and the Inbox. A day's line counts both: "Wed 14.10. ·
+  2 meetings · 1 focus".
+- The **Experimental** switches (Google Calendar, Gmail, Notebook contents) moved from Settings →
+  Advanced to the new Settings → Features.
+- Daily opens a little faster the first time.
+- Week and Month no longer show the weekly and monthly focus panels and goals; Given time takes their
+  place. A project's or area's page shows Given time instead of its focus switches. The Review's
+  **Week ahead** shows only the schedule.
+
+### Removed
+- **Focus** (daily, weekly and monthly), **weekly and monthly goals** and **focus mode** are retired.
+  **Daily** now shows every `#next` todo of the current context, plus what is due; its left column is
+  the day's schedule. The Projects and Areas tabs no longer mark focused items with ★, and pickers
+  list them in folder order.
+- A `#now` left from focus mode now reads as `#next` (its text stays); the card's **Now** and the
+  double tap on `#next` are gone.
+- Review: the steps **Unfocused next items** and **Focus reset** are gone, and so is the close-out
+  checklist's goals line. **Settings → Focus** is gone. The Home page's **Latest goals** piece is no
+  longer offered (a placed one prints nothing).
+- **Engage**: on a note without an owner it offers **Today's schedule** - the owners of today's
+  remaining meetings and focus blocks - instead of today's focus; **Today's schedule ›** replaces
+  "Select next focus ›".
+
+### Upgrade notes
+- New settings for contexts (stored per profile). After the update the context is **Everything**, so
+  every tab shows what it showed before.
+- Google Calendar, Gmail and Notebook contents keep their setting and are now in Settings → Features.
+  Project close-out is on, as before.
+- Focus, weekly/monthly goals and focus mode are retired. Your files keep them; nothing was deleted.
+  Daily now shows all next todos of the current context - set up contexts in Settings → Contexts. New:
+  focus blocks (F) and the context panel when you tap a meeting. The first start says once: "Focus is
+  retired. Contexts decide what Daily shows: Settings → Contexts."
+- Going back to 0.21.1 is safe: the focus marks, goals, `#now` and the focus settings are still in your
+  files and settings, and 0.21.1 finds them again.
+
 ## [0.21.1] — 2026-10-26
 
 ### Fixed

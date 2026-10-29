@@ -5,6 +5,7 @@
  * Link file), behind a Meetings | Google mini-tab. Add, edit and delete live
  * in ProjectDataPanel's single Quick Add above both lists.
  */
+import {SCHEDULE_LABEL} from '../../domain/meetingDisplay';
 import React, {useMemo, useState} from 'react';
 import {usePerfRender} from '../../utils/perf';
 import {Keyboard, View} from 'react-native';
@@ -28,7 +29,7 @@ import {PaneColors, sectionStyles as styles} from './panelLayout';
 
 type MeetingsMainTab = 'meetings' | 'google';
 const MEETINGS_MAIN_TABS: MiniTabDef<MeetingsMainTab>[] = [
-  {key: 'meetings', label: 'Meetings'},
+  {key: 'meetings', label: SCHEDULE_LABEL},
   {key: 'google', label: 'Google'},
 ];
 
@@ -158,7 +159,7 @@ export default function MeetingsSection({
           <MeetingList
             listId="project"
             defaultLayout="oneLine"
-            header="Meetings"
+            header={SCHEDULE_LABEL}
             rows={meetingRows}
             resetKey={itemPath}
             renderRow={(row, layout) => (

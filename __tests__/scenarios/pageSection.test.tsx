@@ -19,7 +19,7 @@ scenario('Engage on the Home page of a home notebook that is also a loop\'s note
   given('Sport 2026.note is Area Sport\'s home notebook and the note of loop marathon; page 1 is its Home page', () => sport());
   when('I open Engage on page 1', () => engageOn(1));
   then('the owner is Area Sport and the line reads "Section: Sport"', () => {
-    expectShows('Area');
+    expectShows('AREA');
     expectShows('Sport');
     expectNotShows('Loop');
     expect(sectionLine()).toEqual(['Section: Sport']);
@@ -30,7 +30,7 @@ scenario('Engage on a free page after the Home page: the Area, from p. 1', {feat
   given('page 2 has no title and no keyword', () => sport());
   when('I open Engage on page 2', () => engageOn(2));
   then('the owner is Area Sport and the line reads "Section: Sport · from p. 1"', () => {
-    expectShows('Area');
+    expectShows('AREA');
     expect(sectionLine()).toEqual(['Section: Sport · from p. 1']);
   });
 });
@@ -39,7 +39,7 @@ scenario('Engage on a loop todo\'s follow-up page: the loop, with that todo curr
   given('page 5 is the page of the open todo "Plan long runs #loop/marathon", page 6 a follow-up', () => sport());
   when('I open Engage on page 6', () => engageOn(6));
   then('the owner is Loop marathon, the todo is current, and the line names it from p. 5', () => {
-    expectShows('Loop');
+    expectShows('LOOP');
     expectShows('  · Sport');
     expectShows('Working on');
     expectShows(/^Plan long runs/);
@@ -51,7 +51,7 @@ scenario('Your own heading starts a section of the notebook owner', {feature: 'E
   given('page 7 has my typed heading "Training plan"', () => sport());
   when('I open Engage on page 8', () => engageOn(8));
   then('the owner is Area Sport and the line reads "Section: Training plan · from p. 7"', () => {
-    expectShows('Area');
+    expectShows('AREA');
     expectNotShows('Working on');
     expect(sectionLine()).toEqual(['Section: Training plan · from p. 7']);
   });
@@ -61,7 +61,7 @@ scenario('A handwritten heading starts a section too', {feature: 'Engage', desig
   given('page 9 has a handwritten title', () => sport());
   when('I open Engage on page 9', () => engageOn(9));
   then('the owner is Area Sport and the line reads "Section: Handwritten section"', () => {
-    expectShows('Area');
+    expectShows('AREA');
     expect(sectionLine()).toEqual(['Section: Handwritten section']);
   });
 });
@@ -80,7 +80,7 @@ scenario('A cancelled todo\'s page still starts a section, but nothing becomes c
   given('the todo "Buy shoes" of page 10 is cancelled', () => sport({shoes: 'cancelled'}));
   when('I open Engage on page 11', () => engageOn(11));
   then('the owner is Area Sport, no todo is current, and the line still reads "Section: Buy shoes · from p. 10"', () => {
-    expectShows('Area');
+    expectShows('AREA');
     expectNotShows('Working on');
     expect(sectionLine()).toEqual(['Section: Buy shoes · from p. 10']);
   });
@@ -90,7 +90,7 @@ scenario('A closed loop\'s todo page goes back to the Area', {feature: 'Engage',
   given('loop marathon is done', () => sport({loop: 'done'}));
   when('I open Engage on page 6', () => engageOn(6));
   then('the owner is Area Sport', () => {
-    expectShows('Area');
+    expectShows('AREA');
     expectNotShows('Loop');
     expect(sectionLine()).toEqual(['Section: Plan long runs loop/marathon · from p. 5']);
   });
@@ -104,7 +104,7 @@ scenario('A pure loop note: a free page after the loop page belongs to the loop'
   });
   when('I open Engage on page 2 of the loop note', () => engageOn(2, LOOP_NOTE, ''));
   then('the owner is the loop and the line names the loop page', () => {
-    expectShows('Loop');
+    expectShows('LOOP');
     expectShows('  · Sport');
     expect(sectionLine()).toEqual(['Section: loop marathon · from p. 1']);
   });
@@ -123,7 +123,7 @@ scenario('A thread notebook\'s follow-up page: the thread and its sparring', {fe
   });
   when('I open Engage on the follow-up page', () => engageOn(2, THREADS));
   then('the owner is Thread #sparring/mieke and the moment line shows that sparring', () => {
-    expectShows('Thread');
+    expectShows('THREAD');
     expectShows('  · Coaching');
     expectShows('Sparring Mieke · Sat 24.10. 10:00–11:00');
     expect(sectionLine()).toEqual(['Section: Sparring Mieke sparring/mieke · 24.10. · from p. 1']);

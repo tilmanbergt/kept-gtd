@@ -1,4 +1,4 @@
-import {expectNotShows, expectShows, openApp, tap, tapTab} from '../../../test-helpers/scenario/app';
+import {expectNotShows, expectShows, labelled, openApp, tap, tapLabel, tapTab} from '../../../test-helpers/scenario/app';
 import {loggedErrors} from '../../../test-helpers/scenario/files';
 import {and, given, scenario, then, when} from '../../../test-helpers/scenario/scenario';
 import {putSmokeSpace, smokeClock} from '../../../test-helpers/scenario/smokeSpace';
@@ -21,20 +21,20 @@ scenario('Switch to the demo space and back', {feature: 'Profiles and demo space
     await tap('Switch');
     await tap('Switch');
   });
-  then('Daily shows the demo\'s content', async () => {
+  then('Daily shows the demo\'s content under the inverted tab bar with its D', async () => {
     await tapTab('Daily');
-    expectShows('DEMO');
+    expect(labelled('Demo space')).not.toBeNull();
     expectShows(/^Book the dentist appointment/);
     expectNotShows(/^Buy bulbs/);
   });
   when('I switch back to Production', async () => {
-    await tap('DEMO');
+    await tapLabel('Demo space');
     await tap('Switch');
     await tap('Switch');
     await tapTab('Daily');
   });
   then('Daily shows the smoke space again', () => {
-    expectNotShows('DEMO');
+    expect(labelled('Demo space')).toBeNull();
     expectShows(/^Buy bulbs/);
   });
   and('no error was logged', () => expect(loggedErrors()).toEqual([]));

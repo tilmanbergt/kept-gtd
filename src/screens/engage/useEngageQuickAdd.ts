@@ -17,6 +17,7 @@ import {Destination} from '../../domain/destination';
 import {EngageOptions} from '../../domain/engageOptions';
 import {EngageOwner, EngageSource, MeetingEntryRef} from '../../domain/engageOwner';
 import {MeetingMoment} from '../../domain/meetingMoment';
+import {quickAddPartsFor} from '../../domain/meetingQuickAdd';
 import {MeetingSeedFields} from '../../domain/nextMeeting';
 import {titleWithLoopTag} from '../../domain/loopEdit';
 import {QuickAddAdds} from '../../ui/quickAdd/ProvenanceLine';
@@ -50,10 +51,10 @@ export interface EngageQuickAdd {
 }
 
 export function useEngageQuickAdd({owner, source, options, page, actions}: Input): EngageQuickAdd {
-  const ownerTag = owner && owner.kind !== 'item' ? owner.tag : null;
+  const parts = quickAddPartsFor(owner, page?.entry.meeting ?? null, page?.moment ?? null);
+  const ownerTag = parts.presetTag;
   const preset = usePresetTag(ownerTag);
-  const fromMeeting = page && page.moment !== 'before' ? page.entry.meeting : null;
-  const origin = useProvenance(fromMeeting);
+  const origin = useProvenance(parts.provenance);
   const [seed, setSeed] = useState<{seed: MeetingSeed; itemPath: string} | null>(null);
   const targetPath = owner && source ? agreementTargetPath(owner, source) : null;
   const refs: AgreementRef[] = options

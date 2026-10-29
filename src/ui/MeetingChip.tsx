@@ -2,11 +2,14 @@
  * One meeting in the Week overview grid (docs/dev/technical-design-meeting-
  * lists.md §2.7): time + short form (else the title), 34 dp, FONT.small -
  * no date, source, tracking, note or file (those live in the day panel).
- * A month highlight is bold; the meeting being edited is inverted.
+ * A month highlight is bold; a focus block starts with a bold "F"
+ * (docs/dev/history/technical-design-time-and-place.md §3.1); the meeting
+ * being edited is inverted.
  */
 import React from 'react';
 import {Pressable, StyleSheet, Text} from 'react-native';
 import {meetingChipLabel, meetingTimeCell} from '../domain/meetingDisplay';
+import {isFocusBlock} from '../domain/focusBlock';
 import {isHighlight} from '../domain/monthHighlight';
 import {MeetingSpanDay} from '../domain/meetingSpan';
 import {Meeting} from '../domain/types';
@@ -24,22 +27,25 @@ interface Props {
   meeting: Meeting;
   span?: MeetingSpanDay;
   editing?: boolean;
+  /** Outside the active context: drawn faint, still tappable. */
+  dimmed?: boolean;
   onPress: () => void;
   textColor: string;
   borderColor: string;
 }
 
-export default function MeetingChip({meeting, span, editing, onPress, textColor, borderColor}: Props): React.JSX.Element {
+export default function MeetingChip({meeting, span, editing, dimmed, onPress, textColor, borderColor}: Props): React.JSX.Element {
   perfCount('row:meetingChip');
   const fg = editing ? inverse(textColor) : textColor;
   return (
     <Pressable
       onPress={onPress}
-      style={[styles.chip, {borderBottomColor: borderColor}, editing && {backgroundColor: textColor}]}>
+      style={[styles.chip, {borderBottomColor: borderColor}, editing && {backgroundColor: textColor}, dimmed && styles.dimmed]}>
       <Text style={[styles.time, {color: fg}]} numberOfLines={1}>
         {meetingTimeCell(meeting, span, 'time').oneLine}
       </Text>
       <Text style={[styles.label, {color: fg}, isHighlight(meeting) && styles.labelHighlight]} numberOfLines={1}>
+        {isFocusBlock(meeting) ? <Text style={styles.focusMark}>F </Text> : null}
         {meetingChipLabel(meeting, span)}
       </Text>
     </Pressable>
@@ -66,4 +72,6 @@ const styles = StyleSheet.create({
     includeFontPadding: false,
   },
   labelHighlight: {fontWeight: '700'},
+  focusMark: {fontWeight: '700'},
+  dimmed: {opacity: 0.4},
 });

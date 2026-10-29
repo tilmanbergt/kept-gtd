@@ -1,4 +1,4 @@
-# Your files and folders
+# Your files, folders and Obsidian
 
 Everything Kept GTD knows lives in ordinary files that you can read and edit yourself.
 
@@ -20,7 +20,7 @@ The names of files Kept creates leave out `\ / : * ? " < > |` (not allowed in fi
 
 ## The Inbox folder
 
-The Inbox has its own folder inside the Areas folder, so the `Note` folder holds only your PARA folders. Kept doesn't treat it as an area: it isn't listed on the Areas tab or in focus and refile. You can change its name in Settings, see [Settings](settings.md).
+The Inbox has its own folder inside the Areas folder, so the `Note` folder holds only your PARA folders. Kept doesn't treat it as an area: it isn't listed on the Areas tab or in refile. You can change its name in Settings, see [Settings](settings.md).
 
 Up to version 0.1.0 the Inbox lived directly in `Note` (`Inbox.txt` plus `Todos` and `Meetings` folders). Versions 0.2 to 0.8 moved these into the Inbox folder on their first start; from 0.9.0 on Kept no longer does. If you still have them in `Note`, move them into the Inbox folder by hand; **Run Integrity Check** in Settings → Advanced points them out.
 
@@ -32,7 +32,6 @@ A project file is plain text in three parts: a short header, then sections.
 ---
 kind: project
 status: active
-dailyFocus: true
 area: Home
 abbrev: GR
 ---
@@ -52,10 +51,7 @@ Turn the back garden into a vegetable garden before winter.
 
 - 2026-10-04 10:00-11:00 Site visit with Marco #marco
 - 2026-10-21 2d Team offsite #monthly
-
-## Weekly Goals
-
-- 2026-W40: Beds measured and soil ordered
+- 2026-10-15 09:00-11:00 Plan the beds #focusblock
 ```
 
 - `- [ ]` is an open todo, `- [x]` a done one, `- [-]` a cancelled one.
@@ -66,6 +62,7 @@ Turn the back garden into a vegetable garden before winter.
 - Older lines with `#due:2026-10-03` or `#waiting-for:marco` are read as before. A line gets the new form only when you edit that todo; nothing is converted on its own.
 - A `## Marks` section lists open lasso marks, one per line, see [Lasso](lasso.md).
 - A `## Threads` section in `area.txt` (or in `project.txt` of a project without an area) holds the counterparts you confirmed, one per line: `- mieke: active` or `- sven: inactive`. Text after a comma is kept. See [Threads](threads.md).
+- Files written by earlier versions may have `dailyFocus: true` (and weekly or monthly) in the header and `## Weekly Goals` or `## Monthly Goals` sections. Kept no longer uses them and leaves them exactly as they are.
 - Lines Kept doesn't understand are kept as they are.
 
 ## Editing by hand
@@ -80,9 +77,83 @@ If you edit a file while Kept is open, Kept reads it again before it saves:
 
 Kept saves a file by writing a hidden copy next to it (for example `.project.txt.gtdpara-tmp`) and putting it in place in one step, so a file is never left half written. If Kept is stopped in that moment, the hidden copy stays behind; the next save replaces it, and **Run Integrity Check** lists it.
 
-## Obsidian
+## Using Kept GTD with Obsidian
 
-To read and edit your files in Obsidian, with the Tasks and Dataview plugins, see [Using Kept GTD with Obsidian](obsidian.md).
+You can read and edit your todos and meetings in Obsidian, with the **Tasks** and **Dataview** plugins. The Supernote and Supernote Cloud keep Kept GTD's `.txt` files; in Obsidian they appear as Markdown.
+
+### Set up the sync
+
+1. In Obsidian, install the community plugin **Supernote Cloud Sync** and sign in to Supernote Cloud.
+2. Set its **Paired folder** to the folder that holds Kept's Projects and Areas folders - with the default settings, the Supernote's `Note` folder.
+3. Sync. In the vault the files appear as `project.md`, `area.md` and `Inbox.md`. When you sync again, the plugin uploads your edits back as `.txt`.
+
+Only the Paired folder syncs both ways. The plugin's mirrored folders only copy from Supernote Cloud to the vault, so edits made there never reach the Supernote.
+
+### Rules that keep it working
+
+- Never keep both `x.txt` and `x.md` in the Paired folder, in the vault or in Supernote Cloud: the sync stops or creates duplicates.
+- Don't rename or create Kept's data files in Obsidian. Create projects and areas on the Supernote.
+- Keep the section headings `## Tasks`, `## Meetings` and `## Marks` as they are.
+
+### The round trip
+
+From Obsidian to the Supernote:
+
+1. Edit in Obsidian.
+2. Sync the Supernote Cloud Sync plugin.
+3. Sync the Supernote.
+4. Open Kept GTD. If a change doesn't show up, tap **Reload all files** in Settings → Advanced.
+
+From the Supernote to Obsidian: sync the Supernote, then the plugin.
+
+### Settings for the Tasks plugin
+
+- Set **Task Format** to **Dataview**. Otherwise Tasks ignores Kept's fields and writes its own emoji format.
+- Optionally switch on the Tasks settings that set a created date on new tasks and a done date when you tick a task. They write `[created:: …]` and `[completion:: …]`, the same fields Kept writes.
+
+### Writing by hand
+
+```
+## Tasks
+- [ ] Send the offer #next [due:: 2026-10-15]
+- [ ] Signed contract back #wf/marco [due:: 2026-10-20]
+
+## Meetings
+- 2026-10-21 10:00-11:00 Retro #retro/alpha
+```
+
+- You type tags. Fields go at the end of the line.
+- Kept puts the fields it knows (`meeting`, `created`, `due`, `completion`) in its fixed order the next time it saves the file. Other fields stay as you wrote them.
+- Leave `→ [[…]]` (the item's note) and `+[[…]]` (a linked file) as they are.
+- A meeting line is the date, then the time (`10:00`, `10:00-11:00`) or the length (`1d`, `2d`), then the title. See the format at the top of this page.
+
+### Agreements
+
+Agreements are plain bullets in a section `## Agreements`, without a checkbox, so the Tasks plugin does not list them:
+
+```
+## Agreements
+- Feedback only in our 1:1s #sparring/mieke [created:: 2026-10-14] [valid:: 2026-12-31]
+```
+
+Kept writes `meeting`, `created`, `valid` and `ended` in that order; other fields and lines stay as you wrote them. See [Agreements](agreements.md).
+
+### Two example queries
+
+An example for the Tasks plugin - open todos in your projects due within a week:
+
+```tasks
+not done
+due before in 7 days
+path includes 1 Projects
+```
+
+An example for Dataview - every open Waiting For todo:
+
+```dataview
+TASK
+WHERE !completed AND any(tags, (t) => t = "#wf" OR startswith(t, "#wf/"))
+```
 
 ## What Kept GTD keeps elsewhere
 

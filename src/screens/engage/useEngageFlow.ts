@@ -9,7 +9,7 @@
 import {useEffect, useMemo, useReducer, useState} from 'react';
 import {decideOpening, EngageOpening, EngageSource, resolveTodoKey, sameOwner, todoKeyOf} from '../../domain/engageOwner';
 import {chosenMomentAt, useMomentChoices} from '../../ui/meetingMomentStore';
-import {effectiveFocus, engageListsOf, engagePageOf, fromRowCount, optionsOf, ownersLeft} from '../../domain/engageOptions';
+import {engageListsOf, engagePageOf, fromRowCount, optionsOf} from '../../domain/engageOptions';
 import {engageFlow, EngageRequest, EngageState, INITIAL_ENGAGE_STATE} from '../../domain/engageFlow';
 import {SectionInfo} from '../../domain/pageSection';
 import {GtdParaSettings, resolvePaths} from '../../domain/settings';
@@ -79,7 +79,7 @@ export function useEngageFlow(request: EngageRequest): EngageFlow {
       const opening = await resolveOpening(request, source, loaded);
       if (cancelled) return;
       setSettings(loaded);
-      dispatch({type: 'open', owner: opening.owner, current: opening.current, ring: effectiveFocus(source), back: opening.back, pageMeeting: opening.pageMeeting, section: opening.section});
+      dispatch({type: 'open', owner: opening.owner, current: opening.current, back: opening.back, pageMeeting: opening.pageMeeting, section: opening.section});
       setOpened(true);
       log('EngageOverlay: opened', 'owner=' + (opening.owner?.kind ?? 'none'), 'via=' + request.via, 'current=' + (opening.current ? 'yes' : 'no'), 'back=' + (opening.back ? 'yes' : 'no'), 'pageMeeting=' + (opening.pageMeeting ? 'yes' : 'no'));
       if (opening.section) log('EngageOverlay: section line', `distance=${opening.section.distance}`);
@@ -113,8 +113,6 @@ export function useEngageFlow(request: EngageRequest): EngageFlow {
     dispatch({
       type: 'dataChanged',
       options,
-      ring: effectiveFocus(source),
-      dailyLeft: ownersLeft('daily', source, nowMs),
       current: currentKey,
       nextRows: options ? engageListsOf(options, currentRef).next.length : 0,
       fromRows: options ? fromRowCount(options.from) : 0,

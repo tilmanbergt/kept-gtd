@@ -1,16 +1,17 @@
 /**
- * Every action the thread and loop overviews offer on their rows and in their
- * Quick Add (docs/dev/history/technical-design-tending-threads.md §3.5.3,
- * docs/dev/history/technical-design-engage.md §3.6): add, edit,
+ * Every action Daily, focus mode and the thread and loop overviews offer on
+ * their rows and in their Quick Add (docs/dev/history/technical-design-tending-threads.md §3.5.3,
+ * docs/dev/history/technical-design-engage.md §3.6,
+ * docs/dev/history/technical-design-daily-slim.md §3.2): add, edit,
  * delete (cancel) and quick-file todos and meetings, tick todos done, the
- * prep/review icon, notes and linked files; for the Engage panel also the
- * flow of a todo (`setTaskFlow`), Done with an undo record and Undo. The same
- * write paths Daily uses:
+ * `#next`/`#now` double tap, the prep/review icon, notes and linked files; for
+ * the Engage panel also the flow of a todo (`setTaskFlow`), Done with an undo
+ * record and Undo. The write paths:
  * storage/itemMutations.ts (`mutateEntryTasks`/`mutateEntryMeetings` on the
  * entry's full-array index), domain/taskEdit.ts, storage/entryMove.ts for
  * quick-file, ui/useEditTarget.ts for the one edit target.
  */
-import {useEffect, useState} from 'react';
+import {useMemo} from 'react';
 import {Keyboard} from 'react-native';
 import {AbbrevFileMatch} from '../domain/abbrev';
 import {Destination, destinationLabel} from '../domain/destination';
@@ -19,9 +20,9 @@ import {UndoRecord} from '../domain/engageFlow';
 import {ENGAGE_NOTICE} from '../domain/engageText';
 import {todayIso} from '../domain/meetingTime';
 import {MeetingTrackingKind, toggleMeetingTrackingAt} from '../domain/meetingTracking';
-import {GtdParaSettings} from '../domain/settings';
 import {withTaskCancelled, withTaskDone, withTaskText} from '../domain/taskEdit';
 import {Meeting, Task} from '../domain/types';
+import {ProjectFileState} from '../storage/projectFile';
 import {getCachedData, setCachedInbox} from '../storage/dataCache';
 import {itemTarget, moveMeeting, moveTask} from '../storage/entryMove';
 import {
@@ -48,6 +49,8 @@ import {useEditTarget} from './useEditTarget';
 import {useEngagePrompt} from './useEngagePrompt';
 import {useEntryMoveUi} from './useEntryMoveUi';
 import {useNoteCreateConfirm} from './useNoteCreateConfirm';
+import {useSettings} from './useSettings';
+import {useHiddenAddNotice} from './context/useHiddenAddNotice';
 import {MeetingCardOptions} from './itemCard/useMeetingCard';
 import {TodoCardOptions} from './itemCard/useTodoCard';
 import {openOrCreateReflectionPage} from '../storage/reflectionPage';
@@ -65,18 +68,17 @@ export interface EntryEditKey {
 export const taskEntryKey = (e: ThreadTaskEntry) => `${e.item.path}#${e.taskIndex}`;
 export const meetingEntryKey = (e: ThreadMeetingEntry) => `${e.item.path}#${e.meetingIndex}`;
 
-/** `name`: the log prefix and status-slot id prefix of the screen using it. */
-export function useEntryActions(name = 'ThreadOverview') {
+/**
+ * `name`: the log prefix and status-slot id prefix of the screen using it.
+ * `hiddenNotice`: a screen the active context filters (Daily) says when an add
+ * lands outside it (ui/context/useHiddenAddNotice.ts).
+ */
+export function useEntryActions(name = 'ThreadOverview', options: {hiddenNotice?: boolean} = {}) {
   const LOG = name;
   const inbox = useCachedInbox();
   const paths = getCachedData()?.paths ?? null;
   const inboxPath = paths?.inboxFolder ?? null;
-  const [settings, setSettings] = useState<GtdParaSettings | null>(null);
-  useEffect(() => {
-    loadSettings()
-      .then(setSettings)
-      .catch(e => logError(`${LOG}: loading settings failed`, errorMessage(e)));
-  }, [LOG]);
+  const settings = useSettings();
   const confirmNoteCreate = useNoteCreateConfirm(`${LOG}.noteCreateConfirm`);
   const moveUi = useEntryMoveUi(LOG);
   const edit = useEditTarget<EntryEditKey>();
@@ -84,10 +86,22 @@ export function useEntryActions(name = 'ThreadOverview') {
   const rowAction = useActionError(`${LOG}.rowError`, `${LOG}: row action failed`);
   const engagePrompt = useEngagePrompt(LOG);
   const ctx = {inbox, inboxPath};
+  const hiddenNotice = useHiddenAddNotice(LOG);
 
-  const saveTasks = async (entry: ThreadTaskEntry, mutate: (tasks: Task[]) => Task[]) => {
-    const {nextInbox} = await mutateEntryTasks(entry, mutate, ctx);
+  /**
+   * Writes one entry's tasks. Returns the written Inbox for an Inbox entry
+   * (null otherwise): a caller writing several Inbox entries in a row passes it
+   * on as `inboxOverride`, because the shared Inbox state reaches this hook's
+   * closure only after a re-render (focus mode's cohort clear).
+   */
+  const saveTasks = async (
+    entry: ThreadTaskEntry,
+    mutate: (tasks: Task[]) => Task[],
+    inboxOverride?: ProjectFileState,
+  ): Promise<ProjectFileState | null> => {
+    const {nextInbox} = await mutateEntryTasks(entry, mutate, inboxOverride ? {inbox: inboxOverride, inboxPath} : ctx);
     if (nextInbox) setCachedInbox(nextInbox);
+    return nextInbox;
   };
   const saveMeetings = async (entry: MeetingEntryRef, mutate: (meetings: Meeting[]) => Meeting[]) => {
     const {nextInbox} = await mutateEntryMeetings(entry, mutate, ctx);
@@ -96,14 +110,18 @@ export function useEntryActions(name = 'ThreadOverview') {
   const currentSettings = async () => settings ?? (await loadSettings());
 
   const addTask = async (line: string, destination: Destination): Promise<void> => {
-    const {nextInbox} = await addTaskToDestination(buildTask(line), destination, ctx);
+    const task = buildTask(line);
+    const {nextInbox} = await addTaskToDestination(task, destination, ctx);
     if (nextInbox) setCachedInbox(nextInbox);
     log(`${LOG}: added task`, destinationLabel(destination));
+    if (options.hiddenNotice) hiddenNotice(destination, {kind: 'task', tags: task.tags});
   };
   const addMeeting = async (fields: MeetingQuickAddFields, destination: Destination): Promise<void> => {
-    const {nextInbox} = await addMeetingToDestination(buildMeeting(fields), destination, ctx);
+    const meeting = buildMeeting(fields);
+    const {nextInbox} = await addMeetingToDestination(meeting, destination, ctx);
     if (nextInbox) setCachedInbox(nextInbox);
     log(`${LOG}: added meeting`, destinationLabel(destination));
+    if (options.hiddenNotice) hiddenNotice(destination, {kind: 'meeting', tags: meeting.tags});
   };
 
   const toggleDone = (entry: ThreadTaskEntry) =>
@@ -284,10 +302,11 @@ export function useEntryActions(name = 'ThreadOverview') {
     return ok && opened;
   };
 
-  const tracking = (): MeetingTrackingConfig => ({setups: trackingSetups(settings)});
+  const trackingConfig = useMemo((): MeetingTrackingConfig => ({setups: trackingSetups(settings)}), [settings]);
+  const tracking = (): MeetingTrackingConfig => trackingConfig;
 
-  /** The selected todo's card (ui/itemCard/useTodoCard.ts); done goes through the row's own toggleDone. */
-  const todoCardOptions = (entry: ThreadTaskEntry | null): TodoCardOptions => ({
+  /** The selected todo's card (ui/itemCard/useTodoCard.ts); done goes through the row's own toggleDone. `extra` overrides the defaults (Daily's Now and owner link). */
+  const todoCardOptions = (entry: ThreadTaskEntry | null, extra?: Partial<TodoCardOptions>): TodoCardOptions => ({
     name: LOG,
     selection: entry && {task: entry.task, itemPath: entry.item.path, ownerName: entry.item.name, inbox: entry.item.kind === 'inbox'},
     updateTask: async change => {
@@ -302,10 +321,11 @@ export function useEntryActions(name = 'ThreadOverview') {
     onOpenFile: linkedFile => openFile(linkedFile),
     onEdit: edit.edit,
     onClose: edit.cancel,
+    ...extra,
   });
 
-  /** The selected meeting's card (ui/itemCard/useMeetingCard.ts); no Files pane here: no +clip, refile only by abbreviation tag. */
-  const cardOptions = (entry: ThreadMeetingEntry | null): MeetingCardOptions => ({
+  /** The selected meeting's card (ui/itemCard/useMeetingCard.ts); no Files pane here: no +clip, refile only by abbreviation tag. `extra` overrides the defaults. */
+  const cardOptions = (entry: ThreadMeetingEntry | null, extra?: Partial<MeetingCardOptions>): MeetingCardOptions => ({
     name: LOG,
     selection: entry && {meeting: entry.meeting, itemPath: entry.item.path, ownerName: entry.item.name, inbox: entry.item.kind === 'inbox'},
     settings,
@@ -319,6 +339,7 @@ export function useEntryActions(name = 'ThreadOverview') {
     onOpenFile: linkedFile => openFile(linkedFile),
     onEdit: edit.edit,
     onClose: edit.cancel,
+    ...extra,
   });
 
   const openFile = (linkedFile: string) => {
@@ -329,7 +350,13 @@ export function useEntryActions(name = 'ThreadOverview') {
   return {
     inbox,
     inboxPath,
+    paths,
+    settings,
     edit,
+    saveTasks,
+    saveMeetings,
+    /** Runs a screen's own row action with this hook's error slot (focus mode's session tick). */
+    rowRun: rowAction.run,
     addTask,
     addMeeting,
     toggleDone,

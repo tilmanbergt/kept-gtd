@@ -1,5 +1,5 @@
 /**
- * A todo row's labels (`#next`, `#now`, `#w/f Meier`, `#someday`, `#due 5.10.`)
+ * A todo row's labels (`#next`, `#w/f Meier`, `#someday`, `#due 5.10.`)
  * as nested text spans after the title - docs/dev/technical-design-waiting-
  * for-0.7.md §3.3. Must be rendered inside the row's title <Text>: spans in
  * one text flow wrap and clamp together with the title, so a label can never
@@ -7,63 +7,37 @@
  * bug, where badges were separate boxes in a wrapping flex line).
  *
  * Fixed text, no tap-to-reveal. Set apart from the title by a smaller,
- * bolder font, not by color (grayscale rule). Only the `#next`/`#now` label
- * reacts to touch, and only when `onToggleNow` is passed: two taps within
- * DOUBLE_TAP_MS flip `#now` (docs/dev/history/technical-design-now-focus-mode.md §3).
- * A single tap on it does nothing. The `#w/f Name` label opens the thread
- * overview of the counterpart `<name>` when `onOpenWaitingFor` is passed
+ * bolder font, not by color (grayscale rule). Only the `#w/f Name` label
+ * reacts to touch: it opens the thread overview of the counterpart `<name>`
+ * when `onOpenWaitingFor` is passed
  * (docs/dev/history/technical-design-tending-threads.md §3.7). Taps on other
  * labels go to the row (start editing), since they have no onPress of their
- * own.
- *
- * In the touch test (ui/touchDiag/touchProbe.ts) the tappable labels report
- * their press events; every tap on `#next`/`#now` reports a press on `next`,
- * whether or not it completes a double tap.
+ * own. In the touch test (ui/touchDiag/touchProbe.ts) that label reports its
+ * press events.
  */
-import React, {useRef} from 'react';
+import React from 'react';
 import {StyleSheet, Text} from 'react-native';
 import {TaskLabel} from '../domain/taskLabels';
 import {LABEL_GAP} from './taskRowLayout';
 import {FONT} from './theme';
 import {probeSpan, useTouchProbe} from './touchDiag/touchProbe';
 
-const DOUBLE_TAP_MS = 350;
-
 interface Props {
   labels: TaskLabel[];
-  onToggleNow?: () => void;
   onOpenWaitingFor?: () => void;
 }
 
-export default function TaskLabels({labels, onToggleNow, onOpenWaitingFor}: Props): React.JSX.Element | null {
-  const lastTapRef = useRef<number>(0);
+export default function TaskLabels({labels, onOpenWaitingFor}: Props): React.JSX.Element | null {
   const probe = useTouchProbe();
   if (labels.length === 0) return null;
-
-  const handleNowPress = () => {
-    probe?.('press', 'next');
-    const now = Date.now();
-    if (now - lastTapRef.current < DOUBLE_TAP_MS) {
-      lastTapRef.current = 0;
-      onToggleNow?.();
-      return;
-    }
-    lastTapRef.current = now;
-  };
-
   return (
     <>
       {labels.map((label, index) => {
-        const toggles = onToggleNow && (label.kind === 'next' || label.kind === 'now');
         const opens = label.kind === 'waiting' ? onOpenWaitingFor : undefined;
         return (
           <React.Fragment key={`${label.kind}-${index}`}>
             {LABEL_GAP}
-            <Text
-              style={[styles.label, opens && styles.link]}
-              onPress={toggles ? handleNowPress : opens}
-              suppressHighlighting
-              {...(toggles ? probeSpan(probe, 'next') : opens ? probeSpan(probe, 'label') : {})}>
+            <Text style={[styles.label, opens && styles.link]} onPress={opens} suppressHighlighting {...(opens ? probeSpan(probe, 'label') : {})}>
               {label.text}
             </Text>
           </React.Fragment>

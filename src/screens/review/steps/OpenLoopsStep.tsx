@@ -1,33 +1,45 @@
 /**
  * Review step "Open loops" (docs/dev/history/technical-design-loops.md §4.8):
- * the active loops per scope (storage/loopRoster.ts), frozen when the step
+ * the active loops that need a look per scope (storage/loopRoster.ts:
+ * nothing planned and no next action, or past their main date;
+ * technical-design-time-and-place.md §10 C3), frozen when the step
  * is entered - an Area with its Projects, then each Project without an Area.
  * Two lines a row: ○ the loop and its kind (and its Project, inside an
  * Area's scope); then main date · next meeting and the counts of its own
- * todos, and what needs a look: "no next action", or "was <date> · close?".
+ * todos, and what needs a look: "no next action", "nothing planned" (no
+ * meeting or focus block in the next 14 days, domain/givenTime.ts), or
+ * "was <date> · close?".
  *
- * Right: Quick Add - a new todo gets the loop's tag and goes to the loop's
- * Area or Project - above the loop's summary with "Open overview ›" and
- * "Close loop" (ui/useCloseLoop.ts). Closed loops stay listed with a
+ * Right: Quick Add - a new todo or meeting gets the loop's tag and goes to
+ * the loop's Area or Project - above the loop's summary with "+ F block"
+ * (seeds Quick Add's Meeting tab with the loop and F on,
+ * docs/dev/history/technical-design-time-and-place.md §3.6), "Open overview ›"
+ * and "Close loop" (ui/useCloseLoop.ts). Closed loops stay listed with a
  * checkmark.
  */
-import React, {useMemo} from 'react';
+import React, {useMemo, useState} from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
 import {formatDate} from '../../../domain/dateFormat';
 import {Destination} from '../../../domain/destination';
-import {withLoopTag} from '../../../domain/loopEdit';
+import {nothingPlanned} from '../../../domain/givenTime';
+import {titleWithLoopTag, withLoopTag} from '../../../domain/loopEdit';
 import {todayIso} from '../../../domain/meetingTime';
+import {setCachedInbox} from '../../../storage/dataCache';
+import {addMeetingToDestination, buildMeeting} from '../../../storage/itemMutations';
 import {loopDateText} from '../../../storage/loopGlance';
 import {buildLoopRoster, LoopRosterEntry, LoopRosterScope, loopRosterCount} from '../../../storage/loopRoster';
 import {glanceCountsText} from '../../../storage/projectGlance';
 import {openOverview} from '../../../ui/overviewStore';
-import QuickAddWidget from '../../../ui/QuickAddWidget';
+import QuickAddWidget, {MeetingQuickAddFields} from '../../../ui/QuickAddWidget';
+import {MeetingSeed} from '../../../ui/quickAdd/useDraftRequests';
 import ReviewMasterDetail from '../../../ui/ReviewMasterDetail';
 import {FONT, SPACING} from '../../../ui/theme';
 import {useCloseLoop} from '../../../ui/useCloseLoop';
 import {useLoopKinds} from '../../../ui/useLoopKinds';
+import {log} from '../../../utils/log';
+import {requestEinkRefresh} from '../../../utils/screenRefresh';
 import {bump} from '../reviewVisit';
-import {noopAddMeeting, ReviewEmptyDetail, ReviewStepProps} from '../shared';
+import {ReviewEmptyDetail, ReviewStepProps} from '../shared';
 import {useFrozenStepList} from '../useFrozenStepList';
 import {ReviewData} from '../useReviewData';
 
@@ -41,7 +53,7 @@ const entryKey = (e: LoopRosterEntry) => `${e.owner.path}|${e.glance.line.tag}`;
 /** The live roster of open loops. */
 export function useLoopRoster(data: ReviewData): LoopRosterScope[] {
   const {kinds} = useLoopKinds();
-  const {items} = data;
+  const {contextItems: items} = data;
   return useMemo(() => buildLoopRoster(items, kinds, todayIso()), [items, kinds]);
 }
 
@@ -51,8 +63,10 @@ export const openLoopsCount = loopRosterCount;
 function rosterRows(roster: LoopRosterScope[]): LoopRow[] {
   const rows: LoopRow[] = [];
   for (const scope of roster) {
+    const look = scope.loops.filter(l => l.attention !== null);
+    if (look.length === 0) continue;
     rows.push({kind: 'head', key: `h-${scope.owner.path}`, label: scope.owner.name});
-    scope.loops.forEach(e => rows.push({kind: 'loop', key: entryKey(e), label: e.glance.loop.name}));
+    look.forEach(e => rows.push({kind: 'loop', key: entryKey(e), label: e.glance.loop.name}));
   }
   return rows;
 }
@@ -71,6 +85,16 @@ export default function OpenLoopsStep({data, stepEntryToken, onAddTask, textColo
   const closeLoop = useCloseLoop('ReviewScreen.openLoops');
   const today = todayIso();
   const dateOf = (iso: string) => formatDate(iso, today);
+  const [seed, setSeed] = useState<MeetingSeed | null>(null);
+
+  const addMeeting = async (fields: MeetingQuickAddFields, destination: Destination, tag: string): Promise<void> => {
+    const meeting = buildMeeting({...fields, title: titleWithLoopTag(fields.title, tag)});
+    const {nextInbox} = await addMeetingToDestination(meeting, destination, {inbox: data.inbox, inboxPath: data.inboxPath});
+    if (nextInbox) setCachedInbox(nextInbox);
+    log('OpenLoopsStep: meeting added');
+    data.refreshFromCache();
+    requestEinkRefresh();
+  };
 
   const renderRow = (row: LoopRow, selected: boolean, actedOn: boolean): React.ReactNode => {
     if (row.kind === 'head') {
@@ -83,7 +107,8 @@ export default function OpenLoopsStep({data, stepEntryToken, onAddTask, textColo
     const entry = live.get(row.key);
     const flag = entry ? attentionText(entry, today) : null;
     const inProject = entry && entry.owner.kind === 'project' ? ` · ${entry.owner.name}` : '';
-    const line2 = entry ? [loopDateText(entry.glance, dateOf), glanceCountsText(entry.glance)].filter(Boolean).join(' · ') : 'closed';
+    const quiet = entry && nothingPlanned(entry.glance.nextMeeting, today) ? 'nothing planned' : '';
+    const line2 = entry ? [loopDateText(entry.glance, dateOf), glanceCountsText(entry.glance), quiet].filter(Boolean).join(' · ') : 'closed';
     return (
       <View style={[styles.row, {borderColor}, selected && styles.rowSelected]}>
         <View style={styles.line}>
@@ -125,9 +150,9 @@ export default function OpenLoopsStep({data, stepEntryToken, onAddTask, textColo
         <QuickAddWidget
           layoutKey="openLoops"
           fixedDestination={destination}
-          taskOnly
+          meetingSeed={seed}
           onAddTask={(text, dest) => onAddTask(withLoopTag(text, tag), dest)}
-          onAddMeeting={noopAddMeeting}
+          onAddMeeting={(fields, dest) => addMeeting(fields, dest, tag)}
           textColor={textColor}
           borderColor={borderColor}
           placeholderColor={placeholderColor}
@@ -139,6 +164,12 @@ export default function OpenLoopsStep({data, stepEntryToken, onAddTask, textColo
           <Text style={[styles.small, {color: textColor}]}>{glanceCountsText(glance)}</Text>
           {flag && <Text style={[styles.small, styles.flag, {color: textColor}]}>{flag}</Text>}
           <View style={styles.actions}>
+            <Pressable
+              onPress={() => setSeed({fields: {title: `${glance.loop.name} #${tag}`, date: today, time: '', endTime: '', days: 1, focusBlock: true}, nonce: Date.now()})}
+              hitSlop={8}
+              style={[styles.button, {borderColor}]}>
+              <Text style={[styles.small, styles.buttonText, {color: textColor}]}>+ F block</Text>
+            </Pressable>
             <Pressable onPress={() => openOverview({tag, ownerPath: owner.path})} hitSlop={8} style={[styles.button, {borderColor}]}>
               <Text style={[styles.small, styles.buttonText, {color: textColor}]}>Open overview ›</Text>
             </Pressable>
@@ -172,7 +203,7 @@ export default function OpenLoopsStep({data, stepEntryToken, onAddTask, textColo
       renderDetail={renderDetail}
       actedOnKeys={frozen.actedOn}
       resetKey={stepEntryToken}
-      emptyHint="No open loops. A Note setup of the kind Loop makes its tag a kind of loop (#workshop/<name>)."
+      emptyHint="No loop needs a look: each has something planned or a next todo. A Note setup of the kind Loop makes its tag a kind of loop (#workshop/<name>)."
       textColor={textColor}
       borderColor={borderColor}
     />

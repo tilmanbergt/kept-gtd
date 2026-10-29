@@ -1,18 +1,19 @@
 import {expectNotShows, expectShows, openApp, readTexts, tap, tapTab, textsBetween, type} from '../../../test-helpers/scenario/app';
 import {areaFile, INBOX_FILE, loggedErrors, sectionLines} from '../../../test-helpers/scenario/files';
 import {and, given, scenario, then, when} from '../../../test-helpers/scenario/scenario';
-import {putSmokeSpace, smokeClock} from '../../../test-helpers/scenario/smokeSpace';
+import {putSmokeSpace, smokeClock, smokeSettings} from '../../../test-helpers/scenario/smokeSpace';
 
-// Smoke scenarios 2, 5 and 6 (docs/dev/history/technical-design-test-tiers.md §3.4), against docs/user/daily.md.
+// Smoke scenarios 2, 5 and 6 (docs/dev/history/technical-design-test-tiers.md §3.4; scenario 2 under a context,
+// docs/dev/history/technical-design-time-and-place.md §6), against docs/user/daily.md.
 // Scenario 5 sets Next with the chip: a #next typed into the text is dropped on + Add.
 const DESIGN = 'technical-design-test-tiers.md';
 
 afterEach(() => jest.useRealTimers());
 
-async function openDaily(): Promise<void> {
+async function openDaily(underHome = false): Promise<void> {
   smokeClock();
   putSmokeSpace();
-  await openApp();
+  await openApp({settings: smokeSettings(underHome)});
   await tapTab('Daily');
 }
 
@@ -27,34 +28,34 @@ function checkboxOf(title: string): number {
   return all.slice(0, at).filter(t => t === '☐').length - 1;
 }
 
-scenario('Daily shows today\'s meetings, the todos that matter now and the focus', {feature: 'Daily', design: DESIGN}, () => {
-  given('the smoke space on Wednesday 14.10.2026', () => undefined);
-  when('I open Daily', openDaily);
+scenario('Daily under a context shows today\'s meetings and the next todos it shows, and counts the rest', {feature: 'Daily', design: DESIGN}, () => {
+  given('the smoke space on Wednesday 14.10.2026 with the context Home (Area Garden) active', () => undefined);
+  when('I open Daily', () => openDaily(true));
   then('the Today tab lists "Neighbour chat" and "Dentist"', () => {
-    expect(textsBetween('Today', 'Focus')).toEqual(expect.arrayContaining(['Neighbour chat', 'Dentist']));
-    expect(textsBetween('Today', 'Focus')).not.toContain('Supplier call');
+    expect(textsBetween('Today', 'Todo')).toEqual(expect.arrayContaining(['Neighbour chat', 'Dentist']));
+    expect(textsBetween('Today', 'Todo')).not.toContain('Supplier call');
   });
-  and('the todos are grouped under Inbox, Garage, Garden and Website, each with its label', () => {
+  and('the todos are the Inbox\'s, Garden\'s project Garage\'s and Garden\'s, each with its label; the rest is counted, Website\'s overdue one as "1 due!"', () => {
     expect(todoList()).toEqual([
       'Inbox', 'Call the plumber  #next',
       'Garage', 'Sort tools  #next',
       'Garden', 'Buy bulbs  #next', 'Water the lawn  #due 14.10.',
-      'Website', 'Send invoice  #due 13.10. !', 'Feedback on layout  #w/f Lena',
+      'Hidden by Home: 3 todos · 1 thread · 1 due! · ', 'Show',
     ]);
-  });
-  and('"Sort tools" shows because Garage is in weekly focus; "Draft homepage" doesn\'t, its project is in no focus', () => {
-    expectShows(/^Sort tools/);
-    expectNotShows(/^Draft homepage/);
   });
   and('Someday, Maybe and done todos don\'t show', () => {
     expectNotShows(/^Repair the fence/);
     expectNotShows(/^Someday idea/);
     expectNotShows(/^Order seeds/);
   });
-  and('the focus panel shows Garden under Areas', () => expect(textsBetween('Focus', 'Todo')).toEqual(expect.arrayContaining(['Areas', 'Garden'])));
+  when('I tap Show', () => tap('Show'));
+  then('Website\'s next todo and its Waiting For show too', () => {
+    expectShows(/^Draft homepage/);
+    expectShows(/^Feedback on layout/);
+  });
   when('I tap Tomorrow', () => tap('Tomorrow'));
   then('it lists "Supplier call"', () => {
-    expect(textsBetween('Tomorrow', 'Focus')).toContain('Supplier call');
+    expect(textsBetween('Tomorrow', 'Todo')).toContain('Supplier call');
     expectNotShows('Neighbour chat');
   });
   and('no error was logged', () => expect(loggedErrors()).toEqual([]));

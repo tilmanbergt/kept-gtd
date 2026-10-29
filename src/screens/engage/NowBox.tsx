@@ -66,10 +66,8 @@ export default function NowBox({
     false,
     today,
   );
-  // Due and Waiting For are spelled out on the details line, so the title keeps only #next/#now.
-  const labels = layout.labels.filter(
-    l => l.kind === 'next' || l.kind === 'now',
-  );
+  // Due and Waiting For are spelled out on the details line, so the title keeps only #next.
+  const labels = layout.labels.filter(l => l.kind === 'next');
   const details = nowDetailsText(todo.task, today);
   const meetingKey = todo.task.fields.meeting;
   const next = isNextTask(todo.task);

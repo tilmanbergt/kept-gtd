@@ -18,16 +18,12 @@ import {
   parseFrontMatter,
   parseMarksSpan,
   parseMeetingsSpan,
-  parseMonthlyGoalsSpan,
   parseScopeSpan,
   parseTasksSpan,
-  parseWeeklyGoalsSpan,
   writeFrontMatterIntoContent,
   writeMeetingsIntoContent,
-  writeMonthlyGoalsIntoContent,
   writeScopeIntoContent,
   writeTasksIntoContent,
-  writeWeeklyGoalsIntoContent,
 } from '../domain/markdown';
 import {CounterpartLine, parseThreadsSpan, THREADS_HEADING, writeThreadsIntoContent} from '../domain/threadsSection';
 import {LoopLine, LOOPS_HEADING, parseLoopsSpan, writeLoopsIntoContent} from '../domain/loopsSection';
@@ -39,10 +35,8 @@ import {
   ItemStatus,
   Mark,
   Meeting,
-  MonthlyGoal,
   PROJECT_FILE_NAME,
   Task,
-  WeeklyGoal,
 } from '../domain/types';
 import {readTextFile} from '../supernote/fileSystem';
 import {writeDataFile} from './dataFileWrite';
@@ -60,6 +54,20 @@ export function dataFilePath(kind: GtdParaKind, itemPath: string): string {
   return `${itemPath.replace(/\/+$/, '')}/${dataFileName(kind)}`;
 }
 
+/**
+ * The retired focus flags (docs/dev/history/technical-design-time-and-place.md
+ * §3.7, rollback shim): parsed from the frontmatter and written back exactly
+ * as found, so 0.21.1 installed over this version finds its focus again.
+ * Nothing reads them; remove at the earliest in 0.24.
+ */
+export type RetainedFocus = Pick<FrontMatterFields, 'dailyFocus' | 'weeklyFocus' | 'monthlyFocus'>;
+
+export const NO_RETAINED_FOCUS: RetainedFocus = {dailyFocus: false, weeklyFocus: false, monthlyFocus: false};
+
+export function retainedFocusOf(fm: RetainedFocus): RetainedFocus {
+  return {dailyFocus: fm.dailyFocus, weeklyFocus: fm.weeklyFocus, monthlyFocus: fm.monthlyFocus};
+}
+
 export interface ProjectFileState {
   /** The file's full text, or '' if it doesn't exist yet. Feed this back into saveTasks/saveMeetings/saveFrontMatter. */
   rawContent: string;
@@ -69,12 +77,6 @@ export interface ProjectFileState {
   meetingExtraLines: string[];
   /** From the `## Scope` span (docs/dev/history/technical-design-item-scope.md) - a single free-text value, '' if never set. Scaffolded (empty) into every new Project/Area's file by `ensureSkeleton`, so it's usually present even before a scope is ever typed in. */
   scope: string;
-  /** From the `## Weekly Goals` span (docs/dev/history/technical-design-weekly-goals.md) - one entry per ISO week that ever had a goal set, empty for most items most of the time. */
-  weeklyGoals: WeeklyGoal[];
-  weeklyGoalsExtraLines: string[];
-  /** From the `## Monthly Goals` span (docs/dev/history/technical-design-monthly-view.md §2.2) - one entry per month that ever had a goal set. */
-  monthlyGoals: MonthlyGoal[];
-  monthlyGoalsExtraLines: string[];
   /** From the `## Marks` span (docs/dev/history/technical-design-lasso-0.8.md §3.1) - open "Mark for later" lines; empty for most files. Written only through storage/markStore.ts. */
   marks: Mark[];
   marksExtraLines: string[];
@@ -87,11 +89,10 @@ export interface ProjectFileState {
   /** From the `## Agreements` span (docs/dev/history/technical-design-meetings-0.21.md §2.1) - the agreements this file holds; empty for most files and always for the Inbox. Written only through storage/agreements.ts. */
   agreements: Agreement[];
   agreementsExtraLines: string[];
-  /** From the frontmatter block's status/dailyFocus/weeklyFocus/monthlyFocus/defaultResourceFolder/area fields - see domain/markdown.ts's parseFrontMatter. */
+  /** From the frontmatter block's status/defaultResourceFolder/area/abbrev fields - see domain/markdown.ts's parseFrontMatter. */
   status: ItemStatus;
-  dailyFocus: boolean;
-  weeklyFocus: boolean;
-  monthlyFocus: boolean;
+  /** The retired focus flags, carried to the next frontmatter write only (see RetainedFocus). */
+  focusFlags: RetainedFocus;
   defaultResourceFolder: string | null;
   /** The Area this Project supports, by bare folder name (technical-design-project-area-assignment.md §2), or null - Projects only, always null for Areas/Inbox. */
   area: string | null;
@@ -130,22 +131,12 @@ export function parseProjectFileContent(rawContent: string): ProjectFileState {
   const {tasks, extraLines: taskExtraLines} = parseTasksSpan(rawContent);
   const {meetings, extraLines: meetingExtraLines} = parseMeetingsSpan(rawContent);
   const scope = parseScopeSpan(rawContent);
-  const {goals: weeklyGoals, extraLines: weeklyGoalsExtraLines} = parseWeeklyGoalsSpan(rawContent);
-  const {goals: monthlyGoals, extraLines: monthlyGoalsExtraLines} = parseMonthlyGoalsSpan(rawContent);
   const {marks, extraLines: marksExtraLines} = parseMarksSpan(rawContent);
   const {threads, extraLines: threadsExtraLines} = parseThreadsSpan(rawContent);
   const {loops, extraLines: loopsExtraLines} = parseLoopsSpan(rawContent);
   const {agreements, extraLines: agreementsExtraLines} = parseAgreementsSpan(rawContent);
-  const {
-    status,
-    dailyFocus,
-    weeklyFocus,
-    monthlyFocus,
-    defaultResourceFolder,
-    area,
-    abbrev,
-    extraLines: frontMatterExtraLines,
-  } = parseFrontMatter(rawContent);
+  const frontMatter = parseFrontMatter(rawContent);
+  const {status, defaultResourceFolder, area, abbrev, extraLines: frontMatterExtraLines} = frontMatter;
   return {
     rawContent,
     tasks,
@@ -153,10 +144,6 @@ export function parseProjectFileContent(rawContent: string): ProjectFileState {
     taskExtraLines,
     meetingExtraLines,
     scope,
-    weeklyGoals,
-    weeklyGoalsExtraLines,
-    monthlyGoals,
-    monthlyGoalsExtraLines,
     marks,
     marksExtraLines,
     threads,
@@ -166,9 +153,7 @@ export function parseProjectFileContent(rawContent: string): ProjectFileState {
     agreements,
     agreementsExtraLines,
     status,
-    dailyFocus,
-    weeklyFocus,
-    monthlyFocus,
+    focusFlags: retainedFocusOf(frontMatter),
     defaultResourceFolder,
     area,
     abbrev,
@@ -262,34 +247,6 @@ export async function saveScope(
   return writeDataFile(kind, itemPath, dataFilePath(kind, itemPath), rawContent, {
     parts: [DATA_FILE_HEADINGS.scope],
     apply: content => writeScopeIntoContent(content, scope),
-  });
-}
-
-/** Saves the Weekly Goals span - see saveTasks for the shared rawContent/scaffolding behavior. */
-export async function saveWeeklyGoals(
-  kind: GtdParaKind,
-  itemPath: string,
-  rawContent: string,
-  goals: WeeklyGoal[],
-  extraLines: string[] = [],
-): Promise<string> {
-  return writeDataFile(kind, itemPath, dataFilePath(kind, itemPath), rawContent, {
-    parts: [DATA_FILE_HEADINGS.weeklyGoals],
-    apply: content => writeWeeklyGoalsIntoContent(content, goals, extraLines),
-  });
-}
-
-/** Saves the Monthly Goals span (docs/dev/history/technical-design-monthly-view.md §2.2) - see saveTasks for the shared rawContent/scaffolding behavior. */
-export async function saveMonthlyGoals(
-  kind: GtdParaKind,
-  itemPath: string,
-  rawContent: string,
-  goals: MonthlyGoal[],
-  extraLines: string[] = [],
-): Promise<string> {
-  return writeDataFile(kind, itemPath, dataFilePath(kind, itemPath), rawContent, {
-    parts: [DATA_FILE_HEADINGS.monthlyGoals],
-    apply: content => writeMonthlyGoalsIntoContent(content, goals, extraLines),
   });
 }
 

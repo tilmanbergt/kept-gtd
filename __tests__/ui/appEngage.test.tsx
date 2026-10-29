@@ -85,8 +85,8 @@ describe('App with the Engage button', () => {
     act(() => mockButtons.press!({id: ENGAGE_BUTTON_ID}));
     await settle();
     expect(texts(r)).toContain('Engage next');
-    // A note outside every Project/Area and no focus: the week's (empty) focus list.
-    expect(texts(r)).toContain("This week's focus");
+    // A note outside every Project/Area and nothing scheduled: today's (empty) schedule.
+    expect(texts(r)).toContain("Today's schedule");
     expect(texts(r)).not.toContain('Daily');
     expect(log).toHaveBeenCalledWith('EngageOverlay: opened', 'owner=none', 'via=button', 'current=no', 'back=no', 'pageMeeting=no');
 

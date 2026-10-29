@@ -21,9 +21,7 @@
  * - An owner is empty with no open todo (any flow state) and no meeting ahead,
  *   the rule `closeBlockers` uses for loops.
  */
-import {scopeOwnerOf} from './counterparts';
 import {
-  EngageItem,
   EngageItemRef,
   EngageOwner,
   EngageSource,
@@ -33,24 +31,22 @@ import {
   MeetingEntryRef,
   MeetingRef,
   ownerAgreedTodos,
-  ownerHomePath,
   ownerKey,
   ownerMeetings,
+  ownerOfMeeting,
   ownerOfTodo,
   ownerTitle,
   ownerTodos,
   OwnerTitle,
   OwnerTodoRef,
   sameTodo,
-  threadOfTodo,
   todoKeyOf,
 } from './engageOwner';
 import {agreementMadeIn, AgreementRef, ownerAgreements} from './agreementOwner';
-import {isLoopMember} from './loops';
 import {MeetingMoment, momentByTime, previousMeeting} from './meetingMoment';
-import {isSomedayMaybe, setFlowStateTag, setNowTag} from './flowState';
+import {coveredDaysIn} from './meetingSpan';
+import {isSomedayMaybe, setFlowStateTag, withoutNow} from './flowState';
 import {meetingEndMs, meetingStartMs, todayIso} from './meetingTime';
-import {scopeOf, threadOf} from './threads';
 import {Meeting, Task} from './types';
 
 /** The flow a todo is set to from the panel: picked (`#next`), Someday, Waiting For (R15), or none (Remove #next). */
@@ -59,12 +55,11 @@ export type EngageFlowChoice = 'next' | 'someday' | 'waiting' | null;
 /**
  * A todo's text with its flow set to `flow`, through `setFlowStateTag`;
  * Waiting For on `counterpart` (`#wf/<counterpart>`, a bare `#wf` without
- * one). Leaving `#next` also drops `#now`, which is only ever layered on
- * top of it.
+ * one). Leaving `#next` also drops a retired `#now`, which reads as `#next`.
  */
 export function engageFlowText(text: string, flow: EngageFlowChoice, counterpart: string | null = null): string {
   const withFlow = flow === 'waiting' ? setFlowStateTag(text, 'waiting-for', counterpart ?? undefined) : setFlowStateTag(text, flow);
-  return flow === 'next' ? withFlow : setNowTag(withFlow, false);
+  return flow === 'next' ? withFlow : withoutNow(withFlow);
 }
 
 /** One From row: a todo agreed in the meeting (open, or done for a reference meeting) or an agreement made in it. */
@@ -83,7 +78,7 @@ export interface EngagePage {
 }
 
 export interface EngageOptions {
-  /** Open `#next` (or `#now`) todos: "I owe" before the rest for threads and loops, file order inside (E5). */
+  /** Open `#next` todos: "I owe" before the rest for threads and loops, file order inside (E5). */
   next: OwnerTodoRef[];
   /** Open todos without a flow state, the same order. */
   plan: OwnerTodoRef[];
@@ -107,11 +102,11 @@ export function fromRowCount(groups: readonly FromGroup[]): number {
 }
 
 export function isNextTask(task: Task): boolean {
-  return task.flowState === 'next' || task.now;
+  return task.flowState === 'next';
 }
 
 function isPlanTask(task: Task): boolean {
-  return task.flowState === null && !task.now;
+  return task.flowState === null;
 }
 
 const sameMeeting = (a: MeetingRef | null, b: MeetingRef | null) => a !== null && b !== null && a.itemPath === b.itemPath && a.meetingIndex === b.meetingIndex;
@@ -246,21 +241,7 @@ export function todayNextMeeting(source: EngageSource, nowMs: number): MeetingEn
   return earliest(entries);
 }
 
-/** The ring a focus screen lists: today's focus, or this week's. */
-export type FocusRing = 'daily' | 'weekly';
-
-/** Today's focus when any Active item is in it, else this week's. */
-export function effectiveFocus(source: EngageSource): FocusRing {
-  return source.items.some(item => item.status === 'active' && item.dailyFocus) ? 'daily' : 'weekly';
-}
-
-/** The Active items in a ring, in the focus panel's order: Projects, then Areas. */
-export function focusItems(ring: FocusRing, source: EngageSource): EngageItem[] {
-  const inRing = source.items.filter(item => item.status === 'active' && (ring === 'daily' ? item.dailyFocus : item.weeklyFocus));
-  return [...inRing.filter(i => i.kind === 'project'), ...inRing.filter(i => i.kind === 'area')];
-}
-
-/** One line of the focus screens (S9, S11). */
+/** One line of the schedule screen (S9). */
 export interface OwnerLine extends OwnerTitle {
   owner: EngageOwner;
   nextCount: number;
@@ -268,67 +249,35 @@ export interface OwnerLine extends OwnerTitle {
   pickNext: boolean;
 }
 
-/** The owners inside one focused item: its active loops, its tended threads, then the item itself. */
-function ownersOf(item: EngageItem, source: EngageSource): EngageOwner[] {
-  const open = item.tasks.filter(t => !t.done && !t.cancelled);
-  // Active loops by main date (loops without one last, then by tag), like the page's todo groups.
-  const activeLoopTags = item.loops
-    .filter(l => l.status === 'active')
-    .slice()
-    .sort((a, b) => (a.mainDate ?? '9999').localeCompare(b.mainDate ?? '9999') || a.tag.localeCompare(b.tag))
-    .map(l => l.tag);
-  const loops = activeLoopTags
-    .filter(tag => open.some(task => isLoopMember(item, tag, task)))
-    .map((tag): EngageOwner => ({kind: 'loop', itemPath: item.path, tag}));
-  const scopeOwner = scopeOwnerOf(item.path, source.items) ?? item;
-  const tended = scopeOwner.threads.filter(l => l.status === 'active').map(l => l.leaf);
-  const threads: EngageOwner[] = [];
-  for (const task of open) {
-    if (activeLoopTags.some(tag => isLoopMember(item, tag, task))) continue;
-    // Its own thread tag, else the thread of the meeting it was agreed in (E4).
-    const thread = threadOfTodo(item.path, task, source);
-    if (!thread || thread.kind !== 'thread' || !tended.includes(threadOf(thread.tag)?.counterpart ?? '')) continue;
-    if (!threads.some(o => ownerKey(o) === ownerKey(thread))) threads.push(thread);
-  }
-  return [...loops, ...threads, {kind: 'item', itemPath: item.path}];
-}
-
-function counterpartOf(owner: EngageOwner): string | null {
-  return owner.kind === 'thread' ? threadOf(owner.tag)?.counterpart ?? null : null;
-}
-
 /**
- * The focus screen's owner lines for `ring`: every owner inside the ring's
- * items that has something to pick, the current owner left out. Ring order
- * around the current owner: the same counterpart first, then the same
- * Area/Project (its scope), then the rest, each block in focus panel order.
+ * The schedule screen's owner lines (D28,
+ * docs/dev/history/technical-design-time-and-place.md §3.6): the owners of
+ * today's meetings and focus blocks that are not over yet, in time order (an
+ * all-day one after the timed ones), one line per owner, the current owner
+ * left out. An Inbox meeting has no owner and no line.
  */
-export function focusOwnerLines(ring: FocusRing, current: EngageOwner | null, source: EngageSource, nowMs: number): OwnerLine[] {
+export function scheduleOwnerLines(source: EngageSource, nowMs: number, current: EngageOwner | null = null): OwnerLine[] {
+  const today = todayIso(new Date(nowMs));
+  const entries: Array<{itemPath: string; meeting: Meeting; meetingIndex: number}> = [];
+  for (const item of source.items) {
+    item.meetings.forEach((meeting, meetingIndex) => {
+      if (meeting.cancelled || meetingEndMs(meeting) <= nowMs) return;
+      if (coveredDaysIn(meeting, today, today).length === 0) return;
+      entries.push({itemPath: item.path, meeting, meetingIndex});
+    });
+  }
+  const timed = (m: Meeting) => (m.time && m.date === today ? 0 : 1);
+  entries.sort((a, b) => timed(a.meeting) - timed(b.meeting) || meetingStartMs(a.meeting) - meetingStartMs(b.meeting));
   const seen = new Set<string>(current ? [ownerKey(current)] : []);
   const lines: OwnerLine[] = [];
-  for (const item of focusItems(ring, source)) {
-    for (const owner of ownersOf(item, source)) {
-      const key = ownerKey(owner);
-      if (seen.has(key)) continue;
-      seen.add(key);
-      const {next, plan} = optionsOf(owner, source, nowMs);
-      if (next.length === 0 && plan.length === 0) continue;
-      lines.push({...ownerTitle(owner, source), owner, nextCount: next.length, pickNext: next.length === 0});
-    }
+  for (const entry of entries) {
+    const owner = ownerOfMeeting({itemPath: entry.itemPath, meeting: entry.meeting}, source);
+    if (!owner || seen.has(ownerKey(owner))) continue;
+    seen.add(ownerKey(owner));
+    const {next} = optionsOf(owner, source, nowMs);
+    lines.push({...ownerTitle(owner, source), owner, nextCount: next.length, pickNext: next.length === 0});
   }
-  if (!current) return lines;
-  const counterpart = counterpartOf(current);
-  const home = scopeOf(ownerHomePath(current), source.items, source.inbox?.path ?? null);
-  const rank = (line: OwnerLine) => {
-    if (counterpart !== null && counterpartOf(line.owner) === counterpart) return 0;
-    return home.includes(ownerHomePath(line.owner)) ? 1 : 2;
-  };
-  return lines.map((line, i) => ({line, i})).sort((a, b) => rank(a.line) - rank(b.line) || a.i - b.i).map(x => x.line);
-}
-
-/** How many owners in a ring still have something to pick (the flow's "anything left?"). */
-export function ownersLeft(ring: FocusRing, source: EngageSource, nowMs: number): number {
-  return focusOwnerLines(ring, null, source, nowMs).length;
+  return lines;
 }
 
 /** At most this many plan todos are offered in the prompt after a Done (R5). */
