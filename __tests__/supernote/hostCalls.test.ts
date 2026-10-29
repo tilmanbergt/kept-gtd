@@ -221,12 +221,14 @@ describe('insertNotePage timeout', () => {
     jest.useFakeTimers();
     try {
       mockSdk.PluginFileAPI.insertNotePage = jest.fn(() => new Promise(() => undefined));
-      const pending = fs.insertNotePage(P, 4, 'style_white');
-      const check = expect(pending).rejects.toThrow('Timeout adding page 5 to the note.');
+      const outcome = fs.insertNotePage(P, 4, 'style_white').then(
+        () => 'resolved',
+        (e: Error) => e.message,
+      );
       await Promise.resolve();
       await Promise.resolve();
       jest.advanceTimersByTime(8000);
-      await check;
+      expect(await outcome).toBe('Timeout adding page 5 to the note.');
     } finally {
       jest.useRealTimers();
     }
