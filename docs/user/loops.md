@@ -2,75 +2,75 @@
 
 A *loop* is a todo that needed more than one step: a team workshop with a room to book, invites and an agenda; a book to read; a trip; a new e-bike that first needs a few offers. A loop is a small project that lives inside an Area or a Project, without a folder of its own. Its todos stay on the Area's page, and the loop keeps them together until you close it.
 
-Threads you tend, loops you close: a thread (see [Threads](threads.md)) is an ongoing relationship, a loop has an end.
+Threads you tend, loops you close: a [thread](threads.md) is an ongoing relationship, a loop has an end.
 
 ## Kinds of loops
 
-A loop is named by a nested tag, `#<kind>/<name>`, for example `#workshop/offsite` or `#race/marathon`. The kinds come from your Note setups: a setup of the kind **Loop** on the tag `workshop` makes every `#workshop/<name>` a loop. Each kind has its own pages for the loop note, see [Note setups](note-setups.md).
+A loop is named by a [nested tag](tags.md#nested-tags), `#<kind>/<name>`, for example `#workshop/offsite` or `#race/marathon`. The kinds come from your [Note setups](note-setups.md#what-a-setup-is): a setup of the kind **Loop** on the tag `workshop` makes every `#workshop/<name>` a loop. Each kind has its own pages for the [loop note](loops.md#the-loop-note), see [The page layout](note-setups.md#the-page-layout).
 
 - Only the full tag counts: `#workshop/offsite`. A plain `#offsite` is just a tag.
-- A loop belongs to exactly one Area or Project: the one its line is in. The Inbox never holds loops.
+- A loop belongs to exactly one Area or Project: the one its line is in. The [Inbox](quick-add.md#the-inbox) never holds loops.
 
 ## Starting a loop
 
-Type only the loop's tag into [Quick Add](quick-add.md), for example `#workshop/offsite`. The button turns into **+ Add loop**, and the date field becomes the loop's *main date*: the day it is all about, like the workshop day. A file you attach becomes the loop's linked file. After the tap, the status line says the loop has started.
+Type only the loop's tag into [Quick Add](quick-add.md), for example `#workshop/offsite`. The button turns into **+ Add loop**, and the date field becomes the loop's *main date*: the day it is all about, like the workshop day. A file you attach becomes the loop's [linked file](loops.md#where-loops-show). After the tap, the [status line](index.md#the-status-line) says the loop has started.
 
-- `#next` doesn't change this: a todo that is only a loop tag is the loop.
+- [#next](tags.md#flow-tags-for-todos) doesn't change this: a todo that is only a loop tag is the loop.
 - With `#someday` or `#maybe`, it stays a todo: a *loop idea*: a loop tag together with `#someday`. When you take someday or maybe off - in Quick Add or in the [Weekly Review](review.md#open-loops) - it becomes the loop.
 - A todo with words and a loop tag, like `Book the workshop room #workshop/offsite`, is a todo of that loop.
-- A todo you already have can become a loop: edit it and replace its text with the loop's tag. **Save** turns into **Make loop**; its due date becomes the main date, and its own note and linked file come along.
-- In the Inbox, a loop tag on its own stays a todo; it becomes the loop when you file it into an Area or Project.
+- A todo you already have can become a loop: [edit](quick-add.md#editing) it and replace its text with the loop's tag. **Save** turns into **Make loop**; its due date becomes the main date, and its own note and linked file come along.
+- In the Inbox, a loop tag on its own stays a todo; it becomes the loop when you [file it](quick-add.md#the-inbox) into an Area or Project.
 - If the loop already exists, **+ Add** stays grey: type some words to add a todo of it.
 
 ## Where loops show
 
-On an Area's page, the **Projects** tab lists the loops after the projects; a Project's page has a **Loops** tab for its own loops. Both list them, each marked ○, sorted by main date. Each row shows the main date, the next meeting and the open, next and waiting-for todos; the note icon opens the loop note (or creates it from the Loop setup), the clip opens the linked file. Tap a loop to open its overview.
+On an Area's page, the [Projects](projects-and-areas.md#projects-of-an-area) tab lists the loops after the projects; a Project's page has a **Loops** tab for its own loops ([Files pane](projects-and-areas.md#files-and-linked-files)). Both list them, each marked ○, sorted by main date. Each row shows the main date, the next meeting and the open, next and waiting-for todos; the note icon opens the [loop note](loops.md#the-loop-note) (or creates it from the Loop setup), the clip opens the linked file. Tap a loop to open its [overview](loops.md#the-loop-overview).
 
-- **Linking a file** to a loop - the book's PDF or epub, the offer, the brief: tap **+** and the clip on a loop without a file, or **Link file** in its overview. The Files pane asks you to pick a file, like linking a file to a todo; tap it. To link another one, remove the file in **Edit** (✕) first: a loop has one linked file. Its note is separate - the place for your own notes.
+- **Linking a file** to a loop - the book's PDF or epub, the offer, the brief: tap **+** and the clip on a loop without a file, or **Link file** in its overview. The Files pane asks you to pick a file, like [linking a file to a todo](quick-add.md#notes-and-files-on-a-todo-or-meeting); tap it. To link another one, remove the file in **Edit** (✕) first: a loop has one linked file. Its note is separate - the place for your own notes.
 
 - **New** lists loop tags that are used on a `#next` or due todo, or on a meeting, but have no loop yet: **Track** starts the loop.
-- **Someday** lists the loop ideas, **closed** the loops you closed.
+- **Someday** lists the [loop ideas](loops.md#starting-a-loop), **closed** the loops you [closed](loops.md#closing-a-loop).
 - The page's todos are grouped by loop, the loops first, then the other todos.
 
 ## The loop overview
 
 Tap a loop row, or a loop tag in any todo or meeting of its Area or Project, to see everything of the loop:
 
-- The header: the loop's name and kind, where it lives, and its main date with the days to go. **File ›** opens the linked file (**Link file** while it has none), **Edit** loads the loop into Quick Add, [Engage ›](engage.md) opens [Engage](engage.md) for the loop.
-- **Ahead**: the loop's next meetings, then its open todos - first the ones agreed in its meetings (also one that is still running), then the ones waiting for someone, then the rest. Someday and Maybe todos are only counted, in a last row such as **1 someday ›**, which opens the Weekly Review's step [Someday / Maybe](review.md#someday--maybe) with just these todos. **+ Next workshop** (the loop's kind) fills Quick Add with the next meeting, copied from the last one.
-- **Looking back**: its past meetings, each with what was agreed in it, and what was done since the last one. A past meeting also offers **Reflect ›** for its [Reflection page](meetings.md).
-- Quick Add on the right adds to the loop: a new todo, meeting or agreement gets the loop's tag on its own and goes to the loop's Area or Project.
-- **Agreements**: the loop's active agreements show in **Ahead** after the waiting todos; ended ones are counted in **Looking back**, see [Agreements](agreements.md).
+- The header: the loop's name and kind, where it lives, and its main date with the days to go. **File ›** opens the linked file (**Link file** while it has none), [Edit](loops.md#editing-a-loop) loads the loop into Quick Add, [Engage ›](engage.md#opening-engage) opens [Engage](engage.md) for the loop.
+- **Ahead**: the loop's next meetings, then its open todos - first the ones agreed in its meetings (also one that is still running), then the ones waiting for someone, then the rest. Someday and Maybe todos are only counted, in a last row such as **1 someday ›**, which opens the Weekly Review's step [Someday / Maybe](review.md#someday--maybe) with just these todos. **+ Next workshop** (the loop's kind) fills Quick Add with the next meeting, copied from the last one, like [+ Next sparring](threads.md#-next-sparring).
+- **Looking back**: its past meetings, each with what was agreed in it, and what was done since the last one. A past meeting also offers **Reflect ›** for its [Reflection page](meetings.md#reflection-page).
+- [Quick Add](quick-add.md) on the right adds to the loop: a new todo, meeting or agreement gets the loop's tag on its own and goes to the loop's Area or Project.
+- **Agreements**: the loop's active agreements show in **Ahead** after the waiting todos; ended ones are counted in **Looking back**, see [Where agreements show](agreements.md#where-agreements-show).
 
-A todo is one of the loop's when it has the loop's tag, or was agreed in one of the loop's meetings - past, running or ahead. [Engage](engage.md) for the loop holds the same todos, and its Area or Project leaves them out.
+A todo is one of the loop's when it has the loop's tag, or was agreed in one of the loop's meetings - past, running or ahead. [Engage](engage.md#what-belongs-to-an-owner) for the loop holds the same todos, and its Area or Project leaves them out.
 
 ## The loop note
 
-Every loop has one note, from start to end, in its Area's or Project's folder. Its name comes from the Loop setup (see [Note setups](note-setups.md)), for example `2026-11 workshop offsite`.
+Every loop has one note, from start to end, in its Area's or Project's folder. Its name comes from the Loop setup (see [Placeholders in a note name](note-setups.md#placeholders-in-a-note-name)), for example `2026-11 workshop offsite`.
 
-- The 📓 on a loop row, or **Note ›** in the overview, opens it. The first time, the status line asks, then the note is created: its first page is the loop's own, filled from the Loop setup's First page.
-- A todo of the loop gets its note as a page in the loop note. A meeting does too, unless it also carries the tag of a Thread setup - `#sparring`, say: a meeting goes to the thread first. When both are possible, the question before the note is created offers the other place as a second button; the meeting still shows in the loop. Pages follow the timeline after the loop's page, see [Note setups](note-setups.md).
-- Prep and review tracking applies when any setup matching the meeting asks for it.
+- The 📓 on a loop row, or **Note ›** in the overview, opens it. The first time, the [status line](index.md#the-status-line) asks, then the note is created: its first page is the loop's own, filled from the Loop setup's First page ([The page layout](note-setups.md#the-page-layout)).
+- A todo of the loop gets its note as a page in the loop note. A meeting does too, unless it also carries the tag of a Thread setup - `#sparring`, say: a meeting goes to the thread first ([When several setups match](note-setups.md#when-several-setups-match)). When both are possible, the [question before the note is created](note-setups.md#before-a-note-is-created) offers the other place as a second button; the meeting still shows in the loop. Pages follow the timeline after the loop's page, see [Order of pages in a notebook](note-setups.md#order-of-pages-in-a-notebook).
+- [Prep and review tracking](meetings.md#preparation-and-review) applies when any setup matching the meeting asks for it.
 
 ## Editing a loop
 
 **Edit** in the overview loads the loop into Quick Add: its tag, its main date and its linked file. Change them and tap **Save loop**.
 
-- A new name after the `/` renames the loop: the status line asks first, then every todo and meeting of the loop gets the new tag.
+- A new name after the `/` renames the loop: the [status line](index.md#the-status-line) asks first, then every todo and meeting of the loop gets the new tag.
 - When the loop note's name changes with it - with the default name, when the main date moves to another month - the status line asks before the note is renamed. Links to it follow.
 - Declining a question saves nothing.
 
 ## Closing a loop
 
-A loop ends as **Done** (it reached its end) or **Dropped** (it stops here). **Close loop** in the overview or in the Weekly Review asks which one.
+A loop ends as **Done** (it reached its end) or **Dropped** (it stops here). **Close loop** in the overview or in the [Weekly Review](review.md#open-loops) asks which one.
 
 - A loop closes only when it has no open todo and no meeting ahead. Otherwise the status line says what is still open - `2 open todos, 1 upcoming meeting` - and **Show** opens the loop. Finish or cancel them, file them elsewhere, or take the loop's tag off.
-- Its note and its todos stay where they are. Closed loops stay readable: the Projects tab lists them folded, the overview shows them as closed, and **Reopen** makes one active again.
+- Its note and its todos stay where they are. Closed loops stay readable: the [Projects](projects-and-areas.md#projects-of-an-area) tab lists them folded, the overview shows them as closed, and **Reopen** makes one active again.
 - Loops are never deleted.
 
 ## In the Weekly Review
 
-The step [Open loops](review.md#open-loops) lists the loops that need a look, per area and project: those without a next action and nothing planned, and those past their main date.
+The step [Open loops](review.md#open-loops) lists the loops that need a look, per area and project: those without a [next action](tags.md#flow-tags-for-todos) and nothing planned, and those past their main date.
 
 ## In your files
 
@@ -78,4 +78,4 @@ The loops of an Area or Project are listed in its file, under `## Loops`:
 
 `- workshop/offsite: active, 2026-11-14, [[Offsite brief.pdf]]`
 
-The status (`active`, `done` or `dropped`), then the main date and the linked file, both optional. You can read and change these lines in Obsidian like the rest of the file.
+The status (`active`, `done` or `dropped`), then the main date and the linked file, both optional. You can read and change these lines in [Obsidian](files-and-folders.md#using-kept-gtd-with-obsidian) like the rest of the file.

@@ -8,34 +8,34 @@ Kept keeps agreements next to the todos and meetings they belong to, so you see 
 
 Like a todo, an agreement belongs where its tags say:
 
-- *A thread*: tagged with the thread, for example `#sparring/jordan`, or with the plain `#jordan`. It shows in the thread's overview, and in **All jordan**.
-- *A loop*: tagged with the loop, for example `#workshop/offsite`. It shows in the loop's overview.
-- *A project or area*: no thread or loop tag. It shows on its page.
+- *A thread*: tagged with the thread, for example `#sparring/jordan`, or with the plain `#jordan`. It shows in the thread's overview, and in [All jordan](threads.md#thread-or-all-of-the-counterpart).
+- *A loop*: tagged with the loop, for example `#workshop/offsite`. It shows in the [loop's overview](loops.md#the-loop-overview).
+- *A project or area*: no thread or loop tag. It shows on its [page](projects-and-areas.md#the-current-tab).
 
-It is written into the file that owns this place: for a thread the area's `area.txt` (or the project's `project.txt` when the project has no area), for a loop the file the loop lives in, for a project or area its own file. Agreements are never kept in the Inbox.
+It is written into the file that owns this place: for a thread the area's `area.txt` (or the project's `project.txt` when the project has no area), for a loop the file the loop lives in, for a project or area its own file. Agreements are never kept in the [Inbox](quick-add.md#the-inbox).
 
 ## Adding one
 
-Quick Add has a tab **Agreement** wherever it knows who the agreement is with: in a thread or loop overview, on a project's or area's page, and in [Engage](engage.md).
+[Quick Add](quick-add.md#adding-an-agreement) has a tab **Agreement** wherever it knows who the agreement is with: in a [thread](threads.md#adding-from-the-overview) or loop overview, on a project's or area's page, and in [Engage](engage.md).
 
 1. Choose **Agreement** and write the words. Tags work as for todos.
 2. Optionally tap **valid till**. A strip hovers over the tabs: **none**, **+1 m**, **+3 m**, **end of year**, and **…** to type another day. **✕** puts it away.
-3. Tap **+ Add**. The status line says where it went, for example "Agreement added to Coaching".
+3. Tap **+ Add**. The [status line](index.md#the-status-line) says where it went, for example "Agreement added to Coaching".
 
-With the lasso, or when you process a mark, choose **Agreement** in the capture panel, see [Lasso](lasso.md).
+With the [lasso](lasso.md#capturing-an-agreement), or when you [process a mark](lasso.md#processing-marks), choose **Agreement** in the capture panel.
 
-In a thread overview the agreement gets the thread's tag and the meeting selected in **Looking back**, the same way a new todo does; the grey line in Quick Add shows both, each with its ✕. In a loop overview it gets the loop's tag. In Engage on a meeting's page, during or after the meeting, it records that meeting.
+In a thread overview the agreement gets the thread's tag and the meeting selected in [Looking back](threads.md#looking-back), the same way a new todo does; the [grey line](quick-add.md#the-grey-line-where-a-todo-comes-from) in Quick Add shows both, each with its ✕. In a loop overview it gets the loop's tag. In Engage on a [meeting's page](engage.md#on-a-meetings-page-before-during-after), during or after the meeting, it records that meeting.
 
 ## The card
 
-Tap an agreement to see its card in Quick Add's place:
+Tap an agreement to see its card in Quick Add's place, as for a [todo](quick-add.md#the-card-one-tap-selects):
 
-- **Agreement · since 14.10.** and, when it was made in a meeting, the meeting (tap it to open that meeting's thread overview)
+- **Agreement · since 14.10.** and, when it was made in a meeting, the meeting (tap it to open that meeting's [thread overview](threads.md#opening-the-overview))
 - the words and tags
-- **valid till 31.12.** (with "– over" once that day has passed), **Change** and **End**
+- **valid till 31.12.** (with "– over" once that day has passed), [Change and End](agreements.md#changing-and-ending)
 - where it lives
 
-**Edit** (or a second tap on the row) changes the words, tags or valid-till date. It stays the same agreement.
+[Edit](quick-add.md#editing) (or a second tap on the row) changes the words, tags or valid-till date. It stays the same agreement.
 
 ## Changing and ending
 
@@ -46,15 +46,15 @@ Agreements are never deleted: the old wording stays in your file.
 
 ## Where agreements show
 
-- [Engage](engage.md): the tab **Agreements** lists the owner's active ones; a tap shows **Change** and **End** in the row. **From Thread** lists the agreements made in each meeting.
-- *Thread and loop overviews*: a block **Agreements** in **Ahead**, after **Waiting for**. In **Looking back** a row such as **2 agreements ended ›** lists the ended ones on the right, and a past meeting lists the **Agreements made** in it.
-- *A project's or area's page*: when it has agreements of its own, its todo list ends with **◇ Agreements 2 ›**. Tap it to list them in that column; **‹ Todos** goes back.
+- [Engage](engage.md): the tab **Agreements** lists the [owner's](engage.md#which-owner-a-page-belongs-to) active ones; a tap shows **Change** and **End** in the row. **From Thread** lists the agreements made in each meeting ([The tabs](engage.md#the-tabs)).
+- *Thread and loop overviews*: a block **Agreements** in [Ahead](threads.md#ahead), after **Waiting for**. In **Looking back** a row such as **2 agreements ended ›** lists the ended ones on the right, and a past meeting lists the **Agreements made** in it.
+- *A project's or area's page*: when it has agreements of its own, its todo list ends with **◇ Agreements 2 ›** ([The Current tab](projects-and-areas.md#the-current-tab)). Tap it to list them in that column; **‹ Todos** goes back.
 
 ## Reviewing and closing out
 
-- [Weekly Review](review.md): the step **Agreements** lists those past their date, with someone you set inactive, of a closed loop, or in a project that is done or on hold: **Keep** (with a new valid-till date), **Change** or **End**.
-- *Setting someone inactive*: after the open todos, their agreements: **Keep** or **End**, or **End all**. [Tending threads](review.md#tending-threads) in the Review lists a counterpart's active agreements.
-- **Closing out a project**: the checklist warns "2 active agreements" with **End all**. It does not block archiving; agreements you keep stay in the archived file. See [Closing out a project](close-out.md).
+- [Weekly Review](review.md): the step [Agreements](review.md#agreements) lists those past their date, with someone you set inactive, of a closed loop, or in a project that is done or on hold: **Keep** (with a new valid-till date), **Change** or **End**.
+- *Setting someone inactive* ([Set inactive](threads.md#tending-counterparts)): after the open todos, their agreements: **Keep** or **End**, or **End all**. [Tending threads](review.md#tending-threads) in the Review lists a counterpart's active agreements.
+- [Closing out a project](close-out.md#the-five-steps): the checklist warns "2 active agreements" with **End all**. It does not block archiving; agreements you keep stay in the archived file.
 - [Since last time](note-setups.md#since-last-time) on a meeting note lists the agreements made in the previous meeting.
 
 ## In your files
@@ -68,5 +68,5 @@ Agreements are plain bullets in a section `## Agreements`:
 ```
 
 - `[meeting:: …]` is the meeting it was made in, `[created:: …]` the day it was added, `[valid:: …]` the day it holds until, `[ended:: …]` the day it was ended. An agreement without `ended` is active.
-- There is no checkbox, so the Tasks plugin in Obsidian does not list agreements as tasks.
+- There is no checkbox, so the Tasks plugin in [Obsidian](files-and-folders.md#using-kept-gtd-with-obsidian) does not list agreements as tasks.
 - You can write agreements by hand. Fields Kept doesn't know, other lines and blank lines stay as they are; a line Kept didn't change is written back exactly as you wrote it.
