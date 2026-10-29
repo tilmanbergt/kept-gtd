@@ -216,3 +216,16 @@ body; a factory that spreads `jest.requireActual` counts only the names it overr
 - `withTimeout` is exported from hostCall.ts for insertNotePage until R2 moves the timeout into
   `callHost`. `supernote/currentPage.ts` re-exports `getCurrentPageNum` from hostContext.ts until R3;
   storage/deviceCheck.ts re-exports `INTERNAL_STORAGE` from devicePaths.ts until R3.
+
+### R2: callHost
+
+- `callHost` (hostCall.ts) carries nine calls: insertNotePage (with its timeout), insertKeyWord,
+  getKeyWords, deleteKeyWord, getNoteTotalPageNum, createElement, getElements, insertElements and
+  deleteElements. The spec has `startArgs`/`failArgs`/`doneArgs` as full argument lists (some calls name
+  more than the path), `failLog: 'error'` for createElement (it logs with logError and keeps the
+  grants, as before) and `record: {fields, okFields}` for the two recorded calls; the timeout is
+  `timeout: {ms, message}`. `withTimeout` is private again.
+- createNote (its own thrown text, the folder notification), openPath (observer rollback, grants
+  forgotten on a throw) and getNoteSystemTemplates (no response envelope) stay hand-written; createNote,
+  openPath and getCurrentNotePath use `SdkResponse<T>` instead of their inline types. The R0 tests pass
+  with no assertion changed.

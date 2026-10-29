@@ -3,11 +3,12 @@
  * PluginFileAPI/PluginCommAPI (docs/dev/history/technical-design-filesystem-split.md §3).
  */
 import {PluginCommAPI, PluginFileAPI} from 'sn-plugin-lib';
-import {ensureFileReadPermission, ensureFileWritePermission, logFileCallFailure} from './pluginPermissions';
+import {ensureFileWritePermission, logFileCallFailure} from './pluginPermissions';
 import {log, logError} from '../utils/log';
 import {errorMessage} from '../utils/errorMessage';
 import {notifyFolderChanged, parentFolder} from './fileNative';
-import {recordDebugLogEntry, withTimeout} from './hostCall';
+import {callHost, recordDebugLogEntry} from './hostCall';
+import {SdkResponse} from './sdkElements';
 
 export interface NoteTemplate {
   name: string;
@@ -174,7 +175,7 @@ export async function createNote(
     template,
     mode: 0,
     isPortrait,
-  })) as {success: boolean; result?: boolean; error?: {code: number; message: string} | null} | null | undefined;
+  })) as SdkResponse<boolean> | null | undefined;
   const durationMs = Date.now() - start;
   if (!response || !response.success || response.result === false) {
     const hostMessage = response?.error?.message || 'Could not create the note.';
@@ -205,23 +206,18 @@ const INSERT_NOTE_PAGE_TIMEOUT_MS = 8000;
  * per call. Used by storage/textNote.ts to build multi-page text notes.
  */
 export async function insertNotePage(path: string, page: number, template: string): Promise<void> {
-  const granted = await ensureFileWritePermission();
-  if (!granted) {
-    logError('insertNotePage: file write permission not granted', path);
-    throw new Error('File write permission was not granted.');
-  }
-  log('insertNotePage: start', path, `page=${page}`, template);
-  const response = (await withTimeout(
-    PluginFileAPI.insertNotePage({notePath: path, page, template}) as Promise<unknown>,
-    INSERT_NOTE_PAGE_TIMEOUT_MS,
-    `Timeout adding page ${page + 1} to the note.`,
-  )) as {success: boolean; result?: boolean; error?: {code: number; message: string} | null} | null | undefined;
-  if (!response || !response.success || response.result === false) {
-    const message = response?.error?.message || `Could not add page ${page + 1} to the note.`;
-    logFileCallFailure('insertNotePage: failed', path, `page=${page}`, message);
-    throw new Error(message);
-  }
-  log('insertNotePage: done', path, `page=${page}`);
+  await callHost<boolean>({
+    name: 'insertNotePage',
+    permission: 'write',
+    path,
+    startArgs: [path, `page=${page}`, template],
+    call: () => PluginFileAPI.insertNotePage({notePath: path, page, template}) as Promise<SdkResponse<boolean>>,
+    ok: r => r.success && r.result !== false,
+    failMessage: `Could not add page ${page + 1} to the note.`,
+    failArgs: [path, `page=${page}`],
+    doneArgs: () => [path, `page=${page}`],
+    timeout: {ms: INSERT_NOTE_PAGE_TIMEOUT_MS, message: `Timeout adding page ${page + 1} to the note.`},
+  });
 }
 
 /**
@@ -236,22 +232,17 @@ export async function insertNotePage(path: string, page: number, template: strin
  * §4) are wrapped below.
  */
 export async function insertKeyWord(path: string, page: number, keyword: string): Promise<void> {
-  const granted = await ensureFileWritePermission();
-  if (!granted) {
-    logError('insertKeyWord: file write permission not granted', path);
-    throw new Error('File write permission was not granted.');
-  }
-  log('insertKeyWord: start', path, `page=${page}`, keyword);
-  const response = (await PluginFileAPI.insertKeyWord(path, page, keyword)) as
-    | {success: boolean; result?: boolean; error?: {code: number; message: string} | null}
-    | null
-    | undefined;
-  if (!response || !response.success || response.result === false) {
-    const message = response?.error?.message || 'Could not add the keyword.';
-    logFileCallFailure('insertKeyWord: failed', path, keyword, message);
-    throw new Error(message);
-  }
-  log('insertKeyWord: done', path, keyword);
+  await callHost<boolean>({
+    name: 'insertKeyWord',
+    permission: 'write',
+    path,
+    startArgs: [path, `page=${page}`, keyword],
+    call: () => PluginFileAPI.insertKeyWord(path, page, keyword) as Promise<SdkResponse<boolean>>,
+    ok: r => r.success && r.result !== false,
+    failMessage: 'Could not add the keyword.',
+    failArgs: [path, keyword],
+    doneArgs: () => [path, keyword],
+  });
 }
 
 /**
@@ -266,24 +257,18 @@ export async function insertKeyWord(path: string, page: number, keyword: string)
  * same way every other read wrapper here does (via the thrown error).
  */
 export async function getKeyWords(path: string, pageList: number[]): Promise<KeyWord[]> {
-  const granted = await ensureFileReadPermission();
-  if (!granted) {
-    logError('getKeyWords: file read permission not granted', path);
-    throw new Error('File read permission was not granted.');
-  }
-  log('getKeyWords: start', path, `${pageList.length} pages`);
-  const response = (await PluginFileAPI.getKeyWords(path, pageList)) as
-    | {success: boolean; result?: KeyWord[] | null; error?: {code: number; message: string} | null}
-    | null
-    | undefined;
-  if (!response || !response.success) {
-    const message = response?.error?.message || 'Could not read this note\'s keywords.';
-    logFileCallFailure('getKeyWords: failed', path, message);
-    throw new Error(message);
-  }
-  const result = response.result ?? [];
-  log('getKeyWords: done', path, `${result.length} keywords`);
-  return result;
+  const response = await callHost<KeyWord[]>({
+    name: 'getKeyWords',
+    permission: 'read',
+    path,
+    startArgs: [path, `${pageList.length} pages`],
+    call: () => PluginFileAPI.getKeyWords(path, pageList) as Promise<SdkResponse<KeyWord[]>>,
+    ok: r => r.success,
+    failMessage: 'Could not read this note\'s keywords.',
+    failArgs: [path],
+    doneArgs: r => [path, `${(r.result ?? []).length} keywords`],
+  });
+  return response.result ?? [];
 }
 
 /**
@@ -297,22 +282,17 @@ export async function getKeyWords(path: string, pageList: number[]): Promise<Key
  * its docs.supernote.com reference page was not checked.
  */
 export async function deleteKeyWord(path: string, page: number, index: number): Promise<void> {
-  const granted = await ensureFileWritePermission();
-  if (!granted) {
-    logError('deleteKeyWord: file write permission not granted', path);
-    throw new Error('File write permission was not granted.');
-  }
-  log('deleteKeyWord: start', path, `page=${page}`, `index=${index}`);
-  const response = (await PluginFileAPI.deleteKeyWord(path, page, index)) as
-    | {success: boolean; result?: boolean; error?: {code: number; message: string} | null}
-    | null
-    | undefined;
-  if (!response || !response.success || response.result === false) {
-    const message = response?.error?.message || 'Could not remove the keyword.';
-    logFileCallFailure('deleteKeyWord: failed', path, `page=${page}`, message);
-    throw new Error(message);
-  }
-  log('deleteKeyWord: done', path, `page=${page}`);
+  await callHost<boolean>({
+    name: 'deleteKeyWord',
+    permission: 'write',
+    path,
+    startArgs: [path, `page=${page}`, `index=${index}`],
+    call: () => PluginFileAPI.deleteKeyWord(path, page, index) as Promise<SdkResponse<boolean>>,
+    ok: r => r.success && r.result !== false,
+    failMessage: 'Could not remove the keyword.',
+    failArgs: [path, `page=${page}`],
+    doneArgs: () => [path, `page=${page}`],
+  });
 }
 
 /**
@@ -325,23 +305,18 @@ export async function deleteKeyWord(path: string, page: number, index: number): 
  * not checked.
  */
 export async function getNoteTotalPageNum(path: string): Promise<number> {
-  const granted = await ensureFileReadPermission();
-  if (!granted) {
-    logError('getNoteTotalPageNum: file read permission not granted', path);
-    throw new Error('File read permission was not granted.');
-  }
-  log('getNoteTotalPageNum: start', path);
-  const response = (await PluginFileAPI.getNoteTotalPageNum(path)) as
-    | {success: boolean; result?: number | null; error?: {code: number; message: string} | null}
-    | null
-    | undefined;
-  if (!response || !response.success || response.result == null) {
-    const message = response?.error?.message || 'Could not read this note\'s page count.';
-    logFileCallFailure('getNoteTotalPageNum: failed', path, message);
-    throw new Error(message);
-  }
-  log('getNoteTotalPageNum: done', path, `${response.result} pages`);
-  return response.result;
+  const response = await callHost<number>({
+    name: 'getNoteTotalPageNum',
+    permission: 'read',
+    path,
+    startArgs: [path],
+    call: () => PluginFileAPI.getNoteTotalPageNum(path) as Promise<SdkResponse<number>>,
+    ok: r => r.success && r.result != null,
+    failMessage: 'Could not read this note\'s page count.',
+    failArgs: [path],
+    doneArgs: r => [path, `${r.result} pages`],
+  });
+  return response.result as number;
 }
 
 /**
@@ -360,18 +335,18 @@ export async function getNoteTotalPageNum(path: string): Promise<number> {
  * with it, per the SDK's own memory-management rule.
  */
 export async function createElement(type: number): Promise<Element> {
-  log('createElement: start', `type=${type}`);
-  const response = (await PluginCommAPI.createElement(type)) as
-    | {success: boolean; result?: Element | null; error?: {code: number; message: string} | null}
-    | null
-    | undefined;
-  if (!response || !response.success || !response.result) {
-    const message = response?.error?.message || 'Could not create the element.';
-    logError('createElement: failed', type, message);
-    throw new Error(message);
-  }
-  log('createElement: done', type, response.result.uuid);
-  return response.result;
+  const response = await callHost<Element>({
+    name: 'createElement',
+    permission: null,
+    startArgs: [`type=${type}`],
+    call: () => PluginCommAPI.createElement(type) as Promise<SdkResponse<Element>>,
+    ok: r => r.success && !!r.result,
+    failMessage: 'Could not create the element.',
+    failArgs: [type],
+    failLog: 'error',
+    doneArgs: r => [type, (r.result as Element).uuid],
+  });
+  return response.result as Element;
 }
 
 /**
@@ -384,33 +359,23 @@ export async function createElement(type: number): Promise<Element> {
  * confirmed here against the docs.
  */
 export async function getElements(page: number, path: string): Promise<Element[]> {
-  const granted = await ensureFileReadPermission();
-  if (!granted) {
-    logError('getElements: file read permission not granted', path);
-    throw new Error('File read permission was not granted.');
-  }
-  log('getElements: start', path, `page=${page}`);
-  const start = Date.now();
-  const response = (await PluginFileAPI.getElements(page, path)) as
-    | {success: boolean; result?: Element[] | null; error?: {code: number; message: string} | null}
-    | null
-    | undefined;
-  const durationMs = Date.now() - start;
-  if (!response || !response.success) {
-    const message = response?.error?.message || 'Could not read this page\'s elements.';
-    logFileCallFailure('getElements: failed', path, message);
-    // Diagnostic (docs/dev/history/technical-design-shared-note-pages.md): logs BOTH
-    // outcomes via recordDebugLogEntry, here and on insertElements/openPath
-    // below, to localize which call fails with "File does not exist. Cannot
-    // call the API." on a page just inserted via insertNotePage - without
-    // needing adb logcat.
-    await recordDebugLogEntry('getElements', false, durationMs, {path, page, errorMessage: message});
-    throw new Error(message);
-  }
-  const result = response.result ?? [];
-  log('getElements: done', path, `${result.length} elements`);
-  await recordDebugLogEntry('getElements', true, durationMs, {path, page, elementCount: result.length});
-  return result;
+  // Diagnostic (docs/dev/history/technical-design-shared-note-pages.md): records BOTH
+  // outcomes via recordDebugLogEntry, here and on insertElements/openPath, to
+  // localize which call fails with "File does not exist. Cannot call the API."
+  // on a page just inserted via insertNotePage - without needing adb logcat.
+  const response = await callHost<Element[]>({
+    name: 'getElements',
+    permission: 'read',
+    path,
+    startArgs: [path, `page=${page}`],
+    call: () => PluginFileAPI.getElements(page, path) as Promise<SdkResponse<Element[]>>,
+    ok: r => r.success,
+    failMessage: 'Could not read this page\'s elements.',
+    failArgs: [path],
+    doneArgs: r => [path, `${(r.result ?? []).length} elements`],
+    record: {fields: {path, page}, okFields: r => ({elementCount: (r.result ?? []).length})},
+  });
+  return response.result ?? [];
 }
 
 /**
@@ -421,27 +386,19 @@ export async function getElements(page: number, path: string): Promise<Element[]
  * other (docs/dev/history/technical-design-meeting-notes.md §5 step 5).
  */
 export async function insertElements(path: string, page: number, elements: Element[]): Promise<void> {
-  const granted = await ensureFileWritePermission();
-  if (!granted) {
-    logError('insertElements: file write permission not granted', path);
-    throw new Error('File write permission was not granted.');
-  }
-  log('insertElements: start', path, `page=${page}`, `${elements.length} elements`);
-  const start = Date.now();
-  const response = (await PluginFileAPI.insertElements(path, page, elements)) as
-    | {success: boolean; result?: boolean; error?: {code: number; message: string} | null}
-    | null
-    | undefined;
-  const durationMs = Date.now() - start;
-  if (!response || !response.success || response.result === false) {
-    const message = response?.error?.message || 'Could not insert the elements.';
-    logFileCallFailure('insertElements: failed', path, message);
-    // Diagnostic - see getElements' own comment above for why.
-    await recordDebugLogEntry('insertElements', false, durationMs, {path, page, elementCount: elements.length, errorMessage: message});
-    throw new Error(message);
-  }
-  log('insertElements: done', path);
-  await recordDebugLogEntry('insertElements', true, durationMs, {path, page, elementCount: elements.length});
+  // Diagnostic - see getElements' own comment above for why.
+  await callHost<boolean>({
+    name: 'insertElements',
+    permission: 'write',
+    path,
+    startArgs: [path, `page=${page}`, `${elements.length} elements`],
+    call: () => PluginFileAPI.insertElements(path, page, elements) as Promise<SdkResponse<boolean>>,
+    ok: r => r.success && r.result !== false,
+    failMessage: 'Could not insert the elements.',
+    failArgs: [path],
+    doneArgs: () => [path],
+    record: {fields: {path, page, elementCount: elements.length}},
+  });
 }
 
 /**
@@ -453,20 +410,15 @@ export async function insertElements(path: string, page: number, elements: Eleme
  * ("always regenerate" - docs/dev/history/technical-design-meeting-notes.md §5 step 2).
  */
 export async function deleteElements(path: string, page: number, numsInPage: number[]): Promise<void> {
-  const granted = await ensureFileWritePermission();
-  if (!granted) {
-    logError('deleteElements: file write permission not granted', path);
-    throw new Error('File write permission was not granted.');
-  }
-  log('deleteElements: start', path, `page=${page}`, numsInPage);
-  const response = (await PluginFileAPI.deleteElements(path, page, numsInPage)) as
-    | {success: boolean; result?: boolean; error?: {code: number; message: string} | null}
-    | null
-    | undefined;
-  if (!response || !response.success || response.result === false) {
-    const message = response?.error?.message || 'Could not delete the elements.';
-    logFileCallFailure('deleteElements: failed', path, message);
-    throw new Error(message);
-  }
-  log('deleteElements: done', path);
+  await callHost<boolean>({
+    name: 'deleteElements',
+    permission: 'write',
+    path,
+    startArgs: [path, `page=${page}`, numsInPage],
+    call: () => PluginFileAPI.deleteElements(path, page, numsInPage) as Promise<SdkResponse<boolean>>,
+    ok: r => r.success && r.result !== false,
+    failMessage: 'Could not delete the elements.',
+    failArgs: [path],
+    doneArgs: () => [path],
+  });
 }

@@ -5,6 +5,7 @@ import {perfEnd, perfStart} from '../utils/perf';
 import {errorMessage} from '../utils/errorMessage';
 import {recordDebugLogEntry} from './hostCall';
 import {nativeFileModule, notifyFolderChanged, parentFolder} from './fileNative';
+import {SdkResponse} from './sdkElements';
 
 // The modules split off this file (docs/dev/history/technical-design-filesystem-split.md):
 // re-exported until every importer points at its own module.
@@ -160,10 +161,7 @@ export async function openPath(path: string, page = -1): Promise<void> {
   // guaranteed to run. The observer's rollback (if any) undoes its
   // bookkeeping when the open then fails.
   const rollback = openPathObserver?.onOpening(path);
-  let response:
-    | {success: boolean; error?: {code: number; message: string} | null}
-    | null
-    | undefined;
+  let response: SdkResponse<unknown> | null | undefined;
   try {
     response = (await PluginFileAPI.openFile(path, page)) as typeof response;
   } catch (e) {

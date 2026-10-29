@@ -19,10 +19,7 @@ import {errText, SdkResponse} from './sdkElements';
 export async function getCurrentNotePath(): Promise<string | null> {
   log('getCurrentNotePath: start');
   try {
-    const response = (await PluginCommAPI.getCurrentFilePath()) as
-      | {success: boolean; result?: string | null; error?: {code: number; message: string} | null}
-      | null
-      | undefined;
+    const response = (await PluginCommAPI.getCurrentFilePath()) as SdkResponse<string> | null | undefined;
     if (!response || !response.success || !response.result) {
       log('getCurrentNotePath: none', response?.error?.message);
       return null;
