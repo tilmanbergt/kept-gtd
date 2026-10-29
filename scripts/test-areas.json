@@ -231,7 +231,7 @@
       "name": "Your files: cache, writes, safety, integrity",
       "help": ["files-and-folders.md"],
       "tests": [
-        "__tests__/**/*{dataFileWrite,writeConflicts,writeGuard,writeLeftovers,fileName,fileChangeText,oddFiles,outsideEdits,refreshCache,legacyInbox,noteMissing,meetingsRoundTrip,markdownMarks,taskLine,taskEdit,fileBrowser,fileSafety,interruptions,pluginPermissions,rollback,rollbackShims,deviceLinks,linkTargets,linkedFiles,deviceRoots}*"
+        "__tests__/**/*{dataFileWrite,writeConflicts,writeGuard,writeLeftovers,fileName,fileChangeText,oddFiles,outsideEdits,refreshCache,legacyInbox,noteMissing,meetingsRoundTrip,markdownMarks,taskLine,taskEdit,fileBrowser,fileSafety,interruptions,pluginPermissions,hostCalls,rollback,rollbackShims,deviceLinks,linkTargets,linkedFiles,deviceRoots}*"
       ],
       "sources": [
         "src/storage/{dataCache,dataFileWrite,projectFile,writeConflicts,integrityCheck,fileNaming,fileNameFix,linkedFiles,itemMutations,deviceRoots}.ts",
