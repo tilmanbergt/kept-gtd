@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-141 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+145 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -1056,6 +1056,43 @@ Test: `__tests__/scenarios/quickAdd.test.tsx` · design: `docs/dev/history/techn
 - **And** Daily lists it in the Inbox group
 
 Test: `__tests__/scenarios/smoke/daily.test.tsx`
+
+## Remove data
+
+### Removing with the defaults leaves no Kept data but keeps profiles, data files and notes
+
+- **Given** Kept has data in every place it uses
+- **When** I remove with the defaults
+- **Then** no Kept entry, log, demo space or private file is left
+- **And** the profiles, every data file, the note and the other plugin stay
+
+Test: `__tests__/scenarios/removeDataRun.test.ts`
+
+### A failing log deletion still removes the rest and keeps the settings
+
+- **Given** Kept has data in every place it uses, and deleting the logs will fail
+- **When** I remove with the defaults
+- **Then** the logs report the failure, the settings are kept and the rest is gone
+
+Test: `__tests__/scenarios/removeDataRun.test.ts`
+
+### Save the active profile first keeps the setup in production.json
+
+- **Given** my Projects folder is "Work projects"
+- **When** I remove the settings with Save the active profile first on
+- **Then** production.json holds the folder and the settings are gone
+- **Given** Kept has data in every place it uses
+- **Then** project.txt, area.txt, Inbox.txt and the archived project.txt are gone
+- **And** the project folder and its note stay
+
+Test: `__tests__/scenarios/removeDataRun.test.ts`
+
+### The scan counts what is there
+
+- **Given** Kept has data in every place it uses
+- **Then** each kind has its count and the open mark is counted
+
+Test: `__tests__/scenarios/removeDataRun.test.ts`
 
 ## Review
 
