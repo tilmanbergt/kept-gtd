@@ -45,7 +45,7 @@ import {useSettingsUnreadableNotice} from './src/ui/useSettingsUnreadableNotice'
 import {useNoteSetupsNotice} from './src/ui/useNoteSetupsNotice';
 import {useProfileCopyNotice} from './src/ui/useProfileCopyNotice';
 import {configureLogFileSink, setFileLogging} from './src/utils/logSink';
-import {GtdParaSettings, resolvePaths} from './src/domain/settings';
+import {DEFAULT_SETTINGS, GtdParaSettings, resolvePaths} from './src/domain/settings';
 import {decideLanding} from './src/domain/returnContext';
 import {clearCachedData, refreshCache} from './src/storage/dataCache';
 import {clearCachedGmailInbox} from './src/storage/gmailInboxCache';
@@ -624,6 +624,18 @@ function AppShell({onProfileSwitched}: {onProfileSwitched: () => void}): React.J
     log('App: switched to profile', next.activeProfileId);
     onProfileSwitched();
   };
+  // After Remove Kept's data took the settings (docs/dev/history/technical-design-remove-data.md
+  // R7): drop every in-memory copy, like a profile switch, and remount; with no stored settings
+  // the load is a first install and the setup assistant opens.
+  const restartFresh = () => {
+    clearCachedData();
+    clearCachedGmailInbox();
+    clearReturnRecord();
+    setActiveProfileId(DEFAULT_PROFILE_ID);
+    setFeatures(featuresOf(DEFAULT_SETTINGS));
+    log('App: starting fresh after Remove Kept\'s data');
+    onProfileSwitched();
+  };
   useNoteSetupsNotice(settings, () => {
     setSettingsTab('templates');
     setActiveTab('settings');
@@ -794,6 +806,7 @@ function AppShell({onProfileSwitched}: {onProfileSwitched: () => void}): React.J
             setSetupAtStart(false);
             if (finished) setActiveTab('projects');
           }}
+          onRestartFresh={restartFresh}
         />
       )}
     </>

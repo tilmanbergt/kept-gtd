@@ -243,7 +243,9 @@ async function runStep(step: RemovalStep, targets: RemovalTargets): Promise<Step
     case 'secrets':
       return removeStoreKeys(step, targets.storeKeys.secrets);
     case 'settings':
-      return removeStoreKeys(step, targets.storeKeys.settings);
+      // With no secrets entry before, one now can only come from Save the active profile first,
+      // which writes an empty one: it goes with the settings.
+      return removeStoreKeys(step, targets.storeKeys.secrets.length > 0 ? targets.storeKeys.settings : [...targets.storeKeys.settings, SECRETS_STORE_KEY]);
   }
 }
 

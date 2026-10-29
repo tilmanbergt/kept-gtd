@@ -41,6 +41,7 @@ import FeaturesTab from './FeaturesTab';
 import ContextsTab from './contexts/ContextsTab';
 import {useContextsDraft} from './contexts/useContextsDraft';
 import DataTab from './DataTab';
+import RemoveDataScreen from './RemoveDataScreen';
 import {styles} from './settingsStyles';
 import SetupAssistant from './SetupAssistant';
 import NoteSetupsTab from './noteSetups/NoteSetupsTab';
@@ -69,9 +70,11 @@ interface Props {
   startSetup?: boolean;
   /** The assistant closed: `finished` after Finish (App then opens the Projects tab), false after Skip. */
   onSetupClosed?: (finished: boolean) => void;
+  /** After Remove Kept's data took the settings: App starts again as on a first install. */
+  onRestartFresh?: () => void;
 }
 
-export default function Settings({initialTab, onSwitchProfile, startSetup = false, onSetupClosed}: Props): React.JSX.Element {
+export default function Settings({initialTab, onSwitchProfile, startSetup = false, onSetupClosed, onRestartFresh}: Props): React.JSX.Element {
   const {isDarkMode, textColor, placeholderColor} = useThemeColors();
   // Settings keeps its own, slightly lighter border shade.
   const borderColor = isDarkMode ? '#444444' : '#cccccc';
@@ -90,6 +93,8 @@ export default function Settings({initialTab, onSwitchProfile, startSetup = fals
   const [fileNameFixes, setFileNameFixes] = useState<FileFix[]>([]);
   const confirmFileNameFix = useStatusConfirm('Settings.fileNameFix');
   const [setupOpen, setSetupOpen] = useState(startSetup);
+  // Data → Remove Kept's data, drawn in place of the settings while open.
+  const [removeOpen, setRemoveOpen] = useState(false);
   // "Reload all files" (Advanced).
   const [reloading, setReloading] = useState(false);
   const [reloadResult, setReloadResult] = useState<{kind: 'success' | 'error'; text: string} | null>(null);
@@ -220,6 +225,20 @@ export default function Settings({initialTab, onSwitchProfile, startSetup = fals
     );
   }
 
+  if (removeOpen) {
+    return (
+      <View style={[styles.container, styles.background]}>
+        <RemoveDataScreen
+          onClose={() => {
+            setRemoveOpen(false);
+            requestEinkRefresh();
+          }}
+          onRestartFresh={() => onRestartFresh?.()}
+        />
+      </View>
+    );
+  }
+
   if (setupOpen) {
     return (
       <View style={[styles.container, styles.background]}>
@@ -254,7 +273,7 @@ export default function Settings({initialTab, onSwitchProfile, startSetup = fals
 
         <View style={styles.tabBody}>
           {activeTab === 'data' && (
-            <DataTab draft={draft} activeProfileId={values.activeProfileId} onSwitchProfile={onSwitchProfile} onRunSetup={() => setSetupOpen(true)} {...tabProps} />
+            <DataTab draft={draft} activeProfileId={values.activeProfileId} onSwitchProfile={onSwitchProfile} onRunSetup={() => setSetupOpen(true)} onRemoveData={() => setRemoveOpen(true)} {...tabProps} />
           )}
           {activeTab === 'contexts' && <ContextsTab draft={contextsDraft} values={values} {...tabProps} />}
           {activeTab === 'templates' && (

@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-145 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+148 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -1058,6 +1058,32 @@ Test: `__tests__/scenarios/quickAdd.test.tsx` · design: `docs/dev/history/techn
 Test: `__tests__/scenarios/smoke/daily.test.tsx`
 
 ## Remove data
+
+### Removing with the defaults, then Start fresh, opens the setup assistant
+
+- **Given** Kept has settings, a log, a profile, a project and open marks
+- **When** I tap Remove… and confirm with Remove
+- **Then** each step reports removed and the settings are gone
+- **And** the profile was saved first, and the project file is still there
+- **When** I tap Start fresh
+- **Then** the setup assistant opens as on a first install
+
+Test: `__tests__/scenarios/removeData.test.tsx`
+
+### Cancel on the question removes nothing
+
+- **When** I tap Remove… and then ✕ on the question
+- **Then** nothing is removed and the list is still there
+
+Test: `__tests__/scenarios/removeData.test.tsx`
+
+### With the demo profile active, the demo space goes only with the settings
+
+- **Given** the demo profile is active and the demo space exists
+- **When** I uncheck the settings
+- **Then** the demo space is unchecked and says why
+
+Test: `__tests__/scenarios/removeData.test.tsx`
 
 ### Removing with the defaults leaves no Kept data but keeps profiles, data files and notes
 
