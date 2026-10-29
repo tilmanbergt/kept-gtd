@@ -10,6 +10,11 @@ or your project/area files are stored.
 
 ## [Unreleased]
 
+### New
+- **Check device files** in Settings → Advanced (shown while Debug logging is on): lists the device's
+  top folders, the SD card and the file Kept was opened from, with buttons to open sample files - for
+  bug reports about files outside `Note`.
+
 ## [0.22.0] — 2026-10-29
 
 ### New

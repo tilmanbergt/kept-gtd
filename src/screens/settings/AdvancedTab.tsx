@@ -1,7 +1,8 @@
 /**
  * Settings → Advanced (docs/dev/history/technical-design-about-debug-experimental.md §3.6):
  * Profiles and the tools (Reload all files, Integrity Check, Touch test, Keep
- * tabs in memory, Performance tracing); the Experimental switches live on
+ * tabs in memory, Performance tracing; Check device files while Debug logging
+ * is on, docs/dev/history/technical-design-easy-start.md §7); the Experimental switches live on
  * Settings → Features. Presentational: Settings.tsx owns the values and the
  * handlers, every switch saves immediately.
  */
@@ -23,6 +24,9 @@ interface Props {
   onToggleKeepTabsAlive: () => void;
   onRunIntegrityCheck: () => void;
   onOpenTouchTest: () => void;
+  /** Debug logging is on: the diagnostic "Check device files" shows. */
+  debugLogging: boolean;
+  onOpenDeviceCheck: () => void;
   textColor: string;
   borderColor: string;
 }
@@ -69,6 +73,16 @@ export default function AdvancedTab(p: Props): React.JSX.Element {
             Finds out why a tap doesn't register: tap sample rows with finger or pen and see which taps arrive and what they hit. Changes nothing.
           </Text>
         </View>
+        {p.debugLogging && (
+          <View style={styles.field}>
+            <Pressable onPress={p.onOpenDeviceCheck} hitSlop={8} style={styles.button}>
+              <Text style={[styles.buttonText, {color: textColor}]}>Check device files</Text>
+            </Pressable>
+            <Text style={[styles.hint, {color: textColor}]}>
+              Lists the device's top folders, the SD card and the file Kept was opened from, with buttons to open sample files. Changes nothing.
+            </Text>
+          </View>
+        )}
         <SettingSwitch
           label="Keep tabs in memory"
           on={p.keepTabsAlive}

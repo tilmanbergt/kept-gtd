@@ -231,3 +231,13 @@ built); demo space → `foundation`; setup assistant → `settings`; Device tab,
 - Help text drift: the link and name checks catch broken links and stray tags, not prose; review S3 on
   device page by page.
 - Settings tab hidden during the assistant: Back/Skip must always be reachable (e-ink, no scroll).
+
+## As built
+
+- **S0** The device check is `storage/deviceCheck.ts` (listings, launch path, page, the first PDF, EPUB
+  and `.note` outside `Note/` in `Document/` two levels deep, the internal root and the SD card) and
+  `screens/settings/DeviceCheckScreen.tsx`, drawn in place of the settings like the Touch test.
+  Besides "Open (last page)" (K5) each sample has "Open at page 1", and the launch file has "Open this
+  file (last page)" and "Open this file at page N" with the page the SDK reports, so K4's numbering can
+  be compared by eye. The log line holds counts and kinds only. A line in `settings.md` (Advanced) and
+  in the CHANGELOG describe it; files in the `settings` area.

@@ -35,6 +35,7 @@ import {perfEnable} from '../../utils/perf';
 import {requestEinkRefresh} from '../../utils/screenRefresh';
 import AboutTab from './AboutTab';
 import AdvancedTab from './AdvancedTab';
+import DeviceCheckScreen from './DeviceCheckScreen';
 import FeaturesTab from './FeaturesTab';
 import ContextsTab from './contexts/ContextsTab';
 import {useContextsDraft} from './contexts/useContextsDraft';
@@ -94,6 +95,8 @@ export default function Settings({initialTab, onSwitchProfile}: Props): React.JS
   const confirmFileNameFix = useStatusConfirm('Settings.fileNameFix');
   // Advanced → Touch test, drawn in place of the settings while open.
   const [touchTestOpen, setTouchTestOpen] = useState(false);
+  // Advanced → Check device files (debug logging on), drawn in place of the settings while open.
+  const [deviceCheckOpen, setDeviceCheckOpen] = useState(false);
   // "Reload all files" (Advanced).
   const [reloading, setReloading] = useState(false);
   const [reloadResult, setReloadResult] = useState<{kind: 'success' | 'error'; text: string} | null>(null);
@@ -235,6 +238,17 @@ export default function Settings({initialTab, onSwitchProfile}: Props): React.JS
     );
   }
 
+  if (deviceCheckOpen) {
+    return (
+      <DeviceCheckScreen
+        onClose={() => {
+          setDeviceCheckOpen(false);
+          requestEinkRefresh();
+        }}
+      />
+    );
+  }
+
   const tabProps = {textColor, borderColor, placeholderColor};
   return (
     <View style={[styles.container, styles.background]}>
@@ -276,6 +290,8 @@ export default function Settings({initialTab, onSwitchProfile}: Props): React.JS
               onToggleKeepTabsAlive={() => toggleNow('keepTabsAlive')}
               onRunIntegrityCheck={handleRunIntegrityCheck}
               onOpenTouchTest={() => setTouchTestOpen(true)}
+              debugLogging={values.debugLogging}
+              onOpenDeviceCheck={() => setDeviceCheckOpen(true)}
               textColor={textColor}
               borderColor={borderColor}
             />
