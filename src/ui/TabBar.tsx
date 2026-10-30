@@ -179,9 +179,9 @@ const styles = StyleSheet.create({
     // Small top padding: the device has no system status bar, so the space
     // goes to the central status slot right below
     // (docs/dev/history/technical-design-status-slot.md D7).
-    paddingTop: 8,
+    paddingTop: 4,
     paddingHorizontal: 16,
-    paddingBottom: 4,
+    paddingBottom: 2,
     borderBottomWidth: 1,
   },
   tabs: {
@@ -190,7 +190,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   tabButton: {
-    paddingVertical: 4,
+    paddingVertical: 3,
     marginRight: 18,
     borderBottomWidth: 2,
     borderBottomColor: 'transparent',
@@ -242,7 +242,7 @@ const styles = StyleSheet.create({
   },
   closeButton: {
     paddingHorizontal: 10,
-    paddingVertical: 6,
+    paddingVertical: 3,
     borderRadius: 16,
     marginLeft: 4,
   },

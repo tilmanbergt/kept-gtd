@@ -7,6 +7,7 @@
  */
 import React, {useSyncExternalStore} from 'react';
 import {ActivityIndicator, Pressable, StyleSheet, Text, View} from 'react-native';
+import ScrollColumn from './ScrollColumn';
 import {SIMULATED_SCREENS, simulationsThatFit} from '../../domain/screenLayout';
 import PillButton from '../../ui/PillButton';
 import {useRealScreenSize} from '../../ui/ScreenSize';
@@ -35,11 +36,11 @@ export default function AdvancedTab(p: Props): React.JSX.Element {
   const {textColor, borderColor} = p;
   return (
     <View style={styles.row}>
-      <View style={[styles.column, styles.columnLeft]}>
+      <ScrollColumn left>
         <ReportingSection debugLogging={p.debugLogging} onToggleDebugLogging={p.onToggleDebugLogging} textColor={textColor} borderColor={borderColor} />
-      </View>
+      </ScrollColumn>
       <View style={[styles.divider, {backgroundColor: borderColor}]} />
-      <View style={styles.column}>
+      <ScrollColumn>
         <Text style={[styles.heading, {color: textColor}]}>Tools</Text>
         <View style={styles.field}>
           <Pressable onPress={p.onReloadAllFiles} disabled={p.reloading} hitSlop={8} style={styles.button}>
@@ -85,7 +86,7 @@ export default function AdvancedTab(p: Props): React.JSX.Element {
           hint="Records how long each tab switch, reopen and cold start takes and writes one small file per event to EXPORT/kept-gtd/debug/perf."
           textColor={textColor}
         />
-      </View>
+      </ScrollColumn>
     </View>
   );
 }
@@ -115,8 +116,6 @@ const styles = StyleSheet.create({
   label: {fontSize: FONT.small, fontWeight: '600', marginBottom: 4},
   pills: {flexDirection: 'row', flexWrap: 'wrap', gap: SPACING.sm},
   row: {flexDirection: 'row', flex: 1},
-  column: {flex: 1},
-  columnLeft: {marginRight: SPACING.base},
   divider: {width: 1, marginRight: SPACING.base},
   heading: {fontSize: FONT.medium, fontWeight: '700', marginBottom: SPACING.sm},
   field: {marginBottom: 18},

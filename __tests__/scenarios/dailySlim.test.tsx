@@ -36,27 +36,21 @@ scenario('Daily: a todo\'s card, then its edit, saved into its own file', {featu
   });
 });
 
-scenario('Daily\'s tag filter: tapping a tag shows only its todos, the pill clears it', {feature: 'Daily', design: DESIGN}, () => {
+scenario('Daily has no tag filter: its todos all show, with no "#" row above the columns', {feature: 'Daily', design: 'technical-design-launch-ready.md'}, () => {
   given('the smoke space with "Buy bulbs #garden" in Garden', () => {
     smokeClock();
     putSmokeSpace();
     putFile(areaFile('Garden'), dataFile('area', {Scope: [], Tasks: ['- [ ] Buy bulbs #next #garden', '- [ ] Rake leaves #garden', '- [ ] Water the lawn [due:: 2026-10-14]'], Meetings: []}, ['dailyFocus: true', 'abbrev: GA']));
   });
-  when('I open Daily and tap #garden in a row', async () => {
+  when('I open Daily', async () => {
     await openApp();
     await tapTab('Daily');
-    await tap('#garden');
   });
-  then('only #garden todos show and the pill reads #garden', () => {
-    expectShows('#garden');
-    expectShows(/^Rake leaves/);
-    expectNotShows(/^Water the lawn/);
-    expectNotShows(/^Call the plumber/);
-  });
-  when('I tap the pill', () => tap('#garden', 0));
-  then('everything shows again', () => {
+  then('the todos the Daily rule lets through show, and there is no filter pill', () => {
+    expectShows(/^Buy bulbs/);
     expectShows(/^Water the lawn/);
-    expectShows(/^Call the plumber/);
+    expectNotShows(/^Rake leaves/);
+    expectNotShows('#');
   });
 });
 

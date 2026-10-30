@@ -236,7 +236,12 @@ counts:
   - smoke renders for every Review step, also at 750×1000;
   - `PAGE_SIZE` leftovers;
   - the stale comments listed in the backlog.
+- **L7a** Cleanup that keeps every way back (§12).
 - **L8** Docs and release prep:
+  - `PRIVACY.md`, `docs/inkhub-review.md`, `inkhub-listing.md`: deletes as Remove Kept's data makes
+    them (named before, one confirm, data files and profiles unticked); Settings paths after the tab
+    rework (demo space and profiles on Data, Debug logging on Advanced); Touch test, Check device files
+    and the Inbox move gone. The new identity follows in 0.25.0 (§12.3);
   - README and `inkhub-listing.md` device lines (§8);
   - `design-device-rendering.md` §1 "Other screens" (Manta, Nomad, landscape; the estimator rule);
   - `design-overview.md` §2/§5;
@@ -344,6 +349,49 @@ links land on the right spot.
   wording, which says "simulated".
 - **Scope creep in L6.** The cut line keeps the release about robustness.
 
+## 12. Cleanup in 0.24.0, clean break in 0.25.0
+
+Decided 2026-10-30 (Tilman). 0.24.0 is the last release under the gtdpara plugin identity
+(`pluginID`, `pluginKey`). It goes to GitHub and Reddit; testers clean up with Remove Kept's data and
+uninstall. **0.25.0 "Clean break"** follows about a week later as a fresh install with a new plugin
+identity and goes to InkHub (requirements in the internal backlog). The Android package
+`eu.embodyagile.gtdpara`, the native module names and the `gtdpara:` markers in notes stay, in 0.25.0
+too: users never see them, and the markers live in the user's notes.
+
+**Rule for 0.24.0:** remove only what no user needs to carry their data forward or to clean up the old
+plugin from inside it.
+
+### 12.1 Removed in 0.24.0 (step L7a)
+
+| What | Where | Note |
+|---|---|---|
+| Scan for stale builds in the host process | `PluginRuntimeGuard.kt` (the process-map scan and the build registry), `GtdParaRuntimeModule.getRuntimeDiagnostics` (`staleBuilds`, `mappedFiles`, `registry`, `scanError`), `supernote/pluginRuntime.ts` (fields, the start-up log line), `debugBundle.ts` ("stale builds") | The required firmware unloads old builds. `PluginRuntimeGuard` keeps `buildId`, `versionCode`, `pluginId`, `npkPath` (the private folder) and the module lifecycle log; About keeps build and device. Native rebuild. |
+| Hosts without the runtime permission API | `supernote/pluginPermissions.ts` | A missing `hasPermission`/`requestPermission` is no longer "granted": the action fails with "This Supernote firmware is too old for Kept GTD. Update the firmware (see the README)." |
+| Native methods treated as optional | `supernote/fileNative.ts` (the `?` and "missing on native builds before 0.x" notes), the matching fallbacks in `supernote/fileSystem.ts` | JS and native always ship together in one package. A missing method is a build error, reported as such. |
+| Home notebook heading diagnostic | `storage/noteTitlesDiagnostic.ts`, its call in `App.tsx` | Spike of 0.17; it ran on every start while Debug logging was on. |
+| Old Inbox location (Inbox in the base folder, up to 0.1.0) | `checkLegacyInboxLeftovers`/`legacyInboxLeftovers` and the check id `legacyInboxLeftovers` (`domain/integrityCheck.ts`, `storage/integrityCheck.ts`); the `inboxFolder === base` guards in `isInboxFolder`/`isUnderInboxFolder` (`domain/settings.ts`) | The automatic move itself is already gone. `validateInboxFolderName` keeps the Inbox under Areas. |
+| Retired focus (0.22) | the `@deprecated` fields and `focusModeActive` in `domain/settings.ts` and `DEFAULT_SETTINGS`; `focusRetiredNoticeSeen`, `shouldShowFocusRetired` (`domain/features.ts`), the "Focus is retired" line in `ui/useWhatsNewNotice.ts`, the key in `domain/profiles.ts` | Stored settings and profile files may still hold these keys; loading ignores them (a test pins this). Someone updating from before 0.22 simply doesn't get the one line. |
+
+Tests for removed code go with it. No CHANGELOG line: nothing visible changes, apart from the
+firmware message, which only a host too old for Kept would show.
+
+### 12.2 Stays in 0.24.0, removed in 0.25.0
+
+| What | Why it stays now |
+|---|---|
+| Remove Kept's data, including the "Old gtdpara folders" row | Testers clean up the old plugin from inside it. |
+| Copying profiles from `EXPORT/gtdpara` (`copyLegacyProfiles`, `useProfileCopyNotice`, `profilesCopiedText`, `LEGACY_EXPORT_ROOT`) | Testers coming from 0.19 or older. |
+| Tag Rules → Note setups migration (`renameLegacyTagRuleKeys`, `domain/noteSetupMigration.ts`, `noteSetupMigrationState.ts`, `useNoteSetupsNotice.ts`, the `migration…Text` helpers, `tagRules`/`noteSetupsMigrated`/`noteSetupsNotice`, the debug-bundle line) | A profile saved before 0.15 must be loaded and saved once in 0.24.0. |
+| The existing-install branch of `migrateExperimentalFlags` | Updates from before the switches. The fresh-install branch stays for good: it starts the setup assistant. |
+| Old lasso marks (handwriting saved by an older version, typed from the picture) | Unprocessed marks live in the old plugin's private folder; they are processed in 0.24.0. |
+
+### 12.3 What 0.24.0 must tell testers
+
+The release notes and the Reddit post say that 0.25.0 is a fresh install, and how to keep everything:
+process open lasso marks, load and save each profile once, note the Gmail app password and the calendar
+link (profiles never hold them), run Remove Kept's data with data files and profiles unticked, then
+uninstall. Notes, `.txt` data files and saved profiles stay on the device.
+
 ## As built
 
 - **L0** (`storage/screenPageCheck.ts`, `screens/settings/ScreenCheckScreen.tsx`): the check also
@@ -422,3 +470,29 @@ links land on the right spot.
     body. Not found in code yet; carried to L7 with a device photo per tab.
   - Test: `__tests__/scenarios/narrowScreen.test.tsx` (Quick Add at Nomad size, What's new),
     `weekGridRows` unit tests.
+- **L6b** (Tilman's Nomad-landscape screenshots, decisions 2026-10-30): height on every device, and
+  the screens that still overflowed.
+  - Height, all devices: tab bar ~46 → ~36 dp (paddings, close button), status slot 36 → 32 dp (30 on a
+    short screen), `common.container` and Settings top padding 16 → 8 (Settings bottom 40 → 12).
+    Proposed 4 dp screen padding on short screens was left out: a few dp did not justify a second style
+    in eight screens. "Short" is `isShortScreen` / `useShortScreen()`: below 1200 dp height.
+  - Daily's tag filter is removed (Tilman: the meeting context panel is the better way): the "#" row,
+    `DailyModeRow.tsx`, the `contextTag` parameter of `buildDailyAggregate` and its tests. Tags in Daily
+    rows are plain text; nested tags still open their thread overview.
+  - Week and Month: the period and ‹ › moved into the Schedule/Month | Google tab row
+    (`ui/PeriodNav.tsx`) on all devices: "Week 44 · 26", "Oct 26" (`shortWeekTitle`,
+    `shortMonthTitle`); "(current)" and Month's highlight count are gone; **Now** appears away from the
+    current period.
+  - Month in halves (`monthNeedsHalves`, `monthHalfOf`): when a day row would be under 28 dp, days
+    1-15 and 16-end with ‹ › above; the half with today first, else the first half; reset on a month change.
+  - Help: the topic list is a `PagedSection` (header "Help" with ‹ Back / ✕ Close as accessory, in the
+    small font so the arrows fit a 30 % column); it jumps to the page holding the selected topic.
+  - Settings → Data, Features, Advanced: `settings/ScrollColumn.tsx` for both columns. About keeps its
+    paged What's new; Contexts and Note setups did not overflow.
+  - Marks screen: Link to source page / Open page / Discard… / Close (or Mark for later, Cancel/Done)
+    under the marks list on all devices (in the panel when there is no list); the right panel is a
+    `ScrollView` as fallback; short screens: picture 120 dp, tags 8 + More… (`shortTags`).
+  - The tiny mark sits exactly at the slot/body boundary at x 0 on every tab (screenshots). Not found
+    in code; to test: whether it goes with Keep tabs in memory off.
+  - Tests: `narrowScreen` (Month nav), unit tests for the helpers, the Daily scenario now checks there
+    is no filter.

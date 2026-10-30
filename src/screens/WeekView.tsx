@@ -10,8 +10,10 @@
  * Week navigation (§8): `weekOffset` is plain, unpersisted `useState(0)` -
  * every reopen of this tab starts back on the current week, the same
  * "sessions held lightly" posture screens/DailyView.tsx's focus-mode-only
- * state uses. `‹`/`›` step it by ±1 (closing an open day panel first). The
- * header shows the ISO week number + year.
+ * state uses. `‹`/`›` step it by ±1 (closing an open day panel first), "Now" goes back. The
+ * week ("Week 44 · 26") and its arrows sit at the right end of the Schedule | Google tab row
+ * (ui/PeriodNav.tsx), not in a header line of their own
+ * (docs/dev/history/technical-design-launch-ready.md L6b).
  *
  * Load/meeting/focus/goal actions live in screens/usePlanningScreen.ts,
  * shared with the Month view (docs/dev/history/technical-design-monthly-view.md
@@ -22,13 +24,13 @@
  * the current one).
  */
 import React, {useState} from 'react';
-import {ActivityIndicator, Pressable, StyleSheet, Text, View} from 'react-native';
-import {shiftPeriod} from '../domain/period';
+import {ActivityIndicator, View} from 'react-native';
+import {shiftPeriod, shortWeekTitle} from '../domain/period';
 import {isoWeekOf} from '../domain/weekDate';
 import {FolderEntry} from '../supernote/fileSystem';
 import {common} from '../ui/commonStyles';
 import LoadErrorNotice from '../ui/LoadErrorNotice';
-import {FONT} from '../ui/theme';
+import PeriodNav from '../ui/PeriodNav';
 import WeekPlanner from './WeekPlanner';
 import {usePlanningScreen} from './usePlanningScreen';
 import {usePerfRender} from '../utils/perf';
@@ -67,20 +69,6 @@ export default function WeekView({
 
       {!loading && !error && (
         <View style={common.content}>
-          <View style={styles.headerRow}>
-            <Pressable onPress={() => changeWeek(-1)} hitSlop={8} style={styles.navButton}>
-              <Text style={[styles.navButtonText, {color: textColor}]}>‹</Text>
-            </Pressable>
-            <View style={styles.headerCenter}>
-              <Text style={[styles.headerTitle, {color: textColor}]}>
-                Week {week} · {year}
-                {weekOffset === 0 ? ' (current)' : ''}
-              </Text>
-            </View>
-            <Pressable onPress={() => changeWeek(1)} hitSlop={8} style={styles.navButton}>
-              <Text style={[styles.navButtonText, {color: textColor}]}>›</Text>
-            </Pressable>
-          </View>
           <WeekPlanner
             planning={planning}
             weekOffset={weekOffset}
@@ -90,33 +78,18 @@ export default function WeekView({
             textColor={textColor}
             borderColor={borderColor}
             placeholderColor={placeholderColor}
+            leftTabsTrailing={
+              <PeriodNav
+                label={shortWeekTitle(week, year)}
+                onPrev={() => changeWeek(-1)}
+                onNext={() => changeWeek(1)}
+                onNow={weekOffset !== 0 ? () => planning.closeDayPanel(() => setWeekOffset(0)) : undefined}
+                textColor={textColor}
+              />
+            }
           />
         </View>
       )}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  headerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 8,
-  },
-  headerCenter: {
-    alignItems: 'center',
-  },
-  headerTitle: {
-    fontSize: FONT.medium,
-    fontWeight: '700',
-  },
-  navButton: {
-    paddingHorizontal: 14,
-    paddingVertical: 6,
-  },
-  navButtonText: {
-    fontSize: FONT.large,
-    fontWeight: '700',
-  },
-});

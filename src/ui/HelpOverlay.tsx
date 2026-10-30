@@ -7,6 +7,10 @@
  * tappable and ‹ Back walks back through the pages read
  * (docs/dev/history/technical-design-easy-start.md §2.4; the history lives in
  * screens/useAppOverlays.tsx).
+ *
+ * The topic list pages ("+N ›") where it is taller than the screen (a turned device, a
+ * Nomad; docs/dev/history/technical-design-launch-ready.md L6b) and always shows the page
+ * that holds the selected topic.
  */
 import React, {useMemo} from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
@@ -14,6 +18,7 @@ import {HELP_OVERVIEW_PAGE, stripLeadingTitle} from '../domain/helpTopics';
 import {USER_DOCS} from '../generated/userDocs';
 import {HelpLinkTarget} from '../domain/markdownBlocks';
 import MarkdownPager from './MarkdownBlocks';
+import PagedSection from './PagedSection';
 import {COLORS, FONT, SPACING, useThemeColors} from './theme';
 
 interface Props {
@@ -29,12 +34,28 @@ interface Props {
 }
 
 const ROW_HEIGHT = 40;
+/** A group title's row: SPACING.md above the small bold title. */
+const GROUP_ROW_HEIGHT = 34;
+
+type NavRow = {kind: 'group'; title: string} | {kind: 'page'; id: string; indent: boolean};
+
+/** Overview, then each group's title and pages, as one list to page through. */
+function navRows(): NavRow[] {
+  const rows: NavRow[] = USER_DOCS.pages[HELP_OVERVIEW_PAGE] ? [{kind: 'page', id: HELP_OVERVIEW_PAGE, indent: false}] : [];
+  for (const group of USER_DOCS.groups) {
+    rows.push({kind: 'group', title: group.title});
+    for (const id of group.pageIds) rows.push({kind: 'page', id, indent: true});
+  }
+  return rows;
+}
 
 export default function HelpOverlay({pageId, jumpTo, onSelectPage, onLink, onBack, onFirstRowChange, onClose}: Props): React.JSX.Element {
   const {textColor, borderColor} = useThemeColors();
   const page = USER_DOCS.pages[pageId] ?? USER_DOCS.pages[HELP_OVERVIEW_PAGE];
   const shownId = USER_DOCS.pages[pageId] ? pageId : HELP_OVERVIEW_PAGE;
   const markdown = useMemo(() => (page ? stripLeadingTitle(page.markdown) : ''), [page]);
+  const rows = useMemo(navRows, []);
+  const selectedIndex = rows.findIndex(r => r.kind === 'page' && r.id === shownId);
 
   const pageRow = (id: string, indent: boolean) => {
     const selected = id === shownId;
@@ -53,24 +74,37 @@ export default function HelpOverlay({pageId, jumpTo, onSelectPage, onLink, onBac
   return (
     <View style={styles.overlay}>
       <View style={[styles.left, {borderColor}]}>
-        <View style={[styles.leftHeader, {borderColor}]}>
-          <Text style={[styles.helpTitle, {color: textColor}]}>Help</Text>
-          {onBack && (
-            <Pressable onPress={onBack} hitSlop={10} style={styles.closeButton}>
-              <Text style={[styles.closeText, {color: textColor}]}>‹ Back</Text>
-            </Pressable>
-          )}
-          <Pressable onPress={onClose} hitSlop={10} style={styles.closeButton}>
-            <Text style={[styles.closeText, {color: textColor}]}>✕ Close</Text>
-          </Pressable>
-        </View>
-        {USER_DOCS.pages[HELP_OVERVIEW_PAGE] ? pageRow(HELP_OVERVIEW_PAGE, false) : null}
-        {USER_DOCS.groups.map(group => (
-          <View key={group.title}>
-            <Text style={[styles.groupTitle, {color: textColor}]}>{group.title.toUpperCase()}</Text>
-            {group.pageIds.map(id => pageRow(id, true))}
-          </View>
-        ))}
+        <PagedSection<NavRow>
+          header="Help"
+          headerAccessory={
+            <View style={styles.headerButtons}>
+              {onBack && (
+                <Pressable onPress={onBack} hitSlop={10} style={styles.closeButton}>
+                  <Text style={[styles.closeText, {color: textColor}]}>‹ Back</Text>
+                </Pressable>
+              )}
+              <Pressable onPress={onClose} hitSlop={10} style={styles.closeButton}>
+                <Text style={[styles.closeText, {color: textColor}]}>✕ Close</Text>
+              </Pressable>
+            </View>
+          }
+          rows={rows}
+          rowHeight={row => (row.kind === 'group' ? GROUP_ROW_HEIGHT : ROW_HEIGHT)}
+          isCountableRow={row => row.kind === 'page'}
+          jumpTo={selectedIndex >= 0 ? {key: shownId, index: selectedIndex} : null}
+          heightKey="help:topics"
+          renderRow={row =>
+            row.kind === 'group' ? (
+              <View key={`g:${row.title}`} style={styles.groupRow}>
+                <Text style={[styles.groupTitle, {color: textColor}]}>{row.title.toUpperCase()}</Text>
+              </View>
+            ) : (
+              pageRow(row.id, row.indent)
+            )
+          }
+          textColor={textColor}
+          borderColor={borderColor}
+        />
       </View>
       <View style={styles.right}>
         {page ? (
@@ -104,22 +138,14 @@ const styles = StyleSheet.create({
     borderRightWidth: 1,
     paddingHorizontal: SPACING.base,
   },
-  leftHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: SPACING.sm,
-    borderBottomWidth: 1,
-    marginBottom: SPACING.xs,
-  },
-  helpTitle: {fontSize: FONT.medium, fontWeight: '700', flex: 1},
-  closeButton: {paddingHorizontal: SPACING.sm, paddingVertical: 4},
-  closeText: {fontSize: FONT.medium, fontWeight: '600'},
+  headerButtons: {flexDirection: 'row', alignItems: 'center'},
+  groupRow: {height: GROUP_ROW_HEIGHT, justifyContent: 'flex-end'},
+  closeButton: {paddingHorizontal: SPACING.sm},
+  closeText: {fontSize: FONT.small, fontWeight: '600'},
   groupTitle: {
     fontSize: FONT.small,
     fontWeight: '700',
     opacity: 0.6,
-    marginTop: SPACING.md,
     marginBottom: 2,
   },
   row: {height: ROW_HEIGHT, justifyContent: 'center'},

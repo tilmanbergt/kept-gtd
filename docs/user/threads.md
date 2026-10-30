@@ -32,7 +32,7 @@ Tap a nested tag in a todo or meeting, on any screen: [Daily](daily.md), [Week](
 
 - **‹ Daily** (the name of the tab underneath) closes it, and so does a tap on any tab. The screen behind is exactly as you left it.
 - The help and the overview replace each other.
-- On Daily, a plain tag such as `#jordan` still [filters the list](daily.md#filtering-by-a-tag); a nested tag opens the overview instead.
+- On Daily, a nested tag opens the overview; a plain tag such as `#jordan` is just text there.
 
 ## The place it covers
 

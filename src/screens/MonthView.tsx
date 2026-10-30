@@ -2,8 +2,9 @@
  * Month view (docs/dev/history/technical-design-monthly-view.md) - the next planning
  * horizon after the Week view, built from the same parts:
  *
- * - Header: ‹ "October 2026" ›, plus how many highlights the month has.
- *   `monthOffset` is plain, unpersisted state - every reopen starts on the
+ * - The month ("Oct 26") and its ‹ › at the right end of the Month | Google tab row
+ *   (ui/PeriodNav.tsx, docs/dev/history/technical-design-launch-ready.md L6b); "Now" goes
+ *   back to the current month. `monthOffset` is plain, unpersisted state - every reopen starts on the
  *   current month (same posture as WeekView's weekOffset).
  * - Left column: Month | Google mini-tabs. "Month" is ui/MonthDaysColumn.tsx -
  *   one row per day showing that day's HAND-PICKED highlights only (meetings
@@ -28,7 +29,7 @@
  * selected, a new meeting defaults to that day with M already on.
  */
 import React, {useMemo, useState} from 'react';
-import {ActivityIndicator, Pressable, StyleSheet, Text, View} from 'react-native';
+import {ActivityIndicator, StyleSheet, View} from 'react-native';
 import {Destination} from '../domain/destination';
 import {formatDayHeader} from '../domain/dateFormat';
 import {todayIso} from '../domain/meetingTime';
@@ -36,7 +37,8 @@ import {scheduleCountText, SCHEDULE_LABEL} from '../domain/meetingDisplay';
 import ContextBackRow from '../ui/meetingContext/ContextBackRow';
 import MeetingContextPanel from '../ui/meetingContext/MeetingContextPanel';
 import {useMeetingContextSlot} from '../ui/meetingContext/useMeetingContextSlot';
-import {monthTitle, periodOf, shiftPeriod} from '../domain/period';
+import {monthTitle, periodOf, shiftPeriod, shortMonthTitle} from '../domain/period';
+import PeriodNav from '../ui/PeriodNav';
 import GivenTimePanel from '../ui/period/GivenTimePanel';
 import {requestReviewStep} from './review/reviewNav';
 import {buildMonthlyAggregate, meetingsOnDay} from '../storage/monthlyAggregate';
@@ -171,25 +173,24 @@ export default function MonthView({
 
       {!loading && !error && (
         <View style={common.content}>
-          <View style={styles.headerRow}>
-            <Pressable onPress={() => changeMonth(-1)} hitSlop={8} style={styles.navButton}>
-              <Text style={[styles.navButtonText, {color: textColor}]}>‹</Text>
-            </Pressable>
-            <View style={styles.headerCenter}>
-              <Text style={[styles.headerTitle, {color: textColor}]}>
-                {monthTitle(shiftedNow)}
-                {isCurrentMonth ? ' (current)' : ''}
-                {`  ·  ${aggregate.highlightCount} highlight${aggregate.highlightCount === 1 ? '' : 's'}`}
-              </Text>
-            </View>
-            <Pressable onPress={() => changeMonth(1)} hitSlop={8} style={styles.navButton}>
-              <Text style={[styles.navButtonText, {color: textColor}]}>›</Text>
-            </Pressable>
-          </View>
-
           <View style={styles.middleRow}>
             <View style={[common.column, common.columnLeft]}>
-              <MiniTabs tabs={left.tabs} activeKey={leftTab} onChange={setLeftTab} textColor={textColor} borderColor={borderColor} />
+              <MiniTabs
+                tabs={left.tabs}
+                activeKey={leftTab}
+                onChange={setLeftTab}
+                textColor={textColor}
+                borderColor={borderColor}
+                trailing={
+                  <PeriodNav
+                    label={shortMonthTitle(shiftedNow)}
+                    onPrev={() => changeMonth(-1)}
+                    onNext={() => changeMonth(1)}
+                    onNow={isCurrentMonth ? undefined : () => planning.closeDayPanel(() => setMonthOffset(0))}
+                    textColor={textColor}
+                  />
+                }
+              />
               <View style={styles.columnScroll}>
                 {leftTab === 'month' ? (
                   <MonthDaysColumn
@@ -333,27 +334,6 @@ export default function MonthView({
 }
 
 const styles = StyleSheet.create({
-  headerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 8,
-  },
-  headerCenter: {
-    alignItems: 'center',
-  },
-  headerTitle: {
-    fontSize: FONT.medium,
-    fontWeight: '700',
-  },
-  navButton: {
-    paddingHorizontal: 14,
-    paddingVertical: 6,
-  },
-  navButtonText: {
-    fontSize: FONT.large,
-    fontWeight: '700',
-  },
   middleRow: {
     flexDirection: 'row',
     flex: 1,

@@ -1,4 +1,4 @@
-import {A5X_ESTIMATOR_WIDTH, A5X_PORTRAIT, estimatorWidthFor, layoutWidthClass, realColumnWidth, simulationsThatFit, weekGridRows} from '../../src/domain/screenLayout';
+import {A5X_ESTIMATOR_WIDTH, A5X_PORTRAIT, estimatorWidthFor, layoutWidthClass, realColumnWidth, simulationsThatFit, weekGridRows, isShortScreen, monthNeedsHalves, monthHalfOf} from '../../src/domain/screenLayout';
 
 describe('estimatorWidthFor', () => {
   it('is exactly the A5 X figure on the A5 X, so nothing pages differently there', () => {
@@ -53,5 +53,26 @@ describe('weekGridRows', () => {
   });
   it('never goes below one row a day', () => {
     expect(rows(100)).toEqual({weekday: 1, weekend: 1});
+  });
+});
+
+describe('isShortScreen', () => {
+  it('a Nomad and any turned device are short, the A5 X and Manta upright are not', () => {
+    expect(isShortScreen({width: 749, height: 998})).toBe(true);
+    expect(isShortScreen({width: 1325, height: 994})).toBe(true);
+    expect(isShortScreen(A5X_PORTRAIT)).toBe(false);
+    expect(isShortScreen({width: 1024, height: 1365})).toBe(false);
+  });
+});
+
+describe('Month halves', () => {
+  it('only when 31 rows would be lower than 28 dp', () => {
+    expect(monthNeedsHalves(31 * 28, 31)).toBe(false);
+    expect(monthNeedsHalves(31 * 28 - 1, 31)).toBe(true);
+    expect(monthNeedsHalves(null, 31)).toBe(false);
+  });
+  it('days 1-15 are the first half', () => {
+    expect(monthHalfOf('2026-10-15')).toBe(0);
+    expect(monthHalfOf('2026-10-16')).toBe(1);
   });
 });

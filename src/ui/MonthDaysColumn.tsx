@@ -14,12 +14,18 @@
  * row's measured width (same estimator every multi-line row in the app
  * uses), so a crowded day degrades to "+N" instead of being clipped
  * mid-word.
+ *
+ * On a short screen (a turned device, a Nomad) 31 equal rows would be lower than their text;
+ * then the column shows the month in two halves, 1-15 and 16-end, with "‹ ›" in a line on top,
+ * opening on the half that holds today (domain/screenLayout.ts monthNeedsHalves,
+ * docs/dev/history/technical-design-launch-ready.md L6b).
  */
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {LayoutChangeEvent, Pressable, StyleSheet, Text, View} from 'react-native';
 import {withSpanArrows} from '../domain/meetingSpan';
 import {MonthDay, MonthDayEntry} from '../storage/monthlyAggregate';
 import {activeLineEstimator} from '../domain/textLineEstimator';
+import {MONTH_FIRST_HALF_DAYS, monthHalfOf, monthNeedsHalves} from '../domain/screenLayout';
 import {FONT} from './theme';
 
 const WEEKDAY_SHORT = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
@@ -59,13 +65,36 @@ function inverse(color: string): string {
 }
 
 export default function MonthDaysColumn({days, selectedDate, todayDate, onSelectDay, textColor, borderColor}: Props): React.JSX.Element {
-  const [width, setWidth] = useState(0);
-  const onLayout = (e: LayoutChangeEvent) => setWidth(e.nativeEvent.layout.width);
-  const labelWidth = Math.max(0, width - ROW_CHROME_PX);
+  const [size, setSize] = useState({width: 0, height: 0});
+  const onLayout = (e: LayoutChangeEvent) => {
+    const {width, height} = e.nativeEvent.layout;
+    setSize(prev => (prev.width === width && prev.height === height ? prev : {width, height}));
+  };
+  const labelWidth = Math.max(0, size.width - ROW_CHROME_PX);
+
+  // Halves: the one holding today when the month is the current one, else the first.
+  const monthKey = days[0]?.date.slice(0, 7) ?? '';
+  const defaultHalf = todayDate.slice(0, 7) === monthKey ? monthHalfOf(todayDate) : 0;
+  const [half, setHalf] = useState<0 | 1>(defaultHalf);
+  useEffect(() => setHalf(defaultHalf), [monthKey]); // eslint-disable-line react-hooks/exhaustive-deps
+  const halves = monthNeedsHalves(size.height, days.length);
+  const shownDays = !halves ? days : half === 0 ? days.slice(0, MONTH_FIRST_HALF_DAYS) : days.slice(MONTH_FIRST_HALF_DAYS);
+  const lastDay = days.length > 0 ? Number(days[days.length - 1].date.slice(8)) : 0;
 
   return (
     <View style={styles.root} onLayout={onLayout}>
-      {days.map(day => {
+      {halves && (
+        <View style={[styles.halfRow, {borderColor}]}>
+          <Pressable onPress={() => setHalf(0)} disabled={half === 0} hitSlop={8} style={styles.halfArrow} accessibilityLabel="First half">
+            <Text style={[styles.halfArrowText, {color: textColor}, half === 0 && styles.halfOff]}>‹</Text>
+          </Pressable>
+          <Text style={[styles.halfLabel, {color: textColor}]}>{half === 0 ? `1-${MONTH_FIRST_HALF_DAYS}` : `${MONTH_FIRST_HALF_DAYS + 1}-${lastDay}`}</Text>
+          <Pressable onPress={() => setHalf(1)} disabled={half === 1} hitSlop={8} style={styles.halfArrow} accessibilityLabel="Second half">
+            <Text style={[styles.halfArrowText, {color: textColor}, half === 1 && styles.halfOff]}>›</Text>
+          </Pressable>
+        </View>
+      )}
+      {shownDays.map(day => {
         const selected = day.date === selectedDate;
         const isToday = day.date === todayDate;
         const weekend = day.weekday >= 5;
@@ -110,6 +139,11 @@ const styles = StyleSheet.create({
   root: {
     flex: 1,
   },
+  halfRow: {flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end', height: 28, borderBottomWidth: 1},
+  halfLabel: {fontSize: FONT.small, fontWeight: '700'},
+  halfArrow: {paddingHorizontal: 10},
+  halfArrowText: {fontSize: FONT.large, fontWeight: '700', includeFontPadding: false},
+  halfOff: {opacity: 0.25},
   row: {
     flex: 1,
     flexDirection: 'row',

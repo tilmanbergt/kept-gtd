@@ -17,7 +17,7 @@
  */
 import React, {createContext, Fragment, useCallback, useContext, useState, useSyncExternalStore} from 'react';
 import {Dimensions, LayoutChangeEvent, StyleSheet, Text, View} from 'react-native';
-import {A5X_ESTIMATOR_WIDTH, A5X_PORTRAIT, estimatorWidthFor, LayoutClass, layoutWidthClass, ScreenSize, SIMULATION_INSET, simulatedScreen, simulationsThatFit} from '../domain/screenLayout';
+import {A5X_ESTIMATOR_WIDTH, A5X_PORTRAIT, estimatorWidthFor, isShortScreen, LayoutClass, layoutWidthClass, ScreenSize, SIMULATION_INSET, simulatedScreen, simulationsThatFit} from '../domain/screenLayout';
 import {getScreenSimulation, subscribeScreenSimulation} from './screenSimStore';
 import {FONT} from './theme';
 import {log} from '../utils/log';
@@ -41,6 +41,11 @@ export function useScreenSize(): ScreenSize {
  */
 export function useLayoutClass(): LayoutClass {
   return layoutWidthClass(useContext(ScreenSizeContext));
+}
+
+/** True below 1200 dp height (domain/screenLayout.ts SHORT_BELOW): a Nomad, or any device turned. */
+export function useShortScreen(): boolean {
+  return isShortScreen(useContext(ScreenSizeContext));
 }
 
 const RealSizeContext = createContext<ScreenSize>(A5X_PORTRAIT);

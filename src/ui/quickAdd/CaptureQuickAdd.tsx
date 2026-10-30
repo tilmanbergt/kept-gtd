@@ -22,7 +22,7 @@ import {Destination, destinationLabel} from '../../domain/destination';
 import HighlightMark from '../HighlightMark';
 import {useOnScreenHide} from '../screenActivity';
 import MarkWrap from '../status/StatusMark';
-import TagChipGrid from '../TagChipGrid';
+import TagChipGrid, {GridChip} from '../TagChipGrid';
 import {COLORS, FONT} from '../theme';
 import {quickAddButtons} from './ActionRow';
 import {AgreementForChoice, buildAgreementForChips} from './agreementForChips';
@@ -41,6 +41,9 @@ import {useQuickAddCore} from './useQuickAddCore';
 import {useQuickAddStatus} from './useQuickAddStatus';
 import {useTaskDraft} from './useTaskDraft';
 
+/** Tags shown before More… on a short screen. */
+const SHORT_TAGS = 8;
+
 interface Props {
   captureSeed?: CaptureSeed | null;
   /** After a successful save (all split items saved). */
@@ -51,6 +54,8 @@ interface Props {
   captureOwnDestination?: Destination | null;
   /** Rendered below the chips (link checkbox, Mark for later / Cancel, ...). */
   captureExtras?: React.ReactNode;
+  /** A short screen: the tags start with the first few and a More… chip, as File to does. */
+  shortTags?: boolean;
   /** The destination picked on the screen. */
   fixedDestination: Destination;
   /** Meeting default date (the mark's day). */
@@ -108,6 +113,12 @@ function CaptureQuickAdd(props: Props): React.JSX.Element {
   });
   useQuickAddStatus(core, task, meeting, null, agreement);
   const isAgreement = core.displayType === 'agreement';
+  // A short screen starts with the first few tags and More…, like File to (docs/dev/history/technical-design-launch-ready.md L6b).
+  const [allTags, setAllTags] = useState(false);
+  const tagChips: GridChip[] =
+    props.shortTags && !allTags && capture.tagChips.length > SHORT_TAGS
+      ? [...capture.tagChips.slice(0, SHORT_TAGS), {key: '__more', label: 'More…', on: false, onPress: () => setAllTags(true)}]
+      : capture.tagChips;
   const forChips = buildAgreementForChips({
     choices,
     items: core.abbrevItems,
@@ -167,7 +178,7 @@ function CaptureQuickAdd(props: Props): React.JSX.Element {
       {capture.tagChips.length > 0 ? (
         <>
           <Text style={[styles.captureLabel, {color: textColor}]}>Tags</Text>
-          <TagChipGrid chips={capture.tagChips} maxChips={18} textColor={textColor} borderColor={borderColor} />
+          <TagChipGrid chips={tagChips} maxChips={18} textColor={textColor} borderColor={borderColor} />
         </>
       ) : null}
       <Text style={[styles.captureLabel, {color: textColor}]}>{isAgreement ? 'For' : 'File to'}</Text>

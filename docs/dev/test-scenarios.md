@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-159 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+160 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -185,15 +185,13 @@ Test: `__tests__/scenarios/daily.test.tsx` · design: `docs/dev/history/technica
 
 Test: `__tests__/scenarios/dailySlim.test.tsx`
 
-### Daily's tag filter: tapping a tag shows only its todos, the pill clears it
+### Daily has no tag filter: its todos all show, with no "#" row above the columns
 
 - **Given** the smoke space with "Buy bulbs #garden" in Garden
-- **When** I open Daily and tap #garden in a row
-- **Then** only #garden todos show and the pill reads #garden
-- **When** I tap the pill
-- **Then** everything shows again
+- **When** I open Daily
+- **Then** the todos the Daily rule lets through show, and there is no filter pill
 
-Test: `__tests__/scenarios/dailySlim.test.tsx`
+Test: `__tests__/scenarios/dailySlim.test.tsx` · design: `docs/dev/history/technical-design-launch-ready.md`
 
 ### Quick-file from a Daily edit: "Save to <Name>" moves the todo
 
@@ -1486,6 +1484,17 @@ Test: `__tests__/scenarios/meetingContext.test.tsx`
 - **Then** neither the panel nor the day panel shows
 
 Test: `__tests__/scenarios/meetingContext.test.tsx`
+
+### Month names its month in the tab row: "Oct 26", ‹ › to move, Now to come back
+
+- **Given** the smoke space on Wednesday 14.10.2026
+- **When** I open Month
+- **Then** the tab row says "Oct 26", with no highlight count and no Now
+- **When** I tap › next to it
+- **Then** it shows November, and Now
+- **And** Now goes back to October
+
+Test: `__tests__/scenarios/narrowScreen.test.tsx` · design: `docs/dev/history/technical-design-launch-ready.md`
 
 ### Week shows this week's meetings and the time given to each owner (smoke)
 

@@ -4,13 +4,13 @@ The Week and Month tabs are for planning. Both work the same way: meetings and [
 
 ## Week
 
-The left side shows the week as a grid of meeting chips, one box per day. Use ‹ and › to move between weeks. Tap a chip to show the meeting's [card](meetings.md#the-meeting-row-and-its-card) and its [context panel](meetings.md#the-context-panel) on the right, with "‹ Back to Week 42 · Thu 15.10. · 2 meetings ›" above it; tap a day's header to open that day's meetings on the right.
+The left side shows the week as a grid of meeting chips, one box per day. The week's name ("Week 44 · 26") with ‹ and › sits at the right of the Schedule | Google tabs; **Now** goes back to the current week. On a shorter screen (a turned device, a Nomad) each day shows fewer rows of chips; ‹ › in a day's header shows the rest. Tap a chip to show the meeting's [card](meetings.md#the-meeting-row-and-its-card) and its [context panel](meetings.md#the-context-panel) on the right, with "‹ Back to Week 42 · Thu 15.10. · 2 meetings ›" above it; tap a day's header to open that day's meetings on the right.
 
 The right side shows [Quick Add](quick-add.md) and [Given time this week](week-and-month.md#given-time).
 
 ## Month
 
-The left side lists every day of the month. It shows meetings you marked as *monthly highlights* - big things like a trip, an offsite or a birthday. Use ‹ and › to move between months, and tap a day to see all its meetings on the right.
+The left side lists every day of the month. It shows meetings you marked as *monthly highlights* - big things like a trip, an offsite or a birthday. The month ("Oct 26") with ‹ and › sits at the right of the Month | Google tabs; **Now** goes back to the current month. Tap a day to see all its meetings on the right. Where the screen is too short for every day (a turned device, a Nomad), the month shows in two halves, 1-15 and 16 to the end, with ‹ › above the days; it opens on the half with today.
 
 Tap one of the day's meetings on the right, and its [card](meetings.md#the-meeting-row-and-its-card) takes Quick Add's place, as on every meeting list: the [prep or review](meetings.md#preparation-and-review) tick, **M** and, once the meeting is over, [Reflect](meetings.md#reflection-page).
 

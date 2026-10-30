@@ -10,6 +10,7 @@ import {StyleSheet, Text, View} from 'react-native';
 import {FONT, SPACING} from '../../ui/theme';
 import {CalendarFields, GmailFields} from './DraftTabs';
 import SettingSwitch from './SettingSwitch';
+import ScrollColumn from './ScrollColumn';
 import {SettingsDraft} from './useSettingsDraft';
 
 interface Props {
@@ -31,7 +32,7 @@ export default function FeaturesTab(p: Props): React.JSX.Element {
   const {textColor, borderColor} = p;
   return (
     <View style={styles.row}>
-      <View style={[styles.column, styles.columnLeft]}>
+      <ScrollColumn left>
         <Text style={[styles.heading, {color: textColor}]}>Features</Text>
         <SettingSwitch
           label="Project close-out"
@@ -66,9 +67,9 @@ export default function FeaturesTab(p: Props): React.JSX.Element {
           hint="Lists the headings of a Project's or Area's home notebook on its Notebook tab. Turn off if they don't show right or reading them is slow."
           textColor={textColor}
         />
-      </View>
+      </ScrollColumn>
       <View style={[styles.divider, {backgroundColor: borderColor}]} />
-      <View style={styles.column}>
+      <ScrollColumn>
         {p.experimentalGoogleCalendar && (
           <>
             <Text style={[styles.heading, {color: textColor}]}>Google Calendar</Text>
@@ -84,15 +85,13 @@ export default function FeaturesTab(p: Props): React.JSX.Element {
         {!p.experimentalGoogleCalendar && !p.experimentalGmail && (
           <Text style={[styles.intro, {color: textColor}]}>Switch on Google Calendar or Gmail to set up its link or account here.</Text>
         )}
-      </View>
+      </ScrollColumn>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   row: {flexDirection: 'row', flex: 1},
-  column: {flex: 1},
-  columnLeft: {marginRight: SPACING.base},
   divider: {width: 1, marginRight: SPACING.base},
   heading: {fontSize: FONT.medium, fontWeight: '700', marginBottom: SPACING.sm},
   headingGap: {marginTop: SPACING.base},

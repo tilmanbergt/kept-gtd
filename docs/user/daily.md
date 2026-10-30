@@ -26,6 +26,6 @@ Tap a meeting or focus block to see its [card](meetings.md#the-meeting-row-and-i
 
 Todos work the same way: a tap shows the todo's [card](quick-add.md#the-card-one-tap-selects), with done, the flow chips, its note and delete.
 
-## Filtering by a tag
+## Tags in rows
 
-Tap a tag inside a todo or meeting (for example `#lena`) to show only items with that tag. A [nested tag](tags.md#nested-tags) such as `#sparring/jordan` opens its [thread overview](threads.md#opening-the-overview) instead. If the tag is the [abbreviation](projects-and-areas.md#abbreviations) of a project or area (for example `#GR`), Daily shows all of that project's items. Tap the tag again to remove the filter.
+A [nested tag](tags.md#nested-tags) such as `#sparring/jordan` in a todo or meeting opens its [thread overview](threads.md#opening-the-overview). To see what belongs to a meeting, tap the meeting: its [context panel](meetings.md#the-context-panel) shows its todos, what you are waiting for and what was agreed.

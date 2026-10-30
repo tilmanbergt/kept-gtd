@@ -37,7 +37,7 @@ Once assigned, the button reads **Area: name ✕**. Tap the name to open the are
 
 ## Abbreviations
 
-Every project and area gets a short abbreviation, suggested from its name (for example `GR`). You can change it; it must be unique. The Projects and Areas tabs show it after each name (`Garden renovation #GR`). Use it as a tag to [file items directly](quick-add.md#filing-directly-with-an-abbreviation), or to [filter Daily](daily.md#filtering-by-a-tag).
+Every project and area gets a short abbreviation, suggested from its name (for example `GR`). You can change it; it must be unique. The Projects and Areas tabs show it after each name (`Garden renovation #GR`). Use it as a tag to [file items directly](quick-add.md#filing-directly-with-an-abbreviation).
 
 ## Files and linked files
 

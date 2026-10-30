@@ -1,6 +1,6 @@
 /**
  * Daily (design-overview.md §2.7, docs/dev/history/technical-design-daily-slim.md §3.1):
- * two columns under the display-mode row (screens/daily/DailyModeRow.tsx).
+ * two columns.
  *
  * - Left: the day panel (ui/DayMeetingsPanel.tsx: Today | Tomorrow | Google),
  *   the whole column.
@@ -16,8 +16,9 @@
  * Inbox (screens/daily/useDailyData.ts). Every write goes through
  * ui/useEntryActions.ts, the path the overviews use too; rows can belong to
  * different Projects/Areas or the Inbox, so each action re-reads its entry's
- * own source. The tag filter (technical-design-context-tags.md §6) is set by
- * tapping a plain tag in a row and is screen state only.
+ * own source. Daily's tag filter (technical-design-context-tags.md §6) was removed in
+ * 0.24.0 (docs/dev/history/technical-design-launch-ready.md L6b): a meeting's todos show in its
+ * context panel instead.
  */
 import React, {useEffect, useMemo, useState} from 'react';
 import {ActivityIndicator, Keyboard, StyleSheet, View} from 'react-native';
@@ -56,7 +57,6 @@ import HiddenLine from '../ui/context/HiddenLine';
 import {useContextMatcher} from '../ui/context/useContextMatcher';
 import {useMeetingCard} from '../ui/itemCard/useMeetingCard';
 import {useTodoCard} from '../ui/itemCard/useTodoCard';
-import DailyModeRow from './daily/DailyModeRow';
 import DailyTodosColumn from './daily/DailyTodosColumn';
 import {flattenTaskGroups, FlatTaskRow, meetingKey, taskKey} from './daily/dailyRows';
 import {useDailyData} from './daily/useDailyData';
@@ -92,8 +92,6 @@ export default function DailyView({onOpenItem, onOpenInbox, onOpenCalendarSettin
   const cardMode = cardOrEdit(editMode);
   const features = useFeatures();
   const [calendarTab, setCalendarTab] = useState<CalendarTab>('today');
-  const [tagFilter, setTagFilter] = useState<string | null>(null);
-  const toggleTagFilter = (tag: string) => setTagFilter(current => (current === tag ? null : tag));
 
   const openItem = (item: DailyItemRef) => {
     if (item.kind === 'inbox') {
@@ -104,20 +102,16 @@ export default function DailyView({onOpenItem, onOpenInbox, onOpenCalendarSettin
   };
 
   const inboxInput = inbox ? {tasks: inbox.tasks, meetings: inbox.meetings} : null;
-  // The active context hides todos and dims meetings (docs/dev/history/technical-design-time-and-place.md §3.3); the tag filter applies on top.
+  // The active context hides todos and dims meetings (docs/dev/history/technical-design-time-and-place.md §3.3).
   const contextFilter = useContextMatcher();
   const {matcher} = contextFilter;
   // Recomputed after midnight through todayDate (render-perf-ab §3 B4).
   const aggregate: DailyAggregate | null = useMemo(
-    () => (inboxPath !== null ? buildDailyAggregate(items, inboxInput, inboxPath, new Date(), null, matcher) : null),
+    () => (inboxPath !== null ? buildDailyAggregate(items, inboxInput, inboxPath, new Date(), matcher) : null),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- todayDate: recompute after midnight
     [items, inbox, inboxPath, todayDate, matcher],
   );
-  const displayAggregate: DailyAggregate = useMemo(
-    () => (tagFilter ? buildDailyAggregate(items, inboxInput, inboxPath ?? '', new Date(), tagFilter, matcher) : aggregate ?? EMPTY_DAILY_AGGREGATE),
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- todayDate: recompute after midnight
-    [tagFilter, items, inbox, inboxPath, aggregate, todayDate, matcher],
-  );
+  const displayAggregate: DailyAggregate = aggregate ?? EMPTY_DAILY_AGGREGATE;
   const hiddenText = contextFilter.lineText(tallyHidden(displayAggregate.hiddenTasks ?? [], contextFilter.kinds, todayDate));
 
   // dailyEntryDate: a multi-day meeting is listed on each day it covers.
@@ -180,12 +174,10 @@ export default function DailyView({onOpenItem, onOpenInbox, onOpenCalendarSettin
         onOpenNote={() => actions.taskNote(entry)}
         linkedFile={entry.task.linkedFile}
         onOpenLinkedFile={actions.openFile}
-        contextTag={tagFilter}
-        onToggleContext={toggleTagFilter}
         ownerPath={entry.item.path}
         context="flat"
         height={heightPx}
-        numberOfLines={taskRowLines(entry.task, estimatorWidth(), 'flat', tagFilter != null)}
+        numberOfLines={taskRowLines(entry.task, estimatorWidth(), 'flat')}
         textColor={textColor}
         borderColor={borderColor}
       />
@@ -210,8 +202,6 @@ export default function DailyView({onOpenItem, onOpenInbox, onOpenCalendarSettin
         onPress={() => selectEditTarget({type: 'meeting', key})}
         dimmed={entry.contextState === 'dimmed'}
         state={editTarget?.type === 'meeting' && editTarget.key === key ? (cardMode === 'card' ? 'selected' : 'editing') : undefined}
-        contextTag={tagFilter}
-        onToggleContext={toggleTagFilter}
         ownerPath={entry.item.path}
         textColor={textColor}
         borderColor={borderColor}
@@ -276,12 +266,6 @@ export default function DailyView({onOpenItem, onOpenInbox, onOpenCalendarSettin
       {!data.loading && data.error && <LoadErrorNotice error={data.error} onRetry={data.retry} textColor={textColor} />}
       {!data.loading && !data.error && aggregate && (
         <View style={common.content}>
-          <DailyModeRow
-            tagFilter={tagFilter}
-            onClearTagFilter={() => setTagFilter(null)}
-            textColor={textColor}
-            borderColor={borderColor}
-          />
           <View style={styles.middleRow}>
             <View style={[common.column, common.columnLeft]}>
               <View style={styles.columnFill}>
@@ -292,7 +276,6 @@ export default function DailyView({onOpenItem, onOpenInbox, onOpenCalendarSettin
                   activeTab={calendarTab}
                   onTabChange={setCalendarTab}
                   renderRow={renderMeetingEntry}
-                  listResetKey={tagFilter ?? '__off__'}
                   emptyHint={`Nothing ${calendarTab === 'tomorrow' ? 'tomorrow' : 'today'}.`}
                   googlePanel={
                     features.googleCalendar ? (
@@ -341,7 +324,6 @@ export default function DailyView({onOpenItem, onOpenInbox, onOpenCalendarSettin
                 rows={taskRows}
                 renderEntry={(row: Extract<FlatTaskRow, {kind: 'entry'}>, heightPx) => renderTaskEntry(row.entry, heightPx)}
                 onOpenItem={openItem}
-                tagFilter={tagFilter}
                 failedItemNames={displayAggregate.failedItems.map(f => f.item.name)}
                 footer={context.model ? undefined : <HiddenLine text={hiddenText} onShow={contextFilter.show} textColor={textColor} />}
                 textColor={textColor}
@@ -356,6 +338,6 @@ export default function DailyView({onOpenItem, onOpenInbox, onOpenCalendarSettin
 }
 
 const styles = StyleSheet.create({
-  middleRow: {flexDirection: 'row', flex: 1, marginTop: 4},
+  middleRow: {flexDirection: 'row', flex: 1},
   columnFill: {flex: 1},
 });

@@ -788,8 +788,7 @@ per-screen wiring.
 **Daily** (`screens/DailyView.tsx`, aggregate `storage/dailyAggregate.ts`; data from
 `screens/daily/useDailyData.ts`: the cache at mount without a loading pass when it is ready, a
 `daily:firstContent` perf span; every write through `ui/useEntryActions.ts`, the overviews' write
-path; the right column `screens/daily/DailyTodosColumn.tsx`, the tag-filter pill
-`screens/daily/DailyModeRow.tsx`). Left column: the day panel (`ui/DayMeetingsPanel.tsx`,
+path; the right column `screens/daily/DailyTodosColumn.tsx`; the tag filter was removed in 0.24.0). Left column: the day panel (`ui/DayMeetingsPanel.tsx`,
 Today | Tomorrow | Google), full height. Right column: Quick Add (always to the Inbox) or the
 selected row's card, above the Next todos grouped by source item (the Inbox first, then cache
 order) or the selected meeting's context panel; the hidden line last. A task shows when it is

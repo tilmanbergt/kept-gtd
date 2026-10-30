@@ -41,7 +41,9 @@ export const STATUS_PRIORITY: Record<StatusKind, number> = {
 };
 
 /** Fixed slot height (px). Always reserved, so a message never shifts the layout (D1). */
-export const STATUS_SLOT_HEIGHT = 36;
+export const STATUS_SLOT_HEIGHT = 32;
+/** On a short screen (ui/ScreenSize.tsx useShortScreen): still room for the slot's buttons. */
+export const STATUS_SLOT_HEIGHT_SHORT = 30;
 
 /** How long the tap-to-expand overlay stays open (§8 Q11). */
 export const STATUS_EXPAND_MS = 3000;

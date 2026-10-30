@@ -50,6 +50,17 @@ export function layoutWidthClass(screen: ScreenSize): LayoutClass {
   return screen.width < NARROW_BELOW ? 'narrow' : 'wide';
 }
 
+/**
+ * Below this height a screen counts as short (a Nomad upright 998 dp, a turned A5 X 994 dp, a
+ * Nomad turned 749 dp): a few screens draw tighter there (the status line, the marks screen).
+ * The A5 X upright (1325 dp) and the Manta are not short.
+ */
+export const SHORT_BELOW = 1200;
+
+export function isShortScreen(screen: ScreenSize): boolean {
+  return screen.height < SHORT_BELOW;
+}
+
 /** Rows per day block of the Week grid: 4 on weekdays and 2 on the weekend where they fit (the A5 X in portrait). */
 export interface WeekGridRows {
   weekday: number;
@@ -98,4 +109,19 @@ export const SIMULATION_INSET = 16;
 export function simulationsThatFit(real: ScreenSize): SimulatedScreen[] {
   const room = SIMULATION_INSET + 2;
   return SIMULATED_SCREENS.filter(s => s.size.width + room <= real.width && s.size.height + room <= real.height).map(s => s.key);
+}
+
+/** The lowest a Month day row may get and still show its text whole (one FONT.medium line and the rule). */
+export const MONTH_MIN_ROW_HEIGHT = 28;
+/** The first half of a month shown on its own: days 1-15. */
+export const MONTH_FIRST_HALF_DAYS = 15;
+
+/** Whether the Month column (`height` dp, `dayCount` rows) shows the month in two halves. */
+export function monthNeedsHalves(height: number | null, dayCount: number): boolean {
+  return !!height && height > 0 && dayCount > 0 && height / dayCount < MONTH_MIN_ROW_HEIGHT;
+}
+
+/** Which half of its month a YYYY-MM-DD falls in: 0 for days 1-15, 1 after. */
+export function monthHalfOf(date: string): 0 | 1 {
+  return Number(date.slice(8, 10)) <= MONTH_FIRST_HALF_DAYS ? 0 : 1;
 }

@@ -27,23 +27,9 @@
  * due-date leg is the same `<= tomorrowDate`. Inbox meetings use the same
  * today/tomorrow rule.
  *
- * Context tags (technical-design-context-tags.md §6): the optional
- * `contextTag` param below is a *hard* filter - when set, every rule above is
- * replaced for that call: only tasks/meetings whose `tags` include it show.
- * Among those matches, every open task qualifies whatever its flow state or
- * date (Waiting For with a future date and Someday included) - only Maybe
- * never qualifies. Meetings keep their today/tomorrow/not-cancelled checks,
- * ANDed with the tag match.
- *
- * Project/Area-aware (docs/dev/history/technical-design-project-area-abbreviations.md):
- * before filtering, `contextTag` is resolved against `items`' own abbrevs
- * (domain/abbrev.ts's resolveAbbrevPath, case-insensitive). When it
- * resolves, the tag-match condition becomes a union - a task/meeting counts
- * if it carries the literal tag OR belongs to that resolved item, so every
- * task and meeting of a Project/Area shows under its `#AT` filter even when
- * not tagged `#AT` itself. When `contextTag` matches no abbrev, the tag-only
- * behavior above applies. Never reaches the synthetic Inbox item - Inbox has
- * no abbrev, so `contextItemPath` can never equal `inboxPath`.
+ * Daily had a tag filter (technical-design-context-tags.md §6) until 0.24.0; it was
+ * removed (docs/dev/history/technical-design-launch-ready.md L6b) - the meeting
+ * context panel shows a meeting's todos instead.
  *
  * The active context (docs/dev/history/technical-design-time-and-place.md
  * §3.3, domain/contexts.ts) applies on top, as `matcher`: a todo the rule
@@ -51,7 +37,6 @@
  * hidden line counts them, due ones as "3 due!"); the Inbox always passes. Meetings are never hidden, only marked `contextState: 'dimmed'`.
  */
 import {entriesInRange, entryDate, MeetingSpanDay} from '../domain/meetingSpan';
-import {resolveAbbrevPath} from '../domain/abbrev';
 import {isWaitingForShownOnDaily} from '../domain/flowState';
 import {isoDateOffset, meetingTimestampMs, todayIso} from '../domain/meetingTime';
 import {GtdParaKind, Meeting, Task} from '../domain/types';
@@ -112,13 +97,10 @@ function buildDailyAggregateImpl(
   inbox: DailyInboxInput | null,
   inboxPath: string,
   now: Date = new Date(),
-  contextTag: string | null = null,
   matcher: ContextMatcher | null = null,
 ): DailyAggregate {
   const todayDate = todayIso(now);
   const tomorrowDate = isoDateOffset(1, now);
-  // See the module doc comment's "Project/Area-aware" note.
-  const contextItemPath = contextTag ? resolveAbbrevPath(contextTag, items) : null;
 
   const shownTasks: DailyTaskEntry[] = [];
   const hiddenTasks: DailyTaskEntry[] = [];
@@ -150,21 +132,8 @@ function buildDailyAggregateImpl(
       continue;
     }
 
-    const inContextItem = contextItemPath !== null && cachedItem.path === contextItemPath;
-
     cachedItem.tasks.forEach((task, taskIndex) => {
       if (task.done || task.cancelled) return;
-      if (contextTag) {
-        // Hard filter, replacing the normal rule below entirely - see the
-        // module doc comment's "Context tags" note. Widened to a union with
-        // `inContextItem` when the tag resolved to a Project/Area (the
-        // "Project/Area-aware" note) - Maybe still never qualifies, tag/
-        // item match or not; Waiting For/Someday become eligible here,
-        // unlike the normal rule just below.
-        if ((!task.tags.includes(contextTag) && !inContextItem) || task.flowState === 'maybe') return;
-        tasks.push({item, taskIndex, task});
-        return;
-      }
       // Someday / Maybe never show on Daily; Waiting For has its own rule
       // (no date or date reached, any item) - see the module doc comment.
       // Both checks win over the inclusion rule below.
@@ -179,7 +148,6 @@ function buildDailyAggregateImpl(
       }
     });
     cachedItem.meetings.forEach((meeting, meetingIndex) => {
-      if (contextTag && !meeting.tags.includes(contextTag) && !inContextItem) return;
       // Multi-day meetings show on every covered day (one entry per day).
       if (!meeting.cancelled) meetings.push(...withState(entriesInRange({item, meetingIndex, meeting}, todayDate, tomorrowDate), cachedItem));
     });
@@ -189,11 +157,6 @@ function buildDailyAggregateImpl(
     const item = inboxItemRef(inboxPath);
     inbox.tasks.forEach((task, taskIndex) => {
       if (task.done || task.cancelled) return;
-      if (contextTag) {
-        if (!task.tags.includes(contextTag) || task.flowState === 'maybe') return;
-        tasks.push({item, taskIndex, task});
-        return;
-      }
       if (task.flowState === 'someday' || task.flowState === 'maybe') return;
       if (task.flowState === 'waiting-for') {
         if (isWaitingForShownOnDaily(task, todayDate)) tasks.push({item, taskIndex, task});
@@ -207,7 +170,6 @@ function buildDailyAggregateImpl(
       }
     });
     inbox.meetings.forEach((meeting, meetingIndex) => {
-      if (contextTag && !meeting.tags.includes(contextTag)) return;
       // Multi-day meetings show on every covered day (one entry per day).
       if (!meeting.cancelled) meetings.push(...entriesInRange({item, meetingIndex, meeting}, todayDate, tomorrowDate));
     });

@@ -16,7 +16,8 @@ import {requestEinkRefresh} from '../../utils/screenRefresh';
 import {WarningIcon} from '../icons';
 import {FONT, useThemeColors} from '../theme';
 import {useStatusList} from './StatusProvider';
-import {STATUS_EXPAND_MS, STATUS_SLOT_HEIGHT, StatusMessage} from './types';
+import {useShortScreen} from '../ScreenSize';
+import {STATUS_EXPAND_MS, STATUS_SLOT_HEIGHT, STATUS_SLOT_HEIGHT_SHORT, StatusMessage} from './types';
 
 /** Texts longer than this are offered the tap-to-expand overlay even without an explicit `detail`. */
 const EXPAND_THRESHOLD_CHARS = 90;
@@ -54,6 +55,7 @@ export default function StatusFrame({children}: {children: React.ReactNode}): Re
     requestEinkRefresh();
   }, [entry?.id, entry?.seq, expanded, list.length]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  const slotHeight = useShortScreen() ? STATUS_SLOT_HEIGHT_SHORT : STATUS_SLOT_HEIGHT;
   const msg = entry?.msg ?? null;
   const expandable = !!msg && (!!msg.detail || msg.text.length > EXPAND_THRESHOLD_CHARS);
 
@@ -66,6 +68,7 @@ export default function StatusFrame({children}: {children: React.ReactNode}): Re
         onPrev={() => setIndex(Math.max(0, safeIndex - 1))}
         onNext={() => setIndex(Math.min(list.length - 1, safeIndex + 1))}
         onTextPress={expandable ? () => setExpanded(e => !e) : undefined}
+        height={slotHeight}
         textColor={textColor}
         background={background}
       />
@@ -73,7 +76,7 @@ export default function StatusFrame({children}: {children: React.ReactNode}): Re
       {expanded && msg && (
         <Pressable
           onPress={() => setExpanded(false)}
-          style={[styles.overlay, {backgroundColor: background, borderColor: textColor}]}>
+          style={[styles.overlay, {top: slotHeight, backgroundColor: background, borderColor: textColor}]}>
           <Text style={[styles.overlayText, {color: textColor}]}>{msg.detail ?? msg.text}</Text>
         </Pressable>
       )}
@@ -88,14 +91,15 @@ interface RowProps {
   onPrev: () => void;
   onNext: () => void;
   onTextPress?: () => void;
+  height: number;
   textColor: string;
   background: string;
 }
 
-function StatusSlotRow({msg, index, count, onPrev, onNext, onTextPress, textColor, background}: RowProps): React.JSX.Element {
+function StatusSlotRow({msg, index, count, onPrev, onNext, onTextPress, height, textColor, background}: RowProps): React.JSX.Element {
   if (!msg) {
     // Empty slot stays blank (D15) - but keeps its height (D1).
-    return <View style={styles.slot} />;
+    return <View style={[styles.slot, {height}]} />;
   }
 
   const inverted = msg.kind === 'modal' || msg.kind === 'confirm';
@@ -106,7 +110,7 @@ function StatusSlotRow({msg, index, count, onPrev, onNext, onTextPress, textColo
     <View
       style={[
         styles.slot,
-        {backgroundColor: bg},
+        {height, backgroundColor: bg},
         msg.kind === 'error' && [styles.bordered, styles.borderedStrong, {borderColor: textColor}],
         msg.kind === 'warning' && [styles.bordered, {borderColor: textColor}],
       ]}>
@@ -242,7 +246,6 @@ const styles = StyleSheet.create({
   },
   overlay: {
     position: 'absolute',
-    top: STATUS_SLOT_HEIGHT,
     left: 8,
     right: 8,
     borderWidth: 2,

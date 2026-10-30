@@ -34,6 +34,13 @@ or your project/area files are stored.
   running past the edge; Quick Add always keeps its + Add button in view; the Week grid shows fewer rows a
   day where the screen is shorter (a turned A5 X), with ‹ › for the rest; the folder fields on Settings →
   Data scroll where they don't fit. On the A5 X upright everything looks as before.
+- **More room for content**: the tab bar, the status line and the space above each screen are slimmer on
+  every device. Week and Month show their period in the tab row ("‹ Week 44 · 26 ›", "‹ Oct 26 ›"), with
+  **Now** to go back; Month no longer counts its highlights there.
+- **Turned screens and Nomad**: Month shows its days in two halves where they don't fit, opening on the half
+  with today; the help's page list pages; Settings → Features and Advanced scroll where they don't fit. On
+  the marks screen, Link to source page, Open page, Discard… and Close moved under the list of marks; on a
+  short screen the picture is lower and the tags start with eight and More….
 - **What's new** in Settings → About shows the last three versions; the earlier ones are in CHANGELOG.md on GitHub.
 - **Settings has six tabs** instead of eight. **Data** holds your folders on the left and, on the
   right, Run setup assistant and the profiles - setting up in one place. The Google Calendar link and

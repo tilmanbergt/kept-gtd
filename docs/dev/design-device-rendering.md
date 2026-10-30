@@ -151,16 +151,16 @@ borders + one text line (§2 line heights) and is marked "~".
 
 | Element | File | Height (dp) | Composition |
 |---|---|---|---|
-| Top tab bar | `ui/TabBar.tsx` | **~46** | `paddingTop 8` + tallest item (close button `paddingVertical 6 × 2` + medium line ~21 ≈ 33; tab buttons ≈ 31) + `paddingBottom 4` + border 1. |
-| Status slot | `ui/status/StatusFrame.tsx` | **36** | `STATUS_SLOT_HEIGHT`, always reserved under the tab bar, empty or not (`docs/dev/history/technical-design-status-slot.md`). |
+| Top tab bar | `ui/TabBar.tsx` | **~36** | `paddingTop 4` + tallest item (tab buttons `paddingVertical 3 × 2` + medium line ~21 + underline 2 ≈ 29; close button ≈ 27) + `paddingBottom 2` + border 1 (0.24.0 L6b; was ~46). Two lines where the tabs wrap on a narrow screen. |
+| Status slot | `ui/status/StatusFrame.tsx` | **32** (30 on a short screen) | `STATUS_SLOT_HEIGHT` / `STATUS_SLOT_HEIGHT_SHORT`, always reserved under the tab bar, empty or not (`docs/dev/history/technical-design-status-slot.md`; 36 before 0.24.0). Screens below it start with `common.container`'s `paddingTop 8` (was 16). |
 | Screen top padding | `common.container` | **16** | `SPACING.base`. |
 | Screen side padding | `common.container` | **16 each side** | Usable width ≈ 994 − 32 = **962 dp**. |
 | Screen bottom padding | per screen | **0–40** | Settings' content has `paddingBottom 40`; most screens have none. |
 | Two-column split | `common.column` / `common.columnLeft` | **16 gutter** | Both columns `flex: 1` → each ≈ (962 − 16) ÷ 2 ≈ **473 dp** wide (see §1 on the 678 estimator width). |
 
-So every screen spends **~98 dp** (46 + 36 + 16) before its own content, leaving about
-**1227 dp** of height for a single column, or for each column of a two-column screen.
-(`screens/ItemsList.tsx` uses `GLOBAL_CHROME_PX = 96` for the same total.)
+So every screen spends **~76 dp** (36 + 32 + 8) before its own content (~98 before 0.24.0), leaving
+about **1249 dp** of height on the A5 X upright for a single column, or for each column of a
+two-column screen. Lists measure their own height, so nothing depends on this figure.
 
 ### 5.2 List rows
 
