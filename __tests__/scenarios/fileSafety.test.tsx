@@ -111,9 +111,9 @@ scenario('Unreadable settings are never replaced by the defaults unasked', {feat
   then('the status line says the settings could not be read', () => {
     expectShows('Settings could not be read - Kept GTD uses defaults and saves no settings.');
   });
-  and('a setting changed on the way (Inbox: Hide done tasks) leaves the stored settings as they were', async () => {
+  and('a setting changed on the way (Inbox: hide done) leaves the stored settings as they were', async () => {
     await tapTab('Inbox');
-    await tap('Hide done tasks');
+    await tap('hide done');
     expect(await AsyncStorage.getItem('gtdpara:settings:v1')).toBe('{"inboxFolder": "0 Inbox", "hideDoneIn');
   });
   and('"Start over" stores the defaults and the message goes away', async () => {

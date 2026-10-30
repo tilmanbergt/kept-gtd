@@ -111,14 +111,20 @@ export function simulationsThatFit(real: ScreenSize): SimulatedScreen[] {
   return SIMULATED_SCREENS.filter(s => s.size.width + room <= real.width && s.size.height + room <= real.height).map(s => s.key);
 }
 
-/** The lowest a Month day row may get and still show its text whole (one FONT.medium line and the rule). */
-export const MONTH_MIN_ROW_HEIGHT = 28;
+/**
+ * The lowest a Month day row may get and still show its line of text (FONT.medium, dense). The
+ * check always counts a 31-day month, so whether a screen splits never depends on the month shown:
+ * the A5 X turned (~26 dp a row) and the Nomad upright show every day, the Nomad turned (~20 dp)
+ * always shows halves.
+ */
+export const MONTH_MIN_ROW_HEIGHT = 24;
+const MONTH_MAX_DAYS = 31;
 /** The first half of a month shown on its own: days 1-15. */
 export const MONTH_FIRST_HALF_DAYS = 15;
 
-/** Whether the Month column (`height` dp, `dayCount` rows) shows the month in two halves. */
-export function monthNeedsHalves(height: number | null, dayCount: number): boolean {
-  return !!height && height > 0 && dayCount > 0 && height / dayCount < MONTH_MIN_ROW_HEIGHT;
+/** Whether the Month column (`height` dp) shows the month in two halves - the same for every month. */
+export function monthNeedsHalves(height: number | null): boolean {
+  return !!height && height > 0 && height / MONTH_MAX_DAYS < MONTH_MIN_ROW_HEIGHT;
 }
 
 /** Which half of its month a YYYY-MM-DD falls in: 0 for days 1-15, 1 after. */

@@ -3,13 +3,15 @@
  * the todos of each active loop first, under the loop's name and main date
  * (docs/dev/history/technical-design-loops.md §4.7), then the rest grouped
  * by flow state, flattened into one PagedSection, with its own row
- * actions (done toggle, note) and the "Hide done tasks" switch, and below it
+ * actions (done toggle, note) and "hide done" / "show n done" in its header line
+ * (ui/DoneToggle.tsx), and below it
  * the `footer` (the agreements line). Add, edit and delete live in
  * ProjectDataPanel's single Quick Add above both lists.
  */
 import React, {useState} from 'react';
 import {usePerfRender} from '../../utils/perf';
-import {Keyboard, Pressable, Text, View} from 'react-native';
+import DoneToggle from '../../ui/DoneToggle';
+import {Keyboard, Text, View} from 'react-native';
 import {Task} from '../../domain/types';
 import {formatDate} from '../../domain/dateFormat';
 import {groupTodosByLoop} from '../../domain/loops';
@@ -185,20 +187,13 @@ export default function TodosSection({
 
   return (
     <View style={styles.section}>
-      {doneCount > 0 && (
-        <Pressable onPress={toggleHideDone} hitSlop={8} style={styles.hideDoneRow}>
-          <Text style={[styles.hideDoneText, {color: textColor}]}>
-            {hideDone ? `Show ${doneCount} done task${doneCount === 1 ? '' : 's'}` : 'Hide done tasks'}
-          </Text>
-        </Pressable>
-      )}
       {/* "Todos" heading and pagination in one PagedSection
           (docs/dev/history/technical-design-pagination-fixed-height.md §3.4). An
           empty list shows `emptyHint` and still reserves the box's full
           height - these boxes are fixed and always there. */}
       <PagedSection
         header="Todos"
-        // Per item first: the "Hide done tasks" line above the list is there only with done todos.
+        headerAccessory={<DoneToggle doneCount={doneCount} hideDone={hideDone} onToggle={toggleHideDone} textColor={textColor} />}
         heightKey={[`current:Todos:${itemPath}`, 'current:Todos']}
         rows={flatRows}
         rowHeight={row => (row.kind === 'header' ? SUBHEADING_ROW_PX : taskRowHeight(row.task, estimatorWidth(), 'grouped'))}

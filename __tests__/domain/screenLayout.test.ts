@@ -66,10 +66,12 @@ describe('isShortScreen', () => {
 });
 
 describe('Month halves', () => {
-  it('only when 31 rows would be lower than 28 dp', () => {
-    expect(monthNeedsHalves(31 * 28, 31)).toBe(false);
-    expect(monthNeedsHalves(31 * 28 - 1, 31)).toBe(true);
-    expect(monthNeedsHalves(null, 31)).toBe(false);
+  it('only when 31 rows would be lower than 24 dp - the same for every month', () => {
+    expect(monthNeedsHalves(31 * 24)).toBe(false);
+    expect(monthNeedsHalves(31 * 24 - 1)).toBe(true);
+    expect(monthNeedsHalves(820)).toBe(false); // A5 X turned
+    expect(monthNeedsHalves(630)).toBe(true); // Nomad turned
+    expect(monthNeedsHalves(null)).toBe(false);
   });
   it('days 1-15 are the first half', () => {
     expect(monthHalfOf('2026-10-15')).toBe(0);

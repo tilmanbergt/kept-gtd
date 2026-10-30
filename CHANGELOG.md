@@ -41,6 +41,13 @@ or your project/area files are stored.
   with today; the help's page list pages; Settings → Features and Advanced scroll where they don't fit. On
   the marks screen, Link to source page, Open page, Discard… and Close moved under the list of marks; on a
   short screen the picture is lower and the tags start with eight and More….
+- **The project and area page is leaner on every device**: no Given time line (Week and Month still
+  show given time), no "Scope" and no "Files" label, Archive… / Close out… next to the status
+  buttons, the marks card on one line, and **hide done** / **show 2 done** next to the Todos heading
+  (on the Inbox next to Tasks). On a turned device or a Nomad, Todos are the first tab of
+  Todos | Schedule | Google, and each counterpart on the Threads tab is one line.
+- **Month** decides once per screen whether it shows two halves: a turned A5 X shows every day, a
+  turned Nomad always two halves. Buttons in the status line always fit inside it.
 - **What's new** in Settings → About shows the last three versions; the earlier ones are in CHANGELOG.md on GitHub.
 - **Settings has six tabs** instead of eight. **Data** holds your folders on the left and, on the
   right, Run setup assistant and the profiles - setting up in one place. The Google Calendar link and

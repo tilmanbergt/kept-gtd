@@ -39,11 +39,47 @@
   box the size of a Nomad (749 × 998 or 998 × 749 dp; a dp is about the same physical size on both
   devices). Turning the device shows landscape (1325 × 906 dp below the tab bar).
 - **Grayscale e-ink only.** The hardware has no color. See §7.
-- **No scrolling, anywhere, by design**
+- **No scrolling for lists, by design**
   (`docs/dev/history/technical-design-pagination-edit-reuse.md`). Every list is a fixed-size
   box paged with ‹ › arrows, because redrawing a growing scroll area is slow and messy on
   e-ink, while a fixed box is cheap to refresh. So row heights (§3) and the space budget (§5)
-  decide whether a screen uses its space well; there is no scroll to fall back on.
+  decide whether a screen uses its space well. Forms are the one exception (§1.1).
+
+### 1.1 Layout rules by screen class (0.24.0)
+
+Every device gets the same Kept, only more or less compact. A component never asks which device
+it runs on; it asks two questions of `ui/ScreenSize.tsx` and follows the rules below
+(`docs/dev/history/technical-design-launch-ready.md` L6-L6c).
+
+| Class | Hook | When | Examples |
+|---|---|---|---|
+| narrow | `useLayoutClass() === 'narrow'` | under 800 dp wide | Nomad upright |
+| short | `useShortScreen()` | under 1200 dp tall | Nomad upright, any device turned |
+
+**All devices**
+
+- Rows of tabs and chips wrap instead of running past the edge (`TabBar`, `MiniTabs`).
+- A row's main button keeps its room; the rest gives way (Quick Add's `+ Add`).
+- Lists page (`PagedSection`, self-measuring); anything with a fixed count measures its height
+  instead (`WeekGrid` rows, Month halves).
+- A button inside a fixed-height strip is sized from the strip (status slot buttons).
+- A simplification that helps a small screen is made on every device, not only on the small one
+  (no Given time line or Scope label on the project page, one-line marks card, "hide done" in the
+  list header).
+
+**Short screens**
+
+- Secondary lines go: a two-line row shows its first line only (thread rows on the project page).
+- Stacked sections become tabs (the project page's Todos | Schedule | Google).
+- Pictures are lower and long chip lists start short with More… (marks screen).
+- Forms scroll (`settings/ScrollColumn.tsx`, the marks screen's panel) - lists still page.
+
+**Narrow screens**
+
+- Tabs sit closer together; a long label may be shortened ("Agree").
+
+A new screen follows the same rules; a new rule goes into this table first. Check it with Simulate
+screen and the device checklist (`docs/dev/device-checklist.md`).
 
 ## 2. Typography (`ui/theme.ts` → `FONT`)
 

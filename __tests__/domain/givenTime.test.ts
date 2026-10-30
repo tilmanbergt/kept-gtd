@@ -1,7 +1,7 @@
 /** Given time, Worked on and Tend (docs/dev/history/technical-design-time-and-place.md §3.4, §6). */
 import {contextMatcher, ContextDef} from '../../src/domain/contexts';
 import {EngageItem, EngageSource} from '../../src/domain/engageOwner';
-import {belowThresholdText, GivenTimeRow, givenTimeDetail, givenTimeOf, givenTimeText, meetingMinutes, needsTending, nothingPlanned, scheduledMinutes, tendCount, tendLineText} from '../../src/domain/givenTime';
+import {belowThresholdText, GivenTimeRow, givenTimeDetail, givenTimeOf, givenTimeText, meetingMinutes, needsTending, nothingPlanned, tendCount, tendLineText} from '../../src/domain/givenTime';
 import {LoopLine} from '../../src/domain/loopsSection';
 import {deriveMeetingFields} from '../../src/domain/markdown';
 import {Meeting} from '../../src/domain/types';
@@ -102,12 +102,6 @@ describe('givenTimeOf', () => {
   it('"Nothing above 1 h this week" when no loop or counterpart reaches the threshold', () => {
     expect(belowThresholdText(60, 'this week')).toBe('Nothing above 1 h this week');
     expect(belowThresholdText(0, 'this month')).toBe('Nothing this month');
-  });
-});
-
-describe('scheduledMinutes', () => {
-  it('sums timed and all-day time in the range', () => {
-    expect(scheduledMinutes([m('2026-10-13', 'a', {time: '09:00', endTime: '10:00'}), m('2026-10-18', 'b', {days: 2}), m('2026-10-30', 'c', {time: '09:00'})], WEEK)).toBe(60 + 480);
   });
 });
 

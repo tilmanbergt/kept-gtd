@@ -15,8 +15,8 @@
  * uses), so a crowded day degrades to "+N" instead of being clipped
  * mid-word.
  *
- * On a short screen (a turned device, a Nomad) 31 equal rows would be lower than their text;
- * then the column shows the month in two halves, 1-15 and 16-end, with "‹ ›" in a line on top,
+ * Where 31 rows would be lower than 24 dp (a Nomad turned; decided for 31 days, so every month
+ * of a screen behaves the same) the column shows the month in two halves, 1-15 and 16-end, with "‹ ›" in a line on top,
  * opening on the half that holds today (domain/screenLayout.ts monthNeedsHalves,
  * docs/dev/history/technical-design-launch-ready.md L6b).
  */
@@ -77,7 +77,7 @@ export default function MonthDaysColumn({days, selectedDate, todayDate, onSelect
   const defaultHalf = todayDate.slice(0, 7) === monthKey ? monthHalfOf(todayDate) : 0;
   const [half, setHalf] = useState<0 | 1>(defaultHalf);
   useEffect(() => setHalf(defaultHalf), [monthKey]); // eslint-disable-line react-hooks/exhaustive-deps
-  const halves = monthNeedsHalves(size.height, days.length);
+  const halves = monthNeedsHalves(size.height);
   const shownDays = !halves ? days : half === 0 ? days.slice(0, MONTH_FIRST_HALF_DAYS) : days.slice(MONTH_FIRST_HALF_DAYS);
   const lastDay = days.length > 0 ? Number(days[days.length - 1].date.slice(8)) : 0;
 
@@ -161,6 +161,7 @@ const styles = StyleSheet.create({
     width: 64,
     fontSize: FONT.medium,
     fontWeight: '700',
+    includeFontPadding: false,
   },
   weekendLabel: {
     opacity: 0.7,
@@ -174,6 +175,7 @@ const styles = StyleSheet.create({
   highlights: {
     flex: 1,
     fontSize: FONT.medium,
+    includeFontPadding: false,
   },
   moreChip: {
     borderWidth: 1.5,

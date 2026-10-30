@@ -571,7 +571,6 @@ export default function ItemDetail({
           />
           <View style={[styles.divider, {backgroundColor: borderColor}]} />
           <View style={styles.filesArea}>
-            <Text style={[styles.paneTitle, {color: textColor}]}>Files</Text>
             {error && (
               <Text style={[styles.error, {color: textColor}]}>⚠ {error}</Text>
             )}
@@ -754,7 +753,7 @@ const styles = StyleSheet.create({
   headerRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 8,
   },
   heading: {
     fontSize: FONT.large,
@@ -779,11 +778,6 @@ const styles = StyleSheet.create({
   },
   rightPane: {
     flex: 1,
-  },
-  paneTitle: {
-    fontSize: FONT.medium,
-    fontWeight: '600',
-    marginBottom: 10,
   },
   divider: {
     height: 1,

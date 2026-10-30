@@ -925,7 +925,7 @@ Test: `__tests__/scenarios/currentPagePerf.test.tsx` · design: `docs/dev/histor
 ### Hiding done todos on an Area page changes the Todos list and nothing else, and is kept
 
 - **Given** the big data set and Team's page open
-- **When** I tap "Hide done tasks"
+- **When** I tap "hide done" in the Todos header
 - **Then** the Todos list offers to show the done ones again, and neither Quick Add nor the left pane rendered
 - **And** after opening Zen and coming back, done todos are still hidden
 
@@ -949,7 +949,6 @@ Test: `__tests__/scenarios/rollback.test.tsx`
 - **Given** the smoke space on Wednesday 14.10.2026
 - **When** I open Garden from Areas
 - **Then** Todos list "Buy bulbs" and "Repair the fence", and Meetings list "Neighbour chat"
-- **And** the Given time line counts this week's two meetings, the focus block and "Delivery" (11 h) and this month's (20 h)
 - **And** Garden's folder is not listed
 - **When** I tap "◇ Agreements 1 ›"
 - **Then** the list shows "Water only in the morning"
@@ -1039,7 +1038,7 @@ Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/techn
 ### On a Nomad-sized screen, Quick Add with four tabs keeps its + Add and calls Agreement "Agree"
 
 - **Given** area "Coaching" has a past sparring session with Jordan, and Kept is drawn at Nomad portrait size
-- **When** I open Jordan's thread overview
+- **When** I open Coaching: on a short screen its Todos are the first tab of Todos | Schedule; there I open Jordan's thread overview
 - **Then** its Quick Add shows the short tab name and the main button
 - **And** back at full size the tab is called Agreement again
 
@@ -1233,7 +1232,7 @@ Test: `__tests__/scenarios/features.test.tsx`
 - **Given** the stored settings are broken and the Inbox has a done todo
 - **When** I open Kept GTD
 - **Then** the status line says the settings could not be read
-- **And** a setting changed on the way (Inbox: Hide done tasks) leaves the stored settings as they were
+- **And** a setting changed on the way (Inbox: hide done) leaves the stored settings as they were
 - **And** "Start over" stores the defaults and the message goes away
 
 Test: `__tests__/scenarios/fileSafety.test.tsx` · design: `docs/dev/history/technical-design-quality-hardening.md`

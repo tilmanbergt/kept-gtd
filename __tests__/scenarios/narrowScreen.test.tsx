@@ -20,10 +20,12 @@ scenario('On a Nomad-sized screen, Quick Add with four tabs keeps its + Add and 
     );
     setScreenSimulation('nomad-portrait');
   });
-  when('I open Jordan\'s thread overview', async () => {
+  when('I open Coaching: on a short screen its Todos are the first tab of Todos | Schedule; there I open Jordan\'s thread overview', async () => {
     await openApp({settings: sparringSettings()});
     await tapTab('Areas');
     await tap(/^Coaching/);
+    expectShows('No todos yet.');
+    await tap('Schedule');
     await tap('#sparring/jordan');
   });
   then('its Quick Add shows the short tab name and the main button', () => {

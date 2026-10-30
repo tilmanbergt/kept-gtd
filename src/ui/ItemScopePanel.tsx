@@ -1,7 +1,8 @@
 /**
  * The Current tab's left pane, pinned to the very TOP of the column, above
- * Files: Scope and the Given time line (ui/GivenTimeLine.tsx,
- * docs/dev/history/technical-design-time-and-place.md §3.4, D30).
+ * Files: the Scope, without a label of its own ("+ Add a scope" says what it is). The Given
+ * time line and the "Scope" label were removed in 0.24.0 to give the page room on every device
+ * (docs/dev/history/technical-design-launch-ready.md L6c); given time stays on Week and Month.
  * ui/ItemStatusPanel.tsx (Status/Archive/Assign-to-Area) sits on the other
  * side of Files, so this is a separate component.
  *
@@ -26,9 +27,7 @@ import {saveScope} from '../storage/projectFile';
 import {logError} from '../utils/log';
 import {useEinkRefreshOnLoad} from '../utils/screenRefresh';
 import {common} from './commonStyles';
-import GivenTimeLine from './GivenTimeLine';
 import {ItemScopeRow} from './ItemContextRows';
-import {FONT} from './theme';
 import {errorMessage} from '../utils/errorMessage';
 
 interface Props {
@@ -90,9 +89,7 @@ export default function ItemScopePanel({kind, name, path, textColor, borderColor
 
   return (
     <View style={styles.root}>
-      <Text style={[styles.sectionTitle, {color: textColor}]}>Scope</Text>
       <ItemScopeRow scope={state.scope} onSaveScope={handleSaveScope} textColor={textColor} borderColor={borderColor} placeholderColor={placeholderColor} />
-      <GivenTimeLine path={path} textColor={textColor} />
     </View>
   );
 }
@@ -100,10 +97,5 @@ export default function ItemScopePanel({kind, name, path, textColor, borderColor
 const styles = StyleSheet.create({
   root: {
     marginBottom: 8,
-  },
-  sectionTitle: {
-    fontSize: FONT.medium,
-    fontWeight: '600',
-    marginBottom: 10,
   },
 });

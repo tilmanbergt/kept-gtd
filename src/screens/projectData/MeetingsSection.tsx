@@ -27,7 +27,7 @@ import {log, logError} from '../../utils/log';
 import {errorMessage} from '../../utils/errorMessage';
 import {PaneColors, sectionStyles as styles} from './panelLayout';
 
-type MeetingsMainTab = 'meetings' | 'google';
+type MeetingsMainTab = 'todos' | 'meetings' | 'google';
 const MEETINGS_MAIN_TABS: MiniTabDef<MeetingsMainTab>[] = [
   {key: 'meetings', label: SCHEDULE_LABEL},
   {key: 'google', label: 'Google'},
@@ -46,6 +46,7 @@ export default function MeetingsSection({
   onSelect,
   onOpenLinkedFile,
   filter,
+  leadingTab,
   textColor,
   borderColor,
   placeholderColor,
@@ -66,6 +67,12 @@ export default function MeetingsSection({
   onOpenLinkedFile: (linkedFile: string) => void;
   /** The counterpart filter (counterpartFilter.tsx): only meetings it accepts show. */
   filter?: ((meeting: Meeting) => boolean) | null;
+  /**
+   * A short screen: the Todos as a first tab in this section's tab row - Todos | Schedule | Google -
+   * instead of a section of their own above it (docs/dev/history/technical-design-launch-ready.md
+   * L6c, "stacked sections become tabs on short screens").
+   */
+  leadingTab?: {label: string; content: React.ReactNode} | null;
 }): React.JSX.Element {
   usePerfRender('MeetingsSection');
   const [actionError, setActionError] = useState<string | null>(null);
@@ -77,11 +84,13 @@ export default function MeetingsSection({
   // directly here (not threaded down as a prop) - same self-contained
   // "load your own settings" pattern TodosSection's hideDone already uses
   // above.
-  const [mainTabState, setMainTab] = useState<MeetingsMainTab>('meetings');
+  const [mainTabState, setMainTab] = useState<MeetingsMainTab>(leadingTab ? 'todos' : 'meetings');
   // The Google tab only while the experimental Google Calendar integration
   // is on (docs/dev/history/technical-design-about-debug-experimental.md §3.2).
   const features = useFeatures();
-  const mainTabs = visibleTabs(MEETINGS_MAIN_TABS, mainTabState, 'google', features.googleCalendar);
+  const allTabs: MiniTabDef<MeetingsMainTab>[] = leadingTab ? [{key: 'todos', label: leadingTab.label}, ...MEETINGS_MAIN_TABS] : MEETINGS_MAIN_TABS;
+  // Without the Todos tab (a taller screen again) a remembered 'todos' falls back to the schedule.
+  const mainTabs = visibleTabs(allTabs, !leadingTab && mainTabState === 'todos' ? 'meetings' : mainTabState, 'google', features.googleCalendar);
   const mainTab = mainTabs.activeKey;
   // The calendar link and the Note setups (the rows' prep/review checkpoint icon), from the settings snapshot.
   const settings = useSettings();
@@ -152,7 +161,9 @@ export default function MeetingsSection({
         textColor={textColor}
         borderColor={borderColor}
       />
-      {mainTab === 'meetings' ? (
+      {mainTab === 'todos' && leadingTab ? (
+        <View style={styles.section}>{leadingTab.content}</View>
+      ) : mainTab === 'meetings' ? (
         <>
           {/* The header row carries the pagination arrows/+N count. An empty list shows `emptyHint` below, same
               as TodosSection. */}

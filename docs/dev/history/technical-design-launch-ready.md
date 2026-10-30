@@ -496,3 +496,24 @@ uninstall. Notes, `.txt` data files and saved profiles stay on the device.
     in code; to test: whether it goes with Keep tabs in memory off.
   - Tests: `narrowScreen` (Month nav), unit tests for the helpers, the Daily scenario now checks there
     is no filter.
+- **L6c** (Tilman's Nomad-landscape screenshots of the Current page, decisions 2026-10-30): the layout
+  rules by screen class are written down in `design-device-rendering.md` §1.1, and these follow them.
+  - Month: `monthNeedsHalves(height)` always counts 31 days and allows 24 dp rows, so one screen
+    behaves the same for every month (before, a turned A5 X split 31-day months only). A5 X turned
+    (~26 dp) shows the whole month, the Nomad turned (~20 dp) always halves.
+  - Status slot buttons are `slot height - 6` high with centred text (Add page stood out of the
+    30 dp slot).
+  - Current page, all devices: no "Files" heading, no "Scope" label, no Given time line
+    (`ui/GivenTimeLine.tsx` and `scheduledMinutes` removed; Week/Month keep given time), header gap
+    20 → 8 dp, Archive… / Close out… in the status row (`StatusSection` `trailing`; Assign to Area
+    keeps its own row on projects), the marks card on one line (40 dp; `summarizeMarks` and
+    `marksSummaryLine` removed), "hide done" / "show n done" as the Todos header accessory
+    (`ui/DoneToggle.tsx`, also the Inbox's Tasks).
+  - Short screens: `MeetingsSection` takes `leadingTab` - the Todos (or the agreements list) as its
+    first tab, Todos | Schedule | Google, opening on Todos; tall screens keep the 4:3 stack. Active
+    counterparts on the Threads tab are one line (44 dp).
+  - The golden master of the Current page (`__golden__/currentPage.json`) was recorded again: the
+    texts differ only by the removed labels and lines and the new "hide done"; every list's rows are
+    unchanged.
+  - Tests: `narrowScreen` (Coaching on a Nomad: Todos tab first, Schedule tab), the Month unit tests,
+    the "hide done" scenarios.

@@ -84,7 +84,8 @@
  */
 import {SCHEDULE_LABEL} from '../domain/meetingDisplay';
 import React, {useCallback, useEffect, useState} from 'react';
-import {ActivityIndicator, Keyboard, Pressable, StyleSheet, Text, View} from 'react-native';
+import {ActivityIndicator, Keyboard, StyleSheet, Text, View} from 'react-native';
+import DoneToggle from '../ui/DoneToggle';
 import {AbbrevFileMatch} from '../domain/abbrev';
 import {Destination} from '../domain/destination';
 import {groupTasksByFlowState} from '../domain/flowState';
@@ -782,20 +783,13 @@ export default function InboxScreen({
             <View style={styles.stackedColumn}>
             <View style={{flex: TASKS_WEIGHT}}>
             <View style={styles.stackedSection}>
-              {doneCount > 0 && (
-                <Pressable onPress={toggleHideDone} hitSlop={8} style={styles.hideDoneRow}>
-                  <Text style={[styles.hideDoneText, {color: textColor}]}>
-                    {hideDone ? `Show ${doneCount} done task${doneCount === 1 ? '' : 's'}` : 'Hide done tasks'}
-                  </Text>
-                </Pressable>
-              )}
-
               {/* "Tasks" heading and page controls live in one PagedSection
                   (docs/dev/history/technical-design-pagination-fixed-height.md §3.4,
                   same as screens/ProjectDataPanel.tsx's TodosSection); the
                   "Inbox is at zero" text is its `emptyHint`. */}
               <PagedSection
                 header="Tasks"
+                headerAccessory={<DoneToggle doneCount={doneCount} hideDone={hideDone} onToggle={toggleHideDone} textColor={textColor} />}
                 rows={taskFlatRows}
                 rowHeight={row => (row.kind === 'header' ? SUBHEADING_ROW_PX : taskRowHeight(row.task, estimatorWidth(), 'grouped'))}
                 isCountableRow={row => row.kind === 'entry'}
@@ -965,13 +959,5 @@ const styles = StyleSheet.create({
     opacity: 0.6,
     marginTop: 10,
     marginBottom: 4,
-  },
-  hideDoneRow: {
-    marginBottom: 6,
-  },
-  hideDoneText: {
-    fontSize: FONT.small,
-    opacity: 0.6,
-    textDecorationLine: 'underline',
   },
 });

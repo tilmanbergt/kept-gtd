@@ -207,7 +207,7 @@
         "src/screens/{ItemsList,ItemDetail,ProjectDataPanel}.tsx",
         "src/screens/area/**",
         "src/screens/projectData/**",
-        "src/ui/{ItemStatusPanel,ItemScopePanel,GivenTimeLine,ItemContextBlock,ItemContextRows}.tsx",
+        "src/ui/{ItemStatusPanel,ItemScopePanel,ItemContextBlock,ItemContextRows}.tsx",
         "src/ui/{useStatusChoice,useStatusConfirm}.ts",
         "src/storage/{areaAssignment,statusControl,projectGlance}.ts"
       ]
@@ -273,7 +273,7 @@
       "sources": [
         "App.tsx",
         "src/screens/useAppOverlays.tsx",
-        "src/ui/{PagedSection,PillButton,ProgressBar,MiniTabs,TabBar,TwoLineRow,KeepAliveTab,TaskRow,HighlightMark,ScreenSize}.tsx",
+        "src/ui/{PagedSection,PillButton,ProgressBar,MiniTabs,TabBar,TwoLineRow,KeepAliveTab,TaskRow,HighlightMark,ScreenSize,DoneToggle}.tsx",
         "src/ui/{icons.tsx,commonStyles.ts,theme.ts,listLayout.ts,pagination.ts,keepAliveStore.ts,screenActivity.ts,screenSimStore.ts}",
         "src/ui/{useMeasuredHeight,useStableCallback,useActionError,useEditTarget,useEntryActions,taskRowLayout,itemEntryRow}.ts",
         "src/ui/status/**",

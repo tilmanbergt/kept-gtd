@@ -275,23 +275,7 @@ export function tendLineText(count: {threads: number; loops: number}): string | 
   return parts.length > 0 ? `Tend: ${parts.join(' · ')} quiet ›` : null;
 }
 
-/**
- * The Project/Area page's line (D30): minutes scheduled in `meetings` - the
- * item's own, an Area's with its Projects' - over the range (all-day days at
- * 8 h). A single page is never filtered by the context.
- */
-export function scheduledMinutes(meetings: readonly Meeting[], range: {start: string; end: string}): number {
-  let minutes = 0;
-  for (const meeting of meetings) {
-    if (meeting.cancelled) continue;
-    const days = coveredDaysIn(meeting, range.start, range.end);
-    if (days.length === 0) continue;
-    minutes += meeting.time ? meetingMinutes(meeting) : days.length * ALL_DAY_MINUTES;
-  }
-  return minutes;
-}
-
-/** "3 h", "45 min", or "–" for none: the page line's value per period. */
+/** "3 h", "45 min", or "–" for none. */
 export function hoursText(minutes: number): string {
   if (minutes === 0) return '–';
   return minutes < 60 ? `${minutes} min` : `${Math.round((minutes / 60) * 10) / 10} h`;

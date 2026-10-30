@@ -24,6 +24,10 @@
  * storage/counterparts.ts. The signals are storage/tendingRoster.ts's. No
  * roster is built before the thread types are known; the list then shows
  * "Loading threads…" (docs/dev/history/technical-design-perf-threads.md §3.6).
+ *
+ * On a short screen (ui/ScreenSize.tsx useShortScreen) an active counterpart is one line, without
+ * its "last · next · counts" line (docs/dev/history/technical-design-launch-ready.md L6c, the rule
+ * "secondary lines go on short screens"); its overview has them.
  */
 import React, {useMemo, useState} from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
@@ -41,10 +45,13 @@ import {FONT, SPACING} from '../../ui/theme';
 import {openOverview} from '../../ui/overviewStore';
 import {needsConfirm, useTendActions, useTendingData} from './useTending';
 import {usePerfRender} from '../../utils/perf';
+import {useShortScreen} from '../../ui/ScreenSize';
 
 const HEAD_HEIGHT = 30;
 const CONFIRM_HEIGHT = 44;
 const ACTIVE_HEIGHT = 57;
+/** An active counterpart on a short screen: its name line only. */
+const ACTIVE_HEIGHT_SHORT = 44;
 const THREAD_HEIGHT = 37;
 const FOLD_HEIGHT = 37;
 const INACTIVE_HEIGHT = 44;
@@ -97,6 +104,7 @@ interface Props {
 
 export default function ThreadsTab({path, selected, onSelect, onNextMeeting, viewportHeight, textColor, borderColor}: Props): React.JSX.Element {
   usePerfRender('ThreadsTab');
+  const short = useShortScreen();
   const {items, inbox, ruleTypes, ready} = useTendingData();
   const tend = useTendActions('ThreadsTab.error');
   const setInactive = useSetInactive('ThreadsTab.setInactive', entry => {
@@ -219,7 +227,7 @@ export default function ThreadsTab({path, selected, onSelect, onNextMeeting, vie
         const counts = rosterCountsText(row.entry);
         const meetingText = rosterMeetingText(row.entry, label(row.entry), today);
         return (
-          <View key={row.key} style={[styles.row, {height: ACTIVE_HEIGHT, borderColor}]}>
+          <View key={row.key} style={[styles.row, {height: short ? ACTIVE_HEIGHT_SHORT : ACTIVE_HEIGHT, borderColor}]}>
             <View style={styles.line}>
               {cp.threads.length > 0 ? (
                 <Text
@@ -248,9 +256,11 @@ export default function ThreadsTab({path, selected, onSelect, onNextMeeting, vie
                 )}
               {filterAction(row.entry)}
             </View>
-            <Text style={[styles.small, styles.second, {color: textColor}]} numberOfLines={1}>
-              {counts ? `${meetingText} · ${counts}` : meetingText}
-            </Text>
+            {!short && (
+              <Text style={[styles.small, styles.second, {color: textColor}]} numberOfLines={1}>
+                {counts ? `${meetingText} · ${counts}` : meetingText}
+              </Text>
+            )}
           </View>
         );
       }
@@ -291,7 +301,7 @@ export default function ThreadsTab({path, selected, onSelect, onNextMeeting, vie
         header={header}
         heightKey={[`current:Threads:${path}`, 'current:Threads']}
         rows={rows}
-        rowHeight={row => HEIGHTS[row.kind]}
+        rowHeight={row => (row.kind === 'active' && short ? ACTIVE_HEIGHT_SHORT : HEIGHTS[row.kind])}
         isCountableRow={row => row.kind === 'confirm' || row.kind === 'active' || row.kind === 'inactive'}
         viewportHeight={viewportHeight}
         resetKey={path}

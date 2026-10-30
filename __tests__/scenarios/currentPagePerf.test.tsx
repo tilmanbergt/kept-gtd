@@ -108,17 +108,17 @@ scenario('Hiding done todos on an Area page changes the Todos list and nothing e
     await tapTab('Areas');
     await tap(/^Team/);
   });
-  when('I tap "Hide done tasks"', async () => {
+  when('I tap "hide done" in the Todos header', async () => {
     // After the page's first e-ink flush, which builds Quick Add's other tabs once.
     await act(async () => {
       await new Promise(resolve => setTimeout(resolve, 500));
     });
     await settle();
     resetRenderCounts();
-    await tap('Hide done tasks');
+    await tap('hide done');
   });
   then('the Todos list offers to show the done ones again, and neither Quick Add nor the left pane rendered', () => {
-    expectShows(/^Show \d+ done tasks?$/);
+    expectShows(/^show \d+ done$/);
     const counts = renderCounts();
     expect(counts.TodosSection).toBeGreaterThan(0);
     for (const name of ['QuickAddWidget', 'ItemDetail', 'FileBrowserPane', 'ThreadsTab', 'ItemScopePanel', 'ItemStatusPanel']) expect([name, counts[name] ?? 0]).toEqual([name, 0]);
@@ -128,7 +128,7 @@ scenario('Hiding done todos on an Area page changes the Todos list and nothing e
     await tap(/^Zen/);
     await tapTab('Areas');
     await tap(/^Team/);
-    expectShows(/^Show \d+ done tasks?$/);
+    expectShows(/^show \d+ done$/);
   });
 });
 

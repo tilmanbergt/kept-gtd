@@ -79,8 +79,8 @@ the thread overview otherwise.
 - **Daily, Week, Month** — the planning screens (§2.7).
 - **Inbox** — `screens/InboxScreen.tsx`: Files pane on the left (Resources and Browse), Tasks
   above Meetings on the right, everything unfiltered.
-- **Current** — `screens/ItemDetail.tsx`: left pane `ui/ItemScopePanel.tsx` (Scope and the
-  Given time line `ui/GivenTimeLine.tsx`) on top, the Files pane (`ui/FileBrowserPane.tsx`) in the middle and
+- **Current** — `screens/ItemDetail.tsx`: left pane `ui/ItemScopePanel.tsx` (the Scope, without a
+  label; the Given time line was removed in 0.24.0) on top, the Files pane (`ui/FileBrowserPane.tsx`) in the middle and
   `ui/ItemStatusPanel.tsx` (status, close-out/archive, Assign to Area) at the bottom; right pane
   `screens/ProjectDataPanel.tsx` with Quick Add, Todos and Meetings (the two lists in
   `screens/projectData/`). The header shows the kind and the editable abbreviation pill. The Files
@@ -857,9 +857,8 @@ todos done and nothing scheduled; the Tend line (threads that need tending, `nee
 loops that need a look, opening Review → Tending threads); the hidden line. In the context panel,
 the slot (`ui/meetingContext/useMeetingContextSlot.ts`) keeps its own todo selection and hands
 Quick Add `todoOverride`; the panel's header has "✕ Close". An owner's kind shows as
-`ui/KindBadge.tsx` (small caps, right of the name) wherever it is labelled. The Project/Area page shows
-`ui/GivenTimeLine.tsx` (this week, this month; the item's and an Area's Projects' meetings,
-never filtered by the context).
+`ui/KindBadge.tsx` (small caps, right of the name) wherever it is labelled. Given time shows on Week
+and Month only (the Project/Area page's line was removed in 0.24.0).
 
 - **Week** (`screens/WeekView.tsx` header and navigation, body `screens/WeekPlanner.tsx`): left a
   chip grid (`ui/WeekGrid.tsx`, 4 × 2 chips per weekday, 2 × 2 per weekend day) or Google.

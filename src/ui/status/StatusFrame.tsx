@@ -128,9 +128,9 @@ function StatusSlotRow({msg, index, count, onPrev, onNext, onTextPress, height, 
         </Text>
       </Pressable>
       {msg.actions?.map(action => (
-        <SlotButton key={action.label} label={action.label} primary={action.primary} onPress={action.onPress} fg={fg} bg={bg} />
+        <SlotButton key={action.label} label={action.label} primary={action.primary} onPress={action.onPress} height={height - SLOT_BUTTON_INSET} fg={fg} bg={bg} />
       ))}
-      {msg.kind === 'modal' && msg.onCancel && <SlotButton label="Cancel" onPress={msg.onCancel} fg={fg} bg={bg} />}
+      {msg.kind === 'modal' && msg.onCancel && <SlotButton label="Cancel" onPress={msg.onCancel} height={height - SLOT_BUTTON_INSET} fg={fg} bg={bg} />}
       {msg.kind === 'confirm' && msg.onCancel && <CloseMark onPress={msg.onCancel} color={fg} />}
       {msg.kind !== 'confirm' && msg.onDismiss && <CloseMark onPress={msg.onDismiss} color={fg} />}
       {count > 1 && (
@@ -150,13 +150,18 @@ function StatusSlotRow({msg, index, count, onPrev, onNext, onTextPress, height, 
   );
 }
 
-function SlotButton({label, onPress, primary, fg, bg}: {label: string; onPress: () => void; primary?: boolean; fg: string; bg: string}) {
+/** A slot button is this much lower than the slot, so it always fits inside it (docs/dev/history/technical-design-launch-ready.md L6c). */
+const SLOT_BUTTON_INSET = 6;
+
+function SlotButton({label, onPress, primary, height, fg, bg}: {label: string; onPress: () => void; primary?: boolean; height: number; fg: string; bg: string}) {
   return (
     <Pressable
       onPress={onPress}
       hitSlop={HIT_SLOP}
-      style={[styles.button, {borderColor: fg}, primary && {backgroundColor: fg}]}>
-      <Text style={[styles.buttonText, {color: primary ? bg : fg}]}>{label}</Text>
+      style={[styles.button, {height, borderColor: fg}, primary && {backgroundColor: fg}]}>
+      <Text style={[styles.buttonText, {color: primary ? bg : fg}]} numberOfLines={1}>
+        {label}
+      </Text>
     </Pressable>
   );
 }
@@ -214,12 +219,13 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 12,
     paddingHorizontal: 10,
-    paddingVertical: 3,
+    justifyContent: 'center',
     marginLeft: 8,
   },
   buttonText: {
     fontSize: FONT.small,
     fontWeight: '600',
+    includeFontPadding: false,
   },
   close: {
     marginLeft: 10,
