@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-140 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+148 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -819,7 +819,7 @@ Test: `__tests__/scenarios/keptGtd.test.tsx`
 ### The demo space lives in Note/kept-gtd-demo
 
 - **Given** an empty PARA folder
-- **When** I create the demo space in Settings → Advanced and switch to it
+- **When** I create the demo space in Settings → Data and switch to it
 - **Then** its folders are under Note/kept-gtd-demo and nothing is written under Note/gtdpara-demo
 
 Test: `__tests__/scenarios/keptGtd.test.tsx`
@@ -827,7 +827,7 @@ Test: `__tests__/scenarios/keptGtd.test.tsx`
 ### Try things in the demo space without touching the real files, then switch back
 
 - **Given** my real PARA folder has project "Website" and an empty Inbox
-- **When** I create the demo space in Settings → Advanced and switch to it
+- **When** I create the demo space in Settings → Data and switch to it
 - **Then** the tab bar shows the boxed D and Projects shows the demo projects, not "Website"
 - **And** the chip opens Settings → Contexts with Work and Home; Daily has Garden renovation's focus block today
 - **When** I add the todo "Try the demo" in the Inbox
@@ -841,7 +841,7 @@ Test: `__tests__/scenarios/profiles.test.tsx` · design: `docs/dev/history/techn
 ### Switch to the demo space and back (smoke)
 
 - **Given** the smoke space on Wednesday 14.10.2026
-- **When** I create the demo space in Settings → Advanced and switch to it
+- **When** I create the demo space in Settings → Data and switch to it
 - **Then** Daily shows the demo's content under the inverted tab bar with its D
 - **When** I switch back to Production
 - **Then** Daily shows the smoke space again
@@ -1057,6 +1057,69 @@ Test: `__tests__/scenarios/quickAdd.test.tsx` · design: `docs/dev/history/techn
 
 Test: `__tests__/scenarios/smoke/daily.test.tsx`
 
+## Remove data
+
+### Removing with the defaults, then Start fresh, opens the setup assistant
+
+- **Given** Kept has settings, a log, a profile, a project and open marks
+- **When** I tap Remove… and confirm with Remove
+- **Then** each step reports removed and the settings are gone
+- **And** the profile was saved first, and the project file is still there
+- **When** I tap Start fresh
+- **Then** the setup assistant opens as on a first install
+
+Test: `__tests__/scenarios/removeData.test.tsx`
+
+### Cancel on the question removes nothing
+
+- **When** I tap Remove… and then ✕ on the question
+- **Then** nothing is removed and the list is still there
+
+Test: `__tests__/scenarios/removeData.test.tsx`
+
+### With the demo profile active, the demo space goes only with the settings
+
+- **Given** the demo profile is active and the demo space exists
+- **When** I uncheck the settings
+- **Then** the demo space is unchecked and says why
+
+Test: `__tests__/scenarios/removeData.test.tsx`
+
+### Removing with the defaults leaves no Kept data but keeps profiles, data files and notes
+
+- **Given** Kept has data in every place it uses
+- **When** I remove with the defaults
+- **Then** no Kept entry, log, demo space or private file is left
+- **And** the profiles, every data file, the note and the other plugin stay
+
+Test: `__tests__/scenarios/removeDataRun.test.ts`
+
+### A failing log deletion still removes the rest and keeps the settings
+
+- **Given** Kept has data in every place it uses, and deleting the logs will fail
+- **When** I remove with the defaults
+- **Then** the logs report the failure, the settings are kept and the rest is gone
+
+Test: `__tests__/scenarios/removeDataRun.test.ts`
+
+### Save the active profile first keeps the setup in production.json
+
+- **Given** my Projects folder is "Work projects"
+- **When** I remove the settings with Save the active profile first on
+- **Then** production.json holds the folder and the settings are gone
+- **Given** Kept has data in every place it uses
+- **Then** project.txt, area.txt, Inbox.txt and the archived project.txt are gone
+- **And** the project folder and its note stay
+
+Test: `__tests__/scenarios/removeDataRun.test.ts`
+
+### The scan counts what is there
+
+- **Given** Kept has data in every place it uses
+- **Then** each kind has its count and the open mark is counted
+
+Test: `__tests__/scenarios/removeDataRun.test.ts`
+
 ## Review
 
 ### Tend: a thread without a meeting in 14 days counts in the Tend line and shows "nothing planned"
@@ -1082,26 +1145,6 @@ Test: `__tests__/scenarios/givenTime.test.tsx`
 Test: `__tests__/scenarios/givenTime.test.tsx`
 
 ## Settings
-
-### Check device files lists the folders, the SD card and the file Kept was opened from
-
-- **Given** a PDF in Document/Garden, an EPUB on an SD card, and debug logging on
-- **When** I open Kept from page 12 of Book.pdf and tap Settings → Advanced → Check device files
-- **Then** each listing shows its top folders, the SD card included, and the file with its page
-- **When** I tap Open (last page) on the PDF
-- **Then** the host is asked to open it at its last page
-- **When** I tap Open this file at page 11
-- **Then** the host is asked to open the launch file at that page
-- **And** Close returns to Advanced
-
-Test: `__tests__/scenarios/deviceCheck.test.tsx` · design: `docs/dev/history/technical-design-easy-start.md`
-
-### Check device files is hidden while debug logging is off
-
-- **When** I open Settings → Advanced with debug logging off
-- **Then** there is no Check device files
-
-Test: `__tests__/scenarios/deviceCheck.test.tsx` · design: `docs/dev/history/technical-design-easy-start.md`
 
 ### Close-out off: a Done project archives directly from its page
 
@@ -1157,10 +1200,57 @@ Test: `__tests__/scenarios/keptGtd.test.tsx`
 ### Export debug bundle writes a file named after Kept GTD
 
 - **Given** an empty PARA folder
-- **When** I tap Export debug bundle on Settings → About
+- **When** I tap Export debug bundle on Settings → Advanced
 - **Then** one kept-gtd-debug file is in EXPORT/kept-gtd/debug, it says Kept GTD, and the status line names it
 
 Test: `__tests__/scenarios/keptGtd.test.tsx`
+
+### Settings opens on Data, with six tabs
+
+- **Given** Kept is open
+- **When** I open Settings
+- **Then** the six tabs show, and Data holds the folders, the setup assistant and the profiles
+
+Test: `__tests__/scenarios/settingsTabs.test.tsx`
+
+### An unsaved folder field holds back the setup assistant until Save
+
+- **Given** Settings → Data is open
+- **When** I change the Projects folder without saving
+- **Then** Run setup assistant waits and says why
+- **When** I tap Save under the folder fields
+- **Then** the folder is stored and the assistant can start again
+
+Test: `__tests__/scenarios/settingsTabs.test.tsx`
+
+### The Gmail account sits on Features while Gmail is on, and stays stored while it is off
+
+- **Given** Gmail is set up for jordan@example.com and switched off
+- **When** I open Settings → Features
+- **Then** there is no Gmail block
+- **When** I switch Gmail on
+- **Then** its block shows the stored address
+- **And** the address is still stored
+
+Test: `__tests__/scenarios/settingsTabs.test.tsx`
+
+### Debug logging and the debug bundle are on Advanced; About invites reports
+
+- **Given** Kept is open
+- **When** I open Settings → Advanced
+- **Then** it shows Reporting a problem next to the tools
+- **When** I open About
+- **Then** it invites reports and points to Advanced, without the debug switches
+
+Test: `__tests__/scenarios/settingsTabs.test.tsx`
+
+### The profile chip in the tab bar opens the profiles on Data
+
+- **Given** the profile "work" is active
+- **When** I tap the chip WORK in the tab bar
+- **Then** Settings shows Data with the profiles
+
+Test: `__tests__/scenarios/settingsTabs.test.tsx`
 
 ### A fresh install opens the setup assistant; Finish saves the folders found and creates only the missing ones
 
@@ -1184,40 +1274,15 @@ Test: `__tests__/scenarios/setupAssistant.test.tsx` · design: `docs/dev/history
 
 Test: `__tests__/scenarios/setupAssistant.test.tsx` · design: `docs/dev/history/technical-design-easy-start.md`
 
-### An existing install opens on Daily as before; Run setup assistant starts it from Settings → Folders, Simple with own notes
+### An existing install opens on Daily as before; Run setup assistant starts it from Settings → Data, Simple with own notes
 
 - **When** Kept starts with stored settings
 - **Then** it lands on Daily, without the assistant
-- **When** I tap Run setup assistant on Settings → Folders, choose own notes and Simple, and Finish
+- **When** I tap Run setup assistant on Settings → Data, choose own notes and Simple, and Finish
 - **Then** close-out, Calendar, Gmail and Notebook contents are off and the Default has no notebook
 - **And** Run setup assistant waits while the Folders fields have unsaved changes
 
 Test: `__tests__/scenarios/setupAssistant.test.tsx` · design: `docs/dev/history/technical-design-easy-start.md`
-
-### Record taps in the touch test without changing anything
-
-- **Given** the Inbox has the todo "Call Anna"
-- **When** I open Settings → Advanced → Touch test
-- **Then** sample rows show, numbered, and none of my todos
-- **When** I tap the title of row 1, then a spot where nothing reacts
-- **Then** the first tap counts as handled on the title, the second as no target
-- **When** I tap the checkbox of row 1 and then Save log
-- **Then** a CSV with the three touches is in EXPORT/kept-gtd/debug, and the status line says so
-- **And** the Inbox is untouched: the tapped checkbox ticked nothing
-- **When** I tap Close
-- **Then** Settings → Advanced shows again
-
-Test: `__tests__/scenarios/touchTest.test.tsx` · design: `docs/dev/history/technical-design-touch-test.md`
-
-### Log touches on every screen while "Log touches everywhere" is on
-
-- **Given** an empty PARA folder
-- **When** I switch on "Log touches everywhere" in the touch test, close it and tap twice on Daily
-- **Then** the log has one line per tap, with numbers only
-- **When** I switch it off again
-- **Then** no touch handler is attached to the app any more
-
-Test: `__tests__/scenarios/touchTest.test.tsx` · design: `docs/dev/history/technical-design-touch-test.md`
 
 ## Smoke
 

@@ -28,7 +28,7 @@ Kept reads your calendar through its private address in iCal format. It only rea
 
 1. On a computer, open Google Calendar, then the settings of your calendar, and copy the **secret address in iCal format**.
 2. Switch on **Google Calendar** under Experimental.
-3. Paste the address in [Settings → Calendar](settings.md#calendar-and-gmail) and tap **Save**.
+3. Paste the address under **Google Calendar** on the right of [Settings → Features](settings.md#google-calendar-and-gmail) and tap its **Save**.
 
 A **Google** tab then appears in [Daily](daily.md#schedule-and-cards), [Week](week-and-month.md#week), [Month](week-and-month.md#month), [Inbox](quick-add.md#the-inbox), a project's [Current](projects-and-areas.md#the-current-tab) tab and the Review's [Week ahead](review.md#the-steps) step. Tap **Load Google Calendar**. You can copy an event into a Kept meeting with one tap; copied events get a check mark, and **Hide existing** hides them. Events copied on the Month tab become [monthly highlights](week-and-month.md#month).
 
@@ -40,7 +40,7 @@ Kept reads your Gmail inbox over IMAP with an *app password*, not your normal pa
 
 1. In your Google account, turn on 2-step verification (required for app passwords) and create an app password.
 2. Switch on **Gmail** under Experimental.
-3. In [Settings → Gmail](settings.md#calendar-and-gmail), enter your Gmail address and the app password, and tap **Save**.
+3. Under **Gmail** on the right of [Settings → Features](settings.md#google-calendar-and-gmail), enter your Gmail address and the app password, and tap its **Save**.
 
 The Weekly Review then has a [Gmail inbox](review.md#the-steps) step. Tap **Load Gmail inbox**, open an email and:
 
@@ -49,6 +49,6 @@ The Weekly Review then has a [Gmail inbox](review.md#the-steps) step. Tap **Load
 - save the email text as a note
 - archive the email in Gmail when you are done
 
-Emails you have created something from get a check mark during the review. The option **Hide emails already turned into a Task/Meeting** in Settings → Gmail hides them.
+Emails you have created something from get a check mark during the review. The option **Hide emails already turned into a Task/Meeting** under Gmail in Settings → Features hides them.
 
 The app password is stored inside the plugin on the Supernote. You can revoke it in your Google account at any time.

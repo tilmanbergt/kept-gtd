@@ -32,6 +32,23 @@ class GtdParaFileModule(reactContext: ReactApplicationContext) :
     companion object {
         private const val TAG = "GtdParaFile"
 
+        /** The internal shared storage; Kept's data files must lie inside it. */
+        private const val SHARED_STORAGE = "/storage/emulated/0"
+
+        /** Kept's own folders in shared storage: the only trees [deleteKeptTree] deletes. */
+        private val KEPT_TREE_ROOTS = listOf(
+            "$SHARED_STORAGE/EXPORT/kept-gtd",
+            "$SHARED_STORAGE/EXPORT/gtdpara",
+            "$SHARED_STORAGE/Note/kept-gtd-demo",
+            "$SHARED_STORAGE/Note/gtdpara-demo",
+        )
+
+        /** The data files Kept writes: the only names [deleteKeptFile] deletes, besides [KEPT_TMP_NAME]. */
+        private val KEPT_FILE_NAMES = setOf("project.txt", "area.txt", "Inbox.txt")
+
+        /** The hidden copy an interrupted save leaves next to a data file. */
+        private val KEPT_TMP_NAME = Regex("^\\.[^/]+\\.gtdpara-tmp$")
+
         /**
          * The plugin's private folder (`.../files/plugins/<pluginID>`), the
          * one place exempt from every plugin permission (Supernote docs,
@@ -548,6 +565,88 @@ class GtdParaFileModule(reactContext: ReactApplicationContext) :
             Log.e(TAG, "deleteEmptyFolder: failed path=$path", error)
             promise.reject("E_DELETE", error.message, error)
         }
+    }
+
+    /**
+     * Remove Kept's data (docs/dev/history/technical-design-remove-data.md §4): recursively
+     * deletes [path] - but ONLY when it is one of Kept's own folders in shared storage or lies
+     * inside one ([KEPT_TREE_ROOTS]: the export folders and the demo spaces). Anything else is
+     * refused without touching the disk. Called by JS only after the user confirmed the removal
+     * and FILE:DELETE was granted. Resolves true when the path is gone (or was already gone).
+     */
+    @ReactMethod
+    fun deleteKeptTree(path: String?, promise: Promise) {
+        PluginRuntimeGuard.trace("GtdParaFile.deleteKeptTree")
+        if (path.isNullOrEmpty() || !isKeptTree(path)) {
+            promise.reject("E_NOT_KEPT", "Refusing to delete outside Kept's own folders: $path")
+            return
+        }
+        try {
+            val target = File(path)
+            val ok = !target.exists() || target.deleteRecursively()
+            Log.d(TAG, "deleteKeptTree: ok=$ok")
+            if (!ok) {
+                promise.reject("E_DELETE", "Could not delete everything in $path")
+                return
+            }
+            promise.resolve(true)
+        } catch (error: Throwable) {
+            Log.e(TAG, "deleteKeptTree: failed", error)
+            promise.reject("E_DELETE", error.message, error)
+        }
+    }
+
+    /**
+     * Remove Kept's data, the data files (§3 rows 8 and 9): deletes the FILE [path] only when its
+     * name is one Kept writes itself - `project.txt`, `area.txt`, `Inbox.txt`, or a hidden
+     * `.<name>.gtdpara-tmp` copy left by an interrupted save - and it lies in shared storage.
+     * Folders and every other file name are refused without touching the disk.
+     */
+    @ReactMethod
+    fun deleteKeptFile(path: String?, promise: Promise) {
+        PluginRuntimeGuard.trace("GtdParaFile.deleteKeptFile")
+        if (path.isNullOrEmpty() || !isKeptFile(path)) {
+            promise.reject("E_NOT_KEPT", "Refusing to delete a file Kept doesn't write: $path")
+            return
+        }
+        try {
+            val file = File(path)
+            if (!file.exists()) {
+                promise.resolve(true)
+                return
+            }
+            if (!file.isFile) {
+                promise.reject("E_NOT_FILE", "Not a file: $path")
+                return
+            }
+            val ok = file.delete()
+            Log.d(TAG, "deleteKeptFile: ok=$ok")
+            if (!ok) {
+                promise.reject("E_DELETE", "Could not delete the file")
+                return
+            }
+            promise.resolve(true)
+        } catch (error: Throwable) {
+            Log.e(TAG, "deleteKeptFile: failed", error)
+            promise.reject("E_DELETE", error.message, error)
+        }
+    }
+
+    /** True for one of [KEPT_TREE_ROOTS] or anything inside one, after resolving `..` and links. */
+    private fun isKeptTree(path: String): Boolean {
+        val target = File(path).canonicalPath
+        return KEPT_TREE_ROOTS.any { root ->
+            val canonicalRoot = File(root).canonicalPath
+            target == canonicalRoot || target.startsWith("$canonicalRoot/")
+        }
+    }
+
+    /** True for a file named like one of Kept's data files, inside shared storage. */
+    private fun isKeptFile(path: String): Boolean {
+        val file = File(path).canonicalFile
+        if (!file.path.startsWith(File(SHARED_STORAGE).canonicalPath + "/")) return false
+        val name = file.name
+        return name in KEPT_FILE_NAMES || KEPT_TMP_NAME.matches(name)
     }
 
     /**

@@ -26,6 +26,10 @@ export interface GtdParaFileNativeModule {
   deletePrivateDataTree?(path: string): Promise<boolean>;
   /** Deletes an EMPTY folder only; missing on older native builds. */
   deleteEmptyFolder?(path: string): Promise<boolean>;
+  /** Recursive delete of Kept's own folders only (technical-design-remove-data.md §4); missing before 0.24.0. */
+  deleteKeptTree?(path: string): Promise<boolean>;
+  /** Deletes a file named like Kept's data files only (§4); missing before 0.24.0. */
+  deleteKeptFile?(path: string): Promise<boolean>;
   writeBinaryFile(path: string, base64Content: string): Promise<boolean>;
   /** Debug-log sink; missing on older native builds. */
   appendTextFile?(path: string, content: string, maxBytes: number): Promise<number>;

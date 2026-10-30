@@ -1055,20 +1055,32 @@ at its old place with an error. Credentials: `gmailEmail`, `gmailAppPassword` (s
 
 ### 2.12 Settings, profiles and diagnostics
 
-**Settings screen** (`screens/settings/`): mini-tabs Folders, Contexts, Calendar, Gmail (the last
-two only while switched on), Note setups, Features, Advanced, About. Folders, Calendar and Gmail edit
-one draft (`useSettingsDraft.ts`) that only Save writes; every Save clears the cache (the next
-screen builds it again) and the Gmail list, and a changed Inbox folder name moves the folder first (`storage/inboxFolder.ts`, refused
-when the target exists, not moved when Base or Areas change in the same save). Note setups save
-per setup (and the Default on its own), and its Heading style (`noteHeadingStyle`) at once; the switches on Features, Advanced and About write immediately. **Features**
-(`FeaturesTab.tsx`) holds the module switches - `settings.modules` (`closeOut`, on by default; read
-through `domain/features.ts`'s `featuresOf`/`modulesOf`, which fill a missing key from its default,
-and `ui/featureStore.ts`'s `useFeatures`; close-out off passes no `onStartCloseOut` to Current and
-Review, so a Done project archives directly) - and the Experimental switches. Advanced holds Profiles, "Reload all files", "Run Integrity Check", "Touch test", "Check device
-files" (only while Debug logging is on: `storage/deviceCheck.ts` - the folders it can list, the
-launch file and page, Open buttons for files outside `Note/`), "Keep tabs in memory" and
-"Performance tracing". About shows version and build, the changelog ("What's new", also offered
-once after an update), Debug logging and "Export debug bundle".
+**Settings screen** (`screens/settings/`; `docs/dev/history/technical-design-settings-tabs.md`):
+mini-tabs Data, Contexts, Note setups, Features, Advanced, About; Settings opens on Data. The folder
+fields (Data) and the Google Calendar and Gmail blocks (Features, shown while their switch is on)
+edit one draft (`useSettingsDraft.ts`); each block's Save (`saveFields(scope)`) writes only its own
+fields over what is stored. A folder Save clears the cache (the next screen builds it again) and a
+changed Inbox folder name moves the folder first (`storage/inboxFolder.ts`, refused when the target
+exists, not moved when Base or Areas change in the same save); a Gmail Save clears the Gmail list.
+**Data** (`DataTab.tsx`) has the folder fields left, Run setup assistant, Profiles and Remove Kept's
+data right; they wait while the folder fields are unsaved (`draft.unsaved('folders')`). **Remove
+Kept's data** (`RemoveDataScreen.tsx`, `docs/dev/history/technical-design-remove-data.md`): the kinds
+and rules are pure (`domain/dataRemoval.ts`); `storage/dataRemoval.ts` scans (only `gtdpara:` store
+keys, never the whole store) and removes in the order files, private folders, store - settings last
+and kept when an earlier step failed; deletes in shared storage go through the native
+`deleteKeptTree` / `deleteKeptFile`, which refuse anything outside Kept's own folders and data-file
+names. Start fresh remounts the app like a profile switch; with no stored settings the load is a
+first install. Note setups save per setup (and
+the Default on its own), and its Heading style (`noteHeadingStyle`) at once; the switches on
+Features and Advanced write immediately. **Features** (`FeaturesTab.tsx`) holds the module switches
+- `settings.modules` (`closeOut`, on by default; read through `domain/features.ts`'s
+`featuresOf`/`modulesOf`, which fill a missing key from its default, and `ui/featureStore.ts`'s
+`useFeatures`; close-out off passes no `onStartCloseOut` to Current and Review, so a Done project
+archives directly) - and the Experimental switches. **Advanced** holds Reporting a problem (Debug
+logging, "Export debug bundle", `ReportingSection.tsx`) and the tools ("Reload all files", "Run
+Integrity Check", "Keep tabs in memory", "Performance tracing"). **About** shows version and build,
+an invitation to report problems, and the changelog ("What's new", also offered once after an
+update).
 
 **Setup assistant** (`screens/settings/SetupAssistant.tsx`, decisions in
 `domain/setupAssistant.ts`, writes in `storage/setupAssistant.ts`): Folders (existing PARA folders
@@ -1127,14 +1139,6 @@ when asked for:
   navigation, reopen and cold start, ending after 1.5 s of quiet (15 s at most), written as JSONL
   to `EXPORT/kept-gtd/debug/perf/` with data-volume stats (`storage/perfStats.ts`). Off costs one
   check per call. Analysis: `node scripts/perf-report.js`.
-- **Touch test** (`screens/settings/TouchTestScreen.tsx`, classification in
-  `domain/touchDiag.ts`): real `TaskRow`s and `MeetingRow`s with sample entries down to the
-  bottom edge; an observe-only root view (`ui/touchDiag/TouchObserver.tsx`, never the
-  responder) records every touch, the rows report press events through a context only the test
-  provides (`ui/touchDiag/touchProbe.ts`), and each touch is classified handled, cancelled,
-  noTarget or swallowed. One numbers-only log line per touch; "Save log" writes CSV to
-  `EXPORT/kept-gtd/debug/`. "Log touches everywhere" (`ui/touchDiag/AppTouchObserver.tsx`, not
-  persisted) logs raw touches app-wide. Detail: `docs/dev/history/technical-design-touch-test.md`.
 - **Stale build**: `supernote/pluginRuntime.ts` checks whether an older Kept build is still
   loaded in the host process. The required plugin firmware unloads it on install, so there is no
   warning: the count goes into the debug bundle and one `pluginRuntime: stale builds` log line per

@@ -8,7 +8,7 @@
 - *A link to a Kept note doesn't work in [Obsidian](files-and-folders.md#using-kept-gtd-with-obsidian)*: the note probably has an old name with `#`, `[`, `]` or `^` ([File names](files-and-folders.md#file-names)). Run [Run Integrity Check](settings.md#advanced); when it finds such names, the message offers **Fix file names (n)**. It asks once, then renames all of them and updates their links in your projects, areas and the Inbox. Notes linked from archived projects and your own notes linked by their full path are only listed in the report.
 - *Creating a note fails when Kept was opened from a PDF or document*: the Supernote only lets plugins create notes when they were opened from a note. Open Kept GTD from any note and create the note there ([Opening Kept GTD from a note](index.md#opening-kept-gtd-from-a-note)). This is a limit of the Supernote, not of Kept.
 - *The calendar or Gmail doesn't load*: check the network connection and the settings ([Google Calendar](features.md#google-calendar), [Gmail](features.md#gmail)); the error message tells you whether it is the network, the login or something else.
-- *"Settings could not be read"*: Kept runs on default settings and saves no settings, so your stored ones stay as they are. Export a debug bundle and [report the problem](troubleshooting.md#reporting-a-problem). If you saved a profile earlier, **Restore** next to it in Settings → Advanced → Profiles brings its settings back (see [Profiles](profiles-and-demo.md#profiles)). **Start over** in the message replaces the stored settings with the defaults for good.
+- *"Settings could not be read"*: Kept runs on default settings and saves no settings, so your stored ones stay as they are. Export a debug bundle and [report the problem](troubleshooting.md#reporting-a-problem). If you saved a profile earlier, **Restore** next to it in Settings → Data → Profiles brings its settings back (see [Profiles](profiles-and-demo.md#profiles)). **Start over** in the message replaces the stored settings with the defaults for good.
 - *"Which version wins?"* after a save: the file was changed outside Kept while it was open, see [Editing by hand](files-and-folders.md#editing-by-hand).
 - *"Permission was not granted"*: see [Permission prompts](troubleshooting.md#permission-prompts).
 
@@ -24,13 +24,19 @@ The Supernote asks you before Kept may use a permission, each time right before 
 
 Kept also tells you whenever it changes files: before a move, an overwrite or a delete it shows what will happen, and afterwards what was done.
 
+## Uninstalling Kept
+
+Uninstalling the plugin removes the plugin, not its data. Your folders and notes stay - they are yours. The settings, the Gmail app password and the calendar link stay inside the Supernote too: when you install Kept again, everything is back. Only the permissions are asked for again.
+
+To leave nothing of Kept behind, first use [Remove Kept's data](settings.md#remove-kepts-data) in Settings → Data, then uninstall.
+
 ## Reporting a problem
 
 Reports are very welcome - they are the main way Kept gets better. Please report on GitHub: github.com/tilmanbergt/kept-gtd, then **Issues → New issue → Bug report**.
 
 To make it easy to find the cause:
 
-1. In [Settings → About](settings.md#about), switch on **Debug logging**.
+1. In [Settings → Advanced](settings.md#reporting-a-problem), switch on **Debug logging**.
 2. Make the problem happen again.
 3. Tap **Export debug bundle**. It saves a text file to `EXPORT/kept-gtd/debug`.
 4. Copy that file to your computer (USB or Supernote Cloud), look through it, and attach it to the issue.

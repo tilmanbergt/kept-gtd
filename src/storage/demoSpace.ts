@@ -1,5 +1,5 @@
 /**
- * "Create demo space" (Settings → Advanced → Profiles,
+ * "Create demo space" (Settings → Data → Profiles,
  * docs/dev/history/technical-design-profiles-demo-space.md §3.5): writes the demo
  * folders under Note/kept-gtd-demo and the demo profile file. Never
  * overwrites: an existing file (e.g. demo data you changed) is left alone.

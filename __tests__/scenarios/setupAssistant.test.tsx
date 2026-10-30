@@ -13,7 +13,7 @@ scenario('A fresh install opens the setup assistant; Finish saves the folders fo
   then('Settings shows the assistant on its Folders step, suggesting Projects', () => {
     expectShows('Setup · 1 of 4');
     expectShows('exists · 3 folders');
-    expectShows('Change later: Settings → Folders');
+    expectShows('Change later: Settings → Data');
     expectShows('Skip');
   });
   when('I go through Notes (keep one notebook) and Features (Everything) to Finish', async () => {
@@ -66,13 +66,13 @@ scenario('Skip closes the assistant without saving or creating anything', {featu
   });
 });
 
-scenario('An existing install opens on Daily as before; Run setup assistant starts it from Settings → Folders, Simple with own notes', {feature: 'Settings', design: 'technical-design-easy-start.md'}, () => {
+scenario('An existing install opens on Daily as before; Run setup assistant starts it from Settings → Data, Simple with own notes', {feature: 'Settings', design: 'technical-design-easy-start.md'}, () => {
   when('Kept starts with stored settings', () => openApp());
   then('it lands on Daily, without the assistant', () => {
     expectNotShows('Setup · 1 of 4');
     expectShows(/^Today/);
   });
-  when('I tap Run setup assistant on Settings → Folders, choose own notes and Simple, and Finish', async () => {
+  when('I tap Run setup assistant on Settings → Data, choose own notes and Simple, and Finish', async () => {
     await tap('Settings');
     await tap('Run setup assistant');
     await tap('Next ›');
@@ -91,6 +91,6 @@ scenario('An existing install opens on Daily as before; Run setup assistant star
   and('Run setup assistant waits while the Folders fields have unsaved changes', async () => {
     await tap('Settings');
     await type('1 Projects', 'Work projects');
-    expectShows('Save or reset your changes below first.');
+    expectShows('Save or reset the folder fields first.');
   });
 });

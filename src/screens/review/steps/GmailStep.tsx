@@ -725,8 +725,8 @@ export default function GmailStep({
       return (
         <ReviewEmptyDetail
           title="Gmail isn't set up yet"
-          text="Add your Gmail address and an app password in Settings → Gmail to triage your inbox here."
-          hint="Settings → Gmail."
+          text="Add your Gmail address and an app password in Settings → Features to triage your inbox here."
+          hint="Settings → Features."
           textColor={textColor}
         />
       );
@@ -765,8 +765,8 @@ export default function GmailStep({
         <View style={styles.stackedColumn}>
           <ReviewEmptyDetail
             title="Gmail isn't set up yet"
-            text="Add your Gmail address and an app password in Settings → Gmail to triage your inbox here."
-            hint="Settings → Gmail."
+            text="Add your Gmail address and an app password in Settings → Features to triage your inbox here."
+            hint="Settings → Features."
             textColor={textColor}
           />
         </View>

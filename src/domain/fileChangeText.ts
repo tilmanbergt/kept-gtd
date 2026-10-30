@@ -310,7 +310,7 @@ export function setupFinishedText(created: string[], failed: string[], baseDispl
   return `${made}${notMade}Setup saved.`;
 }
 
-/** After Create demo space (Settings → Advanced → Profiles, the setup assistant's last step). */
+/** After Create demo space (Settings → Data → Profiles, the setup assistant's last step). */
 export function demoSpaceCreatedText(written: number, skipped: number, profileCreated: boolean): string {
   const files = written > 0 ? `${written} demo files written to Note/kept-gtd-demo` : 'demo files already in Note/kept-gtd-demo';
   return `${files}${skipped > 0 && written > 0 ? `, ${skipped} kept` : ''}${profileCreated ? ', profile "Demo" added' : ''}.`;

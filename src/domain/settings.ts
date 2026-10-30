@@ -62,7 +62,7 @@ export interface GtdParaSettings {
   hideDoneInboxTasks: boolean;
   /**
    * The user's Google Calendar "secret address in iCal format" URL
-   * (Settings → Calendar), or '' if not configured (storage/
+   * (Settings → Features), or '' if not configured (storage/
    * googleCalendarCache.ts's refreshGoogleCalendar). Plugin meta, not PARA
    * content - same reasoning as every other field here. Read-only: this
    * plugin only ever fetches this URL, never writes to it. Like the rest of

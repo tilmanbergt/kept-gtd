@@ -71,7 +71,7 @@ interface Props {
    * Set while a profile other than the default is active
    * (docs/dev/history/technical-design-profiles-demo-space.md §3.6): shown as a small
    * bordered label left of ✕, so demo data is never mistaken for real data.
-   * Tapping it opens Settings → Advanced.
+   * Tapping it opens Settings → Data, where the profiles are.
    */
   profileLabel?: string | null;
   onProfilePress?: () => void;

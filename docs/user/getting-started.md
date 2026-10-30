@@ -21,7 +21,7 @@ Kept keeps everything in four folders inside your `Note` folder ([The folder lay
 
 Kept creates these folders when it first needs them, for example when you [create your first project](projects-and-areas.md#creating-one), or right away in the [setup assistant](settings.md#setup-assistant), which opens on the first start and shows every folder before it creates it. Nothing else is created behind your back.
 
-Already have a folder system? Point [Settings → Folders](settings.md#folders) at it and tap **Save**. Every subfolder of your projects folder is then a [project](projects-and-areas.md), every subfolder of your areas folder an [area](projects-and-areas.md). Nothing is moved or renamed. See [Your files, folders and Obsidian](files-and-folders.md).
+Already have a folder system? Point the folders in [Settings → Data](settings.md#folders) at it and tap **Save**. Every subfolder of your projects folder is then a [project](projects-and-areas.md), every subfolder of your areas folder an [area](projects-and-areas.md). Nothing is moved or renamed. See [Your files, folders and Obsidian](files-and-folders.md).
 
 ## Projects and areas
 

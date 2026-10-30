@@ -1,24 +1,22 @@
 /**
- * Settings: one screen with sub-tabs (Folders, Contexts, Calendar, Gmail,
- * Note setups, Features, Advanced, About). Calendar and Gmail show only while
- * their experimental switch is on.
+ * Settings: one screen with sub-tabs (Data, Contexts, Note setups, Features, Advanced, About;
+ * docs/dev/history/technical-design-settings-tabs.md).
  *
- * Folders, Calendar and Gmail edit one shared draft
- * (useSettingsDraft.ts) that only the Save button at the bottom writes.
- * Everything else takes effect at once: Note setups saves each setup itself
- * (noteSetups/), Contexts saves each context itself, and the switches on Features, Advanced and About write immediately and
- * update the draft too, so a later Save can't write an old value back.
+ * The folder fields (Data) and the Google Calendar and Gmail blocks (Features) edit one draft
+ * (useSettingsDraft.ts); each block's own Save writes only that block. Everything else takes
+ * effect at once: Note setups saves each setup itself (noteSetups/), Contexts saves each context
+ * itself, and the switches on Features and Advanced write immediately and update the draft too.
  *
  * The setup assistant (SetupAssistant.tsx) is drawn in place of the tabs while
  * it runs: started by App on a fresh install (`startSetup`), or with Run setup
- * assistant on the Folders tab.
+ * assistant on the Data tab.
  *
  * `initialTab` lets another screen land on a tab (e.g. a Google Calendar
  * panel's "Open Calendar Settings"). It is read once: a tab switch away from
  * Settings unmounts it.
  */
 import React, {useState} from 'react';
-import {ActivityIndicator, Pressable, Text, View} from 'react-native';
+import {ActivityIndicator, View} from 'react-native';
 import {featuresOf, Modules, modulesOf} from '../../domain/features';
 import {FileFix, fileNameFixConfirmText, fileNameFixDoneText} from '../../domain/fileNameFix';
 import {GtdParaSettings} from '../../domain/settings';
@@ -26,7 +24,7 @@ import {rebuildCache} from '../../storage/dataCache';
 import {applyFileNameFixes} from '../../storage/fileNameFix';
 import {runIntegrityCheck} from '../../storage/integrityCheck';
 import {loadSettings, patchSettings} from '../../storage/settingsStorage';
-import {setFeatures, useFeatures} from '../../ui/featureStore';
+import {setFeatures} from '../../ui/featureStore';
 import {dropKeptTabs, setKeepTabsAlive} from '../../ui/keepAliveStore';
 import MiniTabs, {MiniTabDef} from '../../ui/MiniTabs';
 import {useStatus} from '../../ui/status/StatusProvider';
@@ -39,33 +37,27 @@ import {perfEnable} from '../../utils/perf';
 import {requestEinkRefresh} from '../../utils/screenRefresh';
 import AboutTab from './AboutTab';
 import AdvancedTab from './AdvancedTab';
-import DeviceCheckScreen from './DeviceCheckScreen';
 import FeaturesTab from './FeaturesTab';
 import ContextsTab from './contexts/ContextsTab';
 import {useContextsDraft} from './contexts/useContextsDraft';
-import {CalendarTab, FoldersTab, GmailTab} from './DraftTabs';
+import DataTab from './DataTab';
+import RemoveDataScreen from './RemoveDataScreen';
 import {styles} from './settingsStyles';
 import SetupAssistant from './SetupAssistant';
-import TouchTestScreen from './TouchTestScreen';
 import NoteSetupsTab from './noteSetups/NoteSetupsTab';
 import {useMyStylePngs} from './noteSetups/useMyStylePngs';
 import {useNoteSetupDraft} from './noteSetups/useNoteSetupDraft';
 import {useSettingsDraft} from './useSettingsDraft';
 
-export type SettingsTab = 'folders' | 'contexts' | 'calendar' | 'gmail' | 'templates' | 'features' | 'advanced' | 'about';
+export type SettingsTab = 'data' | 'contexts' | 'templates' | 'features' | 'advanced' | 'about';
 const SETTINGS_TABS: MiniTabDef<SettingsTab>[] = [
-  {key: 'folders', label: 'Folders'},
+  {key: 'data', label: 'Data'},
   {key: 'contexts', label: 'Contexts'},
-  {key: 'calendar', label: 'Calendar'},
-  {key: 'gmail', label: 'Gmail'},
   {key: 'templates', label: 'Note setups'},
   {key: 'features', label: 'Features'},
   {key: 'advanced', label: 'Advanced'},
   {key: 'about', label: 'About'},
 ];
-
-/** Tabs whose edits wait for the Save button. */
-const DRAFT_TABS: SettingsTab[] = ['folders', 'calendar', 'gmail'];
 
 type Result = {kind: 'success' | 'warning' | 'error'; text: string};
 
@@ -78,18 +70,16 @@ interface Props {
   startSetup?: boolean;
   /** The assistant closed: `finished` after Finish (App then opens the Projects tab), false after Skip. */
   onSetupClosed?: (finished: boolean) => void;
+  /** After Remove Kept's data took the settings: App starts again as on a first install. */
+  onRestartFresh?: () => void;
 }
 
-export default function Settings({initialTab, onSwitchProfile, startSetup = false, onSetupClosed}: Props): React.JSX.Element {
+export default function Settings({initialTab, onSwitchProfile, startSetup = false, onSetupClosed, onRestartFresh}: Props): React.JSX.Element {
   const {isDarkMode, textColor, placeholderColor} = useThemeColors();
   // Settings keeps its own, slightly lighter border shade.
   const borderColor = isDarkMode ? '#444444' : '#cccccc';
 
-  const [activeTabState, setActiveTab] = useState<SettingsTab>(initialTab ?? 'folders');
-  const features = useFeatures();
-  const settingsTabs = SETTINGS_TABS.filter(t => (t.key !== 'calendar' || features.googleCalendar) && (t.key !== 'gmail' || features.gmail));
-  // A remembered tab that was just hidden falls back to Folders.
-  const activeTab: SettingsTab = settingsTabs.some(t => t.key === activeTabState) ? activeTabState : 'folders';
+  const [activeTab, setActiveTab] = useState<SettingsTab>(initialTab ?? 'data');
 
   const draft = useSettingsDraft();
   const {values, setValues, setSaveError} = draft;
@@ -102,11 +92,9 @@ export default function Settings({initialTab, onSwitchProfile, startSetup = fals
   const [integrityResult, setIntegrityResult] = useState<Result | null>(null);
   const [fileNameFixes, setFileNameFixes] = useState<FileFix[]>([]);
   const confirmFileNameFix = useStatusConfirm('Settings.fileNameFix');
-  // Advanced → Touch test, drawn in place of the settings while open.
-  const [touchTestOpen, setTouchTestOpen] = useState(false);
-  // Advanced → Check device files (debug logging on), drawn in place of the settings while open.
-  const [deviceCheckOpen, setDeviceCheckOpen] = useState(false);
   const [setupOpen, setSetupOpen] = useState(startSetup);
+  // Data → Remove Kept's data, drawn in place of the settings while open.
+  const [removeOpen, setRemoveOpen] = useState(false);
   // "Reload all files" (Advanced).
   const [reloading, setReloading] = useState(false);
   const [reloadResult, setReloadResult] = useState<{kind: 'success' | 'error'; text: string} | null>(null);
@@ -237,25 +225,17 @@ export default function Settings({initialTab, onSwitchProfile, startSetup = fals
     );
   }
 
-  if (touchTestOpen) {
+  if (removeOpen) {
     return (
-      <TouchTestScreen
-        onClose={() => {
-          setTouchTestOpen(false);
-          requestEinkRefresh();
-        }}
-      />
-    );
-  }
-
-  if (deviceCheckOpen) {
-    return (
-      <DeviceCheckScreen
-        onClose={() => {
-          setDeviceCheckOpen(false);
-          requestEinkRefresh();
-        }}
-      />
+      <View style={[styles.container, styles.background]}>
+        <RemoveDataScreen
+          onClose={() => {
+            setRemoveOpen(false);
+            requestEinkRefresh();
+          }}
+          onRestartFresh={() => onRestartFresh?.()}
+        />
+      </View>
     );
   }
 
@@ -289,13 +269,13 @@ export default function Settings({initialTab, onSwitchProfile, startSetup = fals
   return (
     <View style={[styles.container, styles.background]}>
       <View style={styles.content}>
-        <MiniTabs tabs={settingsTabs} activeKey={activeTab} onChange={setActiveTab} textColor={textColor} borderColor={borderColor} />
+        <MiniTabs tabs={SETTINGS_TABS} activeKey={activeTab} onChange={setActiveTab} textColor={textColor} borderColor={borderColor} />
 
         <View style={styles.tabBody}>
-          {activeTab === 'folders' && <FoldersTab draft={draft} onRunSetup={() => setSetupOpen(true)} {...tabProps} />}
+          {activeTab === 'data' && (
+            <DataTab draft={draft} activeProfileId={values.activeProfileId} onSwitchProfile={onSwitchProfile} onRunSetup={() => setSetupOpen(true)} onRemoveData={() => setRemoveOpen(true)} {...tabProps} />
+          )}
           {activeTab === 'contexts' && <ContextsTab draft={contextsDraft} values={values} {...tabProps} />}
-          {activeTab === 'calendar' && <CalendarTab draft={draft} {...tabProps} />}
-          {activeTab === 'gmail' && <GmailTab draft={draft} {...tabProps} />}
           {activeTab === 'templates' && (
             <NoteSetupsTab draft={noteSetups} values={values} myStyle={myStyle} {...tabProps} />
           )}
@@ -309,14 +289,14 @@ export default function Settings({initialTab, onSwitchProfile, startSetup = fals
               onToggleGoogleCalendar={() => toggleNow('experimentalGoogleCalendar')}
               onToggleGmail={() => toggleNow('experimentalGmail')}
               onToggleNotebookContents={() => toggleNow('notebookContentsEnabled')}
-              textColor={textColor}
-              borderColor={borderColor}
+              draft={draft}
+              {...tabProps}
             />
           )}
           {activeTab === 'advanced' && (
             <AdvancedTab
-              activeProfileId={values.activeProfileId}
-              onSwitchProfile={onSwitchProfile}
+              debugLogging={values.debugLogging}
+              onToggleDebugLogging={() => toggleNow('debugLogging')}
               perfTracing={values.perfTracing}
               keepTabsAlive={values.keepTabsAlive}
               integrityCheckRunning={integrityCheckRunning}
@@ -325,33 +305,15 @@ export default function Settings({initialTab, onSwitchProfile, startSetup = fals
               onTogglePerfTracing={() => toggleNow('perfTracing')}
               onToggleKeepTabsAlive={() => toggleNow('keepTabsAlive')}
               onRunIntegrityCheck={handleRunIntegrityCheck}
-              onOpenTouchTest={() => setTouchTestOpen(true)}
-              debugLogging={values.debugLogging}
-              onOpenDeviceCheck={() => setDeviceCheckOpen(true)}
               textColor={textColor}
               borderColor={borderColor}
             />
           )}
           {activeTab === 'about' && (
-            <AboutTab debugLogging={values.debugLogging} onToggleDebugLogging={() => toggleNow('debugLogging')} textColor={textColor} borderColor={borderColor} />
+            <AboutTab textColor={textColor} borderColor={borderColor} />
           )}
         </View>
 
-        {DRAFT_TABS.includes(activeTab) && (
-          <>
-            <Pressable style={styles.saveButton} onPress={draft.handleSave}>
-              <Text style={styles.saveButtonText}>Save</Text>
-            </Pressable>
-            <Pressable
-              onPress={() => {
-                draft.handleResetDefaults();
-                noteSetups.handleCancel();
-              }}
-              style={styles.resetButton}>
-              <Text style={[styles.resetText, {color: textColor}]}>Reset to defaults</Text>
-            </Pressable>
-          </>
-        )}
       </View>
     </View>
   );

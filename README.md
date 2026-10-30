@@ -105,7 +105,7 @@ for what changed in each version, including which features are still experimenta
    [Releases](https://github.com/tilmanbergt/kept-gtd/releases/latest).
 2. Copy it to your Supernote and install it as a plugin. Requires Supernote's plugin firmware:
    **A5 X / A6 X Chauvet 2.27.42** or later, **Manta / Nomad Chauvet 3.30.45** or later.
-3. Open Kept GTD from the plugin sidebar in a note, then check **Settings → Folders**.
+3. Open Kept GTD from the plugin sidebar in a note, then check **Settings → Data**.
 
 Updating: install the newer `.snplg` over the existing one. Read the *Upgrade notes* in the
 changelog first. Coming from gtdpara: install Kept GTD over it. Your settings, notes and PARA
