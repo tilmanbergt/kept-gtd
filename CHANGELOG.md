@@ -30,6 +30,11 @@ or your project/area files are stored.
 - **Note pages of any size**: pieces of a note setup are placed on the real size of the page - on a Manta's
   bigger pages they keep their place relative to the page; on a horizontal page a piece that would land
   below the page is left out and the status line says so. Text notes (the Gmail email note) fit the page too.
+- **Smaller and turned screens**: the tab bar and the small tab rows wrap onto a second line instead of
+  running past the edge; Quick Add always keeps its + Add button in view; the Week grid shows fewer rows a
+  day where the screen is shorter (a turned A5 X), with ‹ › for the rest; the folder fields on Settings →
+  Data scroll where they don't fit. On the A5 X upright everything looks as before.
+- **What's new** in Settings → About shows the last three versions; the earlier ones are in CHANGELOG.md on GitHub.
 - **Settings has six tabs** instead of eight. **Data** holds your folders on the left and, on the
   right, Run setup assistant and the profiles - setting up in one place. The Google Calendar link and
   the Gmail account moved onto **Features**, next to their switches, each with its own Save. Debug

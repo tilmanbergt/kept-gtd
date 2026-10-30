@@ -35,10 +35,16 @@
  * a tap opens Settings → Contexts, where a context is made active. While the demo space is
  * open (D27) the whole bar is inverted - black, white labels - with a boxed
  * "D" left of ✕; another non-default profile shows its id there.
+ *
+ * Narrow screens (docs/dev/history/technical-design-launch-ready.md L6): the tabs
+ * wrap onto a second line where they don't fit beside "?", the chip and ✕,
+ * instead of running under them; below 800 dp (ui/ScreenSize.tsx useLayoutClass)
+ * they also sit closer together. On the A5 X all of them fit on one line, as before.
 
  */
 import React from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
+import {useLayoutClass} from './ScreenSize';
 import {COLORS, FONT, useThemeColors} from './theme';
 import {usePerfRender} from '../utils/perf';
 
@@ -103,6 +109,7 @@ export default function TabBar({
   const textColor = demo ? COLORS.accentText : theme.textColor;
   const borderColor = demo ? COLORS.accent : theme.borderColor;
   const underline = demo ? COLORS.accentText : COLORS.accent;
+  const narrow = useLayoutClass() === 'narrow';
 
   return (
     <View style={[styles.container, {borderColor}, demo && styles.demo]}>
@@ -114,7 +121,7 @@ export default function TabBar({
               key={tab.key}
               onPress={() => onSelectTab(tab.key)}
               hitSlop={8}
-              style={[styles.tabButton, active && {borderBottomColor: underline}]}>
+              style={[styles.tabButton, narrow && styles.tabButtonNarrow, active && {borderBottomColor: underline}]}>
               <Text
                 style={[
                   styles.tabText,
@@ -179,6 +186,7 @@ const styles = StyleSheet.create({
   },
   tabs: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     flex: 1,
   },
   tabButton: {
@@ -190,6 +198,9 @@ const styles = StyleSheet.create({
   tabText: {
     fontSize: FONT.medium,
     fontWeight: '600',
+  },
+  tabButtonNarrow: {
+    marginRight: 11,
   },
   tabTextActive: {
     fontWeight: '700',

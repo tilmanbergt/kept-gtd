@@ -266,6 +266,7 @@
       "tests": [
         "__tests__/fakeDevice/**",
         "__tests__/scenarios/smoke/appStarts*",
+        "__tests__/scenarios/narrowScreen*",
         "__tests__/domain/{dateFormat,screenLayout}.test.ts",
         "__tests__/ui/{measuredHeightMemo,useActionError,useEditTarget,rowTapTargets,taskRow*,itemEntryRow}*"
       ],

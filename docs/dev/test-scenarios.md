@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-157 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+159 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -1038,6 +1038,15 @@ Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/techn
 
 Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/technical-design-item-card.md`
 
+### On a Nomad-sized screen, Quick Add with four tabs keeps its + Add and calls Agreement "Agree"
+
+- **Given** area "Coaching" has a past sparring session with Jordan, and Kept is drawn at Nomad portrait size
+- **When** I open Jordan's thread overview
+- **Then** its Quick Add shows the short tab name and the main button
+- **And** back at full size the tab is called Agreement again
+
+Test: `__tests__/scenarios/narrowScreen.test.tsx` · design: `docs/dev/history/technical-design-launch-ready.md`
+
 ### Quick Add a todo in a project
 
 - **Given** project "Website" has the todo "Write copy" and a hand-written Scope
@@ -1246,6 +1255,13 @@ Test: `__tests__/scenarios/keptGtd.test.tsx`
 - **Then** one kept-gtd-debug file is in EXPORT/kept-gtd/debug, it says Kept GTD, and the status line names it
 
 Test: `__tests__/scenarios/keptGtd.test.tsx`
+
+### What's new offers the last three versions and says where the earlier ones are
+
+- **When** I open Settings → About
+- **Then** the newest version's notes show, with a pointer to the rest on GitHub
+
+Test: `__tests__/scenarios/narrowScreen.test.tsx` · design: `docs/dev/history/technical-design-launch-ready.md`
 
 ### Check screen and pages shows the launch note's page size and tries a horizontal test note
 

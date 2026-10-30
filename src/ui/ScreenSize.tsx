@@ -17,7 +17,7 @@
  */
 import React, {createContext, Fragment, useCallback, useContext, useState, useSyncExternalStore} from 'react';
 import {Dimensions, LayoutChangeEvent, StyleSheet, Text, View} from 'react-native';
-import {A5X_ESTIMATOR_WIDTH, A5X_PORTRAIT, estimatorWidthFor, ScreenSize, SIMULATION_INSET, simulatedScreen, simulationsThatFit} from '../domain/screenLayout';
+import {A5X_ESTIMATOR_WIDTH, A5X_PORTRAIT, estimatorWidthFor, LayoutClass, layoutWidthClass, ScreenSize, SIMULATION_INSET, simulatedScreen, simulationsThatFit} from '../domain/screenLayout';
 import {getScreenSimulation, subscribeScreenSimulation} from './screenSimStore';
 import {FONT} from './theme';
 import {log} from '../utils/log';
@@ -33,6 +33,14 @@ export function estimatorWidth(): number {
 
 export function useScreenSize(): ScreenSize {
   return useContext(ScreenSizeContext);
+}
+
+/**
+ * 'narrow' below 800 dp (a Nomad upright): the one question a component asks before it draws
+ * tighter. No component checks device names or widths of its own.
+ */
+export function useLayoutClass(): LayoutClass {
+  return layoutWidthClass(useContext(ScreenSizeContext));
 }
 
 const RealSizeContext = createContext<ScreenSize>(A5X_PORTRAIT);

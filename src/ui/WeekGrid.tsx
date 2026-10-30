@@ -1,19 +1,21 @@
 /**
  * The Week overview (docs/dev/history/technical-design-meeting-lists.md §2.7): seven day blocks, each a two-column grid of
  * ui/MeetingChip.tsx, filled down the left column first so reading order is
- * time order. Fixed capacity per page: weekdays 4 rows
- * x 2 = 8, weekend 2 x 2 = 4 - no measuring, no flex weights; an overfull day
- * pages on its own ("+N ‹ ›" in its header). Blocks are content-sized
- * (30 + 4 x 34 dp), which fits the ~1113 dp Week column (calibrated on
- * a device screenshot).
+ * time order. Capacity per page: weekdays 4 rows x 2 = 8, weekend 2 x 2 = 4
+ * where that fits - the ~1113 dp Week column on the A5 X in portrait needs
+ * 7 x 36 + 24 x 34 = 1068 dp. On a shorter column (a turned A5 X, a Nomad;
+ * docs/dev/history/technical-design-launch-ready.md L6) the grid measures its
+ * height and takes fewer rows (domain/screenLayout.ts weekGridRows); an
+ * overfull day pages on its own ("+N ‹ ›" in its header).
  *
  * Tapping a chip opens that day's panel and edits the meeting; tapping a day
  * header opens the panel only (screens/usePlanningScreen.ts's
  * openMeetingFromGrid / selectDay). An empty day shows an empty grid.
  */
-import React, {useEffect, useState} from 'react';
-import {Pressable, StyleSheet, Text, View} from 'react-native';
+import React, {useCallback, useEffect, useState} from 'react';
+import {LayoutChangeEvent, Pressable, StyleSheet, Text, View} from 'react-native';
 import {entryDate} from '../domain/meetingSpan';
+import {weekGridRows} from '../domain/screenLayout';
 import {isoDateOffset, todayIso} from '../domain/meetingTime';
 import {WeeklyMeetingEntry} from '../storage/weeklyAggregate';
 import MeetingChip, {MEETING_CHIP_HEIGHT} from './MeetingChip';
@@ -21,9 +23,9 @@ import {FONT} from './theme';
 import {formatDate} from '../domain/dateFormat';
 
 const DAY_LABELS = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
-const WEEKDAY_ROWS = 4;
-const WEEKEND_ROWS = 2;
 export const WEEK_DAY_HEADER_HEIGHT = 30;
+/** A block's gap below it (styles.block). */
+const BLOCK_GAP = 6;
 
 function dayDate(weekStart: string, dayIndex: number): string {
   const [y, m, d] = weekStart.split('-').map(Number);
@@ -48,8 +50,14 @@ interface Props {
 
 export default function WeekGrid(props: Props): React.JSX.Element {
   const today = todayIso();
+  const [height, setHeight] = useState<number | null>(null);
+  const onLayout = useCallback((e: LayoutChangeEvent) => {
+    const h = e.nativeEvent.layout.height;
+    setHeight(prev => (prev === h ? prev : h));
+  }, []);
+  const rows = weekGridRows(height, MEETING_CHIP_HEIGHT, WEEK_DAY_HEADER_HEIGHT + BLOCK_GAP);
   return (
-    <View style={styles.root}>
+    <View style={styles.root} onLayout={onLayout}>
       {DAY_LABELS.map((label, dayIndex) => {
         const date = dayDate(props.weekStart, dayIndex);
         return (
@@ -57,7 +65,7 @@ export default function WeekGrid(props: Props): React.JSX.Element {
             key={date}
             label={`${label} ${formatDate(date, today)}${date === today ? ' · Today' : ''}`}
             date={date}
-            rows={dayIndex >= 5 ? WEEKEND_ROWS : WEEKDAY_ROWS}
+            rows={dayIndex >= 5 ? rows.weekend : rows.weekday}
             weekend={dayIndex >= 5}
             entries={props.meetings.filter(e => entryDate(e) === date)}
             {...props}
@@ -145,7 +153,7 @@ function WeekDayBlock({
 
 const styles = StyleSheet.create({
   root: {flex: 1},
-  block: {marginBottom: 6},
+  block: {marginBottom: BLOCK_GAP},
   weekend: {backgroundColor: '#efefea'},
   header: {
     height: WEEK_DAY_HEADER_HEIGHT,

@@ -4,9 +4,13 @@
  * defaults; right, Run setup assistant, the profiles and Remove Kept's data
  * (technical-design-remove-data.md R1). The actions on the right wait while the folder fields
  * have unsaved changes: the assistant would not keep them and a profile switch would drop them.
+ *
+ * Each column scrolls where it is taller than the screen (a turned A5 X, a Nomad;
+ * docs/dev/history/technical-design-launch-ready.md L6), so Save and Reset to defaults stay
+ * reachable. On the A5 X in portrait both fit and nothing scrolls.
  */
 import React from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {ScrollView, StyleSheet, Text, View} from 'react-native';
 import PillButton from '../../ui/PillButton';
 import {FONT, SPACING} from '../../ui/theme';
 import {FolderFields} from './DraftTabs';
@@ -28,12 +32,12 @@ export default function DataTab({draft, activeProfileId, onSwitchProfile, onRunS
   const locked = draft.unsaved('folders');
   return (
     <View style={styles.row}>
-      <View style={[styles.column, styles.columnLeft]}>
+      <ScrollView style={[styles.column, styles.columnLeft]} contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
         <Text style={[styles.heading, {color: textColor}]}>Folders</Text>
         <FolderFields draft={draft} textColor={textColor} borderColor={borderColor} placeholderColor={placeholderColor} />
-      </View>
+      </ScrollView>
       <View style={[styles.divider, {backgroundColor: borderColor}]} />
-      <View style={styles.column}>
+      <ScrollView style={styles.column} contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
         {locked && <Text style={[styles.locked, {color: textColor}]}>Save or reset the folder fields first.</Text>}
         <View style={styles.field}>
           <PillButton label="Run setup assistant" onPress={onRunSetup} disabled={locked} textColor={textColor} borderColor={borderColor} />
@@ -46,7 +50,7 @@ export default function DataTab({draft, activeProfileId, onSwitchProfile, onRunS
             Before you uninstall or stop using Kept: shows everything Kept has put on this device and removes what you check. Uninstalling alone keeps the settings and passwords.
           </Text>
         </View>
-      </View>
+      </ScrollView>
     </View>
   );
 }
@@ -54,6 +58,7 @@ export default function DataTab({draft, activeProfileId, onSwitchProfile, onRunS
 const styles = StyleSheet.create({
   row: {flexDirection: 'row', flex: 1},
   column: {flex: 1},
+  scrollContent: {paddingBottom: SPACING.base},
   columnLeft: {marginRight: SPACING.base},
   divider: {width: 1, marginRight: SPACING.base},
   heading: {fontSize: FONT.medium, fontWeight: '700', marginBottom: SPACING.sm},

@@ -44,8 +44,35 @@ export function estimatorWidthFor(screen: ScreenSize): number {
 /** Below this width two columns side by side get too narrow; screens that break offer one column with a toggle. */
 export const NARROW_BELOW = 800;
 
-export function layoutWidthClass(screen: ScreenSize): 'wide' | 'narrow' {
+export type LayoutClass = 'wide' | 'narrow';
+
+export function layoutWidthClass(screen: ScreenSize): LayoutClass {
   return screen.width < NARROW_BELOW ? 'narrow' : 'wide';
+}
+
+/** Rows per day block of the Week grid: 4 on weekdays and 2 on the weekend where they fit (the A5 X in portrait). */
+export interface WeekGridRows {
+  weekday: number;
+  weekend: number;
+}
+
+export const FULL_WEEK_GRID_ROWS: WeekGridRows = {weekday: 4, weekend: 2};
+
+/**
+ * How many chip rows the Week grid's seven day blocks get in `height` dp: the full
+ * 4 + 2 where they fit, otherwise fewer (a shorter screen, a turned A5 X, a Nomad) - the
+ * weekend gives up its second row first - down to one row each. A day with more meetings than its rows pages on its own, so nothing is lost.
+ * `blockOverhead` is a block's header and gap, `rowHeight` one chip row.
+ */
+export function weekGridRows(height: number | null, rowHeight: number, blockOverhead: number): WeekGridRows {
+  if (!height || height <= 0) return FULL_WEEK_GRID_ROWS;
+  const units = Math.floor((height - 7 * blockOverhead) / rowHeight);
+  for (let weekday = FULL_WEEK_GRID_ROWS.weekday; weekday >= 1; weekday--) {
+    for (let weekend = Math.min(FULL_WEEK_GRID_ROWS.weekend, weekday); weekend >= 1; weekend--) {
+      if (5 * weekday + 2 * weekend <= units) return {weekday, weekend};
+    }
+  }
+  return {weekday: 1, weekend: 1};
 }
 
 /** Screens the debug "Simulate screen" can draw Kept in (docs/dev/history/technical-design-launch-ready.md §4.3). */

@@ -92,4 +92,4 @@ Switches on this tab take effect immediately.
 
 - the version of the installed build (a test build shows the coming version and its stage, for example `0.15.0 beta`), build number and device
 - an invitation to report problems and ideas on GitHub; the debug tools are on [Advanced](settings.md#reporting-a-problem)
-- **What's new**: the release notes of this and earlier versions
+- **What's new**: the release notes of this and the two versions before; earlier ones are in `CHANGELOG.md` on GitHub

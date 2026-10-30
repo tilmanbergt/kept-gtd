@@ -3,7 +3,9 @@
  * left - wordmark, name and slogan (docs/dev/history/technical-design-kept-gtd.md §3.2),
  * version/build/device and an invitation to report problems and ideas (the debug tools are on
  * Advanced, docs/dev/history/technical-design-settings-tabs.md T6);
- * right - "What's new" from the bundled CHANGELOG, paged, no scrolling.
+ * right - "What's new" from the bundled CHANGELOG, paged, no scrolling: the last three versions
+ * (docs/dev/history/technical-design-launch-ready.md L6), so their tabs fit even a narrow screen;
+ * older ones are in CHANGELOG.md on GitHub.
  */
 import React, {useEffect, useMemo, useState} from 'react';
 import {Image, StyleSheet, Text, View} from 'react-native';
@@ -25,6 +27,9 @@ const PROJECT_URL = 'github.com/tilmanbergt/kept-gtd';
 const SLOGAN = 'Kept GTD – for those who write, where they write.';
 /** Shown for a few releases after the rename (R9). */
 const FORMERLY = 'Formerly gtdpara';
+/** How many versions What's new offers; older ones are on GitHub. */
+export const WHATS_NEW_VERSIONS = 3;
+const SHOWN_RELEASES = CHANGELOG.slice(0, WHATS_NEW_VERSIONS);
 const WORDMARK = require('../../../assets/wordmark.png');
 
 interface Props {
@@ -47,11 +52,11 @@ export default function AboutTab({textColor, borderColor}: Props): React.JSX.Ele
   }, []);
 
   const releaseTabs: MiniTabDef<string>[] = useMemo(
-    () => CHANGELOG.map(r => ({key: r.version, label: r.version === 'Unreleased' ? (BUILD_INFO.nextVersion ?? 'Unreleased') : r.version})),
+    () => SHOWN_RELEASES.map(r => ({key: r.version, label: r.version === 'Unreleased' ? (BUILD_INFO.nextVersion ?? 'Unreleased') : r.version})),
     [],
   );
-  const [selectedVersion, setSelectedVersion] = useState<string>(CHANGELOG[0]?.version ?? '');
-  const selected = CHANGELOG.find(r => r.version === selectedVersion) ?? CHANGELOG[0];
+  const [selectedVersion, setSelectedVersion] = useState<string>(SHOWN_RELEASES[0]?.version ?? '');
+  const selected = SHOWN_RELEASES.find(r => r.version === selectedVersion) ?? SHOWN_RELEASES[0];
 
   const device = diag ? [diag.manufacturer, diag.model].filter(Boolean).join(' ') : '';
   const builtDate = b.builtAt.slice(0, 10);
@@ -110,6 +115,9 @@ export default function AboutTab({textColor, borderColor}: Props): React.JSX.Ele
               textColor={textColor}
               borderColor={borderColor}
             />
+            {CHANGELOG.length > WHATS_NEW_VERSIONS && (
+              <Text style={[styles.hint, {color: textColor}]}>Earlier versions: CHANGELOG.md at {PROJECT_URL}</Text>
+            )}
           </>
         ) : (
           <Text style={[styles.hint, {color: textColor}]}>No release notes in this build.</Text>

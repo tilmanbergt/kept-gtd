@@ -32,7 +32,7 @@ Where Kept can't do something, it says so plainly.
 | S Screen size + simulate | `domain/screenLayout.ts` (new), `ui/ScreenSize.tsx` (new), App root, every `678`/`1872` user, Settings → Advanced | medium |
 | N Page frame | `domain/pageFrame.ts` (new), `storage/pageFrames.ts` (new), the element writers | medium |
 | Spike | Settings → Advanced → **Check screen and pages** (debug) | small |
-| Checklist + fixes | `docs/dev/device-checklist.md` (new), fixes per finding, `ui/TwoPane.tsx` only if needed | open |
+| Checklist + fixes | `docs/dev/device-checklist.md` (new), fixes per finding, `ui/TwoPane.tsx` only if needed | done (no TwoPane needed) |
 | L/Polish | README, inkhub-listing, help, design-device-rendering, host facts | small |
 
 No file format change. No new settings key: the simulation lasts only for the session (§4.3).
@@ -395,3 +395,30 @@ links land on the right spot.
   - Pieces left out are reported through `reportSkippedPieces`; `ui/usePageFitNotice.ts` shows
     "n pieces of the note setup didn't fit on this page and were left out." in the status slot.
   - The retry without links re-inserts the elements already placed, so nothing is scaled twice.
+- **L5**: `docs/dev/device-checklist.md` holds the four-column checklist (§9.2). Round 1 on the
+  Nomad simulation found: tab bar labels running under the chip and ✕; the Week grid running past
+  the bottom (also on a turned A5 X); Quick Add's "+ Add" pushed out where it has four tabs; Files
+  sub-tabs and About's version tabs running past the edge; Reset to defaults on Settings → Data
+  over the bottom border; a tiny mark at the left edge just below the status slot.
+- **L6** (O4, O11): no screen needed its own one-column layout, so `TwoPane` was not built and the
+  cut line does not apply. Fixes are structural and leave the A5 X upright as it was:
+  - `useLayoutClass()` in `ui/ScreenSize.tsx` ('narrow' below 800 dp) is the one question a
+    component asks; nothing checks device names. Used by the tab bar, `MiniTabs` and Quick Add's
+    tab row to sit closer together. A global smaller font was considered and not done: dp already
+    makes sizes physically equal across devices, and a second set of sizes would have to be kept in
+    step with the line estimators.
+  - The tab bar's tabs and every `MiniTabs` row wrap (`flexWrap`) instead of overflowing; on the
+    A5 X they fit on one line, as before.
+  - Quick Add's tab row gives way before the main button (`flexShrink: 0` on the actions); narrow,
+    Agreement is labelled "Agree".
+  - The Week grid measures its height and takes rows by `weekGridRows` (`domain/screenLayout.ts`):
+    4 + 2 where they fit (the A5 X column needs 1068 of ~1113 dp), the weekend's second row goes
+    first, down to one row a day; an overfull day pages as before.
+  - Settings → Data: both columns are `ScrollView`s, so Save and Reset to defaults stay reachable
+    on a short screen; on the A5 X upright nothing scrolls.
+  - About → What's new offers the last three versions (Tilman's choice), with a line pointing to
+    CHANGELOG.md on GitHub for the rest.
+  - The tiny mark: it moves with the simulated box, so Kept draws it, at the top left of the tab
+    body. Not found in code yet; carried to L7 with a device photo per tab.
+  - Test: `__tests__/scenarios/narrowScreen.test.tsx` (Quick Add at Nomad size, What's new),
+    `weekGridRows` unit tests.
