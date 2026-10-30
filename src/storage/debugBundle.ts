@@ -102,8 +102,7 @@ export async function buildDebugInfo(settings: GtdParaSettings, now: Date = new 
   );
   lines.push(
     d
-      ? `host build ${d.buildId} · versionCode ${d.versionCode} · process age ${Math.round(d.processAgeMs / 60000)} min` +
-          ` · stale builds ${d.staleBuilds.length}`
+      ? `host build ${d.buildId} · versionCode ${d.versionCode} · process age ${Math.round(d.processAgeMs / 60000)} min`
       : 'host diagnostics: not available',
   );
   lines.push(`time ${now.toISOString()} (${utcOffset(now)}) · launched from ${extensionOf(launch?.path)}`);

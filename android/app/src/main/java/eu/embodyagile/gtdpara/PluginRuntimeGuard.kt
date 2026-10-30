@@ -7,35 +7,21 @@ import android.util.Log
 import java.io.File
 
 /**
- * Diagnostics for the "crash shortly after installing a new build" problem
- * (docs/dev/technical-design-host-update-crash.md).
+ * Who this build is, for the private folder and the native logs
+ * (docs/dev/history/technical-design-host-update-crash.md).
  *
- * Background: the Supernote plugin host installs a new gtdpara build into the
- * ALREADY RUNNING host process. The old build's native code stays loaded next
- * to the new one, and 1-2 minutes later the process dies with a SIGSEGV inside
- * ART on our native-modules thread (crash-log.txt, 2026-09-29). A fresh host
- * process never showed the problem.
- *
- * This object is loaded once PER CLASS LOADER, i.e. once per installed build
- * that is alive in the process - which is exactly the unit we want to track:
- *  - [buildId]: the npk file name the host gave this build ("app_<ms>"),
- *    parsed from this class's own class loader.
- *  - A process-wide registry in a System property (System is loaded by the
- *    boot class loader, so every build's copy of this object sees the same
- *    property) - a history of which builds registered in this process.
- *  - [scanMappedBuilds]: which gtdpara npk/odex/vdex files are mapped in
- *    /proc/self/maps right now - the authoritative "is an older build still
- *    loaded?" signal, and the one that also catches builds that predate this
- *    code (they never registered).
- *  - [trace]: a one-line breadcrumb at the start of every @ReactMethod, so the
- *    next crash log shows the last native call and WHICH build made it.
+ * This object is loaded once per class loader, i.e. once per installed build:
+ *  - [npkPath], [pluginId], [buildId]: parsed from this class's own class
+ *    loader; the plugin's private folder is the npk's folder.
+ *  - [versionCode]: from the installed PluginConfig.json next to the npk.
+ *  - [trace]: a one-line breadcrumb at the start of every @ReactMethod, so a
+ *    crash log shows the last native call and which build made it.
  *
  * Logs under the "GtdParaRuntime" tag:
  *   adb logcat -d -s GtdParaRuntime:V ReactNativeJS:V
  */
 object PluginRuntimeGuard {
     private const val TAG = "GtdParaRuntime"
-    private const val REGISTRY_PROPERTY = "eu.embodyagile.gtdpara.loadedBuilds"
     /** PluginConfig.json's pluginID - fallback when it can't be parsed from the class loader. */
     private const val FALLBACK_PLUGIN_ID = "ndx27q77pojfqh6l"
 
@@ -71,21 +57,15 @@ object PluginRuntimeGuard {
         "?"
     }
 
-    private val loadedAtWallMs = System.currentTimeMillis()
-
     @Volatile
     private var moduleCount = 0
 
     init {
-        val registry = register()
-        val mapped = scanMappedBuilds()
         Log.i(
             TAG,
             "build loaded: build=$buildId versionCode=$versionCode loader=$loaderId pid=${Process.myPid()} " +
                 "processAgeMs=${processAgeMs()} npk=${npkPath ?: "?"}",
         )
-        Log.i(TAG, "build loaded: registry=$registry")
-        logMapped("build loaded", mapped)
         if (npkPath == null) {
             Log.w(TAG, "build loaded: could not parse npk path from class loader: ${loaderDescription.take(400)}")
         }
@@ -106,59 +86,6 @@ object PluginRuntimeGuard {
     /** One-line breadcrumb at the start of every @ReactMethod. */
     fun trace(call: String) {
         Log.i(TAG, "call $call build=$buildId loader=$loaderId thread=${Thread.currentThread().name}")
-    }
-
-    /**
-     * The builds (other than this one) whose code files are mapped in the
-     * process right now, plus every mapped gtdpara code file and whether it
-     * was deleted from disk (an old build's files are removed on install but
-     * stay mapped while that build is still loaded).
-     */
-    data class MappedBuilds(val otherBuilds: List<String>, val files: List<String>, val error: String?)
-
-    fun scanMappedBuilds(): MappedBuilds {
-        return try {
-            val marker = "/plugins/$pluginId/"
-            val files = LinkedHashSet<String>()
-            File("/proc/self/maps").forEachLine { line ->
-                val idx = line.indexOf(marker)
-                if (idx < 0) return@forEachLine
-                // The path starts at the first '/' of the pathname column.
-                val pathStart = line.lastIndexOf(' ', idx).let { if (it < 0) idx else it + 1 }
-                val path = line.substring(pathStart).trim()
-                if (BUILD_FILE_RE.containsMatchIn(path)) files.add(path)
-            }
-            val builds = files.mapNotNull { BUILD_FILE_RE.find(it)?.groupValues?.get(1) }.toSortedSet()
-            MappedBuilds(builds.filter { it != buildId }, files.toList(), null)
-        } catch (e: Throwable) {
-            MappedBuilds(emptyList(), emptyList(), "${e.javaClass.simpleName}: ${e.message}")
-        }
-    }
-
-    fun logMapped(context: String, mapped: MappedBuilds) {
-        if (mapped.error != null) {
-            Log.w(TAG, "$context: /proc/self/maps scan failed: ${mapped.error}")
-            return
-        }
-        Log.i(TAG, "$context: mapped gtdpara files=${mapped.files.size} otherBuilds=${mapped.otherBuilds}")
-        mapped.files.forEach { Log.i(TAG, "$context:   mapped $it") }
-        if (mapped.otherBuilds.isNotEmpty()) {
-            Log.w(TAG, "$context: STALE BUILD(S) STILL LOADED in pid ${Process.myPid()}: ${mapped.otherBuilds} (this build=$buildId)")
-        }
-    }
-
-    /** The process-wide registry of builds that registered in this process, oldest first. */
-    fun registryEntries(): List<String> =
-        (System.getProperty(REGISTRY_PROPERTY) ?: "").split(';').filter { it.isNotBlank() }
-
-    private fun register(): List<String> {
-        // Lock on a boot-class-loader object so every build's copy of this code shares the lock.
-        synchronized(System::class.java) {
-            val entry = "$buildId@$loaderId@$loadedAtWallMs"
-            val entries = registryEntries() + entry
-            System.setProperty(REGISTRY_PROPERTY, entries.joinToString(";"))
-            return entries
-        }
     }
 
     /** Milliseconds since the host process started (-1 if unknown). */

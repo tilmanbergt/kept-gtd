@@ -1,40 +1,16 @@
 /**
  * Rollback shims (docs/dev/history/technical-design-time-and-place.md §3.7, §6): what 0.22 keeps so 0.21.1 can be
- * installed over it - the retired settings in settings and profile files, a stored Home page layout with a `goals`
- * piece, the focus flags in frontmatter, and `#now` read as `#next` without touching the text.
+ * installed over it - a stored Home page layout with a `goals` piece, the focus flags in frontmatter, and `#now` read as `#next` without touching the text.
  */
 import {deriveFlowState} from '../../src/domain/flowState';
 import {deriveTaskFields, parseFrontMatter, serializeTaskLine, writeFrontMatterIntoContent} from '../../src/domain/markdown';
 import {DEFAULT_PIECE_TYPES, PageLayout, PIECE_PAGES, renderPieceText} from '../../src/domain/pageLayout';
-import {buildActiveSettings, parseProfile, PROFILE_KEYS, sanitizeProfileSettings, serializeProfile} from '../../src/domain/profiles';
+import {parseProfile, sanitizeProfileSettings, serializeProfile} from '../../src/domain/profiles';
 import {DEFAULT_SETTINGS, GtdParaSettings} from '../../src/domain/settings';
 import {newTask, withTaskDone} from '../../src/domain/taskEdit';
 
-const RETIRED = {
-  dailyFocusProjectCount: 4,
-  dailyFocusAreaCount: 1,
-  weeklyFocusProjectCount: 6,
-  weeklyFocusAreaCount: 2,
-  monthlyFocusProjectCount: 1,
-  monthlyFocusAreaCount: 5,
-  focusModeActive: true,
-};
-
-describe('retired settings', () => {
-  it('stay in DEFAULT_SETTINGS and are kept per profile', () => {
-    for (const key of Object.keys(RETIRED)) {
-      expect(key in DEFAULT_SETTINGS).toBe(true);
-      expect(PROFILE_KEYS).toContain(key);
-    }
-  });
-
-  it('survive a profile save, load and switch with their values', () => {
-    const settings: GtdParaSettings = {...DEFAULT_SETTINGS, ...RETIRED};
-    const parsed = parseProfile(serializeProfile('Production', settings, new Date('2026-10-14T10:00:00Z'), '0.22.0'), 'Production');
-    expect(parsed.settings).toEqual(expect.objectContaining(RETIRED));
-    expect(buildActiveSettings('production', parsed.settings, {}, DEFAULT_SETTINGS)).toEqual(expect.objectContaining(RETIRED));
-  });
-});
+// The retired focus settings themselves went in 0.24.0 (docs/dev/history/technical-design-launch-ready.md §12.1);
+// stored settings that still hold them load as before (__tests__/scenarios/rollback.test.tsx).
 
 describe('a stored Home page layout with a goals piece', () => {
   const home: PageLayout = {

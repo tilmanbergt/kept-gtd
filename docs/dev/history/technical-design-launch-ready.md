@@ -517,3 +517,18 @@ uninstall. Notes, `.txt` data files and saved profiles stay on the device.
     unchanged.
   - Tests: `narrowScreen` (Coaching on a Nomad: Todos tab first, Schedule tab), the Month unit tests,
     the "hide done" scenarios.
+- **L7a** (§12.1), as designed, with these differences:
+  - Old hosts: the permission check calls `PluginManager.hasPermission`/`requestPermission`
+    directly (sn-plugin-lib 0.2.3 types both). A host without them fails the call, which counts as
+    not granted and is logged; no separate firmware message, since the required firmware always
+    has them.
+  - Native methods: all are required in `GtdParaFileNativeModule`; the checks left in
+    `fileSystem.ts` are only for the module itself being missing (test setups). `statFiles` still
+    resolves null then, so its callers keep their fallback.
+  - Old Inbox location: the Integrity Check no longer lists the base folder at all; the help
+    paragraph on the 0.1.0 Inbox and its mention in Settings → Advanced are gone.
+  - Retired focus: the rollback shims that concern the user's files stay (focus flags in
+    frontmatter written back as they are, a stored `goals` piece, `#now` read as `#next`). The
+    rollback scenario still loads stored settings holding the retired keys.
+  - `design-overview.md` §2.12 and `supernote-host-facts.md` §8 follow. The native change needs a
+    native rebuild (CI builds it).

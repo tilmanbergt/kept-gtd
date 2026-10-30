@@ -57,12 +57,12 @@ export interface FileStat {
 /**
  * Stats many files in ONE native call (docs/dev/history/technical-design-files-0.6.md
  * §3.1) - what storage/dataCache.ts's refreshCache uses to see which data
- * files changed since they were read. Resolves `null` on a native build that
- * doesn't have the call yet, so the caller can fall back to a full re-read.
+ * files changed since they were read. Resolves `null` without the native
+ * module (test setups), so the caller falls back to a full re-read.
  */
 export async function statFiles(paths: string[]): Promise<FileStat[] | null> {
-  if (!GtdParaFile?.statFiles) {
-    logWarn('statFiles: not available on this native build');
+  if (!GtdParaFile) {
+    logWarn('statFiles: GtdParaFile native module is not registered');
     return null;
   }
   if (!(await ensureFileReadPermission())) {
@@ -380,7 +380,7 @@ let privateTempDir: string | null = null;
  */
 export async function getPrivateTempDir(): Promise<string> {
   if (privateTempDir) return privateTempDir;
-  if (!GtdParaFile?.getPrivateTempDir) throw new Error('getPrivateTempDir is not available on this build.');
+  if (!GtdParaFile) throw new Error('GtdParaFile native module is not available on this build.');
   privateTempDir = await GtdParaFile.getPrivateTempDir();
   log('getPrivateTempDir:', privateTempDir);
   return privateTempDir;
@@ -412,7 +412,7 @@ let privateDataDir: string | null = null;
  */
 export async function getPrivateDataDir(): Promise<string> {
   if (privateDataDir) return privateDataDir;
-  if (!GtdParaFile?.getPrivateDataDir) throw new Error('getPrivateDataDir is not available on this build.');
+  if (!GtdParaFile) throw new Error('GtdParaFile native module is not available on this build.');
   privateDataDir = await GtdParaFile.getPrivateDataDir();
   log('getPrivateDataDir:', privateDataDir);
   return privateDataDir;
@@ -424,7 +424,7 @@ export async function getPrivateDataDir(): Promise<string> {
  * Never throws: leftover data is harmless and is cleaned up later.
  */
 export async function deletePrivateDataTree(path: string): Promise<boolean> {
-  if (!GtdParaFile?.deletePrivateDataTree) return false;
+  if (!GtdParaFile) return false;
   try {
     return await GtdParaFile.deletePrivateDataTree(path);
   } catch (e) {
@@ -437,10 +437,10 @@ export async function deletePrivateDataTree(path: string): Promise<boolean> {
  * Remove Kept's data (docs/dev/history/technical-design-remove-data.md §4): deletes one of Kept's
  * own folders in shared storage, or something inside one - the native side refuses every other
  * path. The caller asks for FILE:DELETE once for the whole removal, after the user confirmed it.
- * Throws when the build lacks the call or the delete fails.
+ * Throws when the delete fails.
  */
 export async function deleteKeptTree(path: string): Promise<void> {
-  if (!GtdParaFile?.deleteKeptTree) throw new Error('Removing data needs Kept GTD 0.24 or later.');
+  if (!GtdParaFile) throw new Error('GtdParaFile native module is not available on this build.');
   try {
     await GtdParaFile.deleteKeptTree(path);
     notifyFolderChanged(parentFolder(path));
@@ -457,7 +457,7 @@ export async function deleteKeptTree(path: string): Promise<void> {
  * Same permission rule and errors as deleteKeptTree.
  */
 export async function deleteKeptFile(path: string): Promise<void> {
-  if (!GtdParaFile?.deleteKeptFile) throw new Error('Removing data needs Kept GTD 0.24 or later.');
+  if (!GtdParaFile) throw new Error('GtdParaFile native module is not available on this build.');
   try {
     await GtdParaFile.deleteKeptFile(path);
   } catch (e) {
@@ -475,7 +475,7 @@ export async function deleteKeptFile(path: string): Promise<void> {
  * not empty; throws only when the native call itself fails.
  */
 export async function deleteEmptyFolder(path: string, reason: string): Promise<boolean> {
-  if (!GtdParaFile?.deleteEmptyFolder) throw new Error('deleteEmptyFolder is not available on this build.');
+  if (!GtdParaFile) throw new Error('GtdParaFile native module is not available on this build.');
   if (!(await ensureFileDeletePermission(reason))) {
     log('deleteEmptyFolder: delete permission not granted, folder kept', path);
     return false;

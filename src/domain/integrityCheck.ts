@@ -28,7 +28,7 @@
  */
 import {closeOutInterrupted, parsePlan} from './closeOut/plan';
 import {joinNotePath, parsePageAnchor, parseSharedNoteAnchor, stripPageAnchor} from './sharedNotePages';
-import {GtdParaKind, INBOX_FILE_NAME, Meeting, Task} from './types';
+import {GtdParaKind, Meeting, Task} from './types';
 import {parseFrontMatter, parseMarksSpan} from './markdown';
 import {HomeNotebookSpec, readStoredName, renameCase, renamedNotebookMove, renameFindingText} from './homeNotebook';
 import {resolveMarkPath} from './marks';
@@ -586,51 +586,6 @@ export function checkUnknownContextEntries(contexts: readonly ContextDef[], item
     notePath: '',
     message: `Context "${context}" names ${entry.kind === 'item' ? `${entry.itemKind === 'area' ? 'Area' : 'Project'} "${entry.name}"` : 'an item'}, which isn't in your Projects or Areas (renamed or archived?). Edit it in Settings → Contexts.`,
   }));
-}
-
-/** Just what the leftovers check needs from a folder listing - domain stays free of supernote/ types. */
-export interface ListedEntry {
-  name: string;
-  isFolder: boolean;
-}
-
-/** The Inbox's note folders. */
-const INBOX_NOTE_FOLDERS = ['Todos', 'Meetings'] as const;
-
-/** Names left at the base root from where the Inbox lived up to 0.1.0. */
-export function legacyInboxLeftovers(rootEntries: ListedEntry[]): string[] {
-  const has = (name: string, isFolder: boolean) => rootEntries.some(e => e.name === name && e.isFolder === isFolder);
-  const found: string[] = [];
-  if (has(INBOX_FILE_NAME, false)) found.push(INBOX_FILE_NAME);
-  for (const folder of INBOX_NOTE_FOLDERS) {
-    if (has(folder, true)) found.push(`${folder}/`);
-  }
-  return found;
-}
-
-/**
- * Whole-scan finding for anything at the base root from where the Inbox lived
- * up to 0.1.0: Inbox.txt, Todos/ or Meetings/. gtdpara does not move these
- * itself (direct upgrades from 0.1.0 are not supported); the finding tells the
- * user to move them by hand.
- */
-export function checkLegacyInboxLeftovers(rootEntries: ListedEntry[], base: string, inboxFolder: string): IntegrityFinding[] {
-  const leftovers = legacyInboxLeftovers(rootEntries);
-  if (leftovers.length === 0) return [];
-  return [
-    {
-      checkId: 'legacyInboxLeftovers',
-      itemKind: 'inbox',
-      itemPath: base,
-      entityKind: 'item',
-      entityLabel: leftovers.join(', '),
-      notePath: '',
-      message:
-        `Left in the base folder from where the Inbox lived up to version 0.1.0: ${leftovers.join(', ')}. ` +
-        `Move Inbox.txt and the Todos and Meetings folders into "${inboxFolder}" by hand (merge with what is ` +
-        'already there), or delete them in the file manager if they are empty.',
-    },
-  ];
 }
 
 /**

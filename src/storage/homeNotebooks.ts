@@ -93,7 +93,7 @@ export function subscribeHomeNotebookStates(listener: () => void): () => void {
 
 /**
  * Re-reads whether each of `paths` exists - one `statFiles` call for all of
- * them (a native build without it falls back to one check per file) - and
+ * them (without the native module it falls back to one check per file) - and
  * tells the subscribers when anything changed. Never throws; a failed read
  * leaves the cache as it was.
  */

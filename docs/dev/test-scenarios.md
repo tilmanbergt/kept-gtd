@@ -295,7 +295,6 @@ Test: `__tests__/scenarios/meetingReflection.test.tsx` · design: `docs/dev/hist
 - **Given** a 0.21 space: Website with focus flags, goals and #now, Garage in no focus with a #next todo; focus mode on
 - **When** 0.22 starts
 - **Then** Daily shows every next todo - Garage's too - and "Write copy #now" as "Write copy #next"
-- **And** the one-time line says focus is retired
 - **And** no file changed
 - **And** the stored settings still hold the focus keys
 

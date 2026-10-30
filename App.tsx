@@ -26,7 +26,6 @@ import {getEngageRequest, requestEngage, subscribeEngage} from './src/ui/engageS
 import {noteLaunchChanged} from './src/ui/useThisFile';
 import {MarkScope} from './src/domain/marks';
 import MarkOutcomeScreen from './src/ui/MarkOutcomeScreen';
-import {logStaleBuilds} from './src/supernote/pluginRuntime';
 import {getMarkOutcome, holdStartForMark, isMarkInFlight, outcomeNeedsScreen, subscribeMarkOutcome} from './src/storage/marks';
 import {useAppOverlays} from './src/screens/useAppOverlays';
 import {useReviewStepNav} from './src/screens/useReviewStepNav';
@@ -65,7 +64,6 @@ import {log, logError} from './src/utils/log';
 import {BUILD_INFO} from './src/generated/buildInfo';
 import {perfBegin, perfConfigure, perfEnable, perfMark, usePerfRender} from './src/utils/perf';
 import {collectPerfStats} from './src/storage/perfStats';
-import {logNoteTitlesDiagnostic} from './src/storage/noteTitlesDiagnostic';
 import {requestEinkRefresh, useEinkRefreshOnLoad} from './src/utils/screenRefresh';
 import {FONT, useThemeColors} from './src/ui/theme';
 import {ScreenSizeProvider} from './src/ui/ScreenSize';
@@ -234,8 +232,7 @@ function AppShell({onProfileSwitched}: {onProfileSwitched: () => void}): React.J
   // while "Mark for later" or Capture still has its lasso picture in the
   // temp folder): clear leftovers of an interrupted PDF export from the
   // private temp folder (docs/dev/history/technical-design-inkhub-submission.md §3.2;
-  // best-effort, older native builds lack the call), and log whether an
-  // older build is still loaded (supernote/pluginRuntime.ts logStaleBuilds).
+  // best-effort).
   const startHousekeepingRef = useRef(false);
 
   // Re-checks the current note's Project/Area and jumps straight there - on
@@ -349,7 +346,6 @@ function AppShell({onProfileSwitched}: {onProfileSwitched: () => void}): React.J
         // rememberLaunchNotePath's own doc comment in supernote/hostContext.ts.
         rememberLaunchNotePath(currentPath);
         noteLaunchChanged();
-        if (loadedSettings.debugLogging === true && currentPath) void logNoteTitlesDiagnostic(currentPath);
         if (cancelled || routedByLassoButtonRef.current || routedByEngageButtonRef.current) return;
 
         setSettings(loadedSettings);
@@ -358,7 +354,6 @@ function AppShell({onProfileSwitched}: {onProfileSwitched: () => void}): React.J
           getPrivateTempDir()
             .then(dir => deleteTempTree(dir))
             .catch(e => log('App: private temp clean-up skipped', errorMessage(e)));
-          logStaleBuilds();
         }
         // Only files changed outside gtdpara are read again (technical-design-files-0.6.md §3.2).
         refreshCache(loadedSettings).catch(e =>

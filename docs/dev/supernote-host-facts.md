@@ -99,8 +99,8 @@ Checked on the device in 0.23 with a diagnostic screen since removed. Source:
 ## 8. Installing builds
 
 - The host can install a new build into the running process instead of restarting it, so two
-  builds end up loaded in one process. Every build gets a higher `versionCode`, and
-  `supernote/pluginRuntime.ts` reports stale builds in the debug bundle. Source:
+  builds end up loaded in one process. The plugin firmware Kept requires unloads the old build;
+  every build still gets a higher `versionCode`. Source:
   `docs/dev/history/technical-design-host-update-crash.md`.
 
 ## 9. Uninstalling

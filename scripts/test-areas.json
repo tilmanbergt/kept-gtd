@@ -172,7 +172,7 @@
         "src/screens/settings/noteSetups/**",
         "src/screens/notebook/**",
         "src/domain/{noteSetups,noteSetupText,noteSetupMigration,pageLayout,homeNotebook,noteCreationPlan,noteFindability,notebookContents,pageSection,pageOrder,notePageEntry,sharedNotePages,keywordLength,noteRelocation,returnContext,noteCreation,pageFrame}.ts",
-        "src/storage/{homeNotebook*,noteSetupMigrationState,itemNotePlan,noteTargets,noteFindability,notePieceMetrics,notebookContents,notebookPages,pageSection,notePageEntry,sharedNotePages,standaloneNotes,noteLinks,noteOwnerOf,noteTitlesDiagnostic,pageFrames}.ts",
+        "src/storage/{homeNotebook*,noteSetupMigrationState,itemNotePlan,noteTargets,noteFindability,notePieceMetrics,notebookContents,notebookPages,pageSection,notePageEntry,sharedNotePages,standaloneNotes,noteLinks,noteOwnerOf,pageFrames}.ts",
         "src/supernote/{noteElements,noteTitles,textboxMetrics,noteFileApi,hostContext}.ts",
         "src/ui/{HomeNotebookButton,NoteTemplatePreview,NudgePad}.tsx",
         "src/ui/{useHomeNotebook*,useNoteCreateConfirm,useNoteSetupsNotice,usePageFitNotice}.ts*"

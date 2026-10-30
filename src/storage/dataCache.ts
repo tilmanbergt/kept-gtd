@@ -126,7 +126,7 @@ function sameStamp(a: FileStamp | undefined, b: FileStamp | undefined): boolean 
   return !!a && !!b && a.exists === b.exists && a.lastModified === b.lastModified && a.size === b.size;
 }
 
-/** Stats `paths` in one native call. Null when the native build has no statFiles or the call fails - callers then fall back to reading everything. */
+/** Stats `paths` in one native call. Null without the native module or when the call fails - callers then fall back to reading everything. */
 async function statStamps(paths: string[]): Promise<Map<string, FileStamp> | null> {
   try {
     const stats = await statFiles(paths);
@@ -468,7 +468,7 @@ async function doRebuildCache(settings: GtdParaSettings): Promise<DataCache> {
  * picks up added and removed Project/Area folders, and the Inbox. Falls back
  * to a full rebuild when there is no cache yet, the folders in Settings
  * differ from the cached ones (or the Inbox still sits at its old place), or
- * the native build can't stat files.
+ * files can't be statted.
  *
  * Subscribers are notified only when something really changed: a file whose
  * stamp differs but whose text is the same (gtdpara's own saves don't update

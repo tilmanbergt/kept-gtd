@@ -1128,19 +1128,16 @@ when asked for:
 - **Integrity Check** (`storage/integrityCheck.ts`, checks in `domain/integrityCheck.ts`): walks
   Projects, Areas, Archive and the Inbox and writes one report. Checks include load errors, `#`
   in note paths, missing linked files and default Resources folders, duplicate headings and
-  abbreviations, orphaned Area assignments, interrupted close-outs, missing mark notes, Inbox
-  leftovers at the base root, renamed folders whose home notebook kept the old name and unsafe
-  file names. For unsafe note names it plans fixes
+  abbreviations, orphaned Area assignments, interrupted close-outs, missing mark notes, renamed
+  folders whose home notebook kept the old name and unsafe file names. For unsafe note names it plans fixes
   (`domain/fileNameFix.ts`); "Fix file names (n)" renames after one confirm and rewrites the
   links (`storage/fileNameFix.ts`). Everything else is report-only.
 - **Performance tracing** (`utils/perf.ts`, switch `perfTracing`): one trace per tab tap,
   navigation, reopen and cold start, ending after 1.5 s of quiet (15 s at most), written as JSONL
   to `EXPORT/kept-gtd/debug/perf/` with data-volume stats (`storage/perfStats.ts`). Off costs one
   check per call. Analysis: `node scripts/perf-report.js`.
-- **Stale build**: `supernote/pluginRuntime.ts` checks whether an older Kept build is still
-  loaded in the host process. The required plugin firmware unloads it on install, so there is no
-  warning: the count goes into the debug bundle and one `pluginRuntime: stale builds` log line per
-  start, to catch a regression.
+- **Build and device** (`supernote/pluginRuntime.ts`, native `GtdParaRuntime`): build id,
+  `versionCode` and device facts for About and the debug bundle.
 
 **Dates and errors.** All date and time text shown to the user comes from
 `domain/dateFormat.ts` (`6.10.`, `6.10. 14:05`, year only when not the current one); files keep
