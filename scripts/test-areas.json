@@ -247,12 +247,12 @@
       "name": "Settings, profiles, demo, help and logging",
       "help": ["settings.md", "profiles-and-demo.md"],
       "tests": [
-        "__tests__/**/*{settings,Settings,profile,Profile,demoSpace,buildVersionText,helpTopics,markdownBlocks,features,redact,debugBundle,logSink,userDocs,keptGtd,helpLinks,setupAssistant,removeData,RemoveData}*"
+        "__tests__/**/*{settings,Settings,profile,Profile,demoSpace,buildVersionText,helpTopics,markdownBlocks,features,redact,debugBundle,logSink,userDocs,keptGtd,helpLinks,setupAssistant,removeData,RemoveData,screenCheck}*"
       ],
       "sources": [
         "src/screens/settings/**",
         "src/domain/{settings,profiles,profileCopy,demoSpace,buildVersionText,helpTopics,helpLinks,markdownBlocks,features,redact,setupAssistant,dataRemoval}.ts",
-        "src/storage/{settings*,profiles,profileKeys,demoSpace,debugBundle,perfStats,setupAssistant,dataRemoval}.ts",
+        "src/storage/{settings*,profiles,profileKeys,demoSpace,debugBundle,perfStats,setupAssistant,dataRemoval,screenPageCheck}.ts",
         "src/supernote/diagnosticFiles.ts",
         "src/ui/{HelpOverlay,MarkdownBlocks}.tsx",
         "src/ui/{useSettings,useSettingsUnreadableNotice,useProfileCopyNotice,useWhatsNewNotice,featureStore,helpStore}.ts",

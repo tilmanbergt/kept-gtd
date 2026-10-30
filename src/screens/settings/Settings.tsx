@@ -42,6 +42,7 @@ import ContextsTab from './contexts/ContextsTab';
 import {useContextsDraft} from './contexts/useContextsDraft';
 import DataTab from './DataTab';
 import RemoveDataScreen from './RemoveDataScreen';
+import ScreenCheckScreen from './ScreenCheckScreen';
 import {styles} from './settingsStyles';
 import SetupAssistant from './SetupAssistant';
 import NoteSetupsTab from './noteSetups/NoteSetupsTab';
@@ -95,6 +96,7 @@ export default function Settings({initialTab, onSwitchProfile, startSetup = fals
   const [setupOpen, setSetupOpen] = useState(startSetup);
   // Data → Remove Kept's data, drawn in place of the settings while open.
   const [removeOpen, setRemoveOpen] = useState(false);
+  const [screenCheckOpen, setScreenCheckOpen] = useState(false);
   // "Reload all files" (Advanced).
   const [reloading, setReloading] = useState(false);
   const [reloadResult, setReloadResult] = useState<{kind: 'success' | 'error'; text: string} | null>(null);
@@ -225,6 +227,19 @@ export default function Settings({initialTab, onSwitchProfile, startSetup = fals
     );
   }
 
+  if (screenCheckOpen) {
+    return (
+      <View style={[styles.container, styles.background]}>
+        <ScreenCheckScreen
+          onClose={() => {
+            setScreenCheckOpen(false);
+            requestEinkRefresh();
+          }}
+        />
+      </View>
+    );
+  }
+
   if (removeOpen) {
     return (
       <View style={[styles.container, styles.background]}>
@@ -305,6 +320,7 @@ export default function Settings({initialTab, onSwitchProfile, startSetup = fals
               onTogglePerfTracing={() => toggleNow('perfTracing')}
               onToggleKeepTabsAlive={() => toggleNow('keepTabsAlive')}
               onRunIntegrityCheck={handleRunIntegrityCheck}
+              onOpenScreenCheck={() => setScreenCheckOpen(true)}
               textColor={textColor}
               borderColor={borderColor}
             />

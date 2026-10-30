@@ -3,7 +3,7 @@
  * linked (requirement L3; docs/dev/history/technical-design-easy-start.md §6.2):
  * "This file · p. 12" links the page Kept was opened on, "This file" links the
  * file without a page (it opens where it was last left). A tap picks like a
- * file tap. No rows when Kept was opened from Home.
+ * file tap. No rows when the launch file is unknown.
  */
 import React from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';

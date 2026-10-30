@@ -35,7 +35,14 @@ interface FakePage {
 interface FakeNote {
   template: string;
   pages: FakePage[];
+  /** Page size in pixels; absent = an A5 X portrait note (1404 × 1872). */
+  size?: {width: number; height: number};
+  /** The host's machine type (3 = A5 X, 4 = Nomad, 5 = Manta); absent = A5 X. */
+  machineType?: number;
 }
+
+/** An A5 X portrait page; a horizontal note swaps the two. */
+export const A5X_PAGE_SIZE = {width: 1404, height: 1872};
 
 type Response<T> = {success: boolean; result?: T; error?: {code: number; message: string}};
 
@@ -58,7 +65,7 @@ const ok = <T,>(result: T): Response<T> => ({success: true, result});
 const fail = (message: string): Response<never> => ({success: false, error: {code: 1, message}});
 
 export class FakeSdk {
-  /** The note the plugin was opened from, or null (opened from a document or the home screen). */
+  /** The file the plugin was opened from, or null (the host gives no path: launch file unknown). */
   currentFile: string | null = null;
   currentPage = 0;
   /** Notes the plugin asked the host to open, in order. */
@@ -72,8 +79,13 @@ export class FakeSdk {
   constructor(private readonly fs: FakeFs) {}
 
   /** Writes a note the way the host would have made it. */
-  putNote(path: string, pages: Array<Partial<FakePage>> = [{}], template = 'style_white'): void {
-    const note: FakeNote = {template, pages: pages.map(blankPage)};
+  putNote(
+    path: string,
+    pages: Array<Partial<FakePage>> = [{}],
+    template = 'style_white',
+    shape: {size?: {width: number; height: number}; machineType?: number} = {},
+  ): void {
+    const note: FakeNote = {template, pages: pages.map(blankPage), ...shape};
     this.fs.put(path, JSON.stringify(note));
   }
 
@@ -151,9 +163,9 @@ export class FakeSdk {
       recycleElement: () => undefined,
     }),
     PluginFileAPI: this.api('PluginFileAPI', {
-      createNote: async ({notePath, template}: {notePath: string; template: string}) => {
+      createNote: async ({notePath, template, isPortrait}: {notePath: string; template: string; isPortrait?: boolean}) => {
         if (this.fs.exists(notePath)) return fail(`a file exists at ${notePath}`);
-        this.putNote(notePath, [{}], template);
+        this.putNote(notePath, [{}], template, isPortrait === false ? {size: {width: A5X_PAGE_SIZE.height, height: A5X_PAGE_SIZE.width}} : {});
         return ok(true);
       },
       openFile: async (path: string, page: number) => {
@@ -183,7 +195,9 @@ export class FakeSdk {
         this.withNote(path, n =>
           ok(pages.flatMap(p => [...(n.pages[p]?.titles ?? []), ...(n.pages[p]?.elements ?? []).flatMap(el => (el.title ? [el.title] : []))])),
         ),
-      getPageSize: async () => ok({width: 1404, height: 1872}),
+      getPageSize: async (path: string, page: number) =>
+        this.note(path) ? this.withNote(path, n => (n.pages[page] ? ok(n.size ?? A5X_PAGE_SIZE) : fail(`no page ${page}`))) : ok(A5X_PAGE_SIZE),
+      getFileMachineType: async (path: string) => this.withNote(path, n => ok(n.machineType ?? 3)),
       getElements: async (page: number, path: string) =>
         this.withNote(path, n => (n.pages[page] ? ok(n.pages[page].elements) : fail(`no page ${page}`))),
       insertElements: async (path: string, page: number, elements: FakeElement[]) =>

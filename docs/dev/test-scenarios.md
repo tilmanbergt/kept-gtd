@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-148 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+150 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -1205,6 +1205,27 @@ Test: `__tests__/scenarios/keptGtd.test.tsx`
 
 Test: `__tests__/scenarios/keptGtd.test.tsx`
 
+### Check screen and pages shows the launch note's page size and tries a horizontal test note
+
+- **Given** a two-page note made on a Manta, and debug logging on
+- **When** I open Kept from page 2 of that note and tap Settings → Advanced → Check screen and pages
+- **Then** it shows the screen and the note's page count, page size and device
+- **When** I tap Create horizontal test note
+- **Then** a horizontal note is created in Kept's debug folder, not among my notes
+- **When** I tap Add a page and then Write test text boxes
+- **Then** the new page has three text boxes at the A5 X reference positions
+- **And** Open test note asks the host to open it on its last page
+- **And** Close returns to Advanced
+
+Test: `__tests__/scenarios/screenCheck.test.tsx` · design: `docs/dev/history/technical-design-launch-ready.md`
+
+### Check screen and pages is hidden while debug logging is off
+
+- **When** I open Settings → Advanced with debug logging off
+- **Then** there is no Check screen and pages
+
+Test: `__tests__/scenarios/screenCheck.test.tsx` · design: `docs/dev/history/technical-design-launch-ready.md`
+
 ### Settings opens on Data, with six tabs
 
 - **Given** Kept is open
@@ -1476,14 +1497,14 @@ Test: `__tests__/scenarios/deviceLinks.test.tsx` · design: `docs/dev/history/te
 
 Test: `__tests__/scenarios/deviceLinks.test.tsx` · design: `docs/dev/history/technical-design-easy-start.md`
 
-### This file from a note: Quick Add starts off and links the note relative to Note; from Home nothing is offered
+### This file from a note: Quick Add starts off and links the note relative to Note; launch file unknown: nothing is offered
 
 - **Given** project "Garden renovation" has the todo "Order soil" and the note Ideas.note
 - **When** I open Kept from page 2 of Ideas.note and open the project
 - **Then** Quick Add shows the note, switched off
 - **When** I switch on "no page" and add the todo "Sketch the beds"
 - **Then** the todo links the note by its path inside Note, without a page
-- **When** I reopen Kept from Home, open the project and tap +clip on "Order soil"
+- **When** I reopen Kept and the host gives no launch file, open the project and tap +clip on "Order soil"
 - **Then** neither Quick Add nor the Files pane offers This file
 
 Test: `__tests__/scenarios/deviceLinks.test.tsx` · design: `docs/dev/history/technical-design-easy-start.md`

@@ -16,6 +16,9 @@ or your project/area files are stored.
   gtdpara folders - and removes what you check. Your data files and saved profiles are offered too,
   unchecked. Notes are never touched. Afterwards Start fresh opens the setup assistant, or Close Kept
   before you uninstall: uninstalling alone keeps the settings and passwords on the device.
+- **Check screen and pages** in Settings → Advanced (shown while Debug logging is on): the screen
+  size, the page size of the note Kept was opened from, and a horizontal test note in
+  `EXPORT/kept-gtd/debug` - for bug reports about other devices and landscape.
 
 ### Changed
 - **Settings has six tabs** instead of eight. **Data** holds your folders on the left and, on the

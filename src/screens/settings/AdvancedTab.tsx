@@ -1,7 +1,8 @@
 /**
  * Settings → Advanced (docs/dev/history/technical-design-settings-tabs.md T5): left, Reporting a
  * problem (Debug logging, Export debug bundle); right, the tools (Reload all files, Integrity
- * Check, Keep tabs in memory, Performance tracing). Settings.tsx owns the values and the
+ * Check, Keep tabs in memory, Performance tracing; while Debug logging is on also Check screen and
+ * pages, docs/dev/history/technical-design-launch-ready.md §6). Settings.tsx owns the values and the
  * handlers; every switch saves immediately.
  */
 import React from 'react';
@@ -21,6 +22,7 @@ interface Props {
   onTogglePerfTracing: () => void;
   onToggleKeepTabsAlive: () => void;
   onRunIntegrityCheck: () => void;
+  onOpenScreenCheck: () => void;
   textColor: string;
   borderColor: string;
 }
@@ -54,6 +56,16 @@ export default function AdvancedTab(p: Props): React.JSX.Element {
             Scans every Project/Area/Archive/Inbox for broken note links and note names that break Obsidian links, and writes a report to EXPORT/kept-gtd/debug.
           </Text>
         </View>
+        {p.debugLogging && (
+          <View style={styles.field}>
+            <Pressable onPress={p.onOpenScreenCheck} hitSlop={8} style={styles.button}>
+              <Text style={[styles.buttonText, {color: textColor}]}>Check screen and pages</Text>
+            </Pressable>
+            <Text style={[styles.hint, {color: textColor}]}>
+              Shows the screen size and the page size of the note Kept was opened from, and tries a horizontal test note in EXPORT/kept-gtd/debug. For bug reports about other devices and landscape.
+            </Text>
+          </View>
+        )}
         <SettingSwitch
           label="Keep tabs in memory"
           on={p.keepTabsAlive}

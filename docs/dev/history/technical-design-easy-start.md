@@ -326,3 +326,6 @@ built); demo space → `foundation`; setup assistant → `settings`; Device tab,
 - **Scenarios of §9**: 1 `__tests__/scenarios/helpLinks.test.tsx`; 2 `scripts/test-userdocs.mjs` (link
   check); 3 `__tests__/userDocsExamples.test.ts`; 4-7 `__tests__/scenarios/setupAssistant.test.tsx`; 8-10
   `__tests__/scenarios/deviceLinks.test.tsx`; S0's check `__tests__/scenarios/deviceCheck.test.tsx`.
+- **"Home" in §6.3/§9 scenario 10** means "launch file unknown": plugins open only from the Note or the
+  Document app, so there is no Home launch. Wording corrected in 0.24.0
+  (`docs/dev/history/technical-design-launch-ready.md` §2); the behaviour is as designed.

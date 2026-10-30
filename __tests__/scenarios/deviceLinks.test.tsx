@@ -80,7 +80,7 @@ scenario('This file: link the PDF Kept was opened from, with its page, in the Fi
   });
 });
 
-scenario('This file from a note: Quick Add starts off and links the note relative to Note; from Home nothing is offered', {feature: 'Your files', design: 'technical-design-easy-start.md'}, () => {
+scenario('This file from a note: Quick Add starts off and links the note relative to Note; launch file unknown: nothing is offered', {feature: 'Your files', design: 'technical-design-easy-start.md'}, () => {
   const NOTE = `${projectDir(GARDEN)}/Ideas.note`;
   given('project "Garden renovation" has the todo "Order soil" and the note Ideas.note', () => {
     forgetDeviceRoots();
@@ -106,7 +106,7 @@ scenario('This file from a note: Quick Add starts off and links the note relativ
   then('the todo links the note by its path inside Note, without a page', () => {
     expect(sectionLines(projectFile(GARDEN), 'Tasks')[1]).toMatch(/^- \[ \] Sketch the beds \+\[\[1 Projects\/Garden renovation\/Ideas\.note\]\]/);
   });
-  when('I reopen Kept from Home, open the project and tap +clip on "Order soil"', async () => {
+  when('I reopen Kept and the host gives no launch file, open the project and tap +clip on "Order soil"', async () => {
     await reopenApp();
     await tapTab('Projects');
     await tap(new RegExp(`^${GARDEN}`));

@@ -46,7 +46,7 @@ function onOff(v: boolean): string {
 }
 
 function extensionOf(path: string | null | undefined): string {
-  if (!path) {return 'none (Home)';}
+  if (!path) {return 'none (unknown)';}
   const m = /\.([A-Za-z0-9]+)$/.exec(path);
   return m ? `.${m[1].toLowerCase()}` : 'unknown';
 }
