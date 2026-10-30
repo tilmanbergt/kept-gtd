@@ -25,7 +25,8 @@ import {
 import PillButton from '../../ui/PillButton';
 import TaskLabels from '../../ui/TaskLabels';
 import {taskRowLayout} from '../../ui/taskRowLayout';
-import {ENGAGE_TEXT_WIDTH, engageStyles as styles} from './engageStyles';
+import {engageStyles as styles} from './engageStyles';
+import {estimatorWidth} from '../../ui/ScreenSize';
 
 interface Props {
   todo: EngageTodoRef;
@@ -61,7 +62,7 @@ export default function NowBox({
   const today = todayIso();
   const layout = taskRowLayout(
     todo.task,
-    ENGAGE_TEXT_WIDTH,
+    estimatorWidth(),
     'flat',
     false,
     today,

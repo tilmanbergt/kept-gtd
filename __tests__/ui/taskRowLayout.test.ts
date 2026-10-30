@@ -1,4 +1,5 @@
-import {fitTitleToLines, labelSuffix, taskRowLayout, taskTextWidthPx, TASK_COLUMN_WIDTH_PX} from '../../src/ui/taskRowLayout';
+import {fitTitleToLines, labelSuffix, taskRowLayout, taskTextWidthPx} from '../../src/ui/taskRowLayout';
+import {A5X_ESTIMATOR_WIDTH as TASK_COLUMN_WIDTH_PX} from '../../src/domain/screenLayout';
 import {activeLineEstimator} from '../../src/domain/textLineEstimator';
 import {FONT} from '../../src/ui/theme';
 import {task} from '../../test-helpers/fixtures';

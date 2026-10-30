@@ -167,16 +167,8 @@ import {common} from './commonStyles';
 import {FONT} from './theme';
 import {useStatus, useErrorStatus} from './status/StatusProvider';
 import {errorMessage} from '../utils/errorMessage';
+import {estimatorWidth} from './ScreenSize';
 
-// Right column width this pane renders in when it's the left half of a
-// two-column screen (screens/ItemDetail.tsx, screens/InboxScreen.tsx, both
-// plain flex:1 two-column splits) - docs/dev/design-device-rendering.md §5.1's
-// two-column convention, the same constant screens/ProjectDataPanel.tsx/
-// screens/InboxScreen.tsx use for their row-height estimates. Daily view's
-// Focus/Projects/Areas panel renders this pane narrower than that but reuses
-// the same width figure - a starting point, not yet verified for that
-// narrower caller (same caveat as those files' COLUMN_WIDTH_PX comments).
-const COLUMN_WIDTH_PX = 678;
 
 /**
  * Entry row height (docs/dev/history/technical-design-pagination-fixed-height.md
@@ -840,7 +832,7 @@ export default function FileBrowserPane({
             ) : undefined
           }
           rows={loading || error ? [] : visibleEntries}
-          rowHeight={entry => fileEntryHeight(entry, COLUMN_WIDTH_PX)}
+          rowHeight={entry => fileEntryHeight(entry, estimatorWidth())}
           viewportHeight={viewportHeight}
           resetKey={current?.path}
           jumpTo={jumpTo}
@@ -855,7 +847,7 @@ export default function FileBrowserPane({
               // PagedSection budgeted for it. A mispredicted line count then
               // becomes a clip inside the fixed viewport - the safe failure
               // mode - rather than a page-break mismatch.
-            const rowHeightPx = fileEntryHeight(entry, COLUMN_WIDTH_PX);
+            const rowHeightPx = fileEntryHeight(entry, estimatorWidth());
             return (
               <Pressable
                 key={entry.path}
@@ -863,7 +855,7 @@ export default function FileBrowserPane({
                 style={[styles.entryRow, {height: rowHeightPx, minHeight: rowHeightPx}, isLocateTarget && styles.entryRowLocated]}>
                 <Text
                   style={[styles.entry, entry.isFolder && styles.entryLink, {color: textColor}]}
-                  numberOfLines={fileEntryLines(entry, COLUMN_WIDTH_PX)}>
+                  numberOfLines={fileEntryLines(entry, estimatorWidth())}>
                   {fileEntryDisplayText(entry)}
                 </Text>
               </Pressable>

@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-150 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+152 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -786,6 +786,24 @@ Test: `__tests__/scenarios/meetingReflection.test.tsx` · design: `docs/dev/hist
 - **And** the meeting has the new title and keeps both #prepped and #reviewed
 
 Test: `__tests__/scenarios/meetingReflection.test.tsx` · design: `docs/dev/history/technical-design-item-card.md`
+
+## Note setups
+
+### Opened from a PDF, a note that needs a new file is not tried: the status says why
+
+- **Given** a sparring session whose notebook does not exist yet, and a PDF
+- **When** I open Kept from the PDF, open the session and tap Reflect
+- **Then** the status line says Supernote does not allow it, nothing is asked and no note is made
+
+Test: `__tests__/scenarios/noteCreationLimit.test.tsx`
+
+### Opened from a note, the same Reflect asks first and creates the notebook
+
+- **Given** the same session, and a note to open Kept from
+- **When** I open Kept from the note, open the session and tap Reflect
+- **Then** Kept asks before it creates anything
+
+Test: `__tests__/scenarios/noteCreationLimit.test.tsx`
 
 ## Profiles and demo space
 

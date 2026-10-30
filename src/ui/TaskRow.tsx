@@ -49,12 +49,13 @@ import {Task} from '../domain/types';
 import {ClipIcon} from './icons';
 import {TaskLabelContext} from '../domain/taskLabels';
 import TaskLabels from './TaskLabels';
-import {TASK_COLUMN_WIDTH_PX, taskRowLayout} from './taskRowLayout';
+import {taskRowLayout} from './taskRowLayout';
 import {renderTaggableText} from './TaggableText';
 import {openOverview} from './overviewStore';
 import {WAITING_FOR_TYPE} from '../domain/flowState';
 import {FONT} from './theme';
 import {perfCount, usePerfRender} from '../utils/perf';
+import {estimatorWidth} from './ScreenSize';
 
 /** Space above and below the row's content, inside each tap target. */
 const ROW_PAD_DP = 7;
@@ -140,7 +141,7 @@ export default function TaskRow({
   context,
   height,
   numberOfLines,
-  columnWidthPx = TASK_COLUMN_WIDTH_PX,
+  columnWidthPx = estimatorWidth(),
   textColor,
   borderColor,
 }: Props): React.JSX.Element {
@@ -230,7 +231,7 @@ export function ReadOnlyTaskRow({
   textColor: string;
   borderColor: string;
 }): React.JSX.Element {
-  const layout = taskRowLayout(task, TASK_COLUMN_WIDTH_PX, context);
+  const layout = taskRowLayout(task, estimatorWidth(), context);
   return (
     <View style={styles.wrap}>
       <View style={[styles.row, styles.rowReadOnly, {borderBottomColor: borderColor}]}>

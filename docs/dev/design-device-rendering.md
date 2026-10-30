@@ -25,14 +25,16 @@
   (`TASK_ROW_LINE_HEIGHT_PX`, `SUBHEADING_ROW_PX`, `COLUMN_WIDTH_PX` …). They hold **dp**
   values, because React Native reads them as dp. Only the note-page constants above are real
   pixels.
-- **Column width used by the line estimators:** `COLUMN_WIDTH_PX = 678` (in `ui/itemEntryRow.ts`,
-  `ui/taskRowLayout.ts` as `TASK_COLUMN_WIDTH_PX`, `ui/FileBrowserPane.tsx`,
-  `screens/InboxScreen.tsx`, `screens/DailyView.tsx`, `screens/ProjectDataPanel.tsx`). This is a
-  pixel figure, while a real half-screen column is about **473 dp** wide
-  (`(994 − 2 × 16 − 16) ÷ 2`). The line estimator (`domain/textLineEstimator.ts`) is tuned
-  together with 678 (narrow character widths plus a 0.8 safety margin), so the two errors
-  partly cancel out. Treat line-count predictions as estimates; changing 678 re-pages every
-  task and item list.
+- **Column width used by the line estimators:** `estimatorWidth()` (`ui/ScreenSize.tsx`, rule in
+  `domain/screenLayout.ts`). It is **678** on the A5 X and on any wider screen (a Manta, either
+  device in landscape). That is a pixel figure, while a real half-screen column is about **473 dp**
+  wide (`(994 − 2 × 16 − 16) ÷ 2`); the line estimator (`domain/textLineEstimator.ts`) is tuned
+  together with 678 (narrow character widths plus a 0.8 safety margin), so the two errors partly
+  cancel out. On a wider screen the same 678 makes estimates err long: a row gets room it doesn't
+  need, nothing is cut off. A narrower screen (a Nomad, ~750 dp) scales it down with the real column
+  width. Treat line-count predictions as estimates.
+- **Other screens:** the size comes from Kept's root view (`ScreenSizeProvider` in `App.tsx`), never
+  from A5 X constants. Lists measure their own height (`PagedSection` without `viewportHeight`).
 - **Grayscale e-ink only.** The hardware has no color. See §7.
 - **No scrolling, anywhere, by design**
   (`docs/dev/history/technical-design-pagination-edit-reuse.md`). Every list is a fixed-size

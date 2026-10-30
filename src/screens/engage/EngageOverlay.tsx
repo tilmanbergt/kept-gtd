@@ -43,7 +43,7 @@ import BackLine from './BackLine';
 import EngageFooter from './EngageFooter';
 import EngageHeader from './EngageHeader';
 import GoToLine from './GoToLine';
-import {ENGAGE_BACKDROP_TRANSPARENT, ENGAGE_TEXT_WIDTH, engageStyles as styles} from './engageStyles';
+import {ENGAGE_BACKDROP_TRANSPARENT, engageStyles as styles} from './engageStyles';
 import MarksLine from './MarksLine';
 import MeetingLine from './MeetingLine';
 import NowBox from './NowBox';
@@ -59,6 +59,7 @@ import {useEngageFlow} from './useEngageFlow';
 import {useEngageGoTo} from './useEngageGoTo';
 import {useEngageExits} from './useEngageExits';
 import {useEngageView} from './useEngageView';
+import {estimatorWidth} from '../../ui/ScreenSize';
 
 const NAME = 'EngageOverlay';
 
@@ -111,7 +112,7 @@ export default function EngageOverlay({request, onClose, onOpenGtdpara, onExit}:
     run();
   };
 
-  const titleOf = (todo: EngageTodoRef) => taskRowLayout(todo.task, ENGAGE_TEXT_WIDTH, 'flat').title;
+  const titleOf = (todo: EngageTodoRef) => taskRowLayout(todo.task, estimatorWidth(), 'flat').title;
 
   /** The owner thread's counterpart, for w/f (R15); null for a loop or an item. */
   const counterpart = owner?.kind === 'thread' ? threadOf(owner.tag)?.counterpart ?? null : null;

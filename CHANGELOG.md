@@ -21,6 +21,10 @@ or your project/area files are stored.
   `EXPORT/kept-gtd/debug` - for bug reports about other devices and landscape.
 
 ### Changed
+- **Creating a note from a PDF or EPUB**: the Supernote doesn't let plugins create notes when they were opened
+  from a document. Kept no longer asks first and then fails with the device's message; it says right away:
+  "Supernote doesn't let plugins create notes when opened from a PDF or EPUB. Open Kept from a note to
+  create this one." Adding a page to a note that exists is still tried.
 - **Settings has six tabs** instead of eight. **Data** holds your folders on the left and, on the
   right, Run setup assistant and the profiles - setting up in one place. The Google Calendar link and
   the Gmail account moved onto **Features**, next to their switches, each with its own Save. Debug

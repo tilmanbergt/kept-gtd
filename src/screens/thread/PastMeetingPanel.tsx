@@ -30,10 +30,10 @@ import AgreementRow, {AGREEMENT_ROW_HEIGHT} from '../../ui/AgreementRow';
 import PagedSection from '../../ui/PagedSection';
 import {AgreementActions, agreementRefKey} from '../../ui/useAgreementActions';
 import TaskRow, {taskRowHeight, taskRowLines} from '../../ui/TaskRow';
-import {TASK_COLUMN_WIDTH_PX} from '../../ui/taskRowLayout';
 import {FONT, SPACING} from '../../ui/theme';
 import {SUB_HEAD_HEIGHT} from './AheadSection';
 import {EntryActions, taskEntryKey} from '../../ui/useEntryActions';
+import {estimatorWidth} from '../../ui/ScreenSize';
 
 type PanelRow =
   | {kind: 'head'; key: string; label: string}
@@ -141,7 +141,7 @@ export default function PastMeetingPanel({selection, actions, agreements, textCo
         resetKey={past ? past.key : selection.kind}
         isCountableRow={row => row.kind !== 'head'}
         rowHeight={row =>
-          row.kind === 'head' ? SUB_HEAD_HEIGHT : row.kind === 'agreement' ? AGREEMENT_ROW_HEIGHT : taskRowHeight(row.entry.task, TASK_COLUMN_WIDTH_PX, 'flat')
+          row.kind === 'head' ? SUB_HEAD_HEIGHT : row.kind === 'agreement' ? AGREEMENT_ROW_HEIGHT : taskRowHeight(row.entry.task, estimatorWidth(), 'flat')
         }
         emptyHint={past ? 'Nothing agreed in this meeting yet - add it above.' : 'Nothing done since then.'}
         renderRow={row => {
@@ -180,8 +180,8 @@ export default function PastMeetingPanel({selection, actions, agreements, textCo
               onOpenLinkedFile={actions.openFile}
               ownerPath={entry.item.path}
               context="flat"
-              height={taskRowHeight(entry.task, TASK_COLUMN_WIDTH_PX, 'flat')}
-              numberOfLines={taskRowLines(entry.task, TASK_COLUMN_WIDTH_PX, 'flat')}
+              height={taskRowHeight(entry.task, estimatorWidth(), 'flat')}
+              numberOfLines={taskRowLines(entry.task, estimatorWidth(), 'flat')}
               textColor={textColor}
               borderColor={borderColor}
             />

@@ -163,6 +163,10 @@ When you opened Kept from a note or a document, the Files pane shows two rows at
 
 A file inside `Note` is stored as a path inside `Note`, like every linked file; a file outside it with its full path, for example `+[[/storage/emulated/0/Document/Book.pdf#page=12]]`, as the [lasso](lasso.md#capturing-right-away) does for a PDF. Opening, the ⚠ for a missing file and removing a link work the same way. When you change the todo or meeting later, the Files pane opens the Device tab at the file's folder (not for a file on the SD card).
 
+## Known limitations
+
+- *New notes from a PDF or EPUB*: when Kept was opened from a document, the Supernote doesn't let it create notes. Kept says so instead of asking; open Kept from a note to create one ([Troubleshooting](troubleshooting.md#common-situations)).
+
 ## What Kept GTD keeps elsewhere
 
 - *Settings* are stored inside the plugin. Profiles save them as files, see [Profile files](profiles-and-demo.md#profile-files).

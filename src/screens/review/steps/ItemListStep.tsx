@@ -9,7 +9,7 @@ import {SettableStatus, setItemStatus} from '../../../storage/statusControl';
 import {displayPath} from '../../../supernote/devicePaths';
 import {log} from '../../../utils/log';
 import {requestEinkRefresh} from '../../../utils/screenRefresh';
-import {COLUMN_WIDTH_PX, itemEntryHeight} from '../../../ui/itemEntryRow';
+import {itemEntryHeight} from '../../../ui/itemEntryRow';
 import ReviewMasterDetail from '../../../ui/ReviewMasterDetail';
 import {useStatusApi} from '../../../ui/status/StatusProvider';
 import {changedOnDisk, reviewCurrentItem, ReviewEmptyDetail, ReviewLeftRow, ReviewStepProps, SETTINGS_NOT_LOADED} from '../shared';
@@ -18,6 +18,7 @@ import {useFrozenStepList} from '../useFrozenStepList';
 import {useStatusConfirm} from '../../../ui/useStatusConfirm';
 import {DoneOnHoldDetail, ReviewItemDetail} from './ItemDetails';
 import {mutateEntryTasks} from '../../../storage/itemMutations';
+import {estimatorWidth} from '../../../ui/ScreenSize';
 
 export type ItemStepId = 'stalled' | 'neglected' | 'done' | 'onHold';
 
@@ -224,7 +225,7 @@ export default function ItemListStep({
     <ReviewMasterDetail<ItemRow>
       header={text.header}
       rows={frozen.list}
-      rowHeight={row => itemEntryHeight(reviewCurrentItem(refOf(row), items), COLUMN_WIDTH_PX)}
+      rowHeight={row => itemEntryHeight(reviewCurrentItem(refOf(row), items), estimatorWidth())}
       isSelectable={() => true}
       rowKey={row => refOf(row).path}
       renderRow={(row, selected, actedOn) => (

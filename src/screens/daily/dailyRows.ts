@@ -10,8 +10,6 @@ import {DailyItemRef, DailyMeetingEntry, DailyTaskEntry, DailyTaskGroup} from '.
 export const taskKey = (entry: DailyTaskEntry) => `${entry.item.path}#${entry.taskIndex}`;
 export const meetingKey = (entry: DailyMeetingEntry) => `${entry.item.path}#${entry.meetingIndex}`;
 
-/** The column width the line estimators use (design-device-rendering.md §1). */
-export const COLUMN_WIDTH_PX = 678;
 /** A group header's budget; it renders at its natural height (design-device-rendering.md §3). */
 export const GROUP_HEADER_ROW_PX = 57;
 

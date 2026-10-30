@@ -32,7 +32,9 @@ Measured on: Supernote A5 X, plugin firmware Chauvet 2.27.42, `sn-plugin-lib` 0.
 
 - **Creating a note works only when the plugin was opened from a note.** From a document (PDF,
   EPUB) `PluginFileAPI.createNote` fails with "This app is not allowed to use this API", so
-  creating a linked note or a notebook needs Kept to be opened from a note.
+  creating a linked note or a notebook needs Kept to be opened from a note. Kept doesn't try
+  when it knows it was opened from a document and shows its own sentence for the host's refusal
+  (`domain/noteCreation.ts`).
 - `createNote` needs a fixed template name (`style_white`, or a MyStyle file path); a template
   reference from `getNoteSystemTemplates()` does not resolve there.
 - Inserting a page and adding its keyword are two separate calls; nothing makes them atomic.

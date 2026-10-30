@@ -27,7 +27,8 @@ import TaskRow, {taskRowHeight, taskRowLines} from '../../ui/TaskRow';
 import {useErrorStatus} from '../../ui/status/StatusProvider';
 import {log, logError} from '../../utils/log';
 import {errorMessage} from '../../utils/errorMessage';
-import {COLUMN_WIDTH_PX, PaneColors, sectionStyles as styles, SUBHEADING_ROW_PX} from './panelLayout';
+import {PaneColors, sectionStyles as styles, SUBHEADING_ROW_PX} from './panelLayout';
+import {estimatorWidth} from '../../ui/ScreenSize';
 
 /** One flattened Todos row - a flow-state group's header, or a task -
  * see the "Flattened into one paginated sequence" comment inside
@@ -200,7 +201,7 @@ export default function TodosSection({
         // Per item first: the "Hide done tasks" line above the list is there only with done todos.
         heightKey={[`current:Todos:${itemPath}`, 'current:Todos']}
         rows={flatRows}
-        rowHeight={row => (row.kind === 'header' ? SUBHEADING_ROW_PX : taskRowHeight(row.task, COLUMN_WIDTH_PX, 'grouped'))}
+        rowHeight={row => (row.kind === 'header' ? SUBHEADING_ROW_PX : taskRowHeight(row.task, estimatorWidth(), 'grouped'))}
         isCountableRow={row => row.kind === 'entry'}
         renderRow={row =>
           row.kind === 'header' ? (
@@ -222,8 +223,8 @@ export default function TodosSection({
               onArmLink={() => onArmLink(row.index)}
               ownerPath={itemPath}
               context="grouped"
-              height={taskRowHeight(row.task, COLUMN_WIDTH_PX, 'grouped')}
-              numberOfLines={taskRowLines(row.task, COLUMN_WIDTH_PX, 'grouped')}
+              height={taskRowHeight(row.task, estimatorWidth(), 'grouped')}
+              numberOfLines={taskRowLines(row.task, estimatorWidth(), 'grouped')}
               textColor={textColor}
               borderColor={borderColor}
             />

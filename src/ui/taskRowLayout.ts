@@ -25,8 +25,6 @@ import {perfCount} from '../utils/perf';
 
 /** A todo row never shows more than two lines of text. */
 export const TASK_ROW_MAX_LINES = 2;
-/** The usual column width of a todo list (two equal columns, design-device-rendering §5.1). */
-export const TASK_COLUMN_WIDTH_PX = 678;
 // Checkbox glyph width + its marginRight (ui/TaskRow.tsx styles.checkbox).
 const CHECKBOX_WIDTH_PX = 28;
 // Note icon (📓 / +📓) and clip icon with their margins, both assumed shown -

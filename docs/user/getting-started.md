@@ -46,7 +46,7 @@ Switch Quick Add to its [Meeting](quick-add.md#adding-a-meeting) tab: a title, a
 
 Every todo and meeting can have a handwritten note. Tap its [note icon](quick-add.md#notes-and-files-on-a-todo-or-meeting): Kept first says in the [status line](index.md#the-status-line) where the note will go, then creates it and opens it, already filled with the title and date.
 
-By default all notes of a project go into one notebook per year, its [home notebook](projects-and-areas.md#home-notebooks) - "Garden renovation 2026" - one page per todo or meeting, in time order. So everything about the garden is in one place. Creating a note only works when Kept was [opened from a note](troubleshooting.md#common-situations). If you prefer a note of its own for every todo or meeting, see [Note setups](note-setups.md#what-a-setup-is).
+By default all notes of a project go into one notebook per year, its [home notebook](projects-and-areas.md#home-notebooks) - "Garden renovation 2026" - one page per todo or meeting, in time order. So everything about the garden is in one place. Creating a note only works when Kept was opened from a note, see [Known limitations](files-and-folders.md#known-limitations). If you prefer a note of its own for every todo or meeting, see [Note setups](note-setups.md#what-a-setup-is).
 
 ## Capture while you write
 

@@ -11,7 +11,8 @@ import {DailyItemRef} from '../../storage/dailyAggregate';
 import {common} from '../../ui/commonStyles';
 import PagedSection from '../../ui/PagedSection';
 import {taskRowHeight} from '../../ui/TaskRow';
-import {COLUMN_WIDTH_PX, FlatTaskRow, GROUP_HEADER_ROW_PX} from './dailyRows';
+import {FlatTaskRow, GROUP_HEADER_ROW_PX} from './dailyRows';
+import {estimatorWidth} from '../../ui/ScreenSize';
 
 interface Props {
   /** Quick Add or the selected item's card. */
@@ -30,7 +31,7 @@ interface Props {
 }
 
 export default function DailyTodosColumn({quickAdd, panel, rows, renderEntry, onOpenItem, tagFilter, failedItemNames, footer, textColor, borderColor}: Props): React.JSX.Element {
-  const rowHeight = (row: FlatTaskRow) => (row.kind === 'header' ? GROUP_HEADER_ROW_PX : taskRowHeight(row.entry.task, COLUMN_WIDTH_PX, 'flat', tagFilter != null));
+  const rowHeight = (row: FlatTaskRow) => (row.kind === 'header' ? GROUP_HEADER_ROW_PX : taskRowHeight(row.entry.task, estimatorWidth(), 'flat', tagFilter != null));
   const renderRow = (row: FlatTaskRow) => {
     if (row.kind === 'header') {
       // Natural height: clipping it to GROUP_HEADER_ROW_PX would cut the text; the list measures its real viewport.

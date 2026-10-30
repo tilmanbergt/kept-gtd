@@ -58,8 +58,9 @@ import {useMeetingCard} from '../ui/itemCard/useMeetingCard';
 import {useTodoCard} from '../ui/itemCard/useTodoCard';
 import DailyModeRow from './daily/DailyModeRow';
 import DailyTodosColumn from './daily/DailyTodosColumn';
-import {COLUMN_WIDTH_PX, flattenTaskGroups, FlatTaskRow, meetingKey, taskKey} from './daily/dailyRows';
+import {flattenTaskGroups, FlatTaskRow, meetingKey, taskKey} from './daily/dailyRows';
 import {useDailyData} from './daily/useDailyData';
+import {estimatorWidth} from '../ui/ScreenSize';
 
 interface Props {
   onOpenItem: (kind: 'project' | 'area', entry: FolderEntry) => void;
@@ -184,7 +185,7 @@ export default function DailyView({onOpenItem, onOpenInbox, onOpenCalendarSettin
         ownerPath={entry.item.path}
         context="flat"
         height={heightPx}
-        numberOfLines={taskRowLines(entry.task, COLUMN_WIDTH_PX, 'flat', tagFilter != null)}
+        numberOfLines={taskRowLines(entry.task, estimatorWidth(), 'flat', tagFilter != null)}
         textColor={textColor}
         borderColor={borderColor}
       />

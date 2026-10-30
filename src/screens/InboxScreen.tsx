@@ -132,12 +132,6 @@ import {useActionError} from '../ui/useActionError';
 import {errorMessage} from '../utils/errorMessage';
 import {useCachedInbox} from '../ui/useCachedInbox';
 
-// Right column width this whole screen's Tasks/Meetings panes render in
-// (this screen's own `leftPane`/`rightPane`, the identical plain `flex:1`
-// two-column split screens/ItemDetail.tsx uses) - see screens/
-// ProjectDataPanel.tsx's own `COLUMN_WIDTH_PX` comment for the derivation
-// and its not-yet-verified-on-device caveat, which applies here too.
-const COLUMN_WIDTH_PX = 678;
 
 // Flex weights (docs/dev/history/technical-design-flex-weight-stacking.md §3.4) - see
 // screens/ProjectDataPanel.tsx's TODOS_WEIGHT/MEETINGS_WEIGHT comment for the
@@ -172,8 +166,8 @@ type EditTarget = {type: 'task' | 'meeting'; index: number};
 type ArmTarget = {type: 'task' | 'meeting'; index: number; intent: 'link' | 'file'};
 
 const inboxSource = (inboxPath: string): EntrySource => ({kind: 'inbox', path: inboxPath});
-
 import {useDeviceRoot} from '../ui/fileBrowser/useDeviceRoot';
+import {estimatorWidth} from '../ui/ScreenSize';
 export default function InboxScreen({
   onOpenCalendarSettings,
   onOpenItem,
@@ -803,7 +797,7 @@ export default function InboxScreen({
               <PagedSection
                 header="Tasks"
                 rows={taskFlatRows}
-                rowHeight={row => (row.kind === 'header' ? SUBHEADING_ROW_PX : taskRowHeight(row.task, COLUMN_WIDTH_PX, 'grouped'))}
+                rowHeight={row => (row.kind === 'header' ? SUBHEADING_ROW_PX : taskRowHeight(row.task, estimatorWidth(), 'grouped'))}
                 isCountableRow={row => row.kind === 'entry'}
                 renderRow={row =>
                   row.kind === 'header' ? (
@@ -825,8 +819,8 @@ export default function InboxScreen({
                       onOpenLinkedFile={onOpenLinkedFile}
                       onArmLink={() => armLinkTarget('task', row.index)}
                       context="grouped"
-                      height={taskRowHeight(row.task, COLUMN_WIDTH_PX, 'grouped')}
-                      numberOfLines={taskRowLines(row.task, COLUMN_WIDTH_PX, 'grouped')}
+                      height={taskRowHeight(row.task, estimatorWidth(), 'grouped')}
+                      numberOfLines={taskRowLines(row.task, estimatorWidth(), 'grouped')}
                       textColor={textColor}
                       borderColor={borderColor}
                     />

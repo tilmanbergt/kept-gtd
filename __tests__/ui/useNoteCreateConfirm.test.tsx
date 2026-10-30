@@ -3,9 +3,19 @@
 jest.mock('../../src/supernote/devicePaths', () => ({
   displayPath: (p: string) => p.replace(/^\/storage\/emulated\/0\//, ''),
 }));
+// The launch file and which note files exist (docs/dev/history/technical-design-launch-ready.md §3).
+let mockLaunchPath: string | null = '/storage/emulated/0/Note/Ideas.note';
+const mockExistingFiles = new Set<string>();
+jest.mock('../../src/supernote/hostContext', () => ({
+  getRememberedLaunchNotePath: () => ({path: mockLaunchPath, capturedAt: 0}),
+}));
+jest.mock('../../src/supernote/fileSystem', () => ({
+  fileExists: async (path: string) => mockExistingFiles.has(path),
+}));
 
 import React from 'react';
 import TestRenderer, {act} from 'react-test-renderer';
+import {NOTE_CREATION_BLOCKED_TEXT} from '../../src/domain/noteCreation';
 import {NoteCreationPlan} from '../../src/domain/noteCreationPlan';
 import {createScreenActivity, ScreenActivityContext} from '../../src/ui/screenActivity';
 import {StatusEntry, StatusProvider, useStatusList} from '../../src/ui/status/StatusProvider';
@@ -40,6 +50,31 @@ function mount() {
 }
 
 describe('useNoteCreateConfirm', () => {
+  afterEach(() => {
+    mockLaunchPath = '/storage/emulated/0/Note/Ideas.note';
+    mockExistingFiles.clear();
+  });
+
+  it('opened from a PDF, a plan whose file does not exist is not asked: the limitation instead', async () => {
+    mockLaunchPath = '/storage/emulated/0/Document/Book.pdf';
+    mount();
+    await expect(confirm(plan)).rejects.toThrow(NOTE_CREATION_BLOCKED_TEXT);
+    expect(list).toHaveLength(0);
+  });
+
+  it('opened from a PDF, a page in a file that exists is still asked', async () => {
+    mockLaunchPath = '/storage/emulated/0/Document/Book.pdf';
+    mockExistingFiles.add(plan.absolutePath);
+    mount();
+    let result: Promise<number | null> = Promise.resolve(null);
+    await act(async () => {
+      result = confirm(plan);
+    });
+    expect(list).toHaveLength(1);
+    act(() => list[0].msg.actions![0].onPress());
+    await expect(result).resolves.toBe(0);
+  });
+
   it('shows the plan in the slot and resolves 0 on the button', async () => {
     mount();
     let result: Promise<number | null> = Promise.resolve(null);

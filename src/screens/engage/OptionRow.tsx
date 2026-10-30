@@ -16,7 +16,8 @@ import {ENGAGE_TEXT} from '../../domain/engageText';
 import PillButton from '../../ui/PillButton';
 import TaskLabels from '../../ui/TaskLabels';
 import {taskRowLayout} from '../../ui/taskRowLayout';
-import {ENGAGE_TEXT_WIDTH, engageStyles as styles} from './engageStyles';
+import {engageStyles as styles} from './engageStyles';
+import {estimatorWidth} from '../../ui/ScreenSize';
 
 interface Props {
   todo: EngageTodoRef;
@@ -32,7 +33,7 @@ interface Props {
 const MARK = {next: '●', plan: '◌', waiting: '○', done: '✓'} as const;
 
 export default function OptionRow({todo, kind, detail, onPick, actions, textColor, borderColor}: Props): React.JSX.Element {
-  const layout = taskRowLayout(todo.task, ENGAGE_TEXT_WIDTH, 'flat');
+  const layout = taskRowLayout(todo.task, estimatorWidth(), 'flat');
   return (
     <Pressable onPress={onPick} disabled={!onPick} style={[styles.row, {borderBottomColor: borderColor}]}>
       <Text style={[styles.rowMark, {color: textColor}]}>{MARK[kind]}</Text>

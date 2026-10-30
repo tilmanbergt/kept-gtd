@@ -28,7 +28,6 @@ import {loadSettings} from '../../../storage/settingsStorage';
 import {FolderEntry} from '../../../supernote/fileSystem';
 import {log, logError} from '../../../utils/log';
 import FileBrowserPane, {ARMING_TEXT, FileBrowserRoot, LinkTarget} from '../../../ui/FileBrowserPane';
-import {COLUMN_WIDTH_PX} from '../../../ui/itemEntryRow';
 import MeetingRow, {MeetingTrackingConfig, trackingSetups} from '../../../ui/MeetingRow';
 import MeetingList from '../../../ui/MeetingList';
 import {useEditTarget} from '../../../ui/useEditTarget';
@@ -71,8 +70,8 @@ export function inboxStepEntries(inbox: ProjectFileState | null): {
       .filter(({meeting}) => !meeting.cancelled && isTodayOrFuture(meeting.date)),
   };
 }
-
 import {useDeviceRoot} from '../../../ui/fileBrowser/useDeviceRoot';
+import {estimatorWidth} from '../../../ui/ScreenSize';
 export default function InboxStep({
   data,
   onOpenItem,
@@ -440,7 +439,7 @@ return (
       <PagedSection
         header="Tasks"
         rows={inboxOpenTasks}
-        rowHeight={({task}) => taskRowHeight(task, COLUMN_WIDTH_PX, 'flat')}
+        rowHeight={({task}) => taskRowHeight(task, estimatorWidth(), 'flat')}
         renderRow={({task, taskIndex}) => (
           <TaskRow
             key={`task-${taskIndex}`}
@@ -456,8 +455,8 @@ return (
             onOpenLinkedFile={onOpenInboxLinkedFile}
             onArmLink={() => armInboxLinkTarget('task', taskIndex)}
             context="flat"
-            height={taskRowHeight(task, COLUMN_WIDTH_PX, 'flat')}
-            numberOfLines={taskRowLines(task, COLUMN_WIDTH_PX, 'flat')}
+            height={taskRowHeight(task, estimatorWidth(), 'flat')}
+            numberOfLines={taskRowLines(task, estimatorWidth(), 'flat')}
             textColor={textColor}
             borderColor={borderColor}
           />

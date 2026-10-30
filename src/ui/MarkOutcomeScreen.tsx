@@ -83,8 +83,8 @@ export default function MarkOutcomeScreen({outcome}: {outcome: MarkOutcome}): Re
 }
 
 const styles = StyleSheet.create({
-  root: {flex: 1, alignItems: 'center', paddingTop: 320},
-  box: {width: 820, borderWidth: 3, padding: 28},
+  root: {flex: 1, alignItems: 'center', paddingTop: 320, paddingHorizontal: 16},
+  box: {width: '100%', maxWidth: 820, borderWidth: 3, padding: 28},
   title: {fontSize: FONT.large, fontWeight: '700', marginBottom: 12},
   body: {fontSize: FONT.medium, marginBottom: 12},
   buttons: {flexDirection: 'row', marginTop: 8},

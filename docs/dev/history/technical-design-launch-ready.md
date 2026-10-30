@@ -343,3 +343,24 @@ links land on the right spot.
 - **The simulation hides host differences** (Nomad firmware, real rotation). Guarded by the listing
   wording, which says "simulated".
 - **Scope creep in L6.** The cut line keeps the release about robustness.
+
+## As built
+
+- **L0** (`storage/screenPageCheck.ts`, `screens/settings/ScreenCheckScreen.tsx`): the check also
+  shows the device a note was made on (`getFileMachineType`) and writes a third test text box at
+  y 1300 (inside a horizontal page) next to 100 and 1600. The fake SDK models a page size and machine
+  type per note; `createNote(..., isPortrait = false)` makes a horizontal one.
+- **L1**: the guard sits in two places. `noteFileApi.createNote` refuses before the host call when the
+  launch file is a document and maps the host's refusal to `NoteCreationBlockedError`
+  (`domain/noteCreation.ts`), which covers every creator, also those without a confirm (Quick Add's
+  Note tab, the Gmail email note). `ui/useNoteCreateConfirm.ts` throws the same error before asking
+  when none of the plan's files exist yet, so nothing is asked first. The rule is "the file doesn't
+  exist", not the plan kind: a reflection plan whose notebook is missing creates a file too. Adding a
+  page to an existing note is still tried from a document (whether the host allows it is open).
+- **L2**: `ScreenSizeProvider` starts from the window size, so the app and its button listener mount
+  at once, and follows the root's layout. It keys the app on the estimator figure, so the app is
+  drawn anew only when that figure changes (a narrow screen; never on the A5 X or wider). The fake
+  device's window is the size the scenario helpers lay out at (1340 × 1500). The six copies of 678
+  are gone; `A5X_ESTIMATOR_WIDTH` is the one constant. ItemsList's Areas "On Hold" box measures its
+  own height (its budget mixed pixels and dp). Mark outcome's box is at most 820 dp wide and keeps a
+  16 dp margin.

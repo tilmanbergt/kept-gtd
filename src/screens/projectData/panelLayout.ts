@@ -5,15 +5,6 @@
 import {StyleSheet} from 'react-native';
 import {FONT} from '../../ui/theme';
 
-// Right column width this whole screen renders in (screens/ItemDetail.tsx's
-// `leftPane`/`rightPane`, both plain `flex:1` inside a 16px-gutter two-
-// column split) - docs/dev/design-device-rendering.md §5.1's own "two-column
-// split" convention: usable content width 1372px, minus the 16px gutter,
-// split evenly ≈ 678px each. Needed by TaskRow's/MeetingRow's row-height
-// estimators, which predict how many lines a title wraps to at a given
-// width - not separately verified on-device, same as those estimators' own
-// calibration.
-export const COLUMN_WIDTH_PX = 678;
 
 // Flow-state/Upcoming-Past group-header rows within each flattened
 // sequence (TodosSection's `subheading`, MeetingsSection's same style) -

@@ -67,6 +67,7 @@ import {collectPerfStats} from './src/storage/perfStats';
 import {logNoteTitlesDiagnostic} from './src/storage/noteTitlesDiagnostic';
 import {requestEinkRefresh, useEinkRefreshOnLoad} from './src/utils/screenRefresh';
 import {FONT, useThemeColors} from './src/ui/theme';
+import {ScreenSizeProvider} from './src/ui/ScreenSize';
 import {errorMessage} from './src/utils/errorMessage';
 
 // Performance tracing (docs/dev/history/technical-design-perf-tracing.md). Wired once at
@@ -140,12 +141,14 @@ function AppRoot(): React.JSX.Element {
   const markOutcome = useSyncExternalStore(subscribeMarkOutcome, getMarkOutcome);
   return (
     <View style={styles.appRoot}>
-      <AppShell key={epoch} onProfileSwitched={() => setEpoch(e => e + 1)} />
-      {markOutcome && outcomeNeedsScreen(markOutcome) ? (
-        <View style={StyleSheet.absoluteFill}>
-          <MarkOutcomeScreen outcome={markOutcome} />
-        </View>
-      ) : null}
+      <ScreenSizeProvider>
+        <AppShell key={epoch} onProfileSwitched={() => setEpoch(e => e + 1)} />
+        {markOutcome && outcomeNeedsScreen(markOutcome) ? (
+          <View style={StyleSheet.absoluteFill}>
+            <MarkOutcomeScreen outcome={markOutcome} />
+          </View>
+        ) : null}
+      </ScreenSizeProvider>
     </View>
   );
 }
