@@ -16,6 +16,8 @@ or your project/area files are stored.
   gtdpara folders - and removes what you check. Your data files and saved profiles are offered too,
   unchecked. Notes are never touched. Afterwards Start fresh opens the setup assistant, or Close Kept
   before you uninstall: uninstalling alone keeps the settings and passwords on the device.
+- **Simulate screen** in Settings → Advanced (shown while Debug logging is on): draws Kept at the size of a
+  Nomad, to see whether anything is cut off.
 - **Check screen and pages** in Settings → Advanced (shown while Debug logging is on): the screen
   size, the page size of the note Kept was opened from, and a horizontal test note in
   `EXPORT/kept-gtd/debug` - for bug reports about other devices and landscape.
@@ -25,6 +27,9 @@ or your project/area files are stored.
   from a document. Kept no longer asks first and then fails with the device's message; it says right away:
   "Supernote doesn't let plugins create notes when opened from a PDF or EPUB. Open Kept from a note to
   create this one." Adding a page to a note that exists is still tried.
+- **Note pages of any size**: pieces of a note setup are placed on the real size of the page - on a Manta's
+  bigger pages they keep their place relative to the page; on a horizontal page a piece that would land
+  below the page is left out and the status line says so. Text notes (the Gmail email note) fit the page too.
 - **Settings has six tabs** instead of eight. **Data** holds your folders on the left and, on the
   right, Run setup assistant and the profiles - setting up in one place. The Google Calendar link and
   the Gmail account moved onto **Features**, next to their switches, each with its own Save. Debug

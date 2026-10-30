@@ -2,11 +2,15 @@
  * Settings → Advanced (docs/dev/history/technical-design-settings-tabs.md T5): left, Reporting a
  * problem (Debug logging, Export debug bundle); right, the tools (Reload all files, Integrity
  * Check, Keep tabs in memory, Performance tracing; while Debug logging is on also Check screen and
- * pages, docs/dev/history/technical-design-launch-ready.md §6). Settings.tsx owns the values and the
+ * pages and Simulate screen, docs/dev/history/technical-design-launch-ready.md §4.3/§6). Settings.tsx owns the values and the
  * handlers; every switch saves immediately.
  */
-import React from 'react';
+import React, {useSyncExternalStore} from 'react';
 import {ActivityIndicator, Pressable, StyleSheet, Text, View} from 'react-native';
+import {SIMULATED_SCREENS, simulationsThatFit} from '../../domain/screenLayout';
+import PillButton from '../../ui/PillButton';
+import {useRealScreenSize} from '../../ui/ScreenSize';
+import {getScreenSimulation, setScreenSimulation, subscribeScreenSimulation} from '../../ui/screenSimStore';
 import {FONT, SPACING} from '../../ui/theme';
 import ReportingSection from './ReportingSection';
 import SettingSwitch from './SettingSwitch';
@@ -56,6 +60,7 @@ export default function AdvancedTab(p: Props): React.JSX.Element {
             Scans every Project/Area/Archive/Inbox for broken note links and note names that break Obsidian links, and writes a report to EXPORT/kept-gtd/debug.
           </Text>
         </View>
+        {p.debugLogging && <SimulateScreen textColor={textColor} borderColor={borderColor} />}
         {p.debugLogging && (
           <View style={styles.field}>
             <Pressable onPress={p.onOpenScreenCheck} hitSlop={8} style={styles.button}>
@@ -85,7 +90,30 @@ export default function AdvancedTab(p: Props): React.JSX.Element {
   );
 }
 
+/** Off, or one of the Nomad sizes that fit on this screen; not saved, a restart turns it off. */
+function SimulateScreen({textColor, borderColor}: {textColor: string; borderColor: string}): React.JSX.Element {
+  const current = useSyncExternalStore(subscribeScreenSimulation, getScreenSimulation);
+  const fitting = simulationsThatFit(useRealScreenSize());
+  const options = SIMULATED_SCREENS.filter(s => fitting.includes(s.key));
+  return (
+    <View style={styles.field}>
+      <Text style={[styles.label, {color: textColor}]}>Simulate screen</Text>
+      <View style={styles.pills}>
+        <PillButton label="Off" primary={current === null} onPress={() => setScreenSimulation(null)} textColor={textColor} borderColor={borderColor} />
+        {options.map(o => (
+          <PillButton key={o.key} label={o.label} primary={current === o.key} onPress={() => setScreenSimulation(o.key)} textColor={textColor} borderColor={borderColor} />
+        ))}
+      </View>
+      <Text style={[styles.hint, {color: textColor}]}>
+        Draws Kept in a box the size of a Nomad, to check that nothing is cut off. Nomad portrait fits while the device is upright, Nomad landscape while it is turned. Kept starts again on its first tab; closing Kept ends it.
+      </Text>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
+  label: {fontSize: FONT.small, fontWeight: '600', marginBottom: 4},
+  pills: {flexDirection: 'row', flexWrap: 'wrap', gap: SPACING.sm},
   row: {flexDirection: 'row', flex: 1},
   column: {flex: 1},
   columnLeft: {marginRight: SPACING.base},

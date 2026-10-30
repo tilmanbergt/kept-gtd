@@ -37,6 +37,10 @@ Measured on: Supernote A5 X, plugin firmware Chauvet 2.27.42, `sn-plugin-lib` 0.
   (`domain/noteCreation.ts`).
 - `createNote` needs a fixed template name (`style_white`, or a MyStyle file path); a template
   reference from `getNoteSystemTemplates()` does not resolve there.
+- **Horizontal notes**: `createNote(..., isPortrait = false)` makes one; `getPageSize` reports
+  its pages as 1872 × 1404 px, and `insertNotePage` adds horizontal pages to it. Element
+  coordinates are page pixels from the top left; a text box placed below the page is stored
+  but never visible. The host's page bar covers about the bottom 100 px of a page.
 - Inserting a page and adding its keyword are two separate calls; nothing makes them atomic.
   Kept checks what it can (the keyword length) before the first call.
 
@@ -61,6 +65,11 @@ Measured on: Supernote A5 X, plugin firmware Chauvet 2.27.42, `sn-plugin-lib` 0.
   explicitly (`utils/screenRefresh.ts`'s `requestEinkRefresh()`, `useEinkRefreshOnLoad()`).
 - Android's native text-selection toolbar does not work in the plugin host;
   `ui/ClipboardTextInput.tsx` has its own Select All/Copy/Cut/Paste strip.
+- **Rotation**: the plugin view turns with the device while Kept is open, without a restart. The
+  window goes from 994 × 1325 dp to 1325 × 994 dp on the A5 X and `Dimensions` reports the
+  change; below the tab bar Kept has 994 × 1238 dp upright and 1325 × 906 dp turned.
+- **Font scale**: the A5 X reports a font scale of 1.15 - text renders 15 % larger than the
+  `FONT` sizes. The row heights in `design-device-rendering.md` are measured with it.
 
 ## 6. Lasso
 

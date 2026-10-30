@@ -35,6 +35,9 @@
   width. Treat line-count predictions as estimates.
 - **Other screens:** the size comes from Kept's root view (`ScreenSizeProvider` in `App.tsx`), never
   from A5 X constants. Lists measure their own height (`PagedSection` without `viewportHeight`).
+- **Checking another size:** Settings → Advanced → Simulate screen (debug logging on) draws Kept in a
+  box the size of a Nomad (749 × 998 or 998 × 749 dp; a dp is about the same physical size on both
+  devices). Turning the device shows landscape (1325 × 906 dp below the tab bar).
 - **Grayscale e-ink only.** The hardware has no color. See §7.
 - **No scrolling, anywhere, by design**
   (`docs/dev/history/technical-design-pagination-edit-reuse.md`). Every list is a fixed-size

@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-152 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+157 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -805,6 +805,30 @@ Test: `__tests__/scenarios/noteCreationLimit.test.tsx`
 
 Test: `__tests__/scenarios/noteCreationLimit.test.tsx`
 
+### On a Manta notebook the reflection page keeps its layout, scaled to the bigger page
+
+- **Given** a sparring notebook made on a Manta (1920 × 2560 px pages)
+- **When** I reflect on the session
+- **Then** the question sits at the Manta position of reference (x, 400), in a bigger font
+
+Test: `__tests__/scenarios/pageFrame.test.tsx`
+
+### On a horizontal notebook a piece that would land below the page is left out, and Kept says so
+
+- **Given** a sparring notebook with horizontal pages (1872 × 1404 px)
+- **When** I reflect with a setup whose question sits at reference y 1600
+- **Then** the page gets its heading but not the question, and the status line explains
+
+Test: `__tests__/scenarios/pageFrame.test.tsx`
+
+### On an A5 X notebook every piece stays exactly where the setup puts it
+
+- **Given** a sparring notebook made on the A5 X
+- **When** I reflect with the question at reference y 1600
+- **Then** the question is written at y 1600, unscaled
+
+Test: `__tests__/scenarios/pageFrame.test.tsx`
+
 ## Profiles and demo space
 
 ### Saved profiles are copied once into the new export folder
@@ -1243,6 +1267,21 @@ Test: `__tests__/scenarios/screenCheck.test.tsx` · design: `docs/dev/history/te
 - **Then** there is no Check screen and pages
 
 Test: `__tests__/scenarios/screenCheck.test.tsx` · design: `docs/dev/history/technical-design-launch-ready.md`
+
+### Simulate screen draws Kept at Nomad size until it is turned off
+
+- **When** I turn on debug logging and choose Settings → Advanced → Simulate screen: Nomad portrait
+- **Then** Kept says it is simulating, and estimates rows for the narrower columns
+- **And** Off in the same place ends it
+
+Test: `__tests__/scenarios/screenSimulation.test.tsx` · design: `docs/dev/history/technical-design-launch-ready.md`
+
+### Simulate screen is hidden while debug logging is off
+
+- **When** I open Settings → Advanced with debug logging off
+- **Then** there is no Simulate screen
+
+Test: `__tests__/scenarios/screenSimulation.test.tsx` · design: `docs/dev/history/technical-design-launch-ready.md`
 
 ### Settings opens on Data, with six tabs
 

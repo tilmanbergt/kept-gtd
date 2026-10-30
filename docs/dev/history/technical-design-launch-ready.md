@@ -364,3 +364,34 @@ links land on the right spot.
   are gone; `A5X_ESTIMATOR_WIDTH` is the one constant. ItemsList's Areas "On Hold" box measures its
   own height (its budget mixed pixels and dp). Mark outcome's box is at most 820 dp wide and keeps a
   16 dp margin.
+- **Spike results (K1-K5)**, on the A5 X:
+  - K1: the plugin view turns live, without a restart.
+  - K3: the window is 994 × 1325 dp upright and 1325 × 994 dp turned; below the tab bar Kept has
+    994 × 1238 dp and 1325 × 906 dp. Font scale 1.15.
+  - K2/K4: a horizontal note's pages report 1872 × 1404 px, and added pages stay horizontal.
+  - K5: text boxes land at page pixels from the top left. y 1300 shows but sits under the host's
+    page bar; y 1600 is stored but never visible.
+
+  All are recorded in `supernote-host-facts.md`.
+- **L3**:
+  - Only the two Nomad sizes are offered: 749 × 998 and 998 × 749 dp, its whole screen. Each is
+    offered only where it fits: Nomad portrait while the A5 X is upright, Nomad landscape while
+    it is turned. An "A5 X landscape" box can't fit on an upright A5 X; turning the device is the
+    real test.
+  - The box sits 16 dp in from the top left with a 1 dp frame, so whatever the host draws at the
+    screen's own edge stays visibly outside it.
+  - Choosing a simulation draws the app anew (keyed), so it starts on its first tab.
+  - The choice is not saved.
+- **L4**:
+  - `domain/pageFrame.ts` scales by the short side and leaves out what doesn't fit. On a page of
+    another shape (horizontal) it also keeps the bottom 100 px band free, where the host's page
+    bar sits (K5). A page of the reference shape (A5 X, Manta) keeps exactly what fits the A5 X,
+    so nothing changes there.
+  - `storage/pageFrames.ts` reads the size for every page written. A cache keyed by path would
+    have kept a wrong size when a note is replaced, and the read is cheap.
+  - Writers that use the frame: `populatePage` (text boxes and the link piece; a left-out piece
+    also gets no heading), `createTextNote`, `writeRecreatedNotice`. The L0 test text boxes stay
+    unscaled on purpose.
+  - Pieces left out are reported through `reportSkippedPieces`; `ui/usePageFitNotice.ts` shows
+    "n pieces of the note setup didn't fit on this page and were left out." in the status slot.
+  - The retry without links re-inserts the elements already placed, so nothing is scaled twice.

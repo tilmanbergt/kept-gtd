@@ -36,6 +36,8 @@ import {ensureFolderExists, listFolderEntries} from '../supernote/fileSystem';
 import {recordDebugLogEntry} from '../supernote/hostCall';
 import {log, logError} from '../utils/log';
 import {errorMessage} from '../utils/errorMessage';
+import {placeFontSize, placeRect} from '../domain/pageFrame';
+import {readPageFrame} from './pageFrames';
 
 /** Every keyword currently on `filePath`, as `{page, keyword}` pairs (also used by the close-out scan, storage/closeOut/scan.ts) - one `getNoteTotalPageNum` + one `getKeyWords` call covering every page, never one call per page. Resolves `[]` for a brand-new (zero-page) file without calling `getKeyWords` at all - passing an empty `pageList` is untested API territory, so this sidesteps it rather than relying on it resolving sensibly. */
 export async function readAllKeywords(filePath: string): Promise<{keywords: PageKeyword[]; totalPages: number}> {
@@ -294,15 +296,18 @@ export async function writeRecreatedNotice(filePath: string, page: number, isoDa
   const text = recreatedPageNoticeText(isoDate);
   const width = pieceWidthPx(DEFAULT_PIECE_X);
   const height = estimatePieceTextHeight(text, width, DEFAULT_PIECE_FONT_SIZE);
+  // Reference pixels, placed on this page's real size (docs/dev/history/technical-design-launch-ready.md §5).
+  const frame = await readPageFrame(filePath, page);
+  const placed = placeRect({x: DEFAULT_PIECE_X, y: DEFAULT_PIECE_Y, width, height}, frame);
 
   const element = await createElement(ELEMENT_TYPE_TEXT);
   element.pageNum = page;
   element.layerNum = 0;
   element.textBox = {
-    fontSize: DEFAULT_PIECE_FONT_SIZE,
+    fontSize: placeFontSize(DEFAULT_PIECE_FONT_SIZE, frame),
     fontPath: null,
     textContentFull: text,
-    textRect: toRect(DEFAULT_PIECE_X, DEFAULT_PIECE_Y, width, height),
+    textRect: toRect(placed.x, placed.y, placed.width, placed.height),
     textDigestData: null,
     textAlign: 0,
     textBold: 0,

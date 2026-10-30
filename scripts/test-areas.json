@@ -166,16 +166,16 @@
       "name": "Note setups, notebooks and pages",
       "help": ["note-setups.md"],
       "tests": [
-        "__tests__/**/*{noteSetup,NoteSetup,homeNotebook,HomeNotebook,notebook,Notebook,note,Note,pageSection,pageOrder,keywordLength,splitByTag}*"
+        "__tests__/**/*{noteSetup,NoteSetup,homeNotebook,HomeNotebook,notebook,Notebook,note,Note,pageSection,pageOrder,keywordLength,splitByTag,pageFrame}*"
       ],
       "sources": [
         "src/screens/settings/noteSetups/**",
         "src/screens/notebook/**",
-        "src/domain/{noteSetups,noteSetupText,noteSetupMigration,pageLayout,homeNotebook,noteCreationPlan,noteFindability,notebookContents,pageSection,pageOrder,notePageEntry,sharedNotePages,keywordLength,noteRelocation,returnContext,noteCreation}.ts",
-        "src/storage/{homeNotebook*,noteSetupMigrationState,itemNotePlan,noteTargets,noteFindability,notePieceMetrics,notebookContents,notebookPages,pageSection,notePageEntry,sharedNotePages,standaloneNotes,noteLinks,noteOwnerOf,noteTitlesDiagnostic}.ts",
+        "src/domain/{noteSetups,noteSetupText,noteSetupMigration,pageLayout,homeNotebook,noteCreationPlan,noteFindability,notebookContents,pageSection,pageOrder,notePageEntry,sharedNotePages,keywordLength,noteRelocation,returnContext,noteCreation,pageFrame}.ts",
+        "src/storage/{homeNotebook*,noteSetupMigrationState,itemNotePlan,noteTargets,noteFindability,notePieceMetrics,notebookContents,notebookPages,pageSection,notePageEntry,sharedNotePages,standaloneNotes,noteLinks,noteOwnerOf,noteTitlesDiagnostic,pageFrames}.ts",
         "src/supernote/{noteElements,noteTitles,textboxMetrics,noteFileApi,hostContext}.ts",
         "src/ui/{HomeNotebookButton,NoteTemplatePreview,NudgePad}.tsx",
-        "src/ui/{useHomeNotebook*,useNoteCreateConfirm,useNoteSetupsNotice}.ts*"
+        "src/ui/{useHomeNotebook*,useNoteCreateConfirm,useNoteSetupsNotice,usePageFitNotice}.ts*"
       ]
     },
     {
@@ -247,7 +247,7 @@
       "name": "Settings, profiles, demo, help and logging",
       "help": ["settings.md", "profiles-and-demo.md"],
       "tests": [
-        "__tests__/**/*{settings,Settings,profile,Profile,demoSpace,buildVersionText,helpTopics,markdownBlocks,features,redact,debugBundle,logSink,userDocs,keptGtd,helpLinks,setupAssistant,removeData,RemoveData,screenCheck}*"
+        "__tests__/**/*{settings,Settings,profile,Profile,demoSpace,buildVersionText,helpTopics,markdownBlocks,features,redact,debugBundle,logSink,userDocs,keptGtd,helpLinks,setupAssistant,removeData,RemoveData,screenCheck,screenSimulation}*"
       ],
       "sources": [
         "src/screens/settings/**",
@@ -273,7 +273,7 @@
         "App.tsx",
         "src/screens/useAppOverlays.tsx",
         "src/ui/{PagedSection,PillButton,ProgressBar,MiniTabs,TabBar,TwoLineRow,KeepAliveTab,TaskRow,HighlightMark,ScreenSize}.tsx",
-        "src/ui/{icons.tsx,commonStyles.ts,theme.ts,listLayout.ts,pagination.ts,keepAliveStore.ts,screenActivity.ts}",
+        "src/ui/{icons.tsx,commonStyles.ts,theme.ts,listLayout.ts,pagination.ts,keepAliveStore.ts,screenActivity.ts,screenSimStore.ts}",
         "src/ui/{useMeasuredHeight,useStableCallback,useActionError,useEditTarget,useEntryActions,taskRowLayout,itemEntryRow}.ts",
         "src/ui/status/**",
         "src/domain/{dateFormat,dateLabel,textLineEstimator,buttonIds,screenLayout}.ts",

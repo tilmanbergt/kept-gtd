@@ -47,3 +47,28 @@ export const NARROW_BELOW = 800;
 export function layoutWidthClass(screen: ScreenSize): 'wide' | 'narrow' {
   return screen.width < NARROW_BELOW ? 'narrow' : 'wide';
 }
+
+/** Screens the debug "Simulate screen" can draw Kept in (docs/dev/history/technical-design-launch-ready.md §4.3). */
+export type SimulatedScreen = 'nomad-portrait' | 'nomad-landscape';
+
+/** The Nomad's whole screen in dp (1404 × 1872 px at 300 ppi, 1.875 px per dp); a dp is about the same physical size on the A5 X. */
+export const SIMULATED_SCREENS: ReadonlyArray<{key: SimulatedScreen; label: string; size: ScreenSize}> = [
+  {key: 'nomad-portrait', label: 'Nomad portrait', size: {width: 749, height: 998}},
+  {key: 'nomad-landscape', label: 'Nomad landscape', size: {width: 998, height: 749}},
+];
+
+export function simulatedScreen(key: SimulatedScreen): {key: SimulatedScreen; label: string; size: ScreenSize} {
+  return SIMULATED_SCREENS.find(s => s.key === key)!;
+}
+
+/**
+ * Space around the simulated box: it sits this far from the top and left edge, so
+ * anything the host draws at the screen's own edge stays visibly outside it.
+ */
+export const SIMULATION_INSET = 16;
+
+/** The simulations that fit on `real` with their inset and frame (a larger box can't be drawn). */
+export function simulationsThatFit(real: ScreenSize): SimulatedScreen[] {
+  const room = SIMULATION_INSET + 2;
+  return SIMULATED_SCREENS.filter(s => s.size.width + room <= real.width && s.size.height + room <= real.height).map(s => s.key);
+}

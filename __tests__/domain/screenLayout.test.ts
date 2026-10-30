@@ -1,4 +1,4 @@
-import {A5X_ESTIMATOR_WIDTH, A5X_PORTRAIT, estimatorWidthFor, layoutWidthClass, realColumnWidth} from '../../src/domain/screenLayout';
+import {A5X_ESTIMATOR_WIDTH, A5X_PORTRAIT, estimatorWidthFor, layoutWidthClass, realColumnWidth, simulationsThatFit} from '../../src/domain/screenLayout';
 
 describe('estimatorWidthFor', () => {
   it('is exactly the A5 X figure on the A5 X, so nothing pages differently there', () => {
@@ -26,5 +26,13 @@ describe('layoutWidthClass', () => {
     expect(layoutWidthClass({width: 750, height: 1000})).toBe('narrow');
     expect(layoutWidthClass({width: 800, height: 1000})).toBe('wide');
     expect(layoutWidthClass(A5X_PORTRAIT)).toBe('wide');
+  });
+});
+
+describe('simulationsThatFit', () => {
+  it('Nomad portrait fits an upright A5 X, Nomad landscape a turned one', () => {
+    expect(simulationsThatFit({width: 994, height: 1325})).toEqual(['nomad-portrait']);
+    expect(simulationsThatFit({width: 1325, height: 994})).toEqual(['nomad-landscape']);
+    expect(simulationsThatFit({width: 700, height: 700})).toEqual([]);
   });
 });
