@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-169 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+170 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -120,19 +120,21 @@ Test: `__tests__/scenarios/keptGtd.test.tsx`
 
 Test: `__tests__/scenarios/contexts.test.tsx`
 
-### A context filters Areas, Projects and Review; Reviewed stays global
+### A context filters Areas; Review starts in Everything and narrows on request; Reviewed stays global
 
 - **Given** contexts Work and Home, Home active
 - **When** I open Areas
 - **Then** only Garden is listed, and the hidden line counts Team
 - **When** I open Review
+- **Then** the hub says the context is set, and Stalled projects counts every stalled project, with no "+n"
+- **When** I tap "Review only in Home"
 - **Then** Stalled projects counts Home's project and "+1 in other contexts"
 - **When** I open the step
-- **Then** it lists Shed and not Tender
-- **When** I mark it Reviewed, choose Everything and open Review's overview again
-- **Then** Stalled projects counts both and shows today's review: the mark is global
+- **Then** it lists Shed and not Tender, and the title ends "· in Home"
+- **When** I mark it Reviewed, leave Review for Daily and come back to Review's overview
+- **Then** Review shows Everything again: both projects, and today's review (the mark is global)
 
-Test: `__tests__/scenarios/contexts.test.tsx`
+Test: `__tests__/scenarios/contexts.test.tsx` · design: `docs/dev/history/technical-design-contexts-tags.md`
 
 ### Quick Add says when the entry lands outside the context
 
@@ -240,6 +242,14 @@ Test: `__tests__/scenarios/contexts.test.tsx`
 - **When** I open Daily
 - **Then** Work's #computer todo shows, Home's does not
 - **And** the sentence reads "Show #computer everywhere except in Home"
+
+Test: `__tests__/scenarios/contexts.test.tsx`
+
+### The Tend line opens Review narrowed, filtered by place
+
+- **Given** "Coaching" shows all #jf threads; Area Team has a #jf/anna todo and the quiet threads anna and #retro/demand; Garden has the quiet thread #retro/beds
+- **When** I tap the Tend line on Week under Coaching
+- **Then** Tending threads lists both of Team's threads, not Garden's, and the title ends "· in Coaching"
 
 Test: `__tests__/scenarios/contexts.test.tsx`
 

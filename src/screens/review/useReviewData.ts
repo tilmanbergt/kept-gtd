@@ -1,9 +1,10 @@
 /**
  * What every Review step reads: settings, the live item cache, the shared
- * Inbox, resolved paths, and the review aggregate - under the active context
- * (docs/dev/history/technical-design-time-and-place.md §3.3, Q2): `aggregate`
- * and `contextItems` hold what the context shows, `aggregateAll` and `items`
- * everything (the hub's "+n in other contexts"; writes look items up there).
+ * Inbox, resolved paths, and the review aggregate. Review starts in
+ * Everything and is narrowed to the active context only on request
+ * (docs/dev/history/technical-design-contexts-tags.md §2.3): `aggregate` and
+ * `contextItems` hold what Review shows, `aggregateAll` and `items` everything
+ * (the hub's "+n in other contexts"; writes look items up there).
  *
  * `items` is live (ui/useCachedItems.ts). The aggregate is a snapshot that
  * only `load` and `refreshFromCache` rebuild, so a step's lists don't change
@@ -29,7 +30,7 @@ export interface ReviewData {
   setSettings: (settings: GtdParaSettings) => void;
   aggregate: ReviewAggregate | null;
   aggregateAll: ReviewAggregate | null;
-  /** The Projects and Areas the active context shows (the rosters' and Agreements' source). */
+  /** The Projects and Areas Review shows (the rosters' and Agreements' source). */
   contextItems: CachedItem[];
   contextFilter: ContextFilter;
   inbox: ProjectFileState | null;
@@ -48,7 +49,7 @@ export function useReviewData(): ReviewData {
   const inbox = useCachedInbox();
   const [settings, setSettings] = useState<GtdParaSettings | null>(null);
   const [aggregateAll, setAggregate] = useState<ReviewAggregate | null>(null);
-  const contextFilter = useContextMatcher();
+  const contextFilter = useContextMatcher({startAll: true});
   const {matcher} = contextFilter;
   const aggregate = useMemo(() => (aggregateAll ? filterReviewAggregate(aggregateAll, matcher, items) : null), [aggregateAll, matcher, items]);
   const contextItems = useMemo(() => (matcher.context ? items.filter(i => matcher.itemShown(i)) : items), [items, matcher]);

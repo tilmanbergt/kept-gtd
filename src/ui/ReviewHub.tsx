@@ -14,6 +14,8 @@
  *   threshold (domain/reviewSteps.ts's REVIEW_STALE_MS) as the Review tab's
  *   badge. A backlog step with nothing in it says "nothing to review" instead
  *   of a date (domain/reviewSteps.ts's stepRowState).
+ *   While a context is active, a first row says so and narrows Review to it
+ *   ("Review only in Home") or widens it again ("Review everything").
  * - `ReviewEnd`: what "Skip"/"Reviewed" on the last step lands on - the same
  *   headline and recap, plus a way back to the hub.
  * - `ReviewStatsBlock`: the recap bullets, shared by both.
@@ -146,17 +148,33 @@ function ReviewStepRow({
   );
 }
 
+/** The hub's first row while a context is active: "Context Home is set · Review only in Home". */
+export interface ReviewContextLine {
+  text: string;
+  action: string;
+  onPress: () => void;
+}
+
 export function ReviewHub({
   steps,
   counts,
   now,
   onOpenStep,
+  contextLine,
   textColor,
   borderColor,
   stepDefs = REVIEW_STEPS,
-}: CommonProps & {onOpenStep: (id: ReviewStepId) => void}): React.JSX.Element {
+}: CommonProps & {onOpenStep: (id: ReviewStepId) => void; contextLine?: ReviewContextLine | null}): React.JSX.Element {
   return (
     <View>
+      {contextLine && (
+        <View style={styles.contextRow}>
+          <Text style={[common.hint, {color: textColor}]}>{contextLine.text} · </Text>
+          <Pressable onPress={contextLine.onPress} hitSlop={8} accessibilityRole="button">
+            <Text style={[common.hint, styles.contextAction, {color: textColor}]}>{contextLine.action}</Text>
+          </Pressable>
+        </View>
+      )}
       <ReviewHeadline steps={steps} counts={counts} now={now} textColor={textColor} stepDefs={stepDefs} />
       <ReviewStatsBlock summary={sumReviewSummaries(steps)} textColor={textColor} />
       <View style={[styles.list, {borderColor}]}>
@@ -199,6 +217,8 @@ export function ReviewEnd({
 }
 
 const styles = StyleSheet.create({
+  contextRow: {flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap'},
+  contextAction: {fontWeight: '700', textDecorationLine: 'underline'},
   recapLine: {
     fontSize: FONT.medium,
     marginBottom: 2,

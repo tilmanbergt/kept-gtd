@@ -78,7 +78,7 @@ scenario('A context filters Daily: hidden todos, dimmed meetings, the hidden lin
   });
 });
 
-scenario('A context filters Areas, Projects and Review; Reviewed stays global', {feature: 'Contexts', design: DESIGN}, () => {
+scenario('A context filters Areas; Review starts in Everything and narrows on request; Reviewed stays global', {feature: 'Contexts', design: 'technical-design-contexts-tags.md'}, () => {
   given('contexts Work and Home, Home active', space);
   when('I open Areas', async () => {
     await openApp({settings: {...SETTINGS, activeContextId: 'c2'}});
@@ -90,21 +90,31 @@ scenario('A context filters Areas, Projects and Review; Reviewed stays global', 
     expectShows('Hidden by Home: 1 area ·');
   });
   when('I open Review', () => tapTab('Review'));
+  then('the hub says the context is set, and Stalled projects counts every stalled project, with no "+n"', () => {
+    expectShows('Context Home is set · ');
+    expectShows('Review only in Home');
+    expect(textsBetween('Stalled projects')[0]).toBe('2 projects');
+  });
+  when('I tap "Review only in Home"', () => tap('Review only in Home'));
   then('Stalled projects counts Home\'s project and "+1 in other contexts"', () => {
+    expectShows('Reviewing in Home · ');
+    expectShows('Review everything');
     expect(textsBetween('Stalled projects')[0]).toBe('1 project · +1 in other contexts');
   });
   when('I open the step', () => tap('Stalled projects'));
-  then('it lists Shed and not Tender', () => {
+  then('it lists Shed and not Tender, and the title ends "· in Home"', () => {
     expect(readTexts().some(t => t.includes('Shed'))).toBe(true);
     expect(readTexts().some(t => t.includes('Tender'))).toBe(false);
+    expect(readTexts().some(t => /Stalled projects · in Home$/.test(t))).toBe(true);
   });
-  when('I mark it Reviewed, choose Everything and open Review\'s overview again', async () => {
+  when('I mark it Reviewed, leave Review for Daily and come back to Review\'s overview', async () => {
     await tap('Reviewed ›');
-    await chooseContext('Everything');
+    await tapTab('Daily');
     await tapTab('Review');
     await tap('Overview');
   });
-  then('Stalled projects counts both and shows today\'s review: the mark is global', () => {
+  then('Review shows Everything again: both projects, and today\'s review (the mark is global)', () => {
+    expectShows('Review only in Home');
     const row = textsBetween('Stalled projects');
     expect(row[0]).toBe('2 projects');
     expect(row[1]).toBe('today');
@@ -351,4 +361,33 @@ scenario('Except a place: the sentence says "except in"', {feature: 'Contexts', 
     expectNotShows(/^Backup photos/);
   });
   and('the sentence reads "Show #computer everywhere except in Home"', () => expectSentence('Show #computer everywhere except in Home'));
+});
+
+scenario('The Tend line opens Review narrowed, filtered by place', {feature: 'Contexts', design: TAGS_DESIGN}, () => {
+  given('"Coaching" shows all #jf threads; Area Team has a #jf/anna todo and the quiet threads anna and #retro/demand; Garden has the quiet thread #retro/beds', () => {
+    smokeClock();
+    putFile(
+      areaFile('Team'),
+      dataFile('area', {
+        Scope: [],
+        Tasks: ['- [ ] Send the notes #jf/anna'],
+        Meetings: ['- 2026-09-01 10:00 Sparring #jf/anna', '- 2026-09-02 10:00 Retro #retro/demand'],
+        Threads: ['- anna: active', '- demand: active'],
+      }),
+    );
+    putFile(areaFile('Garden'), dataFile('area', {Scope: [], Tasks: [], Meetings: ['- 2026-09-03 10:00 Retro #retro/beds'], Threads: ['- beds: active']}));
+  });
+  when('I tap the Tend line on Week under Coaching', async () => {
+    const setup = (id: string, t: string) => ({...createNoteSetup(id, 'thread'), name: t, tags: [t]});
+    await openApp({settings: active(named('Coaching', [tag('jf')]), {noteSetups: [setup('1', 'jf'), setup('2', 'retro')], noteSetupsMigrated: true})});
+    await tapTab('Week');
+    await tap(/^Tend: /);
+  });
+  then('Tending threads lists both of Team\'s threads, not Garden\'s, and the title ends "· in Coaching"', () => {
+    expect(readTexts().some(t => /Tending threads · in Coaching$/.test(t))).toBe(true);
+    expect(listed('anna')).toBe(true);
+    expect(listed('demand')).toBe(true);
+    expect(listed('beds')).toBe(false);
+    expect(loggedErrors()).toEqual([]);
+  });
 });
