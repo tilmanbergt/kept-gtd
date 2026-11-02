@@ -6,8 +6,10 @@
 import React, {useMemo} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {threadTypesOf} from '../../../domain/counterparts';
+import {WAITING_FOR_TYPE} from '../../../domain/flowState';
 import {loopKindsOf} from '../../../domain/loops';
 import {GtdParaSettings} from '../../../domain/settings';
+import {OWE_TYPE} from '../../../domain/threads';
 import {SPACING} from '../../../ui/theme';
 import ContextEditor from './ContextEditor';
 import ContextsList from './ContextsList';
@@ -22,7 +24,11 @@ export default function ContextsTab(props: {
 }): React.JSX.Element {
   const {draft, values, textColor, borderColor, placeholderColor} = props;
   const setups = values.noteSetups;
-  const kinds = useMemo(() => ({loopKinds: loopKindsOf(setups ?? []), threadTypes: threadTypesOf(setups ?? [])}), [setups]);
+  // wf and owe make counterparts but are no places: not offered as a type, read as plain tags.
+  const kinds = useMemo(
+    () => ({loopKinds: loopKindsOf(setups ?? []), threadTypes: threadTypesOf(setups ?? []).filter(t => t !== WAITING_FOR_TYPE && t !== OWE_TYPE)}),
+    [setups],
+  );
   return (
     <View style={styles.row}>
       <View style={[styles.column, styles.columnLeft]}>

@@ -260,6 +260,28 @@ export function sameEntry(a: ContextEntry, b: ContextEntry): boolean {
   return a.kind === 'item' ? b.kind === 'item' && a.itemKind === b.itemKind && a.name === b.name : b.kind === 'tag' && a.tag === b.tag;
 }
 
+/** The context as it is stored: a name, and `onlyInPlaces` only while it is on and Show names both parts. */
+export function storedContext(draft: ContextDef): ContextDef {
+  const {onlyInPlaces, ...rest} = draft;
+  const bothParts = rest.shows.some(e => e.kind === 'item') && rest.shows.some(e => e.kind === 'tag');
+  return {...rest, name: rest.name.trim() || 'Unnamed', ...(onlyInPlaces && bothParts ? {onlyInPlaces: true} : {})};
+}
+
+/** Whether saving `draft` would change `stored` (the editor's Save is active only then). */
+export function contextChanged(draft: ContextDef, stored: ContextDef | undefined): boolean {
+  if (!stored) return true;
+  const next = storedContext(draft);
+  const same = <T>(a: T, b: T) => JSON.stringify(a) === JSON.stringify(b);
+  return (
+    next.name !== stored.name ||
+    next.outsideMeetings !== stored.outsideMeetings ||
+    !!next.onlyInPlaces !== !!stored.onlyInPlaces ||
+    !same(next.minMinutes ?? null, stored.minMinutes ?? null) ||
+    !same(next.shows, stored.shows) ||
+    !same(next.hides, stored.hides)
+  );
+}
+
 /** `list` with `entry` added, or removed when it is in it. */
 export function toggleEntry(list: readonly ContextEntry[], entry: ContextEntry): ContextEntry[] {
   return list.some(e => sameEntry(e, entry)) ? list.filter(e => !sameEntry(e, entry)) : [...list, entry];

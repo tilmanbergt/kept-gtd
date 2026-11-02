@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-172 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+174 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -149,7 +149,7 @@ Test: `__tests__/scenarios/contexts.test.tsx`
 - **Given** a space with todos tagged #reading and #computer
 - **When** I create the context "Café" with Show #reading and Except #computer (its Tags list)
 - **Then** the sentence on top reads it, and the side tabs count the entries
-- **Then** the preview counts what it shows
+- **Then** the header counts what it shows
 - **When** I save
 - **Then** Café is listed with its count and sentence
 - **When** I tap its radio
@@ -281,6 +281,28 @@ Test: `__tests__/scenarios/contexts.test.tsx`
 - **Then** the switch row is gone
 - **When** I save
 - **Then** the stored context does not keep the switch
+
+Test: `__tests__/scenarios/contexts.test.tsx`
+
+### Save is active only after a change; a new context opens on General
+
+- **Given** the areas Home and Team, and the context Home showing Home
+- **When** I open Home in Settings → Contexts
+- **Then** it opens on Show, its name is in the header, and Save is inactive
+- **When** I tap Team
+- **Then** Save is active and the sentence reads "Show Home and Team"
+- **When** I save
+- **Then** Save is inactive again and the list shows the new sentence
+- **When** I start a new context and type "Desk"
+- **Then** it opens on General, and the header shows the name
+
+Test: `__tests__/scenarios/contexts.test.tsx`
+
+### The Tags tab offers the thread types of the Thread setups, not wf and owe
+
+- **Given** a Thread setup on #sparring and a todo waiting for Marco
+- **When** I open the Tags of a new context
+- **Then** "All #sparring threads" is offered, "All #wf threads" and "All #owe threads" are not
 
 Test: `__tests__/scenarios/contexts.test.tsx`
 

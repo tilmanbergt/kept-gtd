@@ -53,17 +53,14 @@ When [Quick Add](quick-add.md) files a todo where the active context doesn't sho
 
 ## Setting up contexts
 
-In **Settings → Contexts**, tap **+ New context** and type its name; **Save** and **Delete** sit right next to the name. Below it, the sentence shows what the context shows as you go.
+In **Settings → Contexts**, tap **+ New context**. On top of the editor, on every tab: the context's name with **Save** and **Delete**, the sentence of what it shows, and how many next todos that is ("Shows 3 of 21 next todos"). The sentence follows every tap; **Save** becomes active as soon as something changed, and nothing is stored until you tap it. **Delete** removes the context (your files are not touched); for a new one it is **Discard**.
 
-- **Show** and **Except** switch the side you are editing; each says how many entries it has ("Show 3").
-- **Areas**, **Projects** and **Tags** switch the list below. Under Show, tap the areas the context is about - usually that is all it needs, an area brings its projects. A tap adds or removes an entry; one already on the other side says "(excepted)" or "(shown)".
-- **Tags** starts with a **New tag** field: type a tag that no todo carries yet - `shopping` or `#Shopping` - and tap **Add**. A nested tag like `garden/beds` becomes one chip and also brings the tags under it. Then come the loop and thread types (**All #workshop loops**, **All #sparring threads**), the tags the context names and the tags in use.
+Below it, three tabs:
+
+- **General**: the **Name**; **Meetings outside this context**: Dimmed or Shown as usual; **Given time: loops and counterparts from** - how much time a loop or thread needs in **a week** and **a month** to be listed in [Given time](week-and-month.md#given-time) on Week and Month (**all** lists every one). A new context opens here.
+- **Show** and **Except**: each says how many entries it has ("Show 3"). **Areas**, **Projects** and **Tags** switch the chips below. Under Show, tap the areas the context is about - usually that is all it needs, an area brings its projects. A tap adds or removes an entry; one already on the other side says "(excepted)" or "(shown)". When there are more chips than fit, **‹ ›** at the right of Areas · Projects · Tags shows the others.
+- **Tags** has a **New tag** field: type a tag that no todo carries yet - `shopping` or `#Shopping` - and tap **Add**. A nested tag like `garden/beds` becomes one chip and also brings the tags under it. The chips start with the tags the context already names, then the loop and thread types (**All #workshop loops**, **All #sparring threads**) and the tags in use.
 - **Only inside the selected areas and projects** appears under Show once it names both a place and a tag.
-- **Meetings outside this context**: Dimmed or Shown as usual.
-- **Given time: loops and counterparts from** sets how much time a loop or thread needs in **a week** and **a month** to be listed in [Given time](week-and-month.md#given-time) on Week and Month (**all** lists every one).
-- The preview counts how many next todos it shows.
-
-**Save** stores it at once; **Delete** removes it (your files are not touched).
 
 Tap **Everything** (not its ○) to set the same threshold for Everything: 1 h a week and 2 h a month unless you change it. A context without its own threshold uses Everything's. Everything's threshold is saved as soon as you tap it.
 

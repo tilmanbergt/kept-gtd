@@ -37,7 +37,7 @@ what is wrong.
 | Engage on a meeting page and on a todo page (strip, tabs, Quick Add) | | | | |
 | Meeting context panel | | | | |
 | Settings → Data (Save and Reset to defaults reachable) | | | | |
-| Settings → Contexts editor (name/Save, sentence, Show/Except, kind tabs, Only inside, New tag, chips, preview) | | | | |
+| Settings → Contexts editor (header: name/Save/Delete, sentence two lines, count; General · Show · Except; kind tabs with ‹ ›, Only inside, New tag, chips paging) | | | | |
 | Settings → Contexts list, Note setups (editor with preview), Features | | | | |
 | Settings → Advanced (Simulate screen, Check screen and pages) | | | | |
 | Settings → About (What's new: three version tabs) | | | | |

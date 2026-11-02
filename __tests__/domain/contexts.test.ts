@@ -3,6 +3,7 @@ import {
   activeContext,
   ContextDef,
   contextMatcher,
+  contextChanged,
   contextSentence,
   hiddenAddText,
   hiddenLineText,
@@ -10,6 +11,7 @@ import {
   normalizeContextTag,
   nextCountOf,
   renameItemInContexts,
+  storedContext,
   minMinutesOf,
   tallyHidden,
   toggleEntry,
@@ -245,5 +247,24 @@ describe('normalizeContextTag', () => {
   ])('%s', (text, expected) => expect(normalizeContextTag(text)).toBe(expected));
   it('a typed nested tag matches deeper tags', () => {
     expect(contextMatcher(ctx({shows: [tag('project/piplanning')]})).taskShown(garden, {tags: ['project/piplanning/q1']})).toBe(true);
+  });
+});
+
+describe('saving from the editor', () => {
+  const saved = ctx({name: 'Desk', shows: [area('Work'), tag('computer')], onlyInPlaces: true});
+  it('stores a trimmed name, and the switch only while both parts are named', () => {
+    expect(storedContext(ctx({name: '  '})).name).toBe('Unnamed');
+    expect(storedContext(saved).onlyInPlaces).toBe(true);
+    expect(storedContext({...saved, shows: [area('Work')]}).onlyInPlaces).toBeUndefined();
+    expect(storedContext({...saved, onlyInPlaces: false})).not.toHaveProperty('onlyInPlaces');
+  });
+  it('is changed only when saving would store something else', () => {
+    expect(contextChanged(saved, saved)).toBe(false);
+    expect(contextChanged({...saved, name: 'Desk '}, saved)).toBe(false);
+    expect(contextChanged({...saved, shows: [area('Work')], onlyInPlaces: true}, {...saved, shows: [area('Work')], onlyInPlaces: undefined})).toBe(false);
+    expect(contextChanged({...saved, hides: [tag('wifi')]}, saved)).toBe(true);
+    expect(contextChanged({...saved, outsideMeetings: 'show'}, saved)).toBe(true);
+    expect(contextChanged({...saved, minMinutes: {week: 30, month: 60}}, saved)).toBe(true);
+    expect(contextChanged(saved, undefined)).toBe(true);
   });
 });

@@ -222,7 +222,7 @@
       "sources": [
         "src/domain/{flowState,taskLabels,abbrev}.ts",
         "src/storage/tagUsage.ts",
-        "src/ui/{TagChips,TagChipGrid,TaggableText,TaskLabels}.tsx",
+        "src/ui/{TagChips,TagChipGrid,PagedChipGrid,TaggableText,TaskLabels}.tsx",
         "src/ui/{tagChipLayout,useAbbrevItems}.ts"
       ]
     },

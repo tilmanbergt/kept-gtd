@@ -772,8 +772,10 @@ in Work except #wifi"), in the editor and the list. Screens read it through
 is in `ui/TabBar.tsx`; a tap opens Settings → Contexts, where each row's radio makes a context
 active (`useContextsDraft.handleActivate`); Quick Add warns when a new entry lands outside the
 context (`ui/context/useHiddenAddNotice.ts`). Settings → Contexts edits them
-(`screens/settings/contexts/`: Show/Except, the Tags tab with New tag and the loop/thread roots in
-`ContextTagsPanel.tsx`, the "Only inside the selected areas and projects" switch). Review starts in
+(`screens/settings/contexts/`: a header with the name, Save - active only while `contextChanged` -
+and Delete, the sentence and the next count; tabs General · Show · Except; Areas, Projects and Tags
+as chips paged by where they really land, `ui/PagedChipGrid.tsx`; New tag, the loop/thread types
+without `wf`/`owe`, the "Only inside the selected areas and projects" switch). Review starts in
 Everything (`startAll`) and narrows only on request (§2.8). Detail:
 `docs/dev/history/technical-design-contexts-tags.md`, `technical-design-time-and-place.md` §3.3.
 

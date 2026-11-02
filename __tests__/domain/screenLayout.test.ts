@@ -1,4 +1,4 @@
-import {A5X_ESTIMATOR_WIDTH, A5X_PORTRAIT, estimatorWidthFor, layoutWidthClass, realColumnWidth, simulationsThatFit, weekGridRows, isShortScreen, monthNeedsHalves, monthHalfOf} from '../../src/domain/screenLayout';
+import {A5X_ESTIMATOR_WIDTH, A5X_PORTRAIT, estimatorWidthFor, layoutWidthClass, realColumnWidth, simulationsThatFit, weekGridRows, isShortScreen, monthNeedsHalves, monthHalfOf, chipsThatFit} from '../../src/domain/screenLayout';
 
 describe('estimatorWidthFor', () => {
   it('is exactly the A5 X figure on the A5 X, so nothing pages differently there', () => {
@@ -76,5 +76,17 @@ describe('Month halves', () => {
   it('days 1-15 are the first half', () => {
     expect(monthHalfOf('2026-10-15')).toBe(0);
     expect(monthHalfOf('2026-10-16')).toBe(1);
+  });
+});
+
+describe('chipsThatFit', () => {
+  it('counts the leading chips whose bottom is inside the box', () => {
+    expect(chipsThatFit([30, 30, 70, 70, 110], 100)).toBe(4);
+    expect(chipsThatFit([30, 70], 100)).toBe(2);
+  });
+  it('is at least one, so a page always moves on', () => expect(chipsThatFit([130, 130], 100)).toBe(1));
+  it('is unknown until the box and every chip are measured', () => {
+    expect(chipsThatFit([30, undefined], 100)).toBeNull();
+    expect(chipsThatFit([30], null)).toBeNull();
   });
 });

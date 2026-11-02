@@ -265,6 +265,50 @@ Elsewhere:
   Week, Month, Projects, Areas. Unit tests; scenarios 1-4 and 6-8.
 - **CT2** Review (R6) + the Tend request. Scenarios 9-11.
 - **CT3** Editor + list (R2, R4, R5, R7). Scenarios 5 and 12; help pages; design-overview; CHANGELOG lines.
+- **CT4** The editor after the first device test (§8). Scenarios 13-15.
+
+## 8. Addendum: the editor after the first device test (CT4)
+
+Decided 2026-11-02 with Tilman, from screenshots of the alpha on the A5 X (upright, turned) and the
+Nomad simulation (portrait, landscape).
+
+**Found:**
+- The sentence's second line is cut: its box was a fixed 40 dp for two 20 dp lines, while the device
+  draws text at font scale 1.15.
+- The chip list gets what the dozen fixed rows leave: on a Nomad in landscape about half a row, so no
+  chip can be tapped; on a turned A5 X the last row is cut. Chips don't page.
+- The Tags tab offers "All #wf threads" and "All #owe threads": `threadTypesOf` adds both for the
+  counterpart lens, but neither is a place.
+- Save next to the name reads as "save the name"; tapped chips seemed not to need it.
+- Nomad portrait: the name field is cut at the left.
+
+**Decided:**
+- **Header**, the same on every tab: the name bold and read-only, **Save** and **Delete** (Discard for
+  a new context) on its row; Save is active only while the draft differs from the stored context.
+  Below it the sentence, at most two lines, its box reserved for two lines at the device's font scale;
+  then "Shows 3 of 21 next todos".
+- **Tabs** General · Show n · Except n. A new context opens on General, an existing one on Show.
+  - General: the name field, Meetings outside this context, Given time.
+  - Show / Except: Areas · Projects · Tags with ‹ › at the right of that row; the "Only inside" switch
+    (Show only, when both parts have entries); in Tags the New tag field; the chips.
+- **Chips page** instead of being cut: the grid lays the chips out, measures where each one lands and
+  shows only those that fit whole; › starts the next page at the first one that didn't. No "page n of
+  m", as in `PagedSection`.
+- **Tags order**: the tags the context names when the tab is opened, then a newly typed tag, the loop
+  and thread types (without `wf` and `owe`), the tags in use. The order stays while the tab is open,
+  so a tap never moves a chip.
+- Two columns stay on every screen. The hint lines under the kind tabs go (the help page explains).
+  Plain tags stay as they are.
+
+**Test scenarios:**
+13. *Save only after a change.* Given Home is open in the editor, Save is inactive; after a tap on a
+    chip it is active; after Save it is inactive again and the list shows the new sentence.
+14. *General.* Given a new context, the editor opens on General with the name field; typing "Desk"
+    shows "Desk" bold in the header.
+15. *No wf and owe types.* The Tags tab offers "All #<type> threads" for the Thread setups only.
+
+**Device checks** (added to §6): the editor on all four screens: header, sentence (two lines, not
+cut), tabs, chips paging with ‹ ›, nothing cut off; Save inactive until a change.
 
 ## As built
 
@@ -294,4 +338,20 @@ Built as designed in three commits (CT1 `eb30817`, CT2 `74f6052`, CT3 `039c0a8`)
 - **Scenarios.** Scenario 3 is two scenarios (upcoming meeting; past meeting only), 8 is two (Except
   a tag; Except a place), and the switch part of 7 has its own editor scenario. The old "filters
   Areas, Projects and Review" scenario became 9 and 10 in one walk.
+- **CT4** (§8), as decided, with these details:
+  - `storedContext` (the stored form: trimmed name, the switch only with both parts) and `contextChanged`
+    are pure in `domain/contexts.ts`; Save compares the stored form, so turning the switch on and off
+    again leaves Save inactive.
+  - The chip paging is `ui/PagedChipGrid.tsx` (`useChipPages`, `ChipPager`) on top of `TagChipGrid`,
+    which reports each chip's bottom edge and lays out, but hides, the chips of the next page; the fit
+    rule is `chipsThatFit` in `domain/screenLayout.ts`. Until the first measurement every chip shows,
+    clipped by the box; tests never lay out, so scenarios see every chip.
+  - The sentence reserves `2 × ⌈15 × 1.35 × font scale⌉` dp. The count line reads "Shows 3 of 21 next
+    todos"; "The Inbox always shows" stays in the help.
+  - The Tags field is `NewTagRow.tsx`; the chip order lives in the editor. Areas and Projects keep the
+    cache order.
+  - `wf` and `owe` are left out in `ContextsTab` (editor and list), so the hidden line still counts
+    their threads.
+  - Leaving a draft with unsaved changes (another context, another tab) still drops it without asking,
+    as before.
 

@@ -8,7 +8,7 @@
  * which is written at once (`givenTimeMinMinutes`).
  */
 import {useState} from 'react';
-import {ContextDef, ContextEntry, DEFAULT_MIN_MINUTES, EVERYTHING_LABEL, MinMinutes, newContext, normalizeContextTag, sameEntry, toggleEntry} from '../../../domain/contexts';
+import {contextChanged, ContextDef, ContextEntry, DEFAULT_MIN_MINUTES, EVERYTHING_LABEL, MinMinutes, newContext, normalizeContextTag, sameEntry, storedContext, toggleEntry} from '../../../domain/contexts';
 import {GtdParaSettings} from '../../../domain/settings';
 import {patchSettings} from '../../../storage/settingsStorage';
 import {useStatusApi} from '../../../ui/status/StatusProvider';
@@ -16,7 +16,8 @@ import {errorMessage} from '../../../utils/errorMessage';
 import {log, logError} from '../../../utils/log';
 import {requestEinkRefresh} from '../../../utils/screenRefresh';
 
-export type ContextListSide = 'shows' | 'hides';
+/** The editor's tab: General, or the side being edited (Show / Except). */
+export type ContextEditorTab = 'general' | 'shows' | 'hides';
 
 export interface ContextsDraft {
   draft: ContextDef | null;
@@ -26,8 +27,10 @@ export interface ContextsDraft {
   minMinutes: MinMinutes;
   /** The draft is a context not saved yet. */
   isNew: boolean;
-  side: ContextListSide;
-  setSide: (side: ContextListSide) => void;
+  /** Saving would change something (Save is active only then). */
+  changed: boolean;
+  tab: ContextEditorTab;
+  setTab: (tab: ContextEditorTab) => void;
   handleNew: () => void;
   handleEdit: (id: string) => void;
   handleEditEverything: () => void;
@@ -35,7 +38,7 @@ export interface ContextsDraft {
   setMinMinutes: (scope: keyof MinMinutes, minutes: number) => void;
   setName: (name: string) => void;
   toggle: (entry: ContextEntry) => void;
-  /** Puts a typed tag on the current side; false (and a status message) when it isn't one tag. */
+  /** Puts a typed tag on the side being edited; false (and a status message) when it isn't one tag. */
   addTag: (text: string) => boolean;
   setOnlyInPlaces: (on: boolean) => void;
   setOutsideMeetings: (value: ContextDef['outsideMeetings']) => void;
@@ -50,10 +53,12 @@ export function useContextsDraft(values: GtdParaSettings, setValues: (update: (v
   const [draft, setDraft] = useState<ContextDef | null>(null);
   const [everythingOpen, setEverythingOpen] = useState(false);
   const everything = values.givenTimeMinMinutes ?? DEFAULT_MIN_MINUTES;
-  const [side, setSide] = useState<ContextListSide>('shows');
+  const [tab, setTab] = useState<ContextEditorTab>('shows');
   const statusApi = useStatusApi();
   const contexts = values.contexts ?? [];
   const isNew = draft !== null && !contexts.some(c => c.id === draft.id);
+  const changed = draft !== null && contextChanged(draft, contexts.find(c => c.id === draft.id));
+  const side = tab === 'general' ? null : tab;
 
   const store = (next: ContextDef[], patch: Partial<GtdParaSettings> = {}, message: string) => {
     setValues(v => ({...v, contexts: next, ...patch}));
@@ -76,17 +81,18 @@ export function useContextsDraft(values: GtdParaSettings, setValues: (update: (v
     everythingOpen,
     minMinutes: draft?.minMinutes ?? everything,
     isNew,
-    side,
-    setSide,
+    changed,
+    tab,
+    setTab,
     handleNew: () => {
       setDraft(newContext(contexts));
       setEverythingOpen(false);
-      setSide('shows');
+      setTab('general');
     },
     handleEdit: id => {
       setDraft(contexts.find(c => c.id === id) ?? null);
       setEverythingOpen(false);
-      setSide('shows');
+      setTab('shows');
     },
     handleEditEverything: () => {
       setDraft(null);
@@ -109,7 +115,9 @@ export function useContextsDraft(values: GtdParaSettings, setValues: (update: (v
         .catch(e => logError('Settings: saving the given time threshold failed', errorMessage(e)));
     },
     setName: name => update(d => ({...d, name})),
-    toggle: entry => update(d => (side === 'shows' ? {...d, shows: toggleEntry(d.shows, entry)} : {...d, hides: toggleEntry(d.hides, entry)})),
+    toggle: entry => {
+      if (side) update(d => ({...d, [side]: toggleEntry(d[side], entry)}));
+    },
     addTag: text => {
       const tag = normalizeContextTag(text);
       if (!tag) {
@@ -118,19 +126,14 @@ export function useContextsDraft(values: GtdParaSettings, setValues: (update: (v
         return false;
       }
       const entry: ContextEntry = {kind: 'tag', tag};
-      update(d => {
-        const list = side === 'shows' ? d.shows : d.hides;
-        return list.some(e => sameEntry(e, entry)) ? d : {...d, [side]: [...list, entry]};
-      });
+      if (side) update(d => (d[side].some(e => sameEntry(e, entry)) ? d : {...d, [side]: [...d[side], entry]}));
       return true;
     },
     setOnlyInPlaces: on => update(d => ({...d, onlyInPlaces: on})),
     setOutsideMeetings: value => update(d => ({...d, outsideMeetings: value})),
     handleSave: () => {
-      if (!draft) return;
-      const {onlyInPlaces, ...rest} = draft;
-      const bothParts = rest.shows.some(e => e.kind === 'item') && rest.shows.some(e => e.kind === 'tag');
-      const named = {...rest, name: rest.name.trim() || 'Unnamed', ...(onlyInPlaces && bothParts ? {onlyInPlaces: true} : {})};
+      if (!draft || !changed) return;
+      const named = storedContext(draft);
       const next = isNew ? [...contexts, named] : contexts.map(c => (c.id === named.id ? named : c));
       setDraft(named);
       store(next, {}, `Context "${named.name}" saved.`);

@@ -4,6 +4,7 @@ import {and, given, scenario, then, when} from '../../test-helpers/scenario/scen
 import {smokeClock} from '../../test-helpers/scenario/smokeSpace';
 import {ContextDef, ContextEntry} from '../../src/domain/contexts';
 import {createNoteSetup} from '../../src/domain/noteSetups';
+import {GtdParaSettings} from '../../src/domain/settings';
 
 // Contexts (docs/dev/history/technical-design-time-and-place.md §3.3, §6 scenarios 9-12). The clock stands at
 // Wednesday 14.10.2026, 10:00.
@@ -147,6 +148,7 @@ scenario('Settings → Contexts: create Café, listed with its sentence, then ch
     await tap('Contexts');
     await tap('+ New context');
     await type('e.g. Work, Home, Café', 'Café');
+    await tap('Show');
     await tap('Tags');
     await tap('#reading');
     await tap('Except');
@@ -157,7 +159,7 @@ scenario('Settings → Contexts: create Café, listed with its sentence, then ch
     expectShows('Show 1');
     expectShows('Except 1');
   });
-  then('the preview counts what it shows', () => expectShows('Preview: shows 1 of 3 next todos. The Inbox always shows.'));
+  then('the header counts what it shows', () => expectShows('Shows 1 of 3 next todos'));
   when('I save', () => tap('Save'));
   then('Café is listed with its count and sentence', () => {
     expectShows('Café');
@@ -182,7 +184,8 @@ scenario('Settings → Contexts: a context that shows one Area, named and saved 
     await tap('Contexts');
     await tap('+ New context');
     await type('e.g. Work, Home, Café', 'Home');
-    await tap('Home');
+    await tap('Show');
+    await tap('Home', 1);
     await tap('Save');
   });
   then('the Areas list counts the choice and the context is listed', () => {
@@ -398,12 +401,13 @@ scenario('The Tend line opens Review narrowed, filtered by place', {feature: 'Co
 });
 
 /** Settings → Contexts → + New context named `name`. */
-async function newContextNamed(name: string): Promise<void> {
-  await openApp();
+async function newContextNamed(name: string, settings?: Partial<GtdParaSettings>): Promise<void> {
+  await openApp({settings});
   await tapTab('Settings');
   await tap('Contexts');
   await tap('+ New context');
   await type('e.g. Work, Home, Café', name);
+  await tap('Show');
 }
 
 scenario('A tag not in use yet is added from New tag', {feature: 'Contexts', design: TAGS_DESIGN}, () => {
@@ -437,7 +441,7 @@ scenario('A tag not in use yet is added from New tag', {feature: 'Contexts', des
   then('it is a plain chip, and the preview counts the #project/piplanning/q1 todo', () => {
     expectShows('#project/piplanning');
     expectShows('Show #shopping or #project/piplanning everywhere');
-    expectShows('Preview: shows 1 of 2 next todos. The Inbox always shows.');
+    expectShows('Shows 1 of 2 next todos');
   });
   when('I save', () => tap('Save'));
   then('the context is listed with its sentence', () => expectShows('1 next · Show #shopping or #project/piplanning everywhere'));
@@ -473,3 +477,62 @@ scenario('The "Only inside" switch appears only while Show names a place and a t
     expect(stored?.onlyInPlaces).toBeUndefined();
   });
 });
+
+scenario('Save is active only after a change; a new context opens on General', {feature: 'Contexts', design: TAGS_DESIGN}, () => {
+  given('the areas Home and Team, and the context Home showing Home', () => {
+    smokeClock();
+    putFile(areaFile('Home'), dataFile('area', {Scope: [], Tasks: ['- [ ] Laundry #next'], Meetings: []}));
+    putFile(areaFile('Team'), dataFile('area', {Scope: [], Tasks: ['- [ ] Prepare offer #next'], Meetings: []}));
+  });
+  when('I open Home in Settings → Contexts', async () => {
+    await openApp({settings: {contexts: [named('Home', [area('Home')])]}});
+    await tapTab('Settings');
+    await tap('Contexts');
+    await tap('Home');
+  });
+  then('it opens on Show, its name is in the header, and Save is inactive', () => {
+    expectShows('Show 1');
+    expectShows('Areas 1');
+    expect(saveDisabled()).toBe(true);
+  });
+  when('I tap Team', () => tap('Team'));
+  then('Save is active and the sentence reads "Show Home and Team"', () => {
+    expect(saveDisabled()).toBe(false);
+    expectShows('Show Home and Team');
+  });
+  when('I save', () => tap('Save'));
+  then('Save is inactive again and the list shows the new sentence', () => {
+    expect(saveDisabled()).toBe(true);
+    expectShows('2 next · Show Home and Team');
+  });
+  when('I start a new context and type "Desk"', async () => {
+    await tap('+ New context');
+    await type('e.g. Work, Home, Café', 'Desk');
+  });
+  then('it opens on General, and the header shows the name', () => {
+    expectShows('Meetings outside this context');
+    expect(readTexts().filter(t => t === 'Desk').length).toBeGreaterThan(0);
+  });
+});
+
+scenario('The Tags tab offers the thread types of the Thread setups, not wf and owe', {feature: 'Contexts', design: TAGS_DESIGN}, () => {
+  given('a Thread setup on #sparring and a todo waiting for Marco', () => {
+    smokeClock();
+    putFile(areaFile('Home'), dataFile('area', {Scope: [], Tasks: ['- [ ] Quote #wf/marco'], Meetings: []}));
+  });
+  when('I open the Tags of a new context', async () => {
+    const sparring = {...createNoteSetup('1', 'thread'), name: 'Sparring', tags: ['sparring']};
+    await newContextNamed('Talks', {noteSetups: [sparring], noteSetupsMigrated: true});
+    await tap('Tags');
+  });
+  then('"All #sparring threads" is offered, "All #wf threads" and "All #owe threads" are not', () => {
+    expectShows('All #sparring threads');
+    expectNotShows('All #wf threads');
+    expectNotShows('All #owe threads');
+  });
+});
+
+/** Whether the editor's Save is inactive. */
+function saveDisabled(): boolean {
+  return labelled('Save')?.disabled ?? false;
+}

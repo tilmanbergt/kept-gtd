@@ -131,3 +131,14 @@ export function monthNeedsHalves(height: number | null): boolean {
 export function monthHalfOf(date: string): 0 | 1 {
   return Number(date.slice(8, 10)) <= MONTH_FIRST_HALF_DAYS ? 0 : 1;
 }
+
+/**
+ * How many laid-out chips fit whole into a box `boxHeight` high, given each chip's bottom edge in
+ * order (`undefined` while not measured yet): the leading run that ends inside the box, at least one
+ * so a page always moves on. Null while the box or a chip is not measured.
+ */
+export function chipsThatFit(bottoms: ReadonlyArray<number | undefined>, boxHeight: number | null): number | null {
+  if (boxHeight === null || bottoms.some(b => b === undefined)) return null;
+  const over = bottoms.findIndex(b => (b as number) > boxHeight);
+  return over === -1 ? bottoms.length : Math.max(1, over);
+}

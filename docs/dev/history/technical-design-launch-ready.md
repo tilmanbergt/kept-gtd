@@ -242,7 +242,9 @@ counts:
   - **CT1** one matcher with Project/Area rows (a tag-only context lists its places), the sentence,
     the tag helper;
   - **CT2** Review ignores the context by default, "Review only in …", Tend opens Review narrowed;
-  - **CT3** the contexts editor: Show/Except, sentence, New tag, loop/thread roots, "Only inside …".
+  - **CT3** the contexts editor: Show/Except, sentence, New tag, loop/thread roots, "Only inside …";
+  - **CT4** the editor after the first device test: header with Save, tabs General · Show · Except,
+    paged chips.
 - **L8** Docs and release prep:
   - `PRIVACY.md`, `docs/inkhub-review.md`, `inkhub-listing.md`: deletes as Remove Kept's data makes
     them (named before, one confirm, data files and profiles unticked); Settings paths after the tab
@@ -543,7 +545,7 @@ uninstall. Notes, `.txt` data files and saved profiles stay on the device.
   `taskLabels`) without callers and without tests, so the `tags` area fell more than 2 points below its
   coverage baseline and every CI run from L6b to the contexts design failed there, which also skipped
   the `.snplg` build. The dead code was removed (`097696d`); the baseline stays.
-- **CT1-CT3** (scope exception above): as in `technical-design-contexts-tags.md`, see its As built.
+- **CT1-CT4** (scope exception above): as in `technical-design-contexts-tags.md`, see its As built.
 - **L7**:
   - Smoke: `smoke/review` walks every Review step after the hub (Skip › to the end page), then again
     at Nomad portrait size through Simulate screen, which draws inside the `ScreenSizeProvider`. One

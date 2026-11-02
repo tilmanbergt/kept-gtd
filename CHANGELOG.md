@@ -43,6 +43,10 @@ or your project/area files are stored.
   contexts: "Show Work, plus #computer everywhere except #wifi". Show names where (areas, projects) and
   what (tags); a todo shows when it fits either. **Only inside the selected areas and projects** makes it
   fit both: "Show #computer in Work". Except always wins.
+- **The contexts editor** has three tabs - General (name, meetings outside, given time), Show and Except -
+  under a header with the name, Save and Delete, the sentence and how many next todos it shows. Save is
+  active once something changed. Chips that don't fit page with ‹ › instead of being cut off, also on a
+  Nomad or a turned device.
 - **The Weekly Review looks at everything**, also while a context is active: contexts are for doing the
   work. The overview offers **Review only in Home** (and then **Review everything**); narrowed, step
   titles end "· in Home". Leaving Review goes back to everything. The Tend line on Week and Month opens
