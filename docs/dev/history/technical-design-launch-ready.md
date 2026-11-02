@@ -237,6 +237,12 @@ counts:
   - `PAGE_SIZE` leftovers;
   - the stale comments listed in the backlog.
 - **L7a** Cleanup that keeps every way back (§12).
+- **Scope exception: flexible contexts** (`docs/dev/history/technical-design-contexts-tags.md`), found on
+  the device and fixed in 0.24.0 because launch users hit it:
+  - **CT1** one matcher with Project/Area rows (a tag-only context lists its places), the sentence,
+    the tag helper;
+  - **CT2** Review ignores the context by default, "Review only in …", Tend opens Review narrowed;
+  - **CT3** the contexts editor: Show/Except, sentence, New tag, loop/thread roots, "Only inside …".
 - **L8** Docs and release prep:
   - `PRIVACY.md`, `docs/inkhub-review.md`, `inkhub-listing.md`: deletes as Remove Kept's data makes
     them (named before, one confirm, data files and profiles unticked); Settings paths after the tab
@@ -532,3 +538,32 @@ uninstall. Notes, `.txt` data files and saved profiles stay on the device.
     rollback scenario still loads stored settings holding the retired keys.
   - `design-overview.md` §2.12 and `supernote-host-facts.md` §8 follow. The native change needs a
     native rebuild (CI builds it).
+- **CI ratchet after L6b**: removing Daily's tag filter left its row code (`contextTag`/
+  `onToggleContext` in `TaggableText`, `TaskRow`, `MeetingRow`; `contextActive` in `taskRowLayout` and
+  `taskLabels`) without callers and without tests, so the `tags` area fell more than 2 points below its
+  coverage baseline and every CI run from L6b to the contexts design failed there, which also skipped
+  the `.snplg` build. The dead code was removed (`097696d`); the baseline stays.
+- **CT1-CT3** (scope exception above): as in `technical-design-contexts-tags.md`, see its As built.
+- **L7**:
+  - Smoke: `smoke/review` walks every Review step after the hub (Skip › to the end page), then again
+    at Nomad portrait size through Simulate screen, which draws inside the `ScreenSizeProvider`. One
+    scenario, no new file; smoke stays at about 40 s.
+  - `PAGE_SIZE` was unused and is gone, with `FileBrowserRoot.pageSize`,
+    `fileBrowserViewportHeightPx` and the comments pointing to them or to the retired focus panels;
+    comment links to old memory notes point to the design docs.
+  - Obsidian help: Task Format = Dataview and both example queries match the Tasks documentation
+    (the `in two weeks` form of relative dates, `path includes` case-insensitive); the two date
+    settings now carry their names from the Tasks docs ("Set done date on every completed task" is on
+    by default). Still to confirm in Tilman's vault.
+  - The tiny mark: not found in code (status slot and its overlay, kept tabs hidden with
+    `display: 'none'`, `MarkWrap` badges, the App body and the screen container were checked). It stays
+    a device item for the beta: with Keep tabs in memory off, and a photo.
+- **L8**:
+  - PRIVACY.md, `docs/inkhub-review.md`, `inkhub-listing.md`: deletes as Remove Kept's data makes them,
+    the native delete helpers and their limits, Settings paths after the tab rework, Touch test and the
+    old Inbox move gone; the listing's stale "Focus mode" line became Contexts.
+  - README and the listing carry the "without a Manta tester" device line (§8).
+  - `design-device-rendering.md` §1 "Other screens": Manta, Nomad, landscape and the estimator rule.
+  - CHANGELOG: the tester note of §12.3 is the first Upgrade note; Daily's tag filter (L6b) is listed
+    under Removed; the two Month lines are one.
+  - The profiles intro in Settings → Data no longer names focus counts.

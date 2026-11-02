@@ -248,7 +248,7 @@ A change is not done while the docs describe the old behavior.
   handwriting, real notes and the real SDK, speed, firmware differences:
   - build with `buildPlugin.ps1`, install over the previous build, test the changed flow;
   - for features, a short checklist in the design doc's test plan, ticked off on the device;
-  - use the demo space (Settings → Advanced → Profiles) for tests that change data.
+  - use the demo space (Settings → Data → Profiles) for tests that change data.
 - A change is only reported as done when the checks above passed - and the report says what
   was verified off-device and what still needs a device test.
 

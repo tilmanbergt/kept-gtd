@@ -24,7 +24,7 @@ A calm GTD + PARA workspace for the Supernote. Every Project and Area is a folde
 
 - Threads: what you agreed, owe and wait for per person or meeting series, tended in the Weekly Review
 - Daily, Week and Month views
-- Focus mode (#now): only what you are doing right now
+- Contexts - Work, Home, Errands: only what fits where you are
 - Quick Add for todos, meetings and notes; lasso capture
 - Projects & Areas with status, linked notes and files
 - Weekly Review, one step at a time
@@ -33,7 +33,9 @@ A calm GTD + PARA workspace for the Supernote. Every Project and Area is a folde
 - Built-in help (? in the tab bar)
 - Experimental, off by default: Google Calendar and Gmail
 
-Permissions: file read/write for your PARA folders and EXPORT/kept-gtd. File delete only after you confirm it, and the prompt names what will be deleted (e.g. an empty folder left after archiving). Internet only for the optional Calendar/Gmail integrations, when you tap Load. No telemetry.
+Made on the Supernote A5 X; checked in landscape and on a simulated Nomad; Manta should work. Beta.
+
+Permissions: file read/write for your PARA folders and EXPORT/kept-gtd. File delete only after you confirm it, and the prompt names what will be deleted (an empty folder left after archiving, or what you check in Remove Kept's data). Internet only for the optional Calendar/Gmail integrations, when you tap Load. No telemetry.
 
 Hobby project, open source (MIT). Docs, issues, privacy and notes for reviewers:
 github.com/tilmanbergt/kept-gtd
@@ -89,13 +91,11 @@ from the description via the repository. Summary:
   sn-plugin-lib has no API for these), `Pdf` (close-out PDF), `GmailImap` (IMAP, only when Gmail
   is switched on), `TextboxMetrics` (text measurement). All of it runs under the host's
   permissions; each permission is requested right before use.
-- Deletes: temp files only in the plugin's private folder; in shared storage, only empty folders
-  after a move, and only after a confirmation that names them.
+- Deletes: temp files and lasso mark pictures only in the plugin's private folders; in shared
+  storage, only empty folders after a move and what the user checks in Remove Kept's data (Kept's
+  own export and demo folders, its data files by name), always after a confirmation that names them.
 - Every move, overwrite and delete is announced to the user.
-- One-time data move for users of builds before 0.2.0 (never public): `Note/Inbox.txt` with its
-  `Todos`/`Meetings` folders → `Note/2 Areas/0 Inbox`. Nothing is deleted, and the user is told
-  what moved. It doesn't happen on a fresh install.
-- Quick test without own data: Settings → Advanced → Profiles → demo space.
+- Quick test without own data: Settings → Data → Profiles → demo space.
 - Credentials for the optional integrations are stored on the device only, never in files or logs.
 
 ## Updating the listing

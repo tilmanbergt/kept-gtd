@@ -35,6 +35,15 @@
   width. Treat line-count predictions as estimates.
 - **Other screens:** the size comes from Kept's root view (`ScreenSizeProvider` in `App.tsx`), never
   from A5 X constants. Lists measure their own height (`PagedSection` without `viewportHeight`).
+  - *Manta* (1920 × 2560 px): about the size of the A5 X in dp, so it gets the A5 X layout and the
+    estimator figure 678. Its note pages are bigger: Note setup pieces are scaled by the page's short
+    side (× 1.37, `domain/pageFrame.ts`).
+  - *Nomad* (749 × 998 dp): narrow (under 800 dp) and short; the estimator figure scales down with
+    the real column width.
+  - *Landscape* (a turned A5 X: 1325 × 906 dp below the tab bar): wide but short; Kept turns live,
+    without a restart. A horizontal note page keeps its bottom 100 px band free (the host's page bar).
+  - The estimator rule: 678 on the A5 X or any wider screen, scaled down below it
+    (`domain/screenLayout.ts`); never a device name.
 - **Checking another size:** Settings → Advanced → Simulate screen (debug logging on) draws Kept in a
   box the size of a Nomad (749 × 998 or 998 × 749 dp; a dp is about the same physical size on both
   devices). Turning the device shows landscape (1325 × 906 dp below the tab bar).

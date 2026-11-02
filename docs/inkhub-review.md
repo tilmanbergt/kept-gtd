@@ -12,27 +12,29 @@ Each permission is requested right before the first action that needs it, never 
   `3 Resources`, `4 Archive`; the Inbox in `2 Areas/0 Inbox`) and `EXPORT/kept-gtd` (profiles,
   debug files the user exports). Todos and meetings are plain-text files (`project.txt`,
   `area.txt`, `Inbox.txt`) inside those folders.
-- **FILE:DELETE** - only after a confirmation in the plugin that names what will be deleted. In
-  practice the one case is the empty folder left behind when the user archives an area into an
-  Archive folder that already exists. If the user says no, the empty folder stays.
+- **FILE:DELETE** - only after a confirmation in the plugin that names what will be deleted:
+  - the empty folder left behind when the user archives an area into an Archive folder that
+    already exists (if the user says no, the empty folder stays);
+  - **Remove Kept's data** (Settings → Data): it lists everything Kept put on the device (settings,
+    secrets, caches, lasso mark pictures, logs, the demo space, old gtdpara folders) and removes
+    only what the user checks, after one confirmation naming it. The user's data files and saved
+    profiles are listed unchecked; notes are never deleted.
 - **INTERNET** - only for two optional integrations (Google Calendar via the user's private ICS
-  link, Gmail via IMAP with an app password). Both are off by default (Settings → Advanced) and
+  link, Gmail via IMAP with an app password). Both are off by default (Settings → Features) and
   connect only when the user taps Load or Refresh. No telemetry, no server of our own.
 
 ## What changes files, and how the user is told
 
-- The user's own edits (todos, meetings, status, focus) are written to the item's text file.
+- The user's own edits (todos, meetings, status) are written to the item's text file.
   Changes are span-scoped: lines the plugin doesn't understand are kept.
 - New notes, PDFs and exports the user asked for are created and named in a status message.
 - **Moves** (archive, project close-out): shown in a confirmation or the close-out wizard's
   step list before they happen, reported afterwards. Moves are renames within shared storage.
 - **Overwrites**: replacing an existing close-out PDF asks first.
-- **Deletes**: see FILE:DELETE above. The native delete helper refuses anything that is not an
-  empty folder.
-- **One automatic change**: users of builds before 0.2.0 (never public) get their `Note/Inbox.txt`
-  and its `Todos`/`Meetings` folders moved into `Note/2 Areas/0 Inbox` once, on first start,
-  with links to those notes updated. Nothing is deleted, and a message names what moved. A fresh
-  install never does this.
+- **Deletes**: see FILE:DELETE above. The native delete helpers refuse everything else: in shared
+  storage they remove only empty folders, Kept's own folders (`EXPORT/kept-gtd`, the demo space and
+  their gtdpara predecessors) and files named `project.txt`, `area.txt`, `Inbox.txt` or Kept's own
+  save copies; the private temp and data deletes stay inside those folders.
 - Temporary files (rendered PDF pages, the unfinished PDF) live in the plugin's private folder
   and are removed when done.
 - Diagnostics are written to files only when the user switches on Debug logging or exports a
@@ -43,17 +45,18 @@ Each permission is requested right before the first action that needs it, never 
 Kotlin modules in `android/app/src/main/java/eu/embodyagile/gtdpara/`:
 
 - `GtdParaFileModule` - folder listing, plain-text and binary read/write, moves, empty-folder
-  delete, private temp folder. sn-plugin-lib has no API for these.
+  delete, the private temp and data folders. sn-plugin-lib has no API for these.
 - `PdfModule` - writes the close-out PDF (text pages, rendered note pages, table of contents).
 - `GmailImapModule` - IMAP access, only when Gmail is switched on.
 - `TextboxMetricsModule` - text measurement for note templates.
-- `PluginRuntimeGuard` / `GtdParaRuntimeModule` - diagnostics for the host's in-process update.
+- `PluginRuntimeGuard` / `GtdParaRuntimeModule` - the build id and version shown in Settings →
+  About and in the debug bundle.
 
 All of them run under the host's permission checks.
 
 ## Testing quickly
 
-Settings → Advanced → Profiles → **Create demo space**, then switch to the Demo profile. It
+Settings → Data → Profiles → **Create demo space**, then switch to the Demo profile. It
 writes a small example PARA tree to `Note/kept-gtd-demo` and never touches the user's real folders.
 Help is built in (**?** in the tab bar).
 

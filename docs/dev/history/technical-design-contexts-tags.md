@@ -267,4 +267,31 @@ Elsewhere:
 - **CT3** Editor + list (R2, R4, R5, R7). Scenarios 5 and 12; help pages; design-overview; CHANGELOG lines.
 
 ## As built
-(filled in by the implementing session)
+
+Built as designed in three commits (CT1 `eb30817`, CT2 `74f6052`, CT3 `039c0a8`), with these differences:
+
+- **Matcher.** `contextMatcher(ctx, items = [], today = '')`: the items are optional, because
+  `taskShown` and `meetingState` never need rows. `useHiddenAddNotice` and `nextCountOf` call it
+  without items; only `useContextMatcher` passes the cached items. `nextCountOf` lost its `today`,
+  `filterReviewAggregate` its `now`. An Area is added through a Project only when the Project's
+  content passes (a Project shown by its own entry doesn't bring its Area), as §2.1 says.
+- **Tag helper.** Quick Add has no single-tag helper; it reads tags with `TAG_RE`.
+  `normalizeContextTag` is `normalizeSetupTag` (trim, no `#`, lowercase) plus `isWholeTag`, new in
+  `domain/markdown.ts` on the same `TAG_RE`, plus `isContextTag`. Add puts the tag on the side being
+  edited and never takes it off; a tag that is already there stays.
+- **Hook.** `sentence` was not added to `ContextFilter`: the hub line names the context, and nothing
+  else would read it. The editor and the list get the loop kinds and thread types from
+  `ContextsTab`.
+- **Contexts list.** It uses the sentence from CT1 on, because `contextSummary` went in CT1.
+- **Tend.** Week and Month pass `inContext` when the tab is filtering
+  (`contextFilter.matcher.context !== null`), not merely when a context is active: after **Show** on
+  Week the Tend count is Everything's, and Review opens in Everything to match.
+- **Editor.** A chip that is on the other side reads "(excepted)" or "(shown)". The root chips are
+  always offered (one per loop kind and thread type), before the tags the context names and the tags
+  in use. The debug bundle counts the contexts with the switch on ("contexts 3 (only inside 1)").
+- **design-overview.** It has no §5; the decision is in §4 "Why it is built this way", the as-built
+  text in §2.7 and §2.8.
+- **Scenarios.** Scenario 3 is two scenarios (upcoming meeting; past meeting only), 8 is two (Except
+  a tag; Except a place), and the switch part of 7 has its own editor scenario. The old "filters
+  Areas, Projects and Review" scenario became 9 and 10 in one walk.
+

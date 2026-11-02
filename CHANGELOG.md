@@ -10,6 +10,19 @@ or your project/area files are stored.
 
 ## [Unreleased]
 
+### Upgrade notes
+- **The next version, 0.25.0, is a fresh install**: it comes as a new plugin next to this one, so this one's
+  settings don't carry over by themselves. To keep everything, in this version:
+  1. process your open lasso marks (Mark for later), since their pictures live inside this plugin;
+  2. switch to each profile once and tap **Save** (Settings → Data → Profiles), so every profile file is up to date;
+  3. note your Gmail app password and your calendar link - profiles never hold them;
+  4. run Settings → Data → **Remove Kept's data** with *Kept's data files* and *Saved profiles* left
+     unticked, then uninstall this plugin.
+
+  Your notes, your `.txt` data files and your saved profiles stay on the device; 0.25.0 loads the profiles.
+- Contexts: nothing to do. Your contexts keep working as before; the new switch is optional and your files
+  are unchanged.
+
 ### New
 - **Remove Kept's data** in Settings → Data: shows everything Kept has put on the device - settings,
   the Gmail app password and calendar link, caches, lasso mark pictures, logs, the demo space, old
@@ -48,8 +61,8 @@ or your project/area files are stored.
 - **More room for content**: the tab bar, the status line and the space above each screen are slimmer on
   every device. Week and Month show their period in the tab row ("‹ Week 44 · 26 ›", "‹ Oct 26 ›"), with
   **Now** to go back; Month no longer counts its highlights there.
-- **Turned screens and Nomad**: Month shows its days in two halves where they don't fit, opening on the half
-  with today; the help's page list pages; Settings → Features and Advanced scroll where they don't fit. On
+- **Turned screens and Nomad**: Month shows its days in two halves where they don't fit (a turned A5 X shows
+  every day, a turned Nomad always two halves), opening on the half with today; the help's page list pages; Settings → Features and Advanced scroll where they don't fit. On
   the marks screen, Link to source page, Open page, Discard… and Close moved under the list of marks; on a
   short screen the picture is lower and the tags start with eight and More….
 - **The project and area page is leaner on every device**: no Given time line (Week and Month still
@@ -57,8 +70,7 @@ or your project/area files are stored.
   buttons, the marks card on one line, and **hide done** / **show 2 done** next to the Todos heading
   (on the Inbox next to Tasks). On a turned device or a Nomad, Todos are the first tab of
   Todos | Schedule | Google, and each counterpart on the Threads tab is one line.
-- **Month** decides once per screen whether it shows two halves: a turned A5 X shows every day, a
-  turned Nomad always two halves. Buttons in the status line always fit inside it.
+- Buttons in the status line always fit inside it.
 - **What's new** in Settings → About shows the last three versions; the earlier ones are in CHANGELOG.md on GitHub.
 - **Settings has six tabs** instead of eight. **Data** holds your folders on the left and, on the
   right, Run setup assistant and the profiles - setting up in one place. The Google Calendar link and
@@ -75,12 +87,11 @@ or your project/area files are stored.
   on e-ink.
 
 ### Removed
+- **Daily's tag filter** (the "#" row): a context does the same for every tab, and
+  a meeting's context panel shows what belongs to it. Tags in Daily's rows are plain text; nested tags
+  still open their thread overview.
 - **Touch test** and **Check device files** in Settings → Advanced: both diagnostics have done their
   job. Touch logs already written stay in `EXPORT/kept-gtd/debug` until you delete them.
-
-### Upgrade notes
-- Contexts: nothing to do. Your contexts keep working as before; the new switch is optional and your files
-  are unchanged.
 
 ## [0.23.0] — 2026-10-29
 
