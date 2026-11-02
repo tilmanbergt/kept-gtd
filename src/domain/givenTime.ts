@@ -166,7 +166,7 @@ export function givenTimeOf(input: {source: EngageSource; range: {start: string;
     for (const task of item.tasks) {
       if (!doneIn(task)) continue;
       const side = sideOwner(ownerOfTodo({itemPath: item.path, task}, source));
-      if (!matcher.taskShown(item, {tags: task.tags, dueDate: null}, '')) {
+      if (!matcher.taskShown(item, task)) {
         hidden.add(ownerKey(home));
         if (side) hidden.add(keyOf(side));
         continue;

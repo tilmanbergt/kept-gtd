@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-160 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+169 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -148,7 +148,7 @@ Test: `__tests__/scenarios/contexts.test.tsx`
 - **When** I create the context "Café" with Shows #reading and Hides #computer (its Tags list)
 - **Then** the preview counts what it shows
 - **When** I save
-- **Then** Café is listed with its count and summary
+- **Then** Café is listed with its count and sentence
 - **When** I tap its radio
 - **Then** the chip names Café
 
@@ -161,6 +161,85 @@ Test: `__tests__/scenarios/contexts.test.tsx`
 - **Then** the Areas list counts the choice and the context is listed
 - **When** I tap its radio and open Daily
 - **Then** Daily shows Home's todo and hides Team's
+
+Test: `__tests__/scenarios/contexts.test.tsx`
+
+### A tag-only context lists the areas holding its todos
+
+- **Given** "Errands" shows #errand; Garden holds "Buy bulbs #errand", Team has no errand todo
+- **When** I open Areas under Errands
+- **Then** Garden is listed, Team is not, and the hidden line counts Team
+
+Test: `__tests__/scenarios/contexts.test.tsx`
+
+### An area is listed through its project's todos
+
+- **Given** Project Shed (Area Garden) has "Paint #errand"; Garden itself has none
+- **When** I open Areas under Errands
+- **Then** Garden is listed, Team is not
+
+Test: `__tests__/scenarios/contexts.test.tsx`
+
+### An upcoming meeting keeps a project listed
+
+- **Given** "Coaching" shows all #jf threads; Leadership has no #jf todo, a meeting "Sparring #jf/anna" next Tuesday and one last month
+- **When** I open Projects under Coaching
+- **Then** Leadership is listed, Tender is not
+
+Test: `__tests__/scenarios/contexts.test.tsx`
+
+### A past meeting alone keeps no project listed
+
+- **Given** the same, with only last month's meeting left
+- **When** I open Projects under Coaching
+- **Then** Leadership is not listed
+
+Test: `__tests__/scenarios/contexts.test.tsx`
+
+### A loop root shows every loop of its kind
+
+- **Given** a loop setup on #read, "#read/novel" in Home, "#read/paper" in Team and a plain todo in Garden
+- **When** I open Daily under a context with "All #read loops"
+- **Then** both loops' todos show, Garden's does not
+- **And** the contexts list reads "Show all #read loops everywhere"
+
+Test: `__tests__/scenarios/contexts.test.tsx`
+
+### Show a place and a tag: either one shows
+
+- **Given** Show Area Work and #computer, "Only inside" off
+- **When** I open Daily
+- **Then** every Work todo and Home's #computer todo show, Home's other todo does not
+- **And** the sentence reads "Show Work, plus #computer everywhere"
+
+Test: `__tests__/scenarios/contexts.test.tsx`
+
+### Only inside the selected areas: the tag in the place
+
+- **Given** the same with "Only inside the selected areas and projects" on
+- **When** I open Daily
+- **Then** only Work's #computer todo shows
+- **And** the sentence reads "Show #computer in Work"
+
+Test: `__tests__/scenarios/contexts.test.tsx`
+
+### Except cuts a tag out of a place
+
+- **Given** Show Home, Except #computer
+- **When** I open Areas, then Daily
+- **Then** Home is listed, Work is not
+- **When** I open Daily
+- **Then** Home's #computer todo is hidden, its other todo shows
+- **And** the sentence reads "Show Home except #computer"
+
+Test: `__tests__/scenarios/contexts.test.tsx`
+
+### Except a place: the sentence says "except in"
+
+- **Given** Show #computer, Except Home
+- **When** I open Daily
+- **Then** Work's #computer todo shows, Home's does not
+- **And** the sentence reads "Show #computer everywhere except in Home"
 
 Test: `__tests__/scenarios/contexts.test.tsx`
 

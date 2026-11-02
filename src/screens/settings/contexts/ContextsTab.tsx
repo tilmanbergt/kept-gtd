@@ -1,10 +1,12 @@
 /**
- * Settings → Contexts (docs/dev/history/technical-design-time-and-place.md §3.3,
- * D20): the Note setups pattern - the list on the left, the open context's
+ * Settings → Contexts (docs/dev/history/technical-design-contexts-tags.md §2.4):
+ * the Note setups pattern - the list on the left, the open context's
  * editor on the right.
  */
-import React from 'react';
+import React, {useMemo} from 'react';
 import {StyleSheet, View} from 'react-native';
+import {threadTypesOf} from '../../../domain/counterparts';
+import {loopKindsOf} from '../../../domain/loops';
 import {GtdParaSettings} from '../../../domain/settings';
 import {SPACING} from '../../../ui/theme';
 import ContextEditor from './ContextEditor';
@@ -19,6 +21,8 @@ export default function ContextsTab(props: {
   placeholderColor: string;
 }): React.JSX.Element {
   const {draft, values, textColor, borderColor, placeholderColor} = props;
+  const setups = values.noteSetups;
+  const kinds = useMemo(() => ({loopKinds: loopKindsOf(setups ?? []), threadTypes: threadTypesOf(setups ?? [])}), [setups]);
   return (
     <View style={styles.row}>
       <View style={[styles.column, styles.columnLeft]}>
@@ -31,6 +35,7 @@ export default function ContextsTab(props: {
           onEditEverything={draft.handleEditEverything}
           everythingOpen={draft.everythingOpen}
           onActivate={draft.handleActivate}
+          kinds={kinds}
           textColor={textColor}
           borderColor={borderColor}
         />

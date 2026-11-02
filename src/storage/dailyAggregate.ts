@@ -110,7 +110,7 @@ function buildDailyAggregateImpl(
   const tasks = {
     push(entry: DailyTaskEntry) {
       const owner = !matcher ? null : entry.item.kind === 'inbox' ? 'inbox' : contextItemOf(items, entry.item.path);
-      if (!matcher || owner === null || matcher.taskShown(owner, entry.task, todayDate)) shownTasks.push(entry);
+      if (!matcher || owner === null || matcher.taskShown(owner, entry.task)) shownTasks.push(entry);
       else hiddenTasks.push(entry);
     },
   };

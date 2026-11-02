@@ -13,7 +13,6 @@
 import React, {useEffect, useState} from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
 import {ContextDef, ContextEntry, nextCountOf, sameEntry} from '../../../domain/contexts';
-import {todayIso} from '../../../domain/meetingTime';
 import {isContextTag} from '../../../domain/flowState';
 import {CachedItem} from '../../../storage/dataCache';
 import {getRecentTags} from '../../../storage/tagUsage';
@@ -111,8 +110,8 @@ export default function ContextEditor({draft, textColor, borderColor, placeholde
   const named = [...ctx.shows, ...ctx.hides].flatMap(e => (e.kind === 'tag' ? [e.tag] : []));
   const tagSet = Array.from(new Set([...named, ...[...tags.map(t => t.toLowerCase()), ...tagsInFiles(live)].filter(t => !t.includes('/'))]));
   const tagChips = tagSet.map(tag => chip({kind: 'tag', tag}, `#${tag}`));
-  const shown = nextCountOf(ctx, items, todayIso());
-  const all = nextCountOf(null, items, todayIso());
+  const shown = nextCountOf(ctx, items);
+  const all = nextCountOf(null, items);
 
   const chips = kind === 'areas' ? areas : kind === 'projects' ? projects : tagChips;
   const count = (k: ChipKind) => [...ctx.shows, ...ctx.hides].filter(e => (k === 'tags' ? e.kind === 'tag' : e.kind === 'item' && e.itemKind === (k === 'areas' ? 'area' : 'project'))).length;

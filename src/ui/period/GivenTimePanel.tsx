@@ -63,15 +63,15 @@ export default function GivenTimePanel(props: Props): React.JSX.Element {
   const today = todayIso();
   const tend = useMemo(() => {
     const threads = buildTendingRoster([...items], inbox && inboxPath ? {path: inboxPath, tasks: inbox.tasks, meetings: inbox.meetings} : null, threadTypesOf(noteSetups ?? []));
-    const contextItems = (path: string) => {
+    const ownerShown = (path: string) => {
       const owner = items.find(i => i.path === path);
       return !owner || filter.matcher.itemShown(owner);
     };
     const loops = buildLoopRoster(items, loopKindsOf(noteSetups ?? []), today);
     return tendCount(
       {
-        threads: threads.filter(s => contextItems(s.owner.path)).flatMap(s => s.active),
-        loops: loops.filter(s => contextItems(s.owner.path)).flatMap(s => s.loops),
+        threads: threads.filter(s => ownerShown(s.owner.path)).flatMap(s => s.active),
+        loops: loops.filter(s => ownerShown(s.owner.path)).flatMap(s => s.loops),
       },
       today,
     );
