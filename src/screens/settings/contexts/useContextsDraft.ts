@@ -1,6 +1,6 @@
 /**
- * Settings → Contexts' state (docs/dev/history/technical-design-time-and-place.md
- * §3.3): which context is open in the editor, its draft, and Save / Delete,
+ * Settings → Contexts' state (docs/dev/history/technical-design-contexts-tags.md
+ * §2.4): which context is open in the editor, its draft, and Save / Delete,
  * which write `contexts` at once (and mirror it into the Settings draft, so a
  * later Save on another tab keeps it) - the Note setups pattern - and
  * `handleActivate`, which makes a context (or Everything, '') the active one.
@@ -8,7 +8,7 @@
  * which is written at once (`givenTimeMinMinutes`).
  */
 import {useState} from 'react';
-import {ContextDef, ContextEntry, DEFAULT_MIN_MINUTES, EVERYTHING_LABEL, MinMinutes, newContext, toggleEntry} from '../../../domain/contexts';
+import {ContextDef, ContextEntry, DEFAULT_MIN_MINUTES, EVERYTHING_LABEL, MinMinutes, newContext, normalizeContextTag, sameEntry, toggleEntry} from '../../../domain/contexts';
 import {GtdParaSettings} from '../../../domain/settings';
 import {patchSettings} from '../../../storage/settingsStorage';
 import {useStatusApi} from '../../../ui/status/StatusProvider';
@@ -35,6 +35,9 @@ export interface ContextsDraft {
   setMinMinutes: (scope: keyof MinMinutes, minutes: number) => void;
   setName: (name: string) => void;
   toggle: (entry: ContextEntry) => void;
+  /** Puts a typed tag on the current side; false (and a status message) when it isn't one tag. */
+  addTag: (text: string) => boolean;
+  setOnlyInPlaces: (on: boolean) => void;
   setOutsideMeetings: (value: ContextDef['outsideMeetings']) => void;
   handleSave: () => void;
   handleDelete: () => void;
@@ -107,10 +110,27 @@ export function useContextsDraft(values: GtdParaSettings, setValues: (update: (v
     },
     setName: name => update(d => ({...d, name})),
     toggle: entry => update(d => (side === 'shows' ? {...d, shows: toggleEntry(d.shows, entry)} : {...d, hides: toggleEntry(d.hides, entry)})),
+    addTag: text => {
+      const tag = normalizeContextTag(text);
+      if (!tag) {
+        const id = 'Settings.contextTag';
+        statusApi.show(id, {kind: 'warning', text: `"${text.trim()}" isn't a tag: one word, letters, digits, - or /.`, onDismiss: () => statusApi.clear(id)});
+        return false;
+      }
+      const entry: ContextEntry = {kind: 'tag', tag};
+      update(d => {
+        const list = side === 'shows' ? d.shows : d.hides;
+        return list.some(e => sameEntry(e, entry)) ? d : {...d, [side]: [...list, entry]};
+      });
+      return true;
+    },
+    setOnlyInPlaces: on => update(d => ({...d, onlyInPlaces: on})),
     setOutsideMeetings: value => update(d => ({...d, outsideMeetings: value})),
     handleSave: () => {
       if (!draft) return;
-      const named = {...draft, name: draft.name.trim() || 'Unnamed'};
+      const {onlyInPlaces, ...rest} = draft;
+      const bothParts = rest.shows.some(e => e.kind === 'item') && rest.shows.some(e => e.kind === 'tag');
+      const named = {...rest, name: rest.name.trim() || 'Unnamed', ...(onlyInPlaces && bothParts ? {onlyInPlaces: true} : {})};
       const next = isNew ? [...contexts, named] : contexts.map(c => (c.id === named.id ? named : c));
       setDraft(named);
       store(next, {}, `Context "${named.name}" saved.`);

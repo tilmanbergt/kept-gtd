@@ -19,13 +19,13 @@ what is wrong.
 | Screen | A5 X portrait | A5 X landscape | Nomad portrait | Nomad landscape |
 |---|---|---|---|---|
 | Tab bar (all tabs, "?", context chip, ✕; demo "D") | | | | |
-| Daily (incl. tag filter) | | | | |
+| Daily | | | | |
 | Week (grid: fewer rows on short screens, ‹ › per day) | | | | |
 | Month | | | | |
 | Projects list | | | | |
 | Areas list (incl. On Hold column) | | | | |
 | Inbox | | | | |
-| Review hub and each step | | | | |
+| Review hub (context line) and each step | | | | |
 | Threads overview, Loops overview | | | | |
 | Project/area page: Todos, Meetings | | | | |
 | Project/area page: Files pane (Device tab, This file rows, sub-tabs) | | | | |
@@ -37,7 +37,8 @@ what is wrong.
 | Engage on a meeting page and on a todo page (strip, tabs, Quick Add) | | | | |
 | Meeting context panel | | | | |
 | Settings → Data (Save and Reset to defaults reachable) | | | | |
-| Settings → Contexts, Note setups (editor with preview), Features | | | | |
+| Settings → Contexts editor (name/Save, sentence, Show/Except, kind tabs, Only inside, New tag, chips, preview) | | | | |
+| Settings → Contexts list, Note setups (editor with preview), Features | | | | |
 | Settings → Advanced (Simulate screen, Check screen and pages) | | | | |
 | Settings → About (What's new: three version tabs) | | | | |
 | Setup assistant (all steps) | | | | |

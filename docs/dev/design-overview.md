@@ -459,8 +459,7 @@ labels after its title (`domain/taskLabels.ts`, `ui/TaskLabels.tsx`, layout in
 clamped together with the title; only the `#w/f Name` label reacts to touch. Tags in
 a row's title go through `ui/TaggableText.tsx`: a nested context tag always opens the thread
 overview with the row's item as owner (rows get `ownerPath`; Inbox lists pass the Inbox folder),
-a plain context tag is tappable only where the screen passes a handler (Daily's context filter);
-the `#w/f Name` label and an `#owe/<name>` tag open the counterpart lens for `<name>`
+plain tags stay text; the `#w/f Name` label and an `#owe/<name>` tag open the counterpart lens for `<name>`
 (`openOverview` forces it for `wf`/`owe`; the header then shows "All <name>" without a
 switch). Meeting
 rows have two fixed heights (one line 37 dp, two lines 57 dp); every list has a 1-line/2-line
@@ -758,17 +757,25 @@ Detail: `docs/dev/history/technical-design-note-setups.md`,
 ### 2.7 Daily, Week and Month
 
 **Contexts** (`domain/contexts.ts`, settings `contexts` and `activeContextId`, '' = Everything,
-both per profile). A context shows and hides Areas, Projects (a Project also through its Area) and
-tags; `contextMatcher(ctx)` answers `itemShown`, `taskShown` (the Inbox and todos due today or
-earlier always pass) and `meetingState` (`shown` or `dimmed`, never hidden). Screens read it
-through `ui/context/useContextMatcher.ts` (`ContextFilter`: matcher, kinds, a per-tab **Show**,
-the hidden line's text); `ui/context/HiddenLine.tsx` ends every filtered list ("Hidden by Home:
-4 todos · Show"). The chip is in `ui/TabBar.tsx`; a tap opens Settings → Contexts, where each row's
-radio makes a context active (`useContextsDraft.handleActivate`); Quick Add warns when a new entry lands outside the
+both per profile). A context has Show (`shows`) and Except (`hides`). Show has two parts, Where
+(Areas and Projects; an Area also matches its Projects) and What (tags; a tag also matches the tags
+nested under it, so a loop kind or thread type is a plain tag entry); an empty part sets no limit,
+an entry passes either part, or both with `onlyInPlaces`, and Except always wins (`shown`).
+`contextMatcher(ctx, items, today)` answers `itemShown` from rows worked out once: an item shows
+when it passes itself or holds an open todo or a meeting from today on that passes, an Area also
+through its Projects. `taskShown` (the Inbox always passes) and `meetingState` (`shown` or
+`dimmed`, never hidden) need no items. `contextSentence` says what a context shows ("Show #computer
+in Work except #wifi"), in the editor and the list. Screens read it through
+`ui/context/useContextMatcher.ts` (`ContextFilter`: matcher over the cached items, kinds, the tab's
+**Show** / `narrow()`, back to `startAll` when the tab is left, the hidden line's text);
+`ui/context/HiddenLine.tsx` ends every filtered list ("Hidden by Home: 4 todos · Show"). The chip
+is in `ui/TabBar.tsx`; a tap opens Settings → Contexts, where each row's radio makes a context
+active (`useContextsDraft.handleActivate`); Quick Add warns when a new entry lands outside the
 context (`ui/context/useHiddenAddNotice.ts`). Settings → Contexts edits them
-(`screens/settings/contexts/`). The Review filters its aggregate (`filterReviewAggregate`) and
-counts the rest per step as "+n in other contexts"; Reviewed and overdue stay global. Detail:
-`docs/dev/history/technical-design-time-and-place.md` §3.3.
+(`screens/settings/contexts/`: Show/Except, the Tags tab with New tag and the loop/thread roots in
+`ContextTagsPanel.tsx`, the "Only inside the selected areas and projects" switch). Review starts in
+Everything (`startAll`) and narrows only on request (§2.8). Detail:
+`docs/dev/history/technical-design-contexts-tags.md`, `technical-design-time-and-place.md` §3.3.
 
 **Focus blocks** (`domain/focusBlock.ts`): a meeting tagged `#focusblock` (the F toggle in Quick
 Add and on the card). No prep/review tracking, no Reflection page, never in "Meetings to close
@@ -788,7 +795,7 @@ per-screen wiring.
 **Daily** (`screens/DailyView.tsx`, aggregate `storage/dailyAggregate.ts`; data from
 `screens/daily/useDailyData.ts`: the cache at mount without a loading pass when it is ready, a
 `daily:firstContent` perf span; every write through `ui/useEntryActions.ts`, the overviews' write
-path; the right column `screens/daily/DailyTodosColumn.tsx`; the tag filter was removed in 0.24.0). Left column: the day panel (`ui/DayMeetingsPanel.tsx`,
+path; the right column `screens/daily/DailyTodosColumn.tsx`). Left column: the day panel (`ui/DayMeetingsPanel.tsx`,
 Today | Tomorrow | Google), full height. Right column: Quick Add (always to the Inbox) or the
 selected row's card, above the Next todos grouped by source item (the Inbox first, then cache
 order) or the selected meeting's context panel; the hidden line last. A task shows when it is
@@ -799,9 +806,7 @@ open, the active context shows it, and
 - Waiting For with no date or a date today or earlier.
 
 Someday and Maybe never show; Waiting For sorts last in its group. Meetings: today and
-tomorrow, multi-day meetings on every covered day (`domain/meetingSpan.ts`). Tapping a saved tag
-sets a **context filter**: only tasks and meetings with that tag show (any flow state except
-Maybe), and when the tag is a Project/Area abbreviation, also everything belonging to that item.
+tomorrow, multi-day meetings on every covered day (`domain/meetingSpan.ts`).
 
 **Engage** (`mode: 'engage'`, `screens/engage/`) is the doing step over the note. One owner at a time - a Project/Area, a loop or
 a thread (`domain/engageOwner.ts`) - holding what its overview holds: a thread the thread lens
@@ -918,9 +923,13 @@ todo alone is no next action - with their Plan, Someday and Maybe todos offered 
 
 Adding a step means one id, one `REVIEW_STEPS` entry, one count in `buildReviewStepCounts` and
 one step component. A step can be opened from outside the Review screen through
-`screens/review/reviewNav.ts` (`requestReviewStep(id, filter)`: App shows the Review tab via
+`screens/review/reviewNav.ts` (`requestReviewStep(id, filter, inContext)`: App shows the Review tab via
 `screens/useReviewStepNav.ts`, ReviewScreen takes the request once and enters the step itself;
-the filter lists entry keys and is cleared when the step is left). Detail: `docs/dev/history/technical-design-review-hub.md`,
+the filter lists entry keys and is cleared when the step is left; `inContext`, from the Tend line
+on Week and Month, narrows Review to the active context first). Review reads everything by default;
+the hub's first row offers "Review only in Home" (`ReviewHub`'s `contextLine`), and while narrowed
+step titles end "· in Home" and each step counts the rest as "+n in other contexts"; Reviewed and
+overdue stay global. Detail: `docs/dev/history/technical-design-review-hub.md`,
 `docs/dev/history/technical-design-review-master-detail.md`.
 
 ### 2.9 Status, close-out and archive
@@ -1442,6 +1451,13 @@ recurring meetings, no automatic filing, abbreviation tags only *offer* a destin
 blocks are entered by hand, and Done is a status someone sets. Contexts, not a separate focus
 choice, decide what Daily shows: a busy project cannot flood a context it is not part of, and
 the hidden line always says how much is left out.
+
+**Contexts are for doing; the review sees everything.** The Weekly Review ignores the active
+context unless the user narrows it ("Review only in Home"): a review that silently skips what
+another context holds would let commitments slip. Reviewed marks and the overdue date stay
+global either way. A context is written as Show and Except, not as two alternative lists: Show
+names where and what, Except is a plain cut-out that always wins, and one switch ("Only inside the
+selected areas and projects") turns "either" into "both".
 
 **Review as a walk, not a report.** The Weekly Review fixes things where they are found. Lists
 freeze while a step is open, so rows don't vanish under the user; each step keeps its own record,

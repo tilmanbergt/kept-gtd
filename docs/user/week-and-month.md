@@ -29,7 +29,7 @@ Each row's kind - AREA, PROJECT, LOOP, COUNTERPART - is a small badge right of t
 
 **Worked on this week** lists the areas and projects with todos done but nothing scheduled. Cancelled meetings don't count.
 
-Under it, **Tend: 3 counterparts · 2 loops quiet ›** counts the counterparts that [need tending](threads.md#tending-counterparts) - nothing planned in the next 14 days and no next or I-owe todo - and the loops that need a look; tap it to open the Weekly Review's [Tending threads](review.md#tending-threads). With a [context](contexts.md#what-a-context-shows) active, only what it shows counts, and the last line says how many owners it hides.
+Under it, **Tend: 3 counterparts · 2 loops quiet ›** counts the counterparts that [need tending](threads.md#tending-counterparts) - nothing planned in the next 14 days and no next or I-owe todo - and the loops that need a look; tap it to open the Weekly Review's [Tending threads](review.md#tending-threads). With a [context](contexts.md#what-a-context-shows) active, only what it shows counts, the review opens [narrowed to it](review.md#reviewing-in-a-context), and the last line says how many owners it hides.
 
 ## Meeting length
 

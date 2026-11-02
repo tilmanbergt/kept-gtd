@@ -61,7 +61,7 @@ export function summarizeSettings(s: GtdParaSettings): string[] {
     `          calendar ${s.googleCalendarIcsUrl.trim() ? 'configured' : 'not configured'}, ${onOff(f.googleCalendar)}` +
       ` · gmail ${s.gmailEmail.trim() ? 'configured' : 'not configured'}, ${onOff(f.gmail)}` +
       ` · modules: closeOut ${onOff(f.closeOut)}` +
-      ` · contexts ${(s.contexts ?? []).length}, active ${s.activeContextId ? 'yes' : 'no'}`,
+      ` · contexts ${(s.contexts ?? []).length} (only inside ${(s.contexts ?? []).filter(c => c.onlyInPlaces).length}), active ${s.activeContextId ? 'yes' : 'no'}`,
     `          keepTabs ${onOff(s.keepTabsAlive)} · perfTracing ${onOff(s.perfTracing)} · debugLogging ${onOff(s.debugLogging)}` +
       ` · reviewSteps recorded ${Object.keys(s.reviewSteps ?? {}).length} · setup assistant ${s.setupAssistant}`,
     noteSetupsLine(s, didNoteSetupMigrationFail()),

@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-170 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+172 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -144,10 +144,11 @@ Test: `__tests__/scenarios/contexts.test.tsx` · design: `docs/dev/history/techn
 
 Test: `__tests__/scenarios/contexts.test.tsx`
 
-### Settings → Contexts: create Café, then choose it from the chip
+### Settings → Contexts: create Café, listed with its sentence, then choose it from the chip
 
 - **Given** a space with todos tagged #reading and #computer
-- **When** I create the context "Café" with Shows #reading and Hides #computer (its Tags list)
+- **When** I create the context "Café" with Show #reading and Except #computer (its Tags list)
+- **Then** the sentence on top reads it, and the side tabs count the entries
 - **Then** the preview counts what it shows
 - **When** I save
 - **Then** Café is listed with its count and sentence
@@ -159,7 +160,7 @@ Test: `__tests__/scenarios/contexts.test.tsx`
 ### Settings → Contexts: a context that shows one Area, named and saved from the top row
 
 - **Given** the areas Home and Team, each with a next todo
-- **When** I create "Home" with Shows on the Area Home and tap Save
+- **When** I create "Home" with Show on the Area Home and tap Save
 - **Then** the Areas list counts the choice and the context is listed
 - **When** I tap its radio and open Daily
 - **Then** Daily shows Home's todo and hides Team's
@@ -250,6 +251,36 @@ Test: `__tests__/scenarios/contexts.test.tsx`
 - **Given** "Coaching" shows all #jf threads; Area Team has a #jf/anna todo and the quiet threads anna and #retro/demand; Garden has the quiet thread #retro/beds
 - **When** I tap the Tend line on Week under Coaching
 - **Then** Tending threads lists both of Team's threads, not Garden's, and the title ends "· in Coaching"
+
+Test: `__tests__/scenarios/contexts.test.tsx`
+
+### A tag not in use yet is added from New tag
+
+- **Given** no todo carries #shopping; one carries #project/piplanning/q1
+- **When** I type "#Shopping" in New tag on the Tags tab and tap Add
+- **Then** the #shopping chip is there and the sentence reads "Show #shopping everywhere"
+- **When** I type "two words" and tap Add
+- **Then** the status line says it isn't a tag, and nothing is added
+- **When** I add "project/piplanning" too
+- **Then** it is a plain chip, and the preview counts the #project/piplanning/q1 todo
+- **When** I save
+- **Then** the context is listed with its sentence
+
+Test: `__tests__/scenarios/contexts.test.tsx`
+
+### The "Only inside" switch appears only while Show names a place and a tag
+
+- **Given** Work and Home, with #computer todos in both
+- **When** I create "Desk" with Show Area Work and Tags #computer
+- **Then** the switch is offered, off, and the sentence reads "Show Work, plus #computer everywhere"
+- **When** I tick it
+- **Then** the sentence reads "Show #computer in Work"
+- **When** I look at Except
+- **Then** the switch is not offered there
+- **When** I go back to Show and remove #computer
+- **Then** the switch row is gone
+- **When** I save
+- **Then** the stored context does not keep the switch
 
 Test: `__tests__/scenarios/contexts.test.tsx`
 

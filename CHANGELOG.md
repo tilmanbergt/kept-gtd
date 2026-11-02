@@ -21,8 +21,19 @@ or your project/area files are stored.
 - **Check screen and pages** in Settings → Advanced (shown while Debug logging is on): the screen
   size, the page size of the note Kept was opened from, and a horizontal test note in
   `EXPORT/kept-gtd/debug` - for bug reports about other devices and landscape.
+- **Contexts: any tag, and whole loop and thread types**: Settings → Contexts → Tags has a **New tag**
+  field for a tag no todo carries yet (`shopping`, also a nested one like `garden/beds`), and one chip per
+  loop and thread type - **All #workshop loops**, **All #sparring threads** - that brings all of them.
 
 ### Changed
+- **Contexts read as Show and Except**, with one sentence on top of the editor and in the list of
+  contexts: "Show Work, plus #computer everywhere except #wifi". Show names where (areas, projects) and
+  what (tags); a todo shows when it fits either. **Only inside the selected areas and projects** makes it
+  fit both: "Show #computer in Work". Except always wins.
+- **The Weekly Review looks at everything**, also while a context is active: contexts are for doing the
+  work. The overview offers **Review only in Home** (and then **Review everything**); narrowed, step
+  titles end "· in Home". Leaving Review goes back to everything. The Tend line on Week and Month opens
+  Review already narrowed to the active context.
 - **Creating a note from a PDF or EPUB**: the Supernote doesn't let plugins create notes when they were opened
   from a document. Kept no longer asks first and then fails with the device's message; it says right away:
   "Supernote doesn't let plugins create notes when opened from a PDF or EPUB. Open Kept from a note to
@@ -58,12 +69,18 @@ or your project/area files are stored.
   save or reset it, so the change can't be lost.
 
 ### Fixed
+- A context that names only tags (an "Errands" with `#errand` and `#shopping`) no longer leaves Projects
+  and Areas empty: they list every project and area holding an open todo or an upcoming meeting it shows.
 - The profile list redraws once it has found the profile files, so it is no longer left half drawn
   on e-ink.
 
 ### Removed
 - **Touch test** and **Check device files** in Settings → Advanced: both diagnostics have done their
   job. Touch logs already written stay in `EXPORT/kept-gtd/debug` until you delete them.
+
+### Upgrade notes
+- Contexts: nothing to do. Your contexts keep working as before; the new switch is optional and your files
+  are unchanged.
 
 ## [0.23.0] — 2026-10-29
 

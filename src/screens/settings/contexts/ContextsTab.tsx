@@ -42,7 +42,7 @@ export default function ContextsTab(props: {
       </View>
       <View style={[styles.divider, {backgroundColor: borderColor}]} />
       <View style={styles.column}>
-        <ContextEditor draft={draft} textColor={textColor} borderColor={borderColor} placeholderColor={placeholderColor} />
+        <ContextEditor draft={draft} kinds={kinds} textColor={textColor} borderColor={borderColor} placeholderColor={placeholderColor} />
       </View>
     </View>
   );

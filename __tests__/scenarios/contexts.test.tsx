@@ -1,4 +1,4 @@
-import {expectNotShows, expectShows, labelled, openApp, readTexts, tap, tapLabel, tapTab, textsBetween, type} from '../../test-helpers/scenario/app';
+import {expectNotShows, expectShows, fieldValue, labelled, openApp, readTexts, storedSettings, tap, tapLabel, tapTab, textsBetween, type} from '../../test-helpers/scenario/app';
 import {areaFile, dataFile, INBOX_FILE, loggedErrors, projectFile, putFile, sectionLines} from '../../test-helpers/scenario/files';
 import {and, given, scenario, then, when} from '../../test-helpers/scenario/scenario';
 import {smokeClock} from '../../test-helpers/scenario/smokeSpace';
@@ -135,12 +135,12 @@ scenario('Quick Add says when the entry lands outside the context', {feature: 'C
   });
 });
 
-scenario('Settings → Contexts: create Café, then choose it from the chip', {feature: 'Contexts', design: DESIGN}, () => {
+scenario('Settings → Contexts: create Café, listed with its sentence, then choose it from the chip', {feature: 'Contexts', design: DESIGN}, () => {
   given('a space with todos tagged #reading and #computer', () => {
     smokeClock();
     putFile(areaFile('Home'), dataFile('area', {Scope: [], Tasks: ['- [ ] Novel #reading #next', '- [ ] Backup #computer #reading #next', '- [ ] Laundry #next'], Meetings: []}, ['dailyFocus: true']));
   });
-  when('I create the context "Café" with Shows #reading and Hides #computer (its Tags list)', async () => {
+  when('I create the context "Café" with Show #reading and Except #computer (its Tags list)', async () => {
     await openApp();
     await tapTab('Daily');
     await tapTab('Settings');
@@ -149,8 +149,13 @@ scenario('Settings → Contexts: create Café, then choose it from the chip', {f
     await type('e.g. Work, Home, Café', 'Café');
     await tap('Tags');
     await tap('#reading');
-    await tap('Hides');
+    await tap('Except');
     await tap('#computer');
+  });
+  then('the sentence on top reads it, and the side tabs count the entries', () => {
+    expectShows('Show #reading everywhere except #computer');
+    expectShows('Show 1');
+    expectShows('Except 1');
   });
   then('the preview counts what it shows', () => expectShows('Preview: shows 1 of 3 next todos. The Inbox always shows.'));
   when('I save', () => tap('Save'));
@@ -171,7 +176,7 @@ scenario('Settings → Contexts: a context that shows one Area, named and saved 
     putFile(areaFile('Home'), dataFile('area', {Scope: [], Tasks: ['- [ ] Laundry #next'], Meetings: []}));
     putFile(areaFile('Team'), dataFile('area', {Scope: [], Tasks: ['- [ ] Prepare offer #next'], Meetings: []}));
   });
-  when('I create "Home" with Shows on the Area Home and tap Save', async () => {
+  when('I create "Home" with Show on the Area Home and tap Save', async () => {
     await openApp();
     await tapTab('Settings');
     await tap('Contexts');
@@ -389,5 +394,82 @@ scenario('The Tend line opens Review narrowed, filtered by place', {feature: 'Co
     expect(listed('demand')).toBe(true);
     expect(listed('beds')).toBe(false);
     expect(loggedErrors()).toEqual([]);
+  });
+});
+
+/** Settings → Contexts → + New context named `name`. */
+async function newContextNamed(name: string): Promise<void> {
+  await openApp();
+  await tapTab('Settings');
+  await tap('Contexts');
+  await tap('+ New context');
+  await type('e.g. Work, Home, Café', name);
+}
+
+scenario('A tag not in use yet is added from New tag', {feature: 'Contexts', design: TAGS_DESIGN}, () => {
+  given('no todo carries #shopping; one carries #project/piplanning/q1', () => {
+    smokeClock();
+    putFile(areaFile('Home'), dataFile('area', {Scope: [], Tasks: ['- [ ] Laundry #next', '- [ ] Plan the quarter #project/piplanning/q1 #next'], Meetings: []}));
+  });
+  when('I type "#Shopping" in New tag on the Tags tab and tap Add', async () => {
+    await newContextNamed('Shops');
+    await tap('Tags');
+    await type('New tag, e.g. errand', '#Shopping');
+    await tap('Add');
+  });
+  then('the #shopping chip is there and the sentence reads "Show #shopping everywhere"', () => {
+    expectShows('#shopping');
+    expectShows('Show #shopping everywhere');
+    expect(fieldValue('New tag, e.g. errand')).toBe('');
+  });
+  when('I type "two words" and tap Add', async () => {
+    await type('New tag, e.g. errand', 'two words');
+    await tap('Add');
+  });
+  then('the status line says it isn\'t a tag, and nothing is added', () => {
+    expect(readTexts().some(t => t.startsWith('"two words" isn\'t a tag'))).toBe(true);
+    expectShows('Show #shopping everywhere');
+  });
+  when('I add "project/piplanning" too', async () => {
+    await type('New tag, e.g. errand', 'project/piplanning');
+    await tap('Add');
+  });
+  then('it is a plain chip, and the preview counts the #project/piplanning/q1 todo', () => {
+    expectShows('#project/piplanning');
+    expectShows('Show #shopping or #project/piplanning everywhere');
+    expectShows('Preview: shows 1 of 2 next todos. The Inbox always shows.');
+  });
+  when('I save', () => tap('Save'));
+  then('the context is listed with its sentence', () => expectShows('1 next · Show #shopping or #project/piplanning everywhere'));
+});
+
+scenario('The "Only inside" switch appears only while Show names a place and a tag', {feature: 'Contexts', design: TAGS_DESIGN}, () => {
+  given('Work and Home, with #computer todos in both', workAndHome);
+  when('I create "Desk" with Show Area Work and Tags #computer', async () => {
+    await newContextNamed('Desk');
+    await tap('Work');
+    await tap('Tags');
+    await tap('#computer');
+  });
+  then('the switch is offered, off, and the sentence reads "Show Work, plus #computer everywhere"', () => {
+    expectShows('☐ Only inside the selected areas and projects');
+    expectShows('Show Work, plus #computer everywhere');
+  });
+  when('I tick it', () => tap('☐ Only inside the selected areas and projects'));
+  then('the sentence reads "Show #computer in Work"', () => expectShows('Show #computer in Work'));
+  when('I look at Except', () => tap('Except'));
+  then('the switch is not offered there', () => expectNotShows(/Only inside the selected areas and projects/));
+  when('I go back to Show and remove #computer', async () => {
+    await tap('Show 2');
+    await tap('#computer');
+  });
+  then('the switch row is gone', () => {
+    expectNotShows(/Only inside the selected areas and projects/);
+    expectShows('Show Work');
+  });
+  when('I save', () => tap('Save'));
+  then('the stored context does not keep the switch', async () => {
+    const stored = (await storedSettings()).contexts?.find(c => c.name === 'Desk');
+    expect(stored?.onlyInPlaces).toBeUndefined();
   });
 });

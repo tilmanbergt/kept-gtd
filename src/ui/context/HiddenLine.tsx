@@ -1,6 +1,6 @@
 /**
  * The last line of a filtered tab (docs/dev/history/technical-design-time-and-place.md
- * §3.3, D24): "Hidden by Work: 9 todos · 2 loops · 1 thread · Show". Show is
+ * §3.3): "Hidden by Work: 9 todos · 2 loops · 1 thread · Show". Show is
  * a temporary Everything until the tab is left (ui/context/useContextMatcher.ts).
  * Nothing renders when nothing is hidden.
  */
