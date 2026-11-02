@@ -60,13 +60,7 @@ export default function NowBox({
   borderColor,
 }: Props): React.JSX.Element {
   const today = todayIso();
-  const layout = taskRowLayout(
-    todo.task,
-    estimatorWidth(),
-    'flat',
-    false,
-    today,
-  );
+  const layout = taskRowLayout(todo.task, estimatorWidth(), 'flat', today);
   // Due and Waiting For are spelled out on the details line, so the title keeps only #next.
   const labels = layout.labels.filter(l => l.kind === 'next');
   const details = nowDetailsText(todo.task, today);

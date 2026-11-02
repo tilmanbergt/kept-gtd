@@ -95,9 +95,6 @@ export interface MeetingRowProps {
   state?: 'editing' | 'arming' | 'selected' | 'done';
   /** Outside the active context (domain/contexts.ts): drawn faint, still tappable. */
   dimmed?: boolean;
-  /** Daily's context filter - see ui/TaskRow.tsx's identical props. */
-  contextTag?: string | null;
-  onToggleContext?: (tag: string) => void;
   /** The item this meeting lives in (the Inbox folder for Inbox rows): owner of the overview its nested tags open. */
   ownerPath?: string | null;
   textColor: string;
@@ -117,8 +114,6 @@ function MeetingRowV2({
   onPress,
   state,
   dimmed,
-  contextTag,
-  onToggleContext,
   ownerPath,
   textColor,
   borderColor,
@@ -140,7 +135,7 @@ function MeetingRowV2({
     <Text style={[v2.title, titleWraps && v2.titleWrapped, focusBlock && v2.flex, {color: textColor}]} numberOfLines={titleWraps ? 2 : 1}>
       {done ? '✓ ' : ''}
       {continuesBefore ? '◂ ' : ''}
-      {renderTaggableText(meetingDisplayTitle(meeting), {contextTag, onToggleContext, ownerPath})}
+      {renderTaggableText(meetingDisplayTitle(meeting), ownerPath)}
       {continuesAfter ? ' ▸' : ''}
     </Text>
   );

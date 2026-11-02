@@ -45,20 +45,20 @@ describe('taskRowLayout', () => {
     let title = 'Signed NDA';
     while (lines(title + ' word') === 1) title += ' word';
     const t = task(`${title} #waiting-for:meier-sohn #due:2026-10-05`);
-    const layout = taskRowLayout(t, TASK_COLUMN_WIDTH_PX, 'flat', false, TODAY);
+    const layout = taskRowLayout(t, TASK_COLUMN_WIDTH_PX, 'flat', TODAY);
     expect(layout.labels.map(l => l.text)).toEqual(['#w/f Meier Sohn', '#due 5.10.']);
     expect(layout.title).toBe(title);
     expect(layout.lines).toBe(2);
   });
   it('never exceeds two lines and keeps all labels', () => {
     const t = task(`${LONG} #waiting-for:meier #due:2026-09-01`);
-    const layout = taskRowLayout(t, TASK_COLUMN_WIDTH_PX, 'flat', false, TODAY);
+    const layout = taskRowLayout(t, TASK_COLUMN_WIDTH_PX, 'flat', TODAY);
     expect(layout.lines).toBe(2);
     expect(layout.labels).toHaveLength(2);
     expect(lines(layout.title + labelSuffix(layout.labels))).toBeLessThanOrEqual(2);
   });
   it('a short todo without labels is one line', () => {
-    expect(taskRowLayout(task('Book train'), TASK_COLUMN_WIDTH_PX, 'flat', false, TODAY)).toEqual({
+    expect(taskRowLayout(task('Book train'), TASK_COLUMN_WIDTH_PX, 'flat', TODAY)).toEqual({
       title: 'Book train',
       labels: [],
       lines: 1,
@@ -69,21 +69,20 @@ describe('taskRowLayout', () => {
 describe('taskRowLayout cache (technical-design-daily-slim.md §3.4)', () => {
   it('U1: the same Task with the same arguments gets the same layout object', () => {
     const t = task('Book train #next');
-    const first = taskRowLayout(t, TASK_COLUMN_WIDTH_PX, 'flat', false, TODAY);
-    expect(taskRowLayout(t, TASK_COLUMN_WIDTH_PX, 'flat', false, TODAY)).toBe(first);
+    const first = taskRowLayout(t, TASK_COLUMN_WIDTH_PX, 'flat', TODAY);
+    expect(taskRowLayout(t, TASK_COLUMN_WIDTH_PX, 'flat', TODAY)).toBe(first);
   });
-  it('U2: another day, tag filter or width computes again', () => {
+  it('U2: another day or width computes again', () => {
     const t = task('Book train #next');
-    const first = taskRowLayout(t, TASK_COLUMN_WIDTH_PX, 'flat', false, TODAY);
-    expect(taskRowLayout(t, TASK_COLUMN_WIDTH_PX, 'flat', false, '2026-10-05')).not.toBe(first);
-    expect(taskRowLayout(t, TASK_COLUMN_WIDTH_PX, 'flat', true, TODAY)).not.toBe(first);
-    expect(taskRowLayout(t, 400, 'flat', false, TODAY)).not.toBe(first);
+    const first = taskRowLayout(t, TASK_COLUMN_WIDTH_PX, 'flat', TODAY);
+    expect(taskRowLayout(t, TASK_COLUMN_WIDTH_PX, 'flat', '2026-10-05')).not.toBe(first);
+    expect(taskRowLayout(t, 400, 'flat', TODAY)).not.toBe(first);
   });
   it('U3: the same object with changed text computes again', () => {
     const t = task('Book train #next');
-    const first = taskRowLayout(t, TASK_COLUMN_WIDTH_PX, 'flat', false, TODAY);
+    const first = taskRowLayout(t, TASK_COLUMN_WIDTH_PX, 'flat', TODAY);
     t.text = `${LONG} #next`;
-    const second = taskRowLayout(t, TASK_COLUMN_WIDTH_PX, 'flat', false, TODAY);
+    const second = taskRowLayout(t, TASK_COLUMN_WIDTH_PX, 'flat', TODAY);
     expect(second).not.toBe(first);
     expect(second.lines).toBe(2);
   });

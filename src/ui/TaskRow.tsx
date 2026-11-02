@@ -34,9 +34,7 @@
  * Tappable inline tags (technical-design-context-tags.md §7): the title's
  * `#tags` go through ui/TaggableText.tsx - nested tags open the thread
  * overview with `ownerPath` as owner, and so does the `#w/f Name` label
- * (docs/dev/history/technical-design-tending-threads.md §3.7);
- * `contextTag`/`onToggleContext` (the plain-tag filter) are passed only by
- * Daily's own instances (screens/DailyView.tsx).
+ * (docs/dev/history/technical-design-tending-threads.md §3.7).
  *
  * Title and labels are ONE <Text> (docs/dev/history/technical-design-waiting-for-0.7.md
  * §3.3): what's drawn (title, then labels as nested spans) and the height a
@@ -78,13 +76,13 @@ export const TASK_ROW_CHROME_PX = 20;
 export const TASK_ROW_LINE_HEIGHT_PX = 22;
 
 /** Predicted lines for `task`'s title plus labels at `columnWidthPx` (1-2). */
-export function taskRowLines(task: Task, columnWidthPx: number, context: TaskBadgeContext, contextActive = false): number {
-  return taskRowLayout(task, columnWidthPx, context, contextActive).lines;
+export function taskRowLines(task: Task, columnWidthPx: number, context: TaskBadgeContext): number {
+  return taskRowLayout(task, columnWidthPx, context).lines;
 }
 
 /** The row's real rendered height at `columnWidthPx`, for a caller building a ui/PagedSection.tsx. */
-export function taskRowHeight(task: Task, columnWidthPx: number, context: TaskBadgeContext, contextActive = false): number {
-  return TASK_ROW_CHROME_PX + taskRowLines(task, columnWidthPx, context, contextActive) * TASK_ROW_LINE_HEIGHT_PX;
+export function taskRowHeight(task: Task, columnWidthPx: number, context: TaskBadgeContext): number {
+  return TASK_ROW_CHROME_PX + taskRowLines(task, columnWidthPx, context) * TASK_ROW_LINE_HEIGHT_PX;
 }
 
 interface Props {
@@ -103,10 +101,6 @@ interface Props {
   onOpenLinkedFile?: (linkedFile: string) => void;
   /** Only passed by callers that support starting a link from this row (Current tab, Inbox) - its absence (Daily, Review) is what makes the clip read-only there. */
   onArmLink?: () => void;
-  /** The active Daily context filter tag, if any - a matching tag segment renders filled/selected. Only meaningful together with onToggleContext (see the module doc comment); pass null (not omit) when Daily's context is off but rows should still render tags as tappable-but-unselected. */
-  contextTag?: string | null;
-  /** Set only by Daily's own instances - present, every context tag in this row's text becomes its own tap target that calls this instead of onStartEdit; absent, tags render as plain text. */
-  onToggleContext?: (tag: string) => void;
   /** The item this row's todo lives in (the Inbox folder for Inbox rows): owner of the thread overview its nested tags and `#w/f Name` label open. */
   ownerPath?: string | null;
   context: TaskBadgeContext;
@@ -135,8 +129,6 @@ export default function TaskRow({
   linkedFile,
   onOpenLinkedFile,
   onArmLink,
-  contextTag,
-  onToggleContext,
   ownerPath,
   context,
   height,
@@ -147,14 +139,7 @@ export default function TaskRow({
 }: Props): React.JSX.Element {
   perfCount('row:task');
   usePerfRender('TaskRow');
-  // Whether this row is showing because of an active Daily context filter
-  // (technical-design-context-tags.md §6) - derived from contextTag rather
-  // than a separate prop, since the two always agree (DailyView always
-  // passes contextTag alongside onToggleContext - null while its own
-  // context is off, a tag string while active). Decides the `#someday`
-  // label and, in step, which flow tag the title loses.
-  const contextActive = contextTag != null;
-  const layout = taskRowLayout(task, columnWidthPx, context, contextActive);
+  const layout = taskRowLayout(task, columnWidthPx, context);
   return (
     <View style={styles.wrap}>
       <View
@@ -179,7 +164,7 @@ export default function TaskRow({
             <Text
               style={[styles.rowText, {color: textColor}, task.done && styles.rowTextDone]}
               numberOfLines={numberOfLines ?? layout.lines}>
-              {renderTaggableText(layout.title, {contextTag, onToggleContext, ownerPath})}
+              {renderTaggableText(layout.title, ownerPath)}
               <TaskLabels
                 labels={layout.labels}
                 onOpenWaitingFor={

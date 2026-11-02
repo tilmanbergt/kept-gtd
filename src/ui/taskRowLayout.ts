@@ -84,26 +84,25 @@ export function taskRowLayout(
   task: Task,
   columnWidthPx: number,
   context: TaskLabelContext,
-  contextActive = false,
   today: string = todayIso(),
 ): TaskRowLayout {
-  const key = `${columnWidthPx}|${context}|${contextActive}|${today}|${task.dueDate ?? ''}|${task.text}`;
+  const key = `${columnWidthPx}|${context}|${today}|${task.dueDate ?? ''}|${task.text}`;
   const known = layoutCache.get(task);
   if (known && known.key === key) {
     perfCount('calc:taskRowLayoutHit');
     return known.layout;
   }
   perfCount('calc:taskRowLayout');
-  const layout = computeTaskRowLayout(task, columnWidthPx, context, contextActive, today);
+  const layout = computeTaskRowLayout(task, columnWidthPx, context, today);
   layoutCache.set(task, {key, layout});
   return layout;
 }
 
-function computeTaskRowLayout(task: Task, columnWidthPx: number, context: TaskLabelContext, contextActive: boolean, today: string): TaskRowLayout {
-  const labels = taskLabels(task, context, today, contextActive);
+function computeTaskRowLayout(task: Task, columnWidthPx: number, context: TaskLabelContext, today: string): TaskRowLayout {
+  const labels = taskLabels(task, context, today);
   const suffix = labelSuffix(labels);
   const widthPx = taskTextWidthPx(columnWidthPx);
-  const title = fitTitleToLines(displayTaskText(task, context, contextActive), suffix, widthPx, TASK_ROW_MAX_LINES);
+  const title = fitTitleToLines(displayTaskText(task, context), suffix, widthPx, TASK_ROW_MAX_LINES);
   const lines = Math.min(TASK_ROW_MAX_LINES, linesFor(title + suffix, widthPx));
   return {title, labels, lines};
 }

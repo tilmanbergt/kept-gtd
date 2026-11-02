@@ -1,6 +1,6 @@
 /**
  * The text labels a todo row shows after its title - `#next`, `#now`,
- * `#w/f Meier`, `#someday`, `#due 5.10.` (docs/dev/technical-design-waiting-
+ * `#w/f Meier`, `#due 5.10.` (docs/dev/technical-design-waiting-
  * for-0.7.md §3.2). Pure, no React Native - one definition every todo row
  * (ui/TaskRow.tsx) reads, so what a label says never drifts between Daily,
  * Inbox, Current and Review.
@@ -23,7 +23,7 @@ import {Task} from './types';
 
 export type TaskLabelContext = 'flat' | 'grouped';
 
-export type TaskLabelKind = 'next' | 'waiting' | 'someday' | 'due' | 'overdue';
+export type TaskLabelKind = 'next' | 'waiting' | 'due' | 'overdue';
 
 export interface TaskLabel {
   kind: TaskLabelKind;
@@ -40,17 +40,12 @@ function waitingLabel(task: Task): string {
   return short ? `#w/f ${short}` : '#w/f';
 }
 
-/**
- * The labels for `task`, flow state first, then due date. `contextActive` is
- * true only when Daily's tag filter produced the list - the one way a
- * Someday todo reaches a flat list.
- */
-export function taskLabels(task: Task, context: TaskLabelContext, today: string, contextActive = false): TaskLabel[] {
+/** The labels for `task`, flow state first, then due date. */
+export function taskLabels(task: Task, context: TaskLabelContext, today: string): TaskLabel[] {
   const labels: TaskLabel[] = [];
   if (context === 'flat') {
     if (task.flowState === 'next') labels.push({kind: 'next', text: '#next'});
     if (task.flowState === 'waiting-for') labels.push({kind: 'waiting', text: waitingLabel(task)});
-    if (task.flowState === 'someday' && contextActive) labels.push({kind: 'someday', text: '#someday'});
   } else if (task.flowState === 'waiting-for' && task.waitingOn) {
     labels.push({kind: 'waiting', text: waitingLabel(task)});
   }
@@ -69,15 +64,12 @@ export function taskLabels(task: Task, context: TaskLabelContext, today: string,
  * Whether `task`'s flow state is already shown by a label or by its section
  * heading - then its tag is left out of the title. Mirrors `taskLabels`: in
  * a grouped list the heading always shows it; in a flat list Next and
- * Waiting For always get a label, Someday only under an active tag filter,
- * Maybe never (it doesn't reach a flat list).
+ * Waiting For always get a label, Someday and Maybe never.
  */
-export function isFlowStateConveyed(task: Task, context: TaskLabelContext, contextActive = false): boolean {
+export function isFlowStateConveyed(task: Task, context: TaskLabelContext): boolean {
   if (!task.flowState) return false;
   if (context === 'grouped') return true;
-  if (task.flowState === 'next' || task.flowState === 'waiting-for') return true;
-  if (task.flowState === 'someday' && contextActive) return true;
-  return false;
+  return task.flowState === 'next' || task.flowState === 'waiting-for';
 }
 
 /**
@@ -85,11 +77,11 @@ export function isFlowStateConveyed(task: Task, context: TaskLabelContext, conte
  * tag always (its label always shows), the flow-state tag when conveyed -
  * for Next also a retired `#now`, which reads as `#next`.
  */
-export function displayTaskText(task: Task, context: TaskLabelContext, contextActive = false): string {
+export function displayTaskText(task: Task, context: TaskLabelContext): string {
   const withoutDue = task.dueDate ? setDueInLine(task.text, null) : task.text;
-  const withoutFlowState = isFlowStateConveyed(task, context, contextActive)
+  const withoutFlowState = isFlowStateConveyed(task, context)
     ? setFlowStateTag(withoutDue, null)
     : withoutDue;
-  const nextConveyed = task.flowState === 'next' && isFlowStateConveyed(task, context, contextActive);
+  const nextConveyed = task.flowState === 'next' && isFlowStateConveyed(task, context);
   return nextConveyed ? withoutNow(withoutFlowState) : withoutFlowState;
 }
