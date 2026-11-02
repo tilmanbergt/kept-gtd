@@ -6,7 +6,7 @@ import {COLORS, FONT} from '../../ui/theme';
 const GMAIL_BODY_MIN_PX = 150;
 
 export const styles = StyleSheet.create({
-  // See renderWeekAhead's own comment - [[feature_pagination_fixed_height]].
+  // The Week ahead step fills its column (docs/dev/history/technical-design-pagination-fixed-height.md).
   weekAheadRoot: {
     flex: 1,
   },

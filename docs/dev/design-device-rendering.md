@@ -167,12 +167,9 @@ Lists are paged **by height, not by a fixed row count.**
   under 50 dp is logged as suspicious (usually a greedy sibling above it). Stacked sections
   share a column by flex weight, e.g. Project panel Todos : Meetings = 4 : 3 and Inbox Tasks :
   Meetings = 8 : 6 (`docs/dev/history/technical-design-flex-weight-stacking.md`).
-- **Explicit `viewportHeight`.** A few callers still pass a fixed height:
-  - `screens/ItemsList.tsx`, Areas tab, right column "On Hold": `FULL_VIEWPORT_PX` ≈ 1700, built
-    from the 1872 px panel height. That is larger than the real column (about 1150 dp, see §6),
-    so rows past the visible box can be cut off.
-- **`PAGE_SIZE`** in `ui/pagination.ts` still lists per-list row counts; they are not used for
-  paging.
+- **Explicit `viewportHeight`.** A few lists share a column with a part that takes the rest and
+  pass a fixed height: the Ahead list of the thread and loop overviews (`AHEAD_VIEWPORT_DP`, 480 dp)
+  and Engage's owner and option lists (`ENGAGE_LIST_VIEWPORT`). Everything else measures itself.
 
 When a paginated list changes, check it on the device with realistic data: the last row should
 end close to the bottom of its box, and no row should be cut off.

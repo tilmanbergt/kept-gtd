@@ -1668,6 +1668,9 @@ Test: `__tests__/scenarios/review.test.tsx` · design: `docs/dev/history/technic
 - **Then** the hub lists its steps with counts: the week's schedule (focus block included), the Inbox's two todos and its meeting; no focus steps
 - **When** I open the step "Inbox to zero"
 - **Then** it shows "Call the plumber"
+- **And** every step opens with its title, one after the other, up to the end page
+- **When** Kept is drawn at Nomad portrait size and I open Review again
+- **Then** every step opens there too
 - **And** no error was logged
 
 Test: `__tests__/scenarios/smoke/review.test.tsx`

@@ -1206,10 +1206,10 @@ carries meaning: weight, underline, borders and icons (`ui/icons.tsx`, SVG) do.
 `‹`/`›` only when there is somewhere to go, a `+N` hidden count, an optional `subHeader`) and
 measures its own viewport;
 `ui/pagination.ts`'s `usePagedByHeight` fills a page greedily by each row's real height, keeps the
-current page across data changes, and supports `resetKey` and `jumpTo`. `PAGE_SIZE` anchors are
-tuned on the device. Sizes and the element budget: `design-device-rendering.md`.
+current page across data changes, and supports `resetKey` and `jumpTo`. Sizes and the element
+budget: `design-device-rendering.md`.
 
-**Central status slot** (`ui/status/`). One 36 px strip, always reserved, under the TabBar and at
+**Central status slot** (`ui/status/`). One strip (32 dp, 30 on a short screen), always reserved, under the TabBar and at
 the top of capture and Engage (`StatusFrame`). Publishers use `useStatus(id, msg)`,
 `useErrorStatus(name, error, onDismiss)` or `useStatusApi()`; kinds by priority confirm > modal >
 error > warning > success > info; one message shows, `‹ n/m ›` pages through the rest.

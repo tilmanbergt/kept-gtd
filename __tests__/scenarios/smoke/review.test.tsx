@@ -1,9 +1,12 @@
-import {describeScreen, expectShows, openApp, readTexts, tap, tapTab} from '../../../test-helpers/scenario/app';
+import {act} from '@testing-library/react-native';
+import {setScreenSimulation} from '../../../src/ui/screenSimStore';
+import {describeScreen, expectShows, openApp, readTexts, settle, shows, tap, tapTab} from '../../../test-helpers/scenario/app';
 import {loggedErrors} from '../../../test-helpers/scenario/files';
 import {and, given, scenario, then, when} from '../../../test-helpers/scenario/scenario';
 import {putSmokeSpace, smokeClock} from '../../../test-helpers/scenario/smokeSpace';
 
-// Smoke scenario 8 (docs/dev/history/technical-design-test-tiers.md §3.4), against docs/user/review.md.
+// Smoke scenario 8 (docs/dev/history/technical-design-test-tiers.md §3.4), against docs/user/review.md;
+// every step renders, also at Nomad size (docs/dev/history/technical-design-launch-ready.md §7 L7).
 const DESIGN = 'technical-design-test-tiers.md';
 
 afterEach(() => jest.useRealTimers());
@@ -33,5 +36,33 @@ scenario('The Review hub lists its steps with counts, and the Inbox step shows t
   });
   when('I open the step "Inbox to zero"', () => tap('Inbox to zero'));
   then('it shows "Call the plumber"', () => expectShows(/^Call the plumber/));
-  and('no error was logged', () => expect(loggedErrors()).toEqual([]));
+  and('every step opens with its title, one after the other, up to the end page', () => walkAllSteps());
+  when('Kept is drawn at Nomad portrait size and I open Review again', async () => {
+    await act(async () => setScreenSimulation('nomad-portrait'));
+    await settle();
+    await tapTab('Review');
+  });
+  then('every step opens there too', () => walkAllSteps());
+  and('no error was logged', async () => {
+    await act(async () => setScreenSimulation(null));
+    expect(loggedErrors()).toEqual([]);
+  });
 });
+
+/** From the hub (or a step), opens the first step and skips through all of them to the end page. */
+async function walkAllSteps(): Promise<void> {
+  if (shows('Overview')) await tap('Overview');
+  await tap('Week ahead');
+  const titles: string[] = [];
+  while (!shows('That was the last step.')) {
+    const title = readTexts().find(t => /^Step \d+ of \d+ — /.test(t));
+    if (!title) throw new Error(`no step title; the screen shows: ${describeScreen()}`);
+    if (titles.includes(title)) throw new Error(`step "${title}" came twice`);
+    titles.push(title);
+    await tap('Skip ›');
+  }
+  const total = Number(/of (\d+)/.exec(titles[0])?.[1]);
+  expect(titles).toHaveLength(total);
+  expect(total).toBeGreaterThanOrEqual(10);
+  expect(titles[0]).toMatch(/— Week ahead$/);
+}

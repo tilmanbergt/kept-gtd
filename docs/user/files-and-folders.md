@@ -107,7 +107,7 @@ From the Supernote to Obsidian: sync the Supernote, then the plugin.
 ### Settings for the Tasks plugin
 
 - Set **Task Format** to **Dataview**. Otherwise Tasks ignores Kept's fields and writes its own emoji format.
-- Optionally switch on the Tasks settings that set a created date on new tasks and a done date when you tick a task. They write `[created:: …]` and `[completion:: …]`, the same fields Kept writes.
+- **Set done date on every completed task** is on by default; optionally also switch on **Set created date on every added task**. With the Dataview format they write `[completion:: …]` and `[created:: …]`, the same fields Kept writes. Restart Obsidian after changing them.
 
 ### Writing by hand
 

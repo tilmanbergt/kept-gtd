@@ -118,8 +118,8 @@ import MeetingsSection from './projectData/MeetingsSection';
 // Flex weights (docs/dev/history/technical-design-flex-weight-stacking.md §3.3) -
 // TodosSection and MeetingsSection are each the sole occupant of their own
 // weighted `<View style={{flex: weight}}>` box inside `styles.stackedColumn`
-// below, and self-measure into it (no `viewportHeight` props). 4:3 is the
-// ratio of `PAGE_SIZE.projectTodos`/`projectMeetings` (8:6).
+// below, and self-measure into it (no `viewportHeight` props). Todos is
+// usually the longer list, so it gets the bigger share.
 const TODOS_WEIGHT = 4;
 const MEETINGS_WEIGHT = 3;
 

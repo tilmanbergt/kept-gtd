@@ -108,7 +108,7 @@ export async function fileExists(path: string): Promise<boolean> {
  * `defaultResourceFolder`, which names a Resources subfolder, not a file) -
  * lists the parent and looks for a matching entry with isFolder true instead
  * of false. Used by domain/integrityCheck.ts's defaultResourceFolderMissing
- * check ([[feature_integrity_check]]).
+ * check (docs/dev/history/technical-design-integrity-check.md).
  */
 export async function folderExists(path: string): Promise<boolean> {
   const lastSlash = path.lastIndexOf('/');

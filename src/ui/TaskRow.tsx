@@ -284,7 +284,7 @@ const styles = StyleSheet.create({
     // Android's default `includeFontPadding` reserves space above cap-height
     // without a matching reservation below the baseline, so a fixed-height,
     // top-aligned row (this one) would clip descenders ("g"/"y") at its own
-    // bottom edge ([[feature_pagination_fixed_height]]; same on
+    // bottom edge (docs/dev/history/technical-design-pagination-fixed-height.md; same on
     // screens/ItemsList.tsx's row Text).
     includeFontPadding: false,
   },
