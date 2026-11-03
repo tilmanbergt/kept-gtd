@@ -50,11 +50,11 @@ export async function settle(rounds = 8): Promise<void> {
   }
 }
 
-/** Stores the settings the app will load; unset fields are the defaults. The What's-new notice and the one-time "Focus is retired" line are acknowledged. */
+/** Stores the settings the app will load; unset fields are the defaults. The What's-new notice is acknowledged. */
 export async function storeSettings(patch: Partial<GtdParaSettings> = {}): Promise<void> {
   await AsyncStorage.setItem(
     SETTINGS_KEY,
-    JSON.stringify({...DEFAULT_SETTINGS, lastSeenVersion: BUILD_INFO.version, focusRetiredNoticeSeen: true, ...patch}),
+    JSON.stringify({...DEFAULT_SETTINGS, lastSeenVersion: BUILD_INFO.version, ...patch}),
   );
 }
 

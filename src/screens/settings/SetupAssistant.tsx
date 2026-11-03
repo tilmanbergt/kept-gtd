@@ -1,6 +1,7 @@
 /**
  * The setup assistant (requirements S1-S3, docs/dev/history/technical-design-easy-start.md §5.3):
- * four steps - Folders, Notes, Features, Look around first? - and Finish, drawn
+ * five steps - Folders, Notes, Features, Updates (docs/dev/history/technical-design-in-app-updates.md
+ * §6.4), Look around first? - and Finish, drawn
  * in Settings in place of its tabs. Each step has ? Help (its help page) and a
  * line saying where to change it later; Back, Next and Skip are always on
  * screen. Finish lists exactly what it creates and saves; nothing happens before
@@ -22,6 +23,7 @@ import {
   suggestFolders,
 } from '../../domain/setupAssistant';
 import {GtdParaSettings} from '../../domain/settings';
+import {UPDATE_DISCLAIMER} from '../../domain/updateCheck';
 import {createDemoSpace} from '../../storage/demoSpace';
 import {BaseScan, finishSetup, scanBaseFolder, skipSetup} from '../../storage/setupAssistant';
 import {displayPath} from '../../supernote/devicePaths';
@@ -36,16 +38,17 @@ import CheckToggle from './CheckToggle';
 import {styles as settingsStyles} from './settingsStyles';
 
 const ROLE_LABEL: Record<FolderRole, string> = {projects: 'Projects folder', areas: 'Areas folder', resources: 'Resources folder', archive: 'Archive folder'};
-const STEP_COUNT = 4;
+const STEP_COUNT = 5;
 /** The help page (and heading) behind each step's ? Help, Finish last. */
 const STEP_HELP: Array<[string, string | null]> = [
   ['getting-started', 'your-folders'],
   ['note-setups', 'the-default'],
   ['features', null],
+  ['settings', 'updates'],
   ['profiles-and-demo', 'the-demo-space'],
   ['settings', 'setup-assistant'],
 ];
-const CHANGE_LATER = ['Settings → Folders', 'Settings → Note setups → Default', 'Settings → Features', 'Settings → Advanced'];
+const CHANGE_LATER = ['Settings → Data', 'Settings → Note setups → Default', 'Settings → Features', 'Settings → About', 'Settings → Data'];
 const SCAN_DELAY_MS = 500;
 const FINISHED_STATUS_ID = 'SetupAssistant.finished';
 
@@ -212,18 +215,28 @@ export default function SetupAssistant({current, onDone, textColor, borderColor,
         <>
           <Text style={text}>Start simple or with everything switched on?</Text>
           {option('Simple', choices.features === 'simple', () => setChoices(c => ({...c, features: 'simple'})), 'Project close-out, Google Calendar, Gmail and Notebook contents off.')}
-          {option('Everything', choices.features === 'everything', () => setChoices(c => ({...c, features: 'everything'})), 'All on. Google Calendar and Gmail still need their addresses in Settings.')}
+          {option('Everything', choices.features === 'everything', () => setChoices(c => ({...c, features: 'everything'})), 'All on. Google Calendar and Gmail still need their addresses in Settings → Features.')}
         </>
       );
     }
     if (step === 3) {
       return (
         <>
+          <Text style={text}>Kept can tell you when a new version is on GitHub and save it to MyStyle/kept-gtd, ready to install from the Supernote's plugin settings.</Text>
+          {option('Check for new versions on GitHub once a day', choices.updates === 'daily', () => setChoices(c => ({...c, updates: 'daily'})), 'When Kept opens, at most once a day. Kept asks for internet access once, on Finish.')}
+          {option('Only when I tap Check now', choices.updates === 'manual', () => setChoices(c => ({...c, updates: 'manual'})), 'In Settings → About. Nothing goes over the network until then.')}
+          <Text style={[styles.hint, {color: textColor}]}>{UPDATE_DISCLAIMER}</Text>
+        </>
+      );
+    }
+    if (step === 4) {
+      return (
+        <>
           <Text style={text}>Look around first? The demo space is a small made-up setup in Note/kept-gtd-demo, with its own profile "Demo". Your own folders stay untouched.</Text>
           <View style={styles.buttons}>
             <PillButton label="Create demo space" onPress={handleDemo} disabled={busy} {...pill} />
           </View>
-          <Text style={text}>To switch to it, open Settings → Advanced → Profiles and tap Switch next to Demo; switch back to Production the same way.</Text>
+          <Text style={text}>To switch to it, open Settings → Data → Profiles and tap Switch next to Demo; switch back to Production the same way.</Text>
         </>
       );
     }
@@ -236,7 +249,7 @@ export default function SetupAssistant({current, onDone, textColor, borderColor,
             : 'Kept will create no folder: they all exist.'}
         </Text>
         <Text style={text}>
-          {`And save: notes - ${choices.notes === 'notebook' ? 'one notebook per project and year' : 'own note per todo or meeting'}; features - ${choices.features === 'simple' ? 'Simple' : 'Everything'}.`}
+          {`And save: notes - ${choices.notes === 'notebook' ? 'one notebook per project and year' : 'own note per todo or meeting'}; features - ${choices.features === 'simple' ? 'Simple' : 'Everything'}; updates - ${choices.updates === 'daily' ? 'checked once a day' : 'only when you tap Check now'}.`}
         </Text>
         <Text style={text}>Nothing is moved, renamed or deleted. Afterwards Kept opens the Projects tab.</Text>
       </>

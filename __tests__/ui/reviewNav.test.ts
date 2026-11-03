@@ -17,8 +17,12 @@ describe('reviewNav', () => {
 
   it('hands a request out once', () => {
     requestReviewStep('somedayMaybe', somedayFilterOf('x', entries));
-    expect(takeReviewStepRequest()).toEqual({id: 'somedayMaybe', filter: {label: 'x', keys: ['/A#2', '/B#0']}});
+    expect(takeReviewStepRequest()).toEqual({id: 'somedayMaybe', filter: {label: 'x', keys: ['/A#2', '/B#0']}, inContext: false});
     expect(takeReviewStepRequest()).toBeNull();
     clearReviewStepFilter();
+  });
+  it('carries the wish to open narrowed to the context', () => {
+    requestReviewStep('tendingThreads', null, true);
+    expect(takeReviewStepRequest()?.inContext).toBe(true);
   });
 });

@@ -1,32 +1,31 @@
 /**
- * Settings → Contexts, right column (docs/dev/history/technical-design-time-and-place.md
- * §3.3, D20, D23): the name with Save and Delete on one row at the top; Shows
- * and Hides; one chip list at a time - Areas (an Area brings its Projects,
- * the usual case), Projects, or plain tags in use (a loop or thread tag only
- * once a context names it) - where a tap adds or removes an entry; meetings
- * outside the context dimmed or shown as usual; a preview of how many `#next`
- * todos it shows; from how much time loops and counterparts show in Given
- * time. Save and Delete write at once. Every row but the chip list keeps its
- * height, so the name and Save always fit on the screen. Everything opens
- * with only its Given time threshold.
+ * Settings → Contexts, right column (docs/dev/history/technical-design-contexts-tags.md §2.4, §8).
+ * A header on every tab: the name with Save (active only after a change) and Delete, the sentence
+ * of what the draft shows (two lines reserved at the device's font scale) and how many next todos it
+ * shows. Then General (name, meetings outside, Given time) · Show · Except. Show and Except list
+ * Areas, Projects or Tags as paged chips; a tap adds or removes an entry;
+ * "Only inside the selected areas and projects" while Show names both parts. Everything opens with
+ * only its Given time threshold.
  */
 import React, {useEffect, useState} from 'react';
-import {Pressable, StyleSheet, Text, View} from 'react-native';
-import {ContextDef, ContextEntry, nextCountOf, sameEntry} from '../../../domain/contexts';
-import {todayIso} from '../../../domain/meetingTime';
+import {PixelRatio, Pressable, StyleSheet, Text, View} from 'react-native';
+import {ContextDef, ContextEntry, ContextKinds, contextSentence, nextCountOf, sameEntry} from '../../../domain/contexts';
 import {isContextTag} from '../../../domain/flowState';
 import {CachedItem} from '../../../storage/dataCache';
 import {getRecentTags} from '../../../storage/tagUsage';
 import ClipboardTextInput from '../../../ui/ClipboardTextInput';
 import MiniTabs, {MiniTabDef} from '../../../ui/MiniTabs';
-import TagChipGrid from '../../../ui/TagChipGrid';
+import PagedChipGrid, {ChipPager, useChipPages} from '../../../ui/PagedChipGrid';
+import {FONT} from '../../../ui/theme';
 import {useCachedItems} from '../../../ui/useCachedItems';
 import {errorMessage} from '../../../utils/errorMessage';
 import {logWarn} from '../../../utils/log';
 import {styles} from '../settingsStyles';
+import CheckToggle from '../CheckToggle';
 import {setupStyles} from '../noteSetups/noteSetupsStyles';
+import NewTagRow from './NewTagRow';
 import GivenTimeThreshold from './GivenTimeThreshold';
-import {ContextListSide, ContextsDraft} from './useContextsDraft';
+import {ContextEditorTab, ContextsDraft} from './useContextsDraft';
 
 /** Context tags of open todos and meetings, most used first: what a context can name besides the recently typed tags. */
 function tagsInFiles(items: readonly CachedItem[]): string[] {
@@ -40,35 +39,31 @@ function tagsInFiles(items: readonly CachedItem[]): string[] {
     .map(([tag]) => tag);
 }
 
-const SIDES: MiniTabDef<ContextListSide>[] = [
-  {key: 'shows', label: 'Shows'},
-  {key: 'hides', label: 'Hides'},
-];
 type ChipKind = 'areas' | 'projects' | 'tags';
 const KINDS: MiniTabDef<ChipKind>[] = [
   {key: 'areas', label: 'Areas'},
   {key: 'projects', label: 'Projects'},
   {key: 'tags', label: 'Tags'},
 ];
-const KIND_HINT: Record<ChipKind, string> = {
-  areas: 'An Area brings its Projects.',
-  projects: 'Projects one by one, e.g. one without an Area.',
-  tags: 'Todos and meetings with the tag, wherever they live.',
-};
+const TAB_LABEL: Record<ContextEditorTab, string> = {general: 'General', shows: 'Show', hides: 'Except'};
 
 const OUTSIDE: MiniTabDef<ContextDef['outsideMeetings']>[] = [
   {key: 'dim', label: 'Dimmed'},
   {key: 'show', label: 'Shown as usual'},
 ];
 
+/** Two lines of the sentence at the device's font scale (FONT.small, with room for the line gap). */
+const SENTENCE_HEIGHT = 2 * Math.ceil(FONT.small * 1.35 * PixelRatio.getFontScale());
+
 interface Props {
   draft: ContextsDraft;
+  kinds: ContextKinds;
   textColor: string;
   borderColor: string;
   placeholderColor: string;
 }
 
-export default function ContextEditor({draft, textColor, borderColor, placeholderColor}: Props): React.JSX.Element | null {
+export default function ContextEditor({draft, kinds: setupKinds, textColor, borderColor, placeholderColor}: Props): React.JSX.Element | null {
   const items = useCachedItems();
   const [tags, setTags] = useState<string[]>([]);
   const [kind, setKind] = useState<ChipKind>('areas');
@@ -84,6 +79,22 @@ export default function ContextEditor({draft, textColor, borderColor, placeholde
     };
   }, []);
   const ctx = draft.draft;
+  const tab = draft.tab;
+  const side = tab === 'general' ? null : tab;
+  // The tags on this side when the tab was opened come first, and stay put while it is open.
+  const orderKey = `${ctx?.id}|${tab}|${kind}`;
+  const [opened, setOpened] = useState({key: '', tags: [] as string[]});
+  const sideTags = ctx && side ? ctx[side].flatMap(e => (e.kind === 'tag' ? [e.tag] : [])) : [];
+  if (ctx && opened.key !== orderKey) setOpened({key: orderKey, tags: sideTags});
+
+  const live = items.filter(i => !i.loadError && i.status !== 'archived');
+  const named = ctx ? [...ctx.shows, ...ctx.hides].flatMap(e => (e.kind === 'tag' ? [e.tag] : [])) : [];
+  const roots = [...setupKinds.loopKinds, ...setupKinds.threadTypes];
+  const inUse = [...tags.map(t => t.toLowerCase()), ...tagsInFiles(live)].filter(t => !t.includes('/'));
+  const tagOrder = Array.from(new Set([...opened.tags, ...named.filter(t => !roots.includes(t)), ...roots, ...inUse]));
+  const kindItems = live.filter(i => i.kind === (kind === 'areas' ? 'area' : 'project'));
+  const pages = useChipPages(kind === 'tags' ? tagOrder.length : kindItems.length, orderKey);
+
   if (!ctx && draft.everythingOpen) {
     return (
       <View style={setupStyles.page}>
@@ -96,66 +107,91 @@ export default function ContextEditor({draft, textColor, borderColor, placeholde
   if (!ctx) {
     return <Text style={[styles.label, {color: textColor}]}>Tap a context on the left to edit it, or create a new one.</Text>;
   }
-  const list = draft.side === 'shows' ? ctx.shows : ctx.hides;
-  const other = draft.side === 'shows' ? ctx.hides : ctx.shows;
+  const list = side ? ctx[side] : [];
+  const other = side === 'shows' ? ctx.hides : ctx.shows;
   const chip = (entry: ContextEntry, label: string) => ({
     key: entry.kind === 'item' ? `${entry.itemKind}:${entry.name}` : `#${entry.tag}`,
-    label: other.some(e => sameEntry(e, entry)) ? `${label} (${draft.side === 'shows' ? 'hidden' : 'shown'})` : label,
+    label: other.some(e => sameEntry(e, entry)) ? `${label} (${side === 'shows' ? 'excepted' : 'shown'})` : label,
     on: list.some(e => sameEntry(e, entry)),
     onPress: () => draft.toggle(entry),
   });
-  const live = items.filter(i => !i.loadError && i.status !== 'archived');
-  const areas = live.filter(i => i.kind === 'area').map(i => chip({kind: 'item', itemKind: 'area', name: i.name}, i.name));
-  const projects = live.filter(i => i.kind === 'project').map(i => chip({kind: 'item', itemKind: 'project', name: i.name}, i.name));
-  // Plain tags by default; a loop's or thread's tag (nested) only once the context names it.
-  const named = [...ctx.shows, ...ctx.hides].flatMap(e => (e.kind === 'tag' ? [e.tag] : []));
-  const tagSet = Array.from(new Set([...named, ...[...tags.map(t => t.toLowerCase()), ...tagsInFiles(live)].filter(t => !t.includes('/'))]));
-  const tagChips = tagSet.map(tag => chip({kind: 'tag', tag}, `#${tag}`));
-  const shown = nextCountOf(ctx, items, todayIso());
-  const all = nextCountOf(null, items, todayIso());
-
-  const chips = kind === 'areas' ? areas : kind === 'projects' ? projects : tagChips;
-  const count = (k: ChipKind) => [...ctx.shows, ...ctx.hides].filter(e => (k === 'tags' ? e.kind === 'tag' : e.kind === 'item' && e.itemKind === (k === 'areas' ? 'area' : 'project'))).length;
-  const kinds = KINDS.map(t => ({...t, label: count(t.key) > 0 ? `${t.label} ${count(t.key)}` : t.label}));
+  const rootLabel = (t: string) => (setupKinds.loopKinds.includes(t) ? `All #${t} loops` : setupKinds.threadTypes.includes(t) ? `All #${t} threads` : `#${t}`);
+  const chips =
+    kind === 'tags'
+      ? tagOrder.map(t => chip({kind: 'tag', tag: t}, rootLabel(t)))
+      : kindItems.map(i => chip({kind: 'item', itemKind: i.kind, name: i.name}, i.name));
+  const bothParts = ctx.shows.some(e => e.kind === 'item') && ctx.shows.some(e => e.kind === 'tag');
+  const count = (k: ChipKind) => list.filter(e => (k === 'tags' ? e.kind === 'tag' : e.kind === 'item' && e.itemKind === (k === 'areas' ? 'area' : 'project'))).length;
+  const kindTabs = KINDS.map(t => ({...t, label: count(t.key) > 0 ? `${t.label} ${count(t.key)}` : t.label}));
+  const tabs = (['general', 'shows', 'hides'] as const).map(key => ({
+    key,
+    label: key !== 'general' && ctx[key].length > 0 ? `${TAB_LABEL[key]} ${ctx[key].length}` : TAB_LABEL[key],
+  }));
 
   return (
     <View style={setupStyles.page}>
       <View style={local.fixed}>
-        <Text style={[styles.label, {color: textColor}]}>Name</Text>
         <View style={local.nameRow}>
-          <View style={local.nameInput}>
-            <ClipboardTextInput value={ctx.name} onChangeText={draft.setName} placeholder="e.g. Work, Home, Café" placeholderColor={placeholderColor} textColor={textColor} borderColor={borderColor} />
-          </View>
-          <Pressable style={[styles.saveButton, setupStyles.headerSave, local.save]} onPress={draft.handleSave}>
+          <Text style={[local.name, {color: textColor}]} numberOfLines={1}>
+            {ctx.name.trim() || 'New context'}
+          </Text>
+          <Pressable
+            style={[styles.saveButton, setupStyles.headerSave, local.save, !draft.changed && local.saveIdle]}
+            onPress={draft.handleSave}
+            disabled={!draft.changed}
+            accessibilityRole="button"
+            accessibilityLabel="Save"
+            accessibilityState={{disabled: !draft.changed}}>
             <Text style={styles.saveButtonText}>Save</Text>
           </Pressable>
           <Pressable onPress={draft.handleDelete} hitSlop={8}>
             <Text style={[setupStyles.headerAction, {color: textColor}]}>{draft.isNew ? 'Discard' : 'Delete'}</Text>
           </Pressable>
         </View>
-        <MiniTabs tabs={SIDES} activeKey={draft.side} onChange={draft.setSide} textColor={textColor} borderColor={borderColor} />
-        <MiniTabs tabs={kinds} activeKey={kind} onChange={setKind} textColor={textColor} borderColor={borderColor} />
-        <Text style={[styles.pathPreview, {color: textColor}]}>{KIND_HINT[kind]}</Text>
-      </View>
-      <View style={local.chips}>
-        <TagChipGrid chips={chips} maxChips={40} maxLabelChars={24} textColor={textColor} borderColor={borderColor} />
-      </View>
-      <View style={local.fixed}>
-        <Text style={[styles.label, {color: textColor}]}>Meetings outside this context</Text>
-        <MiniTabs tabs={OUTSIDE} activeKey={ctx.outsideMeetings} onChange={draft.setOutsideMeetings} textColor={textColor} borderColor={borderColor} />
-        <GivenTimeThreshold value={draft.minMinutes} onChange={draft.setMinMinutes} textColor={textColor} borderColor={borderColor} />
-        <Text style={[styles.pathPreview, {color: textColor}]}>
-          Preview: shows {shown} of {all} next todos. The Inbox always shows.
+        <Text style={[local.sentence, {color: textColor}]} numberOfLines={2}>
+          {contextSentence(ctx, setupKinds)}
         </Text>
+        <Text style={[styles.pathPreview, {color: textColor}]} numberOfLines={1}>
+          Shows {nextCountOf(ctx, items)} of {nextCountOf(null, items)} next todos
+        </Text>
+        <MiniTabs tabs={tabs} activeKey={tab} onChange={draft.setTab} textColor={textColor} borderColor={borderColor} />
       </View>
+      {side === null ? (
+        <View style={local.fixed}>
+          <Text style={[styles.label, {color: textColor}]}>Name</Text>
+          <View style={local.nameField}>
+            <ClipboardTextInput value={ctx.name} onChangeText={draft.setName} placeholder="e.g. Work, Home, Café" placeholderColor={placeholderColor} textColor={textColor} borderColor={borderColor} />
+          </View>
+          <Text style={[styles.label, {color: textColor}]}>Meetings outside this context</Text>
+          <MiniTabs tabs={OUTSIDE} activeKey={ctx.outsideMeetings} onChange={draft.setOutsideMeetings} textColor={textColor} borderColor={borderColor} />
+          <GivenTimeThreshold value={draft.minMinutes} onChange={draft.setMinMinutes} textColor={textColor} borderColor={borderColor} />
+        </View>
+      ) : (
+        <>
+          <View style={local.fixed}>
+            <MiniTabs tabs={kindTabs} activeKey={kind} onChange={setKind} trailing={<ChipPager pages={pages} textColor={textColor} />} textColor={textColor} borderColor={borderColor} />
+            {side === 'shows' && bothParts ? (
+              <CheckToggle label="Only inside the selected areas and projects" checked={!!ctx.onlyInPlaces} onPress={() => draft.setOnlyInPlaces(!ctx.onlyInPlaces)} textColor={textColor} />
+            ) : null}
+            {kind === 'tags' ? <NewTagRow onAdd={draft.addTag} textColor={textColor} borderColor={borderColor} placeholderColor={placeholderColor} /> : null}
+          </View>
+          <View style={local.chips}>
+            <PagedChipGrid chips={chips} pages={pages} textColor={textColor} borderColor={borderColor} />
+          </View>
+        </>
+      )}
     </View>
   );
 }
 
 const local = StyleSheet.create({
   fixed: {flexShrink: 0},
-  nameRow: {flexDirection: 'row', alignItems: 'center', marginBottom: 8},
-  nameInput: {flex: 1, marginRight: 12},
+  nameRow: {flexDirection: 'row', alignItems: 'center', marginBottom: 4},
+  name: {flex: 1, fontSize: FONT.large, fontWeight: '700', marginRight: 12},
   save: {marginRight: 12},
-  chips: {flex: 1, overflow: 'hidden', marginVertical: 4},
+  saveIdle: {opacity: 0.3},
+  // A row, so the field's flex: 1 fills the width; in this column it would get no height (design-device-rendering §5.3).
+  nameField: {flexDirection: 'row', marginBottom: 8},
+  chips: {flex: 1, marginTop: 4},
+  sentence: {fontSize: FONT.small, fontWeight: '600', minHeight: SENTENCE_HEIGHT},
 });

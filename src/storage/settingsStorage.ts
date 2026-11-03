@@ -189,7 +189,7 @@ export function updateReviewSteps(mutate: (steps: ReviewStepsMap) => ReviewSteps
 }
 
 /**
- * Load-modify-save of a few top-level fields (switches in Settings → About /
+ * Load-modify-save of a few top-level fields (switches in Settings → Advanced /
  * Advanced, the What's-new marker). Re-reads what is stored so unsaved
  * drafts elsewhere in Settings are never written as a side effect, and
  * shares the write chain with updateReviewSteps. Resolves to the new settings.

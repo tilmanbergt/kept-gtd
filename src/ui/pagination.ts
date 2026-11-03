@@ -7,10 +7,8 @@
  * `usePagedByHeight` (docs/dev/history/technical-design-pagination-fixed-height.md)
  * is the app's pagination hook - fits as many rows as their real, per-row
  * `rowHeight` allows into a fixed pixel `viewportHeight`, so the box's total
- * height never varies with content. `PAGE_SIZE` below is a per-list-type
- * constant; for most callers it is an anchor multiplied by a row's pixel
- * height to get that list's `viewportHeight` ("N single-line rows"), tuned
- * on the real device rather than computed from measured layout.
+ * height never varies with content. The viewport is measured
+ * (ui/PagedSection.tsx) or passed by the caller.
  *
  * Current page is preserved across data reloads (add/save/toggle-done) and
  * only clamped down if it's now past the new last page (e.g. the last item
@@ -37,66 +35,6 @@
  * render, `jumpTo` wins (its effect runs after resetKey's).
  */
 import {useEffect, useRef, useState} from 'react';
-
-/** Rows-per-page constants, tuned as a starting point (see the design doc's
- * §2) - retune once checked against the real device rather than computing
- * from measured layout. */
-export const PAGE_SIZE = {
-  /** Half-width columns: Daily's own Meetings and Tasks/Open-tasks columns. */
-  column: 10,
-  /** Full-width single-column lists that are the only list on their screen:
-   * Projects/Areas tabs, the file browser, Lasso-capture's destination
-   * picker. */
-  full: 23,
-  /** The Files pane's Browse tab specifically (ui/FileBrowserPane.tsx's
-   * `sources` root), once drilled into its Projects or Areas category listing,
-   * where `full`'s row count is too long. Its own constant, 3 less than
-   * `full`, so every other full-width list (Project Files, Resources, a
-   * Project's Areas-assignment picker, etc.) keeps `full`. */
-  browse: 20,
-  /** Weekly Review's Inbox-to-zero step: two full-width lists (Tasks,
-   * Meetings) stacked on one screen, each with its own quick-add form above
-   * it. Kept separate from the Project/Area panel's own Todos/Meetings sizes
-   * below - the two screens' available space and content density differ, and
-   * on-device tuning of one shouldn't silently move the other. */
-  stacked: 4,
-  /** Project/Area panel's Todos section. Independent of `projectMeetings`:
-   * Todos is usually the longer list and can afford more rows per page
-   * (docs/dev/history/technical-design-pagination-grayscale-proposal.md §1) - well under
-   * the column's estimated vertical slack. */
-  projectTodos: 8,
-  /** Project/Area panel's Meetings section - deliberately smaller than
-   * `projectTodos`; see that constant's note. This section is the last
-   * element in its column, so there's nothing below it to crowd (same
-   * proposal §1). */
-  projectMeetings: 6,
-  /** Inbox tab's Tasks section (technical-design-linked-files.md §1/§10.5) -
-   * Inbox stacks Tasks above Meetings, same shape as the Project/Area panel,
-   * so it uses the same values as `projectTodos`/`projectMeetings`. Kept as
-   * its own constant so on-device tuning of one doesn't silently move the
-   * other (docs/dev/history/technical-design-pagination-grayscale-proposal.md §1). */
-  inboxTasks: 8,
-  /** Inbox tab's Meetings section - see inboxTasks. Same reasoning as
-   * projectMeetings (last element in its column). */
-  inboxMeetings: 6,
-  /** Google Calendar mini-tab, per screen - the same
-   * ui/GoogleCalendarPanel.tsx component is reused across screens whose
-   * available space/density differ (same reasoning as projectTodos vs.
-   * projectMeetings above), so its page size is a prop. */
-  googleCalendarProject: 9,
-  googleCalendarDaily: 20,
-  googleCalendarReview: 18,
-  /** Inbox's Google mini-tab - it sits in the bottom (Meetings) half of
-   * Inbox's stacked right pane, so it uses the same value as
-   * googleCalendarProject, the closest "Google panel inside a
-   * partial-height stacked section" case. */
-  googleCalendarInbox: 9,
-  /** Week view's Google mini-tab (docs/dev/history/technical-design-weekly-view.md §7) -
-   * independent of `googleCalendarDaily`/`googleCalendarReview`/etc, same
-   * "on-device tuning of one shouldn't silently move another" rule those
-   * follow. */
-  googleCalendarWeekly: 14,
-} as const;
 
 /** A `jumpTo` value, used by `usePagedByHeight` below - see the module doc
  * comment. `key` is what's watched for changes (only a *change* triggers

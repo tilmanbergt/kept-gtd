@@ -110,6 +110,16 @@ export function monthTitle(date: Date): string {
   return `${MONTH_NAMES[date.getMonth()]} ${date.getFullYear()}`;
 }
 
+/** "Oct 26": the month's first three letters and the two-digit year (Month's tab row). */
+export function shortMonthTitle(date: Date): string {
+  return `${MONTH_NAMES[date.getMonth()].slice(0, 3)} ${String(date.getFullYear()).slice(2)}`;
+}
+
+/** "Week 44 · 26": an ISO week and the two-digit year it belongs to (Week's tab row). */
+export function shortWeekTitle(week: number, year: number): string {
+  return `Week ${week} · ${String(year).slice(2)}`;
+}
+
 /** The month a week "belongs to" - the month containing its Thursday (the same ISO rule that decides a week's year). `weekStart` is the week's Monday, YYYY-MM-DD. */
 export function monthOfWeek(weekStart: string): string {
   const [y, m, d] = weekStart.split('-').map(Number);

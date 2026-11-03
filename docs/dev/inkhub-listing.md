@@ -3,41 +3,41 @@
 Ready-to-use values for InkHub → **Upload Item** on the Supernote. The InkHub build is always the
 same `.snplg` as the GitHub release. Design and decisions: `technical-design-inkhub-submission.md`.
 
-Status: **draft** - fill in the version once the release exists. The field order below matches
-the form on the device.
+The field order below matches the form on the device.
 
 ## Title*
 
 Kept GTD
 
+The grid cuts titles after about 20 characters, so the tagline goes into the description.
+
 ## Description (Keyboard tab)
 
-Plain text, no markdown (the field doesn't render it). Keep it this short - the maximum length is
-unknown.
+Plain text, no markdown (the field doesn't render it). "•" bullets, "→" arrows and line breaks show
+as typed. Keep it this short - the maximum length is unknown.
 
 ```
-GTD for the Supernote: todos, meetings and next actions, joined to the notes you write.
-Your promises, kept · your todos, kept safe · your files, kept yours.
-Formerly gtdpara.
+Kept GTD — for those who write, where they write.
+GTD and PARA for the Supernote: todos, meetings and next actions, joined to the notes you write.
 
-A calm GTD + PARA workspace for the Supernote. Every Project and Area is a folder in Note; its todos and meetings live in a small plain-text file inside it. You can read and edit everything without the plugin - no lock-in, no internal database.
+• Engage: your next actions and the meeting's context, right on the note page you're working in
+• Notes at the center: a home notebook per project and area, notes for todos and meetings set up your way, PDFs and files linked from anywhere on the device
+• Capture from your handwriting: lasso a few words to make a todo, or mark them now and sort them in the review
+• Weekly Review and planning: a guided review, Daily, Week and Month views, and contexts like Work or Home
+• Your data stays yours: plain text files next to your notes, readable in Obsidian, no database, no lock-in
+• Easy start: a setup assistant, a demo space to try things out, and built-in help (? in the tab bar)
+• Optional, off by default: your Google Calendar next to your meetings, and Gmail as a review step
 
-- Threads: what you agreed, owe and wait for per person or meeting series, tended in the Weekly Review
-- Daily, Week and Month views
-- Focus mode (#now): only what you are doing right now
-- Quick Add for todos, meetings and notes; lasso capture
-- Projects & Areas with status, linked notes and files
-- Weekly Review, one step at a time
-- Note templates with pre-filled context
-- Project close-out with an optional PDF, then archive
-- Built-in help (? in the tab bar)
-- Experimental, off by default: Google Calendar and Gmail
+Made and used daily on the A5 X in portrait. Manta, Nomad and landscape are checked in simulation, not yet in daily use. Beta.
 
-Permissions: file read/write for your PARA folders and EXPORT/kept-gtd. File delete only after you confirm it, and the prompt names what will be deleted (e.g. an empty folder left after archiving). Internet only for the optional Calendar/Gmail integrations, when you tap Load. No telemetry.
+Permissions: files only in your PARA folders and EXPORT/kept-gtd, and MyStyle/kept-gtd for an update you download. Kept deletes only after you confirm, and it names what will go. Internet only for Calendar and Gmail when you tap Load, and for the update check on GitHub when you tap Check now (or once a day, if you switch that on). No telemetry.
 
-Hobby project, open source (MIT). Docs, issues, privacy and notes for reviewers:
+Free and open source (MIT). Help, privacy and issues:
 github.com/tilmanbergt/kept-gtd
 ```
+
+The device line follows the latest device results; the permissions paragraph must match the
+permissions the manifest declares (InkHub lists those on the item page by itself).
 
 ## Category*
 
@@ -60,19 +60,18 @@ Supernote first, e.g. to `EXPORT/kept-gtd/inkhub/`.
 
 ## Thumbnail (up to 6)
 
-From `docs/user/images/` (demo space, A5 X portrait), in this order:
+The first thumbnail is the tile in InkHub's grid, so it is a designed poster; the other five are
+screenshots from the demo space on the released build (A5 X portrait, 1404×1872), showing the
+Kept GTD name and icons:
 
-1. `20260930_Daily.png`
-2. `20260930_Week.png`
-3. `20260930_Current Project.png`
-4. `20260930_Inbox Quick Add.png`
-5. `20260930_Review.png`
-6. `20260930_Help Settings.png`
+1. Poster (`docs/user/images/inkhub-poster.png`, made from `docs/dev/inkhub-poster/`)
+2. Daily
+3. Week
+4. A project page
+5. Engage on a note page
+6. Review
 
-To do for Tilman with the first Kept GTD release: new thumbnails that show the new name and icons
-(at least About with the wordmark, and a screen with the sidebar).
-
-Refresh any screenshot whose screen changed noticeably (see backlog: Settings Folders). Copy them to
+Quick Add is shown inside the Daily or project screenshot. Copy the images to
 `EXPORT/kept-gtd/inkhub/` on the device for the upload.
 
 ## Open Source
@@ -89,16 +88,15 @@ from the description via the repository. Summary:
   sn-plugin-lib has no API for these), `Pdf` (close-out PDF), `GmailImap` (IMAP, only when Gmail
   is switched on), `TextboxMetrics` (text measurement). All of it runs under the host's
   permissions; each permission is requested right before use.
-- Deletes: temp files only in the plugin's private folder; in shared storage, only empty folders
-  after a move, and only after a confirmation that names them.
+- Deletes: temp files and lasso mark pictures only in the plugin's private folders; in shared
+  storage, only empty folders after a move and what the user checks in Remove Kept's data (Kept's
+  own export and demo folders, its data files by name), always after a confirmation that names them.
 - Every move, overwrite and delete is announced to the user.
-- One-time data move for users of builds before 0.2.0 (never public): `Note/Inbox.txt` with its
-  `Todos`/`Meetings` folders → `Note/2 Areas/0 Inbox`. Nothing is deleted, and the user is told
-  what moved. It doesn't happen on a fresh install.
-- Quick test without own data: Settings → Advanced → Profiles → demo space.
+- Quick test without own data: Settings → Data → Profiles → demo space.
 - Credentials for the optional integrations are stored on the device only, never in files or logs.
 
 ## Updating the listing
 
 See `RELEASING.md` §7: new `.snplg`, description if features changed, thumbnails if screens
-changed.
+changed. A new upload starts a new review, and the listed version is offline until it passes, so
+fixes are collected into one upload rather than sent one by one.

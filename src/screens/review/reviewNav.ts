@@ -12,6 +12,8 @@
  *   of the todos to list, taken at request time (the frozen-list posture; a
  *   todo edited elsewhere in between simply drops out). Taking the request
  *   makes it the step's filter until the step is left or "Show all" clears it.
+ * - `inContext` opens Review narrowed to the active context (the Tend line on
+ *   Week and Month).
  */
 import {useSyncExternalStore} from 'react';
 import {ReviewStepId} from '../../domain/reviewSteps';
@@ -26,6 +28,7 @@ export interface ReviewStepFilter {
 export interface ReviewStepRequest {
   id: ReviewStepId;
   filter: ReviewStepFilter | null;
+  inContext?: boolean;
 }
 
 interface NavState {
@@ -59,10 +62,10 @@ export function somedayFilterOf(label: string, entries: ReadonlyArray<{item: {pa
   return {label, keys: entries.map(reviewEntryKey)};
 }
 
-/** Asks for step `id`, optionally filtered. */
-export function requestReviewStep(id: ReviewStepId, filter: ReviewStepFilter | null): void {
+/** Asks for step `id`, optionally filtered, optionally narrowed to the active context. */
+export function requestReviewStep(id: ReviewStepId, filter: ReviewStepFilter | null, inContext = false): void {
   nonce += 1;
-  set({...state, pending: {id, filter, nonce}});
+  set({...state, pending: {id, filter, inContext, nonce}});
 }
 
 /** The request waiting to be taken, or null; consumed by `takeReviewStepRequest`. */
@@ -70,7 +73,7 @@ export function takeReviewStepRequest(): ReviewStepRequest | null {
   const pending = state.pending;
   if (!pending) return null;
   set({pending: null, active: {id: pending.id, filter: pending.filter}});
-  return {id: pending.id, filter: pending.filter};
+  return {id: pending.id, filter: pending.filter, inContext: pending.inContext};
 }
 
 /** Clears the step filter (leaving the step, "Show all"). */

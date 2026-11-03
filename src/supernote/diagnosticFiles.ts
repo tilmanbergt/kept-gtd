@@ -54,11 +54,11 @@ export async function writeIntegrityCheckReport(content: string): Promise<string
  * Appends to a file in the debug folder, rotating at `maxBytes` (native
  * side). Used only by utils/logSink.ts's optional file sink, via App.tsx's
  * injection - raw native calls, never log(), so writing the log can't log
- * itself. Throws when the native method is missing (older build).
+ * itself. Throws without the native module.
  */
 export async function appendDebugLogFile(fileName: string, content: string, maxBytes: number): Promise<number> {
   const GtdParaFile = nativeFileModule();
-  if (!GtdParaFile?.appendTextFile) throw new Error('appendTextFile is not available on this build.');
+  if (!GtdParaFile) throw new Error('GtdParaFile native module is not available on this build.');
   // A refusal throws, and utils/logSink.ts then stops file logging for the session.
   if (!(await ensureFileWritePermission())) throw new Error('File write permission was not granted.');
   // silent: forgetGrantsAndRethrow rethrows, unlogged (the caller reports it)

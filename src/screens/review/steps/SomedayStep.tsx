@@ -20,7 +20,6 @@ import {Task} from '../../../domain/types';
 import {setCachedInbox} from '../../../storage/dataCache';
 import {mutateEntryTasks} from '../../../storage/itemMutations';
 import {ReviewNextTaskEntry, ReviewSomedayEntry} from '../../../storage/reviewAggregate';
-import {COLUMN_WIDTH_PX} from '../../../ui/itemEntryRow';
 import ReviewMasterDetail from '../../../ui/ReviewMasterDetail';
 import {activeLineEstimator} from '../../../domain/textLineEstimator';
 import {FONT} from '../../../ui/theme';
@@ -32,6 +31,7 @@ import {clearReviewStepFilter, reviewEntryKey, ReviewStepFilter, useReviewStepFi
 import {bump} from '../reviewVisit';
 import {reviewCurrentItem, ReviewEmptyDetail, ReviewStepProps} from '../shared';
 import {useFrozenStepList} from '../useFrozenStepList';
+import {estimatorWidth} from '../../../ui/ScreenSize';
 
 type SomedayRow =
   | {kind: 'header'; key: string; entry: ReviewSomedayEntry}
@@ -51,7 +51,7 @@ const ENTRY_CHROME_PX = 12;
 const ENTRY_LINE_HEIGHT_PX = 22;
 
 function entryLines(text: string): number {
-  return Math.min(2, activeLineEstimator.estimateLines(text, Math.max(1, COLUMN_WIDTH_PX - 12), FONT.medium));
+  return Math.min(2, activeLineEstimator.estimateLines(text, Math.max(1, estimatorWidth() - 12), FONT.medium));
 }
 
 function rowHeight(row: SomedayRow): number {

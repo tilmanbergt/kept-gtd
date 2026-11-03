@@ -370,21 +370,24 @@ export default function ItemStatusPanel({
 
   return (
     <View style={styles.root}>
+      {/* Archive / Close out sits in the status row, after the choices (docs/dev/history/technical-design-launch-ready.md L6c). */}
       <StatusSection
         kind={kind}
         status={state.status}
         onChange={changeStatus}
-        textColor={textColor}
-        borderColor={borderColor}
-      />
-      <View style={styles.section}>
-        <View style={styles.actionsRow}>
-          {kind === 'project' && onStartCloseOut ? (
+        trailing={
+          kind === 'project' && onStartCloseOut ? (
             <ArchiveAction label="🗄 Close out…" onPress={() => onStartCloseOut(path)} pending={archiving} textColor={textColor} />
           ) : (
             <ArchiveAction label="🗄 Archive…" onPress={handleArchivePress} pending={archiving} textColor={textColor} />
-          )}
-          {kind === 'project' && (
+          )
+        }
+        textColor={textColor}
+        borderColor={borderColor}
+      />
+      {kind === 'project' && (
+        <View style={styles.section}>
+          <View style={styles.actionsRow}>
             <AreaAssignmentAction
               area={state.area}
               onPressAssign={handleArmAreaAssignment}
@@ -392,9 +395,9 @@ export default function ItemStatusPanel({
               onPressUnassign={handleUnassignArea}
               textColor={textColor}
             />
-          )}
+          </View>
         </View>
-      </View>
+      )}
     </View>
   );
 }
@@ -403,12 +406,15 @@ function StatusSection({
   kind,
   status,
   onChange,
+  trailing,
   textColor,
   borderColor,
 }: {
   kind: 'project' | 'area';
   status: ItemStatus;
   onChange: (next: SettableStatus) => Promise<void>;
+  /** Drawn after the choices, in the same (wrapping) row: Archive… or Close out…. */
+  trailing?: React.ReactNode;
   textColor: string;
   borderColor: string;
 }): React.JSX.Element {
@@ -467,6 +473,7 @@ function StatusSection({
             </Pressable>
           );
         })}
+        {trailing}
       </View>
     </View>
   );

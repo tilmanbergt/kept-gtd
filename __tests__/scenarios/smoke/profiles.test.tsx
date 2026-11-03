@@ -13,10 +13,10 @@ scenario('Switch to the demo space and back', {feature: 'Profiles and demo space
     smokeClock();
     putSmokeSpace();
   });
-  when('I create the demo space in Settings → Advanced and switch to it', async () => {
+  when('I create the demo space in Settings → Data and switch to it', async () => {
     await openApp();
     await tapTab('Settings');
-    await tap('Advanced');
+    await tap('Data');
     await tap('Create demo space');
     await tap('Switch');
     await tap('Switch');

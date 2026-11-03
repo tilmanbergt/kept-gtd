@@ -10,6 +10,99 @@ or your project/area files are stored.
 
 ## [Unreleased]
 
+### Upgrade notes
+- **The next version, 0.25.0, is a fresh install**: it comes as a new plugin next to this one, so this one's
+  settings don't carry over by themselves. To keep everything, in this version:
+  1. process your open lasso marks (Mark for later), since their pictures live inside this plugin;
+  2. switch to each profile once and tap **Save** (Settings → Data → Profiles), so every profile file is up to date;
+  3. note your Gmail app password and your calendar link - profiles never hold them;
+  4. run Settings → Data → **Remove Kept's data** with *Kept's data files* and *Saved profiles* left
+     unticked, then uninstall this plugin.
+
+  Your notes, your `.txt` data files and your saved profiles stay on the device; 0.25.0 loads the profiles.
+- Contexts: nothing to do. Your contexts keep working as before; the new switch is optional and your files
+  are unchanged.
+- Updates: nothing to do. The daily update check is off until you switch it on (Settings → About); Kept
+  goes online for it only when you tap Check now or Download.
+
+### New
+- Kept tells you about new versions on GitHub and can download them into MyStyle/kept-gtd, ready to install
+  from the plugin settings (check by hand, or once a day if you switch it on). Settings → About → Updates;
+  the setup assistant asks once. Releases on GitHub are not reviewed or approved by Ratta. You install them
+  at your own risk. Each release is tested to keep your data safe.
+- **Remove Kept's data** in Settings → Data: shows everything Kept has put on the device - settings,
+  the Gmail app password and calendar link, caches, lasso mark pictures, logs, the demo space, old
+  gtdpara folders - and removes what you check. Your data files and saved profiles are offered too,
+  unchecked. Notes are never touched. Afterwards Start fresh opens the setup assistant, or Close Kept
+  before you uninstall: uninstalling alone keeps the settings and passwords on the device.
+- **Simulate screen** in Settings → Advanced (shown while Debug logging is on): draws Kept at the size of a
+  Nomad, to see whether anything is cut off.
+- **Check screen and pages** in Settings → Advanced (shown while Debug logging is on): the screen
+  size, the page size of the note Kept was opened from, and a horizontal test note in
+  `EXPORT/kept-gtd/debug` - for bug reports about other devices and landscape.
+- **Contexts: any tag, and whole loop and thread types**: Settings → Contexts → Tags has a **New tag**
+  field for a tag no todo carries yet (`shopping`, also a nested one like `garden/beds`), and one chip per
+  loop and thread type - **All #workshop loops**, **All #sparring threads** - that brings all of them.
+
+### Changed
+- **Contexts read as Show and Except**, with one sentence on top of the editor and in the list of
+  contexts: "Show Work, plus #computer everywhere except #wifi". Show names where (areas, projects) and
+  what (tags); a todo shows when it fits either. **Only inside the selected areas and projects** makes it
+  fit both: "Show #computer in Work". Except always wins.
+- **The contexts editor** has three tabs - General (name, meetings outside, given time), Show and Except -
+  under a header with the name, Save and Delete, the sentence and how many next todos it shows. Save is
+  active once something changed. Chips that don't fit page with ‹ › instead of being cut off, also on a
+  Nomad or a turned device.
+- **The Weekly Review looks at everything**, also while a context is active: contexts are for doing the
+  work. The overview offers **Review only in Home** (and then **Review everything**); narrowed, step
+  titles end "· in Home". Leaving Review goes back to everything. The Tend line on Week and Month opens
+  Review already narrowed to the active context.
+- **Creating a note from a PDF or EPUB**: the Supernote doesn't let plugins create notes when they were opened
+  from a document. Kept no longer asks first and then fails with the device's message; it says right away:
+  "Supernote doesn't let plugins create notes when opened from a PDF or EPUB. Open Kept from a note to
+  create this one." Adding a page to a note that exists is still tried.
+- **Note pages of any size**: pieces of a note setup are placed on the real size of the page - on a Manta's
+  bigger pages they keep their place relative to the page; on a horizontal page a piece that would land
+  below the page is left out and the status line says so. Text notes (the Gmail email note) fit the page too.
+- **Smaller and turned screens**: the tab bar and the small tab rows wrap onto a second line instead of
+  running past the edge; Quick Add always keeps its + Add button in view; the Week grid shows fewer rows a
+  day where the screen is shorter (a turned A5 X), with ‹ › for the rest; the folder fields on Settings →
+  Data scroll where they don't fit. On the A5 X upright everything looks as before.
+- **More room for content**: the tab bar, the status line and the space above each screen are slimmer on
+  every device. Week and Month show their period in the tab row ("‹ Week 44 · 26 ›", "‹ Oct 26 ›"), with
+  **Now** to go back; Month no longer counts its highlights there.
+- **Turned screens and Nomad**: Month shows its days in two halves where they don't fit (a turned A5 X shows
+  every day, a turned Nomad always two halves), opening on the half with today; the help's page list pages; Settings → Features and Advanced scroll where they don't fit. On
+  the marks screen, Link to source page, Open page, Discard… and Close moved under the list of marks; on a
+  short screen the picture is lower and the tags start with eight and More….
+- **The project and area page is leaner on every device**: no Given time line (Week and Month still
+  show given time), no "Scope" and no "Files" label, Archive… / Close out… next to the status
+  buttons, the marks card on one line, and **hide done** / **show 2 done** next to the Todos heading
+  (on the Inbox next to Tasks). On a turned device or a Nomad, Todos are the first tab of
+  Todos | Schedule | Google, and each counterpart on the Threads tab is one line.
+- Buttons in the status line always fit inside it.
+- **What's new** in Settings → About shows the last three versions; the earlier ones are in CHANGELOG.md on GitHub.
+- **Settings has six tabs** instead of eight. **Data** holds your folders on the left and, on the
+  right, Run setup assistant and the profiles - setting up in one place. The Google Calendar link and
+  the Gmail account moved onto **Features**, next to their switches, each with its own Save. Debug
+  logging and Export debug bundle moved to **Advanced** under "Reporting a problem"; About invites you
+  to report problems and ideas.
+- While a folder field has unsaved changes, Run setup assistant and Switch (profiles) wait until you
+  save or reset it, so the change can't be lost.
+
+### Fixed
+- A context that names only tags (an "Errands" with `#errand` and `#shopping`) no longer leaves Projects
+  and Areas empty: they list every project and area holding an open todo or an upcoming meeting it shows.
+- The profile list redraws once it has found the profile files, so it is no longer left half drawn
+  on e-ink.
+
+### Removed
+- **Daily's tag filter** (the "#" row): a context does the same for every tab, and
+  a meeting's context panel shows what belongs to it. Tags in Daily's rows are plain text; nested tags
+  still open their thread overview.
+- **Touch test** and **Check device files** in Settings → Advanced: both diagnostics have done their
+  job. Touch logs already written stay in `EXPORT/kept-gtd/debug` until you delete them.
+
 ## [0.23.0] — 2026-10-29
 
 ### New

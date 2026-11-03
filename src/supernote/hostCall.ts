@@ -46,14 +46,14 @@ export async function recordDebugLogEntry(
     .join(' ');
   const context =
     `session=${DEBUG_SESSION_ID} seq=${debugAttemptSeq} sinceStartMs=${Date.now() - DEBUG_SESSION_START_MS}` +
-    ` launch=${launch ? launch.path ?? '(Home)' : '(not captured)'}` +
-    ` coldStart=${coldStart ? coldStart.path ?? '(Home)' : '(not captured)'}`;
+    ` launch=${launch ? launch.path ?? '(unknown)' : '(not captured)'}` +
+    ` coldStart=${coldStart ? coldStart.path ?? '(unknown)' : '(not captured)'}`;
   if (ok) log(`hostCall: ${event} OK`, `${durationMs}ms`, detail, context);
   else logWarn(`hostCall: ${event} FAIL`, `${durationMs}ms`, detail, context);
 }
 
 /** Rejects if `promise` has not settled after `timeoutMs`. The underlying call is NOT cancelled - the caller aborts its whole flow on this error. */
-function withTimeout<T>(promise: Promise<T>, timeoutMs: number, timeoutMessage: string): Promise<T> {
+export function withTimeout<T>(promise: Promise<T>, timeoutMs: number, timeoutMessage: string): Promise<T> {
   return new Promise<T>((resolve, reject) => {
     const timer = setTimeout(() => reject(new Error(timeoutMessage)), timeoutMs);
     promise.then(

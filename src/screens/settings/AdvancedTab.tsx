@@ -1,20 +1,26 @@
 /**
- * Settings → Advanced (docs/dev/history/technical-design-about-debug-experimental.md §3.6):
- * Profiles and the tools (Reload all files, Integrity Check, Touch test, Keep
- * tabs in memory, Performance tracing; Check device files while Debug logging
- * is on, docs/dev/history/technical-design-easy-start.md §7); the Experimental switches live on
- * Settings → Features. Presentational: Settings.tsx owns the values and the
- * handlers, every switch saves immediately.
+ * Settings → Advanced (docs/dev/history/technical-design-settings-tabs.md T5): left, Reporting a
+ * problem (Debug logging, Export debug bundle); right, the tools (Reload all files, Integrity
+ * Check, Keep tabs in memory, Performance tracing; while Debug logging is on also Check screen and
+ * pages and Simulate screen, docs/dev/history/technical-design-launch-ready.md §4.3/§6, and Update test,
+ * docs/dev/history/technical-design-in-app-updates.md §8). Settings.tsx owns the values and the
+ * handlers; every switch saves immediately, except the memory-only Simulate screen and Update test.
  */
-import React from 'react';
+import React, {useSyncExternalStore} from 'react';
 import {ActivityIndicator, Pressable, StyleSheet, Text, View} from 'react-native';
+import ScrollColumn from './ScrollColumn';
+import {SIMULATED_SCREENS, simulationsThatFit} from '../../domain/screenLayout';
+import PillButton from '../../ui/PillButton';
+import {useRealScreenSize} from '../../ui/ScreenSize';
+import {getScreenSimulation, setScreenSimulation, subscribeScreenSimulation} from '../../ui/screenSimStore';
+import {isUpdateTestMode, setUpdateTestMode, subscribeUpdates} from '../../storage/updates';
 import {FONT, SPACING} from '../../ui/theme';
-import ProfilesSection from './ProfilesSection';
+import ReportingSection from './ReportingSection';
 import SettingSwitch from './SettingSwitch';
 
 interface Props {
-  activeProfileId: string;
-  onSwitchProfile?: (id: string) => Promise<void>;
+  debugLogging: boolean;
+  onToggleDebugLogging: () => void;
   perfTracing: boolean;
   keepTabsAlive: boolean;
   integrityCheckRunning: boolean;
@@ -23,10 +29,7 @@ interface Props {
   onTogglePerfTracing: () => void;
   onToggleKeepTabsAlive: () => void;
   onRunIntegrityCheck: () => void;
-  onOpenTouchTest: () => void;
-  /** Debug logging is on: the diagnostic "Check device files" shows. */
-  debugLogging: boolean;
-  onOpenDeviceCheck: () => void;
+  onOpenScreenCheck: () => void;
   textColor: string;
   borderColor: string;
 }
@@ -35,16 +38,11 @@ export default function AdvancedTab(p: Props): React.JSX.Element {
   const {textColor, borderColor} = p;
   return (
     <View style={styles.row}>
-      <View style={[styles.column, styles.columnLeft]}>
-        <ProfilesSection
-          activeProfileId={p.activeProfileId}
-          onSwitchProfile={p.onSwitchProfile}
-          textColor={textColor}
-          borderColor={borderColor}
-        />
-      </View>
+      <ScrollColumn left>
+        <ReportingSection debugLogging={p.debugLogging} onToggleDebugLogging={p.onToggleDebugLogging} textColor={textColor} borderColor={borderColor} />
+      </ScrollColumn>
       <View style={[styles.divider, {backgroundColor: borderColor}]} />
-      <View style={styles.column}>
+      <ScrollColumn>
         <Text style={[styles.heading, {color: textColor}]}>Tools</Text>
         <View style={styles.field}>
           <Pressable onPress={p.onReloadAllFiles} disabled={p.reloading} hitSlop={8} style={styles.button}>
@@ -65,21 +63,15 @@ export default function AdvancedTab(p: Props): React.JSX.Element {
             Scans every Project/Area/Archive/Inbox for broken note links and note names that break Obsidian links, and writes a report to EXPORT/kept-gtd/debug.
           </Text>
         </View>
-        <View style={styles.field}>
-          <Pressable onPress={p.onOpenTouchTest} hitSlop={8} style={styles.button}>
-            <Text style={[styles.buttonText, {color: textColor}]}>Touch test</Text>
-          </Pressable>
-          <Text style={[styles.hint, {color: textColor}]}>
-            Finds out why a tap doesn't register: tap sample rows with finger or pen and see which taps arrive and what they hit. Changes nothing.
-          </Text>
-        </View>
+        {p.debugLogging && <SimulateScreen textColor={textColor} borderColor={borderColor} />}
+        {p.debugLogging && <UpdateTestSwitch textColor={textColor} />}
         {p.debugLogging && (
           <View style={styles.field}>
-            <Pressable onPress={p.onOpenDeviceCheck} hitSlop={8} style={styles.button}>
-              <Text style={[styles.buttonText, {color: textColor}]}>Check device files</Text>
+            <Pressable onPress={p.onOpenScreenCheck} hitSlop={8} style={styles.button}>
+              <Text style={[styles.buttonText, {color: textColor}]}>Check screen and pages</Text>
             </Pressable>
             <Text style={[styles.hint, {color: textColor}]}>
-              Lists the device's top folders, the SD card and the file Kept was opened from, with buttons to open sample files. Changes nothing.
+              Shows the screen size and the page size of the note Kept was opened from, and tries a horizontal test note in EXPORT/kept-gtd/debug. For bug reports about other devices and landscape.
             </Text>
           </View>
         )}
@@ -97,15 +89,50 @@ export default function AdvancedTab(p: Props): React.JSX.Element {
           hint="Records how long each tab switch, reopen and cold start takes and writes one small file per event to EXPORT/kept-gtd/debug/perf."
           textColor={textColor}
         />
-      </View>
+      </ScrollColumn>
     </View>
   );
 }
 
+/** Off, or one of the Nomad sizes that fit on this screen; not saved, a restart turns it off. */
+function SimulateScreen({textColor, borderColor}: {textColor: string; borderColor: string}): React.JSX.Element {
+  const current = useSyncExternalStore(subscribeScreenSimulation, getScreenSimulation);
+  const fitting = simulationsThatFit(useRealScreenSize());
+  const options = SIMULATED_SCREENS.filter(s => fitting.includes(s.key));
+  return (
+    <View style={styles.field}>
+      <Text style={[styles.label, {color: textColor}]}>Simulate screen</Text>
+      <View style={styles.pills}>
+        <PillButton label="Off" primary={current === null} onPress={() => setScreenSimulation(null)} textColor={textColor} borderColor={borderColor} />
+        {options.map(o => (
+          <PillButton key={o.key} label={o.label} primary={current === o.key} onPress={() => setScreenSimulation(o.key)} textColor={textColor} borderColor={borderColor} />
+        ))}
+      </View>
+      <Text style={[styles.hint, {color: textColor}]}>
+        Draws Kept in a box the size of a Nomad, to check that nothing is cut off. Nomad portrait fits while the device is upright, Nomad landscape while it is turned. Kept starts again on its first tab; closing Kept ends it.
+      </Text>
+    </View>
+  );
+}
+
+/** Makes this build look like 0.0.0 to the updater, so the latest real release is offered; not saved. */
+function UpdateTestSwitch({textColor}: {textColor: string}): React.JSX.Element {
+  const on = useSyncExternalStore(subscribeUpdates, isUpdateTestMode);
+  return (
+    <SettingSwitch
+      label="Update test: treat this build as 0.0.0"
+      on={on}
+      onPress={() => setUpdateTestMode(!on)}
+      hint="Settings → About → Check now then offers the latest release on GitHub, to try the download and Add plugin. Not saved: closing Kept turns it off."
+      textColor={textColor}
+    />
+  );
+}
+
 const styles = StyleSheet.create({
+  label: {fontSize: FONT.small, fontWeight: '600', marginBottom: 4},
+  pills: {flexDirection: 'row', flexWrap: 'wrap', gap: SPACING.sm},
   row: {flexDirection: 'row', flex: 1},
-  column: {flex: 1},
-  columnLeft: {marginRight: SPACING.base},
   divider: {width: 1, marginRight: SPACING.base},
   heading: {fontSize: FONT.medium, fontWeight: '700', marginBottom: SPACING.sm},
   field: {marginBottom: 18},

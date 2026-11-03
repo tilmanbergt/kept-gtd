@@ -6,27 +6,35 @@ import {and, given, scenario, then, when} from '../../test-helpers/scenario/scen
 const NOTE = '/storage/emulated/0/Note';
 
 scenario('A fresh install opens the setup assistant; Finish saves the folders found and creates only the missing ones', {feature: 'Settings', design: 'technical-design-easy-start.md'}, () => {
-  given('Note holds a folder "Projects" with 3 project folders and nothing else of PARA', () => {
+  given('Note holds a folder "Projects" with 3 project folders and nothing else of PARA, and Kept may not use the internet yet', () => {
     for (const p of ['Garden renovation', 'Team offsite', 'Bike repair']) putFile(`${NOTE}/Projects/${p}/notes.txt`, 'x');
+    device().sdk.deniedPermissions.add('plugin.permission.INTERNET');
   });
   when('Kept starts for the first time', () => openApp({fresh: true}));
   then('Settings shows the assistant on its Folders step, suggesting Projects', () => {
-    expectShows('Setup · 1 of 4');
+    expectShows('Setup · 1 of 5');
     expectShows('exists · 3 folders');
-    expectShows('Change later: Settings → Folders');
+    expectShows('Change later: Settings → Data');
     expectShows('Skip');
   });
-  when('I go through Notes (keep one notebook) and Features (Everything) to Finish', async () => {
+  when('I go through Notes (keep one notebook), Features (Everything) and Updates (once a day) to Finish', async () => {
     await tap('Next ›');
-    expectShows('Setup · 2 of 4');
+    expectShows('Setup · 2 of 5');
     await tap('Next ›');
     await tap(/ Everything$/);
+    await tap('Next ›');
+    expectShows('Setup · 4 of 5');
+    expectShows('☑ Only when I tap Check now');
+    expectShows('Change later: Settings → About');
+    expectShows(/^Releases on GitHub are not reviewed or approved by Ratta\./);
+    await tap(/ Check for new versions on GitHub once a day$/);
     await tap('Next ›');
     expectShows('Create demo space');
     await tap('Next ›');
   });
-  then('Finish lists exactly the folders it will create', () => {
+  then('Finish lists exactly the folders it will create, and the update choice', () => {
     expectShows('Kept will create in Note: 2 Areas, 3 Resources, 4 Archive.');
+    expectShows(/updates - checked once a day\.$/);
   });
   when('I tap Finish', () => tap('Finish'));
   then('the folders are created, Projects is kept as it is, and the Projects tab says what happened', async () => {
@@ -38,8 +46,11 @@ scenario('A fresh install opens the setup assistant; Finish saves the folders fo
   });
   and('the settings hold the choices', async () => {
     const s = await storedSettings();
-    expect(s).toMatchObject({projectsFolder: 'Projects', setupAssistant: 'done', experimentalGoogleCalendar: true, experimentalGmail: true, modules: {closeOut: true}});
+    expect(s).toMatchObject({projectsFolder: 'Projects', setupAssistant: 'done', experimentalGoogleCalendar: true, experimentalGmail: true, modules: {closeOut: true}, updateCheck: 'daily'});
     expect(s.noteSetupDefaults.notebook).not.toBeNull();
+  });
+  and('Kept asked for internet access once, after saving', () => {
+    expect(device().sdk.permissionRequests.filter(p => p.endsWith('INTERNET'))).toEqual(['plugin.permission.INTERNET']);
   });
 });
 
@@ -58,7 +69,7 @@ scenario('Skip closes the assistant without saving or creating anything', {featu
   });
   then('Settings shows its tabs, no folder was created, and the assistant is done', async () => {
     expectShows('Run setup assistant');
-    expectNotShows('Setup · 1 of 4');
+    expectNotShows('Setup · 1 of 5');
     expect(device().fs.paths('/storage/emulated/0/Note')).toEqual([]);
     const s = await storedSettings();
     expect(s.setupAssistant).toBe('done');
@@ -66,13 +77,13 @@ scenario('Skip closes the assistant without saving or creating anything', {featu
   });
 });
 
-scenario('An existing install opens on Daily as before; Run setup assistant starts it from Settings → Folders, Simple with own notes', {feature: 'Settings', design: 'technical-design-easy-start.md'}, () => {
+scenario('An existing install opens on Daily as before; Run setup assistant starts it from Settings → Data, Simple with own notes', {feature: 'Settings', design: 'technical-design-easy-start.md'}, () => {
   when('Kept starts with stored settings', () => openApp());
   then('it lands on Daily, without the assistant', () => {
-    expectNotShows('Setup · 1 of 4');
+    expectNotShows('Setup · 1 of 5');
     expectShows(/^Today/);
   });
-  when('I tap Run setup assistant on Settings → Folders, choose own notes and Simple, and Finish', async () => {
+  when('I tap Run setup assistant on Settings → Data, choose own notes and Simple, and Finish', async () => {
     await tap('Settings');
     await tap('Run setup assistant');
     await tap('Next ›');
@@ -81,16 +92,18 @@ scenario('An existing install opens on Daily as before; Run setup assistant star
     await tap(/ Simple$/);
     await tap('Next ›');
     await tap('Next ›');
+    await tap('Next ›');
     await tap('Finish');
   });
   then('close-out, Calendar, Gmail and Notebook contents are off and the Default has no notebook', async () => {
     const s = await storedSettings();
     expect(s).toMatchObject({modules: {closeOut: false}, experimentalGoogleCalendar: false, experimentalGmail: false, notebookContentsEnabled: false});
     expect(s.noteSetupDefaults.notebook).toBeNull();
+    expect(s.updateCheck).toBe('manual');
   });
   and('Run setup assistant waits while the Folders fields have unsaved changes', async () => {
     await tap('Settings');
     await type('1 Projects', 'Work projects');
-    expectShows('Save or reset your changes below first.');
+    expectShows('Save or reset the folder fields first.');
   });
 });

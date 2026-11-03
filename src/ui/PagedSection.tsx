@@ -41,7 +41,7 @@
  * fills that same box rather than shrinking it. So a `PagedSection` can be
  * dropped into any layout without reflowing its surroundings.
  *
- * `viewportHeight` is optional ([[feature_pagination_fixed_height]]'s
+ * `viewportHeight` is optional (docs/dev/history/technical-design-pagination-fixed-height.md's
  * "runtime-measured viewport height"). Hand-derived heights tend to drift
  * from the real layout in ways that are hard to catch by eye. Omitting
  * `viewportHeight` switches this component into self-measuring mode: its

@@ -100,6 +100,8 @@ import {ItemNoteAnchorResolution, resolveItemNote} from './itemNotePlan';
 import {rememberItemName} from './homeNotebookRename';
 import {ensureLoopNoteFile, loopNoteOf} from './loopNotes';
 import {layoutForLink} from './noteTargets';
+import {fitsOnPage, PageRect, placeFontSize, placeRect} from '../domain/pageFrame';
+import {readPageFrame, reportSkippedPieces} from './pageFrames';
 
 /**
  * `linkedFile`'s bare file name (e.g. "Kickoff deck.pdf" from
@@ -136,11 +138,11 @@ export async function existingLinkedFile(
 
 /**
  * Builds the link element for a `link` piece (docs/dev/technical-design-linked-
- * file-piece.md §4/§5): positioned at the piece's own `x`/`y`, sized from the
- * real text via measureNoteLinkRect (content-fit width + icon allowance,
- * measured height + underline allowance, never past the piece's max width or
- * the page edge), marked with the piece's own per-index userData like every
- * other piece.
+ * file-piece.md §4/§5) at `rect`: the caller sizes it from the real text via
+ * measureNoteLinkRect (content-fit width + icon allowance, measured height +
+ * underline allowance, never past the piece's max width or the page edge) and
+ * places it on the page (domain/pageFrame.ts). Marked with the piece's own
+ * per-index userData like every other piece.
  *
  * `page` (docs/dev/history/technical-design-shared-note-pages.md) is the page
  * THIS link element lives on within `notePath` - unrelated to `destPage`
@@ -151,15 +153,14 @@ export async function existingLinkedFile(
 async function buildLinkElement(params: {
   linkedFileAbsolutePath: string;
   text: string;
-  x: number;
-  y: number;
+  /** Already placed on the page (domain/pageFrame.ts), in page pixels. */
+  rect: PageRect;
   fontSize: number;
-  maxWidthPx: number;
   userData: string;
   page: number;
 }): Promise<Element> {
-  const {linkedFileAbsolutePath, text, x, y, fontSize, maxWidthPx, userData, page} = params;
-  const rect = await measureNoteLinkRect(text, x, fontSize, maxWidthPx);
+  const {linkedFileAbsolutePath, text, rect, fontSize, userData, page} = params;
+  const {x, y} = rect;
   const linkElement = await createElement(ELEMENT_TYPE_LINK);
   linkElement.userData = userData;
   linkElement.pageNum = page;
@@ -251,8 +252,13 @@ export async function populatePage(
 ): Promise<void> {
   await deleteStaleManagedElements(notePath, page);
 
+  // Pieces are laid out in A5 X reference pixels and placed on this page's real
+  // size; one that would not fit is left out (docs/dev/history/technical-design-launch-ready.md §5).
+  const frame = await readPageFrame(notePath, page);
   const elements: Element[] = [];
   const linkElements = new Set<Element>();
+  const placedContent = [...pieceContent];
+  let skipped = 0;
 
   for (let index = 0; index < layout.pieces.length; index++) {
     const piece = layout.pieces[index];
@@ -261,13 +267,18 @@ export async function populatePage(
 
     if (piece.type === 'link') {
       if (!linkedFileAbsolutePath) continue;
+      const linkRect = await measureNoteLinkRect(text, piece.x, piece.fontSize, pieceMaxWidthPx(piece));
+      const placedLink = placeRect({x: piece.x, y: piece.y, width: linkRect.width, height: linkRect.height}, frame);
+      if (!fitsOnPage(placedLink, frame)) {
+        skipped++;
+        placedContent[index] = '';
+        continue;
+      }
       const linkElement = await buildLinkElement({
         linkedFileAbsolutePath,
         text,
-        x: piece.x,
-        y: piece.y,
-        fontSize: piece.fontSize,
-        maxWidthPx: pieceMaxWidthPx(piece),
+        rect: placedLink,
+        fontSize: placeFontSize(piece.fontSize, frame),
         userData: notePieceUserData(index),
         page,
       });
@@ -277,20 +288,27 @@ export async function populatePage(
     }
 
     const rect = await measureNotePieceRect(text, piece.x, piece.fontSize, pieceMaxWidthPx(piece));
+    const placed = placeRect({x: piece.x, y: piece.y, width: rect.width, height: rect.height}, frame);
+    if (!fitsOnPage(placed, frame)) {
+      skipped++;
+      placedContent[index] = '';
+      continue;
+    }
 
     const textboxElement = await buildTextboxElement({
       text,
-      x: piece.x,
-      y: piece.y,
-      width: rect.width,
-      height: rect.height,
-      fontSize: piece.fontSize,
+      x: placed.x,
+      y: placed.y,
+      width: placed.width,
+      height: placed.height,
+      fontSize: placeFontSize(piece.fontSize, frame),
       userData: notePieceUserData(index),
       pageNum: page,
     });
     elements.push(textboxElement);
   }
 
+  reportSkippedPieces(skipped);
   if (elements.length === 0) return;
   try {
     await insertElements(notePath, page, elements);
@@ -307,7 +325,7 @@ export async function populatePage(
       await insertElements(notePath, page, withoutLinks);
     }
   }
-  await applyPieceHeadings(notePath, page, layout, pieceContent, headingStyle);
+  await applyPieceHeadings(notePath, page, layout, placedContent, headingStyle);
 }
 
 /**

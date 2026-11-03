@@ -11,9 +11,14 @@
  * greyed out and non-tappable without disappearing from the row - tabs are
  * not added or removed, only what tapping them does changes. Omitted
  * (undefined) means "enabled".
+ *
+ * Narrow screens (docs/dev/history/technical-design-launch-ready.md L6): tabs that
+ * don't fit the width wrap onto a further line instead of running past the edge
+ * (and `trailing` with them, still at the right); below 800 dp they also sit closer.
  */
 import React from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
+import {useLayoutClass} from './ScreenSize';
 import {COLORS, FONT} from './theme';
 
 export interface MiniTabDef<K extends string> {
@@ -40,6 +45,7 @@ export default function MiniTabs<K extends string>({
   textColor,
   borderColor,
 }: Props<K>): React.JSX.Element {
+  const narrow = useLayoutClass() === 'narrow';
   return (
     <View style={[styles.row, {borderColor}]}>
       {tabs.map(tab => {
@@ -47,7 +53,7 @@ export default function MiniTabs<K extends string>({
         return (
           <Pressable
             key={tab.key}
-            style={[styles.tab, active && styles.tabActive]}
+            style={[styles.tab, narrow && styles.tabNarrow, active && styles.tabActive]}
             onPress={() => !tab.disabled && onChange(tab.key)}
             disabled={tab.disabled}>
             <Text
@@ -74,6 +80,7 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     borderBottomWidth: 1,
     marginBottom: 8,
   },
@@ -83,6 +90,9 @@ const styles = StyleSheet.create({
     marginRight: 20,
     borderBottomWidth: 2,
     borderBottomColor: 'transparent',
+  },
+  tabNarrow: {
+    marginRight: 12,
   },
   tabActive: {
     borderBottomColor: COLORS.accent,

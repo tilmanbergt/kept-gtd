@@ -1,24 +1,24 @@
 /**
- * Contexts (docs/dev/history/technical-design-time-and-place.md §3.3,
- * requirements D20-D25, §12 Q1-Q2): a named place - Work, Home, Café - that
- * decides what Daily, Week, Month, Projects, Areas and Review show. Stored
- * per profile in `settings.contexts`; the active one is
- * `settings.activeContextId` ('' = Everything, built in). Pure.
+ * Contexts: a named place - Work, Home, Café - that decides what Daily, Week,
+ * Month, Projects and Areas show (Review only when narrowed to it). Stored per
+ * profile in `settings.contexts`; the active one is `settings.activeContextId`
+ * ('' = Everything, built in). Rules: docs/dev/history/technical-design-contexts-tags.md §2.1.
  *
- * The rules, in this order:
- * 1. Everything shows all.
- * 2. Inbox entries always show. Due todos follow the context too; the hidden
- *    line counts the hidden ones that are due ("3 due!").
- * 3. An item entry matches a Project or Area by kind and folder name; an
- *    Area also matches its Projects (`area:`). A tag entry matches a todo or
- *    meeting carrying the tag or one nested under it (`tagMatchesSetupTag`:
- *    `retro` matches `retro/demand`), so loops and threads are tag entries.
- * 4. Hides wins. Then a non-empty Shows list shows only what it matches; an
- *    empty one shows everything else ("everything but work").
- * 5. Meetings are never hidden: matched ones show, the others are dimmed (or
- *    shown as usual, `outsideMeetings: 'show'`).
+ * - Show has two parts, Where (areas and projects) and What (tags, a loop or
+ *   thread type as its root tag). An empty part restricts nothing; with both
+ *   filled, an entry shows when it matches either part, or both with
+ *   `onlyInPlaces`.
+ * - Except (`hides`) always wins.
+ * - An Area entry also matches its Projects; a tag entry also matches tags
+ *   nested under it (`retro` matches `retro/demand`).
+ * - The Inbox always shows. Meetings are never hidden: outside the context
+ *   they are dimmed (or shown as usual, `outsideMeetings: 'show'`).
+ * - A Project or Area row shows when the item passes, or holds an open todo or
+ *   a meeting from today on that passes; an Area also through its Projects.
  */
-import {tagMatchesSetupTag} from './noteSetups';
+import {isWholeTag} from './markdown';
+import {isContextTag} from './flowState';
+import {normalizeSetupTag, tagMatchesSetupTag} from './noteSetups';
 import {Meeting, Task} from './types';
 
 export type ContextEntry =
@@ -30,8 +30,12 @@ export type ContextEntry =
 export interface ContextDef {
   id: string;
   name: string;
+  /** Show. */
   shows: ContextEntry[];
+  /** Except. */
   hides: ContextEntry[];
+  /** Where AND What, when both parts of Show have entries; absent = either. */
+  onlyInPlaces?: boolean;
   outsideMeetings: 'dim' | 'show';
   /** Given time lists loops and counterparts from this much time up; absent = Everything's (`givenTimeMinMinutes`). */
   minMinutes?: MinMinutes;
@@ -58,17 +62,23 @@ export interface ContextItem {
   area: string | null;
 }
 
+/** A Project or Area with what can keep its row shown (a cached item fits). */
+export interface ContextContentItem extends ContextItem {
+  tasks: ReadonlyArray<Pick<Task, 'tags' | 'done' | 'cancelled'>>;
+  meetings: ReadonlyArray<Pick<Meeting, 'tags' | 'cancelled' | 'date'>>;
+}
+
 export type MeetingContextState = 'shown' | 'dimmed';
 
 export interface ContextMatcher {
   /** The active context; null = Everything. */
   context: ContextDef | null;
-  /** A Project or Area row (Projects, Areas, Review's item steps). */
+  /** A Project or Area row (Projects, Areas, Review's item steps, rosters). */
   itemShown(item: ContextItem): boolean;
-  /** An open todo of `item` (or the Inbox). */
-  taskShown(item: ContextItem | 'inbox', task: Pick<Task, 'tags' | 'dueDate'>, today: string): boolean;
-  /** A meeting of `item` (or the Inbox): never hidden (rule 5). */
-  meetingState(item: ContextItem | 'inbox', meeting: Pick<Meeting, 'tags'>): MeetingContextState;
+  /** A todo of `item` (or the Inbox). */
+  taskShown(item: ContextItem | 'inbox', task: {tags: readonly string[]}): boolean;
+  /** A meeting of `item` (or the Inbox): never hidden. */
+  meetingState(item: ContextItem | 'inbox', meeting: {tags: readonly string[]}): MeetingContextState;
 }
 
 export const EVERYTHING_LABEL = 'Everything';
@@ -87,35 +97,58 @@ const itemEntryMatches = (entry: ContextEntry, item: ContextItem): boolean =>
 const tagEntryMatches = (entry: ContextEntry, tags: readonly string[]): boolean =>
   entry.kind === 'tag' && tags.some(tag => tagMatchesSetupTag(tag, entry.tag));
 
-function matchesAny(entries: readonly ContextEntry[], item: ContextItem | null, tags: readonly string[]): boolean {
-  return entries.some(entry => (item !== null && itemEntryMatches(entry, item)) || tagEntryMatches(entry, tags));
+const entryMatches = (entry: ContextEntry, item: ContextItem | null, tags: readonly string[]): boolean =>
+  (item !== null && itemEntryMatches(entry, item)) || tagEntryMatches(entry, tags);
+
+/** Whether `ctx` shows an entry of `item` carrying `tags` (the item itself: no tags). */
+function shown(ctx: ContextDef, item: ContextItem | null, tags: readonly string[]): boolean {
+  if (ctx.hides.some(e => entryMatches(e, item, tags))) return false;
+  const where = ctx.shows.filter(e => e.kind === 'item');
+  const what = ctx.shows.filter(e => e.kind === 'tag');
+  if (where.length === 0 && what.length === 0) return true;
+  const inWhere = item !== null && where.some(e => itemEntryMatches(e, item));
+  const inWhat = what.some(e => tagEntryMatches(e, tags));
+  return ctx.onlyInPlaces && where.length > 0 && what.length > 0 ? inWhere && inWhat : inWhere || inWhat;
 }
 
-/** Rules 3-4 for one entry of `item` with `tags`. */
-function passes(ctx: ContextDef, item: ContextItem | null, tags: readonly string[]): boolean {
-  if (matchesAny(ctx.hides, item, tags)) return false;
-  return ctx.shows.length === 0 || matchesAny(ctx.shows, item, tags);
+const rowKey = (item: ContextItem) => `${item.kind}:${item.name}`;
+
+/** The rows `ctx` shows among `items`: the item itself, or its open todos and meetings from `today` on. */
+function shownRows(ctx: ContextDef, items: readonly ContextContentItem[], today: string): Set<string> {
+  const rows = new Set<string>();
+  for (const item of items) {
+    const content =
+      item.tasks.some(t => !t.done && !t.cancelled && shown(ctx, item, t.tags)) ||
+      item.meetings.some(m => !m.cancelled && m.date >= today && shown(ctx, item, m.tags));
+    if (content || shown(ctx, item, [])) rows.add(rowKey(item));
+    if (content && item.kind === 'project' && item.area) rows.add(`area:${item.area}`);
+  }
+  return rows;
 }
 
-export function contextMatcher(ctx: ContextDef | null): ContextMatcher {
+/**
+ * The matcher for `ctx` (null = Everything). Rows are worked out once from
+ * `items`; an item not among them is shown by its own entries only. Todos and
+ * meetings need no items.
+ */
+export function contextMatcher(ctx: ContextDef | null, items: readonly ContextContentItem[] = [], today = ''): ContextMatcher {
   if (!ctx) {
     return {context: null, itemShown: () => true, taskShown: () => true, meetingState: () => 'shown'};
   }
+  const rows = shownRows(ctx, items, today);
+  const known = new Set(items.map(rowKey));
   return {
     context: ctx,
-    itemShown: item => passes(ctx, item, []),
-    taskShown: (item, task) => {
-      if (item === 'inbox') return true;
-      return passes(ctx, item, task.tags);
-    },
+    itemShown: item => (known.has(rowKey(item)) ? rows.has(rowKey(item)) : shown(ctx, item, [])),
+    taskShown: (item, task) => item === 'inbox' || shown(ctx, item, task.tags),
     meetingState: (item, meeting) => {
-      if (item === 'inbox' || passes(ctx, item, meeting.tags)) return 'shown';
+      if (item === 'inbox' || shown(ctx, item, meeting.tags)) return 'shown';
       return ctx.outsideMeetings === 'show' ? 'shown' : 'dimmed';
     },
   };
 }
 
-/** What a filtered tab leaves out (D24): the hidden line's counts. */
+/** What a filtered tab leaves out: the hidden line's counts. */
 export interface HiddenTally {
   todos: number;
   loops: number;
@@ -166,16 +199,50 @@ export function hiddenLineText(contextName: string, tally: HiddenTally, itemNoun
   return parts.length > 0 ? `Hidden by ${contextName}: ${parts.join(' · ')}` : null;
 }
 
-/** "Saved to Team · hidden by Home" (§3.3): an entry Quick Add filed where the active context doesn't show it. */
+/** "Saved to Team · hidden by Home": an entry Quick Add filed where the active context doesn't show it. */
 export function hiddenAddText(ownerName: string, contextName: string): string {
   return `Saved to ${ownerName} · hidden by ${contextName}`;
 }
 
-/** The chip menu's one-line summary: "Shows Team, #reading · hides #computer"; "Shows everything". */
-export function contextSummary(ctx: ContextDef): string {
-  const label = (e: ContextEntry) => (e.kind === 'item' ? e.name : `#${e.tag}`);
-  const shows = ctx.shows.length > 0 ? `Shows ${ctx.shows.map(label).join(', ')}` : 'Shows everything';
-  return ctx.hides.length > 0 ? `${shows} · hides ${ctx.hides.map(label).join(', ')}` : shows;
+export interface ContextKinds {
+  loopKinds: readonly string[];
+  threadTypes: readonly string[];
+}
+
+/** "A, B and C"; more than three: "A, B and 3 more". */
+function joinList(labels: readonly string[], word: 'and' | 'or'): string {
+  if (labels.length > 3) return `${labels.slice(0, 2).join(', ')} ${word} ${labels.length - 2} more`;
+  if (labels.length <= 1) return labels.join('');
+  return `${labels.slice(0, -1).join(', ')} ${word} ${labels[labels.length - 1]}`;
+}
+
+function entryLabel(entry: ContextEntry, kinds: ContextKinds): string {
+  if (entry.kind === 'item') return entry.name;
+  if (kinds.loopKinds.includes(entry.tag)) return `all #${entry.tag} loops`;
+  if (kinds.threadTypes.includes(entry.tag)) return `all #${entry.tag} threads`;
+  return `#${entry.tag}`;
+}
+
+/** What `ctx` shows, as one sentence: "Show #computer in Work except #wifi"; Everything: "Show everything". */
+export function contextSentence(ctx: ContextDef | null, kinds: ContextKinds): string {
+  if (!ctx) return 'Show everything';
+  const labels = (entries: readonly ContextEntry[]) => entries.map(e => entryLabel(e, kinds));
+  const where = joinList(labels(ctx.shows.filter(e => e.kind === 'item')), 'and');
+  const what = joinList(labels(ctx.shows.filter(e => e.kind === 'tag')), 'or');
+  let show: string;
+  if (!where && !what) show = 'Show everything';
+  else if (!what) show = `Show ${where}`;
+  else if (!where) show = `Show ${what} everywhere`;
+  else show = ctx.onlyInPlaces ? `Show ${what} in ${where}` : `Show ${where}, plus ${what} everywhere`;
+  if (ctx.hides.length === 0) return show;
+  const placesOnly = ctx.hides.every(e => e.kind === 'item');
+  return `${show} except ${placesOnly ? 'in ' : ''}${joinList(labels(ctx.hides), 'and')}`;
+}
+
+/** A typed tag for a context: trimmed, without '#', lowercase; null when it isn't one tag a todo could carry. */
+export function normalizeContextTag(text: string): string | null {
+  const tag = normalizeSetupTag(text);
+  return tag && isWholeTag(tag) && isContextTag(tag) ? tag : null;
 }
 
 /** A new context's id: the next free `c<n>`. */
@@ -191,6 +258,28 @@ export function newContext(contexts: readonly ContextDef[], name = ''): ContextD
 
 export function sameEntry(a: ContextEntry, b: ContextEntry): boolean {
   return a.kind === 'item' ? b.kind === 'item' && a.itemKind === b.itemKind && a.name === b.name : b.kind === 'tag' && a.tag === b.tag;
+}
+
+/** The context as it is stored: a name, and `onlyInPlaces` only while it is on and Show names both parts. */
+export function storedContext(draft: ContextDef): ContextDef {
+  const {onlyInPlaces, ...rest} = draft;
+  const bothParts = rest.shows.some(e => e.kind === 'item') && rest.shows.some(e => e.kind === 'tag');
+  return {...rest, name: rest.name.trim() || 'Unnamed', ...(onlyInPlaces && bothParts ? {onlyInPlaces: true} : {})};
+}
+
+/** Whether saving `draft` would change `stored` (the editor's Save is active only then). */
+export function contextChanged(draft: ContextDef, stored: ContextDef | undefined): boolean {
+  if (!stored) return true;
+  const next = storedContext(draft);
+  const same = <T>(a: T, b: T) => JSON.stringify(a) === JSON.stringify(b);
+  return (
+    next.name !== stored.name ||
+    next.outsideMeetings !== stored.outsideMeetings ||
+    !!next.onlyInPlaces !== !!stored.onlyInPlaces ||
+    !same(next.minMinutes ?? null, stored.minMinutes ?? null) ||
+    !same(next.shows, stored.shows) ||
+    !same(next.hides, stored.hides)
+  );
 }
 
 /** `list` with `entry` added, or removed when it is in it. */
@@ -220,14 +309,13 @@ export function unknownContextEntries(contexts: readonly ContextDef[], items: re
 /** Open `#next` todos of the Active Projects and Areas `ctx` shows (Everything: all of them): the count next to each context. */
 export function nextCountOf(
   ctx: ContextDef | null,
-  items: ReadonlyArray<ContextItem & {status: string; loadError?: string; tasks: ReadonlyArray<Pick<Task, 'tags' | 'dueDate' | 'done' | 'cancelled' | 'flowState'>>}>,
-  today: string,
+  items: ReadonlyArray<ContextItem & {status: string; loadError?: string; tasks: ReadonlyArray<Pick<Task, 'tags' | 'done' | 'cancelled' | 'flowState'>>}>,
 ): number {
   const matcher = contextMatcher(ctx);
   let n = 0;
   for (const item of items) {
     if (item.loadError || item.status !== 'active') continue;
-    for (const task of item.tasks) if (!task.done && !task.cancelled && task.flowState === 'next' && matcher.taskShown(item, task, today)) n++;
+    for (const task of item.tasks) if (!task.done && !task.cancelled && task.flowState === 'next' && matcher.taskShown(item, task)) n++;
   }
   return n;
 }

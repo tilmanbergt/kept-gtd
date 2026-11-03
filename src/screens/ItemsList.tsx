@@ -35,12 +35,10 @@
  * `numberOfLines={2}`; since pagination is height-driven, the computed
  * height and the rendered row have to agree.
  *
- * The viewport-height constant (`FULL_VIEWPORT_PX`) is a screen budget
- * (docs/dev/design-device-rendering.md §6's method), a starting point to
- * tune on the device. It is used by the Areas tab's lone "On Hold" box; the
- * Projects tab's right column splits On Hold/Done by an equal 1:1 `flex`
- * weight instead (docs/dev/history/technical-design-flex-weight-stacking.md §3.2) -
- * see `columnRight`'s own render comment.
+ * Every box measures its own height (PagedSection without `viewportHeight`),
+ * so the columns fit any screen (docs/dev/history/technical-design-launch-ready.md
+ * §4.2); the Projects tab's right column splits On Hold/Done by an equal 1:1
+ * `flex` weight (docs/dev/history/technical-design-flex-weight-stacking.md §3.2).
  */
 import {NO_HIDDEN} from '../domain/contexts';
 import HiddenLine from '../ui/context/HiddenLine';
@@ -58,7 +56,6 @@ import ClipboardTextInput from '../ui/ClipboardTextInput';
 import PagedSection from '../ui/PagedSection';
 import {
   ABBREV_GAP,
-  COLUMN_WIDTH_PX,
   ItemEntryOptions,
   itemEntryAbbrevLabel,
   itemEntryHeight,
@@ -71,6 +68,7 @@ import {errorMessage} from '../utils/errorMessage';
 import HomeNotebookButton, {HOME_NOTEBOOK_ICON_HEIGHT, HOME_NOTEBOOK_ICON_WIDTH} from '../ui/HomeNotebookButton';
 import {useHomeNotebooks} from '../ui/useHomeNotebooks';
 import {useHomeNotebookTap} from '../ui/useHomeNotebookTap';
+import {estimatorWidth} from '../ui/ScreenSize';
 
 const CREATE_LABEL: Record<'project' | 'area', string> = {
   project: '+ Create Project',
@@ -82,7 +80,7 @@ const CREATE_PLACEHOLDER: Record<'project' | 'area', string> = {
   area: 'New area name',
 };
 
-// Two-column width (COLUMN_WIDTH_PX) and row-sizing helpers
+// Two-column width (estimatorWidth()) and row-sizing helpers
 // (itemEntryHeight/itemEntryLines) live in ui/itemEntryRow.ts
 // (docs/dev/history/technical-design-review-master-detail.md) so Review's
 // master-detail left lists can render rows with identical sizing/display
@@ -97,35 +95,14 @@ const ENTRY_OPTS: ItemEntryOptions = {showAbbrev: true, paddingPx: ENTRY_PADDING
 // With home notebooks on, the notebook icon takes its width from the text
 // and the row is at least as tall as its touch target
 // (docs/dev/history/technical-design-home-notebooks.md §3.3).
-const textWidth = (withIcon: boolean) => COLUMN_WIDTH_PX - (withIcon ? HOME_NOTEBOOK_ICON_WIDTH : 0);
+const textWidth = (withIcon: boolean) => estimatorWidth() - (withIcon ? HOME_NOTEBOOK_ICON_WIDTH : 0);
 const entryHeight = (item: CachedItem, withIcon: boolean) =>
   Math.max(itemEntryHeight(item, textWidth(withIcon), ENTRY_OPTS), withIcon ? HOME_NOTEBOOK_ICON_HEIGHT : 0);
 
-// --- Fresh screen budget for this screen's two-column area (docs/dev/design-
-// device-rendering.md §6) ---
-// Tab bar (~80) + screen content top padding (16), present on every screen.
-const GLOBAL_CHROME_PX = 96;
-// This screen's own create-row (name field + button) above the columns -
-// ui/ClipboardTextInput.tsx's input (paddingVertical 5x2 + borderWidth 1x2
-// + FONT.medium line ~21 = 33) is the taller sibling vs. the create button,
-// plus this row's own marginBottom (12).
-const CREATE_ROW_PX = 33 + 12;
-// Every PagedSection's own header row (ui/PagedSection.tsx's
-// styles.headerRow): paddingVertical 4x2 + FONT.small line ~18 +
-// marginBottom 4 + borderBottomWidth 1.
-const SECTION_HEADER_ROW_PX = 8 + 18 + 4 + 1;
 // Vertical gap between the right column's two stacked halves (On Hold /
 // Done) - SPACING.md (12px), same gap this screen's own createRow uses
 // below itself.
 const HALF_BOX_GAP_PX = 12;
-
-// Both columns share the same vertical bounds (design-device-rendering.md
-// §6 point 4) - the height available to either column's own PagedSection(s),
-// below the global chrome and this screen's create-row.
-const COLUMN_BUDGET_PX = 1872 - GLOBAL_CHROME_PX - CREATE_ROW_PX; // ≈ 1731
-// "Active" (left column) and the Areas tab's lone "On Hold" (right column,
-// unsplit) are both a single full-height PagedSection.
-const FULL_VIEWPORT_PX = COLUMN_BUDGET_PX - SECTION_HEADER_ROW_PX; // ≈ 1700
 
 interface Props {
   kind: 'project' | 'area';
@@ -334,13 +311,10 @@ export default function ItemsList({kind, onOpenItem}: Props): React.JSX.Element 
       {cache && allEntries.length > 0 && (
         <View style={styles.twoColumn}>
           <View style={styles.columnLeft}>
-            {/* Self-measured - `viewportHeight` deliberately omitted: this is the only thing
-                in columnLeft (flex:1, common.container's own flex:1 chain
-                above it), so ui/PagedSection.tsx's own flex:1+onLayout gets
-                exactly this column's real available height instead of
-                FULL_VIEWPORT_PX's hand-derived estimate. columnRight's
-                'area'-kind branch uses FULL_VIEWPORT_PX on purpose (see
-                that branch's own comment). */}
+            {/* Self-measured (`viewportHeight` omitted): the only thing in
+                columnLeft (flex:1, common.container's own flex:1 chain above
+                it), so ui/PagedSection.tsx's own flex:1+onLayout gets exactly
+                this column's real available height. */}
             <PagedSection
               header="Active"
               rows={groups.active}
@@ -384,15 +358,12 @@ export default function ItemsList({kind, onOpenItem}: Props): React.JSX.Element 
                 </View>
               </>
             ) : (
-              // Deliberately on the explicit FULL_VIEWPORT_PX constant
-              // rather than self-measuring (which columnRight's
-              // flex:1/sole-occupant shape would make possible, same as
-              // columnLeft above).
+              // Self-measured like columnLeft: the sole occupant of
+              // columnRight (flex:1), so it gets the real height on any screen.
               <PagedSection
                 header="On Hold"
                 rows={groups.onHold}
                 rowHeight={rowHeight}
-                viewportHeight={FULL_VIEWPORT_PX}
                 renderRow={renderEntry}
                 emptyHint="Nothing on hold."
                 textColor={textColor}

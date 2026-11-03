@@ -1,15 +1,14 @@
 /**
  * Settings → Contexts, left column (docs/dev/history/technical-design-time-and-place.md
  * §3.3): "+ New context", the built-in Everything (not editable) and the
- * contexts with their one-line summary and how many `#next` todos they show.
+ * contexts with their sentence and how many `#next` todos they show.
  * Each row starts with a radio: a tap there makes it the active context (the
  * tab bar's chip opens this tab); a tap on the rest of a row opens it in the
  * editor (Everything with only its Given time threshold).
  */
 import React from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
-import {ContextDef, contextSummary, EVERYTHING_LABEL, nextCountOf} from '../../../domain/contexts';
-import {todayIso} from '../../../domain/meetingTime';
+import {ContextDef, ContextKinds, contextSentence, EVERYTHING_LABEL, nextCountOf} from '../../../domain/contexts';
 import PagedSection from '../../../ui/PagedSection';
 import {FONT} from '../../../ui/theme';
 import {useCachedItems} from '../../../ui/useCachedItems';
@@ -25,13 +24,13 @@ interface Props {
   onEditEverything: () => void;
   everythingOpen: boolean;
   onActivate: (id: string) => void;
+  kinds: ContextKinds;
   textColor: string;
   borderColor: string;
 }
 
-export default function ContextsList({contexts, activeId, openId, onNew, onEdit, onEditEverything, everythingOpen, onActivate, textColor, borderColor}: Props): React.JSX.Element {
+export default function ContextsList({contexts, activeId, openId, onNew, onEdit, onEditEverything, everythingOpen, onActivate, kinds, textColor, borderColor}: Props): React.JSX.Element {
   const items = useCachedItems();
-  const today = todayIso();
   const radio = (id: string, name: string) => {
     const on = id === activeId;
     return (
@@ -46,7 +45,7 @@ export default function ContextsList({contexts, activeId, openId, onNew, onEdit,
       </Pressable>
     );
   };
-  const meta = (summary: string, ctx: ContextDef | null) => `${nextCountOf(ctx, items, today)} next · ${summary}`;
+  const meta = (summary: string, ctx: ContextDef | null) => `${nextCountOf(ctx, items)} next · ${summary}`;
 
   return (
     <View style={setupStyles.page}>
@@ -79,7 +78,7 @@ export default function ContextsList({contexts, activeId, openId, onNew, onEdit,
                   {c.name || 'Unnamed'}
                 </Text>
                 <Text style={[setupStyles.setupRowMeta, {color: textColor}]} numberOfLines={1}>
-                  {meta(contextSummary(c), c)}
+                  {meta(contextSentence(c, kinds), c)}
                 </Text>
               </Pressable>
             </View>

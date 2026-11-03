@@ -11,7 +11,8 @@ import {DailyItemRef} from '../../storage/dailyAggregate';
 import {common} from '../../ui/commonStyles';
 import PagedSection from '../../ui/PagedSection';
 import {taskRowHeight} from '../../ui/TaskRow';
-import {COLUMN_WIDTH_PX, FlatTaskRow, GROUP_HEADER_ROW_PX} from './dailyRows';
+import {FlatTaskRow, GROUP_HEADER_ROW_PX} from './dailyRows';
+import {estimatorWidth} from '../../ui/ScreenSize';
 
 interface Props {
   /** Quick Add or the selected item's card. */
@@ -21,7 +22,6 @@ interface Props {
   rows: FlatTaskRow[];
   renderEntry: (row: Extract<FlatTaskRow, {kind: 'entry'}>, heightPx: number) => React.ReactNode;
   onOpenItem: (item: DailyItemRef) => void;
-  tagFilter: string | null;
   failedItemNames: string[];
   /** The hidden line (ui/context/HiddenLine.tsx) under the list. */
   footer?: React.ReactNode;
@@ -29,8 +29,8 @@ interface Props {
   borderColor: string;
 }
 
-export default function DailyTodosColumn({quickAdd, panel, rows, renderEntry, onOpenItem, tagFilter, failedItemNames, footer, textColor, borderColor}: Props): React.JSX.Element {
-  const rowHeight = (row: FlatTaskRow) => (row.kind === 'header' ? GROUP_HEADER_ROW_PX : taskRowHeight(row.entry.task, COLUMN_WIDTH_PX, 'flat', tagFilter != null));
+export default function DailyTodosColumn({quickAdd, panel, rows, renderEntry, onOpenItem, failedItemNames, footer, textColor, borderColor}: Props): React.JSX.Element {
+  const rowHeight = (row: FlatTaskRow) => (row.kind === 'header' ? GROUP_HEADER_ROW_PX : taskRowHeight(row.entry.task, estimatorWidth(), 'flat'));
   const renderRow = (row: FlatTaskRow) => {
     if (row.kind === 'header') {
       // Natural height: clipping it to GROUP_HEADER_ROW_PX would cut the text; the list measures its real viewport.
@@ -53,11 +53,10 @@ export default function DailyTodosColumn({quickAdd, panel, rows, renderEntry, on
         header="Next todos"
         rows={rows}
         rowHeight={rowHeight}
-        resetKey={tagFilter ?? '__off__'}
         heightKey="daily:todos"
         isCountableRow={row => row.kind === 'entry'}
         renderRow={renderRow}
-        emptyHint={tagFilter ? `Nothing tagged #${tagFilter}.` : 'Nothing open - inbox zero!'}
+        emptyHint="Nothing open - inbox zero!"
         textColor={textColor}
         borderColor={borderColor}
       />

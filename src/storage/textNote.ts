@@ -15,6 +15,8 @@ import {TextPage} from '../domain/textPagination';
 import {createNote, insertElements, insertNotePage} from '../supernote/noteFileApi';
 import {buildTextboxElement} from '../supernote/noteElements';
 import {log} from '../utils/log';
+import {placeFontSize, placeRect} from '../domain/pageFrame';
+import {readPageFrame} from './pageFrames';
 
 /**
  * Page geometry, from the sister project's tested import defaults (A5X page,
@@ -53,13 +55,23 @@ export async function createTextNote(params: CreateTextNoteParams): Promise<void
   await createNote(absolutePath, template, true);
   for (let i = 0; i < pages.length; i++) {
     if (i > 0) await insertNotePage(absolutePath, i, template);
+    // Laid out for the A5 X page and placed on this note's real page size
+    // (docs/dev/history/technical-design-launch-ready.md §5): on a Manta every
+    // figure scales by the same factor, so the text paginates the same.
+    const frame = await readPageFrame(absolutePath, i);
+    const placed = placeRect(
+      {
+        x: TEXT_NOTE_MARGIN_LEFT,
+        y: TEXT_NOTE_MARGIN_TOP,
+        width: TEXT_NOTE_RECT_WIDTH_PX,
+        height: Math.max(1, Math.min(TEXT_NOTE_RECT_HEIGHT_PX, pages[i].heightPx)),
+      },
+      frame,
+    );
     const textbox = await buildTextboxElement({
       text: pages[i].text,
-      x: TEXT_NOTE_MARGIN_LEFT,
-      y: TEXT_NOTE_MARGIN_TOP,
-      width: TEXT_NOTE_RECT_WIDTH_PX,
-      height: Math.max(1, Math.min(TEXT_NOTE_RECT_HEIGHT_PX, pages[i].heightPx)),
-      fontSize: TEXT_NOTE_FONT_SIZE,
+      ...placed,
+      fontSize: placeFontSize(TEXT_NOTE_FONT_SIZE, frame),
       pageNum: i,
     });
     await insertElements(absolutePath, i, [textbox]);

@@ -8,11 +8,6 @@ export const FILE_WRITE_PERMISSION = 'plugin.permission.FILE:WRITE';
 export const FILE_DELETE_PERMISSION = 'plugin.permission.FILE:DELETE';
 export const INTERNET_PERMISSION = 'plugin.permission.INTERNET';
 
-type PermissionAwareManager = typeof PluginManager & {
-  hasPermission?: (name: string) => Promise<number>;
-  requestPermission?: (name: string, desc?: string) => Promise<number>;
-};
-
 const pending = new Map<string, Promise<boolean>>();
 
 /**
@@ -70,28 +65,15 @@ function withTimeout<T>(promise: Promise<T>, label: string): Promise<T> {
 }
 
 /**
- * Requests a plugin.permission.* grant if the host exposes the runtime
- * permission API (the firmware shipping alongside sn-plugin-lib 0.1.65+,
- * see sdk-migration-0.1.65-analysis.md). On older hosts without
- * hasPermission/requestPermission, treats the operation as already allowed
- * rather than blocking on an API that doesn't exist there. A grant is
- * remembered for the session (see `granted` above).
+ * Requests a plugin.permission.* grant through the host's runtime permission
+ * API. A grant is remembered for the session (see `granted` above); a denial,
+ * an error or a timeout resolves false.
  */
 export async function ensurePluginPermission(
   permission: string,
   description: string,
 ): Promise<boolean> {
-  const manager = PluginManager as PermissionAwareManager;
   if (granted.has(permission)) return true;
-
-  if (
-    typeof manager.hasPermission !== 'function' ||
-    typeof manager.requestPermission !== 'function'
-  ) {
-    log('ensurePluginPermission: host has no runtime permission API, treating as granted', permission);
-    granted.add(permission);
-    return true;
-  }
 
   const existing = pending.get(permission);
   if (existing) return existing;
@@ -101,7 +83,7 @@ export async function ensurePluginPermission(
     try {
       log('ensurePluginPermission: calling hasPermission', permission);
       const has = Number(
-        await withTimeout(manager.hasPermission!(permission), `hasPermission(${permission})`),
+        await withTimeout(PluginManager.hasPermission(permission), `hasPermission(${permission})`),
       );
       log('ensurePluginPermission: hasPermission', permission, '=>', has);
       if (has > 0) {
@@ -112,7 +94,7 @@ export async function ensurePluginPermission(
       log('ensurePluginPermission: calling requestPermission', permission);
       const requested = Number(
         await withTimeout(
-          manager.requestPermission!(permission, description),
+          PluginManager.requestPermission(permission, description),
           `requestPermission(${permission})`,
         ),
       );
@@ -135,6 +117,25 @@ export async function ensurePluginPermission(
   } finally {
     pending.delete(permission);
     perfEnd('io:permission', perfToken, {permission});
+  }
+}
+
+/**
+ * Whether `permission` is granted, without ever showing a dialog: the session's grant, else the
+ * host's hasPermission (a grant found there is remembered like one from ensurePluginPermission).
+ * A timeout or an error reads as not granted. For checks the user didn't ask for, such as the
+ * daily update check (docs/dev/history/technical-design-in-app-updates.md §4).
+ */
+export async function hasPluginPermission(permission: string): Promise<boolean> {
+  if (granted.has(permission)) return true;
+  try {
+    const has = Number(await withTimeout(PluginManager.hasPermission(permission), `hasPermission(${permission})`)) > 0;
+    log('hasPluginPermission:', permission, '=>', has);
+    if (has) granted.add(permission);
+    return has;
+  } catch (e) {
+    logError('hasPluginPermission: error', permission, errorMessage(e));
+    return false;
   }
 }
 
@@ -164,13 +165,15 @@ export function ensureFileDeletePermission(description: string): Promise<boolean
 
 /**
  * The network-touching operations - Google Calendar's ICS fetch
- * (storage/googleCalendarCache.ts) and the Gmail IMAP calls
- * (storage/gmailImapNative.ts) - call this immediately before connecting,
- * never eagerly and never from Settings just because a URL was typed in.
- * Both integrations are opt-in (Settings -> Advanced, off by default).
+ * (storage/googleCalendarCache.ts), the Gmail IMAP calls
+ * (storage/gmailImapNative.ts) and the GitHub update check and download
+ * (storage/updates.ts) - call this immediately before connecting, never
+ * eagerly and never from Settings just because a URL was typed in. The
+ * integrations are opt-in (off by default); the update check runs when the
+ * user taps Check now or Download, or once a day if they switched that on.
  */
 export function ensureInternetPermission(
-  description = 'Allow Kept GTD to connect to Google Calendar or Gmail - only when you tap Load or Refresh.',
+  description = 'Allow Kept GTD to connect to Google Calendar, Gmail or GitHub (updates) - only when you tap, or once a day if you switched on the update check.',
 ): Promise<boolean> {
   return ensurePluginPermission(INTERNET_PERMISSION, description);
 }

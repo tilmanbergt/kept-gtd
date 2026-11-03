@@ -17,6 +17,10 @@ const ALLOWED: RegExp[] = [
   /\bopenGtdpara\b/g, // ENGAGE_TEXT key
   /Formerly gtdpara/g, // About (R9)
   /^\/storage\/emulated\/0\/EXPORT\/gtdpara$/, // LEGACY_EXPORT_ROOT, the export folder of 0.19 and older (the whole literal)
+  /^gtdpara:$/, // the store-key prefix Remove Kept's data filters by (the whole literal)
+  /\/Note\/gtdpara-demo$/, // the demo folder of 0.19 and older, offered by Remove Kept's data
+  /EXPORT\/gtdpara, Note\/gtdpara-demo/g, // where Remove Kept's data says those two folders are
+  /^Old gtdpara folders$/, // that row's label: the folders are named so on the device
 ];
 
 const LITERAL_KINDS = new Set([

@@ -70,6 +70,7 @@ import {
   Text,
   View,
 } from 'react-native';
+import {useShortScreen} from '../ui/ScreenSize';
 import {Meeting, Task} from '../domain/types';
 import {AbbrevFileMatch} from '../domain/abbrev';
 import {Destination} from '../domain/destination';
@@ -117,8 +118,8 @@ import MeetingsSection from './projectData/MeetingsSection';
 // Flex weights (docs/dev/history/technical-design-flex-weight-stacking.md §3.3) -
 // TodosSection and MeetingsSection are each the sole occupant of their own
 // weighted `<View style={{flex: weight}}>` box inside `styles.stackedColumn`
-// below, and self-measure into it (no `viewportHeight` props). 4:3 is the
-// ratio of `PAGE_SIZE.projectTodos`/`projectMeetings` (8:6).
+// below, and self-measure into it (no `viewportHeight` props). Todos is
+// usually the longer list, so it gets the bigger share.
 const TODOS_WEIGHT = 4;
 const MEETINGS_WEIGHT = 3;
 
@@ -179,6 +180,7 @@ export default function ProjectDataPanel({
   onSeedUsed,
 }: Props): React.JSX.Element {
   usePerfRender('ProjectDataPanel');
+  const short = useShortScreen();
   const marksScope: MarkScope = useMemo(() => ({type: 'item', path}), [path]);
   const {textColor, borderColor, placeholderColor} = useThemeColors();
 
@@ -698,6 +700,53 @@ export default function ProjectDataPanel({
     );
   }
 
+  // The Todos (or the agreements list in their place), stacked above the schedule or, on a short
+  // screen, behind the schedule's first tab.
+  const todosContent = (
+    <>
+      {showAgreements && agreements.refs.length > 0 ? (
+            <AgreementsList refs={agreements.refs} agreements={agreements.actions} onBack={() => setShowAgreements(false)} textColor={textColor} borderColor={borderColor} />
+          ) : (
+          <TodosSection
+            itemPath={path}
+            tasks={state.tasks}
+            onSave={withTasks}
+            editingIndex={editTarget?.type === 'task' ? editTarget.index : null}
+            armingIndex={armTarget?.type === 'task' ? armTarget.index : null}
+            onStartEdit={index => selectEdit({type: 'task', index})}
+            onArmLink={index => armLinkTarget('task', index)}
+            onOpenLinkedFile={onOpenLinkedFile}
+            filter={predicates?.task}
+            loops={item?.loops}
+            textColor={textColor}
+            borderColor={borderColor}
+            footer={<AgreementsLink count={agreements.refs.length} onOpen={() => setShowAgreements(true)} textColor={textColor} />}
+          />
+          )}
+    </>
+  );
+
+  const meetingsSection = (leadingTab: {label: string; content: React.ReactNode} | null) => (
+    <MeetingsSection
+      leadingTab={leadingTab}
+      kind={kind}
+      name={name}
+      itemPath={path}
+      meetings={state.meetings}
+      onSave={withMeetings}
+      onOpenCalendarSettings={onOpenCalendarSettings}
+      editingIndex={editTarget?.type === 'meeting' ? editTarget.index : null}
+      editMode={cardOrEdit(editMode)}
+      armingIndex={armTarget?.type === 'meeting' ? armTarget.index : null}
+      onSelect={index => selectEdit({type: 'meeting', index})}
+      onOpenLinkedFile={onOpenLinkedFile}
+      filter={predicates?.meeting}
+      textColor={textColor}
+      borderColor={borderColor}
+      placeholderColor={placeholderColor}
+    />
+  );
+
   return (
     // Plain View, not ScrollView (docs/dev/technical-design-pagination-edit-
     // reuse.md §2/§4) - Todos/Meetings below are each their own paginated,
@@ -749,48 +798,18 @@ export default function ProjectDataPanel({
           `flex` weights. Each section is the sole
           occupant of its own weighted box and self-measures into it - see
           TodosSection's/MeetingsSection's own PagedSection calls. */}
+      {/* Short screens: Todos become the first tab of the schedule's tab row instead of a section of
+          their own (docs/dev/history/technical-design-launch-ready.md L6c). */}
       <View style={styles.stackedColumn}>
-        <View style={{flex: TODOS_WEIGHT}}>
-          {showAgreements && agreements.refs.length > 0 ? (
-            <AgreementsList refs={agreements.refs} agreements={agreements.actions} onBack={() => setShowAgreements(false)} textColor={textColor} borderColor={borderColor} />
-          ) : (
-          <TodosSection
-            itemPath={path}
-            tasks={state.tasks}
-            onSave={withTasks}
-            editingIndex={editTarget?.type === 'task' ? editTarget.index : null}
-            armingIndex={armTarget?.type === 'task' ? armTarget.index : null}
-            onStartEdit={index => selectEdit({type: 'task', index})}
-            onArmLink={index => armLinkTarget('task', index)}
-            onOpenLinkedFile={onOpenLinkedFile}
-            filter={predicates?.task}
-            loops={item?.loops}
-            textColor={textColor}
-            borderColor={borderColor}
-            footer={<AgreementsLink count={agreements.refs.length} onOpen={() => setShowAgreements(true)} textColor={textColor} />}
-          />
-          )}
-        </View>
-        <View style={[styles.divider, {backgroundColor: borderColor}]} />
-        <View style={{flex: MEETINGS_WEIGHT}}>
-          <MeetingsSection
-            kind={kind}
-            name={name}
-            itemPath={path}
-            meetings={state.meetings}
-            onSave={withMeetings}
-            onOpenCalendarSettings={onOpenCalendarSettings}
-            editingIndex={editTarget?.type === 'meeting' ? editTarget.index : null}
-            editMode={cardOrEdit(editMode)}
-            armingIndex={armTarget?.type === 'meeting' ? armTarget.index : null}
-            onSelect={index => selectEdit({type: 'meeting', index})}
-            onOpenLinkedFile={onOpenLinkedFile}
-            filter={predicates?.meeting}
-            textColor={textColor}
-            borderColor={borderColor}
-            placeholderColor={placeholderColor}
-          />
-        </View>
+        {short ? (
+          meetingsSection({label: 'Todos', content: todosContent})
+        ) : (
+          <>
+            <View style={{flex: TODOS_WEIGHT}}>{todosContent}</View>
+            <View style={[styles.divider, {backgroundColor: borderColor}]} />
+            <View style={{flex: MEETINGS_WEIGHT}}>{meetingsSection(null)}</View>
+          </>
+        )}
       </View>
     </View>
   );

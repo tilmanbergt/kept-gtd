@@ -2,12 +2,16 @@
  * The setup assistant's reads and writes (docs/dev/history/technical-design-easy-start.md §5.3-5.4):
  * one look at the base folder (its folders and how many subfolders each has),
  * and Finish - the choices saved through the normal save path (refused while
- * the stored settings are unreadable), then only the missing folders created.
+ * the stored settings are unreadable), then only the missing folders created,
+ * then, when the daily update check was chosen, the INTERNET permission asked
+ * once, so the check itself never needs a dialog
+ * (docs/dev/history/technical-design-in-app-updates.md §6.4).
  * Nothing is moved, renamed or deleted. Logs counts only.
  */
 import {FinishPlan, RootEntry} from '../domain/setupAssistant';
 import {GtdParaSettings, resolvePaths} from '../domain/settings';
 import {ensureFolderExists, listFolderEntries} from '../supernote/fileSystem';
+import {ensureInternetPermission} from '../supernote/pluginPermissions';
 import {errorMessage} from '../utils/errorMessage';
 import {log, logError, logWarn} from '../utils/log';
 import {clearCachedData} from './dataCache';
@@ -45,7 +49,11 @@ export interface FinishResult {
   settings: GtdParaSettings;
 }
 
-/** Saves the plan's settings, then creates its missing folders in order. A save that fails throws and creates nothing. */
+/**
+ * Saves the plan's settings, then creates its missing folders in order, then asks for INTERNET
+ * when the daily update check was chosen (a refusal keeps the choice). A save that fails throws
+ * and creates nothing.
+ */
 export async function finishSetup(plan: FinishPlan): Promise<FinishResult> {
   const saved = await patchSettings(plan.settingsPatch);
   // The cache was built for the folders before.
@@ -62,7 +70,8 @@ export async function finishSetup(plan: FinishPlan): Promise<FinishResult> {
       failed.push(name);
     }
   }
-  log('setupAssistant: finished', `created ${created.length}`, `failed ${failed.length}`);
+  log('setupAssistant: finished', `created ${created.length}`, `failed ${failed.length}`, `updates ${saved.updateCheck}`);
+  if (saved.updateCheck === 'daily') await ensureInternetPermission();
   return {created, failed, base, settings: saved};
 }
 

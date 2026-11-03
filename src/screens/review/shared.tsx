@@ -10,9 +10,10 @@ import {CachedItem} from '../../storage/dataCache';
 import {NO_RETAINED_FOCUS} from '../../storage/projectFile';
 import {ReviewItemRef} from '../../storage/reviewAggregate';
 import {SettableStatus} from '../../storage/statusControl';
-import {COLUMN_WIDTH_PX, itemEntryDisplayText, itemEntryHeight, itemEntryLines} from '../../ui/itemEntryRow';
+import {itemEntryDisplayText, itemEntryHeight, itemEntryLines} from '../../ui/itemEntryRow';
 import {styles} from './reviewStyles';
 import {ReviewData} from './useReviewData';
+import {estimatorWidth} from '../../ui/ScreenSize';
 
 export interface ReviewColors {
   textColor: string;
@@ -121,7 +122,7 @@ export function ReviewLeftRow({
   textColor: string;
   borderColor: string;
 }): React.JSX.Element {
-  const heightPx = itemEntryHeight(current, COLUMN_WIDTH_PX);
+  const heightPx = itemEntryHeight(current, estimatorWidth());
   return (
     <View
       style={[
@@ -131,7 +132,7 @@ export function ReviewLeftRow({
       ]}>
       <Text
         style={[styles.masterRowText, {color: textColor}, actedOn && styles.masterRowActedOn]}
-        numberOfLines={itemEntryLines(current, COLUMN_WIDTH_PX)}>
+        numberOfLines={itemEntryLines(current, estimatorWidth())}>
         {actedOn ? '✓ ' : ''}
         {itemEntryDisplayText(current)}
       </Text>

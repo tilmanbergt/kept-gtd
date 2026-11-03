@@ -3,8 +3,7 @@ import {isWaitingForShownOnDaily} from '../../src/domain/flowState';
 import {task} from '../../test-helpers/fixtures';
 
 const TODAY = '2026-10-04';
-const texts = (t: string, context: 'flat' | 'grouped' = 'flat', contextActive = false) =>
-  taskLabels(task(t), context, TODAY, contextActive).map(l => l.text);
+const texts = (t: string, context: 'flat' | 'grouped' = 'flat') => taskLabels(task(t), context, TODAY).map(l => l.text);
 
 describe('taskLabels - flat', () => {
   it('#next, and a retired #now as #next', () => {
@@ -22,9 +21,8 @@ describe('taskLabels - flat', () => {
     expect(label.endsWith('…')).toBe(true);
     expect(label.length).toBeLessThanOrEqual('#w/f '.length + 20);
   });
-  it('#someday only under an active tag filter', () => {
+  it('#someday gets no label', () => {
     expect(texts('Idea #someday')).toEqual([]);
-    expect(texts('Idea #someday', 'flat', true)).toEqual(['#someday']);
   });
   it('due and overdue after the flow state', () => {
     expect(texts('Price sheet #next #due:2026-10-05')).toEqual(['#next', '#due 5.10.']);
@@ -53,7 +51,7 @@ describe('displayTaskText / isFlowStateConveyed', () => {
     expect(displayTaskText(task('NDA #waiting-for'), 'flat')).toBe('NDA');
     expect(displayTaskText(task('NDA #waiting-for:meier #due:2026-10-05'), 'flat')).toBe('NDA');
   });
-  it('keeps #someday in a flat list without tag filter', () => {
+  it('keeps #someday in a flat list', () => {
     expect(isFlowStateConveyed(task('Idea #someday'), 'flat')).toBe(false);
     expect(displayTaskText(task('Idea #someday'), 'flat')).toBe('Idea #someday');
   });

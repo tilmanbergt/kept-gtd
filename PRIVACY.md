@@ -14,6 +14,10 @@ Kept GTD is a local plugin. There is no account, no server and no telemetry.
   selection, plus the text once it is recognized, in the plugin's own private folder on the device -
   not in your folders. They are deleted when the mark is processed or discarded. Recognition runs
   on the device.
+- **Downloaded updates**: when you tap **Download** in Settings → About or in the update notice,
+  the release file `kept-gtd-X.Y.Z.snplg` is saved to `MyStyle/kept-gtd/`, after being checked in the
+  plugin's private folder. Kept never deletes files there. The date of the last update check, the
+  version it found and your "not now" are kept in the plugin settings storage.
 - **Temporary files** while a close-out PDF is made (page images and the unfinished PDF), in the
   plugin's own private folder on the device - not in your folders. They are removed when the PDF
   is done, and on the next start if Kept was interrupted.
@@ -22,11 +26,12 @@ Kept GTD is a local plugin. There is no account, no server and no telemetry.
 
 Each permission is requested right before the first action that needs it:
 
-- **File read / file write**: your PARA folders and `EXPORT/kept-gtd`.
-- **File delete**: only after you confirmed a delete that names what is deleted - in practice the
-  empty folder left behind when an area is archived into an Archive folder that already exists.
-  Kept never deletes notes or files.
-- **Internet**: only for the two optional integrations below.
+- **File read / file write**: your PARA folders, `EXPORT/kept-gtd`, and `MyStyle/kept-gtd` for a
+  downloaded update.
+- **File delete**: only after you confirmed a delete that names what is deleted - the empty folder
+  left behind when an area is archived into an Archive folder that already exists, and what you
+  check in **Remove Kept's data** (below). Kept never deletes notes.
+- **Internet**: only for the two optional integrations and the update check below.
 
 ## Changes to your files
 
@@ -39,16 +44,30 @@ changes to your files.
 into a check mark, discarding it removes the icon. Kept changes only its own icons, never your
 handwriting. In a PDF, or where an icon can't be identified safely, it is left as it is.
 
+## Removing Kept's data
+
+**Remove Kept's data** (Settings → Data) lists everything Kept has put on the device, with where
+it is and how much: settings, the Gmail app password and calendar link, caches (recent tags and
+places, the calendar cache), lasso mark pictures and temporary files, logs, the demo space, old
+gtdpara folders and leftover save copies. Your data files (`project.txt`, `area.txt`,
+`Inbox.txt`) and saved profiles are listed too, but not checked. You tick what to remove; one
+confirmation names it before anything is deleted. Notes Kept created, its icons, keywords and
+headings inside your notes, empty folders and archive PDFs are never touched.
+
 ## Network access
 
-Kept only goes online for the two optional integrations, and only when you tap Load/Refresh:
+Kept only goes online for the two optional integrations, when you tap Load/Refresh, and for the
+update check, when you tap Check now or Download, or once a day if you switched that on:
 
-| Integration | Connects to | What is sent |
+| Feature | Connects to | What is sent |
 |---|---|---|
 | Google Calendar | the private ICS link you entered | a normal HTTPS download of your calendar file |
 | Gmail | `imap.gmail.com` (or the IMAP host you set) | your email address and app password, to read your inbox and archive messages you choose |
+| Update check | `api.github.com` (the latest release of Kept GTD), and for a download `github.com` and the GitHub file host it redirects to | a normal HTTPS request with the user agent `KeptGTD/<version>`; nothing else |
 
-If neither is configured, Kept makes no network connections.
+If neither integration is configured and you never check for updates, Kept makes no network
+connections. Releases on GitHub are not reviewed or approved by Ratta; you install them yourself,
+at your own risk.
 
 ## Credentials
 
@@ -63,23 +82,22 @@ Diagnostic output goes to the Android system log (`logcat`) on your device, and 
 lines are kept in memory while the plugin runs. Nothing is uploaded, and nothing is written to a
 file unless you switch it on.
 
-- **Debug logging** (Settings → About, off by default) also writes these lines to
+- **Debug logging** (Settings → Advanced, off by default) also writes these lines to
   `EXPORT/kept-gtd/debug/kept-gtd-log.txt`. When it reaches about 1 MB its content is copied over
   `kept-gtd-log.1.txt` and it starts again, so there are at most two files.
 - **Run Integrity Check** (Settings → Advanced) saves its report there too.
-- **Export debug bundle** (Settings → About) saves one text file to the same folder: version,
+- **Export debug bundle** (Settings → Advanced) saves one text file to the same folder: version,
   device, a settings summary without names, counts, and the recent log. The Gmail app password,
   calendar links and e-mail addresses are removed from it. File paths stay in it, because they
   are needed for debugging, and they can contain your project names.
 - Optional performance tracing (Settings → Advanced, off by default) writes timing files there too.
-- **Touch test** (Settings → Advanced): **Save log** writes the positions and timings of your taps
-  on its sample rows to the same folder; no texts. **Log touches everywhere** (off after every
-  start) puts the position and timing of each tap into the log above.
+- **Check screen and pages** (Settings → Advanced, while Debug logging is on) creates a test note
+  in the same folder and shows sizes; it writes nothing into your notes.
 
 ## Profiles
 
-Profiles (Settings → Advanced) are saved as JSON files in `EXPORT/kept-gtd/profiles`. They contain
-your folder names, focus counts, Tag Rules, review dates, experimental switches, the todo you are
+Profiles (Settings → Data) are saved as JSON files in `EXPORT/kept-gtd/profiles`. They contain
+your folder names, Note setups, contexts, review dates, the feature switches, the todo you are
 working on in Engage (its text and folder) and your Gmail address, but never the Gmail app password or the calendar link - those stay inside the plugin.
 On its first start, Kept copies the profiles that gtdpara saved in `EXPORT/gtdpara/profiles` into
 this folder once, and leaves the old folder as it is.

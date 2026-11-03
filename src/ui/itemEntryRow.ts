@@ -5,16 +5,13 @@
  * (Stalled projects, Neglected areas, Done awaiting review, On Hold
  * reconsideration) so both use the same sizing/display logic.
  *
- * `COLUMN_WIDTH_PX` (678) is the app's established equal-two-column figure
- * (docs/dev/design-device-rendering.md §5.1: 1372px usable width, 16px gutter,
- * (1372-16)/2 = 678 per column) - both ItemsList.tsx's own two columns and
- * Review's 50/50 master-detail split reuse this same constant.
+ * Row heights take the column figure of the line estimators as a parameter;
+ * callers pass ui/ScreenSize.tsx's `estimatorWidth()`.
  */
 import {CachedItem} from '../storage/dataCache';
 import {activeLineEstimator} from '../domain/textLineEstimator';
 import {FONT} from './theme';
 
-export const COLUMN_WIDTH_PX = 678;
 const MAX_LINES = 2;
 // Same FONT.medium line-height estimate ui/TaskRow.tsx's
 // TASK_ROW_LINE_HEIGHT_PX and ui/FileBrowserPane.tsx's

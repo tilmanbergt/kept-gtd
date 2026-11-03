@@ -26,7 +26,6 @@
  * exactly the kind of thing an integrity check should surface.
  */
 import {
-  checkLegacyInboxLeftovers,
   checkUnknownContextEntries,
   checkWriteLeftovers,
   formatIntegrityReport,
@@ -190,10 +189,9 @@ export async function runIntegrityCheck(settings: GtdParaSettings): Promise<Inte
   // and threaded into every per-item check run below.
   const io: IntegrityCheckIO = {fileExists, folderExists};
 
-  const [projectEntries, areaEntries, rootEntries] = await Promise.all([
+  const [projectEntries, areaEntries] = await Promise.all([
     listFolderEntries(paths.projects),
     listFolderEntries(paths.areas),
-    listFolderEntries(paths.base),
   ]);
 
   const targets: ScanTarget[] = [
@@ -269,11 +267,6 @@ export async function runIntegrityCheck(settings: GtdParaSettings): Promise<Inte
     .map(result => result.summary)
     .filter((summary): summary is ScannedItemSummary => summary !== null);
   const wholeRunFindings = runWholeRunChecks(summaries);
-  const leftoverFindings = checkLegacyInboxLeftovers(
-    rootEntries.map(e => ({name: e.name, isFolder: e.isFolder})),
-    paths.base,
-    paths.inboxFolder,
-  );
   // Unsafe file names (docs/dev/history/technical-design-files-0.6.md §3.5).
   const loaded = perTargetResults.map(result => result.loaded).filter((l): l is LoadedEntries => l !== null);
   const {fixes, reportOnly} = planFileNameFixes(await collectUnsafeNoteRefs(loaded));
@@ -284,7 +277,6 @@ export async function runIntegrityCheck(settings: GtdParaSettings): Promise<Inte
   const findings = [
     ...perItemFindings,
     ...wholeRunFindings,
-    ...leftoverFindings,
     ...checkWriteLeftovers(writeLeftovers),
     ...checkUnknownContextEntries(settings.contexts ?? [], summaries),
     ...fileNameFindings(fixes, reportOnly, folders),

@@ -72,10 +72,10 @@ scenario('A fresh install copies no profiles', {feature: 'Profiles and demo spac
 
 scenario('The demo space lives in Note/kept-gtd-demo', {feature: 'Profiles and demo space', design: DESIGN}, () => {
   given('an empty PARA folder', () => undefined);
-  when('I create the demo space in Settings → Advanced and switch to it', async () => {
+  when('I create the demo space in Settings → Data and switch to it', async () => {
     await openApp();
     await tapTab('Settings');
-    await tap('Advanced');
+    await tap('Data');
     await tap('Create demo space');
     await tap('Switch');
     await tap('Switch');
@@ -103,10 +103,10 @@ scenario('Settings → About shows the name Kept GTD, its slogan and where it ca
 
 scenario('Export debug bundle writes a file named after Kept GTD', {feature: 'Settings', design: DESIGN}, () => {
   given('an empty PARA folder', () => undefined);
-  when('I tap Export debug bundle on Settings → About', async () => {
+  when('I tap Export debug bundle on Settings → Advanced', async () => {
     await openApp();
     await tapTab('Settings');
-    await tap('About');
+    await tap('Advanced');
     await tap('Export debug bundle');
   });
   then('one kept-gtd-debug file is in EXPORT/kept-gtd/debug, it says Kept GTD, and the status line names it', () => {

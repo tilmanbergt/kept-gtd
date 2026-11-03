@@ -79,8 +79,8 @@ the thread overview otherwise.
 - **Daily, Week, Month** — the planning screens (§2.7).
 - **Inbox** — `screens/InboxScreen.tsx`: Files pane on the left (Resources and Browse), Tasks
   above Meetings on the right, everything unfiltered.
-- **Current** — `screens/ItemDetail.tsx`: left pane `ui/ItemScopePanel.tsx` (Scope and the
-  Given time line `ui/GivenTimeLine.tsx`) on top, the Files pane (`ui/FileBrowserPane.tsx`) in the middle and
+- **Current** — `screens/ItemDetail.tsx`: left pane `ui/ItemScopePanel.tsx` (the Scope, without a
+  label; the Given time line was removed in 0.24.0) on top, the Files pane (`ui/FileBrowserPane.tsx`) in the middle and
   `ui/ItemStatusPanel.tsx` (status, close-out/archive, Assign to Area) at the bottom; right pane
   `screens/ProjectDataPanel.tsx` with Quick Add, Todos and Meetings (the two lists in
   `screens/projectData/`). The header shows the kind and the editable abbreviation pill. The Files
@@ -459,8 +459,7 @@ labels after its title (`domain/taskLabels.ts`, `ui/TaskLabels.tsx`, layout in
 clamped together with the title; only the `#w/f Name` label reacts to touch. Tags in
 a row's title go through `ui/TaggableText.tsx`: a nested context tag always opens the thread
 overview with the row's item as owner (rows get `ownerPath`; Inbox lists pass the Inbox folder),
-a plain context tag is tappable only where the screen passes a handler (Daily's context filter);
-the `#w/f Name` label and an `#owe/<name>` tag open the counterpart lens for `<name>`
+plain tags stay text; the `#w/f Name` label and an `#owe/<name>` tag open the counterpart lens for `<name>`
 (`openOverview` forces it for `wf`/`owe`; the header then shows "All <name>" without a
 switch). Meeting
 rows have two fixed heights (one line 37 dp, two lines 57 dp); every list has a 1-line/2-line
@@ -758,17 +757,27 @@ Detail: `docs/dev/history/technical-design-note-setups.md`,
 ### 2.7 Daily, Week and Month
 
 **Contexts** (`domain/contexts.ts`, settings `contexts` and `activeContextId`, '' = Everything,
-both per profile). A context shows and hides Areas, Projects (a Project also through its Area) and
-tags; `contextMatcher(ctx)` answers `itemShown`, `taskShown` (the Inbox and todos due today or
-earlier always pass) and `meetingState` (`shown` or `dimmed`, never hidden). Screens read it
-through `ui/context/useContextMatcher.ts` (`ContextFilter`: matcher, kinds, a per-tab **Show**,
-the hidden line's text); `ui/context/HiddenLine.tsx` ends every filtered list ("Hidden by Home:
-4 todos · Show"). The chip is in `ui/TabBar.tsx`; a tap opens Settings → Contexts, where each row's
-radio makes a context active (`useContextsDraft.handleActivate`); Quick Add warns when a new entry lands outside the
+both per profile). A context has Show (`shows`) and Except (`hides`). Show has two parts, Where
+(Areas and Projects; an Area also matches its Projects) and What (tags; a tag also matches the tags
+nested under it, so a loop kind or thread type is a plain tag entry); an empty part sets no limit,
+an entry passes either part, or both with `onlyInPlaces`, and Except always wins (`shown`).
+`contextMatcher(ctx, items, today)` answers `itemShown` from rows worked out once: an item shows
+when it passes itself or holds an open todo or a meeting from today on that passes, an Area also
+through its Projects. `taskShown` (the Inbox always passes) and `meetingState` (`shown` or
+`dimmed`, never hidden) need no items. `contextSentence` says what a context shows ("Show #computer
+in Work except #wifi"), in the editor and the list. Screens read it through
+`ui/context/useContextMatcher.ts` (`ContextFilter`: matcher over the cached items, kinds, the tab's
+**Show** / `narrow()`, back to `startAll` when the tab is left, the hidden line's text);
+`ui/context/HiddenLine.tsx` ends every filtered list ("Hidden by Home: 4 todos · Show"). The chip
+is in `ui/TabBar.tsx`; a tap opens Settings → Contexts, where each row's radio makes a context
+active (`useContextsDraft.handleActivate`); Quick Add warns when a new entry lands outside the
 context (`ui/context/useHiddenAddNotice.ts`). Settings → Contexts edits them
-(`screens/settings/contexts/`). The Review filters its aggregate (`filterReviewAggregate`) and
-counts the rest per step as "+n in other contexts"; Reviewed and overdue stay global. Detail:
-`docs/dev/history/technical-design-time-and-place.md` §3.3.
+(`screens/settings/contexts/`: a header with the name, Save - active only while `contextChanged` -
+and Delete, the sentence and the next count; tabs General · Show · Except; Areas, Projects and Tags
+as chips paged by where they really land, `ui/PagedChipGrid.tsx`; New tag, the loop/thread types
+without `wf`/`owe`, the "Only inside the selected areas and projects" switch). Review starts in
+Everything (`startAll`) and narrows only on request (§2.8). Detail:
+`docs/dev/history/technical-design-contexts-tags.md`, `technical-design-time-and-place.md` §3.3.
 
 **Focus blocks** (`domain/focusBlock.ts`): a meeting tagged `#focusblock` (the F toggle in Quick
 Add and on the card). No prep/review tracking, no Reflection page, never in "Meetings to close
@@ -788,8 +797,7 @@ per-screen wiring.
 **Daily** (`screens/DailyView.tsx`, aggregate `storage/dailyAggregate.ts`; data from
 `screens/daily/useDailyData.ts`: the cache at mount without a loading pass when it is ready, a
 `daily:firstContent` perf span; every write through `ui/useEntryActions.ts`, the overviews' write
-path; the right column `screens/daily/DailyTodosColumn.tsx`, the tag-filter pill
-`screens/daily/DailyModeRow.tsx`). Left column: the day panel (`ui/DayMeetingsPanel.tsx`,
+path; the right column `screens/daily/DailyTodosColumn.tsx`). Left column: the day panel (`ui/DayMeetingsPanel.tsx`,
 Today | Tomorrow | Google), full height. Right column: Quick Add (always to the Inbox) or the
 selected row's card, above the Next todos grouped by source item (the Inbox first, then cache
 order) or the selected meeting's context panel; the hidden line last. A task shows when it is
@@ -800,9 +808,7 @@ open, the active context shows it, and
 - Waiting For with no date or a date today or earlier.
 
 Someday and Maybe never show; Waiting For sorts last in its group. Meetings: today and
-tomorrow, multi-day meetings on every covered day (`domain/meetingSpan.ts`). Tapping a saved tag
-sets a **context filter**: only tasks and meetings with that tag show (any flow state except
-Maybe), and when the tag is a Project/Area abbreviation, also everything belonging to that item.
+tomorrow, multi-day meetings on every covered day (`domain/meetingSpan.ts`).
 
 **Engage** (`mode: 'engage'`, `screens/engage/`) is the doing step over the note. One owner at a time - a Project/Area, a loop or
 a thread (`domain/engageOwner.ts`) - holding what its overview holds: a thread the thread lens
@@ -858,9 +864,8 @@ todos done and nothing scheduled; the Tend line (threads that need tending, `nee
 loops that need a look, opening Review → Tending threads); the hidden line. In the context panel,
 the slot (`ui/meetingContext/useMeetingContextSlot.ts`) keeps its own todo selection and hands
 Quick Add `todoOverride`; the panel's header has "✕ Close". An owner's kind shows as
-`ui/KindBadge.tsx` (small caps, right of the name) wherever it is labelled. The Project/Area page shows
-`ui/GivenTimeLine.tsx` (this week, this month; the item's and an Area's Projects' meetings,
-never filtered by the context).
+`ui/KindBadge.tsx` (small caps, right of the name) wherever it is labelled. Given time shows on Week
+and Month only (the Project/Area page's line was removed in 0.24.0).
 
 - **Week** (`screens/WeekView.tsx` header and navigation, body `screens/WeekPlanner.tsx`): left a
   chip grid (`ui/WeekGrid.tsx`, 4 × 2 chips per weekday, 2 × 2 per weekend day) or Google.
@@ -920,9 +925,13 @@ todo alone is no next action - with their Plan, Someday and Maybe todos offered 
 
 Adding a step means one id, one `REVIEW_STEPS` entry, one count in `buildReviewStepCounts` and
 one step component. A step can be opened from outside the Review screen through
-`screens/review/reviewNav.ts` (`requestReviewStep(id, filter)`: App shows the Review tab via
+`screens/review/reviewNav.ts` (`requestReviewStep(id, filter, inContext)`: App shows the Review tab via
 `screens/useReviewStepNav.ts`, ReviewScreen takes the request once and enters the step itself;
-the filter lists entry keys and is cleared when the step is left). Detail: `docs/dev/history/technical-design-review-hub.md`,
+the filter lists entry keys and is cleared when the step is left; `inContext`, from the Tend line
+on Week and Month, narrows Review to the active context first). Review reads everything by default;
+the hub's first row offers "Review only in Home" (`ReviewHub`'s `contextLine`), and while narrowed
+step titles end "· in Home" and each step counts the rest as "+n in other contexts"; Reviewed and
+overdue stay global. Detail: `docs/dev/history/technical-design-review-hub.md`,
 `docs/dev/history/technical-design-review-master-detail.md`.
 
 ### 2.9 Status, close-out and archive
@@ -1055,25 +1064,54 @@ at its old place with an error. Credentials: `gmailEmail`, `gmailAppPassword` (s
 
 ### 2.12 Settings, profiles and diagnostics
 
-**Settings screen** (`screens/settings/`): mini-tabs Folders, Contexts, Calendar, Gmail (the last
-two only while switched on), Note setups, Features, Advanced, About. Folders, Calendar and Gmail edit
-one draft (`useSettingsDraft.ts`) that only Save writes; every Save clears the cache (the next
-screen builds it again) and the Gmail list, and a changed Inbox folder name moves the folder first (`storage/inboxFolder.ts`, refused
-when the target exists, not moved when Base or Areas change in the same save). Note setups save
-per setup (and the Default on its own), and its Heading style (`noteHeadingStyle`) at once; the switches on Features, Advanced and About write immediately. **Features**
-(`FeaturesTab.tsx`) holds the module switches - `settings.modules` (`closeOut`, on by default; read
-through `domain/features.ts`'s `featuresOf`/`modulesOf`, which fill a missing key from its default,
-and `ui/featureStore.ts`'s `useFeatures`; close-out off passes no `onStartCloseOut` to Current and
-Review, so a Done project archives directly) - and the Experimental switches. Advanced holds Profiles, "Reload all files", "Run Integrity Check", "Touch test", "Check device
-files" (only while Debug logging is on: `storage/deviceCheck.ts` - the folders it can list, the
-launch file and page, Open buttons for files outside `Note/`), "Keep tabs in memory" and
-"Performance tracing". About shows version and build, the changelog ("What's new", also offered
-once after an update), Debug logging and "Export debug bundle".
+**Settings screen** (`screens/settings/`; `docs/dev/history/technical-design-settings-tabs.md`):
+mini-tabs Data, Contexts, Note setups, Features, Advanced, About; Settings opens on Data. The folder
+fields (Data) and the Google Calendar and Gmail blocks (Features, shown while their switch is on)
+edit one draft (`useSettingsDraft.ts`); each block's Save (`saveFields(scope)`) writes only its own
+fields over what is stored. A folder Save clears the cache (the next screen builds it again) and a
+changed Inbox folder name moves the folder first (`storage/inboxFolder.ts`, refused when the target
+exists, not moved when Base or Areas change in the same save); a Gmail Save clears the Gmail list.
+**Data** (`DataTab.tsx`) has the folder fields left, Run setup assistant, Profiles and Remove Kept's
+data right; they wait while the folder fields are unsaved (`draft.unsaved('folders')`). **Remove
+Kept's data** (`RemoveDataScreen.tsx`, `docs/dev/history/technical-design-remove-data.md`): the kinds
+and rules are pure (`domain/dataRemoval.ts`); `storage/dataRemoval.ts` scans (only `gtdpara:` store
+keys, never the whole store) and removes in the order files, private folders, store - settings last
+and kept when an earlier step failed; deletes in shared storage go through the native
+`deleteKeptTree` / `deleteKeptFile`, which refuse anything outside Kept's own folders and data-file
+names. Start fresh remounts the app like a profile switch; with no stored settings the load is a
+first install. Note setups save per setup (and
+the Default on its own), and its Heading style (`noteHeadingStyle`) at once; the switches on
+Features and Advanced write immediately. **Features** (`FeaturesTab.tsx`) holds the module switches
+- `settings.modules` (`closeOut`, on by default; read through `domain/features.ts`'s
+`featuresOf`/`modulesOf`, which fill a missing key from its default, and `ui/featureStore.ts`'s
+`useFeatures`; close-out off passes no `onStartCloseOut` to Current and Review, so a Done project
+archives directly) - and the Experimental switches. **Advanced** holds Reporting a problem (Debug
+logging, "Export debug bundle", `ReportingSection.tsx`) and the tools ("Reload all files", "Run
+Integrity Check", "Keep tabs in memory", "Performance tracing"; while Debug logging is on also
+Simulate screen, Check screen and pages and "Update test: treat this build as 0.0.0"). **About**
+shows version and build, Updates, an invitation to report problems, and the changelog ("What's
+new", also offered once after an update; a newer release known from GitHub comes first).
+
+**Updates** (`docs/dev/history/technical-design-in-app-updates.md`): `domain/updateCheck.ts` decides
+which GitHub release counts (`/releases/latest`, tag `vX.Y.Z`, exactly one `kept-gtd-X.Y.Z.snplg` with
+a `sha256` digest, no draft or pre-release) and whether it is newer (`runningVersion`: an alpha or
+beta towards X.Y.Z is older than X.Y.Z). `storage/updates.ts` fetches the release JSON in JS and
+keeps a device-wide state in AsyncStorage (`gtdpara:updates:v1`: last check, what it found, Not
+now, what was saved) with a subscribe API; `checkForUpdate` dedupes concurrent calls, and the
+silent daily check only looks at the INTERNET grant (`hasPluginPermission`), never asks.
+`downloadUpdate` uses the native `KeptUpdate` module (`KeptUpdateModule.kt`, its own thread):
+download over https into the private temp folder with SHA-256 on the way, compare size and digest,
+then copy into `MyStyle/kept-gtd/` through `.part` + rename under the first free name; the temp
+file is always removed, nothing in `MyStyle` is deleted. `ui/useUpdateNotice.ts` (in App) runs the
+daily check after the first screen (setting `updateCheck`, device-wide, default `'manual'`; never
+while the setup assistant is open), shows the notice after What's new and the download's
+messages; About's block is `screens/settings/UpdatesBlock.tsx`.
 
 **Setup assistant** (`screens/settings/SetupAssistant.tsx`, decisions in
 `domain/setupAssistant.ts`, writes in `storage/setupAssistant.ts`): Folders (existing PARA folders
 suggested, what exists shown), Notes (the Default's notebook or none), Features (Simple or
-Everything), Look around first (demo space), then Finish, drawn in Settings in place of its tabs.
+Everything), Updates (daily check or only Check now; Finish asks for INTERNET when daily), Look
+around first (demo space), then Finish, drawn in Settings in place of its tabs.
 Finish saves through `patchSettings` (refused while settings are unreadable), creates only the
 missing folders and reports them; Skip only sets `setupAssistant: 'done'`. App lands on it on the
 first reorient while `setupAssistant` is 'pending', which `migrateExperimentalFlags` sets only on a
@@ -1095,8 +1133,8 @@ content never goes into AsyncStorage.
 
 **Profiles** (`domain/profiles.ts`, `storage/profiles.ts`). A profile is a named configuration;
 its file is `EXPORT/kept-gtd/profiles/<id>.json`. Every setting is classified: per profile,
-device-wide (`perfTracing`, `keepTabsAlive`, `debugLogging`, `lastSeenVersion`,
-`activeProfileId`) or secret (`gmailAppPassword`, `googleCalendarIcsUrl` — per profile, but only
+device-wide (`perfTracing`, `keepTabsAlive`, `debugLogging`, `notebookContentsEnabled`,
+`lastSeenVersion`, `updateCheck`, `activeProfileId`) or secret (`gmailAppPassword`, `googleCalendarIcsUrl` — per profile, but only
 in AsyncStorage, never in a file). Switching writes the profile being left, reads the new one,
 clears the caches and the return record, and remounts the shell. "Create demo space" writes demo
 folders under `Note/kept-gtd-demo` and a demo profile, never overwriting (`storage/demoSpace.ts`).
@@ -1118,27 +1156,16 @@ when asked for:
 - **Integrity Check** (`storage/integrityCheck.ts`, checks in `domain/integrityCheck.ts`): walks
   Projects, Areas, Archive and the Inbox and writes one report. Checks include load errors, `#`
   in note paths, missing linked files and default Resources folders, duplicate headings and
-  abbreviations, orphaned Area assignments, interrupted close-outs, missing mark notes, Inbox
-  leftovers at the base root, renamed folders whose home notebook kept the old name and unsafe
-  file names. For unsafe note names it plans fixes
+  abbreviations, orphaned Area assignments, interrupted close-outs, missing mark notes, renamed
+  folders whose home notebook kept the old name and unsafe file names. For unsafe note names it plans fixes
   (`domain/fileNameFix.ts`); "Fix file names (n)" renames after one confirm and rewrites the
   links (`storage/fileNameFix.ts`). Everything else is report-only.
 - **Performance tracing** (`utils/perf.ts`, switch `perfTracing`): one trace per tab tap,
   navigation, reopen and cold start, ending after 1.5 s of quiet (15 s at most), written as JSONL
   to `EXPORT/kept-gtd/debug/perf/` with data-volume stats (`storage/perfStats.ts`). Off costs one
   check per call. Analysis: `node scripts/perf-report.js`.
-- **Touch test** (`screens/settings/TouchTestScreen.tsx`, classification in
-  `domain/touchDiag.ts`): real `TaskRow`s and `MeetingRow`s with sample entries down to the
-  bottom edge; an observe-only root view (`ui/touchDiag/TouchObserver.tsx`, never the
-  responder) records every touch, the rows report press events through a context only the test
-  provides (`ui/touchDiag/touchProbe.ts`), and each touch is classified handled, cancelled,
-  noTarget or swallowed. One numbers-only log line per touch; "Save log" writes CSV to
-  `EXPORT/kept-gtd/debug/`. "Log touches everywhere" (`ui/touchDiag/AppTouchObserver.tsx`, not
-  persisted) logs raw touches app-wide. Detail: `docs/dev/history/technical-design-touch-test.md`.
-- **Stale build**: `supernote/pluginRuntime.ts` checks whether an older Kept build is still
-  loaded in the host process. The required plugin firmware unloads it on install, so there is no
-  warning: the count goes into the debug bundle and one `pluginRuntime: stale builds` log line per
-  start, to catch a regression.
+- **Build and device** (`supernote/pluginRuntime.ts`, native `GtdParaRuntime`): build id,
+  `versionCode` and device facts for About and the debug bundle.
 
 **Dates and errors.** All date and time text shown to the user comes from
 `domain/dateFormat.ts` (`6.10.`, `6.10. 14:05`, year only when not the current one); files keep
@@ -1198,10 +1225,10 @@ carries meaning: weight, underline, borders and icons (`ui/icons.tsx`, SVG) do.
 `‹`/`›` only when there is somewhere to go, a `+N` hidden count, an optional `subHeader`) and
 measures its own viewport;
 `ui/pagination.ts`'s `usePagedByHeight` fills a page greedily by each row's real height, keeps the
-current page across data changes, and supports `resetKey` and `jumpTo`. `PAGE_SIZE` anchors are
-tuned on the device. Sizes and the element budget: `design-device-rendering.md`.
+current page across data changes, and supports `resetKey` and `jumpTo`. Sizes and the element
+budget: `design-device-rendering.md`.
 
-**Central status slot** (`ui/status/`). One 36 px strip, always reserved, under the TabBar and at
+**Central status slot** (`ui/status/`). One strip (32 dp, 30 on a short screen), always reserved, under the TabBar and at
 the top of capture and Engage (`StatusFrame`). Publishers use `useStatus(id, msg)`,
 `useErrorStatus(name, error, onDismiss)` or `useStatusApi()`; kinds by priority confirm > modal >
 error > warning > success > info; one message shows, `‹ n/m ›` pages through the rest.
@@ -1444,6 +1471,13 @@ blocks are entered by hand, and Done is a status someone sets. Contexts, not a s
 choice, decide what Daily shows: a busy project cannot flood a context it is not part of, and
 the hidden line always says how much is left out.
 
+**Contexts are for doing; the review sees everything.** The Weekly Review ignores the active
+context unless the user narrows it ("Review only in Home"): a review that silently skips what
+another context holds would let commitments slip. Reviewed marks and the overdue date stay
+global either way. A context is written as Show and Except, not as two alternative lists: Show
+names where and what, Except is a plain cut-out that always wins, and one switch ("Only inside the
+selected areas and projects") turns "either" into "both".
+
 **Review as a walk, not a report.** The Weekly Review fixes things where they are found. Lists
 freeze while a step is open, so rows don't vanish under the user; each step keeps its own record,
 so a partial review still counts, and empty backlog steps count as done.
@@ -1477,6 +1511,13 @@ from `PluginFileAPI.getPageSize`. Kept uses no EMR coordinates, no `PointUtils`,
 `Element.maxX/maxY`, and `getPageDisplaySize` for nothing but diagnostics. Ratta changes such
 semantics without a major version, so a library upgrade is always a deliberate step with a device
 test.
+
+**Updates are downloaded, never installed by Kept.** An InkHub review takes long, so Kept tells
+users about new releases itself - but only official GitHub releases of this repository, read
+through the public API without an account, and only by hand or once a day when the user switched
+that on (off by default). It saves the checked `.snplg` to `MyStyle/kept-gtd/` and leaves
+installing to the Supernote's own Settings → Plugins → Add plugin, so a build only ever gets on the
+device through the host's installer, and the user decides when. Pre-releases are not offered.
 
 **Native code only where the host has no API.** Moving and merging folders, statting files in
 bulk, measuring text, writing PDFs and talking IMAP are native modules because `sn-plugin-lib`

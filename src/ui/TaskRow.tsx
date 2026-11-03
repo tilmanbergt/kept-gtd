@@ -34,18 +34,12 @@
  * Tappable inline tags (technical-design-context-tags.md §7): the title's
  * `#tags` go through ui/TaggableText.tsx - nested tags open the thread
  * overview with `ownerPath` as owner, and so does the `#w/f Name` label
- * (docs/dev/history/technical-design-tending-threads.md §3.7);
- * `contextTag`/`onToggleContext` (the plain-tag filter) are passed only by
- * Daily's own instances (screens/DailyView.tsx).
+ * (docs/dev/history/technical-design-tending-threads.md §3.7).
  *
  * Title and labels are ONE <Text> (docs/dev/history/technical-design-waiting-for-0.7.md
  * §3.3): what's drawn (title, then labels as nested spans) and the height a
  * caller reserves both come from ui/taskRowLayout.ts's `taskRowLayout`, so a
  * label can't wrap onto a line the row doesn't have.
- *
- * Inside the touch test (ui/touchDiag/touchProbe.ts) every tap target also
- * reports its press events, and the thread tags and `#w/f` label report a
- * press instead of opening an overview. Elsewhere there is no probe.
  */
 import React from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
@@ -53,13 +47,13 @@ import {Task} from '../domain/types';
 import {ClipIcon} from './icons';
 import {TaskLabelContext} from '../domain/taskLabels';
 import TaskLabels from './TaskLabels';
-import {TASK_COLUMN_WIDTH_PX, taskRowLayout} from './taskRowLayout';
+import {taskRowLayout} from './taskRowLayout';
 import {renderTaggableText} from './TaggableText';
 import {openOverview} from './overviewStore';
 import {WAITING_FOR_TYPE} from '../domain/flowState';
 import {FONT} from './theme';
 import {perfCount, usePerfRender} from '../utils/perf';
-import {probePressable, useTouchProbe} from './touchDiag/touchProbe';
+import {estimatorWidth} from './ScreenSize';
 
 /** Space above and below the row's content, inside each tap target. */
 const ROW_PAD_DP = 7;
@@ -82,13 +76,13 @@ export const TASK_ROW_CHROME_PX = 20;
 export const TASK_ROW_LINE_HEIGHT_PX = 22;
 
 /** Predicted lines for `task`'s title plus labels at `columnWidthPx` (1-2). */
-export function taskRowLines(task: Task, columnWidthPx: number, context: TaskBadgeContext, contextActive = false): number {
-  return taskRowLayout(task, columnWidthPx, context, contextActive).lines;
+export function taskRowLines(task: Task, columnWidthPx: number, context: TaskBadgeContext): number {
+  return taskRowLayout(task, columnWidthPx, context).lines;
 }
 
 /** The row's real rendered height at `columnWidthPx`, for a caller building a ui/PagedSection.tsx. */
-export function taskRowHeight(task: Task, columnWidthPx: number, context: TaskBadgeContext, contextActive = false): number {
-  return TASK_ROW_CHROME_PX + taskRowLines(task, columnWidthPx, context, contextActive) * TASK_ROW_LINE_HEIGHT_PX;
+export function taskRowHeight(task: Task, columnWidthPx: number, context: TaskBadgeContext): number {
+  return TASK_ROW_CHROME_PX + taskRowLines(task, columnWidthPx, context) * TASK_ROW_LINE_HEIGHT_PX;
 }
 
 interface Props {
@@ -107,10 +101,6 @@ interface Props {
   onOpenLinkedFile?: (linkedFile: string) => void;
   /** Only passed by callers that support starting a link from this row (Current tab, Inbox) - its absence (Daily, Review) is what makes the clip read-only there. */
   onArmLink?: () => void;
-  /** The active Daily context filter tag, if any - a matching tag segment renders filled/selected. Only meaningful together with onToggleContext (see the module doc comment); pass null (not omit) when Daily's context is off but rows should still render tags as tappable-but-unselected. */
-  contextTag?: string | null;
-  /** Set only by Daily's own instances - present, every context tag in this row's text becomes its own tap target that calls this instead of onStartEdit; absent, tags render as plain text. */
-  onToggleContext?: (tag: string) => void;
   /** The item this row's todo lives in (the Inbox folder for Inbox rows): owner of the thread overview its nested tags and `#w/f Name` label open. */
   ownerPath?: string | null;
   context: TaskBadgeContext;
@@ -139,27 +129,17 @@ export default function TaskRow({
   linkedFile,
   onOpenLinkedFile,
   onArmLink,
-  contextTag,
-  onToggleContext,
   ownerPath,
   context,
   height,
   numberOfLines,
-  columnWidthPx = TASK_COLUMN_WIDTH_PX,
+  columnWidthPx = estimatorWidth(),
   textColor,
   borderColor,
 }: Props): React.JSX.Element {
   perfCount('row:task');
   usePerfRender('TaskRow');
-  const probe = useTouchProbe();
-  // Whether this row is showing because of an active Daily context filter
-  // (technical-design-context-tags.md §6) - derived from contextTag rather
-  // than a separate prop, since the two always agree (DailyView always
-  // passes contextTag alongside onToggleContext - null while its own
-  // context is off, a tag string while active). Decides the `#someday`
-  // label and, in step, which flow tag the title loses.
-  const contextActive = contextTag != null;
-  const layout = taskRowLayout(task, columnWidthPx, context, contextActive);
+  const layout = taskRowLayout(task, columnWidthPx, context);
   return (
     <View style={styles.wrap}>
       <View
@@ -176,43 +156,39 @@ export default function TaskRow({
           // "raised" with a blank gap under it.
           height != null && {height, minHeight: height},
         ]}>
-        <Pressable onPress={onToggleDone} hitSlop={8} style={styles.target} {...probePressable(probe, 'checkbox')}>
+        <Pressable onPress={onToggleDone} hitSlop={8} style={styles.target}>
           <Text style={styles.checkbox}>{task.done ? '☑' : '☐'}</Text>
         </Pressable>
         <View style={styles.rowTextWrap}>
-          <Pressable onPress={onStartEdit} style={styles.editTarget} {...probePressable(probe, 'title')}>
+          <Pressable onPress={onStartEdit} style={styles.editTarget}>
             <Text
               style={[styles.rowText, {color: textColor}, task.done && styles.rowTextDone]}
               numberOfLines={numberOfLines ?? layout.lines}>
-              {renderTaggableText(layout.title, {contextTag, onToggleContext, ownerPath, probe})}
+              {renderTaggableText(layout.title, ownerPath)}
               <TaskLabels
                 labels={layout.labels}
                 onOpenWaitingFor={
-                  !task.waitingOn
-                    ? undefined
-                    : probe
-                      ? () => probe('press', 'label')
-                      : () => openOverview({tag: `${WAITING_FOR_TYPE}/${task.waitingOn}`, ownerPath: ownerPath ?? null})
+                  !task.waitingOn ? undefined : () => openOverview({tag: `${WAITING_FOR_TYPE}/${task.waitingOn}`, ownerPath: ownerPath ?? null})
                 }
               />
             </Text>
           </Pressable>
         </View>
         {task.notePath ? (
-          <Pressable onPress={onOpenNote} hitSlop={8} style={styles.target} {...probePressable(probe, 'note')}>
+          <Pressable onPress={onOpenNote} hitSlop={8} style={styles.target}>
             <Text style={[styles.noteAction, {color: textColor}]}>📓</Text>
           </Pressable>
         ) : (
-          <Pressable onPress={onCreateNote} hitSlop={8} style={styles.target} {...probePressable(probe, 'note')}>
+          <Pressable onPress={onCreateNote} hitSlop={8} style={styles.target}>
             <Text style={[styles.noteAction, {color: textColor}]}>+📓</Text>
           </Pressable>
         )}
         {linkedFile ? (
-          <Pressable onPress={() => onOpenLinkedFile?.(linkedFile)} hitSlop={8} style={[styles.target, styles.clipAction]} {...probePressable(probe, 'clip')}>
+          <Pressable onPress={() => onOpenLinkedFile?.(linkedFile)} hitSlop={8} style={[styles.target, styles.clipAction]}>
             <ClipIcon color={textColor} />
           </Pressable>
         ) : onArmLink ? (
-          <Pressable onPress={onArmLink} hitSlop={8} style={[styles.target, styles.clipAction]} {...probePressable(probe, 'clip')}>
+          <Pressable onPress={onArmLink} hitSlop={8} style={[styles.target, styles.clipAction]}>
             <Text style={[styles.clipPlus, {color: textColor}]}>+</Text>
             <ClipIcon color={textColor} />
           </Pressable>
@@ -240,7 +216,7 @@ export function ReadOnlyTaskRow({
   textColor: string;
   borderColor: string;
 }): React.JSX.Element {
-  const layout = taskRowLayout(task, TASK_COLUMN_WIDTH_PX, context);
+  const layout = taskRowLayout(task, estimatorWidth(), context);
   return (
     <View style={styles.wrap}>
       <View style={[styles.row, styles.rowReadOnly, {borderBottomColor: borderColor}]}>
@@ -308,7 +284,7 @@ const styles = StyleSheet.create({
     // Android's default `includeFontPadding` reserves space above cap-height
     // without a matching reservation below the baseline, so a fixed-height,
     // top-aligned row (this one) would clip descenders ("g"/"y") at its own
-    // bottom edge ([[feature_pagination_fixed_height]]; same on
+    // bottom edge (docs/dev/history/technical-design-pagination-fixed-height.md; same on
     // screens/ItemsList.tsx's row Text).
     includeFontPadding: false,
   },

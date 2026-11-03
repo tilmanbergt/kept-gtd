@@ -27,11 +27,11 @@ import {common} from '../commonStyles';
 import {openOverview} from '../overviewStore';
 import PagedSection from '../PagedSection';
 import TaskRow, {taskRowHeight, taskRowLines} from '../TaskRow';
-import {TASK_COLUMN_WIDTH_PX} from '../taskRowLayout';
 import {FONT} from '../theme';
 import {EntryActions} from '../useEntryActions';
 import {panelTodoKey} from './useMeetingContextSlot';
 import {Meeting} from '../../domain/types';
+import {estimatorWidth} from '../ScreenSize';
 
 type PanelRow =
   | {kind: 'caption'; text: string}
@@ -65,7 +65,7 @@ export function panelRowsOf(model: MeetingContextModel): PanelRow[] {
 }
 
 const rowHeight = (row: PanelRow) =>
-  row.kind === 'todo' ? taskRowHeight(row.todo.task, TASK_COLUMN_WIDTH_PX, 'flat') : row.kind === 'agreement' ? AGREEMENT_ROW_HEIGHT : CAPTION_ROW_PX;
+  row.kind === 'todo' ? taskRowHeight(row.todo.task, estimatorWidth(), 'flat') : row.kind === 'agreement' ? AGREEMENT_ROW_HEIGHT : CAPTION_ROW_PX;
 
 interface Props {
   model: MeetingContextModel;
@@ -126,7 +126,7 @@ export default function MeetingContextPanel(props: Props): React.JSX.Element {
         ownerPath={todo.item.path}
         context="flat"
         height={rowHeight(row)}
-        numberOfLines={taskRowLines(todo.task, TASK_COLUMN_WIDTH_PX, 'flat')}
+        numberOfLines={taskRowLines(todo.task, estimatorWidth(), 'flat')}
         textColor={textColor}
         borderColor={borderColor}
       />

@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {device} from '../../test-helpers/fakeDevice/device';
-import {firstCheckboxOf, openApp, readTexts, tap, tapTab, texts, textsBetween, type} from '../../test-helpers/scenario/app';
+import {firstCheckboxOf, openApp, tap, tapTab, texts, textsBetween, type} from '../../test-helpers/scenario/app';
 import {fileText, loggedErrors, PATHS, projectFile, putFile} from '../../test-helpers/scenario/files';
 import {and, given, scenario, then, when} from '../../test-helpers/scenario/scenario';
 import {smokeClock} from '../../test-helpers/scenario/smokeSpace';
@@ -97,9 +97,6 @@ scenario('Upgrade: 0.22 starts on a 0.21 space without writing a file or a setti
   then('Daily shows every next todo - Garage\'s too - and "Write copy #now" as "Write copy #next"', async () => {
     await tapTab('Daily');
     expect(textsBetween('Next todos')).toEqual(expect.arrayContaining(['Sort tools  #next', 'Write copy  #next', 'Draft homepage  #next']));
-  });
-  and('the one-time line says focus is retired', () => {
-    expect(readTexts()).toContain('Focus is retired. Contexts decide what Daily shows: Settings → Contexts.');
   });
   and('no file changed', () => {
     expect(device().fs.tree(PATHS.projects)).toEqual(before);

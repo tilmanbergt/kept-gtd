@@ -25,20 +25,70 @@
   (`TASK_ROW_LINE_HEIGHT_PX`, `SUBHEADING_ROW_PX`, `COLUMN_WIDTH_PX` …). They hold **dp**
   values, because React Native reads them as dp. Only the note-page constants above are real
   pixels.
-- **Column width used by the line estimators:** `COLUMN_WIDTH_PX = 678` (in `ui/itemEntryRow.ts`,
-  `ui/taskRowLayout.ts` as `TASK_COLUMN_WIDTH_PX`, `ui/FileBrowserPane.tsx`,
-  `screens/InboxScreen.tsx`, `screens/DailyView.tsx`, `screens/ProjectDataPanel.tsx`). This is a
-  pixel figure, while a real half-screen column is about **473 dp** wide
-  (`(994 − 2 × 16 − 16) ÷ 2`). The line estimator (`domain/textLineEstimator.ts`) is tuned
-  together with 678 (narrow character widths plus a 0.8 safety margin), so the two errors
-  partly cancel out. Treat line-count predictions as estimates; changing 678 re-pages every
-  task and item list.
+- **Column width used by the line estimators:** `estimatorWidth()` (`ui/ScreenSize.tsx`, rule in
+  `domain/screenLayout.ts`). It is **678** on the A5 X and on any wider screen (a Manta, either
+  device in landscape). That is a pixel figure, while a real half-screen column is about **473 dp**
+  wide (`(994 − 2 × 16 − 16) ÷ 2`); the line estimator (`domain/textLineEstimator.ts`) is tuned
+  together with 678 (narrow character widths plus a 0.8 safety margin), so the two errors partly
+  cancel out. On a wider screen the same 678 makes estimates err long: a row gets room it doesn't
+  need, nothing is cut off. A narrower screen (a Nomad, ~750 dp) scales it down with the real column
+  width. Treat line-count predictions as estimates.
+- **Other screens:** the size comes from Kept's root view (`ScreenSizeProvider` in `App.tsx`), never
+  from A5 X constants. Lists measure their own height (`PagedSection` without `viewportHeight`).
+  - *Manta* (1920 × 2560 px): about the size of the A5 X in dp, so it gets the A5 X layout and the
+    estimator figure 678. Its note pages are bigger: Note setup pieces are scaled by the page's short
+    side (× 1.37, `domain/pageFrame.ts`).
+  - *Nomad* (749 × 998 dp): narrow (under 800 dp) and short; the estimator figure scales down with
+    the real column width.
+  - *Landscape* (a turned A5 X: 1325 × 906 dp below the tab bar): wide but short; Kept turns live,
+    without a restart. A horizontal note page keeps its bottom 100 px band free (the host's page bar).
+  - The estimator rule: 678 on the A5 X or any wider screen, scaled down below it
+    (`domain/screenLayout.ts`); never a device name.
+- **Checking another size:** Settings → Advanced → Simulate screen (debug logging on) draws Kept in a
+  box the size of a Nomad (749 × 998 or 998 × 749 dp; a dp is about the same physical size on both
+  devices). Turning the device shows landscape (1325 × 906 dp below the tab bar).
 - **Grayscale e-ink only.** The hardware has no color. See §7.
-- **No scrolling, anywhere, by design**
+- **No scrolling for lists, by design**
   (`docs/dev/history/technical-design-pagination-edit-reuse.md`). Every list is a fixed-size
   box paged with ‹ › arrows, because redrawing a growing scroll area is slow and messy on
   e-ink, while a fixed box is cheap to refresh. So row heights (§3) and the space budget (§5)
-  decide whether a screen uses its space well; there is no scroll to fall back on.
+  decide whether a screen uses its space well. Forms are the one exception (§1.1).
+
+### 1.1 Layout rules by screen class (0.24.0)
+
+Every device gets the same Kept, only more or less compact. A component never asks which device
+it runs on; it asks two questions of `ui/ScreenSize.tsx` and follows the rules below
+(`docs/dev/history/technical-design-launch-ready.md` L6-L6c).
+
+| Class | Hook | When | Examples |
+|---|---|---|---|
+| narrow | `useLayoutClass() === 'narrow'` | under 800 dp wide | Nomad upright |
+| short | `useShortScreen()` | under 1200 dp tall | Nomad upright, any device turned |
+
+**All devices**
+
+- Rows of tabs and chips wrap instead of running past the edge (`TabBar`, `MiniTabs`).
+- A row's main button keeps its room; the rest gives way (Quick Add's `+ Add`).
+- Lists page (`PagedSection`, self-measuring); anything with a fixed count measures its height
+  instead (`WeekGrid` rows, Month halves).
+- A button inside a fixed-height strip is sized from the strip (status slot buttons).
+- A simplification that helps a small screen is made on every device, not only on the small one
+  (no Given time line or Scope label on the project page, one-line marks card, "hide done" in the
+  list header).
+
+**Short screens**
+
+- Secondary lines go: a two-line row shows its first line only (thread rows on the project page).
+- Stacked sections become tabs (the project page's Todos | Schedule | Google).
+- Pictures are lower and long chip lists start short with More… (marks screen).
+- Forms scroll (`settings/ScrollColumn.tsx`, the marks screen's panel) - lists still page.
+
+**Narrow screens**
+
+- Tabs sit closer together; a long label may be shortened ("Agree").
+
+A new screen follows the same rules; a new rule goes into this table first. Check it with Simulate
+screen and the device checklist (`docs/dev/device-checklist.md`).
 
 ## 2. Typography (`ui/theme.ts` → `FONT`)
 
@@ -126,12 +176,9 @@ Lists are paged **by height, not by a fixed row count.**
   under 50 dp is logged as suspicious (usually a greedy sibling above it). Stacked sections
   share a column by flex weight, e.g. Project panel Todos : Meetings = 4 : 3 and Inbox Tasks :
   Meetings = 8 : 6 (`docs/dev/history/technical-design-flex-weight-stacking.md`).
-- **Explicit `viewportHeight`.** A few callers still pass a fixed height:
-  - `screens/ItemsList.tsx`, Areas tab, right column "On Hold": `FULL_VIEWPORT_PX` ≈ 1700, built
-    from the 1872 px panel height. That is larger than the real column (about 1150 dp, see §6),
-    so rows past the visible box can be cut off.
-- **`PAGE_SIZE`** in `ui/pagination.ts` still lists per-list row counts; they are not used for
-  paging.
+- **Explicit `viewportHeight`.** A few lists share a column with a part that takes the rest and
+  pass a fixed height: the Ahead list of the thread and loop overviews (`AHEAD_VIEWPORT_DP`, 480 dp)
+  and Engage's owner and option lists (`ENGAGE_LIST_VIEWPORT`). Everything else measures itself.
 
 When a paginated list changes, check it on the device with realistic data: the last row should
 end close to the bottom of its box, and no row should be cut off.
@@ -146,16 +193,16 @@ borders + one text line (§2 line heights) and is marked "~".
 
 | Element | File | Height (dp) | Composition |
 |---|---|---|---|
-| Top tab bar | `ui/TabBar.tsx` | **~46** | `paddingTop 8` + tallest item (close button `paddingVertical 6 × 2` + medium line ~21 ≈ 33; tab buttons ≈ 31) + `paddingBottom 4` + border 1. |
-| Status slot | `ui/status/StatusFrame.tsx` | **36** | `STATUS_SLOT_HEIGHT`, always reserved under the tab bar, empty or not (`docs/dev/history/technical-design-status-slot.md`). |
+| Top tab bar | `ui/TabBar.tsx` | **~36** | `paddingTop 4` + tallest item (tab buttons `paddingVertical 3 × 2` + medium line ~21 + underline 2 ≈ 29; close button ≈ 27) + `paddingBottom 2` + border 1 (0.24.0 L6b; was ~46). Two lines where the tabs wrap on a narrow screen. |
+| Status slot | `ui/status/StatusFrame.tsx` | **32** (30 on a short screen) | `STATUS_SLOT_HEIGHT` / `STATUS_SLOT_HEIGHT_SHORT`, always reserved under the tab bar, empty or not (`docs/dev/history/technical-design-status-slot.md`; 36 before 0.24.0). Screens below it start with `common.container`'s `paddingTop 8` (was 16). |
 | Screen top padding | `common.container` | **16** | `SPACING.base`. |
 | Screen side padding | `common.container` | **16 each side** | Usable width ≈ 994 − 32 = **962 dp**. |
 | Screen bottom padding | per screen | **0–40** | Settings' content has `paddingBottom 40`; most screens have none. |
 | Two-column split | `common.column` / `common.columnLeft` | **16 gutter** | Both columns `flex: 1` → each ≈ (962 − 16) ÷ 2 ≈ **473 dp** wide (see §1 on the 678 estimator width). |
 
-So every screen spends **~98 dp** (46 + 36 + 16) before its own content, leaving about
-**1227 dp** of height for a single column, or for each column of a two-column screen.
-(`screens/ItemsList.tsx` uses `GLOBAL_CHROME_PX = 96` for the same total.)
+So every screen spends **~76 dp** (36 + 32 + 8) before its own content (~98 before 0.24.0), leaving
+about **1249 dp** of height on the A5 X upright for a single column, or for each column of a
+two-column screen. Lists measure their own height, so nothing depends on this figure.
 
 ### 5.2 List rows
 
@@ -180,6 +227,21 @@ See §3. Other single-line rows:
 | Flow/tag chip | `ui/FlowStateChips.tsx`, `ui/TagChips.tsx` | **~32** | `paddingVertical 6 × 2` + small line ~18 + border 2. Matches QuickAdd's row 3 `minHeight: 32`. |
 | Pill button | `ui/PillButton.tsx` | **~30** / **44** | Normal: `paddingVertical 5 × 2` + small line ~18 + border 2. Large: `minHeight 44`. |
 | Text input (`ClipboardTextInput`) | `ui/ClipboardTextInput.tsx` | **~33** | `paddingVertical 5 × 2` + medium line ~21 + border 2 (as budgeted in `screens/ItemsList.tsx`'s `CREATE_ROW_PX`). |
+
+**Text fields belong in a row.** `ClipboardTextInput`'s wrapper is `flex: 1`: right in a row (the
+field takes the rest of the line next to a button), but in a column it means "height 0, then share
+the free space". A column without free height - a form block sized by its content, a
+`flexShrink: 0` section, a label-field-label stack - then makes no room for the field. Without a
+minimum height the field is drawn as a flat, untappable line; with one (the component has
+`minHeight` `TEXT_FIELD_MIN_H` 33, multiline `TEXT_FIELD_MULTILINE_MIN_H` 76) the field has its
+height, but the next label is drawn over it. Both showed on the A5 X in the contexts editor's Name
+field. The minimum height alone doesn't fix it: the parent decides how much room it gets. Rules:
+
+- Every text field (`ClipboardTextInput`, a raw `TextInput`, or anything else with `flex: 1`) that
+  stands alone in a column gets a `flexDirection: 'row'` wrapper; the field then fills the width
+  and the row takes the field's height. A fixed `height` on the wrapper works too.
+- Check every new form on the device by tapping into each field and typing, and look at what
+  comes below it; a field that is only looked at can pass review while collapsed or covered.
 
 ### 5.4 The QuickAdd card
 

@@ -1,8 +1,7 @@
-// Lasso 0.8 §3.10: the "marks to process" card.
+// Lasso 0.8 §3.10: the "marks to process" card - one line since 0.24.0 (technical-design-launch-ready.md L6c).
 const mockMarks: {list: unknown[]} = {list: []};
 jest.mock('../../src/ui/useOpenMarks', () => ({useOpenMarks: () => mockMarks.list}));
 jest.mock('../../src/utils/log', () => ({log: jest.fn(), logWarn: jest.fn(), logError: jest.fn()}));
-jest.mock('../../src/domain/meetingTime', () => ({todayIso: () => '2026-10-06'}));
 
 import React from 'react';
 import {Text} from 'react-native';
@@ -12,7 +11,7 @@ import {setOpenMarksHandler} from '../../src/ui/marksNav';
 
 const om = (path: string, createdAt: string) => ({mark: {id: 'm', createdAt, notePath: path, page: 0, text: null}, owner: {type: 'inbox'}, absPath: path});
 
-it('is hidden without marks, shows count and age, and opens the marks screen', () => {
+it('is hidden without marks, shows the count on one line, and opens the marks screen', () => {
   const opened: unknown[] = [];
   setOpenMarksHandler((scope, returnTo) => opened.push([scope, returnTo]));
   let r!: TestRenderer.ReactTestRenderer;
@@ -25,7 +24,7 @@ it('is hidden without marks, shows count and age, and opens the marks screen', (
     r.update(<MarksCard scope={{type: 'item', path: '/P/Garden'}} returnTo="current" textColor="#000" borderColor="#ddd" />);
   });
   const texts = r.root.findAllByType(Text).map(t => [t.props.children].flat().join(''));
-  expect(texts).toEqual(['2 marks to process', '2 notes · oldest 2 days', 'Process ›']);
+  expect(texts).toEqual(['2 marks to process', 'Process ›']);
   act(() => {
     r.root.findByProps({accessibilityRole: 'button'}).props.onPress();
   });

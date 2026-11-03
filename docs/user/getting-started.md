@@ -8,7 +8,7 @@ This page walks you through Kept GTD for simple needs: capture your todos and me
 2. Copy it to your Supernote and install it as a plugin. Kept GTD needs the plugin firmware: A5 X and A6 X Chauvet 2.27.42 or later, Manta and Nomad Chauvet 3.30.45 or later.
 3. Open any note, open the plugin sidebar and tap the Kept GTD icon. See [Opening Kept GTD from a note](index.md#opening-kept-gtd-from-a-note).
 
-To update later, install the newer file over the old one. Read the [Upgrade notes](settings.md#about) in What's new (Settings → About) first.
+To update later, install the newer file over the old one. Read the [Upgrade notes](settings.md#about) in What's new (Settings → About) first. Kept tells you about new versions and can download them for you; see [Updates](settings.md#updates).
 
 ## Your folders
 
@@ -21,7 +21,7 @@ Kept keeps everything in four folders inside your `Note` folder ([The folder lay
 
 Kept creates these folders when it first needs them, for example when you [create your first project](projects-and-areas.md#creating-one), or right away in the [setup assistant](settings.md#setup-assistant), which opens on the first start and shows every folder before it creates it. Nothing else is created behind your back.
 
-Already have a folder system? Point [Settings → Folders](settings.md#folders) at it and tap **Save**. Every subfolder of your projects folder is then a [project](projects-and-areas.md), every subfolder of your areas folder an [area](projects-and-areas.md). Nothing is moved or renamed. See [Your files, folders and Obsidian](files-and-folders.md).
+Already have a folder system? Point the folders in [Settings → Data](settings.md#folders) at it and tap **Save**. Every subfolder of your projects folder is then a [project](projects-and-areas.md), every subfolder of your areas folder an [area](projects-and-areas.md). Nothing is moved or renamed. See [Your files, folders and Obsidian](files-and-folders.md).
 
 ## Projects and areas
 
@@ -46,7 +46,7 @@ Switch Quick Add to its [Meeting](quick-add.md#adding-a-meeting) tab: a title, a
 
 Every todo and meeting can have a handwritten note. Tap its [note icon](quick-add.md#notes-and-files-on-a-todo-or-meeting): Kept first says in the [status line](index.md#the-status-line) where the note will go, then creates it and opens it, already filled with the title and date.
 
-By default all notes of a project go into one notebook per year, its [home notebook](projects-and-areas.md#home-notebooks) - "Garden renovation 2026" - one page per todo or meeting, in time order. So everything about the garden is in one place. Creating a note only works when Kept was [opened from a note](troubleshooting.md#common-situations). If you prefer a note of its own for every todo or meeting, see [Note setups](note-setups.md#what-a-setup-is).
+By default all notes of a project go into one notebook per year, its [home notebook](projects-and-areas.md#home-notebooks) - "Garden renovation 2026" - one page per todo or meeting, in time order. So everything about the garden is in one place. Creating a note only works when Kept was opened from a note, see [Known limitations](files-and-folders.md#known-limitations). If you prefer a note of its own for every todo or meeting, see [Note setups](note-setups.md#what-a-setup-is).
 
 ## Capture while you write
 

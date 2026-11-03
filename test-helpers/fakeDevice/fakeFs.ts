@@ -7,7 +7,9 @@
  * The rules are the native module's: listings are sorted case-insensitively and
  * hide dot files and `.mark` files; moves refuse an existing destination;
  * deleteEmptyFolder refuses a folder with anything in it; the private deletes
- * refuse paths outside their folder; writeTextFile replaces atomically.
+ * refuse paths outside their folder; deleteKeptTree refuses anything outside
+ * Kept's own folders and deleteKeptFile any name Kept doesn't write;
+ * writeTextFile replaces atomically.
  *
  * Faults for the tests: `failNext` makes the next matching call throw,
  * `crashAfter(n)` lets n more writes through and then throws SimulatedCrash
@@ -16,6 +18,12 @@
  */
 
 export const PRIVATE_DIR = '/data/user/0/host/files/plugins/gtdpara';
+
+const SHARED = '/storage/emulated/0';
+/** GtdParaFileModule.kt's KEPT_TREE_ROOTS. */
+const KEPT_TREE_ROOTS = [`${SHARED}/EXPORT/kept-gtd`, `${SHARED}/EXPORT/gtdpara`, `${SHARED}/Note/kept-gtd-demo`, `${SHARED}/Note/gtdpara-demo`];
+/** GtdParaFileModule.kt's KEPT_FILE_NAMES and KEPT_TMP_NAME. */
+const KEPT_FILE = /^(project\.txt|area\.txt|Inbox\.txt|\.[^/]+\.gtdpara-tmp)$/;
 
 export class SimulatedCrash extends Error {
   constructor() {
@@ -42,7 +50,9 @@ type Method =
   | 'moveFolderMerge'
   | 'deleteEmptyFolder'
   | 'deleteTempTree'
-  | 'deletePrivateDataTree';
+  | 'deletePrivateDataTree'
+  | 'deleteKeptTree'
+  | 'deleteKeptFile';
 
 const WRITES: ReadonlySet<Method> = new Set([
   'writeTextFile',
@@ -55,6 +65,8 @@ const WRITES: ReadonlySet<Method> = new Set([
   'deleteEmptyFolder',
   'deleteTempTree',
   'deletePrivateDataTree',
+  'deleteKeptTree',
+  'deleteKeptFile',
 ]);
 
 function parentOf(path: string): string {
@@ -263,6 +275,23 @@ export class FakeFs {
       this.call('deleteTempTree', path, () => this.deleteTreeInside(path, `${PRIVATE_DIR}/tmp`, 'E_NOT_TEMP')),
     deletePrivateDataTree: (path: string) =>
       this.call('deletePrivateDataTree', path, () => this.deleteTreeInside(path, `${PRIVATE_DIR}/data`, 'E_NOT_PRIVATE_DATA')),
+    deleteKeptTree: (path: string) =>
+      this.call('deleteKeptTree', path, () => {
+        const target = norm(path);
+        const root = target.includes('/..') ? undefined : KEPT_TREE_ROOTS.find(r => target === r || target.startsWith(`${r}/`));
+        if (!root) throw rejectWith('E_NOT_KEPT', `Refusing to delete outside Kept's own folders: ${path}`);
+        return this.deleteTreeInside(target, root, 'E_NOT_KEPT');
+      }),
+    deleteKeptFile: (path: string) =>
+      this.call('deleteKeptFile', path, () => {
+        const file = norm(path);
+        if (!file.startsWith(`${SHARED}/`) || file.includes('/..') || !KEPT_FILE.test(nameOf(file))) {
+          throw rejectWith('E_NOT_KEPT', `Refusing to delete a file Kept doesn't write: ${path}`);
+        }
+        if (this.folders.has(file)) throw rejectWith('E_NOT_FILE', `Not a file: ${path}`);
+        this.files.delete(file);
+        return true;
+      }),
   };
 
   // ---- internals ----

@@ -22,9 +22,9 @@ import MeetingRow, {MEETING_ROW_HEIGHT} from '../../ui/MeetingRow';
 import {AgreementActions, agreementRefKey} from '../../ui/useAgreementActions';
 import PagedSection from '../../ui/PagedSection';
 import TaskRow, {taskRowHeight, taskRowLines} from '../../ui/TaskRow';
-import {TASK_COLUMN_WIDTH_PX} from '../../ui/taskRowLayout';
 import {FONT} from '../../ui/theme';
 import {EntryActions, meetingEntryKey, taskEntryKey} from '../../ui/useEntryActions';
+import {estimatorWidth} from '../../ui/ScreenSize';
 
 export const SUB_HEAD_HEIGHT = 30;
 
@@ -119,7 +119,7 @@ export default function AheadSection(props: Props): React.JSX.Element {
         if (row.kind === 'head' || row.kind === 'someday') return SUB_HEAD_HEIGHT;
         if (row.kind === 'meeting') return MEETING_ROW_HEIGHT.oneLine;
         if (row.kind === 'agreement') return AGREEMENT_ROW_HEIGHT;
-        return taskRowHeight(row.entry.task, TASK_COLUMN_WIDTH_PX, 'flat');
+        return taskRowHeight(row.entry.task, estimatorWidth(), 'flat');
       }}
       emptyHint="Nothing ahead: no meeting planned, nothing open."
       renderRow={row => {
@@ -197,8 +197,8 @@ export default function AheadSection(props: Props): React.JSX.Element {
             onOpenLinkedFile={actions.openFile}
             ownerPath={entry.item.path}
             context="flat"
-            height={taskRowHeight(entry.task, TASK_COLUMN_WIDTH_PX, 'flat')}
-            numberOfLines={taskRowLines(entry.task, TASK_COLUMN_WIDTH_PX, 'flat')}
+            height={taskRowHeight(entry.task, estimatorWidth(), 'flat')}
+            numberOfLines={taskRowLines(entry.task, estimatorWidth(), 'flat')}
             textColor={textColor}
             borderColor={borderColor}
           />

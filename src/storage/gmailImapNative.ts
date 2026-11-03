@@ -85,7 +85,7 @@ export function describeGmailFailure(e: unknown): Error & {kind: GmailErrorKind}
       'No permission - the Supernote did not allow this plugin to use the internet. Allow it when asked (or in the plugin\'s permissions), then tap Refresh.';
   } else if (/AUTHENTICATIONFAILED|Invalid credentials|authentication failed|application-specific password|LOGIN failed/i.test(raw)) {
     kind = 'auth';
-    message = `Login failed - check your Gmail address and app password in Settings → Gmail. (${raw})`;
+    message = `Login failed - check your Gmail address and app password in Settings → Features. (${raw})`;
   } else if (
     /Couldn't connect|UnknownHost|Unable to resolve host|No address associated|timed out|timeout|unreachable|Connection (reset|refused)|SSLException|SocketException|Software caused connection abort/i.test(
       raw,

@@ -25,7 +25,8 @@ import {
 import PillButton from '../../ui/PillButton';
 import TaskLabels from '../../ui/TaskLabels';
 import {taskRowLayout} from '../../ui/taskRowLayout';
-import {ENGAGE_TEXT_WIDTH, engageStyles as styles} from './engageStyles';
+import {engageStyles as styles} from './engageStyles';
+import {estimatorWidth} from '../../ui/ScreenSize';
 
 interface Props {
   todo: EngageTodoRef;
@@ -59,13 +60,7 @@ export default function NowBox({
   borderColor,
 }: Props): React.JSX.Element {
   const today = todayIso();
-  const layout = taskRowLayout(
-    todo.task,
-    ENGAGE_TEXT_WIDTH,
-    'flat',
-    false,
-    today,
-  );
+  const layout = taskRowLayout(todo.task, estimatorWidth(), 'flat', today);
   // Due and Waiting For are spelled out on the details line, so the title keeps only #next.
   const labels = layout.labels.filter(l => l.kind === 'next');
   const details = nowDetailsText(todo.task, today);

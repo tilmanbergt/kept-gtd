@@ -32,9 +32,15 @@ Measured on: Supernote A5 X, plugin firmware Chauvet 2.27.42, `sn-plugin-lib` 0.
 
 - **Creating a note works only when the plugin was opened from a note.** From a document (PDF,
   EPUB) `PluginFileAPI.createNote` fails with "This app is not allowed to use this API", so
-  creating a linked note or a notebook needs Kept to be opened from a note.
+  creating a linked note or a notebook needs Kept to be opened from a note. Kept doesn't try
+  when it knows it was opened from a document and shows its own sentence for the host's refusal
+  (`domain/noteCreation.ts`).
 - `createNote` needs a fixed template name (`style_white`, or a MyStyle file path); a template
   reference from `getNoteSystemTemplates()` does not resolve there.
+- **Horizontal notes**: `createNote(..., isPortrait = false)` makes one; `getPageSize` reports
+  its pages as 1872 × 1404 px, and `insertNotePage` adds horizontal pages to it. Element
+  coordinates are page pixels from the top left; a text box placed below the page is stored
+  but never visible. The host's page bar covers about the bottom 100 px of a page.
 - Inserting a page and adding its keyword are two separate calls; nothing makes them atomic.
   Kept checks what it can (the keyword length) before the first call.
 
@@ -59,6 +65,11 @@ Measured on: Supernote A5 X, plugin firmware Chauvet 2.27.42, `sn-plugin-lib` 0.
   explicitly (`utils/screenRefresh.ts`'s `requestEinkRefresh()`, `useEinkRefreshOnLoad()`).
 - Android's native text-selection toolbar does not work in the plugin host;
   `ui/ClipboardTextInput.tsx` has its own Select All/Copy/Cut/Paste strip.
+- **Rotation**: the plugin view turns with the device while Kept is open, without a restart. The
+  window goes from 994 × 1325 dp to 1325 × 994 dp on the A5 X and `Dimensions` reports the
+  change; below the tab bar Kept has 994 × 1238 dp upright and 1325 × 906 dp turned.
+- **Font scale**: the A5 X reports a font scale of 1.15 - text renders 15 % larger than the
+  `FONT` sizes. The row heights in `design-device-rendering.md` are measured with it.
 
 ## 6. Lasso
 
@@ -68,7 +79,7 @@ Measured on: Supernote A5 X, plugin firmware Chauvet 2.27.42, `sn-plugin-lib` 0.
 
 ## 7. Files outside Note
 
-Checked with Settings → Advanced → Check device files (`storage/deviceCheck.ts`). Source:
+Checked on the device in 0.23 with a diagnostic screen since removed. Source:
 `docs/dev/history/technical-design-easy-start.md` §7.
 
 - **Listing**: `listFolderEntries('/storage/emulated/0')` lists every top-level folder - the
@@ -88,6 +99,20 @@ Checked with Settings → Advanced → Check device files (`storage/deviceCheck.
 ## 8. Installing builds
 
 - The host can install a new build into the running process instead of restarting it, so two
-  builds end up loaded in one process. Every build gets a higher `versionCode`, and
-  `supernote/pluginRuntime.ts` reports stale builds in the debug bundle. Source:
+  builds end up loaded in one process. The plugin firmware Kept requires unloads the old build;
+  every build still gets a higher `versionCode`. Source:
   `docs/dev/history/technical-design-host-update-crash.md`.
+- **Settings → Plugins → Add plugin** lists the `.snplg` files in `MyStyle` and its subfolders, so
+  the in-app updater saves a release to `MyStyle/kept-gtd/` and the user installs it from there;
+  Kept never installs a build itself (`storage/updates.ts`). Source:
+  `docs/dev/history/requirements-in-app-updates.md`.
+
+## 9. Uninstalling
+
+- Uninstalling the plugin keeps what it stored in the host's key–value store (`AsyncStorage`: the
+  settings, the profile secrets, recent tags and places, the calendar cache); a reinstall finds
+  everything again, including the Gmail app password and the calendar link. Only the runtime
+  permissions are reset: the next start asks for them again. Seen on the device with 0.23.0.
+- The SDK gives a plugin no uninstall event (`sn-plugin-lib` has start and stop listeners only), so
+  Kept can't clean up when it is removed. Settings → Data → Remove Kept's data does it on request
+  (`docs/dev/history/technical-design-remove-data.md`).

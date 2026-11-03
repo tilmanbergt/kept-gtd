@@ -9,7 +9,8 @@ import {Text} from 'react-native';
 import {EngageTodoRef} from '../../domain/engageOwner';
 import {backLineText} from '../../domain/engageText';
 import {taskRowLayout} from '../../ui/taskRowLayout';
-import {ENGAGE_TEXT_WIDTH, engageStyles as styles} from './engageStyles';
+import {engageStyles as styles} from './engageStyles';
+import {estimatorWidth} from '../../ui/ScreenSize';
 
 interface Props {
   todo: EngageTodoRef;
@@ -18,7 +19,7 @@ interface Props {
 }
 
 export default function BackLine({todo, onPress, textColor}: Props): React.JSX.Element {
-  const title = taskRowLayout(todo.task, ENGAGE_TEXT_WIDTH, 'flat').title;
+  const title = taskRowLayout(todo.task, estimatorWidth(), 'flat').title;
   return (
     <Text style={[styles.backLine, {color: textColor}]} numberOfLines={1} onPress={onPress} suppressHighlighting>
       {backLineText(title)}

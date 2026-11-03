@@ -102,24 +102,3 @@ export function migrateExperimentalFlags<T extends MigratableFields>(
 export function shouldShowWhatsNew(lastSeenVersion: string, build: {version: string; release: boolean}): boolean {
   return build.release && lastSeenVersion !== build.version;
 }
-
-/** The release that retired focus (docs/dev/history/technical-design-time-and-place.md R7). */
-const FOCUS_RETIRED_IN = [0, 22, 0];
-
-function versionParts(version: string): number[] | null {
-  const match = /^(\d+)\.(\d+)\.(\d+)/.exec(version);
-  return match ? match.slice(1).map(Number) : null;
-}
-
-/**
- * Whether the one-time line "Focus is retired. …" shows (R7): the user last
- * acknowledged a release before focus was retired and hasn't dismissed the
- * line yet. A fresh install ('' = no release seen) never had focus. Unlike
- * the "Updated to" notice it shows in test builds too.
- */
-export function shouldShowFocusRetired(lastSeenVersion: string, seen: boolean): boolean {
-  const parts = versionParts(lastSeenVersion);
-  if (seen || !parts) return false;
-  for (let i = 0; i < 3; i++) if (parts[i] !== FOCUS_RETIRED_IN[i]) return parts[i] < FOCUS_RETIRED_IN[i];
-  return false;
-}

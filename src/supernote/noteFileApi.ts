@@ -4,11 +4,13 @@
  */
 import {PluginCommAPI, PluginFileAPI} from 'sn-plugin-lib';
 import {ensureFileWritePermission, logFileCallFailure} from './pluginPermissions';
-import {log, logError} from '../utils/log';
+import {log, logError, logWarn} from '../utils/log';
 import {errorMessage} from '../utils/errorMessage';
 import {notifyFolderChanged, parentFolder} from './fileNative';
 import {callHost, recordDebugLogEntry} from './hostCall';
 import {SdkResponse} from './sdkElements';
+import {getRememberedLaunchNotePath} from './hostContext';
+import {isHostCreateRefusal, launchKind, NoteCreationBlockedError} from '../domain/noteCreation';
 
 export interface NoteTemplate {
   name: string;
@@ -157,6 +159,12 @@ export async function getNoteSystemTemplates(): Promise<NoteTemplate[]> {
  * own text-file I/O - it needs FILE:WRITE the same way writing a
  * project.txt does, since it's putting a new file on disk in the user's
  * Note folder.
+ *
+ * Opened from a PDF or EPUB, the host refuses note creation
+ * (docs/dev/supernote-host-facts.md §2): Kept then throws
+ * NoteCreationBlockedError without calling the host, and maps the host's
+ * own refusal to the same error when it comes anyway
+ * (docs/dev/history/technical-design-launch-ready.md §3).
  */
 export async function createNote(
   path: string,
@@ -167,6 +175,10 @@ export async function createNote(
   if (!granted) {
     logError('createNote: file write permission not granted', path);
     throw new Error('File write permission was not granted.');
+  }
+  if (launchKind(getRememberedLaunchNotePath()?.path) === 'document') {
+    logWarn('createNote: not tried, Kept was opened from a document');
+    throw new NoteCreationBlockedError();
   }
   log('createNote: start', path, template);
   const start = Date.now();
@@ -181,8 +193,9 @@ export async function createNote(
     const hostMessage = response?.error?.message || 'Could not create the note.';
     logFileCallFailure('createNote: failed', path, hostMessage);
     await recordDebugLogEntry('createNote', false, durationMs, {notePath: path, template, isPortrait, errorMessage: hostMessage});
-    // ensureFileWritePermission() above already succeeded by this point, so
-    // every failure reaching here is the "granted != allowed" situation (a
+    if (isHostCreateRefusal(hostMessage)) throw new NoteCreationBlockedError();
+    // Any other refusal: ensureFileWritePermission() above already succeeded,
+    // so this is still the "granted != allowed" situation (a
     // second, separate host-side gate in HostCommImpl.checkAPIAvailable,
     // unrelated to plugin.permission.FILE:WRITE) - the plain host message
     // alone reads like a permission problem and sends people chasing the

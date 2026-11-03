@@ -26,10 +26,8 @@ import {getEngageRequest, requestEngage, subscribeEngage} from './src/ui/engageS
 import {noteLaunchChanged} from './src/ui/useThisFile';
 import {MarkScope} from './src/domain/marks';
 import MarkOutcomeScreen from './src/ui/MarkOutcomeScreen';
-import {logStaleBuilds} from './src/supernote/pluginRuntime';
 import {getMarkOutcome, holdStartForMark, isMarkInFlight, outcomeNeedsScreen, subscribeMarkOutcome} from './src/storage/marks';
 import {useAppOverlays} from './src/screens/useAppOverlays';
-import AppTouchObserver from './src/ui/touchDiag/AppTouchObserver';
 import {useReviewStepNav} from './src/screens/useReviewStepNav';
 import {useEngageExit} from './src/screens/useEngageExit';
 import {useLoopEvents} from './src/ui/useLoopEvents';
@@ -42,11 +40,13 @@ import {featuresOf} from './src/domain/features';
 import {setFeatures, useFeatures} from './src/ui/featureStore';
 import {useWriteConflicts} from './src/ui/useWriteConflicts';
 import {useWhatsNewNotice} from './src/ui/useWhatsNewNotice';
+import {useUpdateNotice} from './src/ui/useUpdateNotice';
 import {useSettingsUnreadableNotice} from './src/ui/useSettingsUnreadableNotice';
 import {useNoteSetupsNotice} from './src/ui/useNoteSetupsNotice';
 import {useProfileCopyNotice} from './src/ui/useProfileCopyNotice';
+import {usePageFitNotice} from './src/ui/usePageFitNotice';
 import {configureLogFileSink, setFileLogging} from './src/utils/logSink';
-import {GtdParaSettings, resolvePaths} from './src/domain/settings';
+import {DEFAULT_SETTINGS, GtdParaSettings, resolvePaths} from './src/domain/settings';
 import {decideLanding} from './src/domain/returnContext';
 import {clearCachedData, refreshCache} from './src/storage/dataCache';
 import {clearCachedGmailInbox} from './src/storage/gmailInboxCache';
@@ -65,9 +65,9 @@ import {log, logError} from './src/utils/log';
 import {BUILD_INFO} from './src/generated/buildInfo';
 import {perfBegin, perfConfigure, perfEnable, perfMark, usePerfRender} from './src/utils/perf';
 import {collectPerfStats} from './src/storage/perfStats';
-import {logNoteTitlesDiagnostic} from './src/storage/noteTitlesDiagnostic';
 import {requestEinkRefresh, useEinkRefreshOnLoad} from './src/utils/screenRefresh';
 import {FONT, useThemeColors} from './src/ui/theme';
+import {ScreenSizeProvider} from './src/ui/ScreenSize';
 import {errorMessage} from './src/utils/errorMessage';
 
 // Performance tracing (docs/dev/history/technical-design-perf-tracing.md). Wired once at
@@ -136,21 +136,20 @@ export default function App(): React.JSX.Element {
 // index.js without this view; when it needs to say something it stores an
 // outcome and opens the view - drawn here on top of whatever the shell shows,
 // so the shell (and its kept tabs) stays as it was.
-//
-// AppTouchObserver is the touch test's "Log touches everywhere" observer:
-// observe-only, without handlers while switched off.
 function AppRoot(): React.JSX.Element {
   const [epoch, setEpoch] = useState(0);
   const markOutcome = useSyncExternalStore(subscribeMarkOutcome, getMarkOutcome);
   return (
-    <AppTouchObserver>
-      <AppShell key={epoch} onProfileSwitched={() => setEpoch(e => e + 1)} />
-      {markOutcome && outcomeNeedsScreen(markOutcome) ? (
-        <View style={StyleSheet.absoluteFill}>
-          <MarkOutcomeScreen outcome={markOutcome} />
-        </View>
-      ) : null}
-    </AppTouchObserver>
+    <View style={styles.appRoot}>
+      <ScreenSizeProvider>
+        <AppShell key={epoch} onProfileSwitched={() => setEpoch(e => e + 1)} />
+        {markOutcome && outcomeNeedsScreen(markOutcome) ? (
+          <View style={StyleSheet.absoluteFill}>
+            <MarkOutcomeScreen outcome={markOutcome} />
+          </View>
+        ) : null}
+      </ScreenSizeProvider>
+    </View>
   );
 }
 
@@ -190,20 +189,20 @@ function AppShell({onProfileSwitched}: {onProfileSwitched: () => void}): React.J
   );
 
   // Which Settings sub-tab to land on next time Settings mounts (docs/
-  // technical-design-google-calendar.md §9) - normally 'folders' (the
+  // technical-design-google-calendar.md §9) - normally 'data' (the
   // default every direct TabBar tap resets it back to, in handleSelectTab
-  // below), but openSettingsCalendar sets it to 'calendar' right before
+  // below), but openSettingsCalendar sets it to 'features' right before
   // switching tabs so a Google mini-tab's "Open Calendar Settings" link
   // (DailyView/WeekView/ProjectDataPanel/InboxScreen/ReviewScreen, all
   // threaded to openSettingsCalendar below) lands straight there. Settings
   // itself only reads this once, via its own initialTab prop's useState
   // initializer - see that screen's module doc comment for why a watched
   // effect isn't needed (a tab switch away always unmounts it first).
-  const [settingsTab, setSettingsTab] = useState<SettingsTab>('folders');
+  const [settingsTab, setSettingsTab] = useState<SettingsTab>('data');
   // A fresh install starts on Settings with the setup assistant running, once
   // (docs/dev/history/technical-design-easy-start.md §5.5).
   const [setupAtStart, setSetupAtStart] = useState(false);
-  // Once: leaving Settings ends the start (Run setup assistant on Settings → Folders stays).
+  // Once: leaving Settings ends the start (Run setup assistant on Settings → Data stays).
   useEffect(() => {
     if (activeTab !== 'settings') setSetupAtStart(false);
   }, [activeTab]);
@@ -234,8 +233,7 @@ function AppShell({onProfileSwitched}: {onProfileSwitched: () => void}): React.J
   // while "Mark for later" or Capture still has its lasso picture in the
   // temp folder): clear leftovers of an interrupted PDF export from the
   // private temp folder (docs/dev/history/technical-design-inkhub-submission.md §3.2;
-  // best-effort, older native builds lack the call), and log whether an
-  // older build is still loaded (supernote/pluginRuntime.ts logStaleBuilds).
+  // best-effort).
   const startHousekeepingRef = useRef(false);
 
   // Re-checks the current note's Project/Area and jumps straight there - on
@@ -349,7 +347,6 @@ function AppShell({onProfileSwitched}: {onProfileSwitched: () => void}): React.J
         // rememberLaunchNotePath's own doc comment in supernote/hostContext.ts.
         rememberLaunchNotePath(currentPath);
         noteLaunchChanged();
-        if (loadedSettings.debugLogging === true && currentPath) void logNoteTitlesDiagnostic(currentPath);
         if (cancelled || routedByLassoButtonRef.current || routedByEngageButtonRef.current) return;
 
         setSettings(loadedSettings);
@@ -358,7 +355,6 @@ function AppShell({onProfileSwitched}: {onProfileSwitched: () => void}): React.J
           getPrivateTempDir()
             .then(dir => deleteTempTree(dir))
             .catch(e => log('App: private temp clean-up skipped', errorMessage(e)));
-          logStaleBuilds();
         }
         // Only files changed outside gtdpara are read again (technical-design-files-0.6.md §3.2).
         refreshCache(loadedSettings).catch(e =>
@@ -418,7 +414,7 @@ function AppShell({onProfileSwitched}: {onProfileSwitched: () => void}): React.J
         if (loadedSettings.setupAssistant === 'pending' && !hasLandedRef.current) {
           log('App: reorient landing on the setup assistant');
           setSetupAtStart(true);
-          setSettingsTab('folders');
+          setSettingsTab('data');
           setActiveTab('settings');
         } else if (landing.kind === 'item') {
           const enclosing = landing.item;
@@ -607,8 +603,9 @@ function AppShell({onProfileSwitched}: {onProfileSwitched: () => void}): React.J
     setActiveTab('settings');
     setMode('tabs');
   };
-  const openSettingsAdvanced = () => {
-    setSettingsTab('advanced');
+  // The profile chip in the tab bar opens the profiles (Settings → Data).
+  const openSettingsProfiles = () => {
+    setSettingsTab('data');
     setActiveTab('settings');
     setMode('tabs');
   };
@@ -627,14 +624,28 @@ function AppShell({onProfileSwitched}: {onProfileSwitched: () => void}): React.J
     log('App: switched to profile', next.activeProfileId);
     onProfileSwitched();
   };
+  // After Remove Kept's data took the settings (docs/dev/history/technical-design-remove-data.md
+  // R7): drop every in-memory copy, like a profile switch, and remount; with no stored settings
+  // the load is a first install and the setup assistant opens.
+  const restartFresh = () => {
+    clearCachedData();
+    clearCachedGmailInbox();
+    clearReturnRecord();
+    setActiveProfileId(DEFAULT_PROFILE_ID);
+    setFeatures(featuresOf(DEFAULT_SETTINGS));
+    log('App: starting fresh after Remove Kept\'s data');
+    onProfileSwitched();
+  };
   useNoteSetupsNotice(settings, () => {
     setSettingsTab('templates');
     setActiveTab('settings');
     setMode('tabs');
   });
-  useWhatsNewNotice(settings, setSettings, openSettingsAbout);
+  const whatsNewShowing = useWhatsNewNotice(settings, setSettings, openSettingsAbout);
+  useUpdateNotice(settings, setupAtStart, whatsNewShowing, openSettingsAbout);
   useSettingsUnreadableNotice(setSettings);
   useProfileCopyNotice(settings);
+  usePageFitNotice();
 
   if (mode === 'loading') {
     return (
@@ -672,17 +683,17 @@ function AppShell({onProfileSwitched}: {onProfileSwitched: () => void}): React.J
 
   // Every calendar-showing surface's Google mini-tab (ui/GoogleCalendarPanel.tsx)
   // empty state calls this when no ICS URL is configured yet (docs/
-  // technical-design-google-calendar.md §9) - lands on Settings' Calendar
-  // sub-tab specifically, not just Settings in general.
+  // technical-design-google-calendar.md §9) - lands on Settings → Features, where the
+  // calendar link is entered, not just Settings in general.
   const openSettingsCalendar = () => {
-    setSettingsTab('calendar');
+    setSettingsTab('features');
     setActiveTab('settings');
     setMode('tabs');
   };
 
   // TabBar's own tab taps go through this rather than setActiveTab directly,
   // so a direct tap on the Settings tab always resets settingsTab back to
-  // its normal default - otherwise a leftover 'calendar' from an earlier
+  // its normal default - otherwise a leftover 'features' from an earlier
   // openSettingsCalendar() jump would keep winning on every future visit,
   // even ones that had nothing to do with Calendar settings.
   const openCloseOut = (path: string, closeOutMode: 'full' | 'quick') => {
@@ -703,7 +714,7 @@ function AppShell({onProfileSwitched}: {onProfileSwitched: () => void}): React.J
     overlays.closeOverlays();
     perfBegin('tab', tab, {from: activeTab});
     perfMark('tab:press');
-    if (tab === 'settings') setSettingsTab('folders');
+    if (tab === 'settings') setSettingsTab('data');
     setActiveTab(tab);
   };
 
@@ -797,6 +808,7 @@ function AppShell({onProfileSwitched}: {onProfileSwitched: () => void}): React.J
             setSetupAtStart(false);
             if (finished) setActiveTab('projects');
           }}
+          onRestartFresh={restartFresh}
         />
       )}
     </>
@@ -815,7 +827,7 @@ function AppShell({onProfileSwitched}: {onProfileSwitched: () => void}): React.J
         demo={settings?.activeProfileId === DEMO_PROFILE_ID}
         contextLabel={activeCtx ? activeCtx.name || 'Unnamed' : EVERYTHING_LABEL}
         onContextPress={openSettingsContexts}
-        onProfilePress={openSettingsAdvanced}
+        onProfilePress={openSettingsProfiles}
         helpOpen={overlays.helpOpen}
         onHelpPress={overlays.toggleHelp}
       />
@@ -899,6 +911,7 @@ function AppShell({onProfileSwitched}: {onProfileSwitched: () => void}): React.J
 }
 
 const styles = StyleSheet.create({
+  appRoot: {flex: 1},
   loading: {
     flex: 1,
     alignItems: 'center',

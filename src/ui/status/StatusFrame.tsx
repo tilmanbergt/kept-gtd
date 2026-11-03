@@ -16,7 +16,8 @@ import {requestEinkRefresh} from '../../utils/screenRefresh';
 import {WarningIcon} from '../icons';
 import {FONT, useThemeColors} from '../theme';
 import {useStatusList} from './StatusProvider';
-import {STATUS_EXPAND_MS, STATUS_SLOT_HEIGHT, StatusMessage} from './types';
+import {useShortScreen} from '../ScreenSize';
+import {STATUS_EXPAND_MS, STATUS_SLOT_HEIGHT, STATUS_SLOT_HEIGHT_SHORT, StatusMessage} from './types';
 
 /** Texts longer than this are offered the tap-to-expand overlay even without an explicit `detail`. */
 const EXPAND_THRESHOLD_CHARS = 90;
@@ -54,6 +55,7 @@ export default function StatusFrame({children}: {children: React.ReactNode}): Re
     requestEinkRefresh();
   }, [entry?.id, entry?.seq, expanded, list.length]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  const slotHeight = useShortScreen() ? STATUS_SLOT_HEIGHT_SHORT : STATUS_SLOT_HEIGHT;
   const msg = entry?.msg ?? null;
   const expandable = !!msg && (!!msg.detail || msg.text.length > EXPAND_THRESHOLD_CHARS);
 
@@ -66,6 +68,7 @@ export default function StatusFrame({children}: {children: React.ReactNode}): Re
         onPrev={() => setIndex(Math.max(0, safeIndex - 1))}
         onNext={() => setIndex(Math.min(list.length - 1, safeIndex + 1))}
         onTextPress={expandable ? () => setExpanded(e => !e) : undefined}
+        height={slotHeight}
         textColor={textColor}
         background={background}
       />
@@ -73,7 +76,7 @@ export default function StatusFrame({children}: {children: React.ReactNode}): Re
       {expanded && msg && (
         <Pressable
           onPress={() => setExpanded(false)}
-          style={[styles.overlay, {backgroundColor: background, borderColor: textColor}]}>
+          style={[styles.overlay, {top: slotHeight, backgroundColor: background, borderColor: textColor}]}>
           <Text style={[styles.overlayText, {color: textColor}]}>{msg.detail ?? msg.text}</Text>
         </Pressable>
       )}
@@ -88,14 +91,15 @@ interface RowProps {
   onPrev: () => void;
   onNext: () => void;
   onTextPress?: () => void;
+  height: number;
   textColor: string;
   background: string;
 }
 
-function StatusSlotRow({msg, index, count, onPrev, onNext, onTextPress, textColor, background}: RowProps): React.JSX.Element {
+function StatusSlotRow({msg, index, count, onPrev, onNext, onTextPress, height, textColor, background}: RowProps): React.JSX.Element {
   if (!msg) {
     // Empty slot stays blank (D15) - but keeps its height (D1).
-    return <View style={styles.slot} />;
+    return <View style={[styles.slot, {height}]} />;
   }
 
   const inverted = msg.kind === 'modal' || msg.kind === 'confirm';
@@ -106,7 +110,7 @@ function StatusSlotRow({msg, index, count, onPrev, onNext, onTextPress, textColo
     <View
       style={[
         styles.slot,
-        {backgroundColor: bg},
+        {height, backgroundColor: bg},
         msg.kind === 'error' && [styles.bordered, styles.borderedStrong, {borderColor: textColor}],
         msg.kind === 'warning' && [styles.bordered, {borderColor: textColor}],
       ]}>
@@ -124,9 +128,9 @@ function StatusSlotRow({msg, index, count, onPrev, onNext, onTextPress, textColo
         </Text>
       </Pressable>
       {msg.actions?.map(action => (
-        <SlotButton key={action.label} label={action.label} primary={action.primary} onPress={action.onPress} fg={fg} bg={bg} />
+        <SlotButton key={action.label} label={action.label} primary={action.primary} onPress={action.onPress} height={height - SLOT_BUTTON_INSET} fg={fg} bg={bg} />
       ))}
-      {msg.kind === 'modal' && msg.onCancel && <SlotButton label="Cancel" onPress={msg.onCancel} fg={fg} bg={bg} />}
+      {msg.kind === 'modal' && msg.onCancel && <SlotButton label="Cancel" onPress={msg.onCancel} height={height - SLOT_BUTTON_INSET} fg={fg} bg={bg} />}
       {msg.kind === 'confirm' && msg.onCancel && <CloseMark onPress={msg.onCancel} color={fg} />}
       {msg.kind !== 'confirm' && msg.onDismiss && <CloseMark onPress={msg.onDismiss} color={fg} />}
       {count > 1 && (
@@ -146,13 +150,18 @@ function StatusSlotRow({msg, index, count, onPrev, onNext, onTextPress, textColo
   );
 }
 
-function SlotButton({label, onPress, primary, fg, bg}: {label: string; onPress: () => void; primary?: boolean; fg: string; bg: string}) {
+/** A slot button is this much lower than the slot, so it always fits inside it (docs/dev/history/technical-design-launch-ready.md L6c). */
+const SLOT_BUTTON_INSET = 6;
+
+function SlotButton({label, onPress, primary, height, fg, bg}: {label: string; onPress: () => void; primary?: boolean; height: number; fg: string; bg: string}) {
   return (
     <Pressable
       onPress={onPress}
       hitSlop={HIT_SLOP}
-      style={[styles.button, {borderColor: fg}, primary && {backgroundColor: fg}]}>
-      <Text style={[styles.buttonText, {color: primary ? bg : fg}]}>{label}</Text>
+      style={[styles.button, {height, borderColor: fg}, primary && {backgroundColor: fg}]}>
+      <Text style={[styles.buttonText, {color: primary ? bg : fg}]} numberOfLines={1}>
+        {label}
+      </Text>
     </Pressable>
   );
 }
@@ -210,12 +219,13 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 12,
     paddingHorizontal: 10,
-    paddingVertical: 3,
+    justifyContent: 'center',
     marginLeft: 8,
   },
   buttonText: {
     fontSize: FONT.small,
     fontWeight: '600',
+    includeFontPadding: false,
   },
   close: {
     marginLeft: 10,
@@ -242,7 +252,6 @@ const styles = StyleSheet.create({
   },
   overlay: {
     position: 'absolute',
-    top: STATUS_SLOT_HEIGHT,
     left: 8,
     right: 8,
     borderWidth: 2,

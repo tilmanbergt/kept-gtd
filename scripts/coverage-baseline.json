@@ -10,15 +10,15 @@
       "branches": 71.1
     },
     "contexts": {
-      "lines": 91.4,
-      "branches": 84.5
+      "lines": 92.8,
+      "branches": 86.9
     },
     "engage": {
       "lines": 96.5,
       "branches": 90.7
     },
     "close-out": {
-      "lines": 68.7,
+      "lines": 69,
       "branches": 47.1
     },
     "lasso": {
@@ -35,19 +35,19 @@
     },
     "threads": {
       "lines": 89.7,
-      "branches": 80.5
+      "branches": 81.4
     },
     "review": {
-      "lines": 74.9,
-      "branches": 61
+      "lines": 77.1,
+      "branches": 63.2
     },
     "meetings": {
       "lines": 83.2,
       "branches": 75.9
     },
     "note-setups": {
-      "lines": 86.6,
-      "branches": 78.8
+      "lines": 87.7,
+      "branches": 80.3
     },
     "quick-add": {
       "lines": 80.9,
@@ -62,16 +62,20 @@
       "branches": 88.6
     },
     "files": {
-      "lines": 88.8,
+      "lines": 89.1,
       "branches": 77.7
+    },
+    "updates": {
+      "lines": 96.7,
+      "branches": 94.6
     },
     "settings": {
-      "lines": 83.8,
-      "branches": 73.2
+      "lines": 84.9,
+      "branches": 73.5
     },
     "foundation": {
-      "lines": 88.7,
-      "branches": 77.7
+      "lines": 89.3,
+      "branches": 78.6
     }
   }
 }

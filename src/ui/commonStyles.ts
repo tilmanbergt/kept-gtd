@@ -15,7 +15,9 @@ export const common = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.background,
-    paddingTop: SPACING.base,
+    // Small: the status slot right above already separates the screen from the tab bar
+    // (docs/dev/history/technical-design-launch-ready.md L6b).
+    paddingTop: SPACING.sm,
     paddingHorizontal: SPACING.base,
   },
   content: {

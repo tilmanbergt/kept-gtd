@@ -87,7 +87,15 @@ interface Props {
 export default function ReviewScreen({onOpenItem, onReviewRecorded, onOpenCalendarSettings, onStartCloseOut}: Props): React.JSX.Element {
   const {textColor, borderColor, placeholderColor} = useThemeColors();
   const data = useReviewData();
-  const {items, settings, setSettings, aggregate, inbox, inboxPath, loading, error, load, refreshFromCache} = data;
+  const {items, settings, setSettings, aggregate, inbox, inboxPath, loading, error, load, refreshFromCache, contextFilter} = data;
+  // The active context's name while Review is narrowed to it; null in Everything.
+  const narrowedTo = contextFilter.matcher.context?.name ?? null;
+  const contextName = contextFilter.context?.name ?? null;
+  const contextLine = !contextName
+    ? null
+    : narrowedTo
+    ? {text: `Reviewing in ${contextName}`, action: 'Review everything', onPress: contextFilter.show}
+    : {text: `Context ${contextName} is set`, action: `Review only in ${contextName}`, onPress: contextFilter.narrow};
   // The Gmail step only while the experimental Gmail integration is on.
   const features = useFeatures();
   const allSteps = useMemo(() => activeReviewSteps(features), [features]);
@@ -188,7 +196,8 @@ export default function ReviewScreen({onOpenItem, onReviewRecorded, onOpenCalend
     if (view.kind === 'step') leaveStep(false, 'hub');
     const request = takeReviewStepRequest();
     if (!request) return;
-    log('ReviewScreen: step requested', request.id, request.filter ? 'filtered' : 'all');
+    log('ReviewScreen: step requested', request.id, request.filter ? 'filtered' : 'all', request.inContext ? 'in context' : 'everything');
+    if (request.inContext) contextFilter.narrow();
     enterStep(request.id);
     // Runs once per request; the view at that moment is what it leaves.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -219,7 +228,7 @@ export default function ReviewScreen({onOpenItem, onReviewRecorded, onOpenCalend
   const tendingRoster = useTendingRoster(data);
   const loopRoster = useLoopRoster(data);
   const agreementReview = useAgreementReview(data);
-  // The same without the active context: the hub's "+n in other contexts" and the global empty stamps (Q2).
+  // The same over everything: the hub's "+n in other contexts" and the global empty stamps.
   const allData = {...data, contextItems: data.items};
   const tendingRosterAll = useTendingRoster(allData);
   const loopRosterAll = useLoopRoster(allData);
@@ -247,7 +256,7 @@ export default function ReviewScreen({onOpenItem, onReviewRecorded, onOpenCalend
   const stepCounts = countsShown && countsAll ? withElsewhere(countsShown, countsAll) : null;
   // What the hub and the walk-through show: a hide-when-empty step (Agreements) only while it lists
   // something anywhere, or while it is the step shown. Empty stamps go over every step (the tab badge)
-  // and count every context: Reviewed marks and the overdue date are global (Q2).
+  // and count every context: Reviewed marks and the overdue date are global.
   const activeSteps = visibleReviewSteps(allSteps, countsAll, view.kind === 'step' ? view.id : null);
   // Backlog steps with nothing in them, as a string so the effect below only runs when that set changes.
   const emptyBacklogKey = countsAll
@@ -340,6 +349,7 @@ export default function ReviewScreen({onOpenItem, onReviewRecorded, onOpenCalend
         </View>
         <Text style={[styles.stepTitle, {color: textColor}]}>
           Step {position} of {activeSteps.length} — {reviewStepDef(id).title}
+          {narrowedTo ? ` · in ${narrowedTo}` : ''}
         </Text>
         <View style={styles.stepNavGroup}>
           <Pressable onPress={() => leaveStep(false, 'next')} hitSlop={8}>
@@ -370,6 +380,7 @@ export default function ReviewScreen({onOpenItem, onReviewRecorded, onOpenCalend
                 counts={stepCounts}
                 now={new Date()}
                 onOpenStep={enterStep}
+                contextLine={contextLine}
                 stepDefs={activeSteps}
                 textColor={textColor}
                 borderColor={borderColor}

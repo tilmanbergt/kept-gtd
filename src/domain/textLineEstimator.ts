@@ -34,8 +34,7 @@ export interface TextLineEstimator {
 // (no canvas/text-measurement API exists in this RN/e-ink environment
 // without a render pass). Calibrated by eye, not derived from a font
 // metrics table - retune these three numbers once checked against real
-// on-device screenshots, same "hand-tuned starting point" convention every
-// `PAGE_SIZE` constant in ui/pagination.ts already follows.
+// on-device screenshots.
 const NARROW_CHARS = /[iIlj.,:;'!|\s]/;
 const WIDE_CHARS = /[A-Z0-9@%&#WMwm]/;
 const NARROW_WIDTH_EM = 0.32;

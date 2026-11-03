@@ -12,6 +12,16 @@ Tap a step to open it. Inside a step:
 - **Skip ›** goes on without marking it reviewed
 - **‹ Back** and **Overview** move around without saving
 
+## Reviewing in a context
+
+The review looks at everything, also while a [context](contexts.md) is active: a context is for doing the work, the review is for seeing all of it. Then the overview's first line says "Context Home is set · **Review only in Home**". Tap it to narrow every step to what Home shows, until you leave the Review tab:
+
+- the line reads "Reviewing in Home · **Review everything**" (tap it to see everything again);
+- step titles end "· in Home", and the overview shows "+2 in other contexts" next to a step's count;
+- [Tending threads](review.md#tending-threads), [Open loops](review.md#open-loops) and [Agreements](review.md#agreements) list the areas and projects the context shows, with all their threads and loops.
+
+**Reviewed** and the ● mark count every context: reviewing a step in Home marks it reviewed for all. The Tend line on [Week and Month](week-and-month.md#given-time) opens Review already narrowed to the active context.
+
 ## The steps
 
 - **Week ahead**: this week's schedule (meetings and [focus blocks](meetings.md#focus-blocks)); from Friday to Sunday the coming week

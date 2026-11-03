@@ -90,6 +90,12 @@ function extractTags(text: string): string[] {
   return tags;
 }
 
+/** `tag` (lowercase, no '#') reads back as exactly this one tag when written as `#tag`. */
+export function isWholeTag(tag: string): boolean {
+  const tags = extractTags(`#${tag}`);
+  return tags.length === 1 && tags[0] === tag;
+}
+
 /** A task's due date from a `#due:YYYY-MM-DD` tag among its already-extracted tags, or null. First match wins if more than one is present. */
 function deriveDueDate(tags: string[]): string | null {
   for (const tag of tags) {

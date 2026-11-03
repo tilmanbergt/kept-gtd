@@ -11,6 +11,7 @@ import type {NoteSetup, NoteSetupDefaults} from './noteSetups';
 import {ReviewStepsMap} from './reviewSteps';
 import {DEFAULT_MODULES, Modules} from './features';
 import type {ContextDef, MinMinutes} from './contexts';
+import type {UpdateCheckMode} from './updateCheck';
 
 export interface GtdParaSettings {
   baseRoot: string;
@@ -24,23 +25,6 @@ export interface GtdParaSettings {
    * Inbox's Todos/Meetings note folders. Never treated as an Area.
    */
   inboxFolder: string;
-  /**
-   * @deprecated retired 0.22, kept for rollback (remove ≥ 0.24): the focus
-   * slot counts of 0.21.1 (docs/dev/history/technical-design-time-and-place.md
-   * §3.7). Nothing reads them; they stay in DEFAULT_SETTINGS so the stored
-   * settings and profile files keep them for 0.21.1.
-   */
-  dailyFocusProjectCount: number;
-  /** @deprecated retired 0.22, kept for rollback (remove ≥ 0.24). */
-  dailyFocusAreaCount: number;
-  /** @deprecated retired 0.22, kept for rollback (remove ≥ 0.24). */
-  weeklyFocusProjectCount: number;
-  /** @deprecated retired 0.22, kept for rollback (remove ≥ 0.24). */
-  weeklyFocusAreaCount: number;
-  /** @deprecated retired 0.22, kept for rollback (remove ≥ 0.24). */
-  monthlyFocusProjectCount: number;
-  /** @deprecated retired 0.22, kept for rollback (remove ≥ 0.24). */
-  monthlyFocusAreaCount: number;
   /**
    * Per-step review tracking for the Weekly Review (docs/dev/technical-design-
    * review-hub.md). One record per step id: when "Reviewed" was last tapped on it, the recap
@@ -62,7 +46,7 @@ export interface GtdParaSettings {
   hideDoneInboxTasks: boolean;
   /**
    * The user's Google Calendar "secret address in iCal format" URL
-   * (Settings → Calendar), or '' if not configured (storage/
+   * (Settings → Features), or '' if not configured (storage/
    * googleCalendarCache.ts's refreshGoogleCalendar). Plugin meta, not PARA
    * content - same reasoning as every other field here. Read-only: this
    * plugin only ever fetches this URL, never writes to it. Like the rest of
@@ -73,11 +57,6 @@ export interface GtdParaSettings {
    * changes.
    */
   googleCalendarIcsUrl: string;
-  /**
-   * @deprecated retired 0.22, kept for rollback (remove ≥ 0.24): 0.21.1's
-   * focus mode flag. Nothing reads or writes it.
-   */
-  focusModeActive: boolean;
   /**
    * The Engage panel's current todo and its owner
    * (docs/dev/history/technical-design-engage.md §3.5, D7): per-profile UI
@@ -214,10 +193,11 @@ export interface GtdParaSettings {
    */
   lastSeenVersion: string;
   /**
-   * The one-time "Focus is retired" line (docs/dev/history/technical-design-time-and-place.md
-   * R7) was dismissed. Device-wide: it is about the update, not a profile.
+   * The GitHub update check (docs/dev/history/technical-design-in-app-updates.md §3): 'manual'
+   * only when the user taps Check now, 'daily' also once a day when Kept opens. Device-wide: it
+   * concerns the installed build, not a profile's data. Stored settings without it read as 'manual'.
    */
-  focusRetiredNoticeSeen: boolean;
+  updateCheck: UpdateCheckMode;
   /**
    * Which profile is active (docs/dev/history/technical-design-profiles-demo-space.md) -
    * the file name of its JSON in EXPORT/kept-gtd/profiles, without ".json".
@@ -236,17 +216,10 @@ export const DEFAULT_SETTINGS: GtdParaSettings = {
   resourcesFolder: '3 Resources',
   archiveFolder: '4 Archive',
   inboxFolder: '0 Inbox',
-  dailyFocusProjectCount: 3,
-  dailyFocusAreaCount: 2,
-  weeklyFocusProjectCount: 5,
-  weeklyFocusAreaCount: 3,
-  monthlyFocusProjectCount: 2,
-  monthlyFocusAreaCount: 3,
   reviewSteps: {},
   hideDoneProjectTasks: false,
   hideDoneInboxTasks: false,
   googleCalendarIcsUrl: '',
-  focusModeActive: false,
   engageCurrent: null,
   noteSetups: [],
   noteSetupDefaults: {pages: {}, tracking: {trackPrep: false, trackReview: false}, notebook: null},
@@ -272,7 +245,7 @@ export const DEFAULT_SETTINGS: GtdParaSettings = {
   notebookContentsEnabled: true,
   setupAssistant: 'done',
   lastSeenVersion: '',
-  focusRetiredNoticeSeen: false,
+  updateCheck: 'manual',
   activeProfileId: 'production',
 };
 
@@ -343,13 +316,11 @@ export function resolvePaths(settings: GtdParaSettings): ResolvedParaPaths {
 
 /** Whether `folderPath` is the configured Inbox folder (exact match, trailing slashes ignored). Keeps it out of every Area listing. */
 export function isInboxFolder(paths: ResolvedParaPaths, folderPath: string): boolean {
-  if (paths.inboxFolder === paths.base) return false; // legacy location: the base root is never an Area folder
   return folderPath.replace(/\/+$/, '') === paths.inboxFolder;
 }
 
 /** Whether `filePath` is the Inbox folder or anything inside it. */
 export function isUnderInboxFolder(paths: ResolvedParaPaths, filePath: string): boolean {
-  if (paths.inboxFolder === paths.base) return false; // legacy location: everything is under the base root
   return filePath === paths.inboxFolder || filePath.startsWith(`${paths.inboxFolder}/`);
 }
 

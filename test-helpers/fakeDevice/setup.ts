@@ -3,13 +3,21 @@
  * installs the fake device before any app module loads
  * (docs/dev/history/technical-design-quality-hardening.md §4.2).
  */
-import {NativeModules} from 'react-native';
+import {Dimensions, NativeModules} from 'react-native';
 import {forwarding} from './device';
 import {fakeTextboxMetrics} from './fakeSdk';
+
+// The fake device's screen: the same size the scenario helpers lay every view out at
+// (test-helpers/scenario/app.tsx's LAYOUT), as wide as an A5 X or wider.
+const SCREEN = {width: 1340, height: 1500, scale: 1.41, fontScale: 1};
+Dimensions.set({window: SCREEN, screen: SCREEN});
 
 NativeModules.GtdParaFile = forwarding(d => d.fs.module);
 NativeModules.GtdParaPdf = forwarding(d => d.pdf.module);
 NativeModules.TextboxMetrics = fakeTextboxMetrics;
+NativeModules.KeptUpdate = forwarding(d => d.github.module);
+// The only network call the scenarios make is the update check; it reaches the fake GitHub.
+(global as unknown as {fetch: unknown}).fetch = (url: string) => require('./device').device().github.fetch(url);
 NativeModules.GtdParaRuntime = {
   getRuntimeDiagnostics: async () => ({
     buildId: 'scenario',
@@ -18,10 +26,6 @@ NativeModules.GtdParaRuntime = {
     pid: 1,
     processAgeMs: 1000,
     npkPath: null,
-    staleBuilds: [],
-    mappedFiles: [],
-    registry: [],
-    scanError: null,
     model: 'Fake A5 X',
     manufacturer: 'Fake',
     display: '1404x1872',

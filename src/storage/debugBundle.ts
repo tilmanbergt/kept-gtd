@@ -1,5 +1,5 @@
 /**
- * "Export debug bundle" (Settings → About;
+ * "Export debug bundle" (Settings → Advanced;
  * docs/dev/history/technical-design-about-debug-experimental.md §3.4): one .txt in
  * the debug folder with what a bug report needs - version and build,
  * device, a settings summary made of yes/no facts and counts (never names),
@@ -23,7 +23,6 @@ import {counterpartScopes} from '../domain/counterparts';
 import {Agreement, isActiveAgreement} from '../domain/agreements';
 import {getCachedData} from './dataCache';
 import {errorMessage} from '../utils/errorMessage';
-import {getTouchEntries, isAppWideTouchLog} from '../utils/touchDiagStore';
 import {didNoteSetupMigrationFail} from './noteSetupMigrationState';
 import {getSettingsUnreadable} from './settingsUnreadable';
 
@@ -47,7 +46,7 @@ function onOff(v: boolean): string {
 }
 
 function extensionOf(path: string | null | undefined): string {
-  if (!path) {return 'none (Home)';}
+  if (!path) {return 'none (unknown)';}
   const m = /\.([A-Za-z0-9]+)$/.exec(path);
   return m ? `.${m[1].toLowerCase()}` : 'unknown';
 }
@@ -62,9 +61,9 @@ export function summarizeSettings(s: GtdParaSettings): string[] {
     `          calendar ${s.googleCalendarIcsUrl.trim() ? 'configured' : 'not configured'}, ${onOff(f.googleCalendar)}` +
       ` · gmail ${s.gmailEmail.trim() ? 'configured' : 'not configured'}, ${onOff(f.gmail)}` +
       ` · modules: closeOut ${onOff(f.closeOut)}` +
-      ` · contexts ${(s.contexts ?? []).length}, active ${s.activeContextId ? 'yes' : 'no'}`,
+      ` · contexts ${(s.contexts ?? []).length} (only inside ${(s.contexts ?? []).filter(c => c.onlyInPlaces).length}), active ${s.activeContextId ? 'yes' : 'no'}`,
     `          keepTabs ${onOff(s.keepTabsAlive)} · perfTracing ${onOff(s.perfTracing)} · debugLogging ${onOff(s.debugLogging)}` +
-      ` · reviewSteps recorded ${Object.keys(s.reviewSteps ?? {}).length} · setup assistant ${s.setupAssistant}`,
+      ` · reviewSteps recorded ${Object.keys(s.reviewSteps ?? {}).length} · setup assistant ${s.setupAssistant} · updateCheck ${s.updateCheck ?? 'manual'}`,
     noteSetupsLine(s, didNoteSetupMigrationFail()),
     `          homeNotebooks ${onOff(!!s.noteSetupDefaults?.notebook)} · contents ${onOff(s.notebookContentsEnabled)} · pageIndex: cached ${cachedPageIndexCount()}`,
   ];
@@ -103,8 +102,7 @@ export async function buildDebugInfo(settings: GtdParaSettings, now: Date = new 
   );
   lines.push(
     d
-      ? `host build ${d.buildId} · versionCode ${d.versionCode} · process age ${Math.round(d.processAgeMs / 60000)} min` +
-          ` · stale builds ${d.staleBuilds.length}`
+      ? `host build ${d.buildId} · versionCode ${d.versionCode} · process age ${Math.round(d.processAgeMs / 60000)} min`
       : 'host diagnostics: not available',
   );
   lines.push(`time ${now.toISOString()} (${utcOffset(now)}) · launched from ${extensionOf(launch?.path)}`);
@@ -122,7 +120,6 @@ export async function buildDebugInfo(settings: GtdParaSettings, now: Date = new 
   lines.push(loopsLine());
   lines.push(agreementsSummary(getCachedData()?.items ?? null));
   lines.push(`log file: ${isFileLoggingOn() ? `ON (${LOG_FILE_NAME})` : 'OFF'}`);
-  lines.push(`touch test: log touches everywhere ${isAppWideTouchLog() ? 'ON' : 'OFF'} · records ${getTouchEntries().length}`);
   const errors = getRecentErrors(10);
   lines.push(`recent errors (${errors.length}):`);
   errors.forEach(e => lines.push(`  ${e}`));

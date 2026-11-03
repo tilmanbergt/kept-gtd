@@ -84,10 +84,6 @@
  *    files in place. Below this level, or with no `onNavigateItem` set, a
  *    folder tap always just drills in as normal.
  *
- * `sources` roots use `PAGE_SIZE.browse` (smaller than `PAGE_SIZE.full`,
- * ui/pagination.ts) for their real listings - the depth-0 chooser only ever
- * has two entries, so page size there is moot.
- *
  * `startAt` (LinkTarget's `arming` variant) - pairs with `root` pointing at
  * a `sources` root: the auto-navigate-on-arm effect below drills straight
  * into the matching source's listing (skipping the "Projects"/"Areas" tap),
@@ -137,18 +133,8 @@
  * the root and an arm targeting the root's alternate (Browse) finds it there.
  * When the arm ends the slot is the extra tab again.
  *
- * `pageSize` (`FileBrowserRoot`) - kept on the type but not read by
- * `FileBrowserPane`; no caller sets it. Sizing comes from the
- * component-level `viewportHeight` prop instead.
- *
- * Self-measuring ([[feature_pagination_fixed_height]]): `viewportHeight` is
- * optional (see its doc comment below). Callers that are the sole occupant
- * of their box (`ItemDetail.tsx`'s `filesArea`, `InboxScreen.tsx`'s
- * `leftPane`) omit it and self-measure. `DailyFocusPanel.tsx`/
- * `WeeklyFocusPanel.tsx`'s Projects/Areas tabs pass an explicit
- * `fileBrowserViewportHeightPx(pageSize)` value, since their embedding
- * context still needs checking (memory: feature_pagination_fixed_height.md's
- * "Next steps").
+ * Self-measuring: `viewportHeight` is optional (see its doc comment below);
+ * every caller today omits it and the list measures its own box.
  */
 import React, {useEffect, useRef, useState} from 'react';
 import {ActivityIndicator, Pressable, StyleSheet, Text, View} from 'react-native';
@@ -167,16 +153,8 @@ import {common} from './commonStyles';
 import {FONT} from './theme';
 import {useStatus, useErrorStatus} from './status/StatusProvider';
 import {errorMessage} from '../utils/errorMessage';
+import {estimatorWidth} from './ScreenSize';
 
-// Right column width this pane renders in when it's the left half of a
-// two-column screen (screens/ItemDetail.tsx, screens/InboxScreen.tsx, both
-// plain flex:1 two-column splits) - docs/dev/design-device-rendering.md §5.1's
-// two-column convention, the same constant screens/ProjectDataPanel.tsx/
-// screens/InboxScreen.tsx use for their row-height estimates. Daily view's
-// Focus/Projects/Areas panel renders this pane narrower than that but reuses
-// the same width figure - a starting point, not yet verified for that
-// narrower caller (same caveat as those files' COLUMN_WIDTH_PX comments).
-const COLUMN_WIDTH_PX = 678;
 
 /**
  * Entry row height (docs/dev/history/technical-design-pagination-fixed-height.md
@@ -222,16 +200,6 @@ export function fileEntryHeight(entry: FolderEntry, columnWidthPx: number): numb
   return FILE_ENTRY_CHROME_PX + fileEntryLines(entry, columnWidthPx) * FILE_ENTRY_LINE_HEIGHT_PX;
 }
 
-/**
- * "N single-line rows" in px, the total-pixel-budget-preserving conversion
- * also used for `PAGE_SIZE.projectTodos`/etc. Exported so a caller not yet
- * safe to self-measure (`DailyFocusPanel.tsx`/`WeeklyFocusPanel.tsx`) can
- * pass an explicit, pageSize-derived `viewportHeight`.
- */
-export function fileBrowserViewportHeightPx(pageSize: number): number {
-  return pageSize * (FILE_ENTRY_CHROME_PX + FILE_ENTRY_LINE_HEIGHT_PX);
-}
-
 export interface FileBrowserRoot {
   /** 'project' | 'resources' | 'areas' | 'area' - matches technical-design-linked-files.md §5/§8's and technical-design-project-area-assignment.md §4.2's LinkTarget/EditTarget root keys. */
   key: string;
@@ -262,8 +230,6 @@ export interface FileBrowserRoot {
   onNavigateToItem?: (kind: 'project' | 'area', name: string, path: string) => void;
   /** A root shown in this root's tab slot while arming needs it (the Browse merge) - see the module doc comment's `alternate` note. */
   alternate?: FileBrowserRoot;
-  /** Not read by `FileBrowserPane` (see the module doc comment's `pageSize` note) - use the component-level `viewportHeight` prop (with `fileBrowserViewportHeightPx`) instead. */
-  pageSize?: number;
 }
 
 /**
@@ -339,13 +305,10 @@ interface Props {
   /**
    * The internal `PagedSection`'s own fixed viewport, in px.
    *
-   * Optional ([[feature_pagination_fixed_height]]) - omitted, this
-   * component's own root gets a conditional `flex:1` (mirrors
-   * `ui/GoogleCalendarPanel.tsx`) and forwards `undefined` to the internal
-   * `PagedSection`, which self-measures. Passed explicitly, it goes straight
-   * to `PagedSection` - `fileBrowserViewportHeightPx` (exported above) gives
-   * the pageSize-derived value for a caller whose embedding context isn't
-   * yet confirmed safe to self-measure.
+   * Optional - omitted, this component's own root gets a conditional
+   * `flex:1` (mirrors `ui/GoogleCalendarPanel.tsx`) and forwards `undefined`
+   * to the internal `PagedSection`, which self-measures. Passed explicitly,
+   * it goes straight to `PagedSection`.
    */
   viewportHeight?: number;
   /** Tabs before the roots with their own content - see the module doc comment's `extraTabs` note. */
@@ -840,7 +803,7 @@ export default function FileBrowserPane({
             ) : undefined
           }
           rows={loading || error ? [] : visibleEntries}
-          rowHeight={entry => fileEntryHeight(entry, COLUMN_WIDTH_PX)}
+          rowHeight={entry => fileEntryHeight(entry, estimatorWidth())}
           viewportHeight={viewportHeight}
           resetKey={current?.path}
           jumpTo={jumpTo}
@@ -855,7 +818,7 @@ export default function FileBrowserPane({
               // PagedSection budgeted for it. A mispredicted line count then
               // becomes a clip inside the fixed viewport - the safe failure
               // mode - rather than a page-break mismatch.
-            const rowHeightPx = fileEntryHeight(entry, COLUMN_WIDTH_PX);
+            const rowHeightPx = fileEntryHeight(entry, estimatorWidth());
             return (
               <Pressable
                 key={entry.path}
@@ -863,7 +826,7 @@ export default function FileBrowserPane({
                 style={[styles.entryRow, {height: rowHeightPx, minHeight: rowHeightPx}, isLocateTarget && styles.entryRowLocated]}>
                 <Text
                   style={[styles.entry, entry.isFolder && styles.entryLink, {color: textColor}]}
-                  numberOfLines={fileEntryLines(entry, COLUMN_WIDTH_PX)}>
+                  numberOfLines={fileEntryLines(entry, estimatorWidth())}>
                   {fileEntryDisplayText(entry)}
                 </Text>
               </Pressable>
@@ -921,7 +884,7 @@ const styles = StyleSheet.create({
   entry: {
     fontSize: FONT.medium,
     paddingVertical: 5,
-    // Descender clipping ([[feature_pagination_fixed_height]]), same as
+    // Descender clipping (docs/dev/history/technical-design-pagination-fixed-height.md), same as
     // screens/ItemsList.tsx's row Text: Android's default
     // `includeFontPadding` reserves space above cap-height without a
     // matching reservation below the baseline, so a fixed-height,

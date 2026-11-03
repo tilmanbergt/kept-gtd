@@ -35,7 +35,7 @@ Todos added with older versions get no created date, and a todo checked before t
 
 ## Context tags
 
-Any other tag is a context tag: a person (`#lena`), a topic (`#budget`) or a recurring meeting (`#team-sync`). Tap a plain context tag on Daily to [see only matching items](daily.md#filtering-by-a-tag). [Note setups](note-setups.md#what-a-setup-is) can react to context tags. Not to be confused with [contexts](contexts.md) (Work, Home), which choose what the tabs show.
+Any other tag is a context tag: a person (`#lena`), a topic (`#budget`) or a recurring meeting (`#team-sync`). [Note setups](note-setups.md#what-a-setup-is) can react to context tags. Not to be confused with [contexts](contexts.md) (Work, Home), which choose what the tabs show.
 
 ## Nested tags
 
@@ -47,7 +47,7 @@ A tag can have parts separated by `/`, for example `#sparring/jordan`. It is one
 
 ## Project and area abbreviations
 
-A tag that matches a project's or area's [abbreviation](projects-and-areas.md#abbreviations) (for example `#GR`) is shown in capitals. It lets you [file an item directly](quick-add.md#filing-directly-with-an-abbreviation) into that project from Quick Add, and as a [Daily filter](daily.md#filtering-by-a-tag) it shows all of that project's items. Abbreviations are not case-sensitive.
+A tag that matches a project's or area's [abbreviation](projects-and-areas.md#abbreviations) (for example `#GR`) is shown in capitals. It lets you [file an item directly](quick-add.md#filing-directly-with-an-abbreviation) into that project from Quick Add. Abbreviations are not case-sensitive.
 
 ## Tags the app sets itself
 

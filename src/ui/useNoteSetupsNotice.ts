@@ -24,7 +24,7 @@ export function useNoteSetupsNotice(settings: GtdParaSettings | null, onShow: ()
           scope: 'global',
           text: 'Updating your Tag Rules to Note setups failed - notes use the Default for now.',
           detail:
-            'Your Tag Rules are kept as they are; the update is tried again on the next start. If it keeps failing, export a debug bundle (Settings → About) and attach it to an issue.',
+            'Your Tag Rules are kept as they are; the update is tried again on the next start. If it keeps failing, export a debug bundle (Settings → Advanced) and attach it to an issue.',
           onDismiss: () => setSeen(true),
         }
       : settings.noteSetupsNotice

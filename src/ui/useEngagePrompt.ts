@@ -24,8 +24,9 @@ import {log, logError} from '../utils/log';
 import {requestEinkRefresh} from '../utils/screenRefresh';
 import {useOnScreenHide} from './screenActivity';
 import {useStatusApi} from './status/StatusProvider';
-import {TASK_COLUMN_WIDTH_PX, taskRowLayout} from './taskRowLayout';
+import {taskRowLayout} from './taskRowLayout';
 import {useActionError} from './useActionError';
+import {estimatorWidth} from './ScreenSize';
 
 let nextInstance = 0;
 
@@ -78,7 +79,7 @@ export function useEngagePrompt(name: string): EngagePrompt {
           text: noNextPromptText(ownerTitle(prompt.owner, source).name),
           actions: [
             ...prompt.candidates.map(ref => ({
-              label: promptTodoLabel(taskRowLayout(ref.task, TASK_COLUMN_WIDTH_PX, 'flat').title),
+              label: promptTodoLabel(taskRowLayout(ref.task, estimatorWidth(), 'flat').title),
               onPress: () => pick(ref),
             })),
             {label: ENGAGE_NOTICE.promptLater, onPress: clear},

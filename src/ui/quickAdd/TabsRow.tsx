@@ -6,9 +6,15 @@
  * create in. Note is rendered only where a screen passes `onAddNote`,
  * Agreement only where it passes `onAddAgreement` (a screen that knows the
  * owner, docs/dev/history/technical-design-meetings-0.21.md §5).
+ *
+ * The main button always keeps its room: where the row is too narrow, the tabs
+ * give way, never "+ Add". Below 800 dp (a Nomad upright, ui/ScreenSize.tsx
+ * useLayoutClass) the tabs sit closer and Agreement is called "Agree", so all
+ * four fit next to the button (docs/dev/history/technical-design-launch-ready.md L6).
  */
 import React from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
+import {useLayoutClass} from '../ScreenSize';
 import {FONT} from '../theme';
 import {rowStyles} from './styles';
 import {QuickAddType} from './types';
@@ -29,6 +35,7 @@ interface Props {
 
 export default function TabsRow({core, taskOnly, hasNoteTab, hasAgreementTab = false, noteFolderPath, actions, textColor}: Props): React.JSX.Element {
   const {displayType, isEditing, editFields} = core;
+  const narrow = useLayoutClass() === 'narrow';
   const other = (kind: QuickAddType) => !!editFields && editFields.kind !== kind;
   const disabled: Record<QuickAddType, boolean> = {
     task: other('task'),
@@ -46,8 +53,10 @@ export default function TabsRow({core, taskOnly, hasNoteTab, hasAgreementTab = f
   const tab = (type: QuickAddType, label: string) => (
     <Pressable onPress={() => select(type)} hitSlop={8} disabled={isEditing || disabled[type]}>
       <Text
+        numberOfLines={1}
         style={[
           styles.tabText,
+          narrow && styles.tabTextNarrow,
           {color: textColor},
           displayType === type && styles.tabTextActive,
           disabled[type] && rowStyles.tabTextDisabled,
@@ -61,10 +70,10 @@ export default function TabsRow({core, taskOnly, hasNoteTab, hasAgreementTab = f
       <View style={styles.tabs}>
         {tab('task', 'Todo')}
         {tab('meeting', 'Meeting')}
-        {hasAgreementTab && tab('agreement', 'Agreement')}
+        {hasAgreementTab && tab('agreement', narrow ? 'Agree' : 'Agreement')}
         {hasNoteTab && tab('note', 'Note')}
       </View>
-      {actions}
+      {actions != null && <View style={styles.actions}>{actions}</View>}
     </View>
   );
 }
@@ -78,11 +87,19 @@ const styles = StyleSheet.create({
   },
   tabs: {
     flexDirection: 'row',
+    flexShrink: 1,
+    overflow: 'hidden',
+  },
+  actions: {
+    flexShrink: 0,
   },
   tabText: {
     fontSize: FONT.small,
     fontWeight: '600',
     marginRight: 18,
+  },
+  tabTextNarrow: {
+    marginRight: 12,
   },
   tabTextActive: {
     textDecorationLine: 'underline',

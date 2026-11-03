@@ -46,8 +46,8 @@ const DATA_FILES = new Set([PROJECT_FILE_NAME, AREA_FILE_NAME, INBOX_FILE_NAME])
 
 /**
  * The This-file targets for `launchPath` (the file Kept was opened from) and
- * the host's current `page`, or null when Kept was opened from Home or from
- * one of its own data files. A `.note` is a note, anything else a document.
+ * the host's current `page`, or null when the launch file is unknown or is
+ * one of Kept's own data files. A `.note` is a note, anything else a document.
  */
 export function thisFileTargets(launchPath: string | null | undefined, page: number | null): ThisFileTargets | null {
   if (!launchPath || !launchPath.startsWith('/')) return null;

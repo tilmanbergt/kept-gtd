@@ -1,4 +1,5 @@
-import {COLUMN_WIDTH_PX, itemEntryDisplayText, itemEntryHeight} from '../../src/ui/itemEntryRow';
+import {itemEntryDisplayText, itemEntryHeight} from '../../src/ui/itemEntryRow';
+import {A5X_ESTIMATOR_WIDTH as COLUMN_WIDTH_PX} from '../../src/domain/screenLayout';
 import {item} from '../../test-helpers/fixtures';
 
 describe('itemEntryRow (0.7.0 P1/P2)', () => {

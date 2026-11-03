@@ -11,8 +11,8 @@ afterEach(() => jest.useRealTimers());
 /** Each main tab and the text that tells it is there. */
 const TABS: Array<[string, string | RegExp]> = [
   ['Daily', 'Next todos'],
-  ['Week', /^Week 42 · 2026/],
-  ['Month', /^October 2026/],
+  ['Week', 'Week 42 · 26'],
+  ['Month', 'Oct 26'],
   ['Projects', '+ Create Project'],
   ['Areas', '+ Create Area'],
   ['Review', 'No complete review yet.'],
@@ -25,12 +25,14 @@ scenario('The app starts and every main tab shows', {feature: 'Smoke', design: D
     smokeClock();
     putSmokeSpace();
   });
-  when('I open the app and tap through Daily, Week, Month, Projects, Areas, Review, Settings and the help', async () => {
+  when('I open the app and tap through Daily, Week, Month, Projects, Areas, Review, Settings, its About tab and the help', async () => {
     await openApp();
     for (const [tab, heading] of TABS) {
       await tapTab(tab);
       if (!shows(heading)) missing.push(`${tab}: ${String(heading)}`);
     }
+    await tap('About');
+    if (!shows('Check now')) missing.push('Settings → About: the Updates block');
     await tap('?');
   });
   then('each shows its main heading', () => {

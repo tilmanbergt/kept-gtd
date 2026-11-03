@@ -51,11 +51,13 @@ Open marks show as a card **n marks to process** under Quick Add:
 - on the [Current](projects-and-areas.md#the-current-tab) tab: the marks of that project or area,
 - in the [Weekly Review](review.md) step [Inbox to zero](review.md#the-steps): all marks, and they count toward the step.
 
-**Process ›** opens the marks screen. The left column lists the marks by note, each with its picture, page, date and time, and whether it has been recognized yet. Recognition starts when you open the screen and runs ahead for the next marks; each mark is recognized only once.
+**Process ›** opens the marks screen. The left column lists the marks by note, each with its picture, page, date and time, and whether it has been recognized yet; under the list are **Link to source page**, **Open page**, **Discard…** and **Close**. Recognition starts when you open the screen and runs ahead for the next marks; each mark is recognized only once.
 
 - Work through them with **Save & next**: the mark is done and the next one is selected. After the last one the screen closes.
 - **Open page** opens the note at the marked page.
 - **Discard…** removes a mark without creating anything.
+
+On a shorter screen (a turned device, a Nomad) the picture is lower, the tags start with the most recent eight and **More…**, and the right side scrolls where it is still too tall.
 
 When a mark is saved, its bookmark in the note becomes a check mark. When it is discarded, the bookmark is removed. In a PDF, or where the icon can't be changed safely, the icon stays as it is.
 

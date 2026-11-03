@@ -4,7 +4,7 @@ Everything Kept GTD knows lives in ordinary files that you can read and edit you
 
 ## The folder layout
 
-With the default settings ([Settings → Folders](settings.md#folders) changes them):
+With the default settings ([Settings → Data](settings.md#folders) changes them):
 
 - `Note/1 Projects/<project>/project.txt`
 - `Note/2 Areas/<area>/area.txt`
@@ -20,9 +20,7 @@ The names of files Kept creates leave out `\ / : * ? " < > |` (not allowed in fi
 
 ## The Inbox folder
 
-The Inbox has its own folder inside the Areas folder, so the `Note` folder holds only your PARA folders. Kept doesn't treat it as an area: it isn't listed on the [Areas](projects-and-areas.md) tab or in refile. You can change its name in [Settings → Folders](settings.md#folders).
-
-Up to version 0.1.0 the Inbox lived directly in `Note` (`Inbox.txt` plus `Todos` and `Meetings` folders). Versions 0.2 to 0.8 moved these into the Inbox folder on their first start; from 0.9.0 on Kept no longer does. If you still have them in `Note`, move them into the Inbox folder by hand; [Run Integrity Check](settings.md#advanced) in Settings → Advanced points them out.
+The Inbox has its own folder inside the Areas folder, so the `Note` folder holds only your PARA folders. Kept doesn't treat it as an area: it isn't listed on the [Areas](projects-and-areas.md) tab or in refile. You can change its name in [Settings → Data](settings.md#folders).
 
 ## Inside project.txt
 
@@ -109,7 +107,7 @@ From the Supernote to Obsidian: sync the Supernote, then the plugin.
 ### Settings for the Tasks plugin
 
 - Set **Task Format** to **Dataview**. Otherwise Tasks ignores Kept's fields and writes its own emoji format.
-- Optionally switch on the Tasks settings that set a created date on new tasks and a done date when you tick a task. They write `[created:: …]` and `[completion:: …]`, the same fields Kept writes.
+- **Set done date on every completed task** is on by default; optionally also switch on **Set created date on every added task**. With the Dataview format they write `[completion:: …]` and `[created:: …]`, the same fields Kept writes. Restart Obsidian after changing them.
 
 ### Writing by hand
 
@@ -163,8 +161,14 @@ When you opened Kept from a note or a document, the Files pane shows two rows at
 
 A file inside `Note` is stored as a path inside `Note`, like every linked file; a file outside it with its full path, for example `+[[/storage/emulated/0/Document/Book.pdf#page=12]]`, as the [lasso](lasso.md#capturing-right-away) does for a PDF. Opening, the ⚠ for a missing file and removing a link work the same way. When you change the todo or meeting later, the Files pane opens the Device tab at the file's folder (not for a file on the SD card).
 
+## Known limitations
+
+- *New notes from a PDF or EPUB*: when Kept was opened from a document, the Supernote doesn't let it create notes. Kept says so instead of asking; open Kept from a note to create one ([Troubleshooting](troubleshooting.md#common-situations)).
+
 ## What Kept GTD keeps elsewhere
 
 - *Settings* are stored inside the plugin. Profiles save them as files, see [Profile files](profiles-and-demo.md#profile-files).
 - *Pictures and handwriting of lasso marks* are kept in the plugin's own storage until the mark is processed, see [Where marks are stored](lasso.md#where-marks-are-stored).
 - *Exports* go to `EXPORT/kept-gtd`: `profiles` for [profile files](profiles-and-demo.md#profile-files), `debug` for logs, [debug bundles](troubleshooting.md#reporting-a-problem) and reports.
+
+[Remove Kept's data](settings.md#remove-kepts-data) in Settings → Data shows all of these and removes what you check.

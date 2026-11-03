@@ -5,9 +5,9 @@ import {item, task} from '../../test-helpers/fixtures';
 const NOW = new Date(2026, 9, 4, 12, 0, 0);
 const INBOX = '/Note/2 Areas/0 Inbox';
 
-const shown = (texts: string[], opts: {contextTag?: string} = {}) => {
+const shown = (texts: string[]) => {
   const p = item('project', 'P', {tasks: texts.map(t => task(t))});
-  return buildDailyAggregate([p], null, INBOX, NOW, opts.contextTag ?? null).tasks.map(e => e.task.text);
+  return buildDailyAggregate([p], null, INBOX, NOW).tasks.map(e => e.task.text);
 };
 
 describe('buildDailyAggregate - Waiting For (0.7.0 W1)', () => {
@@ -36,9 +36,6 @@ describe('buildDailyAggregate - Waiting For (0.7.0 W1)', () => {
   it('applies the same rule to the Inbox', () => {
     const inbox = {tasks: [task('i #waiting-for'), task('j #waiting-for #due:2026-10-06')], meetings: []};
     expect(buildDailyAggregate([], inbox, INBOX, NOW).tasks.map(e => e.task.text)).toEqual(['i #waiting-for']);
-  });
-  it('a tag filter still lets a future-dated Waiting For through', () => {
-    expect(shown(['a #lena #waiting-for #due:2026-11-01'], {contextTag: 'lena'})).toHaveLength(1);
   });
 });
 

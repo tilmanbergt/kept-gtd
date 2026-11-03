@@ -1,5 +1,5 @@
 /**
- * Renaming the Inbox's folder from Settings → Folders. The Inbox lives in its
+ * Renaming the Inbox's folder from Settings → Data. The Inbox lives in its
  * own folder under Areas (`<areas>/<inboxFolder>`, domain/settings.ts's
  * resolvePaths); that folder is never listed as an Area.
  */
@@ -10,7 +10,7 @@ import {log} from '../utils/log';
 export type InboxRenameResult = 'unchanged' | 'moved' | 'notMoved';
 
 /**
- * Settings → Folders save with a changed Inbox folder name. Moves the folder
+ * Settings → Data save with a changed Inbox folder name. Moves the folder
  * FIRST, so the saved settings never point at a folder that wasn't moved;
  * throws (and the caller saves nothing) when the name is invalid, the target
  * exists, or the move fails. When Base or Areas change in the same save

@@ -35,6 +35,7 @@ import {log, logError, logWarn} from '../../src/utils/log';
 import * as fileSystem from '../../src/supernote/fileSystem';
 import * as hostContext from '../../src/supernote/hostContext';
 import * as noteFileApi from '../../src/supernote/noteFileApi';
+import {NOTE_CREATION_BLOCKED_TEXT} from '../../src/domain/noteCreation';
 
 /** Every wrapped host call, wherever it lives. */
 const fs = {...fileSystem, ...noteFileApi, ...hostContext};
@@ -194,12 +195,27 @@ describe('getKeyWords and getElements read a missing result as empty', () => {
 });
 
 describe('createNote', () => {
-  it('a refusal leads with the device gate, keeps the host text, records the failure', async () => {
+  it('the host gate becomes the plain limitation sentence; the host text stays in the log and the record', async () => {
     mockSdk.PluginFileAPI.createNote = jest.fn(async () => fail('This app is not allowed to use this API'));
-    await expect(fs.createNote(P, 'style_white')).rejects.toThrow('Though write permission is granted, note creation was blocked by the device: This app is not allowed to use this API');
+    await expect(fs.createNote(P, 'style_white')).rejects.toThrow(NOTE_CREATION_BLOCKED_TEXT);
     expect(logFileCallFailure).toHaveBeenCalledWith('createNote: failed', P, 'This app is not allowed to use this API');
     expect(hostCallLines()).toEqual(['hostCall: createNote FAIL']);
     expect((logWarn as jest.Mock).mock.calls[0][2]).toBe('notePath=/storage/emulated/0/Note/a.note template=style_white isPortrait=true errorMessage=This app is not allowed to use this API');
+  });
+  it('opened from a document: not tried, the limitation sentence instead', async () => {
+    mockSdk.PluginFileAPI.createNote = jest.fn(async () => ok(true));
+    hostContext.rememberLaunchNotePath('/storage/emulated/0/Document/Book.pdf');
+    try {
+      await expect(fs.createNote(P, 'style_white')).rejects.toThrow(NOTE_CREATION_BLOCKED_TEXT);
+      expect(mockSdk.PluginFileAPI.createNote).not.toHaveBeenCalled();
+      expect(logWarn).toHaveBeenCalledWith('createNote: not tried, Kept was opened from a document');
+    } finally {
+      hostContext.rememberLaunchNotePath(null);
+    }
+  });
+  it('another refusal keeps the device-gate wording with the host text', async () => {
+    mockSdk.PluginFileAPI.createNote = jest.fn(async () => fail('Background template file does not exist'));
+    await expect(fs.createNote(P, 'style_white')).rejects.toThrow('Though write permission is granted, note creation was blocked by the device: Background template file does not exist');
   });
   it('result false fails with the fallback host text', async () => {
     mockSdk.PluginFileAPI.createNote = jest.fn(async () => ok(false));

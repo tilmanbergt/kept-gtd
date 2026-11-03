@@ -14,9 +14,9 @@ export const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    paddingTop: 16,
+    paddingTop: 8,
     paddingHorizontal: 16,
-    paddingBottom: 40,
+    paddingBottom: 12,
   },
   // The bounded flex:1 box every tab's content renders inside
   // (docs/dev/history/technical-design-note-templates.md §6) - what makes

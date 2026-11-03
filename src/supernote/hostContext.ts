@@ -14,7 +14,7 @@ import {errText, SdkResponse} from './sdkElements';
  * this should always resolve to something). Used on app start to jump
  * straight into that note's Project/Area, if it has one. Resolves null
  * rather than throwing on failure - this is a "nice to have" shortcut, not
- * something that should block the app from opening to Home.
+ * something that should block the app from opening.
  */
 export async function getCurrentNotePath(): Promise<string | null> {
   log('getCurrentNotePath: start');
@@ -37,7 +37,8 @@ export async function getCurrentNotePath(): Promise<string | null> {
 // "what note/doc was open when the plugin was last (re)launched" without an
 // extra native round-trip. `undefined` means nothing has captured a value
 // yet this process; `null` means it was captured but resolved to nothing
-// (e.g. launched from Home rather than from within a NOTE/DOC).
+// (the host gave no path: the launch file is unknown. Plugins open only from
+// the Note or the Document app, so there is no launch without a file).
 let rememberedLaunchNotePath: string | null | undefined;
 let rememberedLaunchNotePathAt: number | null = null;
 
@@ -50,7 +51,7 @@ let rememberedLaunchNotePathAt: number | null = null;
 // stays fixed for the process's whole lifetime even as
 // rememberedLaunchNotePath above keeps getting overwritten on every
 // reopen - `coldStartCaptured` (not "is the path truthy") is the latch, so
-// a genuine cold start from Home (path resolves to null) is still captured
+// a cold start whose path resolves to null (launch file unknown) is still captured
 // correctly rather than leaving this looking like "not yet captured".
 let rememberedColdStartNotePath: string | null | undefined;
 let rememberedColdStartNotePathAt: number | null = null;

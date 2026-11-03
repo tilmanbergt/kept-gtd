@@ -11,8 +11,11 @@
  *   go back to): the marks only.
  *
  * Left: ui/capture/MarksColumn.tsx (hidden when there is nothing to list
- * besides the lasso). Right: the picture, then the capture panel
- * ui/quickAdd/CaptureQuickAdd.tsx (flow, due, Split lines, tags, File to, Save buttons).
+ * besides the lasso), with the mark's own controls under it - Link to source page, Open page,
+ * Discard…, Close (in the panel when there is no column). Right: the picture, then the capture
+ * panel ui/quickAdd/CaptureQuickAdd.tsx (flow, due, Split lines, tags, File to, Save buttons).
+ * On a short screen the picture is lower, the tags start short (More…), and the panel scrolls
+ * where it is still too tall (docs/dev/history/technical-design-launch-ready.md L6b).
  *
  * With an owner on the page, the panel also captures an agreement
  * (docs/dev/history/technical-design-meetings-0.21.md §7): for the page
@@ -27,7 +30,7 @@
  * another row is selected (its recognized text comes back).
  */
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
-import {ActivityIndicator, Image, Keyboard, Pressable, StyleSheet, Text, View} from 'react-native';
+import {ActivityIndicator, Image, Keyboard, Pressable, ScrollView, StyleSheet, Text, View} from 'react-native';
 import {PluginManager} from 'sn-plugin-lib';
 import {prepareCaptureText} from '../domain/captureText';
 import {Destination, destinationLabel} from '../domain/destination';
@@ -72,6 +75,7 @@ import {useErrorStatus, useStatus} from '../ui/status/StatusProvider';
 import {COLORS, FONT, useThemeColors} from '../ui/theme';
 import {useCachedInbox} from '../ui/useCachedInbox';
 import {useCachedItems} from '../ui/useCachedItems';
+import {useShortScreen} from '../ui/ScreenSize';
 import {log, logError} from '../utils/log';
 import {requestEinkRefresh, useEinkRefreshOnLoad} from '../utils/screenRefresh';
 import {errorMessage} from '../utils/errorMessage';
@@ -110,6 +114,7 @@ function fileUri(path: string): string {
 
 export default function CaptureScreen({request, onOpenItem, onOpenDaily, onExit}: Props): React.JSX.Element {
   const {isDarkMode, textColor, borderColor, placeholderColor} = useThemeColors();
+  const short = useShortScreen();
   const fromLasso = request.source === 'lasso';
   const scope: MarkScope = request.source === 'marks' ? request.scope : {type: 'all'};
 
@@ -580,13 +585,14 @@ export default function CaptureScreen({request, onOpenItem, onOpenDaily, onExit}
               textColor={textColor}
               borderColor={borderColor}
             />
+            <View style={styles.columnExtras}>{extras}</View>
           </View>
         ) : null}
-        <View style={styles.panel}>
+        <ScrollView style={styles.panel} keyboardShouldPersistTaps="handled">
           {nothingSelected ? (
             <>
               <Text style={[styles.hint, {color: textColor}]}>No open marks left.</Text>
-              {extras}
+              {showColumn ? null : extras}
             </>
           ) : (
             <>
@@ -595,7 +601,7 @@ export default function CaptureScreen({request, onOpenItem, onOpenDaily, onExit}
                   {marks.length > 0 ? 'Lasso saved.' : 'Lasso saved · no marks left.'} Add another todo or press Done.
                 </Text>
               ) : (
-                <View style={[styles.pictureBox, {borderColor: isDarkMode ? COLORS.borderDark : COLORS.textLight}]}>
+                <View style={[styles.pictureBox, short && styles.pictureBoxShort, {borderColor: isDarkMode ? COLORS.borderDark : COLORS.textLight}]}>
                   {pictureUri ? <Image source={{uri: pictureUri}} style={styles.picture} resizeMode="contain" /> : null}
                   {recognizing ? <Text style={styles.pictureNote}>recognizing…</Text> : null}
                 </View>
@@ -609,7 +615,8 @@ export default function CaptureScreen({request, onOpenItem, onOpenDaily, onExit}
                 onAddTask={onAddTask}
                 onAddMeeting={onAddMeeting}
                 initialDate={selectedMark ? markDate(selectedMark.mark) : undefined}
-                captureExtras={extras}
+                captureExtras={showColumn ? undefined : extras}
+                shortTags={short}
                 provenance={origin.provenance}
                 agreementFor={agreementChoices.length > 0 ? {choices: agreementChoices, onAdd: onAddAgreement} : null}
                 placeholder="Todo text"
@@ -619,7 +626,7 @@ export default function CaptureScreen({request, onOpenItem, onOpenDaily, onExit}
               />
             </>
           )}
-        </View>
+        </ScrollView>
       </View>
     </View>
   );
@@ -637,11 +644,13 @@ const styles = StyleSheet.create({
   column: {flex: 1, borderRightWidth: 1, paddingRight: 8, marginRight: 12},
   panel: {flex: 2},
   pictureBox: {height: 180, borderWidth: 1, marginBottom: 10, backgroundColor: '#ffffff', justifyContent: 'center'},
+  pictureBoxShort: {height: 120},
+  columnExtras: {paddingTop: 8},
   picture: {width: '100%', height: '100%'},
   pictureNote: {position: 'absolute', right: 8, bottom: 4, fontSize: FONT.small, color: '#555555'},
   checkboxRow: {flexDirection: 'row', alignItems: 'center', marginTop: 4, marginBottom: 8},
   checkbox: {fontSize: FONT.large, marginRight: 8},
-  extrasRow: {flexDirection: 'row', alignItems: 'center', marginTop: 4},
+  extrasRow: {flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', rowGap: 8, marginTop: 4},
   button: {borderWidth: 1, borderRadius: 4, paddingHorizontal: 14, paddingVertical: 8, marginRight: 8},
   dashed: {borderStyle: 'dashed'},
   buttonText: {fontSize: FONT.small, fontWeight: '600'},

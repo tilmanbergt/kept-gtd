@@ -317,7 +317,7 @@ export default function WeekPlanner({
               settings={settings}
               filter={planning.contextFilter}
               onOpenItem={openItemAt}
-              onTend={() => requestReviewStep('tendingThreads', null)}
+              onTend={() => requestReviewStep('tendingThreads', null, planning.contextFilter.matcher.context !== null)}
               textColor={textColor}
               borderColor={borderColor}
             />

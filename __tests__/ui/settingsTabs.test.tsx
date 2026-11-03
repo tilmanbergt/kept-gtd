@@ -1,4 +1,5 @@
-// Settings in pieces (technical-design-quality-0.9.md §3.11): every tab renders, and Save writes the draft.
+// Settings in pieces (technical-design-quality-0.9.md §3.11, technical-design-settings-tabs.md): every tab renders, and each
+// block's Save writes only that block.
 const mockSaved: unknown[] = [];
 
 jest.mock('react-native-svg', () => {
@@ -61,11 +62,13 @@ beforeAll(() => setFeatures({googleCalendar: true, gmail: true, closeOut: true})
 
 describe('Settings tabs', () => {
   it.each<[SettingsTab, string]>([
-    ['folders', 'Projects folder'],
-    ['calendar', 'Google Calendar ICS link'],
-    ['gmail', 'Gmail address'],
+    ['data', 'Projects folder'],
+    ['features', 'Google Calendar ICS link'],
+    ['features', 'Gmail address'],
     ['templates', '+ New note setup'],
     ['advanced', 'Reload all files'],
+    ['advanced', 'Export debug bundle'],
+    ['about', 'Problems and ideas'],
   ])('%s renders', async (tab, expected) => {
     const r = await render(tab);
     expect(texts(r).some(t => t.includes(expected))).toBe(true);
@@ -81,11 +84,29 @@ describe('Settings tabs', () => {
   });
 
   it('Save writes the edited folder name', async () => {
-    const r = await render('folders');
+    const r = await render('data');
     const input = r.root.findAllByType(TextInput)[1];
     await act(async () => input.props.onChangeText('Projekte'));
     const save = r.root.findAll(n => n.props.onPress && texts({root: n} as never).includes('Save'))[0];
     await act(async () => save.props.onPress());
     expect(mockSaved.at(-1)).toMatchObject({projectsFolder: 'Projekte'});
+  });
+
+  it('the calendar block saves only its link, not an unsaved folder edit', async () => {
+    const r = await render('features');
+    const inputs = r.root.findAllByType(TextInput);
+    await act(async () => inputs[0].props.onChangeText(' https://calendar.example/basic.ics '));
+    const save = r.root.findAll(n => n.props.onPress && n.props.label === 'Save')[0];
+    await act(async () => save.props.onPress());
+    expect(mockSaved.at(-1)).toMatchObject({googleCalendarIcsUrl: 'https://calendar.example/basic.ics', projectsFolder: '1 Projects'});
+  });
+
+  it('greys Run setup assistant while a folder field is unsaved', async () => {
+    const r = await render('data');
+    const assistant = () => r.root.findAll(n => n.props.label === 'Run setup assistant')[0];
+    expect(assistant().props.disabled).toBe(false);
+    await act(async () => r.root.findAllByType(TextInput)[1].props.onChangeText('Projekte'));
+    expect(assistant().props.disabled).toBe(true);
+    expect(texts(r)).toContain('Save or reset the folder fields first.');
   });
 });

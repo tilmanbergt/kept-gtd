@@ -1,9 +1,8 @@
 /**
- * The draft of the settings edited on the Folders, Focus, Calendar and Gmail
- * tabs: loaded once, edited freely, written only by Save (or thrown away by
- * Reset to defaults). Focus counts are edited as text and parsed on save.
- * Settings that take effect at once (switches on Advanced/About, Note setups)
- * write themselves and also update this draft, so a later Save keeps them.
+ * The draft of the settings edited in fields - the folders on Data, the Google Calendar link and
+ * the Gmail account on Features: loaded once, edited freely, written block by block by that
+ * block's Save (folders: or set back by Reset to defaults). Settings that take effect at once
+ * (switches, Note setups) write themselves and also update this draft.
  */
 import {useEffect, useState} from 'react';
 import Clipboard from '@react-native-clipboard/clipboard';
@@ -61,9 +60,20 @@ export const FIELDS: Array<{
   },
 ];
 
+/** The blocks with a Save of their own: the folder fields on Data, Calendar and Gmail on Features. */
+export type SaveScope = 'folders' | 'calendar' | 'gmail';
+
+const SCOPE_KEYS: Record<SaveScope, Array<keyof GtdParaSettings>> = {
+  folders: ['baseRoot', 'projectsFolder', 'areasFolder', 'inboxFolder', 'resourcesFolder', 'archiveFolder'],
+  calendar: ['googleCalendarIcsUrl'],
+  gmail: ['gmailEmail', 'gmailAppPassword', 'gmailImapHost', 'gmailHideHandled'],
+};
+
 export function useSettingsDraft() {
   const [values, setValues] = useState<GtdParaSettings>(DEFAULT_SETTINGS);
   const [loading, setLoading] = useState(true);
+  // What is stored for the fields here, as loaded or last saved - what "unsaved" compares with.
+  const [baseline, setBaseline] = useState<GtdParaSettings>(DEFAULT_SETTINGS);
   const [saved, setSaved] = useState(false);
   // Extra sentence for the saved message, e.g. after the Inbox folder was renamed.
   const [savedNote, setSavedNote] = useState('');
@@ -80,6 +90,7 @@ export function useSettingsDraft() {
       .then(loaded => {
         if (cancelled) return;
         setValues(loaded);
+        setBaseline(loaded);
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -105,83 +116,74 @@ export function useSettingsDraft() {
     }
   };
 
-  const handleSave = async () => {
+  /**
+   * Save for one block (docs/dev/history/technical-design-settings-tabs.md §3): cleans that
+   * block's fields and writes only them over what is stored, so a Save on Features never writes
+   * an unsaved folder edit on Data, and the other way round.
+   */
+  const saveFields = async (scope: SaveScope) => {
     setSaveError(null);
     try {
-      // Spread `values` first, then override only the fields this screen
-      // edits/parses, so settings edited elsewhere (hideDoneProjectTasks,
-      // the retired focus counts, ...) keep their value on Save. Blank fields fall
-      // back to the default rather than resolving to a broken/empty path
-      // segment.
-      // Written elsewhere while this screen may be open (the What's-new
-      // notice in App.tsx) - keep what is stored, not this screen's copy.
+      // Written elsewhere while this screen may be open (the What's-new notice, switches
+      // that save at once) - the base is what is stored, not this screen's copy.
       const storedNow = await loadSettings();
-      const cleaned: GtdParaSettings = {
-        ...values,
-        lastSeenVersion: storedNow.lastSeenVersion,
-        baseRoot: values.baseRoot.trim() || DEFAULT_SETTINGS.baseRoot,
-        projectsFolder: values.projectsFolder.trim() || DEFAULT_SETTINGS.projectsFolder,
-        areasFolder: values.areasFolder.trim() || DEFAULT_SETTINGS.areasFolder,
-        resourcesFolder: values.resourcesFolder.trim() || DEFAULT_SETTINGS.resourcesFolder,
-        archiveFolder: values.archiveFolder.trim() || DEFAULT_SETTINGS.archiveFolder,
-        inboxFolder: values.inboxFolder.trim() || DEFAULT_SETTINGS.inboxFolder,
-        // No fallback-to-default here (unlike the folder fields above) - an
-        // empty string is itself a valid, meaningful value ("no calendar
-        // linked yet"), not a broken path segment to guard against.
-        googleCalendarIcsUrl: values.googleCalendarIcsUrl.trim(),
-        // Same no-fallback reasoning as googleCalendarIcsUrl above - an
-        // empty gmailEmail/gmailAppPassword just means "Gmail inbox review
-        // isn't configured yet" (storage/gmailInboxCache.ts's
-        // isGmailConfigured), not a broken value to replace with a default.
-        gmailEmail: values.gmailEmail.trim(),
-        gmailAppPassword: values.gmailAppPassword.trim(),
-        gmailImapHost: values.gmailImapHost.trim() || DEFAULT_SETTINGS.gmailImapHost,
-      };
-      // A new Inbox folder name moves the folder first; a problem throws and nothing is saved.
-      const inboxRename = await renameInboxFolderForSave(storedNow, cleaned);
-      setSavedNote(
-        inboxRename === 'moved'
-          ? ' Inbox folder renamed.'
-          : inboxRename === 'notMoved'
-            ? ' The Inbox folder was not moved, because Base root or Areas changed too.'
-            : '',
-      );
-      await saveSettings(cleaned);
-      // The cache was built against whatever paths were in effect before -
-      // a changed root would otherwise keep showing stale Projects/Areas
-      // (or the wrong folder's data) until someone thought to rebuild it.
-      // Note: lowering a focus count here never un-focuses anything already
-      // over the new limit (storage/focusSlots.ts) - the cache clear is
-      // only about the folder-path fields, focus flags live in each item's
-      // own file and are unaffected by a settings save.
-      clearCachedData();
-      // Unconditional, same as clearCachedData() above - a credentials
-      // change, an IMAP host change, or even just clearing the fields
-      // should never leave stale/mismatched inbox rows (or rows fetched
-      // under the old account) sitting in storage/gmailInboxCache.ts's
-      // module-level cache until the next explicit refresh happens to
-      // notice.
-      clearCachedGmailInbox();
-      setValues(cleaned);
-      // Reflect back whatever actually got saved (a blank/invalid count
-      // fell back to its default) rather than leaving stale/invalid text
-      // sitting in the field - same normalize-after-save the folder-name
-      // fields already get via setValues(cleaned).
+      // Blank folder fields fall back to the default rather than resolving to a broken path
+      // segment; an empty calendar link or Gmail address is itself meaningful ("not set up").
+      const cleaned: Partial<GtdParaSettings> =
+        scope === 'folders'
+          ? {
+              baseRoot: values.baseRoot.trim() || DEFAULT_SETTINGS.baseRoot,
+              projectsFolder: values.projectsFolder.trim() || DEFAULT_SETTINGS.projectsFolder,
+              areasFolder: values.areasFolder.trim() || DEFAULT_SETTINGS.areasFolder,
+              resourcesFolder: values.resourcesFolder.trim() || DEFAULT_SETTINGS.resourcesFolder,
+              archiveFolder: values.archiveFolder.trim() || DEFAULT_SETTINGS.archiveFolder,
+              inboxFolder: values.inboxFolder.trim() || DEFAULT_SETTINGS.inboxFolder,
+            }
+          : scope === 'calendar'
+            ? {googleCalendarIcsUrl: values.googleCalendarIcsUrl.trim()}
+            : {
+                gmailEmail: values.gmailEmail.trim(),
+                gmailAppPassword: values.gmailAppPassword.trim(),
+                gmailImapHost: values.gmailImapHost.trim() || DEFAULT_SETTINGS.gmailImapHost,
+                gmailHideHandled: values.gmailHideHandled,
+              };
+      const next: GtdParaSettings = {...storedNow, ...cleaned};
+      let note = '';
+      if (scope === 'folders') {
+        // A new Inbox folder name moves the folder first; a problem throws and nothing is saved.
+        const inboxRename = await renameInboxFolderForSave(storedNow, next);
+        note =
+          inboxRename === 'moved'
+            ? ' Inbox folder renamed.'
+            : inboxRename === 'notMoved'
+              ? ' The Inbox folder was not moved, because Base root or Areas changed too.'
+              : '';
+      }
+      await saveSettings(next);
+      // The cache was built for the folders before; the Gmail list for the account before.
+      if (scope === 'folders') clearCachedData();
+      if (scope === 'gmail') clearCachedGmailInbox();
+      setValues(prev => ({...prev, ...cleaned}));
+      setBaseline(next);
+      setSavedNote(note);
       setSaved(true);
     } catch (e) {
-      // Show a failed AsyncStorage write, so the button never looks like it
-      // did nothing at all.
+      // Show a failed AsyncStorage write, so the button never looks like it did nothing at all.
       setSaveError(errorMessage(e));
     }
   };
 
-  const handleResetDefaults = () => {
-    setValues(DEFAULT_SETTINGS);
+  /** Whether `scope`'s fields differ from what is stored. */
+  const unsaved = (scope: SaveScope): boolean => SCOPE_KEYS[scope].some(key => values[key] !== baseline[key]);
+
+  /** Reset to defaults under the folder fields: only those fields, in the draft. */
+  const resetFolders = () => {
+    setValues(prev => ({...prev, ...Object.fromEntries(SCOPE_KEYS.folders.map(key => [key, DEFAULT_SETTINGS[key]]))}));
     setSaved(false);
     setSaveError(null);
   };
 
-  return {values, setValues, loading, patch, update, pasteInto, handleSave, handleResetDefaults, setSaveError};
+  return {values, setValues, loading, patch, update, pasteInto, saveFields, unsaved, resetFolders, setSaveError};
 }
 
 export type SettingsDraft = ReturnType<typeof useSettingsDraft>;

@@ -1,55 +1,58 @@
 /**
  * Settings → About (docs/dev/history/technical-design-about-debug-experimental.md §3.5):
  * left - wordmark, name and slogan (docs/dev/history/technical-design-kept-gtd.md §3.2),
- * version/build/device, Debug logging switch, Export debug bundle;
- * right - "What's new" from the bundled CHANGELOG, paged, no scrolling.
+ * version/build/device and an invitation to report problems and ideas (the debug tools are on
+ * Advanced, docs/dev/history/technical-design-settings-tabs.md T6);
+ * below them Updates (UpdatesBlock.tsx, docs/dev/history/technical-design-in-app-updates.md §6.2);
+ * the left column scrolls where it is taller than the screen (ScrollColumn.tsx);
+ * right - "What's new" from the bundled CHANGELOG, paged, no scrolling: the last three versions
+ * (docs/dev/history/technical-design-launch-ready.md L6), so their tabs fit even a narrow screen;
+ * older ones are in CHANGELOG.md on GitHub. A newer release known from GitHub comes first, as
+ * "X.Y.Z · new", with its release notes in the same pager, in place of the oldest of the three.
  */
 import React, {useEffect, useMemo, useState} from 'react';
-import {ActivityIndicator, Image, Pressable, StyleSheet, Text, View} from 'react-native';
-import {GtdParaSettings} from '../../domain/settings';
+import {Image, StyleSheet, Text, View} from 'react-native';
 import {buildVersionText} from '../../domain/buildVersionText';
+import {UpdateCheckMode} from '../../domain/updateCheck';
+import {knownUpdate} from '../../storage/updates';
 import {BUILD_INFO} from '../../generated/buildInfo';
 import {CHANGELOG} from '../../generated/changelog';
-import {exportDebugBundle} from '../../storage/debugBundle';
-import {loadSettings} from '../../storage/settingsStorage';
-import {DEBUG_LOG_FOLDER_PATH, displayPath} from '../../supernote/devicePaths';
 import {getRuntimeDiagnostics, RuntimeDiagnostics} from '../../supernote/pluginRuntime';
 import MarkdownPager from '../../ui/MarkdownBlocks';
 import MiniTabs, {MiniTabDef} from '../../ui/MiniTabs';
-import PillButton from '../../ui/PillButton';
-import {useStatus} from '../../ui/status/StatusProvider';
 import {FONT, SPACING} from '../../ui/theme';
-import {LOG_FILE_NAME} from '../../utils/logSink';
+import {useUpdateSnapshot} from '../../ui/useUpdateNotice';
+import ScrollColumn from './ScrollColumn';
+import UpdatesBlock from './UpdatesBlock';
 
 /** The Unreleased changelog section's heading: the release it is for, when the build knows it. */
 function unreleasedHeader(): string {
   return BUILD_INFO.nextVersion ? `${BUILD_INFO.nextVersion} (in progress)` : 'Not yet released';
 }
-import {logError} from '../../utils/log';
-import {errorMessage} from '../../utils/errorMessage';
 import {formatDate} from '../../domain/dateFormat';
 
 const PROJECT_URL = 'github.com/tilmanbergt/kept-gtd';
 const SLOGAN = 'Kept GTD – for those who write, where they write.';
 /** Shown for a few releases after the rename (R9). */
 const FORMERLY = 'Formerly gtdpara';
+/** How many versions What's new offers; older ones are on GitHub. */
+export const WHATS_NEW_VERSIONS = 3;
+const SHOWN_RELEASES = CHANGELOG.slice(0, WHATS_NEW_VERSIONS);
 const WORDMARK = require('../../../assets/wordmark.png');
 
 interface Props {
-  debugLogging: boolean;
-  onToggleDebugLogging: () => void;
+  updateCheck: UpdateCheckMode;
+  onToggleUpdateCheck: () => void;
   textColor: string;
   borderColor: string;
 }
 
-const shortFolder = displayPath;
+/** The What's-new tab key of a release known from GitHub (no bundled version is named like it). */
+const UPDATE_TAB_PREFIX = 'update:';
 
-export default function AboutTab({debugLogging, onToggleDebugLogging, textColor, borderColor}: Props): React.JSX.Element {
+export default function AboutTab({updateCheck, onToggleUpdateCheck, textColor, borderColor}: Props): React.JSX.Element {
   const b = BUILD_INFO;
   const [diag, setDiag] = useState<RuntimeDiagnostics | null>(null);
-  const [exporting, setExporting] = useState(false);
-  const [result, setResult] = useState<{kind: 'success' | 'error'; text: string} | null>(null);
-  useStatus('Settings.about.export', result ? {...result, onDismiss: () => setResult(null)} : null);
 
   useEffect(() => {
     let cancelled = false;
@@ -61,36 +64,26 @@ export default function AboutTab({debugLogging, onToggleDebugLogging, textColor,
     };
   }, []);
 
-  const releaseTabs: MiniTabDef<string>[] = useMemo(
-    () => CHANGELOG.map(r => ({key: r.version, label: r.version === 'Unreleased' ? (BUILD_INFO.nextVersion ?? 'Unreleased') : r.version})),
-    [],
+  const update = knownUpdate(useUpdateSnapshot());
+  // The update's tab takes one of the three places, so the tabs still fit a narrow screen.
+  const bundledShown = update ? WHATS_NEW_VERSIONS - 1 : WHATS_NEW_VERSIONS;
+  const releases = useMemo(
+    () => [
+      ...(update ? [{key: `${UPDATE_TAB_PREFIX}${update.version}`, label: `${update.version} · new`, version: update.version, date: update.publishedAt?.slice(0, 10) ?? null, markdown: update.notes}] : []),
+      ...SHOWN_RELEASES.slice(0, bundledShown).map(r => ({...r, key: r.version, label: r.version === 'Unreleased' ? (BUILD_INFO.nextVersion ?? 'Unreleased') : r.version})),
+    ],
+    [update, bundledShown],
   );
-  const [selectedVersion, setSelectedVersion] = useState<string>(CHANGELOG[0]?.version ?? '');
-  const selected = CHANGELOG.find(r => r.version === selectedVersion) ?? CHANGELOG[0];
-
-  const handleExport = async () => {
-    setResult(null);
-    setExporting(true);
-    try {
-      const settings: GtdParaSettings = await loadSettings();
-      const path = await exportDebugBundle(settings);
-      const name = path.slice(path.lastIndexOf('/') + 1);
-      setResult({kind: 'success', text: `Saved ${shortFolder(DEBUG_LOG_FOLDER_PATH)}/${name} - check it before sharing.`});
-    } catch (e) {
-      const message = errorMessage(e);
-      logError('AboutTab: export debug bundle failed', message);
-      setResult({kind: 'error', text: `Export failed: ${message}`});
-    } finally {
-      setExporting(false);
-    }
-  };
+  const releaseTabs: MiniTabDef<string>[] = releases.map(r => ({key: r.key, label: r.label}));
+  const [selectedKey, setSelectedKey] = useState<string | null>(null);
+  const selected = releases.find(r => r.key === selectedKey) ?? releases[0];
 
   const device = diag ? [diag.manufacturer, diag.model].filter(Boolean).join(' ') : '';
   const builtDate = b.builtAt.slice(0, 10);
 
   return (
     <View style={styles.row}>
-      <View style={[styles.column, styles.columnLeft]}>
+      <ScrollColumn left>
         <Image source={WORDMARK} style={[styles.wordmark, {tintColor: textColor}]} resizeMode="contain" accessibilityLabel="Kept GTD" />
         <Text style={[styles.title, {color: textColor}]}>Kept GTD {buildVersionText(b)}</Text>
         <Text style={[styles.line, {color: textColor}]}>{SLOGAN}</Text>
@@ -112,37 +105,16 @@ export default function AboutTab({debugLogging, onToggleDebugLogging, textColor,
 
         <View style={[styles.hr, {backgroundColor: borderColor}]} />
 
-        <Text style={[styles.heading, {color: textColor}]}>Reporting a problem</Text>
-        <View style={styles.field}>
-          <Pressable onPress={onToggleDebugLogging} hitSlop={8} style={styles.button}>
-            <Text style={[styles.buttonText, {color: textColor}]}>
-              Debug logging: {debugLogging ? 'ON (tap to turn off)' : 'OFF (tap to turn on)'}
-            </Text>
-          </Pressable>
-          <Text style={[styles.hint, {color: textColor}]}>
-            Also writes every log line to {shortFolder(DEBUG_LOG_FOLDER_PATH)}/{LOG_FILE_NAME}, so it survives a crash. Turn on,
-            reproduce the problem, then export.
-          </Text>
-        </View>
-        <View style={styles.field}>
-          <View style={styles.inline}>
-            <PillButton
-              label="Export debug bundle"
-              primary
-              disabled={exporting}
-              onPress={handleExport}
-              textColor={textColor}
-              borderColor={borderColor}
-            />
-            {exporting && <ActivityIndicator style={styles.spinner} />}
-          </View>
-          <Text style={[styles.hint, {color: textColor}]}>
-            Saves one text file with version, device, a settings summary (no names), counts and the recent log to{' '}
-            {shortFolder(DEBUG_LOG_FOLDER_PATH)}. Passwords, calendar links and e-mail addresses are removed; file paths stay,
-            so please look through it before attaching it to a GitHub issue.
-          </Text>
-        </View>
-      </View>
+        <UpdatesBlock updateCheck={updateCheck} onToggleUpdateCheck={onToggleUpdateCheck} textColor={textColor} borderColor={borderColor} />
+
+        <View style={[styles.hr, {backgroundColor: borderColor}]} />
+
+        <Text style={[styles.heading, {color: textColor}]}>Problems and ideas</Text>
+        <Text style={[styles.hint, {color: textColor}]}>
+          Reports are very welcome - they are how Kept GTD gets better. Open an issue at {PROJECT_URL}: a bug report, an idea, a question. For a
+          bug, Settings → Advanced → Reporting a problem saves a debug bundle to attach.
+        </Text>
+      </ScrollColumn>
 
       <View style={[styles.vr, {backgroundColor: borderColor}]} />
 
@@ -153,8 +125,8 @@ export default function AboutTab({debugLogging, onToggleDebugLogging, textColor,
             {releaseTabs.length > 1 && (
               <MiniTabs
                 tabs={releaseTabs}
-                activeKey={selected.version}
-                onChange={setSelectedVersion}
+                activeKey={selected.key}
+                onChange={setSelectedKey}
                 textColor={textColor}
                 borderColor={borderColor}
               />
@@ -162,11 +134,14 @@ export default function AboutTab({debugLogging, onToggleDebugLogging, textColor,
             <MarkdownPager
               markdown={selected.markdown}
               header={selected.version === 'Unreleased' ? unreleasedHeader() : `${selected.version}${selected.date ? ` · ${formatDate(selected.date)}` : ''}`}
-              resetKey={selected.version}
+              resetKey={selected.key}
               emptyHint="No notes for this version."
               textColor={textColor}
               borderColor={borderColor}
             />
+            {CHANGELOG.length > bundledShown && (
+              <Text style={[styles.hint, {color: textColor}]}>Earlier versions: CHANGELOG.md at {PROJECT_URL}</Text>
+            )}
           </>
         ) : (
           <Text style={[styles.hint, {color: textColor}]}>No release notes in this build.</Text>
@@ -179,7 +154,6 @@ export default function AboutTab({debugLogging, onToggleDebugLogging, textColor,
 const styles = StyleSheet.create({
   row: {flexDirection: 'row', flex: 1},
   column: {flex: 1},
-  columnLeft: {marginRight: SPACING.base},
   vr: {width: 1, marginRight: SPACING.base},
   hr: {height: 1, marginVertical: SPACING.md},
   wordmark: {width: 280, height: 70, marginBottom: SPACING.sm},

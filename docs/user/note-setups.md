@@ -65,6 +65,8 @@ Left, the page as it will look, with its background; tap a piece to select it. R
   - your own *texts*: **+ New text** writes one, for example "Agenda" or "Decisions"; **Edit** changes it. Deleting a text that is on the page asks first.
 - **Background**: your templates from the MyStyle folder ([Files outside Note](files-and-folders.md#files-outside-note)); the picture shows the choice at once.
 
+The picture shows an A5 X page. On a note with bigger pages, made on a Manta, the pieces keep their place and size relative to the page. On a horizontal page the layout stays as it is, and a piece that would land below the page is left out; the [status line](index.md#the-status-line) says how many.
+
 **Done** goes back to the setup's page; **Save** there stores everything. A new Meeting page starts with Date & title, Time and Linked file; a Todo page with Title and Linked file; a First page with Date & title and Linked file; a Reflection page with Date & title only - add your guiding questions as your own texts, for example "What did I notice?" or "What do I try next time?".
 
 ## The Default

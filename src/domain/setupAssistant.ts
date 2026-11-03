@@ -1,12 +1,14 @@
 /**
  * The setup assistant's decisions (docs/dev/history/technical-design-easy-start.md §5.2,
- * requirements S1-S3): which existing folders to suggest for the four PARA
+ * requirements S1-S3; the Updates step: docs/dev/history/technical-design-in-app-updates.md
+ * §6.4): which existing folders to suggest for the four PARA
  * roles, what Kept finds for each, and what Finish saves and creates. Pure; the
  * screen is screens/settings/SetupAssistant.tsx, the writes storage/setupAssistant.ts.
  */
 import {modulesOf} from './features';
 import {DEFAULT_HOME_NOTEBOOK} from './noteSetups';
 import {GtdParaSettings} from './settings';
+import {UpdateCheckMode} from './updateCheck';
 
 export type FolderRole = 'projects' | 'areas' | 'resources' | 'archive';
 export const FOLDER_ROLES: FolderRole[] = ['projects', 'areas', 'resources', 'archive'];
@@ -68,6 +70,8 @@ export interface SetupChoices {
   folders: Record<FolderRole, string>;
   notes: NotesChoice;
   features: FeaturesChoice;
+  /** The GitHub update check: once a day, or only on Check now. */
+  updates: UpdateCheckMode;
 }
 
 /** The choices the assistant starts with: the current settings, with a suggested existing folder for each role. */
@@ -79,6 +83,7 @@ export function initialChoices(current: GtdParaSettings, suggested: Partial<Reco
     folders,
     notes: current.noteSetupDefaults.notebook ? 'notebook' : 'own',
     features: current.experimentalGoogleCalendar && current.experimentalGmail ? 'everything' : 'simple',
+    updates: current.updateCheck ?? 'manual',
   };
 }
 
@@ -92,7 +97,7 @@ export interface FinishPlan {
  * What Finish does (S3): save the folder names, the Default's notes (one
  * notebook per project and year, or an own note per item), the features
  * (Simple: close-out, Google Calendar, Gmail and Notebook contents off;
- * Everything: all on) and `setupAssistant: 'done'`; create only the folders
+ * Everything: all on), the update check and `setupAssistant: 'done'`; create only the folders
  * `statuses` says are missing. Nothing is moved, renamed or deleted.
  */
 export function planFinish(choices: SetupChoices, current: GtdParaSettings, statuses: Record<FolderRole, FolderStatus>): FinishPlan {
@@ -104,6 +109,7 @@ export function planFinish(choices: SetupChoices, current: GtdParaSettings, stat
     experimentalGoogleCalendar: everything,
     experimentalGmail: everything,
     notebookContentsEnabled: everything,
+    updateCheck: choices.updates,
     setupAssistant: 'done',
   };
   const foldersToCreate: string[] = [];

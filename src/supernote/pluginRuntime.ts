@@ -2,12 +2,8 @@
  * JS side of the native `GtdParaRuntime` module (GtdParaRuntimeModule.kt /
  * PluginRuntimeGuard.kt) - docs/dev/history/technical-design-host-update-crash.md.
  *
- * `getRuntimeDiagnostics` reports the build, the device and whether an older
- * gtdpara build is still loaded in the host process. Older firmware kept the
- * old build loaded after an update and then crashed; the plugin firmware
- * gtdpara requires unloads it (docs/dev/history/technical-design-new-firmware.md D5),
- * so the check only feeds the debug bundle and one log line per start, to
- * catch a regression. Never throws.
+ * `getRuntimeDiagnostics` reports the build and the device for About and the
+ * debug bundle. Never throws.
  */
 import {NativeModules} from 'react-native';
 import {log, logError} from '../utils/log';
@@ -22,18 +18,11 @@ export interface RuntimeDiagnostics {
   pid: number;
   processAgeMs: number;
   npkPath: string | null;
-  /** Other gtdpara builds whose code is still mapped in this process. Non-empty = stale build present. */
-  staleBuilds: string[];
-  mappedFiles: string[];
-  /** Builds that registered in this process so far, oldest first ("build@loader@loadedAtMs"). */
-  registry: string[];
-  scanError: string | null;
-  /** Device facts (absent on older native builds). */
-  model?: string;
-  manufacturer?: string;
+  model: string;
+  manufacturer: string;
   /** Android Build.DISPLAY - on the Supernote usually the firmware version string. */
-  display?: string;
-  androidRelease?: string;
+  display: string;
+  androidRelease: string;
 }
 
 /** null when the native module is missing or the call failed (logged). */
@@ -50,9 +39,6 @@ export async function getRuntimeDiagnostics(): Promise<RuntimeDiagnostics | null
       loaderId: d.loaderId,
       pid: d.pid,
       processAgeMs: d.processAgeMs,
-      staleBuilds: d.staleBuilds,
-      registry: d.registry,
-      scanError: d.scanError,
     });
     return d;
   } catch (e) {
@@ -61,8 +47,3 @@ export async function getRuntimeDiagnostics(): Promise<RuntimeDiagnostics | null
   }
 }
 
-/** Logs once how many older builds are still loaded (labels only); expected: none. Never throws. */
-export async function logStaleBuilds(): Promise<void> {
-  const d = await getRuntimeDiagnostics();
-  if (d) log('pluginRuntime: stale builds', `n=${d.staleBuilds.length}`, d.staleBuilds.join(','));
-}

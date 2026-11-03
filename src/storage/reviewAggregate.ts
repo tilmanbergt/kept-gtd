@@ -56,7 +56,7 @@ import {NoteSetup} from '../domain/noteSetups';
 import {engageSourceOf} from './engageAggregate';
 import {isSomedayMaybe} from '../domain/flowState';
 import {countMeetingsInRange} from '../domain/meetingSpan';
-import {meetingTimestampMs, splitAndSortMeetings, todayIso} from '../domain/meetingTime';
+import {meetingTimestampMs, splitAndSortMeetings} from '../domain/meetingTime';
 import {isReviewOutstanding} from '../domain/meetingTracking';
 import {EMPTY_NOTE_SETUP_CONFIG, NoteSetupConfig} from '../domain/noteSetups';
 import {ReviewStepId} from '../domain/reviewSteps';
@@ -244,25 +244,24 @@ export function buildReviewAggregate(
 /** One step's number on the Review hub. */
 export interface ReviewStepCount {
   n: number;
-  /** What the active context leaves out of the step: the hub's "+n in other contexts" (Q2). */
+  /** What the active context leaves out of the step: the hub's "+n in other contexts". */
   elsewhere?: number;
 }
 
 /**
- * The aggregate under the active context (docs/dev/history/technical-design-time-and-place.md
- * §3.3, Q2): each step lists the context's items and todos; meetings to close
+ * The aggregate narrowed to a context (docs/dev/history/technical-design-contexts-tags.md
+ * §2.3): each step lists the context's item rows and todos; meetings to close
  * out keep the ones the context shows. Week ahead keeps every meeting (the
  * Week view dims, never hides). Everything (`matcher.context` null) returns
  * the aggregate itself.
  */
-export function filterReviewAggregate(aggregate: ReviewAggregate, matcher: ContextMatcher, items: readonly CachedItem[], now: Date = new Date()): ReviewAggregate {
+export function filterReviewAggregate(aggregate: ReviewAggregate, matcher: ContextMatcher, items: readonly CachedItem[]): ReviewAggregate {
   if (!matcher.context) return aggregate;
   const byPath = new Map(items.map(i => [i.path, i] as const));
   const shown = (ref: ReviewItemRef) => {
     const item = byPath.get(ref.path);
     return !item || matcher.itemShown(item);
   };
-  const today = todayIso(now);
   return {
     ...aggregate,
     stalledProjects: aggregate.stalledProjects.filter(e => shown(e.item)),
@@ -272,7 +271,7 @@ export function filterReviewAggregate(aggregate: ReviewAggregate, matcher: Conte
     somedayItems: aggregate.somedayItems
       .map(e => {
         const item = byPath.get(e.item.path);
-        return item ? {...e, tasks: e.tasks.filter(t => matcher.taskShown(item, t.task, today))} : e;
+        return item ? {...e, tasks: e.tasks.filter(t => matcher.taskShown(item, t.task))} : e;
       })
       .filter(e => e.tasks.length > 0),
     meetingsToClose: aggregate.meetingsToClose.filter(e => {

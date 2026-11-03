@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-140 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+182 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -120,19 +120,21 @@ Test: `__tests__/scenarios/keptGtd.test.tsx`
 
 Test: `__tests__/scenarios/contexts.test.tsx`
 
-### A context filters Areas, Projects and Review; Reviewed stays global
+### A context filters Areas; Review starts in Everything and narrows on request; Reviewed stays global
 
 - **Given** contexts Work and Home, Home active
 - **When** I open Areas
 - **Then** only Garden is listed, and the hidden line counts Team
 - **When** I open Review
+- **Then** the hub says the context is set, and Stalled projects counts every stalled project, with no "+n"
+- **When** I tap "Review only in Home"
 - **Then** Stalled projects counts Home's project and "+1 in other contexts"
 - **When** I open the step
-- **Then** it lists Shed and not Tender
-- **When** I mark it Reviewed, choose Everything and open Review's overview again
-- **Then** Stalled projects counts both and shows today's review: the mark is global
+- **Then** it lists Shed and not Tender, and the title ends "· in Home"
+- **When** I mark it Reviewed, leave Review for Daily and come back to Review's overview
+- **Then** Review shows Everything again: both projects, and today's review (the mark is global)
 
-Test: `__tests__/scenarios/contexts.test.tsx`
+Test: `__tests__/scenarios/contexts.test.tsx` · design: `docs/dev/history/technical-design-contexts-tags.md`
 
 ### Quick Add says when the entry lands outside the context
 
@@ -142,13 +144,14 @@ Test: `__tests__/scenarios/contexts.test.tsx`
 
 Test: `__tests__/scenarios/contexts.test.tsx`
 
-### Settings → Contexts: create Café, then choose it from the chip
+### Settings → Contexts: create Café, listed with its sentence, then choose it from the chip
 
 - **Given** a space with todos tagged #reading and #computer
-- **When** I create the context "Café" with Shows #reading and Hides #computer (its Tags list)
-- **Then** the preview counts what it shows
+- **When** I create the context "Café" with Show #reading and Except #computer (its Tags list)
+- **Then** the sentence on top reads it, and the side tabs count the entries
+- **Then** the header counts what it shows
 - **When** I save
-- **Then** Café is listed with its count and summary
+- **Then** Café is listed with its count and sentence
 - **When** I tap its radio
 - **Then** the chip names Café
 
@@ -157,10 +160,149 @@ Test: `__tests__/scenarios/contexts.test.tsx`
 ### Settings → Contexts: a context that shows one Area, named and saved from the top row
 
 - **Given** the areas Home and Team, each with a next todo
-- **When** I create "Home" with Shows on the Area Home and tap Save
+- **When** I create "Home" with Show on the Area Home and tap Save
 - **Then** the Areas list counts the choice and the context is listed
 - **When** I tap its radio and open Daily
 - **Then** Daily shows Home's todo and hides Team's
+
+Test: `__tests__/scenarios/contexts.test.tsx`
+
+### A tag-only context lists the areas holding its todos
+
+- **Given** "Errands" shows #errand; Garden holds "Buy bulbs #errand", Team has no errand todo
+- **When** I open Areas under Errands
+- **Then** Garden is listed, Team is not, and the hidden line counts Team
+
+Test: `__tests__/scenarios/contexts.test.tsx`
+
+### An area is listed through its project's todos
+
+- **Given** Project Shed (Area Garden) has "Paint #errand"; Garden itself has none
+- **When** I open Areas under Errands
+- **Then** Garden is listed, Team is not
+
+Test: `__tests__/scenarios/contexts.test.tsx`
+
+### An upcoming meeting keeps a project listed
+
+- **Given** "Coaching" shows all #jf threads; Leadership has no #jf todo, a meeting "Sparring #jf/anna" next Tuesday and one last month
+- **When** I open Projects under Coaching
+- **Then** Leadership is listed, Tender is not
+
+Test: `__tests__/scenarios/contexts.test.tsx`
+
+### A past meeting alone keeps no project listed
+
+- **Given** the same, with only last month's meeting left
+- **When** I open Projects under Coaching
+- **Then** Leadership is not listed
+
+Test: `__tests__/scenarios/contexts.test.tsx`
+
+### A loop root shows every loop of its kind
+
+- **Given** a loop setup on #read, "#read/novel" in Home, "#read/paper" in Team and a plain todo in Garden
+- **When** I open Daily under a context with "All #read loops"
+- **Then** both loops' todos show, Garden's does not
+- **And** the contexts list reads "Show all #read loops everywhere"
+
+Test: `__tests__/scenarios/contexts.test.tsx`
+
+### Show a place and a tag: either one shows
+
+- **Given** Show Area Work and #computer, "Only inside" off
+- **When** I open Daily
+- **Then** every Work todo and Home's #computer todo show, Home's other todo does not
+- **And** the sentence reads "Show Work, plus #computer everywhere"
+
+Test: `__tests__/scenarios/contexts.test.tsx`
+
+### Only inside the selected areas: the tag in the place
+
+- **Given** the same with "Only inside the selected areas and projects" on
+- **When** I open Daily
+- **Then** only Work's #computer todo shows
+- **And** the sentence reads "Show #computer in Work"
+
+Test: `__tests__/scenarios/contexts.test.tsx`
+
+### Except cuts a tag out of a place
+
+- **Given** Show Home, Except #computer
+- **When** I open Areas, then Daily
+- **Then** Home is listed, Work is not
+- **When** I open Daily
+- **Then** Home's #computer todo is hidden, its other todo shows
+- **And** the sentence reads "Show Home except #computer"
+
+Test: `__tests__/scenarios/contexts.test.tsx`
+
+### Except a place: the sentence says "except in"
+
+- **Given** Show #computer, Except Home
+- **When** I open Daily
+- **Then** Work's #computer todo shows, Home's does not
+- **And** the sentence reads "Show #computer everywhere except in Home"
+
+Test: `__tests__/scenarios/contexts.test.tsx`
+
+### The Tend line opens Review narrowed, filtered by place
+
+- **Given** "Coaching" shows all #jf threads; Area Team has a #jf/anna todo and the quiet threads anna and #retro/demand; Garden has the quiet thread #retro/beds
+- **When** I tap the Tend line on Week under Coaching
+- **Then** Tending threads lists both of Team's threads, not Garden's, and the title ends "· in Coaching"
+
+Test: `__tests__/scenarios/contexts.test.tsx`
+
+### A tag not in use yet is added from New tag
+
+- **Given** no todo carries #shopping; one carries #project/piplanning/q1
+- **When** I type "#Shopping" in New tag on the Tags tab and tap Add
+- **Then** the #shopping chip is there and the sentence reads "Show #shopping everywhere"
+- **When** I type "two words" and tap Add
+- **Then** the status line says it isn't a tag, and nothing is added
+- **When** I add "project/piplanning" too
+- **Then** it is a plain chip, and the preview counts the #project/piplanning/q1 todo
+- **When** I save
+- **Then** the context is listed with its sentence
+
+Test: `__tests__/scenarios/contexts.test.tsx`
+
+### The "Only inside" switch appears only while Show names a place and a tag
+
+- **Given** Work and Home, with #computer todos in both
+- **When** I create "Desk" with Show Area Work and Tags #computer
+- **Then** the switch is offered, off, and the sentence reads "Show Work, plus #computer everywhere"
+- **When** I tick it
+- **Then** the sentence reads "Show #computer in Work"
+- **When** I look at Except
+- **Then** the switch is not offered there
+- **When** I go back to Show and remove #computer
+- **Then** the switch row is gone
+- **When** I save
+- **Then** the stored context does not keep the switch
+
+Test: `__tests__/scenarios/contexts.test.tsx`
+
+### Save is active only after a change; a new context opens on General
+
+- **Given** the areas Home and Team, and the context Home showing Home
+- **When** I open Home in Settings → Contexts
+- **Then** it opens on Show, its name is in the header, and Save is inactive
+- **When** I tap Team
+- **Then** Save is active and the sentence reads "Show Home and Team"
+- **When** I save
+- **Then** Save is inactive again and the list shows the new sentence
+- **When** I start a new context and type "Desk"
+- **Then** it opens on General, and the header shows the name
+
+Test: `__tests__/scenarios/contexts.test.tsx`
+
+### The Tags tab offers the thread types of the Thread setups, not wf and owe
+
+- **Given** a Thread setup on #sparring and a todo waiting for Marco
+- **When** I open the Tags of a new context
+- **Then** "All #sparring threads" is offered, "All #wf threads" and "All #owe threads" are not
 
 Test: `__tests__/scenarios/contexts.test.tsx`
 
@@ -185,15 +327,13 @@ Test: `__tests__/scenarios/daily.test.tsx` · design: `docs/dev/history/technica
 
 Test: `__tests__/scenarios/dailySlim.test.tsx`
 
-### Daily's tag filter: tapping a tag shows only its todos, the pill clears it
+### Daily has no tag filter: its todos all show, with no "#" row above the columns
 
 - **Given** the smoke space with "Buy bulbs #garden" in Garden
-- **When** I open Daily and tap #garden in a row
-- **Then** only #garden todos show and the pill reads #garden
-- **When** I tap the pill
-- **Then** everything shows again
+- **When** I open Daily
+- **Then** the todos the Daily rule lets through show, and there is no filter pill
 
-Test: `__tests__/scenarios/dailySlim.test.tsx`
+Test: `__tests__/scenarios/dailySlim.test.tsx` · design: `docs/dev/history/technical-design-launch-ready.md`
 
 ### Quick-file from a Daily edit: "Save to <Name>" moves the todo
 
@@ -297,7 +437,6 @@ Test: `__tests__/scenarios/meetingReflection.test.tsx` · design: `docs/dev/hist
 - **Given** a 0.21 space: Website with focus flags, goals and #now, Garage in no focus with a #next todo; focus mode on
 - **When** 0.22 starts
 - **Then** Daily shows every next todo - Garage's too - and "Write copy #now" as "Write copy #next"
-- **And** the one-time line says focus is retired
 - **And** no file changed
 - **And** the stored settings still hold the focus keys
 
@@ -787,6 +926,48 @@ Test: `__tests__/scenarios/meetingReflection.test.tsx` · design: `docs/dev/hist
 
 Test: `__tests__/scenarios/meetingReflection.test.tsx` · design: `docs/dev/history/technical-design-item-card.md`
 
+## Note setups
+
+### Opened from a PDF, a note that needs a new file is not tried: the status says why
+
+- **Given** a sparring session whose notebook does not exist yet, and a PDF
+- **When** I open Kept from the PDF, open the session and tap Reflect
+- **Then** the status line says Supernote does not allow it, nothing is asked and no note is made
+
+Test: `__tests__/scenarios/noteCreationLimit.test.tsx`
+
+### Opened from a note, the same Reflect asks first and creates the notebook
+
+- **Given** the same session, and a note to open Kept from
+- **When** I open Kept from the note, open the session and tap Reflect
+- **Then** Kept asks before it creates anything
+
+Test: `__tests__/scenarios/noteCreationLimit.test.tsx`
+
+### On a Manta notebook the reflection page keeps its layout, scaled to the bigger page
+
+- **Given** a sparring notebook made on a Manta (1920 × 2560 px pages)
+- **When** I reflect on the session
+- **Then** the question sits at the Manta position of reference (x, 400), in a bigger font
+
+Test: `__tests__/scenarios/pageFrame.test.tsx`
+
+### On a horizontal notebook a piece that would land below the page is left out, and Kept says so
+
+- **Given** a sparring notebook with horizontal pages (1872 × 1404 px)
+- **When** I reflect with a setup whose question sits at reference y 1600
+- **Then** the page gets its heading but not the question, and the status line explains
+
+Test: `__tests__/scenarios/pageFrame.test.tsx`
+
+### On an A5 X notebook every piece stays exactly where the setup puts it
+
+- **Given** a sparring notebook made on the A5 X
+- **When** I reflect with the question at reference y 1600
+- **Then** the question is written at y 1600, unscaled
+
+Test: `__tests__/scenarios/pageFrame.test.tsx`
+
 ## Profiles and demo space
 
 ### Saved profiles are copied once into the new export folder
@@ -819,7 +1000,7 @@ Test: `__tests__/scenarios/keptGtd.test.tsx`
 ### The demo space lives in Note/kept-gtd-demo
 
 - **Given** an empty PARA folder
-- **When** I create the demo space in Settings → Advanced and switch to it
+- **When** I create the demo space in Settings → Data and switch to it
 - **Then** its folders are under Note/kept-gtd-demo and nothing is written under Note/gtdpara-demo
 
 Test: `__tests__/scenarios/keptGtd.test.tsx`
@@ -827,7 +1008,7 @@ Test: `__tests__/scenarios/keptGtd.test.tsx`
 ### Try things in the demo space without touching the real files, then switch back
 
 - **Given** my real PARA folder has project "Website" and an empty Inbox
-- **When** I create the demo space in Settings → Advanced and switch to it
+- **When** I create the demo space in Settings → Data and switch to it
 - **Then** the tab bar shows the boxed D and Projects shows the demo projects, not "Website"
 - **And** the chip opens Settings → Contexts with Work and Home; Daily has Garden renovation's focus block today
 - **When** I add the todo "Try the demo" in the Inbox
@@ -841,7 +1022,7 @@ Test: `__tests__/scenarios/profiles.test.tsx` · design: `docs/dev/history/techn
 ### Switch to the demo space and back (smoke)
 
 - **Given** the smoke space on Wednesday 14.10.2026
-- **When** I create the demo space in Settings → Advanced and switch to it
+- **When** I create the demo space in Settings → Data and switch to it
 - **Then** Daily shows the demo's content under the inverted tab bar with its D
 - **When** I switch back to Production
 - **Then** Daily shows the smoke space again
@@ -885,7 +1066,7 @@ Test: `__tests__/scenarios/currentPagePerf.test.tsx` · design: `docs/dev/histor
 ### Hiding done todos on an Area page changes the Todos list and nothing else, and is kept
 
 - **Given** the big data set and Team's page open
-- **When** I tap "Hide done tasks"
+- **When** I tap "hide done" in the Todos header
 - **Then** the Todos list offers to show the done ones again, and neither Quick Add nor the left pane rendered
 - **And** after opening Zen and coming back, done todos are still hidden
 
@@ -909,7 +1090,6 @@ Test: `__tests__/scenarios/rollback.test.tsx`
 - **Given** the smoke space on Wednesday 14.10.2026
 - **When** I open Garden from Areas
 - **Then** Todos list "Buy bulbs" and "Repair the fence", and Meetings list "Neighbour chat"
-- **And** the Given time line counts this week's two meetings, the focus block and "Delivery" (11 h) and this month's (20 h)
 - **And** Garden's folder is not listed
 - **When** I tap "◇ Agreements 1 ›"
 - **Then** the list shows "Water only in the morning"
@@ -996,6 +1176,15 @@ Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/techn
 
 Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/technical-design-item-card.md`
 
+### On a Nomad-sized screen, Quick Add with four tabs keeps its + Add and calls Agreement "Agree"
+
+- **Given** area "Coaching" has a past sparring session with Jordan, and Kept is drawn at Nomad portrait size
+- **When** I open Coaching: on a short screen its Todos are the first tab of Todos | Schedule; there I open Jordan's thread overview
+- **Then** its Quick Add shows the short tab name and the main button
+- **And** back at full size the tab is called Agreement again
+
+Test: `__tests__/scenarios/narrowScreen.test.tsx` · design: `docs/dev/history/technical-design-launch-ready.md`
+
 ### Quick Add a todo in a project
 
 - **Given** project "Website" has the todo "Write copy" and a hand-written Scope
@@ -1057,6 +1246,69 @@ Test: `__tests__/scenarios/quickAdd.test.tsx` · design: `docs/dev/history/techn
 
 Test: `__tests__/scenarios/smoke/daily.test.tsx`
 
+## Remove data
+
+### Removing with the defaults, then Start fresh, opens the setup assistant
+
+- **Given** Kept has settings, a log, a profile, a project and open marks
+- **When** I tap Remove… and confirm with Remove
+- **Then** each step reports removed and the settings are gone
+- **And** the profile was saved first, and the project file is still there
+- **When** I tap Start fresh
+- **Then** the setup assistant opens as on a first install
+
+Test: `__tests__/scenarios/removeData.test.tsx`
+
+### Cancel on the question removes nothing
+
+- **When** I tap Remove… and then ✕ on the question
+- **Then** nothing is removed and the list is still there
+
+Test: `__tests__/scenarios/removeData.test.tsx`
+
+### With the demo profile active, the demo space goes only with the settings
+
+- **Given** the demo profile is active and the demo space exists
+- **When** I uncheck the settings
+- **Then** the demo space is unchecked and says why
+
+Test: `__tests__/scenarios/removeData.test.tsx`
+
+### Removing with the defaults leaves no Kept data but keeps profiles, data files and notes
+
+- **Given** Kept has data in every place it uses
+- **When** I remove with the defaults
+- **Then** no Kept entry, log, demo space or private file is left
+- **And** the profiles, every data file, the note and the other plugin stay
+
+Test: `__tests__/scenarios/removeDataRun.test.ts`
+
+### A failing log deletion still removes the rest and keeps the settings
+
+- **Given** Kept has data in every place it uses, and deleting the logs will fail
+- **When** I remove with the defaults
+- **Then** the logs report the failure, the settings are kept and the rest is gone
+
+Test: `__tests__/scenarios/removeDataRun.test.ts`
+
+### Save the active profile first keeps the setup in production.json
+
+- **Given** my Projects folder is "Work projects"
+- **When** I remove the settings with Save the active profile first on
+- **Then** production.json holds the folder and the settings are gone
+- **Given** Kept has data in every place it uses
+- **Then** project.txt, area.txt, Inbox.txt and the archived project.txt are gone
+- **And** the project folder and its note stay
+
+Test: `__tests__/scenarios/removeDataRun.test.ts`
+
+### The scan counts what is there
+
+- **Given** Kept has data in every place it uses
+- **Then** each kind has its count and the open mark is counted
+
+Test: `__tests__/scenarios/removeDataRun.test.ts`
+
 ## Review
 
 ### Tend: a thread without a meeting in 14 days counts in the Tend line and shows "nothing planned"
@@ -1082,26 +1334,6 @@ Test: `__tests__/scenarios/givenTime.test.tsx`
 Test: `__tests__/scenarios/givenTime.test.tsx`
 
 ## Settings
-
-### Check device files lists the folders, the SD card and the file Kept was opened from
-
-- **Given** a PDF in Document/Garden, an EPUB on an SD card, and debug logging on
-- **When** I open Kept from page 12 of Book.pdf and tap Settings → Advanced → Check device files
-- **Then** each listing shows its top folders, the SD card included, and the file with its page
-- **When** I tap Open (last page) on the PDF
-- **Then** the host is asked to open it at its last page
-- **When** I tap Open this file at page 11
-- **Then** the host is asked to open the launch file at that page
-- **And** Close returns to Advanced
-
-Test: `__tests__/scenarios/deviceCheck.test.tsx` · design: `docs/dev/history/technical-design-easy-start.md`
-
-### Check device files is hidden while debug logging is off
-
-- **When** I open Settings → Advanced with debug logging off
-- **Then** there is no Check device files
-
-Test: `__tests__/scenarios/deviceCheck.test.tsx` · design: `docs/dev/history/technical-design-easy-start.md`
 
 ### Close-out off: a Done project archives directly from its page
 
@@ -1141,7 +1373,7 @@ Test: `__tests__/scenarios/features.test.tsx`
 - **Given** the stored settings are broken and the Inbox has a done todo
 - **When** I open Kept GTD
 - **Then** the status line says the settings could not be read
-- **And** a setting changed on the way (Inbox: Hide done tasks) leaves the stored settings as they were
+- **And** a setting changed on the way (Inbox: hide done) leaves the stored settings as they were
 - **And** "Start over" stores the defaults and the message goes away
 
 Test: `__tests__/scenarios/fileSafety.test.tsx` · design: `docs/dev/history/technical-design-quality-hardening.md`
@@ -1157,21 +1389,112 @@ Test: `__tests__/scenarios/keptGtd.test.tsx`
 ### Export debug bundle writes a file named after Kept GTD
 
 - **Given** an empty PARA folder
-- **When** I tap Export debug bundle on Settings → About
+- **When** I tap Export debug bundle on Settings → Advanced
 - **Then** one kept-gtd-debug file is in EXPORT/kept-gtd/debug, it says Kept GTD, and the status line names it
 
 Test: `__tests__/scenarios/keptGtd.test.tsx`
 
+### What's new offers the last three versions and says where the earlier ones are
+
+- **When** I open Settings → About
+- **Then** the newest version's notes show, with a pointer to the rest on GitHub
+
+Test: `__tests__/scenarios/narrowScreen.test.tsx` · design: `docs/dev/history/technical-design-launch-ready.md`
+
+### Check screen and pages shows the launch note's page size and tries a horizontal test note
+
+- **Given** a two-page note made on a Manta, and debug logging on
+- **When** I open Kept from page 2 of that note and tap Settings → Advanced → Check screen and pages
+- **Then** it shows the screen and the note's page count, page size and device
+- **When** I tap Create horizontal test note
+- **Then** a horizontal note is created in Kept's debug folder, not among my notes
+- **When** I tap Add a page and then Write test text boxes
+- **Then** the new page has three text boxes at the A5 X reference positions
+- **And** Open test note asks the host to open it on its last page
+- **And** Close returns to Advanced
+
+Test: `__tests__/scenarios/screenCheck.test.tsx` · design: `docs/dev/history/technical-design-launch-ready.md`
+
+### Check screen and pages is hidden while debug logging is off
+
+- **When** I open Settings → Advanced with debug logging off
+- **Then** there is no Check screen and pages
+
+Test: `__tests__/scenarios/screenCheck.test.tsx` · design: `docs/dev/history/technical-design-launch-ready.md`
+
+### Simulate screen draws Kept at Nomad size until it is turned off
+
+- **When** I turn on debug logging and choose Settings → Advanced → Simulate screen: Nomad portrait
+- **Then** Kept says it is simulating, and estimates rows for the narrower columns
+- **And** Off in the same place ends it
+
+Test: `__tests__/scenarios/screenSimulation.test.tsx` · design: `docs/dev/history/technical-design-launch-ready.md`
+
+### Simulate screen is hidden while debug logging is off
+
+- **When** I open Settings → Advanced with debug logging off
+- **Then** there is no Simulate screen
+
+Test: `__tests__/scenarios/screenSimulation.test.tsx` · design: `docs/dev/history/technical-design-launch-ready.md`
+
+### Settings opens on Data, with six tabs
+
+- **Given** Kept is open
+- **When** I open Settings
+- **Then** the six tabs show, and Data holds the folders, the setup assistant and the profiles
+
+Test: `__tests__/scenarios/settingsTabs.test.tsx`
+
+### An unsaved folder field holds back the setup assistant until Save
+
+- **Given** Settings → Data is open
+- **When** I change the Projects folder without saving
+- **Then** Run setup assistant waits and says why
+- **When** I tap Save under the folder fields
+- **Then** the folder is stored and the assistant can start again
+
+Test: `__tests__/scenarios/settingsTabs.test.tsx`
+
+### The Gmail account sits on Features while Gmail is on, and stays stored while it is off
+
+- **Given** Gmail is set up for jordan@example.com and switched off
+- **When** I open Settings → Features
+- **Then** there is no Gmail block
+- **When** I switch Gmail on
+- **Then** its block shows the stored address
+- **And** the address is still stored
+
+Test: `__tests__/scenarios/settingsTabs.test.tsx`
+
+### Debug logging and the debug bundle are on Advanced; About invites reports
+
+- **Given** Kept is open
+- **When** I open Settings → Advanced
+- **Then** it shows Reporting a problem next to the tools
+- **When** I open About
+- **Then** it invites reports and points to Advanced, without the debug switches
+
+Test: `__tests__/scenarios/settingsTabs.test.tsx`
+
+### The profile chip in the tab bar opens the profiles on Data
+
+- **Given** the profile "work" is active
+- **When** I tap the chip WORK in the tab bar
+- **Then** Settings shows Data with the profiles
+
+Test: `__tests__/scenarios/settingsTabs.test.tsx`
+
 ### A fresh install opens the setup assistant; Finish saves the folders found and creates only the missing ones
 
-- **Given** Note holds a folder "Projects" with 3 project folders and nothing else of PARA
+- **Given** Note holds a folder "Projects" with 3 project folders and nothing else of PARA, and Kept may not use the internet yet
 - **When** Kept starts for the first time
 - **Then** Settings shows the assistant on its Folders step, suggesting Projects
-- **When** I go through Notes (keep one notebook) and Features (Everything) to Finish
-- **Then** Finish lists exactly the folders it will create
+- **When** I go through Notes (keep one notebook), Features (Everything) and Updates (once a day) to Finish
+- **Then** Finish lists exactly the folders it will create, and the update choice
 - **When** I tap Finish
 - **Then** the folders are created, Projects is kept as it is, and the Projects tab says what happened
 - **And** the settings hold the choices
+- **And** Kept asked for internet access once, after saving
 
 Test: `__tests__/scenarios/setupAssistant.test.tsx` · design: `docs/dev/history/technical-design-easy-start.md`
 
@@ -1184,47 +1507,99 @@ Test: `__tests__/scenarios/setupAssistant.test.tsx` · design: `docs/dev/history
 
 Test: `__tests__/scenarios/setupAssistant.test.tsx` · design: `docs/dev/history/technical-design-easy-start.md`
 
-### An existing install opens on Daily as before; Run setup assistant starts it from Settings → Folders, Simple with own notes
+### An existing install opens on Daily as before; Run setup assistant starts it from Settings → Data, Simple with own notes
 
 - **When** Kept starts with stored settings
 - **Then** it lands on Daily, without the assistant
-- **When** I tap Run setup assistant on Settings → Folders, choose own notes and Simple, and Finish
+- **When** I tap Run setup assistant on Settings → Data, choose own notes and Simple, and Finish
 - **Then** close-out, Calendar, Gmail and Notebook contents are off and the Default has no notebook
 - **And** Run setup assistant waits while the Folders fields have unsaved changes
 
 Test: `__tests__/scenarios/setupAssistant.test.tsx` · design: `docs/dev/history/technical-design-easy-start.md`
 
-### Record taps in the touch test without changing anything
+### About says Kept is up to date when GitHub has nothing newer
 
-- **Given** the Inbox has the todo "Call Anna"
-- **When** I open Settings → Advanced → Touch test
-- **Then** sample rows show, numbered, and none of my todos
-- **When** I tap the title of row 1, then a spot where nothing reacts
-- **Then** the first tap counts as handled on the title, the second as no target
-- **When** I tap the checkbox of row 1 and then Save log
-- **Then** a CSV with the three touches is in EXPORT/kept-gtd/debug, and the status line says so
-- **And** the Inbox is untouched: the tapped checkbox ticked nothing
-- **When** I tap Close
-- **Then** Settings → Advanced shows again
+- **Given** the latest release on GitHub is 0.0.1
+- **When** I open Settings → About and tap Check now
+- **Then** the status slot and the Updates block say it is up to date
+- **And** the check asked GitHub once and nothing was downloaded
 
-Test: `__tests__/scenarios/touchTest.test.tsx` · design: `docs/dev/history/technical-design-touch-test.md`
+Test: `__tests__/scenarios/updates.test.tsx`
 
-### Log touches on every screen while "Log touches everywhere" is on
+### A newer release shows a notice; Download saves it into MyStyle/kept-gtd
 
-- **Given** an empty PARA folder
-- **When** I switch on "Log touches everywhere" in the touch test, close it and tap twice on Daily
-- **Then** the log has one line per tap, with numbers only
-- **When** I switch it off again
-- **Then** no touch handler is attached to the app any more
+- **Given** GitHub has 99.0.0 and I checked for it in About
+- **When** I open Kept again
+- **Then** the notice says 99.0.0 is available, with Download and Details
+- **When** I tap Download
+- **Then** it says where the file is and how to install it
+- **And** the file in MyStyle/kept-gtd is the release asset, and the temp file is gone
+- **When** I dismiss the message and tap Download in About again
+- **Then** it is not downloaded twice
+- **And** no error was logged
 
-Test: `__tests__/scenarios/touchTest.test.tsx` · design: `docs/dev/history/technical-design-touch-test.md`
+Test: `__tests__/scenarios/updates.test.tsx`
+
+### A download that does not match the release leaves nothing in MyStyle
+
+- **Given** GitHub has 99.0.0, but its bytes arrive changed
+- **When** I tap Download
+- **Then** it says nothing was saved
+- **And** MyStyle/kept-gtd holds no file, and the temp file is gone
+
+Test: `__tests__/scenarios/updates.test.tsx`
+
+### Not now hides the notice for that version only
+
+- **Given** GitHub has 99.0.0 and Kept found it
+- **When** I tap ✕ on the notice and open Kept again
+- **Then** no notice shows, but About still offers 99.0.0
+- **When** GitHub gets 99.1.0, I check again and open Kept
+- **Then** the notice shows the new version
+
+Test: `__tests__/scenarios/updates.test.tsx`
+
+### The daily check without internet permission stays silent
+
+- **Given** the daily check is on, GitHub has 99.0.0, and Kept may not use the internet
+- **When** I open Kept and wait for the daily check
+- **Then** no dialog was shown, nothing was fetched and no notice shows
+- **And** About says the daily check needs internet access
+
+Test: `__tests__/scenarios/updates.test.tsx`
+
+### The daily check with internet permission finds a new version without a dialog
+
+- **Given** the daily check is on and GitHub has 99.0.0
+- **When** I open Kept and wait for the daily check
+- **Then** the notice shows, and no dialog was shown
+- **When** I open Kept again the same day
+- **Then** GitHub was asked only once
+
+Test: `__tests__/scenarios/updates.test.tsx`
+
+### Check automatically once a day is switched in About and asks for internet once
+
+- **Given** Kept may not use the internet yet
+- **When** I tick Check automatically once a day
+- **Then** the choice is stored and the permission dialog showed
+
+Test: `__tests__/scenarios/updates.test.tsx`
+
+### Update test: treat this build as 0.0.0 offers the latest real release
+
+- **Given** Debug logging is on and the latest release is 0.0.1
+- **When** I switch on the update test on Advanced and tap Check now in About
+- **Then** 0.0.1 is offered
+
+Test: `__tests__/scenarios/updates.test.tsx`
 
 ## Smoke
 
 ### The app starts and every main tab shows (smoke)
 
 - **Given** the smoke space on Wednesday 14.10.2026
-- **When** I open the app and tap through Daily, Week, Month, Projects, Areas, Review, Settings and the help
+- **When** I open the app and tap through Daily, Week, Month, Projects, Areas, Review, Settings, its About tab and the help
 - **Then** each shows its main heading
 - **And** no error was logged
 
@@ -1328,6 +1703,17 @@ Test: `__tests__/scenarios/meetingContext.test.tsx`
 
 Test: `__tests__/scenarios/meetingContext.test.tsx`
 
+### Month names its month in the tab row: "Oct 26", ‹ › to move, Now to come back
+
+- **Given** the smoke space on Wednesday 14.10.2026
+- **When** I open Month
+- **Then** the tab row says "Oct 26", with no highlight count and no Now
+- **When** I tap › next to it
+- **Then** it shows November, and Now
+- **And** Now goes back to October
+
+Test: `__tests__/scenarios/narrowScreen.test.tsx` · design: `docs/dev/history/technical-design-launch-ready.md`
+
 ### Week shows this week's meetings and the time given to each owner (smoke)
 
 - **Given** the smoke space on Wednesday 14.10.2026
@@ -1382,6 +1768,9 @@ Test: `__tests__/scenarios/review.test.tsx` · design: `docs/dev/history/technic
 - **Then** the hub lists its steps with counts: the week's schedule (focus block included), the Inbox's two todos and its meeting; no focus steps
 - **When** I open the step "Inbox to zero"
 - **Then** it shows "Call the plumber"
+- **And** every step opens with its title, one after the other, up to the end page
+- **When** Kept is drawn at Nomad portrait size and I open Review again
+- **Then** every step opens there too
 - **And** no error was logged
 
 Test: `__tests__/scenarios/smoke/review.test.tsx`
@@ -1411,14 +1800,14 @@ Test: `__tests__/scenarios/deviceLinks.test.tsx` · design: `docs/dev/history/te
 
 Test: `__tests__/scenarios/deviceLinks.test.tsx` · design: `docs/dev/history/technical-design-easy-start.md`
 
-### This file from a note: Quick Add starts off and links the note relative to Note; from Home nothing is offered
+### This file from a note: Quick Add starts off and links the note relative to Note; launch file unknown: nothing is offered
 
 - **Given** project "Garden renovation" has the todo "Order soil" and the note Ideas.note
 - **When** I open Kept from page 2 of Ideas.note and open the project
 - **Then** Quick Add shows the note, switched off
 - **When** I switch on "no page" and add the todo "Sketch the beds"
 - **Then** the todo links the note by its path inside Note, without a page
-- **When** I reopen Kept from Home, open the project and tap +clip on "Order soil"
+- **When** I reopen Kept and the host gives no launch file, open the project and tap +clip on "Order soil"
 - **Then** neither Quick Add nor the Files pane offers This file
 
 Test: `__tests__/scenarios/deviceLinks.test.tsx` · design: `docs/dev/history/technical-design-easy-start.md`
