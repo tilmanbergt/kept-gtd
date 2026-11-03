@@ -234,7 +234,11 @@ CHANGELOG line under Fixed) followed by `./scripts/release.ps1 -Bump patch`.
 
 ## 7. After a release
 
-- Check the release page on GitHub: text and `.snplg` attached.
+- Check the release page on GitHub: text and `.snplg` attached. The in-app updater
+  (`src/domain/updateCheck.ts`) offers a release only when its tag is `vX.Y.Z`, it has exactly one
+  `.snplg` asset, named `kept-gtd-X.Y.Z.snplg` (with GitHub's `sha256` digest, which `gh release
+  create` sets), and it is not marked as a pre-release: a release that breaks one of these is
+  ignored by every installed Kept.
 - If it matters to users: update the InkHub listing with the same `.snplg`, post in the Reddit
   thread (one announcement per minor release; patch releases only if users waited for the fix).
   InkHub runs on the Supernote: copy the `.snplg` (and new screenshots, if screens changed) to

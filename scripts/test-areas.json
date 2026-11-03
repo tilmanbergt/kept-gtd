@@ -243,6 +243,19 @@
       ]
     },
     {
+      "id": "updates",
+      "name": "In-app updates",
+      "help": ["settings.md"],
+      "tests": ["__tests__/**/*{updateCheck,updateNative,updates,Updates,updateNotice,UpdateNotice}*"],
+      "sources": [
+        "src/domain/updateCheck.ts",
+        "src/storage/updates.ts",
+        "src/supernote/updateNative.ts",
+        "src/ui/useUpdateNotice.ts",
+        "src/screens/settings/UpdatesBlock.tsx"
+      ]
+    },
+    {
       "id": "settings",
       "name": "Settings, profiles, demo, help and logging",
       "help": ["settings.md", "profiles-and-demo.md"],

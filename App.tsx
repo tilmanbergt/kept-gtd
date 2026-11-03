@@ -40,6 +40,7 @@ import {featuresOf} from './src/domain/features';
 import {setFeatures, useFeatures} from './src/ui/featureStore';
 import {useWriteConflicts} from './src/ui/useWriteConflicts';
 import {useWhatsNewNotice} from './src/ui/useWhatsNewNotice';
+import {useUpdateNotice} from './src/ui/useUpdateNotice';
 import {useSettingsUnreadableNotice} from './src/ui/useSettingsUnreadableNotice';
 import {useNoteSetupsNotice} from './src/ui/useNoteSetupsNotice';
 import {useProfileCopyNotice} from './src/ui/useProfileCopyNotice';
@@ -640,7 +641,8 @@ function AppShell({onProfileSwitched}: {onProfileSwitched: () => void}): React.J
     setActiveTab('settings');
     setMode('tabs');
   });
-  useWhatsNewNotice(settings, setSettings, openSettingsAbout);
+  const whatsNewShowing = useWhatsNewNotice(settings, setSettings, openSettingsAbout);
+  useUpdateNotice(settings, setupAtStart, whatsNewShowing, openSettingsAbout);
   useSettingsUnreadableNotice(setSettings);
   useProfileCopyNotice(settings);
   usePageFitNotice();

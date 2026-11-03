@@ -11,6 +11,7 @@ import type {NoteSetup, NoteSetupDefaults} from './noteSetups';
 import {ReviewStepsMap} from './reviewSteps';
 import {DEFAULT_MODULES, Modules} from './features';
 import type {ContextDef, MinMinutes} from './contexts';
+import type {UpdateCheckMode} from './updateCheck';
 
 export interface GtdParaSettings {
   baseRoot: string;
@@ -192,6 +193,12 @@ export interface GtdParaSettings {
    */
   lastSeenVersion: string;
   /**
+   * The GitHub update check (docs/dev/history/technical-design-in-app-updates.md §3): 'manual'
+   * only when the user taps Check now, 'daily' also once a day when Kept opens. Device-wide: it
+   * concerns the installed build, not a profile's data. Stored settings without it read as 'manual'.
+   */
+  updateCheck: UpdateCheckMode;
+  /**
    * Which profile is active (docs/dev/history/technical-design-profiles-demo-space.md) -
    * the file name of its JSON in EXPORT/kept-gtd/profiles, without ".json".
    * Device-wide; 'production' is the default profile.
@@ -238,6 +245,7 @@ export const DEFAULT_SETTINGS: GtdParaSettings = {
   notebookContentsEnabled: true,
   setupAssistant: 'done',
   lastSeenVersion: '',
+  updateCheck: 'manual',
   activeProfileId: 'production',
 };
 

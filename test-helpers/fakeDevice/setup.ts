@@ -15,6 +15,9 @@ Dimensions.set({window: SCREEN, screen: SCREEN});
 NativeModules.GtdParaFile = forwarding(d => d.fs.module);
 NativeModules.GtdParaPdf = forwarding(d => d.pdf.module);
 NativeModules.TextboxMetrics = fakeTextboxMetrics;
+NativeModules.KeptUpdate = forwarding(d => d.github.module);
+// The only network call the scenarios make is the update check; it reaches the fake GitHub.
+(global as unknown as {fetch: unknown}).fetch = (url: string) => require('./device').device().github.fetch(url);
 NativeModules.GtdParaRuntime = {
   getRuntimeDiagnostics: async () => ({
     buildId: 'scenario',

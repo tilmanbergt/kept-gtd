@@ -24,6 +24,7 @@ import {rebuildCache} from '../../storage/dataCache';
 import {applyFileNameFixes} from '../../storage/fileNameFix';
 import {runIntegrityCheck} from '../../storage/integrityCheck';
 import {loadSettings, patchSettings} from '../../storage/settingsStorage';
+import {saveUpdateCheckMode} from '../../storage/updates';
 import {setFeatures} from '../../ui/featureStore';
 import {dropKeptTabs, setKeepTabsAlive} from '../../ui/keepAliveStore';
 import MiniTabs, {MiniTabDef} from '../../ui/MiniTabs';
@@ -219,6 +220,16 @@ export default function Settings({initialTab, onSwitchProfile, startSetup = fals
     }
   };
 
+  const toggleUpdateCheck = async () => {
+    const next = values.updateCheck === 'daily' ? 'manual' : 'daily';
+    setValues(v => ({...v, updateCheck: next}));
+    try {
+      await saveUpdateCheckMode(next);
+    } catch (e) {
+      setSaveError(errorMessage(e));
+    }
+  };
+
   if (draft.loading) {
     return (
       <View style={styles.container}>
@@ -326,7 +337,7 @@ export default function Settings({initialTab, onSwitchProfile, startSetup = fals
             />
           )}
           {activeTab === 'about' && (
-            <AboutTab textColor={textColor} borderColor={borderColor} />
+            <AboutTab updateCheck={values.updateCheck ?? 'manual'} onToggleUpdateCheck={toggleUpdateCheck} textColor={textColor} borderColor={borderColor} />
           )}
         </View>
 

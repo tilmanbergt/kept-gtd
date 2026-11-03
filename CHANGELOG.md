@@ -22,8 +22,14 @@ or your project/area files are stored.
   Your notes, your `.txt` data files and your saved profiles stay on the device; 0.25.0 loads the profiles.
 - Contexts: nothing to do. Your contexts keep working as before; the new switch is optional and your files
   are unchanged.
+- Updates: nothing to do. The daily update check is off until you switch it on (Settings → About); Kept
+  goes online for it only when you tap Check now or Download.
 
 ### New
+- Kept tells you about new versions on GitHub and can download them into MyStyle/kept-gtd, ready to install
+  from the plugin settings (check by hand, or once a day if you switch it on). Settings → About → Updates;
+  the setup assistant asks once. Releases on GitHub are not reviewed or approved by Ratta. You install them
+  at your own risk. Each release is tested to keep your data safe.
 - **Remove Kept's data** in Settings → Data: shows everything Kept has put on the device - settings,
   the Gmail app password and calendar link, caches, lasso mark pictures, logs, the demo space, old
   gtdpara folders - and removes what you check. Your data files and saved profiles are offered too,

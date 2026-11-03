@@ -14,6 +14,10 @@ Kept GTD is a local plugin. There is no account, no server and no telemetry.
   selection, plus the text once it is recognized, in the plugin's own private folder on the device -
   not in your folders. They are deleted when the mark is processed or discarded. Recognition runs
   on the device.
+- **Downloaded updates**: when you tap **Download** in Settings → About or in the update notice,
+  the release file `kept-gtd-X.Y.Z.snplg` is saved to `MyStyle/kept-gtd/`, after being checked in the
+  plugin's private folder. Kept never deletes files there. The date of the last update check, the
+  version it found and your "not now" are kept in the plugin settings storage.
 - **Temporary files** while a close-out PDF is made (page images and the unfinished PDF), in the
   plugin's own private folder on the device - not in your folders. They are removed when the PDF
   is done, and on the next start if Kept was interrupted.
@@ -22,11 +26,12 @@ Kept GTD is a local plugin. There is no account, no server and no telemetry.
 
 Each permission is requested right before the first action that needs it:
 
-- **File read / file write**: your PARA folders and `EXPORT/kept-gtd`.
+- **File read / file write**: your PARA folders, `EXPORT/kept-gtd`, and `MyStyle/kept-gtd` for a
+  downloaded update.
 - **File delete**: only after you confirmed a delete that names what is deleted - the empty folder
   left behind when an area is archived into an Archive folder that already exists, and what you
   check in **Remove Kept's data** (below). Kept never deletes notes.
-- **Internet**: only for the two optional integrations below.
+- **Internet**: only for the two optional integrations and the update check below.
 
 ## Changes to your files
 
@@ -51,14 +56,18 @@ headings inside your notes, empty folders and archive PDFs are never touched.
 
 ## Network access
 
-Kept only goes online for the two optional integrations, and only when you tap Load/Refresh:
+Kept only goes online for the two optional integrations, when you tap Load/Refresh, and for the
+update check, when you tap Check now or Download, or once a day if you switched that on:
 
-| Integration | Connects to | What is sent |
+| Feature | Connects to | What is sent |
 |---|---|---|
 | Google Calendar | the private ICS link you entered | a normal HTTPS download of your calendar file |
 | Gmail | `imap.gmail.com` (or the IMAP host you set) | your email address and app password, to read your inbox and archive messages you choose |
+| Update check | `api.github.com` (the latest release of Kept GTD), and for a download `github.com` and the GitHub file host it redirects to | a normal HTTPS request with the user agent `KeptGTD/<version>`; nothing else |
 
-If neither is configured, Kept makes no network connections.
+If neither integration is configured and you never check for updates, Kept makes no network
+connections. Releases on GitHub are not reviewed or approved by Ratta; you install them yourself,
+at your own risk.
 
 ## Credentials
 

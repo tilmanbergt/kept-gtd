@@ -120,6 +120,25 @@ export async function ensurePluginPermission(
   }
 }
 
+/**
+ * Whether `permission` is granted, without ever showing a dialog: the session's grant, else the
+ * host's hasPermission (a grant found there is remembered like one from ensurePluginPermission).
+ * A timeout or an error reads as not granted. For checks the user didn't ask for, such as the
+ * daily update check (docs/dev/history/technical-design-in-app-updates.md §4).
+ */
+export async function hasPluginPermission(permission: string): Promise<boolean> {
+  if (granted.has(permission)) return true;
+  try {
+    const has = Number(await withTimeout(PluginManager.hasPermission(permission), `hasPermission(${permission})`)) > 0;
+    log('hasPluginPermission:', permission, '=>', has);
+    if (has) granted.add(permission);
+    return has;
+  } catch (e) {
+    logError('hasPluginPermission: error', permission, errorMessage(e));
+    return false;
+  }
+}
+
 export function ensureFileReadPermission(): Promise<boolean> {
   return ensurePluginPermission(
     FILE_READ_PERMISSION,
@@ -146,13 +165,15 @@ export function ensureFileDeletePermission(description: string): Promise<boolean
 
 /**
  * The network-touching operations - Google Calendar's ICS fetch
- * (storage/googleCalendarCache.ts) and the Gmail IMAP calls
- * (storage/gmailImapNative.ts) - call this immediately before connecting,
- * never eagerly and never from Settings just because a URL was typed in.
- * Both integrations are opt-in (Settings -> Advanced, off by default).
+ * (storage/googleCalendarCache.ts), the Gmail IMAP calls
+ * (storage/gmailImapNative.ts) and the GitHub update check and download
+ * (storage/updates.ts) - call this immediately before connecting, never
+ * eagerly and never from Settings just because a URL was typed in. The
+ * integrations are opt-in (off by default); the update check runs when the
+ * user taps Check now or Download, or once a day if they switched that on.
  */
 export function ensureInternetPermission(
-  description = 'Allow Kept GTD to connect to Google Calendar or Gmail - only when you tap Load or Refresh.',
+  description = 'Allow Kept GTD to connect to Google Calendar, Gmail or GitHub (updates) - only when you tap, or once a day if you switched on the update check.',
 ): Promise<boolean> {
   return ensurePluginPermission(INTERNET_PERMISSION, description);
 }

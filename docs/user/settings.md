@@ -16,12 +16,13 @@ While a folder field has unsaved changes, **Run setup assistant** and **Switch**
 
 ### Setup assistant
 
-On the first start after installing, Kept opens the setup assistant once. It is always available as **Run setup assistant** on the Data tab, right of the folders (while the folder fields have unsaved changes it waits for you to save or reset them). Four steps, one per screen, each with **? Help** and a line saying where to change it later:
+On the first start after installing, Kept opens the setup assistant once. It is always available as **Run setup assistant** on the Data tab, right of the folders (while the folder fields have unsaved changes it waits for you to save or reset them). Five steps, one per screen, each with **? Help** and a line saying where to change it later:
 
 1. *Folders*: the base folder and the Projects, Areas, Resources and Archive folders ([The folder layout](files-and-folders.md#the-folder-layout)). Kept suggests folders you already have (`Projects`, `1 Projects`, `01 Projects` and so on) and shows what it finds under each field: "exists · 12 folders" or "will be created". Nothing is moved; every subfolder of the Projects and Areas folders becomes a [project or area](projects-and-areas.md).
 2. *Notes*: **One notebook per project and year** (recommended, the [home notebook](projects-and-areas.md#home-notebooks)) or **Own note per todo or meeting** - what the [Default note setup](note-setups.md#the-default) does.
 3. *Features*: **Simple** ([Project close-out](features.md#project-close-out), [Google Calendar](features.md#google-calendar), [Gmail](features.md#gmail) and [Notebook contents](projects-and-areas.md#contents-experimental) off) or **Everything** (all on; Calendar and Gmail still need their addresses on the [Features](settings.md#features) tab).
-4. *Look around first?*: [Create demo space](profiles-and-demo.md#the-demo-space), and how to switch to it ([Profiles](profiles-and-demo.md#profiles)).
+4. *Updates*: **Check for new versions on GitHub once a day** or **Only when I tap Check now** (the default) - see [Updates](settings.md#updates). With the daily check, Kept asks for internet access once, on **Finish**.
+5. *Look around first?*: [Create demo space](profiles-and-demo.md#the-demo-space), and how to switch to it ([Profiles](profiles-and-demo.md#profiles)).
 
 **‹ Back** and **Next ›** move between the steps. The last screen shows exactly which folders Kept will create and what it will save; **Finish** creates only the missing folders, saves your choices and opens the [Projects](projects-and-areas.md) tab, where the [status line](index.md#the-status-line) names the folders it created. **Skip** closes the assistant without changing anything. Nothing is created before **Finish**.
 
@@ -81,6 +82,7 @@ How to report, and what the bundle contains: [Reporting a problem](troubleshooti
 
 - **Reload all files**: reads all projects, areas and the Inbox again, for every tab. Opening Kept already reads files changed outside it, for example on your computer or in [Obsidian](files-and-folders.md#using-kept-gtd-with-obsidian); use this when a change still doesn't show up.
 - **Run Integrity Check**: looks for broken note links and similar file problems, including archived projects and areas, a [project close-out](close-out.md) that was interrupted, todos and meetings whose note is missing (with where a note of that name is, if there is one), [lasso marks](lasso.md#marking-for-later) whose note is gone, [renamed project or area folders](projects-and-areas.md#when-you-rename-a-project-or-area) whose home notebook still has the old name, [hidden copies left by an interrupted save](files-and-folders.md#editing-by-hand), and note [file names](files-and-folders.md#file-names) that break links in Obsidian, and writes a report to `EXPORT/kept-gtd/debug`. When it finds such names, its message offers **Fix file names (n)**: after one confirmation it renames all of them and updates their links
+- **Update test: treat this build as 0.0.0** (only while Debug logging is on): makes Kept look like the oldest version to the [update check](settings.md#updates), so **Check now** offers the latest release on GitHub - to try the download and **Add plugin** once. Not saved: closing Kept turns it off.
 - **Simulate screen** (only while Debug logging is on): draws Kept in a framed box the size of a Nomad, to check that nothing is cut off. **Nomad portrait** fits while the device is upright, **Nomad landscape** while it is turned; **Off** ends it, and so does closing Kept. Kept starts again on its first tab when you choose one.
 - **Check screen and pages** (only while Debug logging is on): shows the screen size Kept gets, the page size of the note Kept was opened from and which device it was made on, and lets you try a horizontal test note that Kept keeps in `EXPORT/kept-gtd/debug`: create it, add a page, write three test text boxes, open it. It never changes your own notes; it is there to answer questions about other devices and landscape in a bug report.
 - **Keep tabs in memory**: Daily, Week, Month, Current, Projects and Areas stay loaded, so switching tabs is fast. Turn it off if something looks outdated ([Troubleshooting](troubleshooting.md#common-situations)).
@@ -92,4 +94,20 @@ Switches on this tab take effect immediately.
 
 - the version of the installed build (a test build shows the coming version and its stage, for example `0.15.0 beta`), build number and device
 - an invitation to report problems and ideas on GitHub; the debug tools are on [Advanced](settings.md#reporting-a-problem)
-- **What's new**: the release notes of this and the two versions before; earlier ones are in `CHANGELOG.md` on GitHub
+- **What's new**: the release notes of this and the two versions before; earlier ones are in `CHANGELOG.md` on GitHub. When a newer version is on GitHub, its notes come first, as "0.26.0 · new"
+- **Updates**, described below
+
+### Updates
+
+Kept can tell you when a new version of Kept GTD is released on GitHub, and save it on your Supernote, ready to install. It never installs anything itself.
+
+- **Check now** asks GitHub for the latest release. The [status line](index.md#the-status-line) says "Kept GTD is up to date (0.25.0)", "Kept GTD 0.26.0 is available", or why it couldn't check (no internet access allowed, no Wi-Fi, GitHub busy). The first time, Kept asks for internet access.
+- **Check automatically once a day**: when Kept opens, at most once a day, in the background after the first screen. Off by default. Switching it on asks for internet access once; the daily check itself never asks and stays quiet when it fails.
+- When a newer version is found, a notice says "Kept GTD 0.26.0 is available" with **Download** and **Details** (this tab). ✕ means *not now*: the notice doesn't come back for that version, the next version shows it again. About keeps showing it until you install it.
+- **Download** saves the release as `MyStyle/kept-gtd/kept-gtd-0.26.0.snplg`. Kept checks the file against the release on GitHub (its size and checksum) before it puts it there; a file that doesn't match is not saved. If the same file is already there, Kept says "Already downloaded" and doesn't fetch it again. Kept never deletes old downloads - remove them in the file manager when you like.
+
+To install a downloaded version: close Kept, then open the Supernote's **Settings → Plugins → Add plugin** and choose the file in `MyStyle/kept-gtd`. Your data stays where it is.
+
+Releases on GitHub are not reviewed or approved by Ratta. You install them at your own risk. Each release is tested to keep your data safe.
+
+What goes over the network for this is described in `PRIVACY.md` on GitHub (github.com/tilmanbergt/kept-gtd): the request to GitHub and the download, nothing else.

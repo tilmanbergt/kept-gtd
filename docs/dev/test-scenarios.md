@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-174 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+182 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -1486,14 +1486,15 @@ Test: `__tests__/scenarios/settingsTabs.test.tsx`
 
 ### A fresh install opens the setup assistant; Finish saves the folders found and creates only the missing ones
 
-- **Given** Note holds a folder "Projects" with 3 project folders and nothing else of PARA
+- **Given** Note holds a folder "Projects" with 3 project folders and nothing else of PARA, and Kept may not use the internet yet
 - **When** Kept starts for the first time
 - **Then** Settings shows the assistant on its Folders step, suggesting Projects
-- **When** I go through Notes (keep one notebook) and Features (Everything) to Finish
-- **Then** Finish lists exactly the folders it will create
+- **When** I go through Notes (keep one notebook), Features (Everything) and Updates (once a day) to Finish
+- **Then** Finish lists exactly the folders it will create, and the update choice
 - **When** I tap Finish
 - **Then** the folders are created, Projects is kept as it is, and the Projects tab says what happened
 - **And** the settings hold the choices
+- **And** Kept asked for internet access once, after saving
 
 Test: `__tests__/scenarios/setupAssistant.test.tsx` · design: `docs/dev/history/technical-design-easy-start.md`
 
@@ -1516,12 +1517,89 @@ Test: `__tests__/scenarios/setupAssistant.test.tsx` · design: `docs/dev/history
 
 Test: `__tests__/scenarios/setupAssistant.test.tsx` · design: `docs/dev/history/technical-design-easy-start.md`
 
+### About says Kept is up to date when GitHub has nothing newer
+
+- **Given** the latest release on GitHub is 0.0.1
+- **When** I open Settings → About and tap Check now
+- **Then** the status slot and the Updates block say it is up to date
+- **And** the check asked GitHub once and nothing was downloaded
+
+Test: `__tests__/scenarios/updates.test.tsx`
+
+### A newer release shows a notice; Download saves it into MyStyle/kept-gtd
+
+- **Given** GitHub has 99.0.0 and I checked for it in About
+- **When** I open Kept again
+- **Then** the notice says 99.0.0 is available, with Download and Details
+- **When** I tap Download
+- **Then** it says where the file is and how to install it
+- **And** the file in MyStyle/kept-gtd is the release asset, and the temp file is gone
+- **When** I dismiss the message and tap Download in About again
+- **Then** it is not downloaded twice
+- **And** no error was logged
+
+Test: `__tests__/scenarios/updates.test.tsx`
+
+### A download that does not match the release leaves nothing in MyStyle
+
+- **Given** GitHub has 99.0.0, but its bytes arrive changed
+- **When** I tap Download
+- **Then** it says nothing was saved
+- **And** MyStyle/kept-gtd holds no file, and the temp file is gone
+
+Test: `__tests__/scenarios/updates.test.tsx`
+
+### Not now hides the notice for that version only
+
+- **Given** GitHub has 99.0.0 and Kept found it
+- **When** I tap ✕ on the notice and open Kept again
+- **Then** no notice shows, but About still offers 99.0.0
+- **When** GitHub gets 99.1.0, I check again and open Kept
+- **Then** the notice shows the new version
+
+Test: `__tests__/scenarios/updates.test.tsx`
+
+### The daily check without internet permission stays silent
+
+- **Given** the daily check is on, GitHub has 99.0.0, and Kept may not use the internet
+- **When** I open Kept and wait for the daily check
+- **Then** no dialog was shown, nothing was fetched and no notice shows
+- **And** About says the daily check needs internet access
+
+Test: `__tests__/scenarios/updates.test.tsx`
+
+### The daily check with internet permission finds a new version without a dialog
+
+- **Given** the daily check is on and GitHub has 99.0.0
+- **When** I open Kept and wait for the daily check
+- **Then** the notice shows, and no dialog was shown
+- **When** I open Kept again the same day
+- **Then** GitHub was asked only once
+
+Test: `__tests__/scenarios/updates.test.tsx`
+
+### Check automatically once a day is switched in About and asks for internet once
+
+- **Given** Kept may not use the internet yet
+- **When** I tick Check automatically once a day
+- **Then** the choice is stored and the permission dialog showed
+
+Test: `__tests__/scenarios/updates.test.tsx`
+
+### Update test: treat this build as 0.0.0 offers the latest real release
+
+- **Given** Debug logging is on and the latest release is 0.0.1
+- **When** I switch on the update test on Advanced and tap Check now in About
+- **Then** 0.0.1 is offered
+
+Test: `__tests__/scenarios/updates.test.tsx`
+
 ## Smoke
 
 ### The app starts and every main tab shows (smoke)
 
 - **Given** the smoke space on Wednesday 14.10.2026
-- **When** I open the app and tap through Daily, Week, Month, Projects, Areas, Review, Settings and the help
+- **When** I open the app and tap through Daily, Week, Month, Projects, Areas, Review, Settings, its About tab and the help
 - **Then** each shows its main heading
 - **And** no error was logged
 

@@ -53,7 +53,7 @@ export async function recordDebugLogEntry(
 }
 
 /** Rejects if `promise` has not settled after `timeoutMs`. The underlying call is NOT cancelled - the caller aborts its whole flow on this error. */
-function withTimeout<T>(promise: Promise<T>, timeoutMs: number, timeoutMessage: string): Promise<T> {
+export function withTimeout<T>(promise: Promise<T>, timeoutMs: number, timeoutMessage: string): Promise<T> {
   return new Promise<T>((resolve, reject) => {
     const timer = setTimeout(() => reject(new Error(timeoutMessage)), timeoutMs);
     promise.then(

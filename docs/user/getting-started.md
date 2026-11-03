@@ -8,7 +8,7 @@ This page walks you through Kept GTD for simple needs: capture your todos and me
 2. Copy it to your Supernote and install it as a plugin. Kept GTD needs the plugin firmware: A5 X and A6 X Chauvet 2.27.42 or later, Manta and Nomad Chauvet 3.30.45 or later.
 3. Open any note, open the plugin sidebar and tap the Kept GTD icon. See [Opening Kept GTD from a note](index.md#opening-kept-gtd-from-a-note).
 
-To update later, install the newer file over the old one. Read the [Upgrade notes](settings.md#about) in What's new (Settings → About) first.
+To update later, install the newer file over the old one. Read the [Upgrade notes](settings.md#about) in What's new (Settings → About) first. Kept tells you about new versions and can download them for you; see [Updates](settings.md#updates).
 
 ## Your folders
 

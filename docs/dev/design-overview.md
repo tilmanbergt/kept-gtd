@@ -1087,14 +1087,31 @@ Features and Advanced write immediately. **Features** (`FeaturesTab.tsx`) holds 
 `useFeatures`; close-out off passes no `onStartCloseOut` to Current and Review, so a Done project
 archives directly) - and the Experimental switches. **Advanced** holds Reporting a problem (Debug
 logging, "Export debug bundle", `ReportingSection.tsx`) and the tools ("Reload all files", "Run
-Integrity Check", "Keep tabs in memory", "Performance tracing"). **About** shows version and build,
-an invitation to report problems, and the changelog ("What's new", also offered once after an
-update).
+Integrity Check", "Keep tabs in memory", "Performance tracing"; while Debug logging is on also
+Simulate screen, Check screen and pages and "Update test: treat this build as 0.0.0"). **About**
+shows version and build, Updates, an invitation to report problems, and the changelog ("What's
+new", also offered once after an update; a newer release known from GitHub comes first).
+
+**Updates** (`docs/dev/history/technical-design-in-app-updates.md`): `domain/updateCheck.ts` decides
+which GitHub release counts (`/releases/latest`, tag `vX.Y.Z`, exactly one `kept-gtd-X.Y.Z.snplg` with
+a `sha256` digest, no draft or pre-release) and whether it is newer (`runningVersion`: an alpha or
+beta towards X.Y.Z is older than X.Y.Z). `storage/updates.ts` fetches the release JSON in JS and
+keeps a device-wide state in AsyncStorage (`gtdpara:updates:v1`: last check, what it found, Not
+now, what was saved) with a subscribe API; `checkForUpdate` dedupes concurrent calls, and the
+silent daily check only looks at the INTERNET grant (`hasPluginPermission`), never asks.
+`downloadUpdate` uses the native `KeptUpdate` module (`KeptUpdateModule.kt`, its own thread):
+download over https into the private temp folder with SHA-256 on the way, compare size and digest,
+then copy into `MyStyle/kept-gtd/` through `.part` + rename under the first free name; the temp
+file is always removed, nothing in `MyStyle` is deleted. `ui/useUpdateNotice.ts` (in App) runs the
+daily check after the first screen (setting `updateCheck`, device-wide, default `'manual'`; never
+while the setup assistant is open), shows the notice after What's new and the download's
+messages; About's block is `screens/settings/UpdatesBlock.tsx`.
 
 **Setup assistant** (`screens/settings/SetupAssistant.tsx`, decisions in
 `domain/setupAssistant.ts`, writes in `storage/setupAssistant.ts`): Folders (existing PARA folders
 suggested, what exists shown), Notes (the Default's notebook or none), Features (Simple or
-Everything), Look around first (demo space), then Finish, drawn in Settings in place of its tabs.
+Everything), Updates (daily check or only Check now; Finish asks for INTERNET when daily), Look
+around first (demo space), then Finish, drawn in Settings in place of its tabs.
 Finish saves through `patchSettings` (refused while settings are unreadable), creates only the
 missing folders and reports them; Skip only sets `setupAssistant: 'done'`. App lands on it on the
 first reorient while `setupAssistant` is 'pending', which `migrateExperimentalFlags` sets only on a
@@ -1116,8 +1133,8 @@ content never goes into AsyncStorage.
 
 **Profiles** (`domain/profiles.ts`, `storage/profiles.ts`). A profile is a named configuration;
 its file is `EXPORT/kept-gtd/profiles/<id>.json`. Every setting is classified: per profile,
-device-wide (`perfTracing`, `keepTabsAlive`, `debugLogging`, `lastSeenVersion`,
-`activeProfileId`) or secret (`gmailAppPassword`, `googleCalendarIcsUrl` — per profile, but only
+device-wide (`perfTracing`, `keepTabsAlive`, `debugLogging`, `notebookContentsEnabled`,
+`lastSeenVersion`, `updateCheck`, `activeProfileId`) or secret (`gmailAppPassword`, `googleCalendarIcsUrl` — per profile, but only
 in AsyncStorage, never in a file). Switching writes the profile being left, reads the new one,
 clears the caches and the return record, and remounts the shell. "Create demo space" writes demo
 folders under `Note/kept-gtd-demo` and a demo profile, never overwriting (`storage/demoSpace.ts`).
@@ -1494,6 +1511,13 @@ from `PluginFileAPI.getPageSize`. Kept uses no EMR coordinates, no `PointUtils`,
 `Element.maxX/maxY`, and `getPageDisplaySize` for nothing but diagnostics. Ratta changes such
 semantics without a major version, so a library upgrade is always a deliberate step with a device
 test.
+
+**Updates are downloaded, never installed by Kept.** An InkHub review takes long, so Kept tells
+users about new releases itself - but only official GitHub releases of this repository, read
+through the public API without an account, and only by hand or once a day when the user switched
+that on (off by default). It saves the checked `.snplg` to `MyStyle/kept-gtd/` and leaves
+installing to the Supernote's own Settings → Plugins → Add plugin, so a build only ever gets on the
+device through the host's installer, and the user decides when. Pre-releases are not offered.
 
 **Native code only where the host has no API.** Moving and merging folders, statting files in
 bulk, measuring text, writing PDFs and talking IMAP are native modules because `sn-plugin-lib`

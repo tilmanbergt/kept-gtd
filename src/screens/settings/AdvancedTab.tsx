@@ -2,8 +2,9 @@
  * Settings → Advanced (docs/dev/history/technical-design-settings-tabs.md T5): left, Reporting a
  * problem (Debug logging, Export debug bundle); right, the tools (Reload all files, Integrity
  * Check, Keep tabs in memory, Performance tracing; while Debug logging is on also Check screen and
- * pages and Simulate screen, docs/dev/history/technical-design-launch-ready.md §4.3/§6). Settings.tsx owns the values and the
- * handlers; every switch saves immediately.
+ * pages and Simulate screen, docs/dev/history/technical-design-launch-ready.md §4.3/§6, and Update test,
+ * docs/dev/history/technical-design-in-app-updates.md §8). Settings.tsx owns the values and the
+ * handlers; every switch saves immediately, except the memory-only Simulate screen and Update test.
  */
 import React, {useSyncExternalStore} from 'react';
 import {ActivityIndicator, Pressable, StyleSheet, Text, View} from 'react-native';
@@ -12,6 +13,7 @@ import {SIMULATED_SCREENS, simulationsThatFit} from '../../domain/screenLayout';
 import PillButton from '../../ui/PillButton';
 import {useRealScreenSize} from '../../ui/ScreenSize';
 import {getScreenSimulation, setScreenSimulation, subscribeScreenSimulation} from '../../ui/screenSimStore';
+import {isUpdateTestMode, setUpdateTestMode, subscribeUpdates} from '../../storage/updates';
 import {FONT, SPACING} from '../../ui/theme';
 import ReportingSection from './ReportingSection';
 import SettingSwitch from './SettingSwitch';
@@ -62,6 +64,7 @@ export default function AdvancedTab(p: Props): React.JSX.Element {
           </Text>
         </View>
         {p.debugLogging && <SimulateScreen textColor={textColor} borderColor={borderColor} />}
+        {p.debugLogging && <UpdateTestSwitch textColor={textColor} />}
         {p.debugLogging && (
           <View style={styles.field}>
             <Pressable onPress={p.onOpenScreenCheck} hitSlop={8} style={styles.button}>
@@ -109,6 +112,20 @@ function SimulateScreen({textColor, borderColor}: {textColor: string; borderColo
         Draws Kept in a box the size of a Nomad, to check that nothing is cut off. Nomad portrait fits while the device is upright, Nomad landscape while it is turned. Kept starts again on its first tab; closing Kept ends it.
       </Text>
     </View>
+  );
+}
+
+/** Makes this build look like 0.0.0 to the updater, so the latest real release is offered; not saved. */
+function UpdateTestSwitch({textColor}: {textColor: string}): React.JSX.Element {
+  const on = useSyncExternalStore(subscribeUpdates, isUpdateTestMode);
+  return (
+    <SettingSwitch
+      label="Update test: treat this build as 0.0.0"
+      on={on}
+      onPress={() => setUpdateTestMode(!on)}
+      hint="Settings → About → Check now then offers the latest release on GitHub, to try the download and Add plugin. Not saved: closing Kept turns it off."
+      textColor={textColor}
+    />
   );
 }
 

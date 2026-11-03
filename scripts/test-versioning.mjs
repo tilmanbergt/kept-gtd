@@ -17,6 +17,8 @@ import {
   unreleasedIsEmpty,
   VERSION_CODE_EPOCH_MS,
 } from './lib/versioning.mjs';
+import {fileURLToPath} from 'node:url';
+import {importTs} from './lib/tsModule.mjs';
 
 let n = 0;
 function t(name, fn) {
@@ -160,6 +162,25 @@ t('setLockfileVersion sets the root version twice, never a dependency', () => {
   assert.equal((out.match(/"version": "0.18.0"/g) ?? []).length, 2);
   assert.ok(out.includes('"name": "x",\n      "version": "0.15.0"'));
   assert.throws(() => setLockfileVersion('{"name": "other", "version": "1.0.0"}', 'gtdpara', '0.18.0'));
+});
+
+// The in-app updater compares versions in TypeScript (src/domain/updateCheck.ts, which can't
+// import this script); both must give the same answer on one table.
+const VERSION_PAIRS = [
+  ['0.24.0', '0.24.0'],
+  ['0.24.0', '0.23.9'],
+  ['0.23.9', '0.24.0'],
+  ['0.9.0', '0.10.0'],
+  ['1.0.0', '0.99.99'],
+  ['0.24.1', '0.24.0'],
+  ['10.0.0', '9.9.9'],
+  ['0.0.0', '0.0.1'],
+];
+const updateCheck = await importTs(fileURLToPath(new URL('../src/domain/updateCheck.ts', import.meta.url)));
+t('the updater compares versions like this script', () => {
+  for (const [a, b] of VERSION_PAIRS) assert.equal(updateCheck.compareVersions(a, b), compareVersions(a, b), `${a} vs ${b}`);
+  assert.throws(() => updateCheck.compareVersions('0.24.0-beta', '0.24.0'));
+  assert.throws(() => compareVersions('0.24.0-beta', '0.24.0'));
 });
 
 console.log(`versioning: ${n} groups passed`);

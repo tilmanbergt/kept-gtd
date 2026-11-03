@@ -11,6 +11,8 @@ import {
   ensureFileWritePermission,
   FILE_READ_PERMISSION,
   forgetPermissionGrants,
+  hasPluginPermission,
+  INTERNET_PERMISSION,
 } from '../../src/supernote/pluginPermissions';
 
 const mockManager = PluginManager as unknown as {hasPermission?: jest.Mock; requestPermission?: jest.Mock};
@@ -77,6 +79,30 @@ describe('ensurePluginPermission grants', () => {
     forgetPermissionGrants();
     await ensureFileReadPermission();
     expect(mockManager.hasPermission).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe('hasPluginPermission (docs/dev/history/technical-design-in-app-updates.md §4)', () => {
+  it('never shows a dialog: not granted reads as false', async () => {
+    mockManager.hasPermission = jest.fn(async () => 0);
+    expect(await hasPluginPermission(INTERNET_PERMISSION)).toBe(false);
+    expect(mockManager.requestPermission).not.toHaveBeenCalled();
+  });
+  it('remembers a grant it finds, and honours one given earlier this session', async () => {
+    expect(await hasPluginPermission(INTERNET_PERMISSION)).toBe(true);
+    expect(await hasPluginPermission(INTERNET_PERMISSION)).toBe(true);
+    expect(mockManager.hasPermission).toHaveBeenCalledTimes(1);
+    forgetPermissionGrants();
+    await ensureFileReadPermission();
+    mockManager.hasPermission = jest.fn(async () => 0);
+    expect(await hasPluginPermission(FILE_READ_PERMISSION)).toBe(true);
+    expect(mockManager.hasPermission).not.toHaveBeenCalled();
+  });
+  it('an error reads as not granted', async () => {
+    mockManager.hasPermission = jest.fn(async () => {
+      throw new Error('bridge');
+    });
+    expect(await hasPluginPermission(INTERNET_PERMISSION)).toBe(false);
   });
 });
 

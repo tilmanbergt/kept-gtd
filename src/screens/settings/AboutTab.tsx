@@ -3,19 +3,27 @@
  * left - wordmark, name and slogan (docs/dev/history/technical-design-kept-gtd.md §3.2),
  * version/build/device and an invitation to report problems and ideas (the debug tools are on
  * Advanced, docs/dev/history/technical-design-settings-tabs.md T6);
+ * below them Updates (UpdatesBlock.tsx, docs/dev/history/technical-design-in-app-updates.md §6.2);
+ * the left column scrolls where it is taller than the screen (ScrollColumn.tsx);
  * right - "What's new" from the bundled CHANGELOG, paged, no scrolling: the last three versions
  * (docs/dev/history/technical-design-launch-ready.md L6), so their tabs fit even a narrow screen;
- * older ones are in CHANGELOG.md on GitHub.
+ * older ones are in CHANGELOG.md on GitHub. A newer release known from GitHub comes first, as
+ * "X.Y.Z · new", with its release notes in the same pager, in place of the oldest of the three.
  */
 import React, {useEffect, useMemo, useState} from 'react';
 import {Image, StyleSheet, Text, View} from 'react-native';
 import {buildVersionText} from '../../domain/buildVersionText';
+import {UpdateCheckMode} from '../../domain/updateCheck';
+import {knownUpdate} from '../../storage/updates';
 import {BUILD_INFO} from '../../generated/buildInfo';
 import {CHANGELOG} from '../../generated/changelog';
 import {getRuntimeDiagnostics, RuntimeDiagnostics} from '../../supernote/pluginRuntime';
 import MarkdownPager from '../../ui/MarkdownBlocks';
 import MiniTabs, {MiniTabDef} from '../../ui/MiniTabs';
 import {FONT, SPACING} from '../../ui/theme';
+import {useUpdateSnapshot} from '../../ui/useUpdateNotice';
+import ScrollColumn from './ScrollColumn';
+import UpdatesBlock from './UpdatesBlock';
 
 /** The Unreleased changelog section's heading: the release it is for, when the build knows it. */
 function unreleasedHeader(): string {
@@ -33,11 +41,16 @@ const SHOWN_RELEASES = CHANGELOG.slice(0, WHATS_NEW_VERSIONS);
 const WORDMARK = require('../../../assets/wordmark.png');
 
 interface Props {
+  updateCheck: UpdateCheckMode;
+  onToggleUpdateCheck: () => void;
   textColor: string;
   borderColor: string;
 }
 
-export default function AboutTab({textColor, borderColor}: Props): React.JSX.Element {
+/** The What's-new tab key of a release known from GitHub (no bundled version is named like it). */
+const UPDATE_TAB_PREFIX = 'update:';
+
+export default function AboutTab({updateCheck, onToggleUpdateCheck, textColor, borderColor}: Props): React.JSX.Element {
   const b = BUILD_INFO;
   const [diag, setDiag] = useState<RuntimeDiagnostics | null>(null);
 
@@ -51,19 +64,26 @@ export default function AboutTab({textColor, borderColor}: Props): React.JSX.Ele
     };
   }, []);
 
-  const releaseTabs: MiniTabDef<string>[] = useMemo(
-    () => SHOWN_RELEASES.map(r => ({key: r.version, label: r.version === 'Unreleased' ? (BUILD_INFO.nextVersion ?? 'Unreleased') : r.version})),
-    [],
+  const update = knownUpdate(useUpdateSnapshot());
+  // The update's tab takes one of the three places, so the tabs still fit a narrow screen.
+  const bundledShown = update ? WHATS_NEW_VERSIONS - 1 : WHATS_NEW_VERSIONS;
+  const releases = useMemo(
+    () => [
+      ...(update ? [{key: `${UPDATE_TAB_PREFIX}${update.version}`, label: `${update.version} · new`, version: update.version, date: update.publishedAt?.slice(0, 10) ?? null, markdown: update.notes}] : []),
+      ...SHOWN_RELEASES.slice(0, bundledShown).map(r => ({...r, key: r.version, label: r.version === 'Unreleased' ? (BUILD_INFO.nextVersion ?? 'Unreleased') : r.version})),
+    ],
+    [update, bundledShown],
   );
-  const [selectedVersion, setSelectedVersion] = useState<string>(SHOWN_RELEASES[0]?.version ?? '');
-  const selected = SHOWN_RELEASES.find(r => r.version === selectedVersion) ?? SHOWN_RELEASES[0];
+  const releaseTabs: MiniTabDef<string>[] = releases.map(r => ({key: r.key, label: r.label}));
+  const [selectedKey, setSelectedKey] = useState<string | null>(null);
+  const selected = releases.find(r => r.key === selectedKey) ?? releases[0];
 
   const device = diag ? [diag.manufacturer, diag.model].filter(Boolean).join(' ') : '';
   const builtDate = b.builtAt.slice(0, 10);
 
   return (
     <View style={styles.row}>
-      <View style={[styles.column, styles.columnLeft]}>
+      <ScrollColumn left>
         <Image source={WORDMARK} style={[styles.wordmark, {tintColor: textColor}]} resizeMode="contain" accessibilityLabel="Kept GTD" />
         <Text style={[styles.title, {color: textColor}]}>Kept GTD {buildVersionText(b)}</Text>
         <Text style={[styles.line, {color: textColor}]}>{SLOGAN}</Text>
@@ -85,12 +105,16 @@ export default function AboutTab({textColor, borderColor}: Props): React.JSX.Ele
 
         <View style={[styles.hr, {backgroundColor: borderColor}]} />
 
+        <UpdatesBlock updateCheck={updateCheck} onToggleUpdateCheck={onToggleUpdateCheck} textColor={textColor} borderColor={borderColor} />
+
+        <View style={[styles.hr, {backgroundColor: borderColor}]} />
+
         <Text style={[styles.heading, {color: textColor}]}>Problems and ideas</Text>
         <Text style={[styles.hint, {color: textColor}]}>
           Reports are very welcome - they are how Kept GTD gets better. Open an issue at {PROJECT_URL}: a bug report, an idea, a question. For a
           bug, Settings → Advanced → Reporting a problem saves a debug bundle to attach.
         </Text>
-      </View>
+      </ScrollColumn>
 
       <View style={[styles.vr, {backgroundColor: borderColor}]} />
 
@@ -101,8 +125,8 @@ export default function AboutTab({textColor, borderColor}: Props): React.JSX.Ele
             {releaseTabs.length > 1 && (
               <MiniTabs
                 tabs={releaseTabs}
-                activeKey={selected.version}
-                onChange={setSelectedVersion}
+                activeKey={selected.key}
+                onChange={setSelectedKey}
                 textColor={textColor}
                 borderColor={borderColor}
               />
@@ -110,12 +134,12 @@ export default function AboutTab({textColor, borderColor}: Props): React.JSX.Ele
             <MarkdownPager
               markdown={selected.markdown}
               header={selected.version === 'Unreleased' ? unreleasedHeader() : `${selected.version}${selected.date ? ` · ${formatDate(selected.date)}` : ''}`}
-              resetKey={selected.version}
+              resetKey={selected.key}
               emptyHint="No notes for this version."
               textColor={textColor}
               borderColor={borderColor}
             />
-            {CHANGELOG.length > WHATS_NEW_VERSIONS && (
+            {CHANGELOG.length > bundledShown && (
               <Text style={[styles.hint, {color: textColor}]}>Earlier versions: CHANGELOG.md at {PROJECT_URL}</Text>
             )}
           </>
@@ -130,7 +154,6 @@ export default function AboutTab({textColor, borderColor}: Props): React.JSX.Ele
 const styles = StyleSheet.create({
   row: {flexDirection: 'row', flex: 1},
   column: {flex: 1},
-  columnLeft: {marginRight: SPACING.base},
   vr: {width: 1, marginRight: SPACING.base},
   hr: {height: 1, marginVertical: SPACING.md},
   wordmark: {width: 280, height: 70, marginBottom: SPACING.sm},

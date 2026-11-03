@@ -30,7 +30,7 @@ GTD and PARA for the Supernote: todos, meetings and next actions, joined to the 
 
 Made and used daily on the A5 X in portrait. Manta, Nomad and landscape are checked in simulation, not yet in daily use. Beta.
 
-Permissions: files only in your PARA folders and EXPORT/kept-gtd. Kept deletes only after you confirm, and it names what will go. Internet only for Calendar and Gmail, when you tap Load. No telemetry.
+Permissions: files only in your PARA folders and EXPORT/kept-gtd, and MyStyle/kept-gtd for an update you download. Kept deletes only after you confirm, and it names what will go. Internet only for Calendar and Gmail when you tap Load, and for the update check on GitHub when you tap Check now (or once a day, if you switch that on). No telemetry.
 
 Free and open source (MIT). Help, privacy and issues:
 github.com/tilmanbergt/kept-gtd
