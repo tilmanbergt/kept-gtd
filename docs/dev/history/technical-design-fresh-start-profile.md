@@ -198,3 +198,24 @@ Deviations and additions:
 - **Remove Kept's data** starts with "Save the active profile first" unticked while fresh (D3: the
   removal would otherwise replace the saved profile with the fresh settings unasked).
 - `onLoadProfile` is Settings' existing `onSwitchProfile`; Settings got no new prop.
+
+**P6 (§3.6)** - built as designed: `supernote/pluginPermissions.ts` (8 s for `hasPermission`,
+`PERMISSION_REQUEST_TIMEOUT_MS` = 120 s per caller for the dialog, one host request per permission
+until it settles, late grants recorded, every caller still gets a boolean), App reorient (no
+`refreshCache` while the assistant is pending), the assistant's access step (read, then write,
+then scan and `listSavedProfiles`; stop line with Try again and Skip). Tests:
+`__tests__/supernote/pluginPermissionsRequest.test.ts` (10, 11, plus a stuck `hasPermission`),
+`__tests__/scenarios/setupAssistantAccess.test.tsx` (12-14); the fake SDK logs every permission
+call (`permissionCalls`, `onPermissionCall`).
+
+Deviations and additions:
+
+- **Two more early readers.** Test 12 found reads before the access step besides `refreshCache`:
+  the hidden Projects screen (kept tabs mount the initial tab while loading, and it builds the
+  cache) and Settings' MyStyle listing (`useMyStylePngs`). While the assistant runs at start,
+  hidden kept screens are not mounted (`setupAtStart`), and the MyStyle list waits until the
+  assistant closes. Normal starts are unchanged (the Current page golden master stays as recorded).
+- **Projects after Finish** now builds its list on the chosen folders when it opens (before, it
+  had been built on the old default folders and showed none of the projects found); the first
+  build gives each project its default abbreviation, as on any first view.
+- The access screen has ? Help (Settings, "Setup assistant") and Skip in its header, like the steps.
