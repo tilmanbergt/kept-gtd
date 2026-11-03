@@ -176,6 +176,13 @@ export interface GtdParaSettings {
    */
   lastSeenVersion: string;
   /**
+   * Kept runs on fresh settings (docs/dev/history/technical-design-fresh-start-profile.md §3.1):
+   * set on a fresh install (domain/features.ts's prepareFreshInstall), cleared when a profile is
+   * loaded or saved. While set, a saved profile file is never written from these settings without
+   * asking, and the active profile can be restored from its file. Device-wide.
+   */
+  freshStart: boolean;
+  /**
    * The GitHub update check (docs/dev/history/technical-design-in-app-updates.md §3): 'manual'
    * only when the user taps Check now, 'daily' also once a day when Kept opens. Device-wide: it
    * concerns the installed build, not a profile's data. Stored settings without it read as 'manual'.
@@ -224,6 +231,7 @@ export const DEFAULT_SETTINGS: GtdParaSettings = {
   notebookContentsEnabled: true,
   setupAssistant: 'done',
   lastSeenVersion: '',
+  freshStart: false,
   updateCheck: 'manual',
   activeProfileId: 'production',
 };

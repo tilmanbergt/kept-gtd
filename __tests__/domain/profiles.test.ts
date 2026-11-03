@@ -30,6 +30,10 @@ describe('key classification', () => {
     const classified = [...PROFILE_KEYS, ...DEVICE_WIDE_KEYS, ...SECRET_KEYS].sort();
     expect(classified).toEqual(all);
   });
+  it('keeps the fresh-start mark device-wide, out of every profile file', () => {
+    expect(DEVICE_WIDE_KEYS).toContain('freshStart');
+    expect(serializeProfile('Production', {...real, freshStart: true}, new Date(0), '0.1.0')).not.toContain('freshStart');
+  });
 });
 
 describe('profile files', () => {

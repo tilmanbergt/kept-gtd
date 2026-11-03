@@ -7,6 +7,7 @@ const base = {
   gmailEmail: '',
   lastSeenVersion: '',
   setupAssistant: 'done' as 'pending' | 'done',
+  freshStart: false,
 };
 
 describe('featuresOf', () => {
@@ -34,9 +35,9 @@ describe('modulesOf', () => {
 });
 
 describe('prepareFreshInstall', () => {
-  it('fresh install: flags stay off, lastSeenVersion set, setup assistant pending', () => {
+  it('fresh install: flags stay off, lastSeenVersion set, setup assistant pending, fresh-start mark set', () => {
     const out = prepareFreshInstall(base, {}, '0.1.0');
-    expect(out).toEqual({...base, lastSeenVersion: '0.1.0', setupAssistant: 'pending'});
+    expect(out).toEqual({...base, lastSeenVersion: '0.1.0', setupAssistant: 'pending', freshStart: true});
   });
   it('fresh install with null raw', () => {
     expect(prepareFreshInstall(base, null, '0.1.0').lastSeenVersion).toBe('0.1.0');
@@ -46,6 +47,7 @@ describe('prepareFreshInstall', () => {
     const out = prepareFreshInstall(merged, {googleCalendarIcsUrl: 'https://x/ical/y.ics'}, '0.1.0');
     expect(out).toBe(merged);
     expect(out.setupAssistant).toBe('done');
+    expect(out.freshStart).toBe(false);
     expect(out.experimentalGoogleCalendar).toBe(false);
   });
 });
