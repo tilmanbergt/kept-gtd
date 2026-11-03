@@ -15,11 +15,14 @@ or your project/area files are stored.
   yet. In your current Kept GTD, follow the 0.24.0 upgrade notes first: process open lasso marks, save
   each profile once, note your Gmail app password and calendar link, run Settings → Data → Remove
   Kept's data with *Kept's data files* and *Saved profiles* unticked, then uninstall it. Then install
-  this version, run the setup assistant and Switch to your saved profile (Settings → Data → Profiles).
-  Your notes, data files and saved profiles stay where they are. Uninstall the old Kept GTD before you
-  install this one; don't run both side by side.
+  this version and open Kept: it finds your saved profile and offers to load it (later: Settings →
+  Data → Profiles → Restore). Your notes, data files and saved profiles stay where they are. Uninstall
+  the old Kept GTD before you install this one; don't run both side by side.
 
 ### Fixed
+- After a fresh install, your saved profile couldn't be loaded (Production showed as active, without
+  Switch). Kept now offers to load it when you first open it, and never overwrites it with the fresh
+  settings without asking.
 - Kept GTD 0.25.0 didn't start after installing: its package was built wrong. This version starts
   normally; if you installed 0.25.0, uninstall it and install this one.
 

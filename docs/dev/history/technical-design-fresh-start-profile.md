@@ -121,4 +121,34 @@ Status: **approved 2026-11-03** (Tilman: offer in the setup assistant, Restore a
 
 ## As built
 
-(filled in by the implementation)
+Built as designed (branch `fix/fresh-start-profile`, steps P1-P5). Files: `domain/settings.ts`,
+`domain/features.ts`, `domain/profiles.ts` (mark), `storage/profiles.ts` (switch, list, save),
+`screens/settings/WelcomeBack.tsx` (new), `SetupAssistant.tsx`, `Settings.tsx`,
+`ProfilesSection.tsx`, `RemoveDataScreen.tsx`, `domain/fileChangeText.ts` (`profileLoadedText`),
+`storage/debugBundle.ts` ("fresh start yes/no"). Tests: `__tests__/storage/profilesFreshStart.test.ts`
+(storage level) and `__tests__/scenarios/freshStartProfile.test.tsx` (scenarios 1-7 and 9; 8 is the
+existing profile tests, unchanged).
+
+Deviations and additions:
+
+- **Failing tests first, committed with the fix.** The policy has no skipped-test exception, so the
+  P1 tests were run red on the old code and committed with the step that turns them green (storage
+  tests with P2, scenarios 1, 2, 6, 7, 9 with P3, 3-5 with P4).
+- **Landing after Load:** the normal landing after a profile switch (Daily, or the open note's
+  project or area), not Projects. Load is the existing switch and remount; forcing a tab would need
+  a second path through the shell's start. The status line names the profile either way.
+- **Date on Welcome back:** "saved 3.11." through `domain/dateFormat.ts` (the one date format of the
+  app), not "saved 3 Nov".
+- **Cancel** on the Save confirm is the status slot's ✕, as on every confirm.
+- **While looking for profiles** the assistant shows one line, "Looking for settings you saved
+  earlier…", instead of drawing Folders first and then replacing it (no e-ink jump).
+- **Active row while fresh:** Restore *and* Save (§3.4 needs both); with unreadable settings Restore
+  stays alone, as before.
+- **Welcome back** has a hint line "Load later: Settings → Data → Profiles → Restore"; the rows are a
+  `PagedSection` of five per page.
+- **`ensureDefaultProfileFile` clears the mark** when it writes a new `production.json` from fresh
+  settings (no saved profile existed): the settings are on file then, like after Save. Without this,
+  a later switch would not save the changes made since (it saves nothing first while fresh).
+- **Remove Kept's data** starts with "Save the active profile first" unticked while fresh (D3: the
+  removal would otherwise replace the saved profile with the fresh settings unasked).
+- `onLoadProfile` is Settings' existing `onSwitchProfile`; Settings got no new prop.

@@ -7,11 +7,11 @@ A *profile* is a complete configuration: which [folders](settings.md#folders) Ke
 Go to [Settings → Data](settings.md#profiles). The Profiles list shows every profile; the active one has a ●.
 
 - **Save** writes the active profile to its file.
-- **Restore** appears instead of **Save** only when Kept could not read its stored settings: it puts the settings from the active profile's file back (see [Troubleshooting](troubleshooting.md#common-situations)).
-- **Switch** changes to another profile, after you confirm in the [status line](index.md#the-status-line). Kept saves the current profile first, then loads the other one and starts the app fresh with it.
+- **Restore** appears next to the active profile when Kept runs on fresh settings (after a fresh install, see [Saved profiles](profiles-and-demo.md#saved-profiles)): it loads the settings from the active profile's file and leaves the file as it is. When Kept could not read its stored settings, **Restore** appears instead of **Save** and puts the settings from the file back (see [Troubleshooting](troubleshooting.md#common-situations)).
+- **Switch** changes to another profile, after you confirm in the [status line](index.md#the-status-line). Kept saves the current profile first, then loads the other one and starts the app fresh with it. On fresh settings nothing is saved first: your saved profile stays as it is.
 - While a profile other than Production is active, its name (for example `DEMO`) is shown in the tab bar. Tap it to get back to the profile list.
 
-The first time you open the list, your current setup is saved as `production.json`, so you can always switch back to it.
+The first time you open the list, your current setup is saved as `production.json`, so you can always switch back to it. If `production.json` already exists, it is left as it is.
 
 ## What switches and what doesn't
 
@@ -23,7 +23,7 @@ Stays the same for all profiles: [keep tabs in memory, performance tracing](sett
 
 Profiles are files in `EXPORT/kept-gtd/profiles`, one `.json` file per profile. To import a profile, copy its file into that folder and tap **Refresh list**. To share your Note setups or folder setup, share the file.
 
-To move your setup to another Supernote, or to keep it over a reinstall of Kept: **Save** each profile, copy the files in `EXPORT/kept-gtd/profiles` (they stay on the device when you uninstall Kept), put them into that folder on the new install and tap **Refresh list**, then **Switch** to your profile. A profile saved by an earlier Kept GTD loads too.
+To move your setup to another Supernote, or to keep it over a reinstall of Kept: **Save** each profile, copy the files in `EXPORT/kept-gtd/profiles` (they stay on the device when you uninstall Kept), put them into that folder on the new install, then open Kept: **Welcome back** offers to load them ([Saved profiles](profiles-and-demo.md#saved-profiles)). A profile saved by an earlier Kept GTD loads too.
 
 The Gmail app password and the calendar link are never written into these files. They stay inside the plugin, separately for each profile.
 
@@ -32,7 +32,9 @@ The Gmail app password and the calendar link are never written into these files.
 After a fresh install, or after [Remove Kept's data](settings.md#remove-kepts-data), Kept starts on fresh settings. When it finds profiles you saved earlier in `EXPORT/kept-gtd/profiles`, the [setup assistant](settings.md#setup-assistant) opens with **Welcome back** first: one row per saved profile with the date it was saved, the newest selected.
 
 - **Load "Production"** (with the name of the profile you picked) loads it: your folders, Note setups and contexts are back, the assistant closes and the [status line](index.md#the-status-line) says which profile was loaded. The Gmail app password and the calendar link are never in profile files - enter them again on the [Features](settings.md#features) tab.
-- **Start fresh** goes on to the setup steps as on a new install. Your saved profile stays as it is.
+- **Start fresh** goes on to the setup steps as on a new install. Your saved profile stays as it is, and you can still load it later with **Restore** in [Settings → Data → Profiles](profiles-and-demo.md#profiles).
+
+Until you load or save a profile, Kept never writes the fresh settings into a saved profile without asking: **Save** on the active profile asks first ("Replace your saved profile …"), **Switch** saves nothing first, and [Remove Kept's data](settings.md#remove-kepts-data) starts with *Save the active profile first* unticked.
 
 Your notes and files are not changed either way.
 

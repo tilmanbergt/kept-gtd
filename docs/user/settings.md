@@ -16,7 +16,7 @@ While a folder field has unsaved changes, **Run setup assistant** and **Switch**
 
 ### Setup assistant
 
-On the first start after installing, Kept opens the setup assistant once. It is always available as **Run setup assistant** on the Data tab, right of the folders (while the folder fields have unsaved changes it waits for you to save or reset them). Five steps, one per screen, each with **? Help** and a line saying where to change it later:
+On the first start after installing, Kept opens the setup assistant once. If it finds profiles you saved earlier, it starts with **Welcome back** and offers to load one ([Saved profiles](profiles-and-demo.md#saved-profiles)); **Start fresh** goes on to the steps. It is always available as **Run setup assistant** on the Data tab, right of the folders (while the folder fields have unsaved changes it waits for you to save or reset them). Five steps, one per screen, each with **? Help** and a line saying where to change it later:
 
 1. *Folders*: the base folder and the Projects, Areas, Resources and Archive folders ([The folder layout](files-and-folders.md#the-folder-layout)). Kept suggests folders you already have (`Projects`, `1 Projects`, `01 Projects` and so on) and shows what it finds under each field: "exists · 12 folders" or "will be created". Nothing is moved; every subfolder of the Projects and Areas folders becomes a [project or area](projects-and-areas.md).
 2. *Notes*: **One notebook per project and year** (recommended, the [home notebook](projects-and-areas.md#home-notebooks)) or **Own note per todo or meeting** - what the [Default note setup](note-setups.md#the-default) does.
