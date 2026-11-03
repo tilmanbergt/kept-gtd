@@ -82,6 +82,38 @@ Status: **approved 2026-11-03** (Tilman: offer in the setup assistant, Restore a
   `docs/user/settings.md` (setup assistant), `docs/user/getting-started.md` if it describes the first start.
 - `docs/dev/test-scenarios.md`, `design-overview.md` §2 (profiles), As built of this doc.
 
+### 3.6 Permissions on the first start (added 2026-11-03, step P6)
+
+Found by tracing the first start (`App.tsx` reorient, `storage/dataCache.ts`,
+`supernote/pluginPermissions.ts`):
+
+| # | Gap | Effect |
+|---|---|---|
+| G1 | `withTimeout` (8 s) also wraps `requestPermission`, which waits for a person. | Reading the dialog for more than 8 s counts as denied: the cache build fails silently, the assistant's scan is empty (no existing folders suggested, default folders may be created next to existing ones), Welcome back finds no profiles. |
+| G2 | After a timeout the pending entry is removed while the dialog is still up. | The next caller asks again: a second dialog or a stuck host call. |
+| G3 | Read and write are asked at unrelated moments (write at Finish or the first todo). | Write interrupts a later action. |
+| G4 | On a fresh start the read dialog comes from the background `refreshCache` in reorient, before the assistant shows. | No context for the user; a denial only shows as an empty scan. |
+| G5 | The assistant doesn't handle a denied permission. | It goes on with "will be created" everywhere. |
+
+Design:
+
+- **Timeouts** (`pluginPermissions.ts`): `hasPermission` keeps the 8 s timeout (stuck host).
+  `requestPermission` gets `PERMISSION_REQUEST_TIMEOUT_MS = 120000` (a person answers; the bound only
+  guards a host that never answers).
+- **One request per permission until the host answers:** the pending entry stays until the host call
+  itself settles, also when the caller's wait timed out; a later caller joins it instead of starting
+  a new dialog. The grant is still recorded when a late answer is "granted".
+- **No background read on a fresh start:** reorient skips `refreshCache` while
+  `setupAssistant === 'pending'`. The cache is built after Finish, Load or Skip (as today: caches are
+  cleared and rebuilt on use).
+- **Access first in the assistant:** before the base scan, the assistant shows one line - "Kept needs
+  to read and write your Project and Area folders and its own files in EXPORT/kept-gtd." - and asks
+  `ensureFileReadPermission()` then `ensureFileWritePermission()`, one after the other, never in
+  parallel. Only when both are granted does it scan the base folder and call `listSavedProfiles()`.
+- **Denied → clear stop:** when either is refused (or times out), the assistant shows "Kept can't
+  work without access to your files." with **Try again** (asks again) and the existing **Skip**. No
+  scan, no Finish plan, no Welcome back.
+
 ## 4. Test scenarios (Given/When/Then)
 
 1. **Welcome back loads the profile.** Given a fresh install (no stored settings) and
@@ -107,6 +139,16 @@ Status: **approved 2026-11-03** (Tilman: offer in the setup assistant, Restore a
    existing profile tests pass unchanged).
 9. **After Remove Kept's data.** Given Remove Kept's data with profiles kept, when Kept restarts fresh,
    then Welcome back offers the saved profiles (same path as a fresh install).
+10. **Late grant.** A `requestPermission` answered "granted" after 9 s resolves true (fake timers);
+    the caller gets true.
+11. **One dialog.** Two callers of `ensureFileReadPermission` while the host hasn't answered → one
+    `requestPermission` call; both get the same answer, also when the first caller's wait timed out.
+12. **No read before the assistant.** Fresh install: no `hasPermission`/`requestPermission` call
+    happens before the assistant's access step (reorient doesn't refresh the cache).
+13. **Read, then write.** The assistant asks read, then write (order checked), then scans and lists
+    profiles.
+14. **Denied.** Read denied → the assistant shows the stop line with Try again and Skip; no scan, no
+    folders planned; Try again with a grant → scan and Welcome back as usual.
 
 ## 5. Device test (Tilman, on the CI or local build of the last commit)
 
@@ -118,6 +160,10 @@ Status: **approved 2026-11-03** (Tilman: offer in the setup assistant, Restore a
 3. Check `EXPORT/kept-gtd/profiles/production.json`'s date didn't change in steps 1-2 (file manager or
    PC).
 4. Install check: the package holds only `keptgtd.bundle` (`tar -tf`).
+5. First start with slow answers (§3.6): Remove Kept's data → Start fresh → the assistant asks read,
+   then write; wait 15 s on each before Allow → folders suggested, Welcome back shows; no second
+   dialog stacks up.
+6. Deny read once → the stop line with Try again → Try again → Allow → the assistant continues.
 
 ## As built
 
