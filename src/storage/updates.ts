@@ -16,12 +16,12 @@ import {
   RunningVersion,
   TEST_RUNNING_VERSION,
   UPDATE_FOLDER,
+  UpdateCheckMode,
   UpdateCheckResult,
   UpdateDownloadResult,
   assetName,
   checkResultText,
   downloadFileName,
-  downloadResultText,
   isNewer,
   parseLatestRelease,
   runningVersion,
@@ -36,11 +36,14 @@ import {getKeptUpdateNative} from '../supernote/updateNative';
 import {errorMessage} from '../utils/errorMessage';
 import {log, logError, logWarn} from '../utils/log';
 import {STORE_PREFIX} from './dataRemoval';
+import {patchSettings} from './settingsStorage';
 
 /** Device-wide, not per profile: switching profiles doesn't show the notice again. */
 export const UPDATE_STATE_KEY = `${STORE_PREFIX}updates:v1`;
 const FETCH_TIMEOUT_MS = 15_000;
 const USER_AGENT = `KeptGTD/${BUILD_INFO.label}`;
+/** About's status line after a daily check found no INTERNET grant (it never asks). */
+export const DAILY_NEEDS_PERMISSION_TEXT = 'The daily check needs internet access - tap Check now.';
 export const UPDATE_DOWNLOAD_FOLDER = `${INTERNAL_STORAGE}/${UPDATE_FOLDER}`;
 
 /** What is stored (design §3). */
@@ -58,14 +61,16 @@ export interface UpdateState {
 /** The stored state plus what is going on right now (memory only). */
 export interface UpdateSnapshot extends UpdateState {
   busy: 'checking' | 'downloading' | null;
-  /** The last failure's sentence, until the next check or download. */
+  /** The last check's failure (by hand), until the next check. */
   lastError: string | null;
+  /** The last download's outcome, until it is dismissed or the next download starts. */
+  lastDownload: UpdateDownloadResult | null;
 }
 
 const EMPTY: UpdateState = {lastCheckAt: null, latest: null, dismissedVersion: null, downloaded: null};
 
-let snapshot: UpdateSnapshot = {...EMPTY, busy: null, lastError: null};
-let loaded: Promise<UpdateSnapshot> | null = null;
+let snapshot: UpdateSnapshot = {...EMPTY, busy: null, lastError: null, lastDownload: null};
+let loaded: Promise<void> | null = null;
 let checking: Promise<UpdateCheckResult> | null = null;
 let downloading: Promise<UpdateDownloadResult> | null = null;
 let testMode = false;
@@ -87,8 +92,8 @@ export function subscribeUpdates(listener: () => void): () => void {
   };
 }
 
-/** Reads the stored state once per session (a missing or unreadable entry reads as empty). */
-export function loadUpdateState(): Promise<UpdateSnapshot> {
+/** Reads the stored state once per session (a missing or unreadable entry reads as empty); resolves the current snapshot. */
+export async function loadUpdateState(): Promise<UpdateSnapshot> {
   if (!loaded) {
     loaded = (async () => {
       try {
@@ -103,10 +108,10 @@ export function loadUpdateState(): Promise<UpdateSnapshot> {
       } catch (e) {
         logWarn('updates: reading the stored state failed', errorMessage(e));
       }
-      return snapshot;
     })();
   }
-  return loaded;
+  await loaded;
+  return snapshot;
 }
 
 async function store(patch: Partial<UpdateState>): Promise<void> {
@@ -122,11 +127,17 @@ async function store(patch: Partial<UpdateState>): Promise<void> {
 /**
  * "Update test: treat this build as 0.0.0" (design §8): memory only, so it is gone after a
  * restart. While on, the latest real release counts as newer and the daily check is due.
+ * Switching it on also forgets when the last check ran, so the daily check runs at the next
+ * start too.
  */
 export function setUpdateTestMode(on: boolean): void {
   testMode = on;
   log('updates: test mode', on ? 'on' : 'off');
-  publish({});
+  if (on) {
+    store({lastCheckAt: null});
+  } else {
+    publish({});
+  }
 }
 
 export function isUpdateTestMode(): boolean {
@@ -220,12 +231,29 @@ export function checkForUpdate({silent}: {silent: boolean}): Promise<UpdateCheck
       result = {kind: 'error'};
     }
     const failed = result.kind !== 'available' && result.kind !== 'upToDate';
-    publish({busy: null, lastError: failed && !silent ? checkResultText(result) : null});
+    const silentText = result.kind === 'noPermission' ? DAILY_NEEDS_PERMISSION_TEXT : null;
+    publish({busy: null, lastError: failed ? (silent ? silentText : checkResultText(result)) : null});
     return result;
   })().finally(() => {
     checking = null;
   });
   return checking;
+}
+
+/**
+ * Stores the daily-check choice. Switching it on asks for INTERNET once, so the daily check
+ * itself never needs a dialog; a refusal keeps the choice (About then says the check needs
+ * internet access).
+ */
+export async function saveUpdateCheckMode(mode: UpdateCheckMode): Promise<void> {
+  log('updates: check mode', mode);
+  await patchSettings({updateCheck: mode});
+  if (mode === 'daily') await ensureInternetPermission();
+}
+
+/** The download's message was dismissed. */
+export function clearLastDownload(): void {
+  publish({lastDownload: null});
 }
 
 /** Not now: no notice for this version; the next one shows it again. */
@@ -293,7 +321,7 @@ async function runDownload(update: AvailableUpdate): Promise<UpdateDownloadResul
  */
 export function downloadUpdate(update: AvailableUpdate): Promise<UpdateDownloadResult> {
   if (downloading) return downloading;
-  publish({busy: 'downloading', lastError: null});
+  publish({busy: 'downloading', lastDownload: null});
   downloading = (async () => {
     let result: UpdateDownloadResult;
     try {
@@ -302,8 +330,7 @@ export function downloadUpdate(update: AvailableUpdate): Promise<UpdateDownloadR
       logError('updates: download failed', errorMessage(e));
       result = {kind: 'error'};
     }
-    const failed = result.kind !== 'saved' && result.kind !== 'already';
-    publish({busy: null, lastError: failed ? downloadResultText(result) : null});
+    publish({busy: null, lastDownload: result});
     return result;
   })().finally(() => {
     downloading = null;
@@ -313,7 +340,7 @@ export function downloadUpdate(update: AvailableUpdate): Promise<UpdateDownloadR
 
 /** For tests: forget everything held in memory. */
 export function resetUpdatesForTests(): void {
-  snapshot = {...EMPTY, busy: null, lastError: null};
+  snapshot = {...EMPTY, busy: null, lastError: null, lastDownload: null};
   loaded = null;
   checking = null;
   downloading = null;

@@ -4,7 +4,8 @@
  * Only a tap on "What's new" or ✕ stores lastSeenVersion - not merely
  * showing it - a first start after an update can be short (the user only
  * marks something, or a warning outranks info in the status slot), so the
- * notice must survive to the next start.
+ * notice must survive to the next start. Returns whether it is showing, so the update notice
+ * (ui/useUpdateNotice.ts) waits for it.
  */
 import {useState} from 'react';
 import {shouldShowWhatsNew} from '../domain/features';
@@ -19,7 +20,7 @@ export function useWhatsNewNotice(
   settings: GtdParaSettings | null,
   onSettingsStored: (settings: GtdParaSettings) => void,
   openAbout: () => void,
-): void {
+): boolean {
   const [acknowledged, setAcknowledged] = useState(false);
   const acknowledge = () => {
     setAcknowledged(true);
@@ -49,4 +50,5 @@ export function useWhatsNewNotice(
         }
       : null,
   );
+  return show;
 }

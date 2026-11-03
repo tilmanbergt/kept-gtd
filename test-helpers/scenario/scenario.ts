@@ -15,6 +15,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {clearCachedData} from '../../src/storage/dataCache';
 import {clearPageIndex} from '../../src/storage/notebookPages';
+import {resetUpdatesForTests} from '../../src/storage/updates';
+import {forgetPermissionGrants} from '../../src/supernote/pluginPermissions';
 import {resetDevice} from '../fakeDevice/device';
 import {closeApp} from './app';
 
@@ -46,6 +48,8 @@ export async function freshDevice(): Promise<void> {
   await AsyncStorage.clear();
   clearCachedData();
   clearPageIndex();
+  resetUpdatesForTests();
+  forgetPermissionGrants();
 }
 
 export function scenario(title: string, _meta: ScenarioMeta, body: () => void): void {

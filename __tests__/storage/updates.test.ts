@@ -151,7 +151,7 @@ describe('checkForUpdate', () => {
     expect(await checkForUpdate({silent: true})).toEqual({kind: 'noPermission'});
     expect(ensureInternetPermission).not.toHaveBeenCalled();
     expect(fetchMock).not.toHaveBeenCalled();
-    expect(getUpdateSnapshot().lastError).toBeNull();
+    expect(getUpdateSnapshot().lastError).toBe('The daily check needs internet access - tap Check now.');
   });
 
   it.each([
@@ -239,7 +239,7 @@ describe('downloadUpdate', () => {
     expect(native.copyIntoFolder).not.toHaveBeenCalled();
     expect(myStyle.size).toBe(0);
     expect(deleteTempTree).toHaveBeenCalledWith('/private/tmp/update-kept-gtd-99.0.0.snplg');
-    expect(getUpdateSnapshot().lastError).toContain("didn't match");
+    expect(getUpdateSnapshot().lastDownload).toEqual({kind: 'mismatch'});
   });
 
   it('a failed download removes the temp file and reports an error', async () => {
@@ -264,5 +264,14 @@ describe('downloadUpdate', () => {
     const [a, b] = await Promise.all([downloadUpdate(UPDATE), downloadUpdate(UPDATE)]);
     expect(a).toBe(b);
     expect(native.download).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('loadUpdateState', () => {
+  it('resolves what is current, not what was read first', async () => {
+    await loadUpdateState();
+    answer(200, releaseJson());
+    await checkForUpdate({silent: true});
+    expect((await loadUpdateState()).lastCheckAt).not.toBeNull();
   });
 });

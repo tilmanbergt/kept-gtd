@@ -129,6 +129,14 @@ export class FakeSdk {
     });
   }
 
+  /** Permissions not granted yet (each is granted when a request dialog is answered with Allow). */
+  readonly deniedPermissions = new Set<string>();
+  readonly grantedPermissions = new Set<string>();
+  /** The request dialog answers Deny. */
+  refuseRequests = false;
+  /** Every permission dialog shown, in order. */
+  readonly permissionRequests: string[] = [];
+
   /** e-ink refreshes the plugin asked for (NativePluginManager.invalidatePluginView). */
   refreshes = 0;
 
@@ -148,8 +156,13 @@ export class FakeSdk {
         this.closed += 1;
       },
       invalidatePluginView: () => undefined,
-      hasPermission: async () => true,
-      requestPermission: async () => true,
+      hasPermission: async (permission: string) => this.grantedPermissions.has(permission) || !this.deniedPermissions.has(permission),
+      requestPermission: async (permission: string) => {
+        this.permissionRequests.push(permission);
+        if (this.refuseRequests) return false;
+        this.grantedPermissions.add(permission);
+        return true;
+      },
     }),
     PluginCommAPI: this.api('PluginCommAPI', {
       getCurrentFilePath: async () => (this.currentFile ? ok(this.currentFile) : fail('no file open')),

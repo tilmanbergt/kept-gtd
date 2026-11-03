@@ -251,7 +251,8 @@
         "src/domain/updateCheck.ts",
         "src/storage/updates.ts",
         "src/supernote/updateNative.ts",
-        "src/ui/useUpdateNotice.ts"
+        "src/ui/useUpdateNotice.ts",
+        "src/screens/settings/UpdatesBlock.tsx"
       ]
     },
     {
