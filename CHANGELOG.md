@@ -10,6 +10,8 @@ or your project/area files are stored.
 
 ## [Unreleased]
 
+## [0.25.1] — 2026-11-03
+
 ### Upgrade notes
 - **Kept GTD 0.25 is a new install, not an update.** Coming from 0.24.0 or earlier: don't install it
   yet. In your current Kept GTD, follow the 0.24.0 upgrade notes first: process open lasso marks, save
