@@ -35,7 +35,7 @@ A calm GTD + PARA workspace for the Supernote. Every Project and Area is a folde
 
 Made on the Supernote A5 X; checked in landscape and on a simulated Nomad; Manta should work. Beta.
 
-Permissions: file read/write for your PARA folders and EXPORT/kept-gtd. File delete only after you confirm it, and the prompt names what will be deleted (an empty folder left after archiving, or what you check in Remove Kept's data). Internet only for the optional Calendar/Gmail integrations, when you tap Load. No telemetry.
+Permissions: file read/write for your PARA folders and EXPORT/kept-gtd. File delete only after you confirm it, and the prompt names what will be deleted (an empty folder left after archiving, or what you check in Remove Kept's data). Internet only for the optional Calendar/Gmail integrations, when you tap Load, and for the update check on GitHub, when you tap Check now or Download, or once a day if you switch that on; a download is saved to MyStyle/kept-gtd for Add plugin. No telemetry.
 
 Hobby project, open source (MIT). Docs, issues, privacy and notes for reviewers:
 github.com/tilmanbergt/kept-gtd

@@ -102,6 +102,10 @@ Checked on the device in 0.23 with a diagnostic screen since removed. Source:
   builds end up loaded in one process. The plugin firmware Kept requires unloads the old build;
   every build still gets a higher `versionCode`. Source:
   `docs/dev/history/technical-design-host-update-crash.md`.
+- **Settings → Plugins → Add plugin** lists the `.snplg` files in `MyStyle` and its subfolders, so
+  the in-app updater saves a release to `MyStyle/kept-gtd/` and the user installs it from there;
+  Kept never installs a build itself (`storage/updates.ts`). Source:
+  `docs/dev/history/requirements-in-app-updates.md`.
 
 ## 9. Uninstalling
 

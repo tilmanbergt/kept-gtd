@@ -93,6 +93,8 @@ More in [Why Kept GTD works this way](docs/user/philosophy.md).
   Default's); notebooks can be split by tag, nested tag and date, e.g. one file per coaching client and year;
   headings for the note's table of contents and date and tag keywords make notes easy to find
 - **Project close-out**: a short wizard before archiving, with an optional PDF of all notes
+- **Updates from GitHub**: Kept tells you about a new release and saves it to `MyStyle/kept-gtd`,
+  ready for Add plugin - by hand, or once a day if you switch it on
 - Experimental **Google Calendar** (ICS link) and **Gmail** (IMAP, in the Weekly Review) integrations
 
 The **[user guide](docs/user/index.md)** explains every view and setting, and the ideas behind
@@ -109,7 +111,11 @@ for what changed in each version, including which features are still experimenta
 3. Open Kept GTD from the plugin sidebar in a note, then check **Settings → Data**.
 
 Updating: install the newer `.snplg` over the existing one. Read the *Upgrade notes* in the
-changelog first. Coming from gtdpara: install Kept GTD over it. Your settings, notes and PARA
+changelog first. Kept can do the fetching: **Settings → About → Check now** (or once a day, if you
+switch that on) tells you about a new release and **Download** saves it to `MyStyle/kept-gtd/`.
+Then close Kept and install it with **Settings → Plugins → Add plugin**; Kept never installs
+anything itself. Releases on GitHub are not reviewed or approved by Ratta. You install them at
+your own risk. Each release is tested to keep your data safe. Coming from gtdpara: install Kept GTD over it. Your settings, notes and PARA
 folders stay as they are; debug files and the demo space move to `EXPORT/kept-gtd` and
 `Note/kept-gtd-demo`, and saved profiles are copied there once.
 

@@ -252,4 +252,45 @@ tests. Risks:
 
 ## As built
 
-(filled in by the implementation)
+Built on `feature/in-app-updates` in six steps (U1 domain, U2 native, U3 storage, U4 UI, U5 setup
+assistant, U6 docs), as designed, with these choices where the code made a point impossible or
+clearly worse:
+
+- **`updateCheck` is device-wide**, not per profile (§3): it concerns the installed build, like
+  `lastSeenVersion`; switching to the demo profile for a test must not switch the daily check off.
+  It is in `DEVICE_WIDE_KEYS`.
+- **`downloadFileName(version, attempt)`** instead of a `taken` callback (§2): whether a name is
+  "taken" needs `statFiles` and `sha256File`, both async. `storage/updates.ts` walks the names in
+  order (at most `MAX_NAME_ATTEMPTS`): a missing name is used, a file of the asset's size and digest
+  is "Already downloaded" (also under a numbered name), any other file keeps its name.
+- **`withTimeout`** for the fetch is the one of `supernote/hostCall.ts`, now exported; the other
+  private copies stay where they are.
+- **About's left column scrolls** (`ScrollColumn`, like Data, Features and Advanced): it did not
+  page (§6.2). The Updates block is its own file, `screens/settings/UpdatesBlock.tsx`.
+- **What's new keeps three tabs**: a known update's tab "X.Y.Z · new" takes the place of the oldest
+  bundled version, so the tabs still fit the narrow column.
+- **The download's messages** come from `ui/useUpdateNotice.ts` for a Download tapped in the notice
+  or in About alike: the outcome is part of the shared state (`lastDownload`, memory only). The
+  notice does not show for a version already downloaded; About then says "Downloaded: …".
+- **`lastCheckAt`** is set whenever GitHub answered (also 404 and a release that can't be
+  checked), so the daily check doesn't retry at every start. A silent check without INTERNET
+  leaves "The daily check needs internet access - tap Check now." on About's status line (§6.4);
+  nothing goes to the status slot.
+- **The update test switch** also clears the stored `lastCheckAt` when it is switched on, so the
+  next start runs the daily check (device checklist 4).
+- **No `channel` parameter** (§9): it would be unused code; developer mode adds it when it comes.
+- **Native**: redirects are followed by hand (`instanceFollowRedirects = false`), each hop must be
+  https; a failed download removes its partial file in the private temp folder natively, and JS
+  removes the temp file (`update-kept-gtd-X.Y.Z.snplg`) after every download.
+- **State key** `gtdpara:updates:v1` (the store prefix), so Remove Kept's data lists and removes it
+  with the caches.
+- `hasPluginPermission` remembers a grant it finds, like `ensurePluginPermission`.
+- "Kept GTD is up to date (X.Y.Z)" names the latest release on GitHub.
+- The decision paragraph went to `design-overview.md` §4 "Why it is built this way" (there is no §5).
+- Tests: the fake device has a fake GitHub (`test-helpers/fakeDevice/fakeGitHub.ts`: release JSON,
+  assets with real SHA-256, the KeptUpdate module) and controllable permissions; scenarios forget
+  the session's permission grants and the update state between runs.
+
+Still to check on the device (0.24.0 beta): writing into `MyStyle/kept-gtd/` with FILE:WRITE, Add plugin
+listing the subfolder, installing over the running build, Kept staying usable during a download,
+and the setup step (device checklist above).

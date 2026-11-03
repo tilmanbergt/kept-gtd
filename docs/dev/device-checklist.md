@@ -41,6 +41,7 @@ what is wrong.
 | Settings → Contexts list, Note setups (editor with preview), Features | | | | |
 | Settings → Advanced (Simulate screen, Check screen and pages) | | | | |
 | Settings → About (What's new: three version tabs) | | | | |
+| Settings → About → Updates (status line, Check now / Download, daily switch, hints; with an update known: "X.Y.Z · new" tab, three tabs in one row) | | | | |
 | Setup assistant (all steps) | | | | |
 | Remove Kept's data (open it, don't run it) | | | | |
 | Help overlay (links, Back) | | | | |
