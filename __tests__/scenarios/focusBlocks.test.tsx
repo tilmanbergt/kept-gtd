@@ -19,7 +19,7 @@ scenario('Focus block from Quick Add: F on, the tag in the file, an F row and a 
     putSmokeSpace();
   });
   when('I add the meeting "Writing session #writing/novel" tomorrow 9-11 on Daily with F on', async () => {
-    await openApp({settings: {noteSetups: [writingLoops], noteSetupsMigrated: true}});
+    await openApp({settings: {noteSetups: [writingLoops]}});
     await tapTab('Daily');
     await tap('Meeting');
     await type('New meeting title', 'Writing session #writing/novel');
@@ -57,7 +57,7 @@ scenario('No close-out for focus blocks', {feature: 'Meetings', design: DESIGN},
     );
   });
   when('I open Review → Meetings to close out', async () => {
-    await openApp({settings: {noteSetups: [sparring], noteSetupsMigrated: true}});
+    await openApp({settings: {noteSetups: [sparring]}});
     await tapTab('Review');
     await tap(/^Meetings to close out/);
   });

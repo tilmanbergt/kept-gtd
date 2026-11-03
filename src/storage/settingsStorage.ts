@@ -1,11 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {DEFAULT_SETTINGS, GtdParaSettings, renameLegacyTagRuleKeys} from '../domain/settings';
-import {migrateNoteSetupSettings, migrationCounts} from '../domain/noteSetupMigration';
-import {seedNoteSetupDefaults} from '../domain/noteSetups';
+import {DEFAULT_SETTINGS, GtdParaSettings} from '../domain/settings';
 import {errorMessage} from '../utils/errorMessage';
 import {log, logError, logWarn} from '../utils/log';
 import {getSettingsUnreadable, setSettingsUnreadable} from './settingsUnreadable';
-import {markNoteSetupMigrationFailed} from './noteSetupMigrationState';
 import {ReviewStepsMap} from '../domain/reviewSteps';
 import {perfCount, perfEnd, perfStart} from '../utils/perf';
 import {migrateExperimentalFlags} from '../domain/features';
@@ -14,7 +11,6 @@ import {rememberSettings} from './settingsSnapshot';
 import {SETTINGS_KEY} from '../domain/storeKeys';
 
 export {peekSettings} from './settingsSnapshot';
-
 
 /**
  * The stored text last read or written and the settings it stands for
@@ -36,20 +32,13 @@ let writeSeq = 0;
  * uses this one directly so a failed read can never turn into "write the
  * defaults over the user's real settings".
  *
- * The loaded settings then pass through the load-time migrations, each of
- * which returns the SAME object when it has nothing to do:
- * - `renameLegacyTagRuleKeys` moves Tag Rules stored under their 0.8 key
- *   names (`noteCreationDefinitions`, `nextNoteDefinitionId`) to the 0.14
- *   ones - first, so the migration below finds them.
- * - `migrateNoteSetups` turns 0.14's Tag Rules into Note setups once per
- *   settings blob or profile (domain/noteSetupMigration.ts), or seeds the
- *   Default on a fresh install. The Tag Rules stay stored as they are.
- * - `migrateExperimentalFlags` sets the experimental switches and the
- *   What's-new marker for an install that predates them; it needs the raw
- *   stored blob to tell a fresh install from an update.
- * When anything changed, the result is saved right away so the migration
- * runs once; a failed save is ignored (the values still apply this session,
- * and every migration is idempotent).
+ * The loaded settings then pass through `migrateExperimentalFlags`, which
+ * returns the SAME object when it has nothing to do: it needs the raw stored
+ * blob to tell a fresh install (What's-new marker, setup assistant) from a
+ * start with stored settings.
+ * When anything changed, the result is saved right away so it runs once; a
+ * failed save is ignored (the values still apply this session, and the step
+ * is idempotent).
  */
 async function readSettings(): Promise<GtdParaSettings> {
   const raw = await AsyncStorage.getItem(SETTINGS_KEY);
@@ -57,11 +46,9 @@ async function readSettings(): Promise<GtdParaSettings> {
   if (raw !== null && raw === lastStored.raw && lastStored.settings) return lastStored.settings;
   perfCount('settings:read');
   const stored: Record<string, unknown> = raw ? JSON.parse(raw) : {};
-  const parsed = renameLegacyTagRuleKeys(stored);
-  const merged: GtdParaSettings = {...DEFAULT_SETTINGS, ...parsed};
-  const noteMigrated = migrateNoteSetups(merged);
-  const migrated = migrateExperimentalFlags(noteMigrated, parsed, BUILD_INFO.version);
-  if (migrated !== merged || parsed !== stored) {
+  const merged: GtdParaSettings = {...DEFAULT_SETTINGS, ...stored};
+  const migrated = migrateExperimentalFlags(merged, stored, BUILD_INFO.version);
+  if (migrated !== merged) {
     try {
       await writeSettings(migrated);
     } catch (e) {
@@ -72,23 +59,6 @@ async function readSettings(): Promise<GtdParaSettings> {
     lastStored = {raw, settings: migrated};
   }
   return migrated;
-}
-
-/**
- * The Note setups migration with its log line (counts only). A failure
- * leaves `noteSetupsMigrated` unset, so the next load tries again, and runs
- * this session on no setups plus the seeded Default.
- */
-function migrateNoteSetups(settings: GtdParaSettings): GtdParaSettings {
-  try {
-    const migrated = migrateNoteSetupSettings(settings);
-    if (migrated !== settings) log('NoteSetupMigration: migrated', migrationCounts(migrated));
-    return migrated;
-  } catch (e) {
-    markNoteSetupMigrationFailed();
-    logError('NoteSetupMigration: failed', errorMessage(e));
-    return {...settings, noteSetups: [], noteSetupDefaults: seedNoteSetupDefaults(), noteSetupsNotice: null};
-  }
 }
 
 /**

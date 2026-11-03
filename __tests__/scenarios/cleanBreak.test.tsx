@@ -2,11 +2,12 @@ import {readFileSync} from 'fs';
 import {join} from 'path';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {device} from '../../test-helpers/fakeDevice/device';
-import {expectNotShows, expectShows, openApp, tap, tapTab, texts} from '../../test-helpers/scenario/app';
-import {putFile} from '../../test-helpers/scenario/files';
+import {expectNotShows, expectShows, openApp, storedSettings, tap, tapTab, texts} from '../../test-helpers/scenario/app';
+import {fileText, putFile} from '../../test-helpers/scenario/files';
+import {sparringSettings} from '../../test-helpers/scenario/setups';
 import {and, given, scenario, then, when} from '../../test-helpers/scenario/scenario';
 import {DEFAULT_SETTINGS} from '../../src/domain/settings';
-import {serializeProfile} from '../../src/domain/profiles';
+import {profileSettingsOf, serializeProfile} from '../../src/domain/profiles';
 
 const DESIGN = 'technical-design-clean-break.md';
 const ROOT = join(__dirname, '..', '..');
@@ -92,5 +93,72 @@ scenario('Profiles in the old export folder are not copied', {feature: 'Profiles
   then('nothing is copied into EXPORT/kept-gtd/profiles and no copy notice shows', () => {
     expect(device().fs.paths(`${S}/EXPORT/kept-gtd/profiles`)).toEqual([]);
     expectNotShows(/^Copied \d+ profiles? from/);
+  });
+});
+
+/** A profile file as Kept GTD 0.24.0 wrote it: format gtdpara-profile, with the Tag Rules migration's keys. */
+function profileOf024(): string {
+  const settings = {
+    ...profileSettingsOf({...DEFAULT_SETTINGS, ...sparringSettings()}),
+    projectsFolder: 'Work Projects',
+    contexts: [{id: 'c1', name: 'Coaching', shows: [{kind: 'tag', tag: 'sparring'}], hides: [], outsideMeetings: 'dim'}],
+    experimentalGmail: true,
+    noteSetupsMigrated: true,
+    noteSetupsNotice: null,
+    tagRules: [],
+    nextTagRuleId: 1,
+  };
+  return JSON.stringify({format: 'gtdpara-profile', formatVersion: 1, name: 'Work', savedAt: '2026-10-30T09:00:00.000Z', savedBy: '0.24.0', settings}, null, 2) + '\n';
+}
+
+const LEFTOVER_KEYS = ['noteSetupsMigrated', 'noteSetupsNotice', 'tagRules', 'nextTagRuleId'];
+const WORK_PROFILE = `${S}/EXPORT/kept-gtd/profiles/work.json`;
+
+scenario('A profile saved by 0.24.0 loads, without the keys of removed settings', {feature: 'Profiles and demo space', design: DESIGN}, () => {
+  given('EXPORT/kept-gtd/profiles/work.json was written by 0.24.0, with noteSetupsMigrated, noteSetupsNotice, tagRules and the experimental switches', () => {
+    putFile(WORK_PROFILE, profileOf024());
+  });
+  when('I switch to "Work" in Settings → Data', async () => {
+    await openApp();
+    await tapTab('Settings');
+    await tap('Data');
+    await tap('Switch');
+    await tap('Switch');
+  });
+  then('its folders, Note setups, contexts and switches apply, and none of the leftover keys is in the settings', async () => {
+    const s = await storedSettings();
+    expect(s.projectsFolder).toBe('Work Projects');
+    expect(s.noteSetups.map(x => x.name)).toEqual(sparringSettings().noteSetups!.map(x => x.name));
+    expect(s.contexts.map(c => c.name)).toEqual(['Coaching']);
+    expect(s.experimentalGmail).toBe(true);
+    expect(s.activeProfileId).toBe('work');
+    for (const key of LEFTOVER_KEYS) expect(key in s).toBe(false);
+  });
+  when('I save the profile in Settings → Data', async () => {
+    await tapTab('Settings');
+    await tap('Data');
+    await tap('Save', 1);
+    expectShows('Saved to EXPORT/kept-gtd/profiles/work.json');
+  });
+  then('work.json is written in the same format, without the leftover keys', () => {
+    const file = JSON.parse(fileText(WORK_PROFILE));
+    expect(file.format).toBe('gtdpara-profile');
+    expect(file.settings.projectsFolder).toBe('Work Projects');
+    for (const key of LEFTOVER_KEYS) expect(key in file.settings).toBe(false);
+  });
+});
+
+scenario('Note setups show no migration notice', {feature: 'Note setups', design: DESIGN}, () => {
+  given('a fresh install without Note setups', () => undefined);
+  when('I open Settings → Note setups', async () => {
+    await openApp({fresh: true});
+    await tapTab('Settings');
+    await tap('Skip');
+    await tap('Note setups');
+  });
+  then('no migration notice shows, and the Default is offered with its pages', () => {
+    expectNotShows(/Tag Rules/);
+    expectShows('+ New note setup');
+    expectShows('Default');
   });
 });

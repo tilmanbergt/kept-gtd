@@ -361,5 +361,5 @@ export function bigScopeCache(): {items: CachedItem[]; inbox: ThreadInboxInput; 
 /** The settings for the data set: its Thread and Loop setups, the seeded Default, everything else default. */
 export function bigScopeSettings(): Partial<GtdParaSettings> {
   const noteSetups = BIG_SETUP_TAGS.map((s, i) => ({...createNoteSetup(`b${i}`, s.kind), name: s.name, tags: [s.tag]}));
-  return {noteSetups, noteSetupDefaults: seedNoteSetupDefaults(), nextNoteSetupId: noteSetups.length + 1, noteSetupsMigrated: true};
+  return {noteSetups, noteSetupDefaults: seedNoteSetupDefaults(), nextNoteSetupId: noteSetups.length + 1};
 }

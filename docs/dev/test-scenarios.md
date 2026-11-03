@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-183 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+185 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -928,6 +928,14 @@ Test: `__tests__/scenarios/meetingReflection.test.tsx` · design: `docs/dev/hist
 
 ## Note setups
 
+### Note setups show no migration notice
+
+- **Given** a fresh install without Note setups
+- **When** I open Settings → Note setups
+- **Then** no migration notice shows, and the Default is offered with its pages
+
+Test: `__tests__/scenarios/cleanBreak.test.tsx`
+
 ### Opened from a PDF, a note that needs a new file is not tried: the status says why
 
 - **Given** a sparring session whose notebook does not exist yet, and a PDF
@@ -975,6 +983,16 @@ Test: `__tests__/scenarios/pageFrame.test.tsx`
 - **Given** EXPORT/gtdpara/profiles holds work.json and home.json, and EXPORT/kept-gtd holds no profile
 - **When** Kept starts
 - **Then** nothing is copied into EXPORT/kept-gtd/profiles and no copy notice shows
+
+Test: `__tests__/scenarios/cleanBreak.test.tsx`
+
+### A profile saved by 0.24.0 loads, without the keys of removed settings
+
+- **Given** EXPORT/kept-gtd/profiles/work.json was written by 0.24.0, with noteSetupsMigrated, noteSetupsNotice, tagRules and the experimental switches
+- **When** I switch to "Work" in Settings → Data
+- **Then** its folders, Note setups, contexts and switches apply, and none of the leftover keys is in the settings
+- **When** I save the profile in Settings → Data
+- **Then** work.json is written in the same format, without the leftover keys
 
 Test: `__tests__/scenarios/cleanBreak.test.tsx`
 

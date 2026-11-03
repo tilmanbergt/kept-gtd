@@ -29,5 +29,5 @@ export function sparringSettings(): Partial<GtdParaSettings> {
     pages: {review: reflectionPageWith('What did I notice?')},
     tracking: {trackPrep: true, trackReview: true},
   };
-  return {noteSetups: [sparring], noteSetupDefaults: seedNoteSetupDefaults(), nextNoteSetupId: 2, noteSetupsMigrated: true};
+  return {noteSetups: [sparring], noteSetupDefaults: seedNoteSetupDefaults(), nextNoteSetupId: 2};
 }

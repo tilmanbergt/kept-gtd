@@ -17,14 +17,11 @@ const settings: GtdParaSettings = {
     {...createNoteSetup('3', 'loop'), name: 'Workshop', tags: ['workshop']},
   ],
   noteSetupDefaults: seedNoteSetupDefaults(),
-  noteSetupsMigrated: true,
 };
 
 describe('noteSetupsLine', () => {
-  it('counts kinds, switched-off setups, notebooks, Default pages and the migration', () => {
-    expect(noteSetupsLine(settings, false)).toBe('note setups: thread 1 · loop 1 · off 1 · notebook 1 · default pages 4 · default notebook yes · migrated no');
-    expect(noteSetupsLine({...settings, tagRules: [{} as never]}, false)).toContain('migrated yes');
-    expect(noteSetupsLine(settings, true)).toContain('migrated failed');
+  it('counts kinds, switched-off setups, notebooks and Default pages', () => {
+    expect(noteSetupsLine(settings)).toBe('note setups: thread 1 · loop 1 · off 1 · notebook 1 · default pages 4 · default notebook yes');
   });
 
   it('is part of the settings summary and carries no names or tags', () => {

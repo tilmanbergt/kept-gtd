@@ -84,13 +84,16 @@ import {openOrCreateLoopNote, openOrCreateMeetingNote, openOrCreateTodoNote} fro
 import * as fs from '../../src/supernote/fileSystem';
 import * as notes from '../../src/supernote/noteFileApi';
 
+/** A Default with no pages and no notebook: every note is an own note unless a setup says otherwise. */
+const EMPTY_DEFAULT: GtdParaSettings['noteSetupDefaults'] = {pages: {}, tracking: {trackPrep: false, trackReview: false}, notebook: null};
+
 const AREA = '/storage/emulated/0/Note/2 Areas/Coaching';
 const LOOP_NOTE = `${AREA}/2026-11 workshop offsite.note`;
 
 const WORKSHOPS: NoteSetup = {...createNoteSetup('w', 'loop'), name: 'Workshops', tags: ['workshop']};
 
 function settingsWith(setups: NoteSetup[]): GtdParaSettings {
-  return {...DEFAULT_SETTINGS, noteSetups: [WORKSHOPS, ...setups]};
+  return {...DEFAULT_SETTINGS, noteSetupDefaults: EMPTY_DEFAULT, noteSetups: [WORKSHOPS, ...setups]};
 }
 
 function meeting(title: string, date = '2026-10-02'): Meeting {

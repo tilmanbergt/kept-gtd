@@ -84,7 +84,6 @@ describe('demo space', () => {
     const s = demoProfileSettings();
     expect(s.baseRoot).toBe(DEMO_BASE_ROOT);
     expect(s.noteSetups.map(x => x.tags)).toEqual([['1on1'], ['sparring'], ['workshop'], ['race']]);
-    expect(s.noteSetupsMigrated).toBe(true);
     // One file per Project/Area and year: the Default, the thread setups and Races share the home notebook; a Workshops loop has its loop note.
     expect(s.noteSetupDefaults.notebook).toEqual({name: '{name} {year}', folder: ''});
     expect(s.noteSetups.map(x => x.notebook)).toEqual([{name: '{name} {year}', folder: ''}, {name: '{name} {year}', folder: ''}, {name: '{year}-{month} {tag} {subtag}', folder: ''}, {name: '{name} {year}', folder: ''}]);

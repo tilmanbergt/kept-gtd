@@ -4,7 +4,7 @@
  * settings belong to a profile, which stay device-wide, which are secrets
  * that never go into a file, and reading/writing the file format.
  */
-import {DEFAULT_SETTINGS, GtdParaSettings, renameLegacyTagRuleKeys} from './settings';
+import {DEFAULT_SETTINGS, GtdParaSettings} from './settings';
 
 export const DEFAULT_PROFILE_ID = 'production';
 export const DEFAULT_PROFILE_NAME = 'Production';
@@ -27,7 +27,7 @@ export const DEVICE_WIDE_KEYS: readonly SettingsKey[] = [
 /** Switch with a profile, but are kept in the app's own storage, never in a profile file. */
 export const SECRET_KEYS: readonly SettingsKey[] = ['gmailAppPassword', 'googleCalendarIcsUrl'];
 
-/** Everything else: folders, Note setups (and the kept Tag Rules), review state, integrations, experimental switches, the module switches (`modules`), contexts and the active context, and Engage's current todo. */
+/** Everything else: folders, Note setups, review state, integrations, experimental switches, the module switches (`modules`), contexts and the active context, and Engage's current todo. */
 export const PROFILE_KEYS: readonly SettingsKey[] = (Object.keys(DEFAULT_SETTINGS) as SettingsKey[]).filter(
   k => !DEVICE_WIDE_KEYS.includes(k) && !SECRET_KEYS.includes(k),
 );
@@ -85,15 +85,15 @@ function sameKind(value: unknown, template: unknown): boolean {
 /**
  * Keeps only known per-profile keys whose value has the same kind as the
  * default (string/number/boolean/array/object), so a hand-edited or older
- * file can never smuggle in a device-wide setting, a secret or a wrong type.
+ * file can never smuggle in a device-wide setting, a secret, a wrong type or a
+ * setting this version doesn't have.
  */
 export function sanitizeProfileSettings(raw: unknown): Partial<GtdParaSettings> {
   const out: Partial<GtdParaSettings> = {};
   if (!raw || typeof raw !== 'object') {
     return out;
   }
-  // Profile files written by 0.8 and earlier carry the old Tag Rule keys.
-  const src = renameLegacyTagRuleKeys(raw as Record<string, unknown>);
+  const src = raw as Record<string, unknown>;
   for (const key of PROFILE_KEYS) {
     if (key in src && sameKind(src[key], DEFAULT_SETTINGS[key])) {
       (out as Record<string, unknown>)[key] = src[key];

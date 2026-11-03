@@ -5,9 +5,8 @@
  * storage/settingsStorage.ts.
  */
 import {INBOX_FILE_NAME} from './types';
-import type {LegacyTagRule, MigrationReport} from './noteSetupMigration';
 import type {EngageOwner, EngageTodoKey} from './engageOwner';
-import type {NoteSetup, NoteSetupDefaults} from './noteSetups';
+import {NoteSetup, NoteSetupDefaults, seedNoteSetupDefaults} from './noteSetups';
 import {ReviewStepsMap} from './reviewSteps';
 import {DEFAULT_MODULES, Modules} from './features';
 import type {ContextDef, MinMinutes} from './contexts';
@@ -70,26 +69,10 @@ export interface GtdParaSettings {
    * layouts. List order is priority among setups of the same kind.
    */
   noteSetups: NoteSetup[];
-  /** The Default: the page per kind and the tracking for items no setup matches. */
+  /** The Default: the page per kind and the tracking for items no setup matches; a fresh install starts with the seeded one. */
   noteSetupDefaults: NoteSetupDefaults;
   /** Next `NoteSetup.id` - a simple counter. */
   nextNoteSetupId: number;
-  /** The Tag Rules migration report, shown above the Note setups list until dismissed; null when there is none. */
-  noteSetupsNotice: MigrationReport | null;
-  /**
-   * Whether the Tag Rules of this settings blob or profile were migrated to
-   * Note setups (domain/noteSetupMigration.ts). False in DEFAULT_SETTINGS, so
-   * stored settings and profile files from 0.14 and earlier migrate once,
-   * also after a profile switch fills their missing keys from the defaults.
-   */
-  noteSetupsMigrated: boolean;
-  /**
-   * 0.14's Tag Rules, kept as stored: the backup, and what 0.14 reads after a
-   * downgrade. Only the migration reads them; nothing writes them.
-   */
-  tagRules: LegacyTagRule[];
-  /** 0.14's Tag Rule id counter, kept as stored with `tagRules`. */
-  nextTagRuleId: number;
   /**
    * The style of the title elements gtdpara writes for heading pieces
    * (docs/dev/history/technical-design-projects-findable-notes.md §2.1 R4,
@@ -222,12 +205,8 @@ export const DEFAULT_SETTINGS: GtdParaSettings = {
   googleCalendarIcsUrl: '',
   engageCurrent: null,
   noteSetups: [],
-  noteSetupDefaults: {pages: {}, tracking: {trackPrep: false, trackReview: false}, notebook: null},
+  noteSetupDefaults: seedNoteSetupDefaults(),
   nextNoteSetupId: 1,
-  noteSetupsNotice: null,
-  noteSetupsMigrated: false,
-  tagRules: [],
-  nextTagRuleId: 1,
   noteHeadingStyle: 3,
   gmailEmail: '',
   gmailAppPassword: '',
@@ -262,29 +241,6 @@ export interface ResolvedParaPaths {
   inboxFolder: string;
   /** The untriaged-capture file, `<inboxFolder>/Inbox.txt`. */
   inbox: string;
-}
-
-/** Keys Tag Rules were stored under up to 0.8 (as "note creation definitions"). */
-const LEGACY_TAG_RULE_KEYS: Array<[legacy: string, current: 'tagRules' | 'nextTagRuleId']> = [
-  ['noteCreationDefinitions', 'tagRules'],
-  ['nextNoteDefinitionId', 'nextTagRuleId'],
-];
-
-/**
- * A stored settings blob or profile file with the Tag Rule keys of 0.8 and
- * earlier renamed to the current ones. A current key already present wins;
- * the legacy key is dropped either way. Returns the same object when there is
- * nothing to rename.
- */
-export function renameLegacyTagRuleKeys(raw: Record<string, unknown>): Record<string, unknown> {
-  if (!LEGACY_TAG_RULE_KEYS.some(([legacy]) => legacy in raw)) return raw;
-  const next = {...raw};
-  for (const [legacy, current] of LEGACY_TAG_RULE_KEYS) {
-    if (!(legacy in next)) continue;
-    if (!(current in next)) next[current] = next[legacy];
-    delete next[legacy];
-  }
-  return next;
 }
 
 function joinPath(base: string, segment: string): string {

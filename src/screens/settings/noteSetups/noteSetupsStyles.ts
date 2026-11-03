@@ -16,8 +16,6 @@ export const PAGE_ROW_HEIGHT = 92;
 export const PAGE_THUMB_WIDTH = 54;
 /** A one-line row in the layout page's panels (pieces, Add, backgrounds), its margin included. */
 export const PANEL_ROW_HEIGHT = 44;
-/** A report line of the migration notice. */
-export const NOTICE_ROW_HEIGHT = 46;
 
 export const setupStyles = StyleSheet.create({
   // A page: heading row on top, the rest fills the tab body.
@@ -29,11 +27,6 @@ export const setupStyles = StyleSheet.create({
   headerButtons: {flexDirection: 'row', alignItems: 'center'},
   headerSave: {marginTop: 0, paddingVertical: 8, paddingHorizontal: SPACING.md},
   // List.
-  noticeCard: {borderWidth: 2, borderRadius: RADII.md, padding: SPACING.sm, marginBottom: SPACING.sm, height: 260},
-  noticeTitle: {fontSize: FONT.medium, fontWeight: '700', marginBottom: SPACING.xs},
-  noticeLine: {fontSize: FONT.small, height: NOTICE_ROW_HEIGHT},
-  noticeOk: {alignSelf: 'flex-end', paddingVertical: SPACING.xs, paddingHorizontal: SPACING.md, borderWidth: 1, borderRadius: RADII.md},
-  noticeOkText: {fontSize: FONT.small, fontWeight: '700'},
   setupRow: {
     flexDirection: 'row',
     alignItems: 'center',

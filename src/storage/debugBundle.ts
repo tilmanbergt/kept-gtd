@@ -23,7 +23,6 @@ import {counterpartScopes} from '../domain/counterparts';
 import {Agreement, isActiveAgreement} from '../domain/agreements';
 import {getCachedData} from './dataCache';
 import {errorMessage} from '../utils/errorMessage';
-import {didNoteSetupMigrationFail} from './noteSetupMigrationState';
 import {getSettingsUnreadable} from './settingsUnreadable';
 
 function pad(n: number): string {
@@ -64,26 +63,22 @@ export function summarizeSettings(s: GtdParaSettings): string[] {
       ` · contexts ${(s.contexts ?? []).length} (only inside ${(s.contexts ?? []).filter(c => c.onlyInPlaces).length}), active ${s.activeContextId ? 'yes' : 'no'}`,
     `          keepTabs ${onOff(s.keepTabsAlive)} · perfTracing ${onOff(s.perfTracing)} · debugLogging ${onOff(s.debugLogging)}` +
       ` · reviewSteps recorded ${Object.keys(s.reviewSteps ?? {}).length} · setup assistant ${s.setupAssistant} · updateCheck ${s.updateCheck ?? 'manual'}`,
-    noteSetupsLine(s, didNoteSetupMigrationFail()),
+    noteSetupsLine(s),
     `          homeNotebooks ${onOff(!!s.noteSetupDefaults?.notebook)} · contents ${onOff(s.notebookContentsEnabled)} · pageIndex: cached ${cachedPageIndexCount()}`,
   ];
 }
 
 /**
- * "note setups: thread 3 · loop 1 · off 1 · notebook 2 · default pages 2 · default notebook no · migrated yes"
+ * "note setups: thread 3 · loop 1 · off 1 · notebook 2 · default pages 2 · default notebook no"
  * (docs/dev/history/technical-design-note-setups.md §8) - counts only, never names or tags.
- * `migrated`: yes when the setups came from Tag Rules, no for a fresh start, failed when
- * the migration failed in this session.
  */
-export function noteSetupsLine(s: GtdParaSettings, migrationFailed: boolean): string {
+export function noteSetupsLine(s: GtdParaSettings): string {
   const setups = s.noteSetups ?? [];
   const on = setups.filter(x => x.enabled);
-  const migrated = migrationFailed ? 'failed' : s.noteSetupsMigrated && (s.tagRules ?? []).length > 0 ? 'yes' : 'no';
   return (
     `note setups: thread ${on.filter(x => x.kind === 'thread').length} · loop ${on.filter(x => x.kind === 'loop').length}` +
     ` · off ${setups.length - on.length} · notebook ${on.filter(x => x.kind === 'thread' && x.notebook).length}` +
-    ` · default pages ${Object.keys(s.noteSetupDefaults?.pages ?? {}).length} · default notebook ${s.noteSetupDefaults?.notebook ? 'yes' : 'no'}` +
-    ` · migrated ${migrated}`
+    ` · default pages ${Object.keys(s.noteSetupDefaults?.pages ?? {}).length} · default notebook ${s.noteSetupDefaults?.notebook ? 'yes' : 'no'}`
   );
 }
 

@@ -72,6 +72,9 @@ import * as sharedPages from '../../src/storage/sharedNotePages';
 import * as fs from '../../src/supernote/fileSystem';
 import * as notes from '../../src/supernote/noteFileApi';
 
+/** A Default with no pages and no notebook: every note is an own note unless a setup says otherwise. */
+const EMPTY_DEFAULT: GtdParaSettings['noteSetupDefaults'] = {pages: {}, tracking: {trackPrep: false, trackReview: false}, notebook: null};
+
 const AREA = '/storage/emulated/0/Note/2 Areas/Coaching';
 
 function coachingRule(extra: Partial<NoteSetup> = {}): NoteSetup {
@@ -85,7 +88,7 @@ function coachingRule(extra: Partial<NoteSetup> = {}): NoteSetup {
 }
 
 function settingsWith(setups: NoteSetup[]): GtdParaSettings {
-  return {...DEFAULT_SETTINGS, noteSetups: setups};
+  return {...DEFAULT_SETTINGS, noteSetupDefaults: EMPTY_DEFAULT, noteSetups: setups};
 }
 
 function meeting(title: string, date = '2026-10-02', notePath = ''): Meeting {
@@ -182,7 +185,7 @@ describe('first-time note on a split-by-tag rule', () => {
 describe('first-time note in the Default notebook (docs/dev/history/technical-design-home-notebooks.md §3.2)', () => {
   const withDefaultNotebook = (): GtdParaSettings => ({
     ...settingsWith([coachingRule()]),
-    noteSetupDefaults: {...DEFAULT_SETTINGS.noteSetupDefaults, notebook: {name: '{name} {year}', folder: ''}},
+    noteSetupDefaults: {...EMPTY_DEFAULT, notebook: {name: '{name} {year}', folder: ''}},
   });
 
   it('a new home notebook starts with its Home page keyword; the item page comes after it', async () => {
