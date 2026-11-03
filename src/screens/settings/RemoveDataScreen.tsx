@@ -22,6 +22,7 @@ import {
   toggleChoice,
 } from '../../domain/dataRemoval';
 import {RemovalScan, runRemoval, scanRemoval} from '../../storage/dataRemoval';
+import {peekSettings} from '../../storage/settingsStorage';
 import PillButton from '../../ui/PillButton';
 import {useStatus} from '../../ui/status/StatusProvider';
 import {FONT, SPACING, useThemeColors} from '../../ui/theme';
@@ -50,7 +51,8 @@ export default function RemoveDataScreen({onClose, onRestartFresh}: Props): Reac
   const {textColor, borderColor} = useThemeColors();
   const [scan, setScan] = useState<RemovalScan | null>(null);
   const [choices, setChoices] = useState<RemovalChoices | null>(null);
-  const [saveFirst, setSaveFirst] = useState(true);
+  // On fresh settings the saved profile is not replaced unasked (docs/dev/history/technical-design-fresh-start-profile.md §2 D3).
+  const [saveFirst, setSaveFirst] = useState(() => peekSettings()?.freshStart !== true);
   const [running, setRunning] = useState(false);
   const [outcomes, setOutcomes] = useState<StepOutcome[] | null>(null);
   const [error, setError] = useState<string | null>(null);

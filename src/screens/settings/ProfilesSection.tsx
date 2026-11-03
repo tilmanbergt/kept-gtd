@@ -3,7 +3,8 @@
  * the profile files in EXPORT/kept-gtd/profiles, Save for the active one,
  * Switch (after a confirm in the status slot) for the others, and
  * Restore for the active one while the stored settings are unreadable
- * (storage/settingsUnreadable.ts), and
+ * (storage/settingsUnreadable.ts) or fresh (docs/dev/history/technical-design-fresh-start-profile.md
+ * §3.4: then Save asks before replacing the file, and Switch saves nothing first), and
  * "Create demo space". The actual switch - reset caches, remount the app -
  * is done by App.tsx via `onSwitchProfile`. `locked` greys Switch while the folder fields
  * beside it have unsaved changes (technical-design-settings-tabs.md T2); the screen refreshes
@@ -19,6 +20,7 @@ import {getSettingsUnreadable, subscribeSettingsUnreadable} from '../../storage/
 import {displayPath, PROFILES_FOLDER_PATH} from '../../supernote/devicePaths';
 import PillButton from '../../ui/PillButton';
 import {useStatus} from '../../ui/status/StatusProvider';
+import {useSettingsValue} from '../../ui/useSettings';
 import {FONT, SPACING} from '../../ui/theme';
 import {logError} from '../../utils/log';
 import {errorMessage} from '../../utils/errorMessage';
@@ -41,6 +43,7 @@ export default function ProfilesSection({activeProfileId, onSwitchProfile, locke
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<Message>(null);
   const [confirmId, setConfirmId] = useState<string | null>(null);
+  const [confirmSave, setConfirmSave] = useState(false);
   useStatus('Settings.profiles.message', message ? {...message, onDismiss: () => setMessage(null)} : null);
 
   const reload = useCallback(async () => {
@@ -87,18 +90,47 @@ export default function ProfilesSection({activeProfileId, onSwitchProfile, locke
     });
 
   const unreadable = useSyncExternalStore(subscribeSettingsUnreadable, getSettingsUnreadable) !== null;
+  const freshStart = useSettingsValue(s => s.freshStart === true) === true;
+  const restoreActive = unreadable || freshStart;
+  const activeName = profiles?.find(p => p.id === activeProfileId)?.name ?? activeProfileId;
   const confirmTarget = profiles?.find(p => p.id === confirmId) ?? null;
+  const restoring = unreadable || (freshStart && confirmTarget?.id === activeProfileId);
+  const confirmText = (name: string): string => {
+    if (unreadable) return `Restore the settings from profile "${name}"? They replace the settings that could not be read.`;
+    if (!freshStart) return `Switch to profile "${name}"? The current profile is saved first.`;
+    return restoring
+      ? `Load your saved profile "${name}"? The fresh settings are replaced; the file stays as it is.`
+      : `Switch to "${name}"? Your saved profile "${activeName}" stays as it is.`;
+  };
+  useStatus(
+    'Settings.profiles.saveConfirm',
+    confirmSave
+      ? {
+          kind: 'confirm',
+          text: `Replace your saved profile "${activeName}" with the current fresh settings?`,
+          actions: [
+            {
+              label: 'Save',
+              primary: true,
+              onPress: () => {
+                setConfirmSave(false);
+                handleSave();
+              },
+            },
+          ],
+          onCancel: () => setConfirmSave(false),
+        }
+      : null,
+  );
   useStatus(
     'Settings.profiles.confirm',
     confirmTarget && onSwitchProfile
       ? {
           kind: 'confirm',
-          text: unreadable
-            ? `Restore the settings from profile "${confirmTarget.name}"? They replace the settings that could not be read.`
-            : `Switch to profile "${confirmTarget.name}"? The current profile is saved first.`,
+          text: confirmText(confirmTarget.name),
           actions: [
             {
-              label: unreadable ? 'Restore' : 'Switch',
+              label: restoring ? 'Restore' : 'Switch',
               primary: true,
               onPress: () => {
                 const id = confirmTarget.id;
@@ -142,7 +174,7 @@ export default function ProfilesSection({activeProfileId, onSwitchProfile, locke
                 <Text style={[styles.rowMeta, {color: textColor}]} numberOfLines={1}>
                   {p.error ? `can't be used: ${p.error}` : p.savedAt ? `saved ${p.savedAt.slice(0, 10)}` : ''}
                 </Text>
-                {active && unreadable ? (
+                {active && restoreActive && (
                   <PillButton
                     label="Restore"
                     disabled={busy || !!p.error || !onSwitchProfile}
@@ -150,9 +182,13 @@ export default function ProfilesSection({activeProfileId, onSwitchProfile, locke
                     textColor={textColor}
                     borderColor={borderColor}
                   />
-                ) : active ? (
-                  <PillButton label="Save" disabled={busy} onPress={handleSave} textColor={textColor} borderColor={borderColor} />
-                ) : (
+                )}
+                {active && !unreadable && (
+                  <View style={restoreActive ? styles.secondButton : undefined}>
+                    <PillButton label="Save" disabled={busy} onPress={freshStart ? () => setConfirmSave(true) : handleSave} textColor={textColor} borderColor={borderColor} />
+                  </View>
+                )}
+                {!active && (
                   <PillButton
                     label="Switch"
                     disabled={busy || locked || !!p.error || !onSwitchProfile}
@@ -191,6 +227,7 @@ const styles = StyleSheet.create({
   rowName: {flex: 1, fontSize: FONT.medium},
   rowMeta: {fontSize: FONT.small, opacity: 0.6, marginHorizontal: SPACING.sm, maxWidth: 220},
   bold: {fontWeight: '700'},
+  secondButton: {marginLeft: SPACING.sm},
   actions: {flexDirection: 'row', alignItems: 'center', marginBottom: SPACING.xs},
   link: {marginLeft: SPACING.base},
   linkText: {fontSize: FONT.small, fontWeight: '600', textDecorationLine: 'underline'},

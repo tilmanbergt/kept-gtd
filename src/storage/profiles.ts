@@ -139,7 +139,8 @@ export async function saveActiveProfile(): Promise<string> {
 /**
  * Before the first switch ever: puts the user's real setup on file as
  * production.json, so it can always be switched back to. No-op when the
- * file exists or another profile is active.
+ * file exists or another profile is active. Writing it ends a fresh start like Save does: the
+ * settings are on file then, and the next switch saves them first again.
  */
 export async function ensureDefaultProfileFile(): Promise<void> {
   const settings = await loadSettings();
@@ -149,6 +150,7 @@ export async function ensureDefaultProfileFile(): Promise<void> {
   const existing = await readTextFile(profilePath(DEFAULT_PROFILE_ID));
   if (existing == null) {
     await writeProfile(DEFAULT_PROFILE_ID, settings, DEFAULT_PROFILE_NAME);
+    if (settings.freshStart) await patchSettings({freshStart: false});
   }
 }
 

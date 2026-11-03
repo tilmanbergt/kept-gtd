@@ -28,6 +28,13 @@ async function expectSavedSetupActive(): Promise<void> {
   expect(s.freshStart).toBe(false);
 }
 
+async function startFreshAndFinish(): Promise<void> {
+  await tap('Start fresh');
+  expectShows('Setup · 1 of 5');
+  for (let i = 0; i < 5; i++) await tap('Next ›');
+  await tap('Finish');
+}
+
 scenario('Welcome back loads the saved profile after a fresh install', {feature: 'Profiles and demo space', design: DESIGN}, () => {
   let before = '';
   given('a fresh install and production.json with two contexts and one Note setup', () => {
@@ -68,6 +75,113 @@ scenario('Welcome back lists the newest profile first and selects it', {feature:
   when('I pick Production', () => tap('○ Production'));
   then('the Load button names it', () => {
     expectShows('Load "Production"');
+  });
+});
+
+scenario('Start fresh, then Restore from Settings → Data → Profiles', {feature: 'Profiles and demo space', design: DESIGN}, () => {
+  let before = '';
+  given('a fresh install and a saved production.json', () => {
+    before = savedProfile('Production', '2026-11-01T09:00:00Z');
+    putFile(PRODUCTION, before);
+  });
+  when('I tap Start fresh and finish the assistant', async () => {
+    await openApp({fresh: true});
+    await startFreshAndFinish();
+  });
+  then('production.json is unchanged and the fresh mark stays', async () => {
+    expect(fileText(PRODUCTION)).toBe(before);
+    expect((await storedSettings()).freshStart).toBe(true);
+  });
+  when('I open Settings → Data and tap Restore on Production', async () => {
+    await tapTab('Settings');
+    await tap('Restore');
+  });
+  then('the confirm says the file stays as it is', () => {
+    expectShows('Load your saved profile "Production"? The fresh settings are replaced; the file stays as it is.');
+  });
+  when('I confirm with Restore', () => tap('Restore'));
+  then('the contexts and the Note setup are active, and the file is unchanged', async () => {
+    await expectSavedSetupActive();
+    expect(fileText(PRODUCTION)).toBe(before);
+  });
+});
+
+scenario('Switching away from fresh settings does not overwrite the saved profile', {feature: 'Profiles and demo space', design: DESIGN}, () => {
+  let before = '';
+  given('a fresh start with a saved production.json (Start fresh)', async () => {
+    before = savedProfile('Production', '2026-11-01T09:00:00Z');
+    putFile(PRODUCTION, before);
+    await openApp({fresh: true});
+    await startFreshAndFinish();
+  });
+  when('I create the demo space and switch to Demo', async () => {
+    await tapTab('Settings');
+    await tap('Create demo space');
+    await tap('Switch');
+  });
+  then('the confirm says the saved profile stays as it is', () => {
+    expectShows('Switch to "Demo"? Your saved profile "Production" stays as it is.');
+  });
+  when('I confirm with Switch', () => tap('Switch'));
+  then('Demo is active and production.json is unchanged', async () => {
+    expect((await storedSettings()).activeProfileId).toBe('demo');
+    expect(fileText(PRODUCTION)).toBe(before);
+  });
+});
+
+scenario('Save on fresh settings asks before replacing the saved profile', {feature: 'Profiles and demo space', design: DESIGN}, () => {
+  let before = '';
+  given('a fresh start with a saved production.json (Start fresh)', async () => {
+    before = savedProfile('Production', '2026-11-01T09:00:00Z');
+    putFile(PRODUCTION, before);
+    await openApp({fresh: true});
+    await startFreshAndFinish();
+  });
+  when('I tap Save on Production', async () => {
+    await tapTab('Settings');
+    expectShows('Restore');
+    await tap('Save', 1);
+  });
+  then('a confirm asks first', () => {
+    expectShows('Replace your saved profile "Production" with the current fresh settings?');
+  });
+  when('I cancel with ✕ on the confirm', () => tap('✕', 1));
+  then('the confirm is gone and the file is unchanged', () => {
+    expectNotShows('Replace your saved profile "Production" with the current fresh settings?');
+    expect(fileText(PRODUCTION)).toBe(before);
+  });
+  when('I tap Save again and confirm with Save', async () => {
+    await tap('Save', 1);
+    await tap('Save');
+  });
+  then('the file holds the fresh settings and the fresh mark is cleared', async () => {
+    expect(fileText(PRODUCTION)).not.toBe(before);
+    expect(JSON.parse(fileText(PRODUCTION)).settings.contexts).toEqual([]);
+    expect((await storedSettings()).freshStart).toBe(false);
+  });
+});
+
+scenario("Remove Kept's data on fresh settings does not save over the saved profile unasked", {feature: 'Profiles and demo space', design: DESIGN}, () => {
+  let before = '';
+  given('a fresh start with a saved production.json (Start fresh)', async () => {
+    before = savedProfile('Production', '2026-11-01T09:00:00Z');
+    putFile(PRODUCTION, before);
+    await openApp({fresh: true});
+    await startFreshAndFinish();
+  });
+  when("I open Settings → Data → Remove Kept's data…", async () => {
+    await tapTab('Settings');
+    await tap("Remove Kept's data…");
+  });
+  then('Save the active profile first is unchecked', () => {
+    expectShows('☐ Save the active profile first');
+  });
+  when('I remove with the defaults', async () => {
+    await tap('Remove…');
+    await tap('Remove');
+  });
+  then('production.json is unchanged', () => {
+    expect(fileText(PRODUCTION)).toBe(before);
   });
 });
 

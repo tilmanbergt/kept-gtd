@@ -30,7 +30,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {DEFAULT_PROFILE_ID, serializeProfile} from '../../src/domain/profiles';
 import {DEFAULT_SETTINGS} from '../../src/domain/settings';
 import {summarizeSettings} from '../../src/storage/debugBundle';
-import {listSavedProfiles, saveActiveProfile, switchProfile} from '../../src/storage/profiles';
+import {ensureDefaultProfileFile, listSavedProfiles, saveActiveProfile, switchProfile} from '../../src/storage/profiles';
 import {loadSettings} from '../../src/storage/settingsStorage';
 
 const PRODUCTION = `${FOLDER}/${DEFAULT_PROFILE_ID}.json`;
@@ -75,6 +75,21 @@ describe('on a fresh install', () => {
     expect(mockFiles.get(PRODUCTION)).not.toBe(before);
     expect((await loadSettings()).freshStart).toBe(false);
   });
+});
+
+it('fresh without production.json: putting the settings on file ends the fresh start', async () => {
+  expect((await loadSettings()).freshStart).toBe(true);
+  await ensureDefaultProfileFile();
+  expect(mockFiles.has(PRODUCTION)).toBe(true);
+  expect((await loadSettings()).freshStart).toBe(false);
+});
+
+it('fresh with production.json: the file is left as it is and the mark stays', async () => {
+  const before = saved('Production', '2026-11-01T09:00:00Z');
+  mockFiles.set(PRODUCTION, before);
+  await ensureDefaultProfileFile();
+  expect(mockFiles.get(PRODUCTION)).toBe(before);
+  expect((await loadSettings()).freshStart).toBe(true);
 });
 
 describe('on stored settings', () => {

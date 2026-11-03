@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-189 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+192 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -1014,6 +1014,44 @@ Test: `__tests__/scenarios/freshStartProfile.test.tsx`
 - **Then** Work is listed first and selected
 - **When** I pick Production
 - **Then** the Load button names it
+
+Test: `__tests__/scenarios/freshStartProfile.test.tsx`
+
+### Start fresh, then Restore from Settings → Data → Profiles
+
+- **Given** a fresh install and a saved production.json
+- **When** I tap Start fresh and finish the assistant
+- **Then** production.json is unchanged and the fresh mark stays
+- **When** I open Settings → Data and tap Restore on Production
+- **Then** the confirm says the file stays as it is
+- **When** I confirm with Restore
+- **Then** the contexts and the Note setup are active, and the file is unchanged
+
+Test: `__tests__/scenarios/freshStartProfile.test.tsx`
+
+### Switching away from fresh settings does not overwrite the saved profile
+
+- **Given** a fresh start with a saved production.json (Start fresh)
+- **When** I create the demo space and switch to Demo
+- **Then** the confirm says the saved profile stays as it is
+- **When** I confirm with Switch
+- **Then** Demo is active and production.json is unchanged
+
+Test: `__tests__/scenarios/freshStartProfile.test.tsx`
+
+### Save on fresh settings asks before replacing the saved profile
+
+- **Given** a fresh start with a saved production.json (Start fresh)
+- **When** I tap Save on Production
+- **Then** a confirm asks first
+- **When** I cancel with ✕ on the confirm
+- **Then** the confirm is gone and the file is unchanged
+- **When** I tap Save again and confirm with Save
+- **Then** the file holds the fresh settings and the fresh mark is cleared
+- **Given** a fresh start with a saved production.json (Start fresh)
+- **Then** Save the active profile first is unchecked
+- **When** I remove with the defaults
+- **Then** production.json is unchanged
 
 Test: `__tests__/scenarios/freshStartProfile.test.tsx`
 
