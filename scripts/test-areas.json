@@ -260,7 +260,7 @@
       "name": "Settings, profiles, demo, help and logging",
       "help": ["settings.md", "profiles-and-demo.md"],
       "tests": [
-        "__tests__/**/*{settings,Settings,profile,Profile,demoSpace,buildVersionText,helpTopics,markdownBlocks,features,redact,debugBundle,logSink,userDocs,keptGtd,helpLinks,setupAssistant,removeData,RemoveData,screenCheck,screenSimulation}*"
+        "__tests__/**/*{settings,Settings,profile,Profile,demoSpace,buildVersionText,helpTopics,markdownBlocks,features,redact,debugBundle,logSink,userDocs,keptGtd,pluginIdentity,cleanBreak,helpLinks,setupAssistant,removeData,RemoveData,screenCheck,screenSimulation}*"
       ],
       "sources": [
         "src/screens/settings/**",

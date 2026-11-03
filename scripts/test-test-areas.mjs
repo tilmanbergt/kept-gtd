@@ -90,7 +90,7 @@ t('test kinds', () => {
   assert.equal(testKind('__tests__/scenarios/smoke/daily.test.tsx'), 'scenario');
   assert.equal(testKind('__tests__/ui/x.test.tsx'), 'ui');
   assert.equal(testKind('__tests__/domain/x.test.ts'), 'unit');
-  assert.equal(testKind('__tests__/keptGtdKeepList.test.ts'), 'unit');
+  assert.equal(testKind('__tests__/pluginIdentity.test.ts'), 'unit');
 });
 
 t('area stats and matrix', () => {

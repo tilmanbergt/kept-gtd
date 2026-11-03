@@ -143,7 +143,7 @@ t('json field', () => {
   const out = setJsonStringField(setJsonStringField(cfg, 'versionName', '0.1.0'), 'versionCode', '392417');
   assert.equal(out, '{\r\n  "versionName": "0.1.0",\r\n  "versionCode": "392417",\r\n  "pluginID": "x"\r\n}\r\n');
   assert.throws(() => setJsonStringField(cfg, 'nope', '1'));
-  const pkg = '{\n  "name": "gtdpara",\n  "version": "0.0.1",\n  "dependencies": {"react": "19.0.0"}\n}\n';
+  const pkg = '{\n  "name": "kept-gtd",\n  "version": "0.0.1",\n  "dependencies": {"react": "19.0.0"}\n}\n';
   assert.ok(setJsonStringField(pkg, 'version', '0.1.0').includes('"version": "0.1.0"'));
 });
 
@@ -157,11 +157,11 @@ t('render', () => {
 });
 
 t('setLockfileVersion sets the root version twice, never a dependency', () => {
-  const lock = '{\n  "name": "gtdpara",\n  "version": "0.15.0",\n  "packages": {\n    "": {\n      "name": "gtdpara",\n      "version": "0.15.0"\n    },\n    "node_modules/x": {\n      "name": "x",\n      "version": "0.15.0"\n    }\n  }\n}';
-  const out = setLockfileVersion(lock, 'gtdpara', '0.18.0');
+  const lock = '{\n  "name": "kept-gtd",\n  "version": "0.15.0",\n  "packages": {\n    "": {\n      "name": "kept-gtd",\n      "version": "0.15.0"\n    },\n    "node_modules/x": {\n      "name": "x",\n      "version": "0.15.0"\n    }\n  }\n}';
+  const out = setLockfileVersion(lock, 'kept-gtd', '0.18.0');
   assert.equal((out.match(/"version": "0.18.0"/g) ?? []).length, 2);
   assert.ok(out.includes('"name": "x",\n      "version": "0.15.0"'));
-  assert.throws(() => setLockfileVersion('{"name": "other", "version": "1.0.0"}', 'gtdpara', '0.18.0'));
+  assert.throws(() => setLockfileVersion('{"name": "other", "version": "1.0.0"}', 'kept-gtd', '0.18.0'));
 });
 
 // The in-app updater compares versions in TypeScript (src/domain/updateCheck.ts, which can't

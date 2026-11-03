@@ -23,7 +23,7 @@ import java.io.File
 object PluginRuntimeGuard {
     private const val TAG = "GtdParaRuntime"
     /** PluginConfig.json's pluginID - fallback when it can't be parsed from the class loader. */
-    private const val FALLBACK_PLUGIN_ID = "ndx27q77pojfqh6l"
+    private const val FALLBACK_PLUGIN_ID = "nj7yssrvl7g778tz"
 
     private val BUILD_FILE_RE = Regex("""(app_\d+)\.(npk|odex|vdex|art)""")
     private val NPK_PATH_RE = Regex("""(/[^\s"',\]\[]*/plugins/([A-Za-z0-9]+)/app_\d+\.npk)""")

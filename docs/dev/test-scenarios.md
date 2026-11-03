@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-182 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+183 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -1334,6 +1334,15 @@ Test: `__tests__/scenarios/givenTime.test.tsx`
 Test: `__tests__/scenarios/givenTime.test.tsx`
 
 ## Settings
+
+### The plugin identity is consistent
+
+- **Given** the plugin as it is built
+- **When** the host reads PluginConfig.json
+- **Then** pluginKey, the app.json name and the MainActivity component name are all keptgtd
+- **Then** pluginID is nj7yssrvl7g778tz, the same as the fallback of the runtime guard
+
+Test: `__tests__/scenarios/cleanBreak.test.tsx`
 
 ### Close-out off: a Done project archives directly from its page
 
