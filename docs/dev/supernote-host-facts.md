@@ -53,8 +53,16 @@ Measured on: Supernote A5 X, plugin firmware Chauvet 2.27.42, `sn-plugin-lib` 0.
 
 ## 4. Permissions
 
-- The host's permission bridge can hang without answering. Every permission check goes through
-  a wrapper with an 8-second timeout (`supernote/pluginPermissions.ts`).
+- The host's permission bridge can hang without answering. `hasPermission` is bounded by 8 s;
+  the dialog (`requestPermission`) waits for a person, so each caller waits up to 120 s and a
+  later caller joins the open request (`supernote/pluginPermissions.ts`).
+- The permission dialog shows the host's own text (for file read: "Used to open, import, or
+  process file content"), not the description Kept passes. Kept says why before it asks (the
+  setup assistant's access step).
+- Opening the plugin from a note, and closing a permission dialog, can deliver the sidebar
+  button event (again) to the running plugin, which starts another landing pass
+  (`App.tsx` reorient). A landing must not undo the setup assistant: while it is pending, every
+  landing goes back to it.
 - Network sockets are blocked ("has no NETWORK permission for: ip:port") until the runtime
   INTERNET permission is granted, also again after a reinstall. Kept checks it right before
   every network call (`ensureInternetPermission`).

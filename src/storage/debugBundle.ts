@@ -56,7 +56,7 @@ export function summarizeSettings(s: GtdParaSettings): string[] {
   const customFolders = folderKeys.some(k => (s[k] ?? '') !== DEFAULT_SETTINGS[k]);
   const f = featuresOf(s);
   return [
-    `settings: profile ${s.activeProfileId} · folders ${customFolders ? 'custom' : 'default'} · engage current todo ${s.engageCurrent ? 'yes' : 'no'}`,
+    `settings: profile ${s.activeProfileId} · folders ${customFolders ? 'custom' : 'default'} · fresh start ${s.freshStart ? 'yes' : 'no'} · engage current todo ${s.engageCurrent ? 'yes' : 'no'}`,
     `          calendar ${s.googleCalendarIcsUrl.trim() ? 'configured' : 'not configured'}, ${onOff(f.googleCalendar)}` +
       ` · gmail ${s.gmailEmail.trim() ? 'configured' : 'not configured'}, ${onOff(f.gmail)}` +
       ` · modules: closeOut ${onOff(f.closeOut)}` +

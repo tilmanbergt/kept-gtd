@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-185 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+196 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -996,6 +996,86 @@ Test: `__tests__/scenarios/cleanBreak.test.tsx`
 
 Test: `__tests__/scenarios/cleanBreak.test.tsx`
 
+### Welcome back loads the saved profile after a fresh install
+
+- **Given** a fresh install and production.json with two contexts and one Note setup
+- **When** Kept starts for the first time
+- **Then** the assistant shows Welcome back with Production selected
+- **When** I tap Load "Production"
+- **Then** the contexts and the Note setup are active, the assistant is closed and the status names the profile
+- **And** production.json is byte-identical
+
+Test: `__tests__/scenarios/freshStartProfile.test.tsx`
+
+### Welcome back lists the newest profile first and selects it
+
+- **Given** production.json saved 1 Nov and work.json saved 3 Nov
+- **When** Kept starts for the first time
+- **Then** Work is listed first and selected
+- **When** I pick Production
+- **Then** the Load button names it
+
+Test: `__tests__/scenarios/freshStartProfile.test.tsx`
+
+### Start fresh, then Restore from Settings → Data → Profiles
+
+- **Given** a fresh install and a saved production.json
+- **When** I tap Start fresh and finish the assistant
+- **Then** production.json is unchanged and the fresh mark stays
+- **When** I open Settings → Data and tap Restore on Production
+- **Then** the confirm says the file stays as it is
+- **When** I confirm with Restore
+- **Then** the contexts and the Note setup are active, and the file is unchanged
+
+Test: `__tests__/scenarios/freshStartProfile.test.tsx`
+
+### Switching away from fresh settings does not overwrite the saved profile
+
+- **Given** a fresh start with a saved production.json (Start fresh)
+- **When** I create the demo space and switch to Demo
+- **Then** the confirm says the saved profile stays as it is
+- **When** I confirm with Switch
+- **Then** Demo is active and production.json is unchanged
+
+Test: `__tests__/scenarios/freshStartProfile.test.tsx`
+
+### Save on fresh settings asks before replacing the saved profile
+
+- **Given** a fresh start with a saved production.json (Start fresh)
+- **When** I tap Save on Production
+- **Then** a confirm asks first
+- **When** I cancel with ✕ on the confirm
+- **Then** the confirm is gone and the file is unchanged
+- **When** I tap Save again and confirm with Save
+- **Then** the file holds the fresh settings and the fresh mark is cleared
+- **Given** a fresh start with a saved production.json (Start fresh)
+- **Then** Save the active profile first is unchecked
+- **When** I remove with the defaults
+- **Then** production.json is unchanged
+
+Test: `__tests__/scenarios/freshStartProfile.test.tsx`
+
+### Without saved profiles the assistant starts at Folders and creates no profiles folder
+
+- **Given** a fresh install without EXPORT/kept-gtd/profiles
+- **When** Kept starts for the first time
+- **Then** the assistant starts at Folders as before
+- **And** the profiles folder was not created
+
+Test: `__tests__/scenarios/freshStartProfile.test.tsx`
+
+### An unreadable profile file shows no Welcome back
+
+- **Given** a fresh install and a production.json that is not valid JSON
+- **When** Kept starts for the first time
+- **Then** the assistant starts at Folders
+- **Given** Kept runs on stored settings with two contexts
+- **Then** Welcome back offers Production
+- **When** I tap Load "Production"
+- **Then** the contexts and the Note setup are back
+
+Test: `__tests__/scenarios/freshStartProfile.test.tsx`
+
 ### The demo space lives in Note/kept-gtd-demo
 
 - **Given** an empty PARA folder
@@ -1247,14 +1327,14 @@ Test: `__tests__/scenarios/smoke/daily.test.tsx`
 
 ## Remove data
 
-### Removing with the defaults, then Start fresh, opens the setup assistant
+### Removing with the defaults, then Start fresh, opens the setup assistant on Welcome back
 
 - **Given** Kept has settings, a log, a profile, a project and open marks
 - **When** I tap Remove… and confirm with Remove
 - **Then** each step reports removed and the settings are gone
 - **And** the profile was saved first, and the project file is still there
 - **When** I tap Start fresh
-- **Then** the setup assistant opens as on a first install
+- **Then** the setup assistant opens as on a first install and offers the saved profile
 
 Test: `__tests__/scenarios/removeData.test.tsx`
 
@@ -1520,7 +1600,7 @@ Test: `__tests__/scenarios/settingsTabs.test.tsx`
 - **When** I go through Notes (keep one notebook), Features (Everything) and Updates (once a day) to Finish
 - **Then** Finish lists exactly the folders it will create, and the update choice
 - **When** I tap Finish
-- **Then** the folders are created, Projects is kept as it is, and the Projects tab says what happened
+- **Then** the folders are created, Projects is kept as it is, and the Projects tab lists its projects and says what happened
 - **And** the settings hold the choices
 - **And** Kept asked for internet access once, after saving
 
@@ -1544,6 +1624,42 @@ Test: `__tests__/scenarios/setupAssistant.test.tsx` · design: `docs/dev/history
 - **And** Run setup assistant waits while the Folders fields have unsaved changes
 
 Test: `__tests__/scenarios/setupAssistant.test.tsx` · design: `docs/dev/history/technical-design-easy-start.md`
+
+### On a fresh install nothing asks for file access before the assistant says why
+
+- **Given** a fresh install where Kept may not read or write files yet
+- **When** Kept starts for the first time
+- **Then** every file permission call came while the assistant showed why it needs access
+
+Test: `__tests__/scenarios/setupAssistantAccess.test.tsx`
+
+### The assistant asks to read, then to write, then looks at the folders and the saved profiles
+
+- **Given** a fresh install with a folder "Projects" and a saved profile, and no file access yet
+- **When** Kept starts for the first time and I allow both dialogs
+- **Then** read was asked before write, one dialog each
+- **And** then Welcome back offers the saved profile, and Start fresh suggests the existing folder
+
+Test: `__tests__/scenarios/setupAssistantAccess.test.tsx`
+
+### Without file access the assistant stops and offers Try again
+
+- **Given** a fresh install with a saved profile, and I deny the file dialog
+- **When** Kept starts for the first time
+- **Then** the assistant says it cannot work without access, with Try again and Skip
+- **And** nothing was scanned or planned, write was not asked, and no Welcome back shows
+- **When** I tap Try again and allow the dialogs
+- **Then** the assistant goes on: Welcome back offers the saved profile
+
+Test: `__tests__/scenarios/setupAssistantAccess.test.tsx`
+
+### Opened from a project note, a fresh install stays in the assistant when the sidebar button event comes again
+
+- **Given** a fresh install, a saved profile, and Kept opened from a note in project "Garden renovation"
+- **When** the host delivers the sidebar button press again (on opening, or when the permission dialog closes)
+- **Then** the assistant is still on screen with Welcome back, not the project page
+
+Test: `__tests__/scenarios/setupAssistantAccess.test.tsx`
 
 ### About says Kept is up to date when GitHub has nothing newer
 

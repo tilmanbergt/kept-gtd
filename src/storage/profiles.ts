@@ -22,7 +22,7 @@ import {BUILD_INFO} from '../generated/buildInfo';
 import {PROFILES_FOLDER_PATH} from '../supernote/devicePaths';
 import {ensureFolderExists, listFolderEntries, readTextFile, writeTextFile} from '../supernote/fileSystem';
 import {log, logWarn} from '../utils/log';
-import {loadSettings, replaceUnreadableSettings, saveSettings} from './settingsStorage';
+import {loadSettings, patchSettings, replaceUnreadableSettings, saveSettings} from './settingsStorage';
 import {getSettingsUnreadable} from './settingsUnreadable';
 import {errorMessage} from '../utils/errorMessage';
 import {SECRETS_KEY} from '../domain/storeKeys';
@@ -56,9 +56,8 @@ async function writeSecrets(id: string, secrets: ProfileSecrets): Promise<void> 
   await AsyncStorage.setItem(SECRETS_KEY, JSON.stringify(map));
 }
 
-/** All profile files, default profile first, then by name. Unreadable files are listed with `error`. */
-export async function listProfiles(): Promise<ProfileInfo[]> {
-  await ensureFolderExists(PROFILES_FOLDER_PATH);
+/** Every profile file in the folder; unreadable files come with `error`. Never creates the folder. */
+async function readProfileInfos(): Promise<ProfileInfo[]> {
   const entries = await listFolderEntries(PROFILES_FOLDER_PATH);
   const infos: ProfileInfo[] = [];
   for (const entry of entries) {
@@ -78,9 +77,27 @@ export async function listProfiles(): Promise<ProfileInfo[]> {
       infos.push({id, name: id, savedAt: null, error: errorMessage(e)});
     }
   }
+  return infos;
+}
+
+/** All profile files, default profile first, then by name. Unreadable files are listed with `error`. */
+export async function listProfiles(): Promise<ProfileInfo[]> {
+  await ensureFolderExists(PROFILES_FOLDER_PATH);
+  const infos = await readProfileInfos();
   return infos.sort((a, b) =>
     a.id === DEFAULT_PROFILE_ID ? -1 : b.id === DEFAULT_PROFILE_ID ? 1 : a.name.localeCompare(b.name),
   );
+}
+
+/**
+ * The profiles the setup assistant can offer (docs/dev/history/technical-design-fresh-start-profile.md
+ * §3.2): only readable files, newest `savedAt` first. Read-only - a missing folder means none
+ * and is not created.
+ */
+export async function listSavedProfiles(): Promise<ProfileInfo[]> {
+  const infos = (await readProfileInfos()).filter(p => !p.error);
+  log('profiles: saved profiles found', infos.length);
+  return infos.sort((a, b) => (b.savedAt ?? '').localeCompare(a.savedAt ?? ''));
 }
 
 async function readProfileName(id: string): Promise<string | null> {
@@ -111,17 +128,19 @@ export async function writeProfile(id: string, settings: GtdParaSettings, name?:
   log('profiles: saved profile', id);
 }
 
-/** "Save": the active settings into the active profile's file. */
+/** "Save": the active settings into the active profile's file; ends a fresh start (they are now on file). */
 export async function saveActiveProfile(): Promise<string> {
   const settings = await loadSettings();
   await writeProfile(settings.activeProfileId, settings);
+  if (settings.freshStart) await patchSettings({freshStart: false});
   return settings.activeProfileId;
 }
 
 /**
  * Before the first switch ever: puts the user's real setup on file as
  * production.json, so it can always be switched back to. No-op when the
- * file exists or another profile is active.
+ * file exists or another profile is active. Writing it ends a fresh start like Save does: the
+ * settings are on file then, and the next switch saves them first again.
  */
 export async function ensureDefaultProfileFile(): Promise<void> {
   const settings = await loadSettings();
@@ -131,6 +150,7 @@ export async function ensureDefaultProfileFile(): Promise<void> {
   const existing = await readTextFile(profilePath(DEFAULT_PROFILE_ID));
   if (existing == null) {
     await writeProfile(DEFAULT_PROFILE_ID, settings, DEFAULT_PROFILE_NAME);
+    if (settings.freshStart) await patchSettings({freshStart: false});
   }
 }
 
@@ -139,6 +159,10 @@ export async function ensureDefaultProfileFile(): Promise<void> {
  * file, then builds and stores the target's settings. Resolves to the new
  * active settings; the caller resets in-memory state and remounts (§3.4).
  * Throws (nothing changed) when the target can't be read.
+ *
+ * Unreadable or fresh settings (docs/dev/history/technical-design-fresh-start-profile.md §3.2)
+ * keep the files as they are: nothing is saved first, and a switch to the active id loads its
+ * file. The result always ends a fresh start and the setup assistant.
  */
 export async function switchProfile(targetId: string): Promise<GtdParaSettings> {
   const text = await readTextFile(profilePath(targetId));
@@ -147,18 +171,24 @@ export async function switchProfile(targetId: string): Promise<GtdParaSettings> 
   }
   const target = parseProfile(text, targetId);
   const current = await loadSettings();
-  // Unreadable settings (storage/settingsUnreadable.ts): `current` is the defaults, so it is not
-  // saved as a profile, and the switch - also to the active profile - is how to get them back.
+  // Unreadable settings (storage/settingsUnreadable.ts) are the defaults, fresh ones were never
+  // saved: neither is saved as a profile, and the switch - also to the active profile - is how
+  // to get the saved settings back.
   const unreadable = getSettingsUnreadable() !== null;
-  if (current.activeProfileId === targetId && !unreadable) {
+  const keepFiles = unreadable || current.freshStart;
+  if (current.activeProfileId === targetId && !keepFiles) {
     return current;
   }
-  if (!unreadable) await writeProfile(current.activeProfileId, current);
+  if (!keepFiles) await writeProfile(current.activeProfileId, current);
   const secrets = (await readSecretsMap())[targetId] ?? {};
-  const next = buildActiveSettings(targetId, target.settings, secrets, current);
+  const next: GtdParaSettings = {
+    ...buildActiveSettings(targetId, target.settings, secrets, current),
+    freshStart: false,
+    setupAssistant: 'done',
+  };
   if (unreadable) await replaceUnreadableSettings(next);
   else await saveSettings(next);
-  log('profiles: switched', current.activeProfileId, '->', targetId);
+  log('profiles: switched', current.activeProfileId, '->', targetId, keepFiles ? '(nothing saved first)' : '');
   // Re-read so the normal load migrations run on the new settings.
   return loadSettings();
 }

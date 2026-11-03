@@ -245,3 +245,12 @@ export function demoSpaceCreatedText(written: number, skipped: number, profileCr
   const files = written > 0 ? `${written} demo files written to Note/kept-gtd-demo` : 'demo files already in Note/kept-gtd-demo';
   return `${files}${skipped > 0 && written > 0 ? `, ${skipped} kept` : ''}${profileCreated ? ', profile "Demo" added' : ''}.`;
 }
+
+/**
+ * Status after the setup assistant loaded a saved profile
+ * (docs/dev/history/technical-design-fresh-start-profile.md §3.3). Secrets are never in a profile
+ * file, so after a fresh install they have to be entered again.
+ */
+export function profileLoadedText(name: string): string {
+  return `Loaded your profile "${name}". If you use Gmail or Google Calendar, enter the app password and calendar link again (Settings → Features).`;
+}

@@ -124,8 +124,9 @@ your current version. In your current Kept GTD (update to 0.24.0 first if you ar
 version or on gtdpara), follow the 0.24.0 upgrade notes: process open lasso marks, save each
 profile once, note your Gmail app password and calendar link, run **Settings → Data → Remove Kept's
 data** with *Kept's data files* and *Saved profiles* unticked, then uninstall it. Then install
-0.25.0, run the setup assistant and **Switch** to your saved profile (Settings → Data → Profiles).
-Your notes, data files and saved profiles stay where they are.
+0.25.1 or later and open Kept: it finds your saved profile and offers to load it (**Welcome back**;
+later: Settings → Data → Profiles → **Restore**). Your notes, data files and saved profiles stay
+where they are.
 
 ## Help and bug reports
 

@@ -1,7 +1,8 @@
 /**
  * The MyStyle `.png` backgrounds a page layout can use, listed once when
  * Settings opens. `reload` lists them again (Settings → Advanced → Reload
- * all files).
+ * all files). `enabled` false (the setup assistant is open) waits: the assistant asks for file
+ * access first (docs/dev/history/technical-design-fresh-start-profile.md §3.6).
  */
 import {useCallback, useEffect, useState} from 'react';
 import {listFolderEntries} from '../../../supernote/fileSystem';
@@ -15,7 +16,7 @@ export interface MyStyleBackgrounds {
   reload: () => Promise<void>;
 }
 
-export function useMyStylePngs(): MyStyleBackgrounds {
+export function useMyStylePngs(enabled = true): MyStyleBackgrounds {
   const [pngs, setPngs] = useState<string[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -34,12 +35,13 @@ export function useMyStylePngs(): MyStyleBackgrounds {
   );
 
   useEffect(() => {
+    if (!enabled) return;
     let cancelled = false;
     load(() => cancelled);
     return () => {
       cancelled = true;
     };
-  }, [load]);
+  }, [load, enabled]);
 
   const reload = useCallback(() => load(), [load]);
   return {pngs, error, reload};

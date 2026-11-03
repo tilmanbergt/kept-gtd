@@ -63,6 +63,28 @@ export function requestEinkRefresh(): void {
 }
 
 /**
+ * Refreshes now, without the debounce, and resolves once the flush ran: for content that must be
+ * on the e-ink screen before something covers it, such as the line a permission dialog is about
+ * to cover (docs/dev/history/technical-design-fresh-start-profile.md §3.6). The same two frames
+ * as requestEinkRefresh, so React's commit is drawn.
+ */
+export function refreshEinkNow(): Promise<void> {
+  return new Promise(resolve => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        log('refreshEinkNow: flushing (invalidatePluginView)');
+        try {
+          NativePluginManager.invalidatePluginView();
+        } catch (e) {
+          logError('refreshEinkNow: invalidatePluginView failed', errorMessage(e));
+        }
+        resolve();
+      });
+    });
+  });
+}
+
+/**
  * Calls requestEinkRefresh() exactly on the falling edge of `loading` (true
  * -> false) - i.e. the moment a screen/panel's own async page-prep finishes
  * and its real content replaces whatever was showing before (spinner,

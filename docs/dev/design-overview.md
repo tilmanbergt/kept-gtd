@@ -1077,7 +1077,7 @@ keys, never the whole store) and removes in the order files, private folders, st
 and kept when an earlier step failed; deletes in shared storage go through the native
 `deleteKeptTree` / `deleteKeptFile`, which refuse anything outside Kept's own folders and data-file
 names. Start fresh remounts the app like a profile switch; with no stored settings the load is a
-first install. Note setups save per setup (and
+first install (fresh-start mark set, below). Note setups save per setup (and
 the Default on its own), and its Heading style (`noteHeadingStyle`) at once; the switches on
 Features and Advanced write immediately. **Features** (`FeaturesTab.tsx`) holds the module switches
 - `settings.modules` (`closeOut`, on by default; read through `domain/features.ts`'s
@@ -1134,9 +1134,17 @@ content never goes into AsyncStorage.
 **Profiles** (`domain/profiles.ts`, `storage/profiles.ts`). A profile is a named configuration;
 its file is `EXPORT/kept-gtd/profiles/<id>.json`. Every setting is classified: per profile,
 device-wide (`perfTracing`, `keepTabsAlive`, `debugLogging`, `notebookContentsEnabled`,
-`lastSeenVersion`, `updateCheck`, `activeProfileId`) or secret (`gmailAppPassword`, `googleCalendarIcsUrl` — per profile, but only
+`lastSeenVersion`, `freshStart`, `updateCheck`, `activeProfileId`) or secret (`gmailAppPassword`, `googleCalendarIcsUrl` — per profile, but only
 in AsyncStorage, never in a file). Switching writes the profile being left, reads the new one,
-clears the caches and the return record, and remounts the shell. "Create demo space" writes demo
+clears the caches and the return record, and remounts the shell. **Fresh start**
+(`docs/dev/history/technical-design-fresh-start-profile.md`): a fresh install sets `freshStart`
+(`prepareFreshInstall`); while it is set, `switchProfile` saves nothing first and also loads the
+active id's file (like unreadable settings), Profiles shows Restore next to Save and asks before
+Save, and Remove Kept's data starts without "Save the active profile first". Loading a profile,
+Save, or `ensureDefaultProfileFile` writing a new `production.json` clears it. The setup assistant
+reads the profiles folder once, after its base-folder read (`listSavedProfiles`, read-only - the
+folder is never created there), and offers readable profiles on Welcome back
+(`screens/settings/WelcomeBack.tsx`); Load is the normal switch. "Create demo space" writes demo
 folders under `Note/kept-gtd-demo` and a demo profile, never overwriting (`storage/demoSpace.ts`).
 The profile file format `gtdpara-profile` reads files saved by earlier versions. Detail:
 `docs/dev/history/technical-design-profiles-demo-space.md`.

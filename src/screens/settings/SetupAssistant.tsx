@@ -7,10 +7,18 @@
  * screen. Finish lists exactly what it creates and saves; nothing happens before
  * it (Skip only marks the assistant done). Decisions: domain/setupAssistant.ts;
  * reads and writes: storage/setupAssistant.ts.
+ *
+ * Access first (docs/dev/history/technical-design-fresh-start-profile.md §3.6): before it reads
+ * anything, the assistant says why it needs file access and asks read, then write; refused, it
+ * stops with Try again and Skip - no scan, no plan, no Welcome back.
+ *
+ * On fresh settings, the first look at the base folder (after the file permissions) is followed by
+ * one look for saved profiles; when there are any, Welcome back (WelcomeBack.tsx) comes first and
+ * offers to load one (docs/dev/history/technical-design-fresh-start-profile.md §3.3).
  */
 import React, {useEffect, useRef, useState} from 'react';
 import {StyleSheet, Text, TextInput, View} from 'react-native';
-import {demoSpaceCreatedText, setupFinishedText} from '../../domain/fileChangeText';
+import {demoSpaceCreatedText, profileLoadedText, setupFinishedText} from '../../domain/fileChangeText';
 import {
   FOLDER_ROLES,
   FolderRole,
@@ -25,17 +33,20 @@ import {
 import {GtdParaSettings} from '../../domain/settings';
 import {UPDATE_DISCLAIMER} from '../../domain/updateCheck';
 import {createDemoSpace} from '../../storage/demoSpace';
+import {listSavedProfiles, ProfileInfo} from '../../storage/profiles';
 import {BaseScan, finishSetup, scanBaseFolder, skipSetup} from '../../storage/setupAssistant';
 import {displayPath} from '../../supernote/devicePaths';
+import {ensureFileReadPermission, ensureFileWritePermission} from '../../supernote/pluginPermissions';
 import {requestHelp} from '../../ui/helpStore';
 import PillButton from '../../ui/PillButton';
 import {useStatus, useStatusApi} from '../../ui/status/StatusProvider';
 import {FONT, SPACING} from '../../ui/theme';
 import {errorMessage} from '../../utils/errorMessage';
-import {logError} from '../../utils/log';
-import {requestEinkRefresh} from '../../utils/screenRefresh';
+import {log, logError} from '../../utils/log';
+import {refreshEinkNow, requestEinkRefresh} from '../../utils/screenRefresh';
 import CheckToggle from './CheckToggle';
 import {styles as settingsStyles} from './settingsStyles';
+import WelcomeBack from './WelcomeBack';
 
 const ROLE_LABEL: Record<FolderRole, string> = {projects: 'Projects folder', areas: 'Areas folder', resources: 'Resources folder', archive: 'Archive folder'};
 const STEP_COUNT = 5;
@@ -51,18 +62,23 @@ const STEP_HELP: Array<[string, string | null]> = [
 const CHANGE_LATER = ['Settings → Data', 'Settings → Note setups → Default', 'Settings → Features', 'Settings → About', 'Settings → Data'];
 const SCAN_DELAY_MS = 500;
 const FINISHED_STATUS_ID = 'SetupAssistant.finished';
+const LOADED_STATUS_ID = 'SetupAssistant.profileLoaded';
+const ACCESS_TEXT = 'Kept needs to read and write your Project and Area folders and its own files in EXPORT/kept-gtd.';
+const NO_ACCESS_TEXT = "Kept can't work without access to your files.";
 
 interface Props {
   /** The settings the assistant starts from (Settings' draft). */
   current: GtdParaSettings;
   /** Closed: `saved` is set after Finish. */
   onDone: (saved: GtdParaSettings | null) => void;
+  /** Loads a saved profile (App's profile switch, which remounts the app); rejects with a message. */
+  onLoadProfile?: (id: string) => Promise<void>;
   textColor: string;
   borderColor: string;
   placeholderColor: string;
 }
 
-export default function SetupAssistant({current, onDone, textColor, borderColor, placeholderColor}: Props): React.JSX.Element {
+export default function SetupAssistant({current, onDone, onLoadProfile, textColor, borderColor, placeholderColor}: Props): React.JSX.Element {
   const [step, setStep] = useState(0);
   const [choices, setChoices] = useState<SetupChoices>(() => initialChoices(current, {}));
   const [scan, setScan] = useState<BaseScan | null>(null);
@@ -72,10 +88,33 @@ export default function SetupAssistant({current, onDone, textColor, borderColor,
   useStatus('SetupAssistant.message', message ? {...message, onDismiss: () => setMessage(null)} : null);
   const statusApi = useStatusApi();
 
+  // File access, asked one after the other (never in parallel); `accessTry` counts Try again.
+  const [access, setAccess] = useState<'asking' | 'granted' | 'denied'>('asking');
+  const [accessTry, setAccessTry] = useState(0);
+  useEffect(() => {
+    let cancelled = false;
+    setAccess('asking');
+    (async () => {
+      // The line saying why is on the e-ink screen before the host's dialog covers it.
+      await refreshEinkNow();
+      if (cancelled) return;
+      const read = await ensureFileReadPermission();
+      const write = read && (await ensureFileWritePermission());
+      if (cancelled) return;
+      if (!(read && write)) log('SetupAssistant: file access refused', read ? 'write' : 'read');
+      setAccess(read && write ? 'granted' : 'denied');
+      requestEinkRefresh();
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [accessTry]);
+
   // What Kept finds in the base folder, read again a moment after the base changes.
   const base = choices.baseRoot.trim();
   const scannedOnce = useRef(false);
   useEffect(() => {
+    if (access !== 'granted') return;
     let cancelled = false;
     setScan(null);
     const delay = scannedOnce.current ? SCAN_DELAY_MS : 0;
@@ -96,7 +135,48 @@ export default function SetupAssistant({current, onDone, textColor, borderColor,
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [base]);
+  }, [base, access]);
+  // Fresh settings: after the first read (the permission is granted by then), the saved profiles,
+  // once. null while that look is pending; Welcome back shows while `welcome` holds some.
+  const offerSaved = current.freshStart && !!onLoadProfile;
+  const [welcome, setWelcome] = useState<ProfileInfo[] | null>(offerSaved ? null : []);
+  useEffect(() => {
+    if (!scan || welcome !== null) return;
+    let cancelled = false;
+    listSavedProfiles()
+      .catch(e => {
+        logError('SetupAssistant: looking for saved profiles failed', errorMessage(e));
+        return [];
+      })
+      .then(found => {
+        if (cancelled) return;
+        if (found.length > 0) log('SetupAssistant: offering saved profiles', found.length);
+        setWelcome(found);
+        requestEinkRefresh();
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [scan, welcome]);
+
+  const handleLoad = async (profile: ProfileInfo) => {
+    if (!onLoadProfile) return;
+    setBusy(true);
+    setMessage(null);
+    try {
+      await onLoadProfile(profile.id);
+      statusApi.show(LOADED_STATUS_ID, {
+        kind: 'success',
+        text: profileLoadedText(profile.name),
+        scope: 'global',
+        onDismiss: () => statusApi.clear(LOADED_STATUS_ID),
+      });
+    } catch (e) {
+      setMessage({kind: 'error', text: `Not loaded: ${errorMessage(e)}`});
+      setBusy(false);
+    }
+  };
+
   // The first read suggests existing folders (`Projects`, `1 Projects` …), once.
   useEffect(() => {
     if (!scan || suggested) return;
@@ -256,6 +336,54 @@ export default function SetupAssistant({current, onDone, textColor, borderColor,
     );
   })();
 
+  if (access !== 'granted') {
+    return (
+      <View style={styles.container}>
+        <View style={[styles.header, {borderColor}]}>
+          <Text style={[styles.title, {color: textColor}]}>Setup</Text>
+          <View style={styles.buttons}>
+            <PillButton label="? Help" onPress={() => requestHelp('settings', 'setup-assistant')} {...pill} />
+            <PillButton label="Skip" onPress={handleSkip} disabled={busy} {...pill} />
+          </View>
+        </View>
+        <View style={styles.body}>
+          <Text style={text}>{ACCESS_TEXT}</Text>
+          {access === 'denied' && (
+            <>
+              <Text style={[text, styles.bold]}>{NO_ACCESS_TEXT}</Text>
+              <View style={styles.buttons}>
+                <PillButton label="Try again" size="large" primary onPress={() => setAccessTry(n => n + 1)} disabled={busy} {...pill} />
+              </View>
+            </>
+          )}
+        </View>
+      </View>
+    );
+  }
+  if (welcome === null) {
+    return (
+      <View style={styles.container}>
+        <Text style={[styles.title, {color: textColor}]}>Setup</Text>
+        <Text style={text}>Looking for settings you saved earlier…</Text>
+      </View>
+    );
+  }
+  if (welcome.length > 0) {
+    return (
+      <WelcomeBack
+        profiles={welcome}
+        onLoad={handleLoad}
+        onStartFresh={() => {
+          setWelcome([]);
+          go(0);
+        }}
+        busy={busy}
+        textColor={textColor}
+        borderColor={borderColor}
+      />
+    );
+  }
+
   const finishScreen = step === STEP_COUNT;
   return (
     <View style={styles.container}>
@@ -292,5 +420,6 @@ const styles = StyleSheet.create({
   folderField: {marginBottom: SPACING.md},
   option: {marginBottom: SPACING.md},
   hint: {fontSize: FONT.small, opacity: 0.6, marginTop: 4},
+  bold: {fontWeight: '700'},
   footer: {marginTop: SPACING.lg, gap: SPACING.sm},
 });

@@ -8,6 +8,11 @@ export const FILE_WRITE_PERMISSION = 'plugin.permission.FILE:WRITE';
 export const FILE_DELETE_PERMISSION = 'plugin.permission.FILE:DELETE';
 export const INTERNET_PERMISSION = 'plugin.permission.INTERNET';
 
+/**
+ * The host request for each permission, until the host call itself settles - also after a
+ * caller's wait timed out - so a later caller joins the open dialog instead of starting a second
+ * one (docs/dev/history/technical-design-fresh-start-profile.md §3.6).
+ */
 const pending = new Map<string, Promise<boolean>>();
 
 /**
@@ -44,13 +49,16 @@ export function forgetGrantsAndRethrow(error: unknown): never {
 // error and no data, which looks like total silence in the UI - exactly the
 // "+Add does nothing, nothing appears, no error" symptom. This turns a stuck
 // bridge call into a clear, catchable error instead of an infinite hang.
+// hasPermission answers at once, so 8 s means a stuck host; requestPermission waits for a person
+// reading a dialog, so its bound is long and only guards a host that never answers.
 const PERMISSION_TIMEOUT_MS = 8000;
+const PERMISSION_REQUEST_TIMEOUT_MS = 120000;
 
-function withTimeout<T>(promise: Promise<T>, label: string): Promise<T> {
+function withTimeout<T>(promise: Promise<T>, label: string, ms: number): Promise<T> {
   return new Promise<T>((resolve, reject) => {
     const timer = setTimeout(() => {
-      reject(new Error(`${label} timed out after ${PERMISSION_TIMEOUT_MS}ms - the host never responded`));
-    }, PERMISSION_TIMEOUT_MS);
+      reject(new Error(`${label} timed out after ${ms}ms - the host never responded`));
+    }, ms);
     promise.then(
       value => {
         clearTimeout(timer);
@@ -64,10 +72,35 @@ function withTimeout<T>(promise: Promise<T>, label: string): Promise<T> {
   });
 }
 
+/** Asks the host: hasPermission (bounded), then the dialog (unbounded here). Never rejects; a grant is recorded whenever it arrives. */
+async function askHost(permission: string, description: string): Promise<boolean> {
+  try {
+    log('ensurePluginPermission: calling hasPermission', permission);
+    const has = Number(
+      await withTimeout(PluginManager.hasPermission(permission), `hasPermission(${permission})`, PERMISSION_TIMEOUT_MS),
+    );
+    log('ensurePluginPermission: hasPermission', permission, '=>', has);
+    if (has > 0) {
+      granted.add(permission);
+      return true;
+    }
+    log('ensurePluginPermission: calling requestPermission', permission);
+    const requested = Number(await PluginManager.requestPermission(permission, description));
+    log('ensurePluginPermission: requestPermission', permission, '=>', requested);
+    if (requested > 0) granted.add(permission);
+    return requested > 0;
+  } catch (e) {
+    logError('ensurePluginPermission: error', permission, errorMessage(e));
+    return false;
+  }
+}
+
 /**
  * Requests a plugin.permission.* grant through the host's runtime permission
  * API. A grant is remembered for the session (see `granted` above); a denial,
- * an error or a timeout resolves false.
+ * an error or a timeout resolves false - never a throw. One host request per
+ * permission at a time (see `pending` above); each caller waits for it at most
+ * PERMISSION_REQUEST_TIMEOUT_MS.
  */
 export async function ensurePluginPermission(
   permission: string,
@@ -75,47 +108,21 @@ export async function ensurePluginPermission(
 ): Promise<boolean> {
   if (granted.has(permission)) return true;
 
-  const existing = pending.get(permission);
-  if (existing) return existing;
+  let request = pending.get(permission);
+  if (!request) {
+    const started: Promise<boolean> = askHost(permission, description).finally(() => {
+      if (pending.get(permission) === started) pending.delete(permission);
+    });
+    request = started;
+    pending.set(permission, request);
+  }
   const perfToken = perfStart();
-
-  const request = (async () => {
-    try {
-      log('ensurePluginPermission: calling hasPermission', permission);
-      const has = Number(
-        await withTimeout(PluginManager.hasPermission(permission), `hasPermission(${permission})`),
-      );
-      log('ensurePluginPermission: hasPermission', permission, '=>', has);
-      if (has > 0) {
-        granted.add(permission);
-        return true;
-      }
-
-      log('ensurePluginPermission: calling requestPermission', permission);
-      const requested = Number(
-        await withTimeout(
-          PluginManager.requestPermission(permission, description),
-          `requestPermission(${permission})`,
-        ),
-      );
-      log('ensurePluginPermission: requestPermission', permission, '=>', requested);
-      if (requested > 0) granted.add(permission);
-      return requested > 0;
-    } catch (e) {
-      logError(
-        'ensurePluginPermission: error',
-        permission,
-        errorMessage(e),
-      );
-      return false;
-    }
-  })();
-
-  pending.set(permission, request);
   try {
-    return await request;
+    return await withTimeout(request, `requestPermission(${permission})`, PERMISSION_REQUEST_TIMEOUT_MS);
+  } catch (e) {
+    logError('ensurePluginPermission: error', permission, errorMessage(e));
+    return false;
   } finally {
-    pending.delete(permission);
     perfEnd('io:permission', perfToken, {permission});
   }
 }
@@ -129,7 +136,7 @@ export async function ensurePluginPermission(
 export async function hasPluginPermission(permission: string): Promise<boolean> {
   if (granted.has(permission)) return true;
   try {
-    const has = Number(await withTimeout(PluginManager.hasPermission(permission), `hasPermission(${permission})`)) > 0;
+    const has = Number(await withTimeout(PluginManager.hasPermission(permission), `hasPermission(${permission})`, PERMISSION_TIMEOUT_MS)) > 0;
     log('hasPluginPermission:', permission, '=>', has);
     if (has) granted.add(permission);
     return has;

@@ -51,15 +51,18 @@ export function featuresOf(settings: FeatureFlagFields | null | undefined): Feat
 interface FreshInstallFields {
   lastSeenVersion: string;
   setupAssistant: 'pending' | 'done';
+  freshStart: boolean;
 }
 
 /**
  * First-start defaults, run on every settings load (storage/settingsStorage.ts): returns the
  * SAME object when nothing changes. On a fresh install (nothing stored), `lastSeenVersion`
  * becomes `currentVersion`, so no "Updated to …" notice, and the setup assistant is 'pending',
- * so it opens once (docs/dev/history/technical-design-easy-start.md §5.1). Stored settings keep
- * the default 'done': they never see the assistant by themselves. The experimental switches
- * stay at their defaults (off).
+ * so it opens once (docs/dev/history/technical-design-easy-start.md §5.1), and `freshStart` is set,
+ * so a saved profile can be loaded and is not overwritten by these settings
+ * (docs/dev/history/technical-design-fresh-start-profile.md §3.1). Stored settings keep the
+ * default 'done' and false: they never see the assistant by themselves. The experimental
+ * switches stay at their defaults (off).
  */
 export function prepareFreshInstall<T extends FreshInstallFields>(merged: T, rawStored: unknown, currentVersion: string): T {
   const raw = rawStored && typeof rawStored === 'object' ? (rawStored as Record<string, unknown>) : {};
@@ -67,6 +70,7 @@ export function prepareFreshInstall<T extends FreshInstallFields>(merged: T, raw
   let next = merged;
   if (!merged.lastSeenVersion) {next = {...next, lastSeenVersion: currentVersion};}
   if (merged.setupAssistant !== 'pending') {next = {...next, setupAssistant: 'pending'};}
+  if (!merged.freshStart) {next = {...next, freshStart: true};}
   return next;
 }
 
