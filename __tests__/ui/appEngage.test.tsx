@@ -1,6 +1,7 @@
 // docs/dev/history/technical-design-engage.md §3.8: the Engage sidebar button opens the
 // panel (mode 'engage'), a landing still in flight doesn't replace it, Close hides the
-// plugin view and the Open Kept GTD button goes back to the tabs.
+// plugin view and the Open Kept GTD button goes back to the tabs. Nothing above the
+// panel paints a background, so the note stays visible around it.
 jest.mock('react-native-svg', () => {
   const ReactLib = require('react');
   const stub = (props: object) => ReactLib.createElement('Svg', props);
@@ -58,13 +59,14 @@ jest.mock('../../src/supernote/fileSystem', () => ({
 }));
 
 import React from 'react';
-import {Text} from 'react-native';
+import {StyleSheet, Text, View} from 'react-native';
 import TestRenderer, {act} from 'react-test-renderer';
 import App from '../../App';
 import {ENGAGE_BUTTON_ID, SIDEBAR_BUTTON_ID} from '../../src/domain/buttonIds';
 import {engageOwner} from '../../src/ui/engageStore';
 import {log} from '../../src/utils/log';
 import {closeOverview, getOverview} from '../../src/ui/overviewStore';
+import EngageOverlay from '../../src/screens/engage/EngageOverlay';
 
 const texts = (r: TestRenderer.ReactTestRenderer) => r.root.findAllByType(Text).map(t => [t.props.children].flat().join(''));
 
@@ -120,6 +122,25 @@ describe('App with the Engage button', () => {
     await act(async () => open.props.onPress());
     await settle();
     expect(texts(r)).toContain('Daily');
+    act(() => r.unmount());
+  });
+
+  it('keeps every view above the panel transparent, so the note shows around it', async () => {
+    let r!: TestRenderer.ReactTestRenderer;
+    await act(async () => {
+      r = TestRenderer.create(<App />);
+    });
+    await settle();
+    act(() => mockButtons.press!({id: ENGAGE_BUTTON_ID}));
+    await settle();
+    const panel = r.root.findByType(EngageOverlay);
+    const painted: string[] = [];
+    for (let node = panel.parent; node; node = node.parent) {
+      if (node.type !== View) continue;
+      const background = StyleSheet.flatten(node.props.style)?.backgroundColor;
+      if (background !== undefined && background !== 'transparent') painted.push(String(background));
+    }
+    expect(painted).toEqual([]);
     act(() => r.unmount());
   });
 

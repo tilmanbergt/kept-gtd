@@ -10,6 +10,11 @@
  * is drawn in a framed box of the simulated size, 16 dp in from the top left
  * corner, and that size is what everything below gets.
  *
+ * The root itself stays transparent: the Engage panel lets the note show
+ * through around it (screens/engage/engageStyles.ts), and every other screen
+ * paints its own white background. Only a simulation paints the root white,
+ * around its framed box.
+ *
  * `estimatorWidth()` is the column figure for the line estimators
  * (domain/screenLayout.ts); helpers outside components read it at call
  * time. When it changes (a narrower screen, or rotating one), the app below
@@ -84,7 +89,7 @@ export function ScreenSizeProvider({children}: {children: React.ReactNode}): Rea
     </ScreenSizeContext.Provider>
   );
   return (
-    <View style={styles.root} onLayout={onLayout}>
+    <View style={sim ? [styles.root, styles.simRoot] : styles.root} onLayout={onLayout}>
       <RealSizeContext.Provider value={size}>
         {sim ? (
           <>
@@ -102,7 +107,8 @@ export function ScreenSizeProvider({children}: {children: React.ReactNode}): Rea
 }
 
 const styles = StyleSheet.create({
-  root: {flex: 1, backgroundColor: '#ffffff'},
+  root: {flex: 1},
+  simRoot: {backgroundColor: '#ffffff'},
   frame: {alignSelf: 'flex-start', marginLeft: SIMULATION_INSET, marginTop: SIMULATION_INSET, borderWidth: 1, borderColor: '#000000'},
   simLine: {fontSize: FONT.small, color: '#666666', margin: 16},
 });
