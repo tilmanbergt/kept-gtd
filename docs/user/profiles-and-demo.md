@@ -23,7 +23,7 @@ Stays the same for all profiles: [keep tabs in memory, performance tracing](sett
 
 Profiles are files in `EXPORT/kept-gtd/profiles`, one `.json` file per profile. To import a profile, copy its file into that folder and tap **Refresh list**. To share your Note setups or folder setup, share the file.
 
-Before Kept GTD 0.20, the plugin was called gtdpara and kept its profiles in `EXPORT/gtdpara/profiles`. On its first start, Kept copies them into `EXPORT/kept-gtd/profiles`, as long as that folder holds no profile yet, and the [status line](index.md#the-status-line) says how many it copied. The demo profile is not copied; it is written again when you create the demo space. The old folder is left as it is; once your profiles are in the new one, you can delete `EXPORT/gtdpara`.
+To move your setup to another Supernote, or to keep it over a reinstall of Kept: **Save** each profile, copy the files in `EXPORT/kept-gtd/profiles` (they stay on the device when you uninstall Kept), put them into that folder on the new install and tap **Refresh list**, then **Switch** to your profile. A profile saved by an earlier Kept GTD loads too.
 
 The Gmail app password and the calendar link are never written into these files. They stay inside the plugin, separately for each profile.
 

@@ -40,7 +40,7 @@ The list, each with where it is and how much there is:
 - *Lasso mark pictures and temporary files*: the plugin's private folder. [Open marks](lasso.md#processing-marks) lose their picture and handwriting - the line says how many; process them first.
 - *Debug and performance logs*: `EXPORT/kept-gtd/debug`.
 - *Demo space*: `Note/kept-gtd-demo` and the profile Demo. While the demo profile is active, it goes only together with the settings.
-- *Old gtdpara folders* and *Leftover save copies*: only listed when there are some.
+- *Leftover save copies*: only listed when there are some.
 - *Kept's data files*, unchecked: `project.txt`, `area.txt` and `Inbox.txt` in your Projects, Areas and Archive folders. Your todos, meetings and agreements are in them - copy them first if you want to keep them. The folders, notes and every other file stay.
 - *Saved profiles*, unchecked: `EXPORT/kept-gtd/profiles`.
 

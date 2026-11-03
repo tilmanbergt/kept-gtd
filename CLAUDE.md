@@ -1,9 +1,11 @@
 # Working on Kept GTD
 
 Kept GTD (formerly gtdpara) is a Supernote e-ink plugin (React Native + `sn-plugin-lib`, native Kotlin
-modules). The rename is display-only: plugin id and key, storage keys, note markers, the profile
-format, native and TS names keep `gtdpara` (`docs/dev/history/technical-design-kept-gtd.md` §3.1,
-pinned by `__tests__/keptGtdKeepList.test.ts`).
+modules). Its identity is `keptgtd` (pluginKey, app name; pluginID `nj7yssrvl7g778tz`), its stored
+keys start with `kept:` (`src/domain/storeKeys.ts`). What the user never sees and what is already
+in their notes and files keeps `gtdpara`: the Android package, native module and TS names, the
+`[GtdPara]` log prefix, the note markers, the profile format `gtdpara-profile` and `.gtdpara-tmp`
+(`docs/dev/history/technical-design-clean-break.md` §3, pinned by `__tests__/pluginIdentity.test.ts`).
 
 **Before any change, read and follow `docs/dev/DEVELOPMENT-POLICY.md`.** Every feature, bugfix
 and release ends with its checklists (§8 for changes, §9 for releases): architecture, UI,

@@ -86,7 +86,9 @@ from the description via the repository. Summary:
 - Source: github.com/tilmanbergt/kept-gtd, tag `vX.Y.Z` = this build.
 - Native modules (Kotlin): `GtdParaFile` (folder listing, plain-text/binary read/write, moves -
   sn-plugin-lib has no API for these), `Pdf` (close-out PDF), `GmailImap` (IMAP, only when Gmail
-  is switched on), `TextboxMetrics` (text measurement). All of it runs under the host's
+  is switched on), `TextboxMetrics` (text measurement), `KeptUpdate` (downloads a release from
+  GitHub into `MyStyle/kept-gtd`; never installs or deletes), `GtdParaRuntime` (build id and version
+  for Settings → About). All of it runs under the host's
   permissions; each permission is requested right before use.
 - Deletes: temp files and lasso mark pictures only in the plugin's private folders; in shared
   storage, only empty folders after a move and what the user checks in Remove Kept's data (Kept's

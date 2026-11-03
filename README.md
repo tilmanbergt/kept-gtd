@@ -104,19 +104,28 @@ for what changed in each version, including which features are still experimenta
 
 1. Download the latest `kept-gtd-x.y.z.snplg` from
    [Releases](https://github.com/tilmanbergt/kept-gtd/releases/latest).
-2. Copy it to your Supernote and install it as a plugin. Requires Supernote's plugin firmware:
+2. Copy it to your Supernote and install it as a new plugin. Requires Supernote's plugin firmware:
    **A5 X / A6 X Chauvet 2.27.42** or later, **Manta / Nomad Chauvet 3.30.45** or later.
    Made on the Supernote A5 X; checked in landscape and on a simulated Nomad; Manta should work.
-3. Open Kept GTD from the plugin sidebar in a note, then check **Settings → Data**.
+3. Open Kept GTD from the plugin sidebar in a note; the setup assistant takes you through your
+   folders.
 
 Updating: install the newer `.snplg` over the existing one. Read the *Upgrade notes* in the
 changelog first. Kept can do the fetching: **Settings → About → Check now** (or once a day, if you
 switch that on) tells you about a new release and **Download** saves it to `MyStyle/kept-gtd/`.
 Then close Kept and install it with **Settings → Plugins → Add plugin**; Kept never installs
 anything itself. Releases on GitHub are not reviewed or approved by Ratta. You install them at
-your own risk. Each release is tested to keep your data safe. Coming from gtdpara: install Kept GTD over it. Your settings, notes and PARA
-folders stay as they are; debug files and the demo space move to `EXPORT/kept-gtd` and
-`Note/kept-gtd-demo`, and saved profiles are copied there once.
+your own risk. Each release is tested to keep your data safe.
+
+### Coming from 0.24.0 or gtdpara
+
+Kept GTD 0.25.0 is a new install, not an update: its settings start fresh. Don't install it over
+your current version. In your current Kept GTD (update to 0.24.0 first if you are on an older
+version or on gtdpara), follow the 0.24.0 upgrade notes: process open lasso marks, save each
+profile once, note your Gmail app password and calendar link, run **Settings → Data → Remove Kept's
+data** with *Kept's data files* and *Saved profiles* unticked, then uninstall it. Then install
+0.25.0, run the setup assistant and **Switch** to your saved profile (Settings → Data → Profiles).
+Your notes, data files and saved profiles stay where they are.
 
 ## Help and bug reports
 

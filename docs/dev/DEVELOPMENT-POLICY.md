@@ -73,8 +73,7 @@ The full rules are in `docs/dev/design-overview.md` §3. They are binding; the m
 - **Secrets** (passwords, private calendar links) are never written to a file, a log, a debug
   bundle or a profile file.
 - **Everything Kept exports** goes under `EXPORT/kept-gtd/` (`debug/`, `profiles/`), never
-  under `Note/`. The export folder of gtdpara 0.19 and older, `EXPORT/gtdpara/`, is only read,
-  by the one-time profile copy (`storage/profiles.ts`). Diagnostics are written to a file only when the user asked for it (Debug
+  under `Note/`. Diagnostics are written to a file only when the user asked for it (Debug
   logging, Export debug bundle, Integrity Check, perf tracing) - never silently.
 - **File changes are visible** (`technical-design-inkhub-submission.md` §3.8): the user's own
   edits need nothing extra; created files are named with their folder in the status slot; moves,

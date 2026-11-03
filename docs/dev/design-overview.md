@@ -605,9 +605,8 @@ item's own note), list order within a kind, the Default without a match; `storag
 places them in the file system and `planItemNote` turns the others into `alternatives`, offered
 as a second button in the confirm (`ui/useStatusChoice.ts`). An existing link decides; its
 layout is the one of the candidate whose file it is (`layoutForLink`). A fresh install gets the
-Default with the standard Meeting, First, Reflection and Home pages (a Default missing the Home or
-Reflection page gets the standard one once); 0.14's Tag Rules are migrated once
-(`domain/noteSetupMigration.ts`, kept unchanged in `settings.tagRules` for a downgrade).
+Default with the standard Meeting, First, Reflection and Home pages and the home notebook
+(`DEFAULT_SETTINGS.noteSetupDefaults` = `seedNoteSetupDefaults()`).
 
 - **Content.** `storage/meetingNoteContent.ts`'s `populatePage` writes one textbox element per piece; pieces are always
   regenerated, never merged. Each textbox is sized by on-device text measurement
@@ -1019,8 +1018,7 @@ cleaned up. The flow reads the lasso first (picture into the private temp folder
 elements, strokes) and removes the lasso box before its first file write, so the first permission
 check doesn't delay the read. While a mark is saved, App starts nothing (`holdStartForMark`: no
 landing, no Files pane, no cache build, no temp clean-up), so a cold start doesn't compete with the
-lasso reads. Marks written before `MARK_DATA_VERSION` 2 hold EMR
-stroke points: their handwriting is not recognized, the text is typed from the picture. A bookmark icon is drawn on the page (`supernote/markIcons.ts`, userData
+lasso reads. A mark whose private data is missing keeps its line; its text is typed. A bookmark icon is drawn on the page (`supernote/markIcons.ts`, userData
 `gtdpara:mark:<id>`), turned into a check on save and removed on discard; when the element is not
 unique the change is kept in a pending list and retried. Only a problem shows
 `ui/MarkOutcomeScreen.tsx`.
@@ -1074,7 +1072,7 @@ exists, not moved when Base or Areas change in the same save); a Gmail Save clea
 **Data** (`DataTab.tsx`) has the folder fields left, Run setup assistant, Profiles and Remove Kept's
 data right; they wait while the folder fields are unsaved (`draft.unsaved('folders')`). **Remove
 Kept's data** (`RemoveDataScreen.tsx`, `docs/dev/history/technical-design-remove-data.md`): the kinds
-and rules are pure (`domain/dataRemoval.ts`); `storage/dataRemoval.ts` scans (only `gtdpara:` store
+and rules are pure (`domain/dataRemoval.ts`); `storage/dataRemoval.ts` scans (only `kept:` store
 keys, never the whole store) and removes in the order files, private folders, store - settings last
 and kept when an earlier step failed; deletes in shared storage go through the native
 `deleteKeptTree` / `deleteKeptFile`, which refuse anything outside Kept's own folders and data-file
@@ -1096,7 +1094,7 @@ new", also offered once after an update; a newer release known from GitHub comes
 which GitHub release counts (`/releases/latest`, tag `vX.Y.Z`, exactly one `kept-gtd-X.Y.Z.snplg` with
 a `sha256` digest, no draft or pre-release) and whether it is newer (`runningVersion`: an alpha or
 beta towards X.Y.Z is older than X.Y.Z). `storage/updates.ts` fetches the release JSON in JS and
-keeps a device-wide state in AsyncStorage (`gtdpara:updates:v1`: last check, what it found, Not
+keeps a device-wide state in AsyncStorage (`kept:updates:v1`: last check, what it found, Not
 now, what was saved) with a subscribe API; `checkForUpdate` dedupes concurrent calls, and the
 silent daily check only looks at the INTERNET grant (`hasPluginPermission`), never asks.
 `downloadUpdate` uses the native `KeptUpdate` module (`KeptUpdateModule.kt`, its own thread):
@@ -1114,14 +1112,16 @@ Everything), Updates (daily check or only Check now; Finish asks for INTERNET wh
 around first (demo space), then Finish, drawn in Settings in place of its tabs.
 Finish saves through `patchSettings` (refused while settings are unreadable), creates only the
 missing folders and reports them; Skip only sets `setupAssistant: 'done'`. App lands on it on the
-first reorient while `setupAssistant` is 'pending', which `migrateExperimentalFlags` sets only on a
+first reorient while `setupAssistant` is 'pending', which `prepareFreshInstall` sets only on a
 fresh install; Run setup assistant on the Folders tab starts it any time. ? Help goes through
 `ui/helpStore.ts`. Detail: `docs/dev/history/technical-design-easy-start.md` §5.
 
 **Persistence.** `GtdParaSettings` (`domain/settings.ts`, defaults in `DEFAULT_SETTINGS`) is one
 JSON blob in AsyncStorage (`storage/settingsStorage.ts`); load fills missing fields from the
-defaults and runs idempotent migrations (Tag Rule key names, Tag Rules to Note setups,
-experimental-switch defaults). The settings last read or written stay in memory
+defaults; on a fresh install (nothing stored) `prepareFreshInstall` sets the What's-new marker
+and the setup assistant. Every AsyncStorage key comes from `domain/storeKeys.ts` and starts with
+`kept:`; a profile switch fills keys a profile file lacks from the defaults and drops keys
+`DEFAULT_SETTINGS` doesn't have. The settings last read or written stay in memory
 (`storage/settingsSnapshot.ts`): `peekSettings`, and `subscribeSettings` for a change. A read
 that finds the same stored text returns the same object (no parse, no migrations), concurrent
 reads share one, and a loaded settings object is never changed in place: a change spreads into
@@ -1138,11 +1138,8 @@ device-wide (`perfTracing`, `keepTabsAlive`, `debugLogging`, `notebookContentsEn
 in AsyncStorage, never in a file). Switching writes the profile being left, reads the new one,
 clears the caches and the return record, and remounts the shell. "Create demo space" writes demo
 folders under `Note/kept-gtd-demo` and a demo profile, never overwriting (`storage/demoSpace.ts`).
-On start, `ui/useProfileCopyNotice.ts` copies the profile files from the old export folder
-`EXPORT/gtdpara/profiles` (`LEGACY_EXPORT_ROOT`) while the new folder holds none, without the demo
-profile (rule: `domain/profileCopy.ts`; copy: `storage/profiles.ts`'s `copyLegacyProfiles`); the old
-folder is only read. Detail: `docs/dev/history/technical-design-profiles-demo-space.md`,
-`docs/dev/history/technical-design-kept-gtd.md` §3.3.
+The profile file format `gtdpara-profile` reads files saved by earlier versions. Detail:
+`docs/dev/history/technical-design-profiles-demo-space.md`.
 
 **Diagnostics.** Everything Kept exports lives under `EXPORT/kept-gtd/` and is written only
 when asked for:
@@ -1187,6 +1184,13 @@ folder-change listeners, so no module imports `fileSystem.ts` back; `lasso.ts`/`
 `sdkElements.ts` note elements; `pdfNative.ts` the native PDF writer (`GtdParaPdf`);
 `textboxMetrics.ts` native text measurement; `pluginRuntime.ts` the runtime guard. Other native
 modules: `GmailImapModule` (§2.11).
+
+**Identity** (`docs/dev/history/technical-design-clean-break.md` §3): `PluginConfig.json`'s
+`pluginKey` `keptgtd` = `app.json` name = `MainActivity`'s component name; `pluginID`
+`nj7yssrvl7g778tz` (also `PluginRuntimeGuard.kt`'s fallback); the host gives the plugin its private
+folder by `pluginID`. The Android package `eu.embodyagile.gtdpara`, the native module names, the
+note markers (`gtdpara:…`), `gtdpara-profile` and `.gtdpara-tmp` keep the old name; changing a marker
+or the profile format would break notes and saved profiles (`__tests__/pluginIdentity.test.ts`).
 
 **Permissions and deletes** (`supernote/pluginPermissions.ts`). Declared: FILE:READ, FILE:WRITE,
 FILE:DELETE, INTERNET (`PluginConfig.json`). Every file or network call checks its permission
