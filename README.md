@@ -20,9 +20,8 @@ which people and series you still tend. See [Threads](docs/user/threads.md).
 > Issues and ideas are welcome.
 
 <table>
-<tr><td align="center"><img src="docs/user/images/20260930_Daily.png" width="260" alt="Daily"><br><sub>Daily</sub></td><td align="center"><img src="docs/user/images/20260930_Week.png" width="260" alt="Week"><br><sub>Week</sub></td><td align="center"><img src="docs/user/images/20260930_Current%20Project.png" width="260" alt="A project (Current tab)"><br><sub>A project (Current tab)</sub></td></tr>
-<tr><td align="center"><img src="docs/user/images/20260930_Inbox%20Quick%20Add.png" width="260" alt="Inbox and Quick Add"><br><sub>Inbox and Quick Add</sub></td><td align="center"><img src="docs/user/images/20260930_Review.png" width="260" alt="Weekly Review"><br><sub>Weekly Review</sub></td><td align="center"><img src="docs/user/images/20260930_Help%20Settings.png" width="260" alt="In-app help"><br><sub>In-app help</sub></td></tr>
-</table>
+   <tr><td align="center"><img src="docs/user/images/screen-daily.png" width="260" alt="Daily"><br><sub>Daily</sub></td><td align="center"><img src="docs/user/images/screen-week.png" width="260" alt="Week"><br><sub>Week</sub></td><td align="center"><img src="docs/user/images/screen-project.png" width="260" alt="A project"><br><sub>A project</sub></td></tr>
+   <tr><td align="center"><img src="docs/user/images/screen-engage.png" width="260" alt="Engage on a note page"><br><sub>Engage on a note page</sub></td><td align="center"><img src="docs/user/images/screen-review.png" width="260" alt="Weekly Review"><br><sub>Weekly Review</sub></td></tr></table>
 
 <sub>Screenshots from the built-in demo space on a Supernote A5 X.</sub>
 
