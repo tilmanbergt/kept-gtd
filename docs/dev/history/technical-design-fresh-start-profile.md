@@ -1,0 +1,124 @@
+# Technical design - fresh start finds the saved profile (0.25.1)
+
+Status: **approved 2026-11-03** (Tilman: offer in the setup assistant, Restore as fallback). Bugfix for
+0.25.0 "Clean break" (`technical-design-clean-break.md`). Branch `fix/fresh-start-profile` from `main`
+(which has the build-script fix: bundle named after `pluginKey`). Release: 0.25.1.
+
+## 1. Exact failure and root cause
+
+- **Failure** (A5 X, alpha of 0.25.1): after the move-over steps (Remove Kept's data, uninstall 0.24.0,
+  install 0.25.x), Kept starts fresh. Projects show (same folders), but contexts and Note setups are
+  missing. `EXPORT/kept-gtd/profiles/production.json` from 0.24.0 is there but can't be loaded.
+- **Root cause:** a fresh install's `activeProfileId` is `production` (`DEFAULT_SETTINGS`), the same id
+  as the saved file. The Profiles list shows it as active, so it has no Switch button, and
+  `switchProfile` returns at once when target = active (`storage/profiles.ts`). Before 0.25.0 the active
+  settings and `production.json` always matched, so the case never arose.
+- **Hidden danger in the same state:** Save on Production, or a switch to another profile (Demo), writes
+  the fresh, empty settings into `production.json` (`saveActiveProfile`, and `switchProfile` saves the
+  current profile first). That would destroy the profile the upgrade notes tell users to keep.
+
+## 2. Decisions
+
+- **D1 Offer, not silent load.** The setup assistant looks for saved profiles in its first step - it
+  needs the file read permission there anyway - and offers to load one. No read and no permission prompt
+  at start-up.
+- **D2 Restore as fallback** on the active profile in Settings → Data → Profiles while Kept runs on
+  fresh settings (the same button the "settings unreadable" case already has).
+- **D3 Protection.** While Kept runs on fresh settings, nothing writes them into an existing profile file
+  without asking.
+
+## 3. Design
+
+### 3.1 The fresh-start mark (`domain/settings.ts`, `domain/features.ts`, `domain/profiles.ts`)
+- New setting `freshStart: boolean`, default `false`, **device-wide** (added to `DEVICE_WIDE_KEYS`, so
+  it never goes into a profile file).
+- `prepareFreshInstall` sets `freshStart: true` together with `setupAssistant: 'pending'`.
+- Cleared (set `false`) by: loading a profile (assistant Load, Restore, Switch) and by Save. Not cleared
+  by finishing or skipping the assistant: someone who chose Start fresh can still Restore later.
+
+### 3.2 Storage (`storage/profiles.ts`)
+- `switchProfile(targetId)`: let `keepFiles = unreadable || current.freshStart`.
+  - Same id: return `current` only when `!keepFiles` (today's rule); otherwise load the file.
+  - Save the current profile first only when `!keepFiles`.
+  - The result has `freshStart: false` and `setupAssistant: 'done'`.
+  - Everything else (secrets map, `buildActiveSettings`, re-read) as today.
+- New `listSavedProfiles()`: like `listProfiles`, but **read-only** - a missing profiles folder means
+  "none" and is not created (`listProfiles` keeps its `ensureFolderExists` for Settings). Only readable
+  files, newest `savedAt` first.
+- `saveActiveProfile()` unchanged in storage; it clears `freshStart` after writing (the UI asks first,
+  §3.4).
+
+### 3.3 Setup assistant (`screens/settings/SetupAssistant.tsx`, `domain/setupAssistant.ts`)
+- When the base folder is scanned (step 0, after the permission), it also calls `listSavedProfiles()`.
+- When at least one is found **and** `current.freshStart` is true, the assistant first shows a
+  **Welcome back** screen (not counted in "1 of 5"):
+  - Title "Welcome back"; text "Kept found settings you saved earlier. Load them to continue where you
+    left off - your folders, Note setups and contexts. Your notes and files are not changed."
+  - One row per profile (radio): name · "saved 3 Nov" (date only); the newest is selected.
+  - Buttons: **Load "<name>"** (primary) and **Start fresh** (goes on to Folders, as today); ? Help
+    (`profiles-and-demo`, `saved-profiles` or the nearest heading).
+- **Load** calls a new prop `onLoadProfile(id)` → Settings → App's `switchToProfile` (the existing switch
+  path: caches dropped, shell remounted). The assistant closes; the shell opens on Projects; the status
+  says: `Loaded your profile "<name>". If you use Gmail or Google Calendar, enter the app password and
+  calendar link again (Settings → Features).` (text in `domain/fileChangeText.ts`).
+- A load that fails keeps the assistant open with the error in its message line; Start fresh still works.
+
+### 3.4 Profiles list (`screens/settings/ProfilesSection.tsx`)
+- Active row: **Restore** when `unreadable || freshStart` (today: only `unreadable`), with confirm text
+  for the fresh case: `Load your saved profile "<name>"? The fresh settings are replaced; the file stays
+  as it is.`
+- Save on the active row while `freshStart`: confirm first - `Replace your saved profile "<name>" with
+  the current fresh settings?` (Save / Cancel).
+- Switch to another profile while `freshStart`: the confirm says `Switch to "<name>"? Your saved profile
+  "<active>" stays as it is.` (nothing is saved first, §3.2).
+
+### 3.5 Texts
+- CHANGELOG `[Unreleased]` (0.25.1): in the Upgrade notes replace "run the setup assistant and Switch to
+  your saved profile" with "open Kept: it finds your saved profile and offers to load it (later: Settings
+  → Data → Profiles → Restore)". **Fixed**: "After a fresh install, your saved profile couldn't be loaded
+  (Production showed as active, without Switch). Kept now offers to load it when you first open it, and
+  never overwrites it with the fresh settings without asking." Keep the line about 0.25.0 not starting.
+- README "Coming from 0.24.0" paragraph, `docs/user/profiles-and-demo.md` (Welcome back, Restore),
+  `docs/user/settings.md` (setup assistant), `docs/user/getting-started.md` if it describes the first start.
+- `docs/dev/test-scenarios.md`, `design-overview.md` §2 (profiles), As built of this doc.
+
+## 4. Test scenarios (Given/When/Then)
+
+1. **Welcome back loads the profile.** Given a fresh install (no stored settings) and
+   `EXPORT/kept-gtd/profiles/production.json` with two contexts and one Note setup, when the assistant
+   opens and the user taps Load "Production", then the contexts and the Note setup are active, the
+   assistant is closed, the status names the profile, `production.json` is byte-identical, and
+   `freshStart` is false.
+2. **Newest first.** Given `production.json` saved 1 Nov and `work.json` saved 3 Nov, when Welcome back
+   shows, then "Work" is listed first and selected.
+3. **Start fresh, then Restore.** Given scenario 1's files, when the user taps Start fresh and finishes
+   the assistant, then `production.json` is unchanged, and Settings → Data → Profiles shows Restore on
+   Production; Restore → confirm → the contexts and Note setup are active.
+4. **Switching away doesn't overwrite.** Given a fresh start (Start fresh), when the user creates the demo
+   space and switches to Demo, then `production.json` is unchanged.
+5. **Save asks first.** Given a fresh start, when the user taps Save on Production, then a confirm shows;
+   Cancel leaves the file unchanged; Save replaces it and clears `freshStart`.
+6. **No profiles, no change.** Given a fresh install without `EXPORT/kept-gtd/profiles`, when the
+   assistant opens, then it starts at Folders as today and the profiles folder is **not** created.
+7. **Unreadable file.** Given a `production.json` that isn't valid JSON, when the assistant opens, then
+   no Welcome back screen shows (nothing readable to load).
+8. **Normal starts unchanged.** Given stored settings (`freshStart` false), when the user switches
+   profiles, then the current profile is saved first and switching to the active one does nothing (the
+   existing profile tests pass unchanged).
+9. **After Remove Kept's data.** Given Remove Kept's data with profiles kept, when Kept restarts fresh,
+   then Welcome back offers the saved profiles (same path as a fresh install).
+
+## 5. Device test (Tilman, on the CI or local build of the last commit)
+
+1. With `production.json` from 0.24.0 in place: Settings → Data → Remove Kept's data (everything except
+   data files and profiles) → Start fresh. Welcome back shows Production with its date → Load → contexts
+   and Note setups are back; a new meeting note gets its pieces.
+2. Again Remove Kept's data → Start fresh → **Start fresh** → finish the assistant → Settings → Data →
+   Profiles: Restore on Production → loads.
+3. Check `EXPORT/kept-gtd/profiles/production.json`'s date didn't change in steps 1-2 (file manager or
+   PC).
+4. Install check: the package holds only `keptgtd.bundle` (`tar -tf`).
+
+## As built
+
+(filled in by the implementation)
