@@ -10,6 +10,19 @@ or your project/area files are stored.
 
 ## [Unreleased]
 
+### Upgrade notes
+- **Kept GTD 0.25 is a new install, not an update.** Coming from 0.24.0 or earlier: don't install it
+  yet. In your current Kept GTD, follow the 0.24.0 upgrade notes first: process open lasso marks, save
+  each profile once, note your Gmail app password and calendar link, run Settings → Data → Remove
+  Kept's data with *Kept's data files* and *Saved profiles* unticked, then uninstall it. Then install
+  this version, run the setup assistant and Switch to your saved profile (Settings → Data → Profiles).
+  Your notes, data files and saved profiles stay where they are. Uninstall the old Kept GTD before you
+  install this one; don't run both side by side.
+
+### Fixed
+- Kept GTD 0.25.0 didn't start after installing: its package was built wrong. This version starts
+  normally; if you installed 0.25.0, uninstall it and install this one.
+
 ## [0.25.0] — 2026-11-03
 
 ### Upgrade notes

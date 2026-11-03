@@ -106,6 +106,11 @@ Checked on the device in 0.23 with a diagnostic screen since removed. Source:
   the in-app updater saves a release to `MyStyle/kept-gtd/` and the user installs it from there;
   Kept never installs a build itself (`storage/updates.ts`). Source:
   `docs/dev/history/requirements-in-app-updates.md`.
+- A package starts only when its JS bundle is named after `pluginKey` and the app registered in
+  `index.js` (`app.json` name) has the same name. 0.24.0 (`gtdpara.bundle`, key `gtdpara`) started;
+  0.25.0 (`kept-gtd.bundle` plus a stale `gtdpara.bundle`, key `keptgtd`) showed in the sidebar but
+  didn't start. `buildPlugin.ps1` names the bundle after `pluginKey` and refuses to package anything
+  but exactly one `<pluginKey>.bundle`.
 
 ## 9. Uninstalling
 

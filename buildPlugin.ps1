@@ -868,6 +868,39 @@ function Copy-ApkAndUpdateConfig {
     }
 }
 
+# The JS bundle is named after the plugin key (PluginConfig.json pluginKey), which is also the app
+# name index.js registers: a package whose bundle was named after package.json (kept-gtd.bundle next
+# to pluginKey keptgtd) didn't start on the device. package.json's name only names the .snplg.
+function Get-BundleName {
+    param([string]$ProjectRoot, [string]$Fallback)
+
+    $configPath = Join-Path $ProjectRoot 'PluginConfig.json'
+    if (Test-Path $configPath) {
+        try {
+            $config = Get-Content $configPath -Raw | ConvertFrom-Json
+            if ($config.pluginKey) { return [string]$config.pluginKey }
+        }
+        catch {
+            Write-ColorOutput "Failed to read pluginKey from PluginConfig.json: $_" 'Red'
+            return $null
+        }
+    }
+    return $Fallback
+}
+
+# The package must hold exactly one JS bundle, <pluginKey>.bundle; anything else can't start on the device.
+function Test-SingleBundle {
+    param([string]$BuildGeneratedDir, [string]$BundleName)
+
+    $bundles = @(Get-ChildItem -Path $BuildGeneratedDir -Filter '*.bundle' -File | ForEach-Object { $_.Name })
+    if ($bundles.Count -ne 1 -or $bundles[0] -ne "$BundleName.bundle") {
+        Write-ColorOutput "Package check failed: expected exactly $BundleName.bundle in build/generated, found: $($bundles -join ', ')" 'Red'
+        return $false
+    }
+    Write-ColorOutput "Package check: $BundleName.bundle is the only bundle" 'Green'
+    return $true
+}
+
 # Execute React Native bundling command
 function Build-ReactNativeBundle {
     param([string]$ProjectRoot, [string]$ProjectName, [string]$OutputDir)
@@ -1193,9 +1226,15 @@ function Main {
         return
     }
     
-    # Step 2: Run React Native bundling command
+    # Step 2: Run React Native bundling command (bundle named after the plugin key; old bundles removed first)
     Write-ColorOutput '=== Step 2: Execute React Native bundling ===' 'Blue'
-    $bundleSuccess = Build-ReactNativeBundle -ProjectRoot $projectRoot -ProjectName $projectName -OutputDir $buildGeneratedDir
+    $bundleName = Get-BundleName -ProjectRoot $projectRoot -Fallback $projectName
+    if (-not $bundleName) {
+        Write-ColorOutput 'No bundle name, script terminated' 'Red'
+        return
+    }
+    Get-ChildItem -Path $buildGeneratedDir -Filter '*.bundle' -File | Remove-Item -Force
+    $bundleSuccess = Build-ReactNativeBundle -ProjectRoot $projectRoot -ProjectName $bundleName -OutputDir $buildGeneratedDir
     if (-not $bundleSuccess) {
         Write-ColorOutput 'React Native bundling failed, script terminated' 'Red'
         return
@@ -1305,6 +1344,11 @@ function Main {
         return
     }
     
+    if (-not (Test-SingleBundle -BuildGeneratedDir $buildGeneratedDir -BundleName $bundleName)) {
+        Write-ColorOutput 'Packaging stopped: the plugin would not start with this package' 'Red'
+        return
+    }
+
     # Create temporary zip file
     $tempZipFileName = 'temp_package.zip'
     $tempZipPath = Join-Path $buildOutputsDir $tempZipFileName
