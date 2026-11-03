@@ -228,16 +228,20 @@ See §3. Other single-line rows:
 | Pill button | `ui/PillButton.tsx` | **~30** / **44** | Normal: `paddingVertical 5 × 2` + small line ~18 + border 2. Large: `minHeight 44`. |
 | Text input (`ClipboardTextInput`) | `ui/ClipboardTextInput.tsx` | **~33** | `paddingVertical 5 × 2` + medium line ~21 + border 2 (as budgeted in `screens/ItemsList.tsx`'s `CREATE_ROW_PX`). |
 
-**Text fields collapse in a column.** `ClipboardTextInput`'s wrapper is `flex: 1`, which is right in a
-row (the field takes the rest of the line next to a button) but means "height 0, then share the free
-space" in a column. When a column has no free height to share - a form block sized by its content,
-a `flexShrink: 0` section, a label-field-label stack - the field is drawn as a flat line a few dp high:
-border visible, no text, and taps don't reach it, so it looks present but can't be edited. On the
-A5 X this showed in the contexts editor's Name field and in earlier forms. Rules:
+**Text fields collapse in a column.** A wrapper with `flex: 1` is right in a row (the field takes
+the rest of the line next to a button) but means "height 0, then share the free space" in a column.
+When a column has no free height to share - a form block sized by its content, a `flexShrink: 0`
+section, a label-field-label stack - the field is drawn as a flat line a few dp high: border
+visible, no text, and taps don't reach it, so it looks present but can't be edited. On the A5 X
+this showed in the contexts editor's Name field and in earlier forms.
 
-- A text field in a column gets a parent that gives it a height: a `flexDirection: 'row'` wrapper
-  (the field fills the width), or a fixed `height`/`minHeight` of at least the ~33 dp above
-  (~76 dp multiline).
+`ClipboardTextInput` guards against it: its `flex: 1` wrapper has a `minHeight`
+(`TEXT_FIELD_MIN_H` 33, multiline `TEXT_FIELD_MULTILINE_MIN_H` 76), so use it for every text
+field. Rules for anything else:
+
+- A raw `TextInput`, or any view with `flex: 1`, in a column gets a parent that gives it a height:
+  a `flexDirection: 'row'` wrapper (the field fills the width), or a fixed `height`/`minHeight`
+  of at least the ~33 dp above (~76 dp multiline).
 - Check every new form on the device by tapping into each field and typing; a field that is only
   looked at can pass review while collapsed.
 

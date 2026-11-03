@@ -32,12 +32,22 @@
  * handle with `insertAtCursor(word)`, so buttons outside the field (the Tag
  * Rules placeholder chips) can insert at the last cursor position - through
  * the same tracked selection Paste uses.
+ *
+ * The wrapper is `flex: 1` so the field fills the rest of a row, and has a
+ * minimum height so it can't collapse in a column: there `flex: 1` starts at
+ * height 0, and a column without free height would draw the field as a flat,
+ * untappable line (docs/dev/design-device-rendering.md §5.3).
  */
 import React, {useImperativeHandle, useRef, useState} from 'react';
 import {StyleSheet, TextInput, View} from 'react-native';
 import {Selection, spliceWordAtSelection} from '../domain/clipboardText';
 import ClipboardStrip, {clipboardActions, StripPlacement} from './ClipboardStrip';
 import {FONT} from './theme';
+
+/** One line: paddingVertical 5 × 2 + medium line ~21 + border 2 (design-device-rendering §5.3). */
+export const TEXT_FIELD_MIN_H = 33;
+/** The multiline field's own minimum height. */
+export const TEXT_FIELD_MULTILINE_MIN_H = 76;
 
 interface Props {
   value: string;
@@ -101,7 +111,7 @@ export default function ClipboardTextInput({
   }));
 
   return (
-    <View style={styles.wrap}>
+    <View style={[styles.wrap, multiline && styles.wrapMultiline]}>
       <TextInput
         ref={inputRef}
         style={[styles.input, multiline && styles.inputMultiline, {color: textColor, borderColor}]}
@@ -127,7 +137,11 @@ export default function ClipboardTextInput({
 const styles = StyleSheet.create({
   wrap: {
     flex: 1,
+    minHeight: TEXT_FIELD_MIN_H,
     position: 'relative',
+  },
+  wrapMultiline: {
+    minHeight: TEXT_FIELD_MULTILINE_MIN_H,
   },
   input: {
     borderWidth: 1,
@@ -137,7 +151,7 @@ const styles = StyleSheet.create({
     fontSize: FONT.medium,
   },
   inputMultiline: {
-    minHeight: 76,
+    minHeight: TEXT_FIELD_MULTILINE_MIN_H,
     paddingTop: 6,
   },
 });
