@@ -7,10 +7,14 @@
  * screen. Finish lists exactly what it creates and saves; nothing happens before
  * it (Skip only marks the assistant done). Decisions: domain/setupAssistant.ts;
  * reads and writes: storage/setupAssistant.ts.
+ *
+ * On fresh settings, the first look at the base folder (after the file permission) is followed by
+ * one look for saved profiles; when there are any, Welcome back (WelcomeBack.tsx) comes first and
+ * offers to load one (docs/dev/history/technical-design-fresh-start-profile.md §3.3).
  */
 import React, {useEffect, useRef, useState} from 'react';
 import {StyleSheet, Text, TextInput, View} from 'react-native';
-import {demoSpaceCreatedText, setupFinishedText} from '../../domain/fileChangeText';
+import {demoSpaceCreatedText, profileLoadedText, setupFinishedText} from '../../domain/fileChangeText';
 import {
   FOLDER_ROLES,
   FolderRole,
@@ -25,6 +29,7 @@ import {
 import {GtdParaSettings} from '../../domain/settings';
 import {UPDATE_DISCLAIMER} from '../../domain/updateCheck';
 import {createDemoSpace} from '../../storage/demoSpace';
+import {listSavedProfiles, ProfileInfo} from '../../storage/profiles';
 import {BaseScan, finishSetup, scanBaseFolder, skipSetup} from '../../storage/setupAssistant';
 import {displayPath} from '../../supernote/devicePaths';
 import {requestHelp} from '../../ui/helpStore';
@@ -32,10 +37,11 @@ import PillButton from '../../ui/PillButton';
 import {useStatus, useStatusApi} from '../../ui/status/StatusProvider';
 import {FONT, SPACING} from '../../ui/theme';
 import {errorMessage} from '../../utils/errorMessage';
-import {logError} from '../../utils/log';
+import {log, logError} from '../../utils/log';
 import {requestEinkRefresh} from '../../utils/screenRefresh';
 import CheckToggle from './CheckToggle';
 import {styles as settingsStyles} from './settingsStyles';
+import WelcomeBack from './WelcomeBack';
 
 const ROLE_LABEL: Record<FolderRole, string> = {projects: 'Projects folder', areas: 'Areas folder', resources: 'Resources folder', archive: 'Archive folder'};
 const STEP_COUNT = 5;
@@ -51,18 +57,21 @@ const STEP_HELP: Array<[string, string | null]> = [
 const CHANGE_LATER = ['Settings → Data', 'Settings → Note setups → Default', 'Settings → Features', 'Settings → About', 'Settings → Data'];
 const SCAN_DELAY_MS = 500;
 const FINISHED_STATUS_ID = 'SetupAssistant.finished';
+const LOADED_STATUS_ID = 'SetupAssistant.profileLoaded';
 
 interface Props {
   /** The settings the assistant starts from (Settings' draft). */
   current: GtdParaSettings;
   /** Closed: `saved` is set after Finish. */
   onDone: (saved: GtdParaSettings | null) => void;
+  /** Loads a saved profile (App's profile switch, which remounts the app); rejects with a message. */
+  onLoadProfile?: (id: string) => Promise<void>;
   textColor: string;
   borderColor: string;
   placeholderColor: string;
 }
 
-export default function SetupAssistant({current, onDone, textColor, borderColor, placeholderColor}: Props): React.JSX.Element {
+export default function SetupAssistant({current, onDone, onLoadProfile, textColor, borderColor, placeholderColor}: Props): React.JSX.Element {
   const [step, setStep] = useState(0);
   const [choices, setChoices] = useState<SetupChoices>(() => initialChoices(current, {}));
   const [scan, setScan] = useState<BaseScan | null>(null);
@@ -97,6 +106,47 @@ export default function SetupAssistant({current, onDone, textColor, borderColor,
       clearTimeout(timer);
     };
   }, [base]);
+  // Fresh settings: after the first read (the permission is granted by then), the saved profiles,
+  // once. null while that look is pending; Welcome back shows while `welcome` holds some.
+  const offerSaved = current.freshStart && !!onLoadProfile;
+  const [welcome, setWelcome] = useState<ProfileInfo[] | null>(offerSaved ? null : []);
+  useEffect(() => {
+    if (!scan || welcome !== null) return;
+    let cancelled = false;
+    listSavedProfiles()
+      .catch(e => {
+        logError('SetupAssistant: looking for saved profiles failed', errorMessage(e));
+        return [];
+      })
+      .then(found => {
+        if (cancelled) return;
+        if (found.length > 0) log('SetupAssistant: offering saved profiles', found.length);
+        setWelcome(found);
+        requestEinkRefresh();
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [scan, welcome]);
+
+  const handleLoad = async (profile: ProfileInfo) => {
+    if (!onLoadProfile) return;
+    setBusy(true);
+    setMessage(null);
+    try {
+      await onLoadProfile(profile.id);
+      statusApi.show(LOADED_STATUS_ID, {
+        kind: 'success',
+        text: profileLoadedText(profile.name),
+        scope: 'global',
+        onDismiss: () => statusApi.clear(LOADED_STATUS_ID),
+      });
+    } catch (e) {
+      setMessage({kind: 'error', text: `Not loaded: ${errorMessage(e)}`});
+      setBusy(false);
+    }
+  };
+
   // The first read suggests existing folders (`Projects`, `1 Projects` …), once.
   useEffect(() => {
     if (!scan || suggested) return;
@@ -255,6 +305,30 @@ export default function SetupAssistant({current, onDone, textColor, borderColor,
       </>
     );
   })();
+
+  if (welcome === null) {
+    return (
+      <View style={styles.container}>
+        <Text style={[styles.title, {color: textColor}]}>Setup</Text>
+        <Text style={text}>Looking for settings you saved earlier…</Text>
+      </View>
+    );
+  }
+  if (welcome.length > 0) {
+    return (
+      <WelcomeBack
+        profiles={welcome}
+        onLoad={handleLoad}
+        onStartFresh={() => {
+          setWelcome([]);
+          go(0);
+        }}
+        busy={busy}
+        textColor={textColor}
+        borderColor={borderColor}
+      />
+    );
+  }
 
   const finishScreen = step === STEP_COUNT;
   return (

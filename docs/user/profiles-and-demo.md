@@ -27,6 +27,15 @@ To move your setup to another Supernote, or to keep it over a reinstall of Kept:
 
 The Gmail app password and the calendar link are never written into these files. They stay inside the plugin, separately for each profile.
 
+## Saved profiles
+
+After a fresh install, or after [Remove Kept's data](settings.md#remove-kepts-data), Kept starts on fresh settings. When it finds profiles you saved earlier in `EXPORT/kept-gtd/profiles`, the [setup assistant](settings.md#setup-assistant) opens with **Welcome back** first: one row per saved profile with the date it was saved, the newest selected.
+
+- **Load "Production"** (with the name of the profile you picked) loads it: your folders, Note setups and contexts are back, the assistant closes and the [status line](index.md#the-status-line) says which profile was loaded. The Gmail app password and the calendar link are never in profile files - enter them again on the [Features](settings.md#features) tab.
+- **Start fresh** goes on to the setup steps as on a new install. Your saved profile stays as it is.
+
+Your notes and files are not changed either way.
+
 ## The demo space
 
 **Create demo space** writes a small fictional setup to `Note/kept-gtd-demo`: five projects (one on hold, one done), five areas and an Inbox (in `2 Areas/0 Inbox`), with todos, meetings, [focus blocks](meetings.md#focus-blocks), tags and two [contexts](contexts.md), **Work** and **Home** (the [chip](contexts.md#choosing-one) starts at Everything). Dates are set relative to today, so it always looks current. It also adds the profile "Demo" that points to these folders. In the demo, every note of a project or area goes into its [home notebook](projects-and-areas.md#home-notebooks) - create one with the [notebook icon](projects-and-areas.md#the-notebook-icon) on "Garden renovation" to see its [Home page](projects-and-areas.md#the-home-page). The area "Coaching" has a sparring [thread](threads.md) with Jordan, `#sparring/jordan` (past meetings, agreed todos) and a [loop](loops.md) with a meeting today, to try [Engage](engage.md). The area "Sport" has a loop `#race/marathon` whose note is Sport's home notebook, and yesterday's "Coach call": open its note, add a page after it and write a heading to see which section a page belongs to ([Which owner a page belongs to](engage.md#which-owner-a-page-belongs-to)). A demo profile from an earlier version keeps its Note setups: there, add a Loop setup on the tag `race` with the notebook name `{name} {year}` in [Settings → Note setups](note-setups.md#editing-a-setup).

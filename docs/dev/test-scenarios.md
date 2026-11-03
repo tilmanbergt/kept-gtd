@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-185 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+189 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -996,6 +996,48 @@ Test: `__tests__/scenarios/cleanBreak.test.tsx`
 
 Test: `__tests__/scenarios/cleanBreak.test.tsx`
 
+### Welcome back loads the saved profile after a fresh install
+
+- **Given** a fresh install and production.json with two contexts and one Note setup
+- **When** Kept starts for the first time
+- **Then** the assistant shows Welcome back with Production selected
+- **When** I tap Load "Production"
+- **Then** the contexts and the Note setup are active, the assistant is closed and the status names the profile
+- **And** production.json is byte-identical
+
+Test: `__tests__/scenarios/freshStartProfile.test.tsx`
+
+### Welcome back lists the newest profile first and selects it
+
+- **Given** production.json saved 1 Nov and work.json saved 3 Nov
+- **When** Kept starts for the first time
+- **Then** Work is listed first and selected
+- **When** I pick Production
+- **Then** the Load button names it
+
+Test: `__tests__/scenarios/freshStartProfile.test.tsx`
+
+### Without saved profiles the assistant starts at Folders and creates no profiles folder
+
+- **Given** a fresh install without EXPORT/kept-gtd/profiles
+- **When** Kept starts for the first time
+- **Then** the assistant starts at Folders as before
+- **And** the profiles folder was not created
+
+Test: `__tests__/scenarios/freshStartProfile.test.tsx`
+
+### An unreadable profile file shows no Welcome back
+
+- **Given** a fresh install and a production.json that is not valid JSON
+- **When** Kept starts for the first time
+- **Then** the assistant starts at Folders
+- **Given** Kept runs on stored settings with two contexts
+- **Then** Welcome back offers Production
+- **When** I tap Load "Production"
+- **Then** the contexts and the Note setup are back
+
+Test: `__tests__/scenarios/freshStartProfile.test.tsx`
+
 ### The demo space lives in Note/kept-gtd-demo
 
 - **Given** an empty PARA folder
@@ -1247,14 +1289,14 @@ Test: `__tests__/scenarios/smoke/daily.test.tsx`
 
 ## Remove data
 
-### Removing with the defaults, then Start fresh, opens the setup assistant
+### Removing with the defaults, then Start fresh, opens the setup assistant on Welcome back
 
 - **Given** Kept has settings, a log, a profile, a project and open marks
 - **When** I tap Remove… and confirm with Remove
 - **Then** each step reports removed and the settings are gone
 - **And** the profile was saved first, and the project file is still there
 - **When** I tap Start fresh
-- **Then** the setup assistant opens as on a first install
+- **Then** the setup assistant opens as on a first install and offers the saved profile
 
 Test: `__tests__/scenarios/removeData.test.tsx`
 

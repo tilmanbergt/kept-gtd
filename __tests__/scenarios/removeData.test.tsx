@@ -42,7 +42,7 @@ scenario("Remove Kept's data lists every kind, with profiles and data files unch
   });
 });
 
-scenario('Removing with the defaults, then Start fresh, opens the setup assistant', {feature: 'Remove data', design: DESIGN}, () => {
+scenario('Removing with the defaults, then Start fresh, opens the setup assistant on Welcome back', {feature: 'Remove data', design: DESIGN}, () => {
   given('Kept has settings, a log, a profile, a project and open marks', async () => {
     keptFiles();
     await AsyncStorage.setItem('otherplugin:settings', 'theirs');
@@ -65,8 +65,9 @@ scenario('Removing with the defaults, then Start fresh, opens the setup assistan
     expect(device().fs.exists(projectFile('Garden renovation'))).toBe(true);
   });
   when('I tap Start fresh', () => tap('Start fresh'));
-  then('the setup assistant opens as on a first install', () => {
-    expectShows('Setup · 1 of 5');
+  then('the setup assistant opens as on a first install and offers the saved profile', () => {
+    expectShows('Welcome back');
+    expectShows('Load "Production"');
   });
 });
 

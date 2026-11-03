@@ -271,6 +271,7 @@ export default function Settings({initialTab, onSwitchProfile, startSetup = fals
         <View style={styles.content}>
           <SetupAssistant
             current={values}
+            onLoadProfile={onSwitchProfile}
             onDone={saved => {
               setSetupOpen(false);
               if (saved) {
