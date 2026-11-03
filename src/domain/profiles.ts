@@ -20,6 +20,7 @@ export const DEVICE_WIDE_KEYS: readonly SettingsKey[] = [
   'debugLogging',
   'notebookContentsEnabled',
   'lastSeenVersion',
+  'updateCheck',
   'activeProfileId',
 ];
 

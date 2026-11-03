@@ -200,7 +200,7 @@ shows "Updates need a newer build" - only relevant for mixed dev builds).
 - `docs/dev/RELEASING.md`: the updater depends on the tag `vX.Y.Z`, the asset name
   `kept-gtd-X.Y.Z.snplg` (exactly one) and the release not being a pre-release - one checklist line.
 - `CHANGELOG.md` Unreleased: "Kept tells you about new versions and can download them".
-- `docs/design-overview.md` §2/§5 after implementation.
+- `docs/dev/design-overview.md` §2/§5 after implementation.
 
 ## 8. Tests
 
