@@ -52,8 +52,7 @@ export interface NoteSetupDefaults {
   tracking: MeetingTracking;
   /**
    * Where the notes of items no setup matches go: a notebook, or null = own
-   * note per item. Absent only in settings migrated before the Default had a
-   * notebook (domain/noteSetupMigration.ts fills it in once); read as null.
+   * note per item. Absent reads as null.
    */
   notebook?: Notebook | null;
 }

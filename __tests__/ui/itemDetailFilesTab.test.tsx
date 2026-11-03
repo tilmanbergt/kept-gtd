@@ -28,6 +28,7 @@ jest.mock('../../src/storage/settingsStorage', () => {
   const setups = jest.requireActual('../../src/domain/noteSetups');
   const stored = {
     ...s.DEFAULT_SETTINGS,
+    noteSetupDefaults: {pages: {}, tracking: {trackPrep: false, trackReview: false}, notebook: null},
     lastSeenVersion: '99.0.0',
     noteSetups: [{...setups.createNoteSetup('r1', 'thread'), name: 'Retro', tags: ['retro']}],
   };

@@ -10,23 +10,19 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {DEMO_BASE_ROOT, DEMO_PROFILE_ID} from '../domain/demoSpace';
 import {RemovalCounts, RemovalInventory, RemovalStep, StepOutcome, outcomeLogLine} from '../domain/dataRemoval';
 import {writeTempPathFor} from '../domain/fileName';
+import {SECRETS_KEY, SETTINGS_KEY, STORE_PREFIX} from '../domain/storeKeys';
 import {resolvePaths} from '../domain/settings';
 import {AREA_FILE_NAME, PROJECT_FILE_NAME} from '../domain/types';
-import {DEBUG_LOG_FOLDER_PATH, GTDPARA_EXPORT_ROOT, INTERNAL_STORAGE, PROFILES_FOLDER_PATH} from '../supernote/devicePaths';
+import {DEBUG_LOG_FOLDER_PATH, GTDPARA_EXPORT_ROOT, PROFILES_FOLDER_PATH} from '../supernote/devicePaths';
 import {deleteKeptFile, deleteKeptTree, deletePrivateDataTree, deleteTempTree, getPrivateDataDir, getPrivateTempDir, listFolderEntries, statFiles} from '../supernote/fileSystem';
 import {ensureFileDeletePermission} from '../supernote/pluginPermissions';
 import {errorMessage} from '../utils/errorMessage';
 import {log, logWarn} from '../utils/log';
 import {flushLogFile, setFileLogging} from '../utils/logSink';
 import {perfEnable} from '../utils/perf';
-import {LEGACY_EXPORT_ROOT, saveActiveProfile} from './profiles';
+import {saveActiveProfile} from './profiles';
 import {loadSettings} from './settingsStorage';
 
-/** Every key Kept writes into the host's store starts with this; other plugins' keys never do. */
-export const STORE_PREFIX = 'gtdpara:';
-export const SETTINGS_STORE_KEY = 'gtdpara:settings:v1';
-export const SECRETS_STORE_KEY = 'gtdpara:profileSecrets:v1';
-export const LEGACY_DEMO_ROOT = `${INTERNAL_STORAGE}/Note/gtdpara-demo`;
 export const DEMO_PROFILE_FILE = `${PROFILES_FOLDER_PATH}/${DEMO_PROFILE_ID}.json`;
 /** Deep enough for `4 Archive/<year>/<area>/<project>/project.txt`. */
 const ARCHIVE_DEPTH = 4;
@@ -103,9 +99,9 @@ async function existing(paths: string[]): Promise<string[]> {
 async function storeTargets(): Promise<{keys: RemovalTargets['storeKeys']; secretProfiles: number}> {
   const all = (await AsyncStorage.getAllKeys()).filter(key => key.startsWith(STORE_PREFIX));
   let secretProfiles = 0;
-  if (all.includes(SECRETS_STORE_KEY)) {
+  if (all.includes(SECRETS_KEY)) {
     try {
-      secretProfiles = Object.keys(JSON.parse((await AsyncStorage.getItem(SECRETS_STORE_KEY)) ?? '{}')).length;
+      secretProfiles = Object.keys(JSON.parse((await AsyncStorage.getItem(SECRETS_KEY)) ?? '{}')).length;
     } catch {
       // silent: an unreadable secrets entry still counts as one, so it is offered for removal.
       secretProfiles = 1;
@@ -113,9 +109,9 @@ async function storeTargets(): Promise<{keys: RemovalTargets['storeKeys']; secre
   }
   return {
     keys: {
-      settings: all.filter(key => key === SETTINGS_STORE_KEY),
-      secrets: all.filter(key => key === SECRETS_STORE_KEY),
-      caches: all.filter(key => key !== SETTINGS_STORE_KEY && key !== SECRETS_STORE_KEY),
+      settings: all.filter(key => key === SETTINGS_KEY),
+      secrets: all.filter(key => key === SECRETS_KEY),
+      caches: all.filter(key => key !== SETTINGS_KEY && key !== SECRETS_KEY),
       demo: all.filter(key => key.endsWith(`:${DEMO_PROFILE_ID}`)),
     },
     secretProfiles,
@@ -151,7 +147,6 @@ export async function scanRemoval(): Promise<RemovalScan> {
     privateData: privateFiles.length,
     logs: (await filesIn(DEBUG_LOG_FOLDER_PATH)).length,
     demo: demoFiles.length,
-    legacy: (await filesIn(LEGACY_EXPORT_ROOT)).length + (await filesIn(LEGACY_DEMO_ROOT)).length,
     saveCopies: saveCopies.length,
     dataFiles: dataFiles.length,
     profiles: profiles.length,
@@ -190,12 +185,12 @@ async function removeStoreKeys(step: RemovalStep, keys: string[]): Promise<StepO
 
 /** Removes the demo profile's entry from the secrets map, keeping the other profiles'. */
 async function removeDemoSecrets(): Promise<void> {
-  const raw = await AsyncStorage.getItem(SECRETS_STORE_KEY);
+  const raw = await AsyncStorage.getItem(SECRETS_KEY);
   if (!raw) return;
   const map = JSON.parse(raw) as Record<string, unknown>;
   if (!(DEMO_PROFILE_ID in map)) return;
   delete map[DEMO_PROFILE_ID];
-  await AsyncStorage.setItem(SECRETS_STORE_KEY, JSON.stringify(map));
+  await AsyncStorage.setItem(SECRETS_KEY, JSON.stringify(map));
 }
 
 async function runStep(step: RemovalStep, targets: RemovalTargets): Promise<StepOutcome> {
@@ -207,8 +202,6 @@ async function runStep(step: RemovalStep, targets: RemovalTargets): Promise<Step
       } catch (e) {
         return {step, done: 0, total: 1, error: errorMessage(e)};
       }
-    case 'legacy':
-      return eachTarget(step, [LEGACY_EXPORT_ROOT, LEGACY_DEMO_ROOT], deleteKeptTree);
     case 'demo': {
       const files = await eachTarget(step, [DEMO_BASE_ROOT, DEMO_PROFILE_FILE], deleteKeptTree);
       const store = await removeStoreKeys(step, targets.storeKeys.demo);
@@ -245,7 +238,7 @@ async function runStep(step: RemovalStep, targets: RemovalTargets): Promise<Step
     case 'settings':
       // With no secrets entry before, one now can only come from Save the active profile first,
       // which writes an empty one: it goes with the settings.
-      return removeStoreKeys(step, targets.storeKeys.secrets.length > 0 ? targets.storeKeys.settings : [...targets.storeKeys.settings, SECRETS_STORE_KEY]);
+      return removeStoreKeys(step, targets.storeKeys.secrets.length > 0 ? targets.storeKeys.settings : [...targets.storeKeys.settings, SECRETS_KEY]);
   }
 }
 
@@ -272,7 +265,7 @@ export async function runRemoval(plan: RemovalStep[], targets: RemovalTargets, r
   } catch (e) {
     logWarn('dataRemoval: flushing the log file failed', errorMessage(e));
   }
-  const needsDelete = plan.some(step => ['legacy', 'demo', 'logs', 'saveCopies', 'dataFiles', 'profiles'].includes(step));
+  const needsDelete = plan.some(step => ['demo', 'logs', 'saveCopies', 'dataFiles', 'profiles'].includes(step));
   if (needsDelete && !(await ensureFileDeletePermission(reason))) {
     log('dataRemoval: delete permission not granted, nothing removed');
     const refused = plan.map(step => ({step, done: 0, total: 0, error: 'the Supernote did not allow deleting files'}));

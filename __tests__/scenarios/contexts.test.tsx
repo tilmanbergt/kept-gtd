@@ -293,7 +293,7 @@ scenario('A loop root shows every loop of its kind', {feature: 'Contexts', desig
   });
   when('I open Daily under a context with "All #read loops"', async () => {
     const reading = {...createNoteSetup('1', 'loop'), name: 'Reading', tags: ['read']};
-    await openApp({settings: active(named('Reading', [tag('read')]), {noteSetups: [reading], noteSetupsMigrated: true})});
+    await openApp({settings: active(named('Reading', [tag('read')]), {noteSetups: [reading]})});
     await tapTab('Daily');
   });
   then('both loops\' todos show, Garden\'s does not', () => {
@@ -387,7 +387,7 @@ scenario('The Tend line opens Review narrowed, filtered by place', {feature: 'Co
   });
   when('I tap the Tend line on Week under Coaching', async () => {
     const setup = (id: string, t: string) => ({...createNoteSetup(id, 'thread'), name: t, tags: [t]});
-    await openApp({settings: active(named('Coaching', [tag('jf')]), {noteSetups: [setup('1', 'jf'), setup('2', 'retro')], noteSetupsMigrated: true})});
+    await openApp({settings: active(named('Coaching', [tag('jf')]), {noteSetups: [setup('1', 'jf'), setup('2', 'retro')]})});
     await tapTab('Week');
     await tap(/^Tend: /);
   });
@@ -522,7 +522,7 @@ scenario('The Tags tab offers the thread types of the Thread setups, not wf and 
   });
   when('I open the Tags of a new context', async () => {
     const sparring = {...createNoteSetup('1', 'thread'), name: 'Sparring', tags: ['sparring']};
-    await newContextNamed('Talks', {noteSetups: [sparring], noteSetupsMigrated: true});
+    await newContextNamed('Talks', {noteSetups: [sparring]});
     await tap('Tags');
   });
   then('"All #sparring threads" is offered, "All #wf threads" and "All #owe threads" are not', () => {

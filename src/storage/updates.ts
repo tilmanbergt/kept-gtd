@@ -26,6 +26,7 @@ import {
   parseLatestRelease,
   runningVersion,
 } from '../domain/updateCheck';
+import {UPDATE_STATE_KEY} from '../domain/storeKeys';
 import {BUILD_INFO} from '../generated/buildInfo';
 import {INTERNAL_STORAGE, displayPath} from '../supernote/devicePaths';
 import {notifyFolderChanged} from '../supernote/fileNative';
@@ -35,11 +36,8 @@ import {INTERNET_PERMISSION, ensureFileWritePermission, ensureInternetPermission
 import {getKeptUpdateNative} from '../supernote/updateNative';
 import {errorMessage} from '../utils/errorMessage';
 import {log, logError, logWarn} from '../utils/log';
-import {STORE_PREFIX} from './dataRemoval';
 import {patchSettings} from './settingsStorage';
 
-/** Device-wide, not per profile: switching profiles doesn't show the notice again. */
-export const UPDATE_STATE_KEY = `${STORE_PREFIX}updates:v1`;
 const FETCH_TIMEOUT_MS = 15_000;
 const USER_AGENT = `KeptGTD/${BUILD_INFO.label}`;
 /** About's status line after a daily check found no INTERNET grant (it never asks). */

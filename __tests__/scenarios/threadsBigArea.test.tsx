@@ -21,7 +21,7 @@ afterEach(() => jest.useRealTimers());
 
 function bigSettings(): Partial<GtdParaSettings> {
   const noteSetups = BIG_SETUP_TAGS.map((s, i) => ({...createNoteSetup(`b${i}`, s.kind), name: s.name, tags: [s.tag]}));
-  return {noteSetups, noteSetupDefaults: seedNoteSetupDefaults(), nextNoteSetupId: noteSetups.length + 1, noteSetupsMigrated: true};
+  return {noteSetups, noteSetupDefaults: seedNoteSetupDefaults(), nextNoteSetupId: noteSetups.length + 1};
 }
 
 /** The big data set on the device; `edit` may change a file's text first. */

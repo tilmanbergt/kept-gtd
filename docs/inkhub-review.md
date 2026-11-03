@@ -16,7 +16,7 @@ Each permission is requested right before the first action that needs it, never 
   - the empty folder left behind when the user archives an area into an Archive folder that
     already exists (if the user says no, the empty folder stays);
   - **Remove Kept's data** (Settings → Data): it lists everything Kept put on the device (settings,
-    secrets, caches, lasso mark pictures, logs, the demo space, old gtdpara folders) and removes
+    secrets, caches, lasso mark pictures, logs, the demo space, leftover save copies) and removes
     only what the user checks, after one confirmation naming it. The user's data files and saved
     profiles are listed unchecked; notes are never deleted.
 - **INTERNET** - for two optional integrations (Google Calendar via the user's private ICS
@@ -37,8 +37,8 @@ Each permission is requested right before the first action that needs it, never 
   step list before they happen, reported afterwards. Moves are renames within shared storage.
 - **Overwrites**: replacing an existing close-out PDF asks first.
 - **Deletes**: see FILE:DELETE above. The native delete helpers refuse everything else: in shared
-  storage they remove only empty folders, Kept's own folders (`EXPORT/kept-gtd`, the demo space and
-  their gtdpara predecessors) and files named `project.txt`, `area.txt`, `Inbox.txt` or Kept's own
+  storage they remove only empty folders, Kept's own folders (`EXPORT/kept-gtd` and the demo space
+  `Note/kept-gtd-demo`) and files named `project.txt`, `area.txt`, `Inbox.txt` or Kept's own
   save copies; the private temp and data deletes stay inside those folders.
 - Temporary files (rendered PDF pages, the unfinished PDF, a release being downloaded) live in the
   plugin's private folder and are removed when done.

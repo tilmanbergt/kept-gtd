@@ -1,74 +1,9 @@
 import {device} from '../../test-helpers/fakeDevice/device';
-import {expectNotShows, expectShows, openApp, reopenApp, tap, tapTab} from '../../test-helpers/scenario/app';
+import {expectShows, openApp, tap, tapTab} from '../../test-helpers/scenario/app';
 import {dataFile, fileText, projectFile, putFile} from '../../test-helpers/scenario/files';
-import {and, given, scenario, then, when} from '../../test-helpers/scenario/scenario';
-import {DEFAULT_SETTINGS} from '../../src/domain/settings';
-import {serializeProfile} from '../../src/domain/profiles';
+import {given, scenario, then, when} from '../../test-helpers/scenario/scenario';
 
 const DESIGN = 'technical-design-kept-gtd.md';
-const OLD_PROFILES = '/storage/emulated/0/EXPORT/gtdpara/profiles';
-const NEW_PROFILES = '/storage/emulated/0/EXPORT/kept-gtd/profiles';
-const COPIED_TWO = 'Copied 2 profiles from EXPORT/gtdpara - you can delete that folder.';
-
-const profile = (name: string, inboxFolder: string) =>
-  serializeProfile(name, {...DEFAULT_SETTINGS, inboxFolder}, new Date('2026-10-01T09:00:00Z'), '0.19.0');
-
-/** The old folder as gtdpara 0.19 left it: two profiles of my own and the demo profile. */
-function putOldProfiles(): void {
-  putFile(`${OLD_PROFILES}/work.json`, profile('Work', 'Work Inbox'));
-  putFile(`${OLD_PROFILES}/home.json`, profile('Home', 'Home Inbox'));
-  putFile(`${OLD_PROFILES}/demo.json`, profile('Demo', 'Demo Inbox'));
-}
-
-const writesUnder = (folder: string, from = 0) =>
-  device().fs.calls.slice(from).filter(c => c.method === 'writeTextFile' && c.path.startsWith(folder + '/'));
-
-scenario('Saved profiles are copied once into the new export folder', {feature: 'Profiles and demo space', design: DESIGN}, () => {
-  given('EXPORT/gtdpara/profiles holds work.json, home.json and the demo profile, and EXPORT/kept-gtd/profiles does not exist', () => {
-    putOldProfiles();
-  });
-  when('Kept GTD starts', () => openApp());
-  then('work.json and home.json are in EXPORT/kept-gtd/profiles with the same content, the demo profile is not', () => {
-    expect(fileText(`${NEW_PROFILES}/work.json`)).toBe(fileText(`${OLD_PROFILES}/work.json`));
-    expect(fileText(`${NEW_PROFILES}/home.json`)).toBe(fileText(`${OLD_PROFILES}/home.json`));
-    expect(device().fs.exists(`${NEW_PROFILES}/demo.json`)).toBe(false);
-  });
-  and('the old folder is unchanged, and the status line says what was copied', () => {
-    expect(device().fs.paths(OLD_PROFILES).sort()).toEqual([`${OLD_PROFILES}/demo.json`, `${OLD_PROFILES}/home.json`, `${OLD_PROFILES}/work.json`]);
-    expect(writesUnder(OLD_PROFILES)).toEqual([]);
-    expectShows(COPIED_TWO);
-  });
-  when('Kept GTD starts again', async () => {
-    const before = device().fs.calls.length;
-    await reopenApp();
-    expect(writesUnder(NEW_PROFILES, before)).toEqual([]);
-  });
-  then('no file is written to the profiles folder and no copy message appears', () => {
-    expectNotShows(COPIED_TWO);
-  });
-});
-
-scenario('Profiles are not copied when the new export folder is already in use', {feature: 'Profiles and demo space', design: DESIGN}, () => {
-  given('EXPORT/kept-gtd/profiles holds work.json and the old folder holds home.json', () => {
-    putFile(`${NEW_PROFILES}/work.json`, profile('Work', 'Work Inbox'));
-    putFile(`${OLD_PROFILES}/home.json`, profile('Home', 'Home Inbox'));
-  });
-  when('Kept GTD starts', () => openApp());
-  then('nothing is copied and no copy message appears', () => {
-    expect(device().fs.exists(`${NEW_PROFILES}/home.json`)).toBe(false);
-    expectNotShows(/^Copied \d+ profiles? from/);
-  });
-});
-
-scenario('A fresh install copies no profiles', {feature: 'Profiles and demo space', design: DESIGN}, () => {
-  given('neither export folder exists', () => undefined);
-  when('Kept GTD starts', () => openApp());
-  then('nothing is copied, no copy message appears and nothing is written under EXPORT/gtdpara', () => {
-    expect(device().fs.paths(NEW_PROFILES)).toEqual([]);
-    expectNotShows(/^Copied \d+ profiles? from/);
-    expect(device().fs.paths('/storage/emulated/0/EXPORT/gtdpara')).toEqual([]);
-  });
-});
 
 scenario('The demo space lives in Note/kept-gtd-demo', {feature: 'Profiles and demo space', design: DESIGN}, () => {
   given('an empty PARA folder', () => undefined);

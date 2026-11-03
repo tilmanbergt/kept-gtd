@@ -22,13 +22,13 @@ jest.mock('../../src/supernote/updateNative', () => ({getKeptUpdateNative: jest.
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {AvailableUpdate, LATEST_RELEASE_URL} from '../../src/domain/updateCheck';
+import {UPDATE_STATE_KEY} from '../../src/domain/storeKeys';
 import {deleteTempTree, statFiles} from '../../src/supernote/fileSystem';
 import {notifyFolderChanged} from '../../src/supernote/fileNative';
 import {ensureInternetPermission, hasPluginPermission} from '../../src/supernote/pluginPermissions';
 import {getKeptUpdateNative} from '../../src/supernote/updateNative';
 import {
   UPDATE_DOWNLOAD_FOLDER,
-  UPDATE_STATE_KEY,
   checkForUpdate,
   dismissUpdate,
   downloadUpdate,

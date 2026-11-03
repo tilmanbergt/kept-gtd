@@ -48,8 +48,8 @@ handwriting. In a PDF, or where an icon can't be identified safely, it is left a
 
 **Remove Kept's data** (Settings → Data) lists everything Kept has put on the device, with where
 it is and how much: settings, the Gmail app password and calendar link, caches (recent tags and
-places, the calendar cache), lasso mark pictures and temporary files, logs, the demo space, old
-gtdpara folders and leftover save copies. Your data files (`project.txt`, `area.txt`,
+places, the calendar cache), lasso mark pictures and temporary files, logs, the demo space and
+leftover save copies. Your data files (`project.txt`, `area.txt`,
 `Inbox.txt`) and saved profiles are listed too, but not checked. You tick what to remove; one
 confirmation names it before anything is deleted. Notes Kept created, its icons, keywords and
 headings inside your notes, empty folders and archive PDFs are never touched.
@@ -99,7 +99,5 @@ file unless you switch it on.
 Profiles (Settings → Data) are saved as JSON files in `EXPORT/kept-gtd/profiles`. They contain
 your folder names, Note setups, contexts, review dates, the feature switches, the todo you are
 working on in Engage (its text and folder) and your Gmail address, but never the Gmail app password or the calendar link - those stay inside the plugin.
-On its first start, Kept copies the profiles that gtdpara saved in `EXPORT/gtdpara/profiles` into
-this folder once, and leaves the old folder as it is.
 
 Please look through these files before attaching them to a bug report.

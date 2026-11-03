@@ -1,7 +1,6 @@
 /**
  * The list of Note setups (docs/dev/history/technical-design-note-setups.md
- * §6.1): the heading style, the migration notice while it is kept,
- * "+ New note setup", the Default pinned on top, then the setups, paged.
+ * §6.1): the heading style, "+ New note setup", the Default pinned on top, then the setups, paged.
  * Delete is immediate.
  */
 import React from 'react';
@@ -12,7 +11,6 @@ import {GtdParaSettings, NoteHeadingStyle} from '../../../domain/settings';
 import MiniTabs, {MiniTabDef} from '../../../ui/MiniTabs';
 import PagedSection from '../../../ui/PagedSection';
 import {styles} from '../settingsStyles';
-import MigrationNotice from './MigrationNotice';
 import {SETUP_ROW_HEIGHT, setupStyles} from './noteSetupsStyles';
 import {NoteSetupDraft} from './useNoteSetupDraft';
 
@@ -46,9 +44,6 @@ export default function NoteSetupsList(props: {
         textColor={textColor}
         borderColor={borderColor}
       />
-      {values.noteSetupsNotice && (
-        <MigrationNotice report={values.noteSetupsNotice} onDismiss={draft.handleDismissNotice} textColor={textColor} borderColor={borderColor} />
-      )}
       <Pressable onPress={draft.handleNewSetup} hitSlop={8} style={styles.addDefRow}>
         <Text style={[styles.addDefRowText, {color: textColor}]}>+ New note setup</Text>
       </Pressable>

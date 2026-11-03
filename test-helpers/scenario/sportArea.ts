@@ -29,7 +29,7 @@ export function loopSetup(name: string): NoteSetup {
 /** Sparring threads, the Marathon loop setup and the seeded Default ("{name} {year}" home notebooks). */
 export function settings(loopNoteName = '{name} {year}'): Partial<GtdParaSettings> {
   const sparring = sparringSettings().noteSetups ?? [];
-  return {noteSetups: [...sparring, loopSetup(loopNoteName)], noteSetupDefaults: seedNoteSetupDefaults(), nextNoteSetupId: 3, noteSetupsMigrated: true};
+  return {noteSetups: [...sparring, loopSetup(loopNoteName)], noteSetupDefaults: seedNoteSetupDefaults(), nextNoteSetupId: 3};
 }
 
 /** A heading on a page: `typed` puts a textbox under it, otherwise it is handwritten. */

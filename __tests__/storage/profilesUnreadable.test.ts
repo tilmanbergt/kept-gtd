@@ -31,7 +31,7 @@ beforeEach(async () => {
   mockFiles.clear();
   mockFiles.set(PROFILE, SAVED);
   await AsyncStorage.clear();
-  await AsyncStorage.setItem('gtdpara:settings:v1', '{"broken');
+  await AsyncStorage.setItem('kept:settings:v1', '{"broken');
   await loadSettings();
   expect(getSettingsUnreadable()).not.toBeNull();
 });

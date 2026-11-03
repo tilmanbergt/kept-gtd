@@ -1317,12 +1317,9 @@ function Main {
     }
     
     # Rename to .snplg file
-    # The package is named after the plugin (kept-gtd), not package.json's name, which stays
-    # gtdpara with pluginKey (docs/dev/history/technical-design-kept-gtd.md §8 U3).
-    $artefactName = 'kept-gtd'
-    $snplgFileName = "$artefactName.snplg"
+    $snplgFileName = "$projectName.snplg"
     $finalSnplgPath = Join-Path $buildOutputsDir $snplgFileName
-    $null = Rename-ToSnplgFile -ZipFilePath $tempZipPath -ProjectName $artefactName -OutputDir $buildOutputsDir
+    $null = Rename-ToSnplgFile -ZipFilePath $tempZipPath -ProjectName $projectName -OutputDir $buildOutputsDir
     if (Test-Path $finalSnplgPath) {
         Write-ColorOutput "Plugin package successfully generated: $finalSnplgPath" 'Green'
         
@@ -1335,7 +1332,7 @@ function Main {
         # kept-gtd-0.1.0+dev.a1b2c3d.snplg otherwise), so earlier builds aren't overwritten.
         try {
             $buildInfo = Get-Content (Join-Path $projectRoot 'build\build-info.json') -Raw | ConvertFrom-Json
-            $labeledPath = Join-Path $buildOutputsDir "$artefactName-$($buildInfo.label).snplg"
+            $labeledPath = Join-Path $buildOutputsDir "$projectName-$($buildInfo.label).snplg"
             Copy-Item -LiteralPath $finalSnplgPath -Destination $labeledPath -Force
             Write-ColorOutput "Also saved as: $labeledPath" 'Green'
             Write-ColorOutput "Kept GTD $($buildInfo.label)  build $($buildInfo.versionCode)" 'Green'

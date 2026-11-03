@@ -9,18 +9,13 @@ const ROOT = join(__dirname, '..');
 
 /** Each entry is cut out of a literal before the check; what is left must not say gtdpara. */
 const ALLOWED: RegExp[] = [
-  /gtdpara:[A-Za-z][\w-]*(:v\d+)?:?/g, // storage keys and note markers
+  /gtdpara:[A-Za-z][\w-]*(:v\d+)?:?/g, // note markers
   /gtdpara-profile/g, // profile format id
   /\.gtdpara-tmp/g, // temp suffix of the atomic write
   /GtdPara(File|PdfProgress|Pdf|Runtime)\b/g, // native module names
   /\[GtdPara\]/g, // log line prefix (§8 U2)
   /\bopenGtdpara\b/g, // ENGAGE_TEXT key
   /Formerly gtdpara/g, // About (R9)
-  /^\/storage\/emulated\/0\/EXPORT\/gtdpara$/, // LEGACY_EXPORT_ROOT, the export folder of 0.19 and older (the whole literal)
-  /^gtdpara:$/, // the store-key prefix Remove Kept's data filters by (the whole literal)
-  /\/Note\/gtdpara-demo$/, // the demo folder of 0.19 and older, offered by Remove Kept's data
-  /EXPORT\/gtdpara, Note\/gtdpara-demo/g, // where Remove Kept's data says those two folders are
-  /^Old gtdpara folders$/, // that row's label: the folders are named so on the device
 ];
 
 const LITERAL_KINDS = new Set([
@@ -70,6 +65,6 @@ it('no visible text in the app says gtdpara outside the allowlist', () => {
 });
 
 it('finds a literal that says gtdpara', () => {
-  const rest = ALLOWED.reduce((s, re) => s.replace(re, ''), 'Open gtdpara (gtdpara:settings:v1)');
+  const rest = ALLOWED.reduce((s, re) => s.replace(re, ''), 'Open gtdpara (gtdpara:mark:a1)');
   expect(rest).toMatch(/gtdpara/);
 });

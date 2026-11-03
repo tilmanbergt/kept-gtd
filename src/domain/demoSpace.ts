@@ -263,7 +263,6 @@ export function demoProfileSettings(): GtdParaSettings {
     noteSetups: [oneOnOne, sparringSetup, workshops, races],
     noteSetupDefaults: seedNoteSetupDefaults(),
     nextNoteSetupId: 5,
-    noteSetupsMigrated: true,
     contexts: DEMO_CONTEXTS,
     activeContextId: '',
     experimentalGoogleCalendar: false,

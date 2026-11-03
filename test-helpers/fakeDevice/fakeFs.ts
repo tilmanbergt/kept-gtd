@@ -21,7 +21,7 @@ export const PRIVATE_DIR = '/data/user/0/host/files/plugins/gtdpara';
 
 const SHARED = '/storage/emulated/0';
 /** GtdParaFileModule.kt's KEPT_TREE_ROOTS. */
-const KEPT_TREE_ROOTS = [`${SHARED}/EXPORT/kept-gtd`, `${SHARED}/EXPORT/gtdpara`, `${SHARED}/Note/kept-gtd-demo`, `${SHARED}/Note/gtdpara-demo`];
+const KEPT_TREE_ROOTS = [`${SHARED}/EXPORT/kept-gtd`, `${SHARED}/Note/kept-gtd-demo`];
 /** GtdParaFileModule.kt's KEPT_FILE_NAMES and KEPT_TMP_NAME. */
 const KEPT_FILE = /^(project\.txt|area\.txt|Inbox\.txt|\.[^/]+\.gtdpara-tmp)$/;
 

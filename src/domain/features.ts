@@ -48,47 +48,25 @@ export function featuresOf(settings: FeatureFlagFields | null | undefined): Feat
   };
 }
 
-interface MigratableFields extends FeatureFlagFields {
-  googleCalendarIcsUrl: string;
-  gmailEmail: string;
+interface FreshInstallFields {
   lastSeenVersion: string;
   setupAssistant: 'pending' | 'done';
 }
 
 /**
- * First-start defaults: the switches, the What's-new marker and the setup assistant, run on every
- * settings load (storage/settingsStorage.ts), same contract as the other
- * migrations there: returns the SAME object when nothing changes.
- *
- * - Existing install (a stored blob exists) without the switch keys: a switch
- *   starts ON when its integration is already configured, so nothing
- *   disappears after the update. `lastSeenVersion` stays '' so the
- *   "Updated to …" notice shows once.
- * - Fresh install (nothing stored): switches stay OFF (defaults),
- *   `lastSeenVersion` becomes `currentVersion`, so no notice, and the setup
- *   assistant is 'pending', so it opens once
- *   (docs/dev/history/technical-design-easy-start.md §5.1). Every stored blob
- *   keeps the default 'done': an existing install never sees it by itself.
+ * First-start defaults, run on every settings load (storage/settingsStorage.ts): returns the
+ * SAME object when nothing changes. On a fresh install (nothing stored), `lastSeenVersion`
+ * becomes `currentVersion`, so no "Updated to …" notice, and the setup assistant is 'pending',
+ * so it opens once (docs/dev/history/technical-design-easy-start.md §5.1). Stored settings keep
+ * the default 'done': they never see the assistant by themselves. The experimental switches
+ * stay at their defaults (off).
  */
-export function migrateExperimentalFlags<T extends MigratableFields>(
-  merged: T,
-  rawStored: unknown,
-  currentVersion: string,
-): T {
+export function prepareFreshInstall<T extends FreshInstallFields>(merged: T, rawStored: unknown, currentVersion: string): T {
   const raw = rawStored && typeof rawStored === 'object' ? (rawStored as Record<string, unknown>) : {};
-  const freshInstall = Object.keys(raw).length === 0;
+  if (Object.keys(raw).length > 0) return merged;
   let next = merged;
-  if (freshInstall) {
-    if (!merged.lastSeenVersion) {next = {...next, lastSeenVersion: currentVersion};}
-    if (merged.setupAssistant !== 'pending') {next = {...next, setupAssistant: 'pending'};}
-    return next;
-  }
-  if (raw.experimentalGoogleCalendar === undefined) {
-    next = {...next, experimentalGoogleCalendar: (merged.googleCalendarIcsUrl ?? '').trim() !== ''};
-  }
-  if (raw.experimentalGmail === undefined) {
-    next = {...next, experimentalGmail: (merged.gmailEmail ?? '').trim() !== ''};
-  }
+  if (!merged.lastSeenVersion) {next = {...next, lastSeenVersion: currentVersion};}
+  if (merged.setupAssistant !== 'pending') {next = {...next, setupAssistant: 'pending'};}
   return next;
 }
 

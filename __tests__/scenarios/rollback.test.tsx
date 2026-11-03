@@ -5,11 +5,11 @@ import {fileText, loggedErrors, PATHS, projectFile, putFile} from '../../test-he
 import {and, given, scenario, then, when} from '../../test-helpers/scenario/scenario';
 import {smokeClock} from '../../test-helpers/scenario/smokeSpace';
 import {DEFAULT_SETTINGS} from '../../src/domain/settings';
+import {SETTINGS_KEY} from '../../src/domain/storeKeys';
 
 // Rollback round-trips (docs/dev/history/technical-design-time-and-place.md §3.7, §6, §7): files written by 0.22
 // keep everything 0.21.1 reads - focus flags, goal spans, `#now` - and the update itself writes nothing.
 const DESIGN = 'technical-design-time-and-place.md';
-const SETTINGS_KEY = 'gtdpara:settings:v1';
 
 afterEach(() => jest.useRealTimers());
 

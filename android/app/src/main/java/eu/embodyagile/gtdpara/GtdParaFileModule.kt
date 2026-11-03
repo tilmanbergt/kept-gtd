@@ -38,9 +38,7 @@ class GtdParaFileModule(reactContext: ReactApplicationContext) :
         /** Kept's own folders in shared storage: the only trees [deleteKeptTree] deletes. */
         private val KEPT_TREE_ROOTS = listOf(
             "$SHARED_STORAGE/EXPORT/kept-gtd",
-            "$SHARED_STORAGE/EXPORT/gtdpara",
             "$SHARED_STORAGE/Note/kept-gtd-demo",
-            "$SHARED_STORAGE/Note/gtdpara-demo",
         )
 
         /** The data files Kept writes: the only names [deleteKeptFile] deletes, besides [KEPT_TMP_NAME]. */

@@ -1,7 +1,7 @@
 {
-  "name": "gtdpara",
+  "name": "kept-gtd",
   "version": "0.24.0",
-  "nextVersion": "0.24.0",
+  "nextVersion": "0.25.0",
   "private": true,
   "scripts": {
     "android": "react-native run-android",

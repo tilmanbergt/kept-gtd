@@ -124,16 +124,6 @@ export function useNoteSetupDraft(values: GtdParaSettings, setValues: Dispatch<S
     return persistSetups(values.noteSetups.filter((_, i) => i !== index), values.nextNoteSetupId);
   };
 
-  /** Clears the migration notice (§6.6). */
-  const handleDismissNotice = async () => {
-    setValues(prev => ({...prev, noteSetupsNotice: null}));
-    try {
-      await patchSettings({noteSetupsNotice: null});
-    } catch (e) {
-      setError(errorMessage(e));
-    }
-  };
-
   /** Heading style: global, written at once. */
   const handleSetHeadingStyle = async (noteHeadingStyle: NoteHeadingStyle) => {
     setValues(prev => ({...prev, noteHeadingStyle}));
@@ -313,7 +303,6 @@ export function useNoteSetupDraft(values: GtdParaSettings, setValues: Dispatch<S
     handleEditSetup,
     handleEditDefault,
     handleDeleteSetup,
-    handleDismissNotice,
     handleSetHeadingStyle,
     handleSetKind,
     handleSetNotebookOn,

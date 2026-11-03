@@ -4,8 +4,8 @@
   "iconPath": "assets/icon.png",
   "versionName": "0.24.0",
   "versionCode": "0",
-  "pluginID": "ndx27q77pojfqh6l",
-  "pluginKey": "gtdpara",
+  "pluginID": "nj7yssrvl7g778tz",
+  "pluginKey": "keptgtd",
   "jsMainPath": "index",
   "uses-permissions": [
     "plugin.permission.FILE:READ",

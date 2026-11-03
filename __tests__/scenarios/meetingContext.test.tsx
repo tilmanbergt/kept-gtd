@@ -12,7 +12,7 @@ const DESIGN = 'technical-design-time-and-place.md';
 afterEach(() => jest.useRealTimers());
 
 const sparring = {...createNoteSetup('1', 'thread'), name: 'Sparring', tags: ['sparring']};
-const SETTINGS = {noteSetups: [sparring], noteSetupsMigrated: true};
+const SETTINGS = {noteSetups: [sparring]};
 const LAST = meetingKey({date: '2026-10-07', title: '1:1 Jordan #sparring/jordan'});
 
 function coaching(meetings: string[]): void {

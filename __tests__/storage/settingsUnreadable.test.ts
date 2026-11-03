@@ -9,8 +9,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {DEFAULT_SETTINGS} from '../../src/domain/settings';
 import {loadSettings, patchSettings, resetSettingsToDefaults, saveSettings} from '../../src/storage/settingsStorage';
 import {getSettingsUnreadable} from '../../src/storage/settingsUnreadable';
+import {SETTINGS_KEY as KEY} from '../../src/domain/storeKeys';
 
-const KEY = 'gtdpara:settings:v1';
 const CORRUPT = '{"basePath": "/storage/emulated/0/Note/My PARA", "hideDoneInboxT';
 
 beforeEach(async () => {

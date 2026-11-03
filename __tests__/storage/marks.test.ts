@@ -191,32 +191,19 @@ describe('recognizeMark keeps the text (checkpoint B)', () => {
   });
 });
 
-describe('recognizeMark with marks from an older gtdpara (version 1)', () => {
+describe('recognized text kept in mark.json', () => {
   const open = {mark: {id: 'm-1', createdAt: '2026-10-05 10:42', notePath: 'Plan.note', page: 0, text: null}, owner: {type: 'inbox'}, absPath: '/x/Plan.note'} as never;
-  const v1 = {version: 1, id: 'm-1', strokes: [stroke], textBoxText: '', page: 0, displaySize: {width: 1404, height: 1872}, pageSize: null};
+  const v2 = {version: 2, id: 'm-1', strokes: [stroke], textBoxText: '', page: 0, displaySize: {width: 1404, height: 1872}, pageSize: null};
   beforeEach(() => (recognizeStrokes as jest.Mock).mockClear());
-  it('keeps using text recognized before', async () => {
-    mockState.data = {...v1, recognizedText: 'Call Anna'};
-    expect(await recognizeMark(open)).toMatchObject({text: 'Call Anna', old: false});
+  it('is used instead of the recognizer', async () => {
+    mockState.data = {...v2, recognizedText: 'Call Anna'};
+    expect(await recognizeMark(open)).toMatchObject({text: 'Call Anna', missing: false});
     expect(recognizeStrokes).not.toHaveBeenCalled();
   });
-  it('does not send old handwriting to the recognizer and says so', async () => {
-    mockState.data = v1;
-    expect(await recognizeMark(open)).toMatchObject({text: '', error: null, old: true, missing: false});
-    expect(recognizeStrokes).not.toHaveBeenCalled();
-    expect(mockState.written).toEqual([]);
-    expect(log).toHaveBeenCalledWith('marks: old mark, not recognized', 'm-1');
-  });
-  it('keeps the text-box text of an old mark', async () => {
-    mockState.data = {...v1, textBoxText: 'Order toner'};
-    expect(await recognizeMark(open)).toMatchObject({text: 'Order toner', old: true});
-  });
-  it('the preload reports an old mark the same way, and kept text first', async () => {
-    mockState.data = v1;
-    expect(await storedMarkRecognition(open)).toEqual({text: '', old: true});
-    mockState.data = {...v1, recognizedText: 'Call Anna'};
-    expect(await storedMarkRecognition(open)).toEqual({text: 'Call Anna', old: false});
-    mockState.data = {...v1, version: 2};
+  it('is what the preload reports; without it the mark still needs recognizing', async () => {
+    mockState.data = {...v2, recognizedText: 'Call Anna'};
+    expect(await storedMarkRecognition(open)).toEqual({text: 'Call Anna'});
+    mockState.data = v2;
     expect(await storedMarkRecognition(open)).toBeNull();
   });
 });

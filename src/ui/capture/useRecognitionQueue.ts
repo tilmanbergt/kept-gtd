@@ -19,8 +19,6 @@ export interface MarkRecognition {
   text: string;
   /** The private data was missing (picture and strokes gone). */
   missing?: boolean;
-  /** Handwriting from an older gtdpara: never recognized, the text is typed from the picture. */
-  old?: boolean;
 }
 
 /** How many marks after the selected one are recognized ahead. */
@@ -42,10 +40,10 @@ export function nextToRecognize(
 }
 
 /** A finished result: 'done' with text, else 'failed' (an error) or 'empty'. Pure. */
-export function settledRecognition(rawText: string, error: string | null, old = false): MarkRecognition {
+export function settledRecognition(rawText: string, error: string | null): MarkRecognition {
   const text = rawText.trim();
   const state: RecognitionState = text ? 'done' : error ? 'failed' : 'empty';
-  return old ? {state, text, old} : {state, text};
+  return {state, text};
 }
 
 export function useRecognitionQueue(marks: OpenMark[], selectedId: string | null): Map<string, MarkRecognition> {
@@ -63,9 +61,8 @@ export function useRecognitionQueue(marks: OpenMark[], selectedId: string | null
   const idsKey = ids.join('|');
 
   // Text recognized on an earlier open comes from the mark's data at once,
-  // for every mark in the list (one small file read each), and so does the
-  // "old mark" verdict - only marks without either are recognized, by the
-  // queue below.
+  // for every mark in the list (one small file read each) - only marks
+  // without it are recognized, by the queue below.
   // The queue waits for these reads, so a mark with stored text is never
   // sent to the recognizer first.
   const preloadedRef = useRef(new Set<string>());
@@ -85,13 +82,13 @@ export function useRecognitionQueue(marks: OpenMark[], selectedId: string | null
     ).then(found => {
       inFlightRef.current -= 1;
       if (!mountedRef.current) {return;}
-      const known = found.filter((f): f is readonly [string, {text: string; old: boolean}] => !!f[1]);
+      const known = found.filter((f): f is readonly [string, {text: string}] => !!f[1]);
       setPreloading(n => n - 1);
       if (known.length === 0) {return;}
       setResults(prev => {
         const next = new Map(prev);
         for (const [id, r] of known) {
-          if (!next.has(id)) {next.set(id, settledRecognition(r.text, null, r.old));}
+          if (!next.has(id)) {next.set(id, settledRecognition(r.text, null));}
         }
         return next;
       });
@@ -121,7 +118,7 @@ export function useRecognitionQueue(marks: OpenMark[], selectedId: string | null
     runningRef.current = nextId;
     setResults(prev => new Map(prev).set(nextId, {state: 'recognizing', text: ''}));
     recognizeMark(open)
-      .then(r => ({...settledRecognition(r.text, r.error, r.old), missing: r.missing}))
+      .then(r => ({...settledRecognition(r.text, r.error), missing: r.missing}))
       .catch(e => {
         logWarn('useRecognitionQueue: failed', nextId, errorMessage(e));
         return {state: 'failed', text: ''} as MarkRecognition;

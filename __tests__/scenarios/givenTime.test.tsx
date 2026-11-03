@@ -65,7 +65,7 @@ scenario('Open loops: "+ F block" fills Quick Add\'s Meeting tab with the loop a
     putFile(areaFile('Writing'), dataFile('area', {Scope: [], Tasks: ['- [ ] Outline #writing/novel'], Meetings: [], Loops: ['- writing/novel: active']}));
   });
   when('I open Review → Open loops and select the loop', async () => {
-    await openApp({settings: {noteSetups: [writingLoops], noteSetupsMigrated: true}});
+    await openApp({settings: {noteSetups: [writingLoops]}});
     await tapTab('Review');
     if (shows('Overview')) await tap('Overview');
     await tap(/^Open loops/);
@@ -98,7 +98,7 @@ scenario('Given time lists loops and counterparts from the threshold up, never t
     putFile(PATHS.inbox, dataFile('inbox', {Tasks: [], Meetings: ['- 2026-10-14 16:00-17:00 Dentist']}));
   });
   when('I open Week', async () => {
-    await openApp({settings: {noteSetups: [writingLoops], noteSetupsMigrated: true}});
+    await openApp({settings: {noteSetups: [writingLoops]}});
     await tapTab('Week');
   });
   then('Writing has all 2.5 h; Loops and counterparts lists novel, not essay (below 1 h); no Inbox row', () => {
@@ -137,7 +137,7 @@ scenario('Given time sums a counterpart\'s threads into one row', {feature: 'Wee
   });
   when('I open Week', async () => {
     const setup = (id: string, tag: string) => ({...createNoteSetup(id, 'thread'), name: tag, tags: [tag]});
-    await openApp({settings: {noteSetups: [setup('1', 'retro'), setup('2', 'review'), setup('3', 'replenishment')], noteSetupsMigrated: true}});
+    await openApp({settings: {noteSetups: [setup('1', 'retro'), setup('2', 'review'), setup('3', 'replenishment')]}});
     await tapTab('Week');
   });
   then('Loops and counterparts lists "value" once, with 3 h and its three series', () => {

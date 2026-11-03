@@ -28,8 +28,6 @@ jest.mock('../../src/storage/settingsStorage', () => {
     noteSetups: [{...setups.createNoteSetup('1', 'thread'), name: 'Sparring', tags: ['sparring', 'retro']}],
     noteSetupDefaults: setups.seedNoteSetupDefaults(),
     nextNoteSetupId: 2,
-    noteSetupsMigrated: true,
-    noteSetupsNotice: [{setup: 'Sparring', change: 'merged', detail: 'Merged from the rules Sparring, Retro.'}],
   };
   return {
     loadSettings: async () => stored,
@@ -92,16 +90,13 @@ beforeEach(() => {
 });
 
 describe('Note setups list', () => {
-  it('shows the heading style, the notice, the Default and the setups', async () => {
+  it('shows the heading style, the Default and the setups', async () => {
     const r = await render();
     const all = texts(r);
-    expect(all).toContain('Tag Rules are now Note setups.');
-    expect(all).toContain('Sparring: Merged from the rules Sparring, Retro.');
+    expect(all).toContain('Heading style');
     expect(all).toContain('+ New note setup');
     expect(all).toContain('Default');
     expect(all.some(t => t.startsWith('#sparring #retro · own note per item'))).toBe(true);
-    await press(r, 'OK');
-    expect(mockSaved.at(-1)).toEqual({noteSetupsNotice: null});
   });
 });
 

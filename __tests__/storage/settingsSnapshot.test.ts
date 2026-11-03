@@ -9,8 +9,7 @@ import {DEFAULT_SETTINGS} from '../../src/domain/settings';
 import {peekSettings, rememberSettings, subscribeSettings} from '../../src/storage/settingsSnapshot';
 import {loadSettings, saveSettings} from '../../src/storage/settingsStorage';
 import {BUILD_INFO} from '../../src/generated/buildInfo';
-
-const KEY = 'gtdpara:settings:v1';
+import {SETTINGS_KEY as KEY} from '../../src/domain/storeKeys';
 
 async function store(patch: Record<string, unknown>): Promise<void> {
   // A blob the migrations leave as it is, so a read returns it unchanged.
