@@ -66,7 +66,7 @@ scenario('Removing with the defaults, then Start fresh, opens the setup assistan
   });
   when('I tap Start fresh', () => tap('Start fresh'));
   then('the setup assistant opens as on a first install', () => {
-    expectShows('Setup · 1 of 4');
+    expectShows('Setup · 1 of 5');
   });
 });
 

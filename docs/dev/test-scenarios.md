@@ -1486,14 +1486,15 @@ Test: `__tests__/scenarios/settingsTabs.test.tsx`
 
 ### A fresh install opens the setup assistant; Finish saves the folders found and creates only the missing ones
 
-- **Given** Note holds a folder "Projects" with 3 project folders and nothing else of PARA
+- **Given** Note holds a folder "Projects" with 3 project folders and nothing else of PARA, and Kept may not use the internet yet
 - **When** Kept starts for the first time
 - **Then** Settings shows the assistant on its Folders step, suggesting Projects
-- **When** I go through Notes (keep one notebook) and Features (Everything) to Finish
-- **Then** Finish lists exactly the folders it will create
+- **When** I go through Notes (keep one notebook), Features (Everything) and Updates (once a day) to Finish
+- **Then** Finish lists exactly the folders it will create, and the update choice
 - **When** I tap Finish
 - **Then** the folders are created, Projects is kept as it is, and the Projects tab says what happened
 - **And** the settings hold the choices
+- **And** Kept asked for internet access once, after saving
 
 Test: `__tests__/scenarios/setupAssistant.test.tsx` · design: `docs/dev/history/technical-design-easy-start.md`
 

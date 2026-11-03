@@ -50,6 +50,13 @@ describe('planFinish', () => {
     expect(plan.settingsPatch).toMatchObject({modules: {closeOut: true}, experimentalGoogleCalendar: true, experimentalGmail: true, notebookContentsEnabled: true});
     expect(plan.settingsPatch.noteSetupDefaults?.notebook).toBeNull();
   });
+  it('carries the update choice, which starts from the current setting', () => {
+    expect(initialChoices(DEFAULT_SETTINGS, {}).updates).toBe('manual');
+    expect(initialChoices({...DEFAULT_SETTINGS, updateCheck: 'daily'}, {}).updates).toBe('daily');
+    const choices = {...initialChoices(DEFAULT_SETTINGS, {}), updates: 'daily' as const};
+    expect(planFinish(choices, DEFAULT_SETTINGS, statuses).settingsPatch.updateCheck).toBe('daily');
+    expect(planFinish(initialChoices(DEFAULT_SETTINGS, {}), DEFAULT_SETTINGS, statuses).settingsPatch.updateCheck).toBe('manual');
+  });
   it('a blank name keeps the current one', () => {
     const choices = initialChoices(DEFAULT_SETTINGS, {});
     choices.folders.projects = '  ';

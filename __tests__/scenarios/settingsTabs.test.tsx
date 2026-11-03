@@ -26,14 +26,14 @@ scenario('An unsaved folder field holds back the setup assistant until Save', {f
   then('Run setup assistant waits and says why', async () => {
     expectShows('Save or reset the folder fields first.');
     await tap('Run setup assistant');
-    expectNotShows('Setup · 1 of 4');
+    expectNotShows('Setup · 1 of 5');
   });
   when('I tap Save under the folder fields', () => tap('Save'));
   then('the folder is stored and the assistant can start again', async () => {
     expect((await storedSettings()).projectsFolder).toBe('Work projects');
     expectNotShows('Save or reset the folder fields first.');
     await tap('Run setup assistant');
-    expectShows('Setup · 1 of 4');
+    expectShows('Setup · 1 of 5');
   });
 });
 
