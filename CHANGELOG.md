@@ -16,8 +16,7 @@ or your project/area files are stored.
   each profile once, note your Gmail app password and calendar link, run Settings → Data → Remove
   Kept's data with *Kept's data files* and *Saved profiles* unticked, then uninstall it. Then install
   0.25.0, run the setup assistant and Switch to your saved profile (Settings → Data → Profiles). Your
-  notes, data files and saved profiles stay where they are.
-  <!-- D2 result -->
+  notes, data files and saved profiles stay where they are. Uninstall the old Kept GTD before you install 0.25.0; don't run both side by side.
 
 ### Changed
 - Kept GTD now installs as its own plugin; settings start fresh (your files and saved profiles are
