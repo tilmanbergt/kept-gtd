@@ -10,6 +10,8 @@ or your project/area files are stored.
 
 ## [Unreleased]
 
+## [0.24.0] — 2026-11-03
+
 ### Upgrade notes
 - **The next version, 0.25.0, is a fresh install**: it comes as a new plugin next to this one, so this one's
   settings don't carry over by themselves. To keep everything, in this version:
