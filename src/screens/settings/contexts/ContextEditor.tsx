@@ -190,7 +190,8 @@ const local = StyleSheet.create({
   name: {flex: 1, fontSize: FONT.large, fontWeight: '700', marginRight: 12},
   save: {marginRight: 12},
   saveIdle: {opacity: 0.3},
-  nameField: {marginBottom: 8},
+  // A row, so the field's flex: 1 fills the width; in this column it would get no height (design-device-rendering §5.3).
+  nameField: {flexDirection: 'row', marginBottom: 8},
   chips: {flex: 1, marginTop: 4},
   sentence: {fontSize: FONT.small, fontWeight: '600', minHeight: SENTENCE_HEIGHT},
 });

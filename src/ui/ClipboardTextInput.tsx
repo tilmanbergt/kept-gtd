@@ -33,10 +33,11 @@
  * Rules placeholder chips) can insert at the last cursor position - through
  * the same tracked selection Paste uses.
  *
- * The wrapper is `flex: 1` so the field fills the rest of a row, and has a
- * minimum height so it can't collapse in a column: there `flex: 1` starts at
- * height 0, and a column without free height would draw the field as a flat,
- * untappable line (docs/dev/design-device-rendering.md §5.3).
+ * The wrapper is `flex: 1` so the field fills the rest of a row. Put the
+ * field in a row: in a column `flex: 1` starts at height 0, and the parent
+ * then makes no room for it (docs/dev/design-device-rendering.md §5.3). The
+ * minimum height keeps the field itself at one line even then, so a misplaced
+ * field shows as overlapping rather than as a flat, untappable line.
  */
 import React, {useImperativeHandle, useRef, useState} from 'react';
 import {StyleSheet, TextInput, View} from 'react-native';
