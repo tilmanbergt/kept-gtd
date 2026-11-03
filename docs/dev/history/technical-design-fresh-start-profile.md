@@ -219,3 +219,10 @@ Deviations and additions:
   had been built on the old default folders and showed none of the projects found); the first
   build gives each project its default abbreviation, as on any first view.
 - The access screen has ? Help (Settings, "Setup assistant") and Skip in its header, like the steps.
+- **Device test of P6 (A5 X, opened from a note in a project):** the read dialog came before the
+  access line was drawn, and after Allow Kept landed on the note's project instead of the
+  assistant: a second landing pass (the host delivers the sidebar event again) skipped the
+  assistant once Kept had landed. Fix: while `setupAssistant` is pending every landing goes back
+  to the assistant (scenario "Opened from a project note …"), and the access step waits for an
+  immediate e-ink refresh (`refreshEinkNow`, `utils/screenRefresh.ts`) before the first dialog.
+  The dialog shows the host's own text, not Kept's description (`supernote-host-facts.md` §4).

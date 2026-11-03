@@ -1,6 +1,8 @@
+import {act} from '@testing-library/react-native';
 import {device} from '../../test-helpers/fakeDevice/device';
-import {expectNotShows, expectShows, openApp, shows, tap} from '../../test-helpers/scenario/app';
-import {putFile} from '../../test-helpers/scenario/files';
+import {SIDEBAR_BUTTON_ID} from '../../src/domain/buttonIds';
+import {expectNotShows, expectShows, openApp, settle, shows, tap} from '../../test-helpers/scenario/app';
+import {dataFile, projectFile, putFile} from '../../test-helpers/scenario/files';
 import {and, given, scenario, then, when} from '../../test-helpers/scenario/scenario';
 import {serializeProfile} from '../../src/domain/profiles';
 import {DEFAULT_SETTINGS} from '../../src/domain/settings';
@@ -78,6 +80,24 @@ scenario('Without file access the assistant stops and offers Try again', {featur
   });
   then('the assistant goes on: Welcome back offers the saved profile', () => {
     expectNotShows(STOP_LINE);
+    expectShows('Welcome back');
+    expectShows('Load "Production"');
+  });
+});
+
+scenario('Opened from a project note, a fresh install stays in the assistant when the sidebar button event comes again', {feature: 'Settings', design: DESIGN}, () => {
+  const NOTE_FILE = '/storage/emulated/0/Note/1 Projects/Garden renovation/Garden renovation 2026.note';
+  given('a fresh install, a saved profile, and Kept opened from a note in project "Garden renovation"', async () => {
+    putFile(projectFile('Garden renovation'), dataFile('project', {Tasks: []}));
+    putFile(NOTE_FILE, 'handwriting');
+    putFile(PRODUCTION, serializeProfile('Production', DEFAULT_SETTINGS, new Date('2026-11-01T09:00:00Z'), '0.24.0'));
+    await openApp({fresh: true, fromNote: NOTE_FILE});
+  });
+  when('the host delivers the sidebar button press again (on opening, or when the permission dialog closes)', async () => {
+    act(() => device().sdk.pressButton(SIDEBAR_BUTTON_ID));
+    await settle();
+  });
+  then('the assistant is still on screen with Welcome back, not the project page', () => {
     expectShows('Welcome back');
     expectShows('Load "Production"');
   });

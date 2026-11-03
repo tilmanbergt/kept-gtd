@@ -414,7 +414,11 @@ function AppShell({onProfileSwitched}: {onProfileSwitched: () => void}): React.J
         // old note by hand later can't resurrect it.
         if (landing.clearRecord) clearReturnRecord();
 
-        if (loadedSettings.setupAssistant === 'pending' && !hasLandedRef.current) {
+        // Pending means the assistant hasn't been finished, skipped or replaced by a loaded profile:
+        // every landing goes back to it - also a later one, such as the sidebar event the host
+        // delivers again on opening or when a permission dialog closes
+        // (docs/dev/history/technical-design-fresh-start-profile.md §3.6, As built).
+        if (loadedSettings.setupAssistant === 'pending') {
           log('App: reorient landing on the setup assistant');
           setSetupAtStart(true);
           setSettingsTab('data');

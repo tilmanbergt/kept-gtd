@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-195 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+196 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -1650,6 +1650,14 @@ Test: `__tests__/scenarios/setupAssistantAccess.test.tsx`
 - **And** nothing was scanned or planned, write was not asked, and no Welcome back shows
 - **When** I tap Try again and allow the dialogs
 - **Then** the assistant goes on: Welcome back offers the saved profile
+
+Test: `__tests__/scenarios/setupAssistantAccess.test.tsx`
+
+### Opened from a project note, a fresh install stays in the assistant when the sidebar button event comes again
+
+- **Given** a fresh install, a saved profile, and Kept opened from a note in project "Garden renovation"
+- **When** the host delivers the sidebar button press again (on opening, or when the permission dialog closes)
+- **Then** the assistant is still on screen with Welcome back, not the project page
 
 Test: `__tests__/scenarios/setupAssistantAccess.test.tsx`
 

@@ -43,7 +43,7 @@ import {useStatus, useStatusApi} from '../../ui/status/StatusProvider';
 import {FONT, SPACING} from '../../ui/theme';
 import {errorMessage} from '../../utils/errorMessage';
 import {log, logError} from '../../utils/log';
-import {requestEinkRefresh} from '../../utils/screenRefresh';
+import {refreshEinkNow, requestEinkRefresh} from '../../utils/screenRefresh';
 import CheckToggle from './CheckToggle';
 import {styles as settingsStyles} from './settingsStyles';
 import WelcomeBack from './WelcomeBack';
@@ -95,6 +95,9 @@ export default function SetupAssistant({current, onDone, onLoadProfile, textColo
     let cancelled = false;
     setAccess('asking');
     (async () => {
+      // The line saying why is on the e-ink screen before the host's dialog covers it.
+      await refreshEinkNow();
+      if (cancelled) return;
       const read = await ensureFileReadPermission();
       const write = read && (await ensureFileWritePermission());
       if (cancelled) return;
