@@ -6,7 +6,6 @@ import {
   groupMarks,
   iconBox,
   isMarkId,
-  isOldStrokeMark,
   MarkDataFile,
   markCreatedAt,
   markLinkPath,
@@ -175,7 +174,7 @@ describe('strokeBounds', () => {
   });
 });
 
-describe('canRecognize / isOldStrokeMark', () => {
+describe('canRecognize', () => {
   const s: StoredStroke = {thickness: 1, penColor: 0, penType: 10, layerNum: 0, points: [10, 20], pressures: []};
   const data = (over: Partial<MarkDataFile>): MarkDataFile => ({
     version: 2,
@@ -192,22 +191,18 @@ describe('canRecognize / isOldStrokeMark', () => {
   });
   it('recognizes version 2 strokes', () => {
     expect(canRecognize(data({}))).toBe(true);
-    expect(isOldStrokeMark(data({}))).toBe(false);
   });
   it('does not send version 1 strokes, with or without kept text', () => {
     expect(canRecognize(data({version: 1}))).toBe(false);
-    expect(isOldStrokeMark(data({version: 1}))).toBe(true);
     expect(canRecognize(data({version: 1, recognizedText: 'Call Anna'}))).toBe(false);
   });
-  it('treats a file without a version as old', () => {
+  it('does not send strokes of a file without a version', () => {
     const noVersion = data({});
     delete (noVersion as Partial<MarkDataFile>).version;
     expect(canRecognize(noVersion)).toBe(false);
-    expect(isOldStrokeMark(noVersion)).toBe(true);
   });
-  it('a text-box-only mark needs no recognizer and is not old', () => {
+  it('a text-box-only mark needs no recognizer', () => {
     expect(canRecognize(data({strokes: [], textBoxText: 'Typed'}))).toBe(false);
-    expect(isOldStrokeMark(data({version: 1, strokes: [], textBoxText: 'Typed'}))).toBe(false);
   });
 });
 

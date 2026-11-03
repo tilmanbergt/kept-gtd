@@ -409,11 +409,6 @@ export function canRecognize(data: MarkDataFile): boolean {
   return typeof data.version === 'number' && data.version >= 2 && data.strokes.length > 0;
 }
 
-/** Handwriting saved by an older gtdpara that won't be recognized: the user types the text from the picture. */
-export function isOldStrokeMark(data: MarkDataFile): boolean {
-  return data.strokes.length > 0 && !canRecognize(data);
-}
-
 /** Parses mark.json; null when it isn't one. */
 export function parseMarkDataFile(text: string | null): MarkDataFile | null {
   if (!text) {return null;}

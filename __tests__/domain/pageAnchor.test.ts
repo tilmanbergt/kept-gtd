@@ -79,8 +79,4 @@ describe('settledRecognition', () => {
     expect(settledRecognition('', '117: failed')).toEqual({state: 'failed', text: ''});
     expect(settledRecognition('  ', null)).toEqual({state: 'empty', text: ''});
   });
-  it('keeps the old-mark flag', () => {
-    expect(settledRecognition('', null, true)).toEqual({state: 'empty', text: '', old: true});
-    expect(settledRecognition('Order toner', null, true)).toEqual({state: 'done', text: 'Order toner', old: true});
-  });
 });
