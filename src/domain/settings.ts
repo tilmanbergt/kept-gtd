@@ -166,7 +166,7 @@ export interface GtdParaSettings {
   notebookContentsEnabled: boolean;
   /**
    * The setup assistant (docs/dev/history/technical-design-easy-start.md §5): 'pending' only on a
-   * fresh install (domain/features.ts's migrateExperimentalFlags), until it is finished or skipped;
+   * fresh install (domain/features.ts's prepareFreshInstall), until it is finished or skipped;
    * it then opens once by itself. Per profile.
    */
   setupAssistant: 'pending' | 'done';

@@ -5,7 +5,7 @@ import {log, logError, logWarn} from '../utils/log';
 import {getSettingsUnreadable, setSettingsUnreadable} from './settingsUnreadable';
 import {ReviewStepsMap} from '../domain/reviewSteps';
 import {perfCount, perfEnd, perfStart} from '../utils/perf';
-import {migrateExperimentalFlags} from '../domain/features';
+import {prepareFreshInstall} from '../domain/features';
 import {BUILD_INFO} from '../generated/buildInfo';
 import {rememberSettings} from './settingsSnapshot';
 import {SETTINGS_KEY} from '../domain/storeKeys';
@@ -32,7 +32,7 @@ let writeSeq = 0;
  * uses this one directly so a failed read can never turn into "write the
  * defaults over the user's real settings".
  *
- * The loaded settings then pass through `migrateExperimentalFlags`, which
+ * The loaded settings then pass through `prepareFreshInstall`, which
  * returns the SAME object when it has nothing to do: it needs the raw stored
  * blob to tell a fresh install (What's-new marker, setup assistant) from a
  * start with stored settings.
@@ -47,7 +47,7 @@ async function readSettings(): Promise<GtdParaSettings> {
   perfCount('settings:read');
   const stored: Record<string, unknown> = raw ? JSON.parse(raw) : {};
   const merged: GtdParaSettings = {...DEFAULT_SETTINGS, ...stored};
-  const migrated = migrateExperimentalFlags(merged, stored, BUILD_INFO.version);
+  const migrated = prepareFreshInstall(merged, stored, BUILD_INFO.version);
   if (migrated !== merged) {
     try {
       await writeSettings(migrated);

@@ -1,4 +1,4 @@
-import {featuresOf, migrateExperimentalFlags, modulesOf, shouldShowWhatsNew} from '../../src/domain/features';
+import {featuresOf, modulesOf, prepareFreshInstall, shouldShowWhatsNew} from '../../src/domain/features';
 
 const base = {
   experimentalGoogleCalendar: false,
@@ -33,34 +33,20 @@ describe('modulesOf', () => {
   });
 });
 
-describe('migrateExperimentalFlags', () => {
-  it('fresh install: flags stay off, lastSeenVersion set', () => {
-    const out = migrateExperimentalFlags(base, {}, '0.1.0');
+describe('prepareFreshInstall', () => {
+  it('fresh install: flags stay off, lastSeenVersion set, setup assistant pending', () => {
+    const out = prepareFreshInstall(base, {}, '0.1.0');
     expect(out).toEqual({...base, lastSeenVersion: '0.1.0', setupAssistant: 'pending'});
   });
   it('fresh install with null raw', () => {
-    expect(migrateExperimentalFlags(base, null, '0.1.0').lastSeenVersion).toBe('0.1.0');
+    expect(prepareFreshInstall(base, null, '0.1.0').lastSeenVersion).toBe('0.1.0');
   });
-  it('existing install: configured integrations switched on, notice pending', () => {
-    const merged = {...base, googleCalendarIcsUrl: 'https://x/ical/y.ics', gmailEmail: ''};
-    const out = migrateExperimentalFlags(merged, {googleCalendarIcsUrl: 'https://x/ical/y.ics'}, '0.1.0');
-    expect(out.experimentalGoogleCalendar).toBe(true);
-    expect(out.experimentalGmail).toBe(false);
-    expect(out.lastSeenVersion).toBe('');
-  });
-  it('existing install with gmail only', () => {
-    const merged = {...base, gmailEmail: 'a@b.c'};
-    const out = migrateExperimentalFlags(merged, {gmailEmail: 'a@b.c'}, '0.1.0');
-    expect(out.experimentalGmail).toBe(true);
-    expect(out.experimentalGoogleCalendar).toBe(false);
-  });
-  it('existing install: the setup assistant stays done', () => {
-    expect(migrateExperimentalFlags(base, {baseRoot: '/storage/emulated/0/Note'}, '0.1.0').setupAssistant).toBe('done');
-  });
-  it('keys already stored: no-op, same reference', () => {
+  it('stored settings: no-op, same reference, the setup assistant stays done', () => {
     const merged = {...base, googleCalendarIcsUrl: 'https://x/ical/y.ics'};
-    const raw = {experimentalGoogleCalendar: false, experimentalGmail: false, googleCalendarIcsUrl: 'x'};
-    expect(migrateExperimentalFlags(merged, raw, '0.1.0')).toBe(merged);
+    const out = prepareFreshInstall(merged, {googleCalendarIcsUrl: 'https://x/ical/y.ics'}, '0.1.0');
+    expect(out).toBe(merged);
+    expect(out.setupAssistant).toBe('done');
+    expect(out.experimentalGoogleCalendar).toBe(false);
   });
 });
 
