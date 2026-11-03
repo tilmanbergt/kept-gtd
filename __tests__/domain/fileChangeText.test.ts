@@ -1,4 +1,4 @@
-import {archiveDoneText, emptyFolderConfirmNote, noteCreationConfirmText, profilesCopiedText, replacePdfConfirmText} from '../../src/domain/fileChangeText';
+import {archiveDoneText, emptyFolderConfirmNote, noteCreationConfirmText, replacePdfConfirmText} from '../../src/domain/fileChangeText';
 
 describe('fileChangeText', () => {
   it('names the folder that will be deleted and says what happens on "no"', () => {
@@ -34,9 +34,3 @@ describe('reflection page confirm (docs/dev/history/technical-design-meeting-ref
   });
 });
 
-describe('profilesCopiedText', () => {
-  it('names the count and the old folder, singular for one', () => {
-    expect(profilesCopiedText(2, 'EXPORT/gtdpara')).toBe('Copied 2 profiles from EXPORT/gtdpara - you can delete that folder.');
-    expect(profilesCopiedText(1, 'EXPORT/gtdpara')).toBe('Copied 1 profile from EXPORT/gtdpara - you can delete that folder.');
-  });
-});

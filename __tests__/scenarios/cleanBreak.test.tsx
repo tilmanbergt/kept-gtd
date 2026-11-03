@@ -1,14 +1,21 @@
 import {readFileSync} from 'fs';
 import {join} from 'path';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {expectShows, openApp} from '../../test-helpers/scenario/app';
+import {device} from '../../test-helpers/fakeDevice/device';
+import {expectNotShows, expectShows, openApp, tap, tapTab, texts} from '../../test-helpers/scenario/app';
+import {putFile} from '../../test-helpers/scenario/files';
 import {and, given, scenario, then, when} from '../../test-helpers/scenario/scenario';
 import {DEFAULT_SETTINGS} from '../../src/domain/settings';
+import {serializeProfile} from '../../src/domain/profiles';
 
 const DESIGN = 'technical-design-clean-break.md';
 const ROOT = join(__dirname, '..', '..');
 const read = (path: string): string => readFileSync(join(ROOT, path), 'utf8');
 const NATIVE = 'android/app/src/main/java/eu/embodyagile/gtdpara';
+const S = '/storage/emulated/0';
+const OLD_EXPORT = `${S}/EXPORT/gtdpara`;
+const OLD_DEMO = `${S}/Note/gtdpara-demo`;
+const profile = (name: string) => serializeProfile(name, {...DEFAULT_SETTINGS, inboxFolder: `${name} Inbox`}, new Date('2026-10-01T09:00:00Z'), '0.19.0');
 
 scenario('The plugin identity is consistent', {feature: 'Settings', design: DESIGN}, () => {
   let config: {pluginID: string; pluginKey: string} = {pluginID: '', pluginKey: ''};
@@ -54,5 +61,36 @@ scenario('Settings of gtdpara 0.24.0 are never read', {feature: 'Settings', desi
     const stored = JSON.parse((await AsyncStorage.getItem('kept:settings:v1')) ?? '{}');
     expect(stored.projectsFolder).toBe(DEFAULT_SETTINGS.projectsFolder);
     expect(stored.inboxFolder).toBe(DEFAULT_SETTINGS.inboxFolder);
+  });
+});
+
+scenario("Remove Kept's data lists only Kept's own folders", {feature: 'Remove data', design: DESIGN}, () => {
+  given('EXPORT/gtdpara and Note/gtdpara-demo hold files from gtdpara', () => {
+    putFile(`${OLD_EXPORT}/profiles/work.json`, profile('Work'));
+    putFile(`${OLD_DEMO}/Inbox.txt`, '# Inbox');
+  });
+  when("I open Settings → Data → Remove Kept's data… and remove with the defaults", async () => {
+    await openApp();
+    await tapTab('Settings');
+    await tap("Remove Kept's data…");
+    expect(texts().some(t => /gtdpara/i.test(t))).toBe(false);
+    await tap('Remove…');
+    await tap('Remove');
+  });
+  then('no row offered the old folders and both are still there', () => {
+    expect(device().fs.exists(`${OLD_EXPORT}/profiles/work.json`)).toBe(true);
+    expect(device().fs.exists(`${OLD_DEMO}/Inbox.txt`)).toBe(true);
+  });
+});
+
+scenario('Profiles in the old export folder are not copied', {feature: 'Profiles and demo space', design: DESIGN}, () => {
+  given('EXPORT/gtdpara/profiles holds work.json and home.json, and EXPORT/kept-gtd holds no profile', () => {
+    putFile(`${OLD_EXPORT}/profiles/work.json`, profile('Work'));
+    putFile(`${OLD_EXPORT}/profiles/home.json`, profile('Home'));
+  });
+  when('Kept starts', () => openApp());
+  then('nothing is copied into EXPORT/kept-gtd/profiles and no copy notice shows', () => {
+    expect(device().fs.paths(`${S}/EXPORT/kept-gtd/profiles`)).toEqual([]);
+    expectNotShows(/^Copied \d+ profiles? from/);
   });
 });

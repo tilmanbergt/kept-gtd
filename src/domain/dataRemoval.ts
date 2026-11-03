@@ -4,7 +4,7 @@
  * (R6) and its texts. Pure: the inventory comes from storage/dataRemoval.ts.
  */
 
-export type RemovalKind = 'settings' | 'secrets' | 'caches' | 'privateData' | 'logs' | 'demo' | 'legacy' | 'saveCopies' | 'dataFiles' | 'profiles';
+export type RemovalKind = 'settings' | 'secrets' | 'caches' | 'privateData' | 'logs' | 'demo' | 'saveCopies' | 'dataFiles' | 'profiles';
 
 export interface RemovalKindInfo {
   kind: RemovalKind;
@@ -13,7 +13,7 @@ export interface RemovalKindInfo {
   where: string;
   /** Checked when the screen opens and there is something to remove. */
   defaultOn: boolean;
-  /** Left out of the list when there is nothing (the old gtdpara folders, leftover save copies). */
+  /** Left out of the list when there is nothing (leftover save copies). */
   onlyWhenPresent?: boolean;
   /** How the count reads: "3 files". */
   unit: [string, string];
@@ -27,7 +27,6 @@ export const REMOVAL_KINDS: readonly RemovalKindInfo[] = [
   {kind: 'privateData', label: 'Lasso mark pictures and temporary files', where: "the plugin's private folder", defaultOn: true, unit: ['file', 'files']},
   {kind: 'logs', label: 'Debug and performance logs', where: 'EXPORT/kept-gtd/debug', defaultOn: true, unit: ['file', 'files']},
   {kind: 'demo', label: 'Demo space', where: 'Note/kept-gtd-demo and the profile Demo', defaultOn: true, unit: ['file', 'files']},
-  {kind: 'legacy', label: 'Old gtdpara folders', where: 'EXPORT/gtdpara, Note/gtdpara-demo', defaultOn: true, onlyWhenPresent: true, unit: ['file', 'files']},
   {kind: 'saveCopies', label: 'Leftover save copies', where: 'hidden .gtdpara-tmp files next to data files', defaultOn: true, onlyWhenPresent: true, unit: ['file', 'files']},
   {kind: 'dataFiles', label: "Kept's data files", where: 'project.txt, area.txt and Inbox.txt in your Projects, Areas and Archive folders', defaultOn: false, unit: ['file', 'files']},
   {kind: 'profiles', label: 'Saved profiles', where: 'EXPORT/kept-gtd/profiles', defaultOn: false, unit: ['file', 'files']},
@@ -118,7 +117,7 @@ export type RemovalStep = RemovalKind | 'saveProfile';
  * failure leaves the settings in place and the removal can run again - then the private folders,
  * and the store last.
  */
-export const REMOVAL_ORDER: readonly RemovalKind[] = ['legacy', 'demo', 'logs', 'saveCopies', 'dataFiles', 'profiles', 'privateData', 'caches', 'secrets', 'settings'];
+export const REMOVAL_ORDER: readonly RemovalKind[] = ['demo', 'logs', 'saveCopies', 'dataFiles', 'profiles', 'privateData', 'caches', 'secrets', 'settings'];
 
 export function planRemoval(choices: RemovalChoices, saveProfileFirst: boolean): RemovalStep[] {
   const steps: RemovalStep[] = saveProfileFirst && saveProfileOffered(choices) ? ['saveProfile'] : [];

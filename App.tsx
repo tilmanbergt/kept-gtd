@@ -43,7 +43,6 @@ import {useWhatsNewNotice} from './src/ui/useWhatsNewNotice';
 import {useUpdateNotice} from './src/ui/useUpdateNotice';
 import {useSettingsUnreadableNotice} from './src/ui/useSettingsUnreadableNotice';
 import {useNoteSetupsNotice} from './src/ui/useNoteSetupsNotice';
-import {useProfileCopyNotice} from './src/ui/useProfileCopyNotice';
 import {usePageFitNotice} from './src/ui/usePageFitNotice';
 import {configureLogFileSink, setFileLogging} from './src/utils/logSink';
 import {DEFAULT_SETTINGS, GtdParaSettings, resolvePaths} from './src/domain/settings';
@@ -644,7 +643,6 @@ function AppShell({onProfileSwitched}: {onProfileSwitched: () => void}): React.J
   const whatsNewShowing = useWhatsNewNotice(settings, setSettings, openSettingsAbout);
   useUpdateNotice(settings, setupAtStart, whatsNewShowing, openSettingsAbout);
   useSettingsUnreadableNotice(setSettings);
-  useProfileCopyNotice(settings);
   usePageFitNotice();
 
   if (mode === 'loading') {

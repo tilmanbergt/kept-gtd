@@ -13,17 +13,16 @@ import {writeTempPathFor} from '../domain/fileName';
 import {SECRETS_KEY, SETTINGS_KEY, STORE_PREFIX} from '../domain/storeKeys';
 import {resolvePaths} from '../domain/settings';
 import {AREA_FILE_NAME, PROJECT_FILE_NAME} from '../domain/types';
-import {DEBUG_LOG_FOLDER_PATH, GTDPARA_EXPORT_ROOT, INTERNAL_STORAGE, PROFILES_FOLDER_PATH} from '../supernote/devicePaths';
+import {DEBUG_LOG_FOLDER_PATH, GTDPARA_EXPORT_ROOT, PROFILES_FOLDER_PATH} from '../supernote/devicePaths';
 import {deleteKeptFile, deleteKeptTree, deletePrivateDataTree, deleteTempTree, getPrivateDataDir, getPrivateTempDir, listFolderEntries, statFiles} from '../supernote/fileSystem';
 import {ensureFileDeletePermission} from '../supernote/pluginPermissions';
 import {errorMessage} from '../utils/errorMessage';
 import {log, logWarn} from '../utils/log';
 import {flushLogFile, setFileLogging} from '../utils/logSink';
 import {perfEnable} from '../utils/perf';
-import {LEGACY_EXPORT_ROOT, saveActiveProfile} from './profiles';
+import {saveActiveProfile} from './profiles';
 import {loadSettings} from './settingsStorage';
 
-export const LEGACY_DEMO_ROOT = `${INTERNAL_STORAGE}/Note/gtdpara-demo`;
 export const DEMO_PROFILE_FILE = `${PROFILES_FOLDER_PATH}/${DEMO_PROFILE_ID}.json`;
 /** Deep enough for `4 Archive/<year>/<area>/<project>/project.txt`. */
 const ARCHIVE_DEPTH = 4;
@@ -148,7 +147,6 @@ export async function scanRemoval(): Promise<RemovalScan> {
     privateData: privateFiles.length,
     logs: (await filesIn(DEBUG_LOG_FOLDER_PATH)).length,
     demo: demoFiles.length,
-    legacy: (await filesIn(LEGACY_EXPORT_ROOT)).length + (await filesIn(LEGACY_DEMO_ROOT)).length,
     saveCopies: saveCopies.length,
     dataFiles: dataFiles.length,
     profiles: profiles.length,
@@ -204,8 +202,6 @@ async function runStep(step: RemovalStep, targets: RemovalTargets): Promise<Step
       } catch (e) {
         return {step, done: 0, total: 1, error: errorMessage(e)};
       }
-    case 'legacy':
-      return eachTarget(step, [LEGACY_EXPORT_ROOT, LEGACY_DEMO_ROOT], deleteKeptTree);
     case 'demo': {
       const files = await eachTarget(step, [DEMO_BASE_ROOT, DEMO_PROFILE_FILE], deleteKeptTree);
       const store = await removeStoreKeys(step, targets.storeKeys.demo);
@@ -269,7 +265,7 @@ export async function runRemoval(plan: RemovalStep[], targets: RemovalTargets, r
   } catch (e) {
     logWarn('dataRemoval: flushing the log file failed', errorMessage(e));
   }
-  const needsDelete = plan.some(step => ['legacy', 'demo', 'logs', 'saveCopies', 'dataFiles', 'profiles'].includes(step));
+  const needsDelete = plan.some(step => ['demo', 'logs', 'saveCopies', 'dataFiles', 'profiles'].includes(step));
   if (needsDelete && !(await ensureFileDeletePermission(reason))) {
     log('dataRemoval: delete permission not granted, nothing removed');
     const refused = plan.map(step => ({step, done: 0, total: 0, error: 'the Supernote did not allow deleting files'}));

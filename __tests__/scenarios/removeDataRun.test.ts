@@ -105,7 +105,7 @@ scenario('The scan counts what is there', {feature: 'Remove data', design: DESIG
   given('Kept has data in every place it uses', () => keptEverywhere());
   then('each kind has its count and the open mark is counted', async () => {
     const {inventory} = await scanRemoval();
-    expect(inventory.counts).toMatchObject({settings: 1, secrets: 2, caches: 2, privateData: 2, logs: 2, demo: 2, dataFiles: 4, profiles: 2, legacy: 0, saveCopies: 0});
+    expect(inventory.counts).toMatchObject({settings: 1, secrets: 2, caches: 2, privateData: 2, logs: 2, demo: 2, dataFiles: 4, profiles: 2, saveCopies: 0});
     expect(inventory.openMarks).toBe(1);
   });
 });

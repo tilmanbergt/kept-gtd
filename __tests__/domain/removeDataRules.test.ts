@@ -21,7 +21,6 @@ const counts = (patch: Partial<RemovalCounts> = {}): RemovalCounts => ({
   privateData: 4,
   logs: 5,
   demo: 6,
-  legacy: 0,
   saveCopies: 0,
   dataFiles: 8,
   profiles: 2,
@@ -38,16 +37,15 @@ describe('defaults (R3)', () => {
       privateData: true,
       logs: true,
       demo: true,
-      legacy: false,
       saveCopies: false,
       dataFiles: false,
       profiles: false,
     });
   });
-  it('lists the old gtdpara folders and save copies only when there are some', () => {
-    expect(listedKinds(inventory()).map(k => k.kind)).not.toContain('legacy');
-    expect(listedKinds(inventory({}, {legacy: 3, saveCopies: 1})).map(k => k.kind)).toEqual(expect.arrayContaining(['legacy', 'saveCopies']));
-    expect(initialChoices(inventory({}, {legacy: 3})).legacy).toBe(true);
+  it('lists the save copies only when there are some', () => {
+    expect(listedKinds(inventory()).map(k => k.kind)).not.toContain('saveCopies');
+    expect(listedKinds(inventory({}, {saveCopies: 1})).map(k => k.kind)).toContain('saveCopies');
+    expect(initialChoices(inventory({}, {saveCopies: 1})).saveCopies).toBe(true);
   });
   it('an empty kind stays unchecked and says nothing here', () => {
     const inv = inventory({}, {logs: 0});

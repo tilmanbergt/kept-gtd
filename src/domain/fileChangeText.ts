@@ -283,11 +283,6 @@ export function dataFileGoneText(fileName: string): string {
   return `Not saved: the file of "${fileName}" was deleted or moved outside Kept GTD. Settings → Advanced → Reload all files shows what is there now.`;
 }
 
-/** After the one-time copy of saved profiles from the old export folder (docs/dev/history/technical-design-kept-gtd.md §3.3). */
-export function profilesCopiedText(count: number, oldFolderDisplay: string): string {
-  return `Copied ${count} ${count === 1 ? 'profile' : 'profiles'} from ${oldFolderDisplay} - you can delete that folder.`;
-}
-
 /** After an agreement was written (docs/dev/history/technical-design-meetings-0.21.md §2.3). */
 export function agreementAddedText(itemName: string): string {
   return `Agreement added to ${itemName}`;
