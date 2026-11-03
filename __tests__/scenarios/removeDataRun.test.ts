@@ -15,9 +15,9 @@ const OTHER_PLUGIN_KEY = 'otherplugin:settings';
 /** Kept's data everywhere §3 lists, plus a note and another plugin's entry that must stay. */
 async function keptEverywhere(settings = {}): Promise<void> {
   await storeSettings(settings);
-  await AsyncStorage.setItem('gtdpara:profileSecrets:v1', JSON.stringify({production: {gmailAppPassword: 'abcd efgh'}, demo: {}}));
-  await AsyncStorage.setItem('gtdpara:tagUsage:v1', '[]');
-  await AsyncStorage.setItem('gtdpara:tagUsage:v1:demo', '[]');
+  await AsyncStorage.setItem('kept:profileSecrets:v1', JSON.stringify({production: {gmailAppPassword: 'abcd efgh'}, demo: {}}));
+  await AsyncStorage.setItem('kept:tagUsage:v1', '[]');
+  await AsyncStorage.setItem('kept:tagUsage:v1:demo', '[]');
   await AsyncStorage.setItem(OTHER_PLUGIN_KEY, 'theirs');
   putFile(projectFile('Garden renovation'), dataFile('project', {Tasks: ['- [ ] Measure the raised beds #next']}));
   putFile(NOTE, 'handwriting');
@@ -39,7 +39,7 @@ async function removeWith(patch: Partial<RemovalChoices> = {}, saveProfileFirst 
   return runRemoval(planRemoval(choices, saveProfileFirst), targets, 'Remove Kept data');
 }
 
-const keptKeys = async () => (await AsyncStorage.getAllKeys()).filter(k => k.startsWith('gtdpara:'));
+const keptKeys = async () => (await AsyncStorage.getAllKeys()).filter(k => k.startsWith('kept:'));
 
 scenario('Removing with the defaults leaves no Kept data but keeps profiles, data files and notes', {feature: 'Remove data', design: DESIGN}, () => {
   given('Kept has data in every place it uses', () => keptEverywhere());
@@ -73,7 +73,7 @@ scenario('A failing log deletion still removes the rest and keeps the settings',
   then('the logs report the failure, the settings are kept and the rest is gone', async () => {
     expect(outcomes.find(o => o.step === 'logs')?.error).toBe('disk busy');
     expect(outcomes.find(o => o.step === 'settings')?.skipped).toBe(true);
-    expect(await keptKeys()).toEqual(['gtdpara:settings:v1']);
+    expect(await keptKeys()).toEqual(['kept:settings:v1']);
     expect(device().fs.paths(`${S}/Note/kept-gtd-demo`)).toEqual([]);
   });
 });
@@ -83,7 +83,7 @@ scenario('Save the active profile first keeps the setup in production.json', {fe
   when('I remove the settings with Save the active profile first on', () => removeWith({}, true));
   then('production.json holds the folder and the settings are gone', async () => {
     expect(device().fs.get(`${S}/EXPORT/kept-gtd/profiles/production.json`)).toContain('Work projects');
-    expect(await AsyncStorage.getItem('gtdpara:settings:v1')).toBeNull();
+    expect(await AsyncStorage.getItem('kept:settings:v1')).toBeNull();
   });
 });
 

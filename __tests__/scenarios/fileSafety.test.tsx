@@ -104,7 +104,7 @@ scenario('When Kept GTD and another app changed the same list, the user decides 
 
 scenario('Unreadable settings are never replaced by the defaults unasked', {feature: 'Settings', design: 'technical-design-quality-hardening.md'}, () => {
   given('the stored settings are broken and the Inbox has a done todo', async () => {
-    await AsyncStorage.setItem('gtdpara:settings:v1', '{"inboxFolder": "0 Inbox", "hideDoneIn');
+    await AsyncStorage.setItem('kept:settings:v1', '{"inboxFolder": "0 Inbox", "hideDoneIn');
     putFile(INBOX_FILE, dataFile('inbox', {Tasks: ['- [x] Old todo', '- [ ] Open todo'], Meetings: []}));
   });
   when('I open Kept GTD', () => openApp());
@@ -114,11 +114,11 @@ scenario('Unreadable settings are never replaced by the defaults unasked', {feat
   and('a setting changed on the way (Inbox: hide done) leaves the stored settings as they were', async () => {
     await tapTab('Inbox');
     await tap('hide done');
-    expect(await AsyncStorage.getItem('gtdpara:settings:v1')).toBe('{"inboxFolder": "0 Inbox", "hideDoneIn');
+    expect(await AsyncStorage.getItem('kept:settings:v1')).toBe('{"inboxFolder": "0 Inbox", "hideDoneIn');
   });
   and('"Start over" stores the defaults and the message goes away', async () => {
     await tap('Start over');
-    expect(JSON.parse((await AsyncStorage.getItem('gtdpara:settings:v1'))!)).toEqual(DEFAULT_SETTINGS);
+    expect(JSON.parse((await AsyncStorage.getItem('kept:settings:v1'))!)).toEqual(DEFAULT_SETTINGS);
     expect(shows('Settings could not be read - Kept GTD uses defaults and saves no settings.')).toBe(false);
     expect(fileText(INBOX_FILE)).toContain('- [x] Old todo');
   });

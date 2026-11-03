@@ -11,10 +11,10 @@ import {perfCount, perfEnd, perfStart} from '../utils/perf';
 import {migrateExperimentalFlags} from '../domain/features';
 import {BUILD_INFO} from '../generated/buildInfo';
 import {rememberSettings} from './settingsSnapshot';
+import {SETTINGS_KEY} from '../domain/storeKeys';
 
 export {peekSettings} from './settingsSnapshot';
 
-const SETTINGS_KEY = 'gtdpara:settings:v1';
 
 /**
  * The stored text last read or written and the settings it stands for

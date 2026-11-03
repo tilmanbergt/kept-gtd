@@ -12,8 +12,7 @@ import {and, given, scenario, then, when} from '../../test-helpers/scenario/scen
 import {BIG_NOW, bigScopeFiles, bigScopeSettings} from '../../test-helpers/bigScope';
 import {renderCounts, resetRenderCounts} from '../../test-helpers/renderCounts';
 import {fixedClock} from '../../test-helpers/scenario/clock';
-
-const SETTINGS_KEY = 'gtdpara:settings:v1';
+import {SETTINGS_KEY} from '../../src/domain/storeKeys';
 
 const clock = () => fixedClock(BIG_NOW);
 afterEach(() => jest.useRealTimers());

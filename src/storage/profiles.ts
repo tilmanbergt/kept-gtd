@@ -28,8 +28,8 @@ import {loadSettings, replaceUnreadableSettings, saveSettings} from './settingsS
 import {getSettingsUnreadable} from './settingsUnreadable';
 import {errorMessage} from '../utils/errorMessage';
 import {profilesCopiedText} from '../domain/fileChangeText';
+import {SECRETS_KEY} from '../domain/storeKeys';
 
-const SECRETS_KEY = 'gtdpara:profileSecrets:v1';
 
 /** The export folder of gtdpara 0.19 and older; read only by copyLegacyProfiles (docs/dev/history/technical-design-kept-gtd.md §3.3). */
 export const LEGACY_EXPORT_ROOT = '/storage/emulated/0/EXPORT/gtdpara';

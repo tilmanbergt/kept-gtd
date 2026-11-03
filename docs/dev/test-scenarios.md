@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-183 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+185 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -1341,6 +1341,24 @@ Test: `__tests__/scenarios/givenTime.test.tsx`
 - **When** the host reads PluginConfig.json
 - **Then** pluginKey, the app.json name and the MainActivity component name are all keptgtd
 - **Then** pluginID is nj7yssrvl7g778tz, the same as the fallback of the runtime guard
+
+Test: `__tests__/scenarios/cleanBreak.test.tsx`
+
+### A fresh install starts clean and writes only kept: keys
+
+- **Given** an empty store
+- **When** Kept starts
+- **Then** the setup assistant opens
+- **And** every key Kept wrote starts with kept:
+
+Test: `__tests__/scenarios/cleanBreak.test.tsx`
+
+### Settings of gtdpara 0.24.0 are never read
+
+- **Given** the store holds gtdpara:settings:v1 with my own folders and no kept: key
+- **When** Kept starts
+- **Then** it behaves as a fresh install: the setup assistant opens
+- **And** the gtdpara: key is still there, untouched, and the new settings have the default folders
 
 Test: `__tests__/scenarios/cleanBreak.test.tsx`
 

@@ -12,8 +12,7 @@ import {DEFAULT_SETTINGS, GtdParaSettings} from '../../src/domain/settings';
 import {ENGAGE_BUTTON_ID} from '../../src/domain/buttonIds';
 import {BUILD_INFO} from '../../src/generated/buildInfo';
 import {device} from '../fakeDevice/device';
-
-const SETTINGS_KEY = 'gtdpara:settings:v1';
+import {SETTINGS_KEY} from '../../src/domain/storeKeys';
 
 // Kept tabs stay mounted with display: none; queries see only what the user sees.
 configure({defaultIncludeHiddenElements: false});

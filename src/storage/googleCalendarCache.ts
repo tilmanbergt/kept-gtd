@@ -42,8 +42,8 @@ import {log, logError} from '../utils/log';
 import {CachedItem} from './dataCache';
 import {onActiveProfileChange, profileScopedKey} from './profileKeys';
 import {errorMessage} from '../utils/errorMessage';
+import {GOOGLE_CALENDAR_CACHE_KEY} from '../domain/storeKeys';
 
-const PERSIST_KEY = 'gtdpara:googleCalendarCache:v1';
 
 /** What's actually persisted - fetchedAt + events only, never `error`. */
 interface PersistedGoogleCalendarCache {
@@ -80,14 +80,14 @@ export function getGoogleCalendarCache(): GoogleCalendarCacheState | null {
 /** Nothing in this feature calls this (kept for completeness/testing) - also clears the persisted copy, so it is a real reset if something wires it up. */
 export function clearGoogleCalendarCache(): void {
   cached = null;
-  AsyncStorage.removeItem(profileScopedKey(PERSIST_KEY)).catch(e => {
+  AsyncStorage.removeItem(profileScopedKey(GOOGLE_CALENDAR_CACHE_KEY)).catch(e => {
     logError('clearGoogleCalendarCache: failed to clear persisted cache', errorMessage(e));
   });
 }
 
 /** Fire-and-forget write of a successful fetch's result - never persists an error state (see this file's top doc comment). Failures are logged, not thrown - persistence is a nice-to-have, never something a refresh should fail over. */
 function persistToDisk(state: PersistedGoogleCalendarCache): void {
-  AsyncStorage.setItem(profileScopedKey(PERSIST_KEY), JSON.stringify(state)).catch(e => {
+  AsyncStorage.setItem(profileScopedKey(GOOGLE_CALENDAR_CACHE_KEY), JSON.stringify(state)).catch(e => {
     logError('persistToDisk: failed to persist Google Calendar cache', errorMessage(e));
   });
 }
@@ -102,7 +102,7 @@ function persistToDisk(state: PersistedGoogleCalendarCache): void {
  */
 async function hydrateFromDisk(): Promise<void> {
   try {
-    const raw = await AsyncStorage.getItem(profileScopedKey(PERSIST_KEY));
+    const raw = await AsyncStorage.getItem(profileScopedKey(GOOGLE_CALENDAR_CACHE_KEY));
     if (!raw) return;
     const parsed = JSON.parse(raw) as PersistedGoogleCalendarCache;
     if (cached) return; // a real fetch already landed while we were reading disk

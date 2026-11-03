@@ -57,7 +57,7 @@ scenario('Removing with the defaults, then Start fresh, opens the setup assistan
   then('each step reports removed and the settings are gone', async () => {
     expectShows('Settings: removed');
     expectShows('Debug and performance logs: removed');
-    expect((await AsyncStorage.getAllKeys()).filter(k => k.startsWith('gtdpara:'))).toEqual([]);
+    expect((await AsyncStorage.getAllKeys()).filter(k => k.startsWith('kept:'))).toEqual([]);
     expect(await AsyncStorage.getItem('otherplugin:settings')).toBe('theirs');
   });
   and('the profile was saved first, and the project file is still there', () => {
@@ -81,7 +81,7 @@ scenario('Cancel on the question removes nothing', {feature: 'Remove data', desi
     await tap('✕');
   });
   then('nothing is removed and the list is still there', async () => {
-    expect(await AsyncStorage.getItem('gtdpara:settings:v1')).not.toBeNull();
+    expect(await AsyncStorage.getItem('kept:settings:v1')).not.toBeNull();
     expect(device().fs.exists(`${S}/EXPORT/kept-gtd/debug/kept-gtd-log.txt`)).toBe(true);
     expect(texts()).toContain('Stays on your device');
   });

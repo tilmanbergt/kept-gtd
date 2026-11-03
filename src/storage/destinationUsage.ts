@@ -8,15 +8,15 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {onActiveProfileChange, profileScopedKey} from './profileKeys';
 import {errorMessage} from '../utils/errorMessage';
 import {logWarn} from '../utils/log';
+import {CAPTURE_DESTINATIONS_KEY} from '../domain/storeKeys';
 
-const KEY = 'gtdpara:captureDestinations:v1';
 const MAX = 12;
 
 let lastKnown: string[] | null = null;
 
 async function load(): Promise<string[]> {
   try {
-    const raw = await AsyncStorage.getItem(profileScopedKey(KEY));
+    const raw = await AsyncStorage.getItem(profileScopedKey(CAPTURE_DESTINATIONS_KEY));
     const parsed = raw ? JSON.parse(raw) : [];
     return Array.isArray(parsed) ? parsed.filter((p): p is string => typeof p === 'string') : [];
   } catch {
@@ -31,7 +31,7 @@ export async function recordDestinationUsed(path: string): Promise<void> {
   try {
     const next = [path, ...(await load()).filter(p => p !== path)].slice(0, MAX);
     lastKnown = next;
-    await AsyncStorage.setItem(profileScopedKey(KEY), JSON.stringify(next));
+    await AsyncStorage.setItem(profileScopedKey(CAPTURE_DESTINATIONS_KEY), JSON.stringify(next));
   } catch (e) {
     // Only a convenience - the list just stays as it was.
     logWarn('destinationUsage: storing failed', errorMessage(e));

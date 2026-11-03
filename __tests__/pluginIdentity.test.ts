@@ -1,5 +1,5 @@
 // docs/dev/history/technical-design-clean-break.md §3: the plugin's identity to the host is
-// keptgtd / nj7yssrvl7g778tz. What is invisible to the user and already written into notes and
+// keptgtd / nj7yssrvl7g778tz and its stored keys start with kept: (§4). What is invisible to the user and already written into notes and
 // files keeps the name gtdpara: changing a note marker, the profile format or the temp suffix would
 // break notes and saved profiles, so this test fails when one changes.
 import {readFileSync} from 'fs';
@@ -13,6 +13,15 @@ import {
 } from '../src/domain/meetingNoteBlock';
 import {PROFILE_FILE_FORMAT} from '../src/domain/profiles';
 import {writeTempPathFor} from '../src/domain/fileName';
+import {
+  CAPTURE_DESTINATIONS_KEY,
+  GOOGLE_CALENDAR_CACHE_KEY,
+  SECRETS_KEY,
+  SETTINGS_KEY,
+  STORE_PREFIX,
+  TAG_USAGE_KEY,
+  UPDATE_STATE_KEY,
+} from '../src/domain/storeKeys';
 
 const ROOT = join(__dirname, '..');
 const NATIVE = 'android/app/src/main/java/eu/embodyagile/gtdpara';
@@ -52,6 +61,34 @@ describe('plugin identity', () => {
     expect(read('src/supernote/fileSystem.ts')).toContain('GtdParaFile');
     expect(read('src/supernote/pdfNative.ts')).toContain('GtdParaPdf');
     expect(read('src/supernote/pluginRuntime.ts')).toContain('GtdParaRuntime');
+  });
+});
+
+describe('storage keys', () => {
+  it('puts every key under the kept: prefix', () => {
+    expect(STORE_PREFIX).toBe('kept:');
+    expect([SETTINGS_KEY, SECRETS_KEY, CAPTURE_DESTINATIONS_KEY, TAG_USAGE_KEY, GOOGLE_CALENDAR_CACHE_KEY, UPDATE_STATE_KEY]).toEqual([
+      'kept:settings:v1',
+      'kept:profileSecrets:v1',
+      'kept:captureDestinations:v1',
+      'kept:tagUsage:v1',
+      'kept:googleCalendarCache:v1',
+      'kept:updates:v1',
+    ]);
+  });
+
+  it.each([
+    'src/storage/settingsStorage.ts',
+    'src/storage/profiles.ts',
+    'src/storage/destinationUsage.ts',
+    'src/storage/tagUsage.ts',
+    'src/storage/googleCalendarCache.ts',
+    'src/storage/updates.ts',
+    'src/storage/dataRemoval.ts',
+  ])('%s takes its keys from domain/storeKeys.ts, with no key literal of its own', file => {
+    const text = read(file);
+    expect(text).toContain("from '../domain/storeKeys'");
+    expect(text).not.toMatch(/['`](gtdpara|kept):[A-Za-z]/);
   });
 });
 

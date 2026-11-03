@@ -3,8 +3,8 @@ import {inactiveLeaves} from '../domain/counterparts';
 import {threadOf} from '../domain/threads';
 import {getCachedData} from './dataCache';
 import {onActiveProfileChange, profileScopedKey} from './profileKeys';
+import {TAG_USAGE_KEY} from '../domain/storeKeys';
 
-const TAG_USAGE_KEY = 'gtdpara:tagUsage:v1';
 const MAX_TAGS = 30;
 
 /**

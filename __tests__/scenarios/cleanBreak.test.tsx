@@ -1,6 +1,9 @@
 import {readFileSync} from 'fs';
 import {join} from 'path';
-import {given, scenario, then, when} from '../../test-helpers/scenario/scenario';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {expectShows, openApp} from '../../test-helpers/scenario/app';
+import {and, given, scenario, then, when} from '../../test-helpers/scenario/scenario';
+import {DEFAULT_SETTINGS} from '../../src/domain/settings';
 
 const DESIGN = 'technical-design-clean-break.md';
 const ROOT = join(__dirname, '..', '..');
@@ -21,5 +24,35 @@ scenario('The plugin identity is consistent', {feature: 'Settings', design: DESI
   then('pluginID is nj7yssrvl7g778tz, the same as the fallback of the runtime guard', () => {
     expect(config.pluginID).toBe('nj7yssrvl7g778tz');
     expect(read(`${NATIVE}/PluginRuntimeGuard.kt`)).toContain('FALLBACK_PLUGIN_ID = "nj7yssrvl7g778tz"');
+  });
+});
+
+scenario('A fresh install starts clean and writes only kept: keys', {feature: 'Settings', design: DESIGN}, () => {
+  given('an empty store', () => undefined);
+  when('Kept starts', () => openApp({fresh: true}));
+  then('the setup assistant opens', () => {
+    expectShows('Setup · 1 of 5');
+  });
+  and('every key Kept wrote starts with kept:', async () => {
+    const keys = await AsyncStorage.getAllKeys();
+    expect(keys).toContain('kept:settings:v1');
+    expect(keys.filter(k => !k.startsWith('kept:'))).toEqual([]);
+  });
+});
+
+scenario('Settings of gtdpara 0.24.0 are never read', {feature: 'Settings', design: DESIGN}, () => {
+  const old = JSON.stringify({...DEFAULT_SETTINGS, projectsFolder: 'My Projects', inboxFolder: 'My Inbox', setupAssistant: 'done', lastSeenVersion: '0.24.0'});
+  given('the store holds gtdpara:settings:v1 with my own folders and no kept: key', async () => {
+    await AsyncStorage.setItem('gtdpara:settings:v1', old);
+  });
+  when('Kept starts', () => openApp({fresh: true}));
+  then('it behaves as a fresh install: the setup assistant opens', () => {
+    expectShows('Setup · 1 of 5');
+  });
+  and('the gtdpara: key is still there, untouched, and the new settings have the default folders', async () => {
+    expect(await AsyncStorage.getItem('gtdpara:settings:v1')).toBe(old);
+    const stored = JSON.parse((await AsyncStorage.getItem('kept:settings:v1')) ?? '{}');
+    expect(stored.projectsFolder).toBe(DEFAULT_SETTINGS.projectsFolder);
+    expect(stored.inboxFolder).toBe(DEFAULT_SETTINGS.inboxFolder);
   });
 });
