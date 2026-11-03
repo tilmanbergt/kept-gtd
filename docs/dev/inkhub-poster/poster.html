@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kept GTD poster</title>
+<!--
+  InkHub poster for Kept GTD: the first thumbnail, the tile in InkHub's grid.
+  The poster is exactly 1404 x 1872 px (A5 X portrait). Opened in a browser it is scaled to fit
+  the window; add ?actual to the URL to see it 1:1. Export: see README.md in this folder.
+  Texts are plain HTML below, sizes and spacing are the variables in :root.
+-->
+<style>
+  @font-face { font-family: "Archivo"; font-weight: 500; src: url("fonts/archivo-latin-500-normal.woff2") format("woff2"); }
+  @font-face { font-family: "Archivo"; font-weight: 700; src: url("fonts/archivo-latin-700-normal.woff2") format("woff2"); }
+  @font-face { font-family: "Archivo"; font-weight: 900; src: url("fonts/archivo-latin-900-normal.woff2") format("woff2"); }
+  @font-face { font-family: "Caveat";  font-weight: 600; src: url("fonts/caveat-latin-600-normal.woff2") format("woff2"); }
+
+  :root {
+    --ink: #000;
+    --paper: #fff;
+    --grey: #8a8a8a;        /* lines on the note page */
+    --pad: 44px;            /* poster margin */
+    --gap: 26px;            /* space between blocks */
+    --radius: 22px;
+    --border: 5px;          /* outer frames */
+    --thin: 3px;            /* inner frames */
+    --header-h: 300px;
+    --pair-h: 420px;        /* panels 02 + 03 */
+    --icons-h: 168px;
+    --footer-h: 104px;
+    --sans: "Archivo", "Helvetica Neue", Arial, sans-serif;
+    --hand: "Caveat", "Segoe Print", "Comic Sans MS", cursive;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: #e6e6e6; }
+  body { min-height: 100vh; display: grid; place-items: center; font-family: var(--sans); color: var(--ink); }
+
+  /* The poster itself: fixed size, scaled only for viewing */
+  .stage { width: 1404px; height: 1872px; transform-origin: top left; }
+  .poster {
+    width: 1404px; height: 1872px; background: var(--paper);
+    padding: var(--pad); display: flex; flex-direction: column; gap: var(--gap);
+  }
+
+  /* ---------- Header ---------- */
+  .header {
+    height: var(--header-h); flex: none; background: var(--ink); color: var(--paper);
+    border-radius: var(--radius); padding: 40px 56px; display: flex; align-items: center; gap: 48px;
+  }
+  /* Plugin icon and wordmark: white versions of assets/icon.png and assets/wordmark.png (see README.md) */
+  .icon-img { width: 210px; height: auto; flex: none; }
+  .wordmark { display: block; width: 740px; height: auto; }
+  .tagline { font-weight: 500; font-size: 40px; margin-top: 26px; letter-spacing: .3px; }
+
+  /* ---------- Panels ---------- */
+  .panel {
+    border: var(--border) solid var(--ink); border-radius: var(--radius);
+    padding: 26px 32px 30px; display: flex; flex-direction: column; min-height: 0;
+  }
+  .label { display: flex; align-items: center; gap: 18px; font-weight: 900; font-size: 34px; letter-spacing: 1px; }
+  .num {
+    background: var(--ink); color: var(--paper); border-radius: 999px;
+    font-size: 26px; padding: 6px 16px; letter-spacing: 0;
+  }
+  .caption { font-weight: 700; font-size: 34px; text-align: center; margin-top: 18px; }
+
+  .main { flex: 1; }
+  .pair { height: var(--pair-h); flex: none; display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap); }
+
+  /* 01 Write + Engage: a note page with the Engage panel docked on the right */
+  .device {
+    flex: 1; margin-top: 22px; border: var(--thin) solid var(--ink); border-radius: 16px;
+    display: grid; grid-template-columns: 1fr 470px; overflow: hidden; min-height: 0;
+  }
+  .note {
+    padding: 34px 40px; font-family: var(--hand); font-weight: 600; font-size: 58px; line-height: 84px;
+    background-image: repeating-linear-gradient(to bottom, transparent 0 83px, var(--grey) 83px 85px);
+    background-position: 0 30px;
+  }
+  .note .title { font-size: 66px; text-decoration: underline; text-decoration-thickness: 3px; text-underline-offset: 10px; }
+  .note .indent { padding-left: 36px; }
+  .engage { border-left: var(--thin) solid var(--ink); padding: 26px 28px; display: flex; flex-direction: column; gap: 18px; }
+  .engage-head {
+    font-weight: 900; font-size: 30px; letter-spacing: 1px; padding-bottom: 14px;
+    border-bottom: var(--thin) solid var(--ink); display: flex; justify-content: space-between; align-items: baseline;
+  }
+  .engage-head small { font-weight: 500; font-size: 24px; letter-spacing: 0; }
+  .group { font-weight: 700; font-size: 22px; letter-spacing: 1px; color: var(--ink); margin-top: 6px; }
+  .todo { display: flex; align-items: center; gap: 16px; font-weight: 500; font-size: 30px; line-height: 1.15; }
+  .box { width: 32px; height: 32px; flex: none; border: var(--thin) solid var(--ink); border-radius: 5px; }
+  .box.done { background: var(--ink); position: relative; }
+  .box.done::after {
+    content: ""; position: absolute; left: 9px; top: 2px; width: 9px; height: 17px;
+    border: solid var(--paper); border-width: 0 4px 4px 0; transform: rotate(45deg);
+  }
+  .todo .tag { font-weight: 700; font-size: 22px; border: 2px solid var(--ink); border-radius: 999px; padding: 1px 10px; margin-left: auto; }
+
+  /* 02 Capture */
+  .capture { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
+  .lassoed { position: relative; font-family: var(--hand); font-weight: 600; font-size: 54px; padding: 16px 34px; }
+  .lassoed svg { position: absolute; left: -22px; top: -14px; width: calc(100% + 44px); height: calc(100% + 28px); overflow: visible; }
+  .arrow { width: 60px; height: 64px; }
+  .capture .todo { border: var(--thin) solid var(--ink); border-radius: 12px; padding: 14px 20px; font-size: 30px; }
+
+  /* 03 Review */
+  .review { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 20px; padding: 0 30px; }
+  .review .todo { font-size: 34px; }
+  .review .count { margin-left: auto; font-weight: 700; font-size: 26px; }
+
+  /* ---------- Icon strip ---------- */
+  .icons {
+    height: var(--icons-h); flex: none; display: grid; grid-template-columns: repeat(4, 1fr);
+    border-top: var(--thin) solid var(--ink); border-bottom: var(--thin) solid var(--ink);
+  }
+  .icon { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; }
+  .icon + .icon { border-left: 2px solid var(--ink); }
+  .icon svg { width: 66px; height: 66px; }
+  .icon span { font-weight: 700; font-size: 28px; }
+
+  /* ---------- Footer ---------- */
+  .footer {
+    height: var(--footer-h); flex: none; border: var(--border) solid var(--ink); border-radius: var(--radius);
+    display: grid; place-items: center;
+    background: repeating-linear-gradient(-45deg, var(--ink) 0 3px, var(--paper) 3px 13px);
+  }
+  .footer span {
+    background: var(--paper); border: var(--thin) solid var(--ink); border-radius: 999px;
+    padding: 10px 34px; font-weight: 900; font-size: 32px; letter-spacing: 1.5px;
+  }
+
+  /* SVG icons share one stroke style */
+  svg.line { fill: none; stroke: currentColor; stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; }
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+<div class="poster" id="poster">
+
+  <!-- Header: wordmark and tagline -->
+  <header class="header">
+    <img class="icon-img" src="images/icon-white.png" alt="">
+    <div>
+      <img class="wordmark" src="images/wordmark-white.png" alt="Kept GTD">
+      <div class="tagline">for those who write, where they write</div>
+    </div>
+  </header>
+
+  <!-- 01: the note page with Engage -->
+  <section class="panel main">
+    <div class="label"><span class="num">01</span> WRITE · ENGAGE</div>
+    <div class="device">
+      <div class="note">
+        <div class="title">Workshop prep</div>
+        <div>Goal: agree on the pilot scope</div>
+        <div class="indent">– open questions from Jordan</div>
+        <div class="indent">– who joins in March?</div>
+        <div>→ draft agenda tonight</div>
+      </div>
+      <div class="engage">
+        <div class="engage-head">ENGAGE <small>Workshop</small></div>
+        <div class="group">NEXT</div>
+        <div class="todo"><span class="box"></span>Draft the agenda</div>
+        <div class="todo"><span class="box"></span>Send dates to Jordan</div>
+        <div class="todo"><span class="box done"></span>Book the room</div>
+        <div class="group">WAITING FOR</div>
+        <div class="todo"><span class="box"></span>Budget OK</div>
+      </div>
+    </div>
+    <div class="caption">Your next actions, right on the page you write</div>
+  </section>
+
+  <!-- 02 + 03 -->
+  <div class="pair">
+    <section class="panel">
+      <div class="label"><span class="num">02</span> CAPTURE</div>
+      <div class="capture">
+        <div class="lassoed">call printer about offer
+          <svg viewBox="0 0 100 40" preserveAspectRatio="none">
+            <path d="M6 22 C 2 2, 94 -2, 97 18 C 100 40, 8 44, 3 26 C 1 18, 12 8, 26 6"
+                  fill="none" stroke="#000" vector-effect="non-scaling-stroke"
+                  style="stroke-width:5px; stroke-dasharray:16px 10px; stroke-linecap:round"/>
+          </svg>
+        </div>
+        <svg class="line arrow" viewBox="0 0 60 64"><path d="M30 6 V54 M14 40 L30 56 L46 40"/></svg>
+        <div class="todo"><span class="box"></span>Call printer about offer</div>
+      </div>
+      <div class="caption">Lasso it, and it's a todo</div>
+    </section>
+
+    <section class="panel">
+      <div class="label"><span class="num">03</span> REVIEW</div>
+      <div class="review">
+        <div class="todo"><span class="box done"></span>Inbox<span class="count">0</span></div>
+        <div class="todo"><span class="box done"></span>Projects<span class="count">7</span></div>
+        <div class="todo"><span class="box done"></span>Waiting for<span class="count">3</span></div>
+        <div class="todo"><span class="box"></span>Next week</div>
+      </div>
+      <div class="caption">One step at a time</div>
+    </section>
+  </div>
+
+  <!-- Icon strip -->
+  <div class="icons">
+    <div class="icon">
+      <svg class="line" viewBox="0 0 64 64"><path d="M6 16 h18 l6 7 h28 v29 a4 4 0 0 1 -4 4 h-44 a4 4 0 0 1 -4 -4 z"/><path d="M6 28 h52"/></svg>
+      <span>Projects &amp; Areas</span>
+    </div>
+    <div class="icon">
+      <svg class="line" viewBox="0 0 64 64"><rect x="8" y="12" width="48" height="44" rx="5"/><path d="M8 24 h48 M20 6 v12 M44 6 v12 M18 36 h12 M18 46 h20"/></svg>
+      <span>Meetings &amp; notes</span>
+    </div>
+    <div class="icon">
+      <svg class="line" viewBox="0 0 64 64"><path d="M14 6 h26 l12 12 v40 h-38 z M40 6 v12 h12"/><path d="M22 32 h20 M22 41 h20 M22 50 h12"/></svg>
+      <span>Plain text files</span>
+    </div>
+    <div class="icon">
+      <svg class="line" viewBox="0 0 64 64"><circle cx="32" cy="32" r="25"/><path d="M24 25 a8 8 0 1 1 11 7.5 c-2.4 1 -3 2.6 -3 5.5"/><circle cx="32" cy="46" r="1.5" style="fill:currentColor"/></svg>
+      <span>Help built in</span>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer"><span>FREE · OPEN SOURCE · YOUR FILES STAY YOURS</span></footer>
+
+</div>
+</div>
+
+<script>
+  // Scale the poster to the window for review; ?actual shows it 1:1 (used for the export).
+  (function () {
+    var stage = document.getElementById('stage');
+    if (location.search.indexOf('actual') !== -1) {
+      document.body.style.display = 'block';
+      document.body.style.background = '#fff';
+      return;
+    }
+    function fit() {
+      var s = Math.min((window.innerWidth - 32) / 1404, (window.innerHeight - 32) / 1872, 1);
+      stage.style.transform = 'scale(' + s + ')';
+      stage.style.width = (1404 * s) + 'px';
+      stage.style.height = (1872 * s) + 'px';
+      stage.firstElementChild.style.transform = 'scale(' + s + ')';
+      stage.style.transform = '';
+      stage.firstElementChild.style.transformOrigin = 'top left';
+    }
+    window.addEventListener('resize', fit);
+    fit();
+  })();
+</script>
+</body>
+</html>
