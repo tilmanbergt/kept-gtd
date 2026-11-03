@@ -13,6 +13,7 @@ class GtdParaFilePackage : ReactPackage {
             TextboxMetricsModule(reactContext),
             PdfModule(reactContext),
             GtdParaRuntimeModule(reactContext),
+            KeptUpdateModule(reactContext),
         )
     }
 

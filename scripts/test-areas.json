@@ -246,7 +246,7 @@
       "id": "updates",
       "name": "In-app updates",
       "help": ["settings.md"],
-      "tests": ["__tests__/**/*{updateCheck,updates,Updates,updateNotice,UpdateNotice}*"],
+      "tests": ["__tests__/**/*{updateCheck,updateNative,updates,Updates,updateNotice,UpdateNotice}*"],
       "sources": [
         "src/domain/updateCheck.ts",
         "src/storage/updates.ts",

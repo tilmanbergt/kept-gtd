@@ -49,6 +49,8 @@ Kotlin modules in `android/app/src/main/java/eu/embodyagile/gtdpara/`:
 - `PdfModule` - writes the close-out PDF (text pages, rendered note pages, table of contents).
 - `GmailImapModule` - IMAP access, only when Gmail is switched on.
 - `TextboxMetricsModule` - text measurement for note templates.
+- `KeptUpdateModule` - downloads a Kept GTD release from GitHub (https only) into the private
+  folder, checks its SHA-256 and copies it into `MyStyle/kept-gtd/`; it never installs or deletes.
 - `PluginRuntimeGuard` / `GtdParaRuntimeModule` - the build id and version shown in Settings →
   About and in the debug bundle.
 
