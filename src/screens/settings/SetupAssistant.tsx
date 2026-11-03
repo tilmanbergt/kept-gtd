@@ -8,7 +8,11 @@
  * it (Skip only marks the assistant done). Decisions: domain/setupAssistant.ts;
  * reads and writes: storage/setupAssistant.ts.
  *
- * On fresh settings, the first look at the base folder (after the file permission) is followed by
+ * Access first (docs/dev/history/technical-design-fresh-start-profile.md §3.6): before it reads
+ * anything, the assistant says why it needs file access and asks read, then write; refused, it
+ * stops with Try again and Skip - no scan, no plan, no Welcome back.
+ *
+ * On fresh settings, the first look at the base folder (after the file permissions) is followed by
  * one look for saved profiles; when there are any, Welcome back (WelcomeBack.tsx) comes first and
  * offers to load one (docs/dev/history/technical-design-fresh-start-profile.md §3.3).
  */
@@ -32,6 +36,7 @@ import {createDemoSpace} from '../../storage/demoSpace';
 import {listSavedProfiles, ProfileInfo} from '../../storage/profiles';
 import {BaseScan, finishSetup, scanBaseFolder, skipSetup} from '../../storage/setupAssistant';
 import {displayPath} from '../../supernote/devicePaths';
+import {ensureFileReadPermission, ensureFileWritePermission} from '../../supernote/pluginPermissions';
 import {requestHelp} from '../../ui/helpStore';
 import PillButton from '../../ui/PillButton';
 import {useStatus, useStatusApi} from '../../ui/status/StatusProvider';
@@ -58,6 +63,8 @@ const CHANGE_LATER = ['Settings → Data', 'Settings → Note setups → Default
 const SCAN_DELAY_MS = 500;
 const FINISHED_STATUS_ID = 'SetupAssistant.finished';
 const LOADED_STATUS_ID = 'SetupAssistant.profileLoaded';
+const ACCESS_TEXT = 'Kept needs to read and write your Project and Area folders and its own files in EXPORT/kept-gtd.';
+const NO_ACCESS_TEXT = "Kept can't work without access to your files.";
 
 interface Props {
   /** The settings the assistant starts from (Settings' draft). */
@@ -81,10 +88,30 @@ export default function SetupAssistant({current, onDone, onLoadProfile, textColo
   useStatus('SetupAssistant.message', message ? {...message, onDismiss: () => setMessage(null)} : null);
   const statusApi = useStatusApi();
 
+  // File access, asked one after the other (never in parallel); `accessTry` counts Try again.
+  const [access, setAccess] = useState<'asking' | 'granted' | 'denied'>('asking');
+  const [accessTry, setAccessTry] = useState(0);
+  useEffect(() => {
+    let cancelled = false;
+    setAccess('asking');
+    (async () => {
+      const read = await ensureFileReadPermission();
+      const write = read && (await ensureFileWritePermission());
+      if (cancelled) return;
+      if (!(read && write)) log('SetupAssistant: file access refused', read ? 'write' : 'read');
+      setAccess(read && write ? 'granted' : 'denied');
+      requestEinkRefresh();
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [accessTry]);
+
   // What Kept finds in the base folder, read again a moment after the base changes.
   const base = choices.baseRoot.trim();
   const scannedOnce = useRef(false);
   useEffect(() => {
+    if (access !== 'granted') return;
     let cancelled = false;
     setScan(null);
     const delay = scannedOnce.current ? SCAN_DELAY_MS : 0;
@@ -105,7 +132,7 @@ export default function SetupAssistant({current, onDone, onLoadProfile, textColo
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [base]);
+  }, [base, access]);
   // Fresh settings: after the first read (the permission is granted by then), the saved profiles,
   // once. null while that look is pending; Welcome back shows while `welcome` holds some.
   const offerSaved = current.freshStart && !!onLoadProfile;
@@ -306,6 +333,30 @@ export default function SetupAssistant({current, onDone, onLoadProfile, textColo
     );
   })();
 
+  if (access !== 'granted') {
+    return (
+      <View style={styles.container}>
+        <View style={[styles.header, {borderColor}]}>
+          <Text style={[styles.title, {color: textColor}]}>Setup</Text>
+          <View style={styles.buttons}>
+            <PillButton label="? Help" onPress={() => requestHelp('settings', 'setup-assistant')} {...pill} />
+            <PillButton label="Skip" onPress={handleSkip} disabled={busy} {...pill} />
+          </View>
+        </View>
+        <View style={styles.body}>
+          <Text style={text}>{ACCESS_TEXT}</Text>
+          {access === 'denied' && (
+            <>
+              <Text style={[text, styles.bold]}>{NO_ACCESS_TEXT}</Text>
+              <View style={styles.buttons}>
+                <PillButton label="Try again" size="large" primary onPress={() => setAccessTry(n => n + 1)} disabled={busy} {...pill} />
+              </View>
+            </>
+          )}
+        </View>
+      </View>
+    );
+  }
   if (welcome === null) {
     return (
       <View style={styles.container}>
@@ -366,5 +417,6 @@ const styles = StyleSheet.create({
   folderField: {marginBottom: SPACING.md},
   option: {marginBottom: SPACING.md},
   hint: {fontSize: FONT.small, opacity: 0.6, marginTop: 4},
+  bold: {fontWeight: '700'},
   footer: {marginTop: SPACING.lg, gap: SPACING.sm},
 });

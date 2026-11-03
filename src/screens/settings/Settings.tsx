@@ -87,7 +87,6 @@ export default function Settings({initialTab, onSwitchProfile, startSetup = fals
   const {values, setValues, setSaveError} = draft;
   const noteSetups = useNoteSetupDraft(values, setValues);
   const contextsDraft = useContextsDraft(values, setValues);
-  const myStyle = useMyStylePngs();
 
   // Integrity Check and Fix file names (Advanced) - result and its action in the status slot.
   const [integrityCheckRunning, setIntegrityCheckRunning] = useState(false);
@@ -95,6 +94,7 @@ export default function Settings({initialTab, onSwitchProfile, startSetup = fals
   const [fileNameFixes, setFileNameFixes] = useState<FileFix[]>([]);
   const confirmFileNameFix = useStatusConfirm('Settings.fileNameFix');
   const [setupOpen, setSetupOpen] = useState(startSetup);
+  const myStyle = useMyStylePngs(!setupOpen);
   // Data → Remove Kept's data, drawn in place of the settings while open.
   const [removeOpen, setRemoveOpen] = useState(false);
   const [screenCheckOpen, setScreenCheckOpen] = useState(false);

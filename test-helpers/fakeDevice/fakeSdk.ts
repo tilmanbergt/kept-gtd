@@ -123,6 +123,11 @@ export class FakeSdk {
     };
   }
 
+  private notePermissionCall(call: string): void {
+    this.permissionCalls.push(call);
+    this.onPermissionCall?.(call);
+  }
+
   private api<T extends object>(name: string, known: T): T {
     return new Proxy(known, {
       get: (target, prop) => (prop in target ? target[prop as keyof T] : typeof prop === 'string' ? this.unknown(name, prop) : undefined),
@@ -136,6 +141,10 @@ export class FakeSdk {
   refuseRequests = false;
   /** Every permission dialog shown, in order. */
   readonly permissionRequests: string[] = [];
+  /** Every permission call, in order: `has <permission>` and `request <permission>`. */
+  readonly permissionCalls: string[] = [];
+  /** Called on every permission call (e.g. to see what the screen showed at that moment). */
+  onPermissionCall: ((call: string) => void) | null = null;
 
   /** e-ink refreshes the plugin asked for (NativePluginManager.invalidatePluginView). */
   refreshes = 0;
@@ -156,8 +165,12 @@ export class FakeSdk {
         this.closed += 1;
       },
       invalidatePluginView: () => undefined,
-      hasPermission: async (permission: string) => this.grantedPermissions.has(permission) || !this.deniedPermissions.has(permission),
+      hasPermission: async (permission: string) => {
+        this.notePermissionCall(`has ${permission}`);
+        return this.grantedPermissions.has(permission) || !this.deniedPermissions.has(permission);
+      },
       requestPermission: async (permission: string) => {
+        this.notePermissionCall(`request ${permission}`);
         this.permissionRequests.push(permission);
         if (this.refuseRequests) return false;
         this.grantedPermissions.add(permission);

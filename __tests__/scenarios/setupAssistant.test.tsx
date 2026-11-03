@@ -37,12 +37,14 @@ scenario('A fresh install opens the setup assistant; Finish saves the folders fo
     expectShows(/updates - checked once a day\.$/);
   });
   when('I tap Finish', () => tap('Finish'));
-  then('the folders are created, Projects is kept as it is, and the Projects tab says what happened', async () => {
+  then('the folders are created, Projects is kept as it is, and the Projects tab lists its projects and says what happened', async () => {
     const fs = device().fs;
     expect(fs.paths(NOTE).filter(p => !p.includes('/Projects/') && p !== `${NOTE}/Projects`)).toEqual([`${NOTE}/2 Areas`, `${NOTE}/3 Resources`, `${NOTE}/4 Archive`]);
-    expect(fs.paths(`${NOTE}/Projects`)).toHaveLength(6);
+    // Nothing moved; the Projects tab's first build gives each project its default abbreviation (project.txt).
+    expect(fs.paths(`${NOTE}/Projects`).filter(p => !p.endsWith('/project.txt'))).toHaveLength(6);
     expectShows(/^Created 2 Areas, 3 Resources, 4 Archive in Note\. Setup saved\. Create your first project here\.$/);
     expectShows('+ Create Project');
+    expectShows(/^Garden renovation/);
   });
   and('the settings hold the choices', async () => {
     const s = await storedSettings();

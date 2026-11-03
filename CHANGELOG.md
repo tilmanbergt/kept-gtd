@@ -23,6 +23,8 @@ or your project/area files are stored.
 - After a fresh install, your saved profile couldn't be loaded (Production showed as active, without
   Switch). Kept now offers to load it when you first open it, and never overwrites it with the fresh
   settings without asking.
+- On the very first start, a permission dialog answered after a few seconds no longer counts as
+  refused; the setup assistant asks for file access first and explains it.
 - Kept GTD 0.25.0 didn't start after installing: its package was built wrong. This version starts
   normally; if you installed 0.25.0, uninstall it and install this one.
 

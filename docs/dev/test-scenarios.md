@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-192 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+195 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -1600,7 +1600,7 @@ Test: `__tests__/scenarios/settingsTabs.test.tsx`
 - **When** I go through Notes (keep one notebook), Features (Everything) and Updates (once a day) to Finish
 - **Then** Finish lists exactly the folders it will create, and the update choice
 - **When** I tap Finish
-- **Then** the folders are created, Projects is kept as it is, and the Projects tab says what happened
+- **Then** the folders are created, Projects is kept as it is, and the Projects tab lists its projects and says what happened
 - **And** the settings hold the choices
 - **And** Kept asked for internet access once, after saving
 
@@ -1624,6 +1624,34 @@ Test: `__tests__/scenarios/setupAssistant.test.tsx` · design: `docs/dev/history
 - **And** Run setup assistant waits while the Folders fields have unsaved changes
 
 Test: `__tests__/scenarios/setupAssistant.test.tsx` · design: `docs/dev/history/technical-design-easy-start.md`
+
+### On a fresh install nothing asks for file access before the assistant says why
+
+- **Given** a fresh install where Kept may not read or write files yet
+- **When** Kept starts for the first time
+- **Then** every file permission call came while the assistant showed why it needs access
+
+Test: `__tests__/scenarios/setupAssistantAccess.test.tsx`
+
+### The assistant asks to read, then to write, then looks at the folders and the saved profiles
+
+- **Given** a fresh install with a folder "Projects" and a saved profile, and no file access yet
+- **When** Kept starts for the first time and I allow both dialogs
+- **Then** read was asked before write, one dialog each
+- **And** then Welcome back offers the saved profile, and Start fresh suggests the existing folder
+
+Test: `__tests__/scenarios/setupAssistantAccess.test.tsx`
+
+### Without file access the assistant stops and offers Try again
+
+- **Given** a fresh install with a saved profile, and I deny the file dialog
+- **When** Kept starts for the first time
+- **Then** the assistant says it cannot work without access, with Try again and Skip
+- **And** nothing was scanned or planned, write was not asked, and no Welcome back shows
+- **When** I tap Try again and allow the dialogs
+- **Then** the assistant goes on: Welcome back offers the saved profile
+
+Test: `__tests__/scenarios/setupAssistantAccess.test.tsx`
 
 ### About says Kept is up to date when GitHub has nothing newer
 

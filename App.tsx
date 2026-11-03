@@ -355,9 +355,14 @@ function AppShell({onProfileSwitched}: {onProfileSwitched: () => void}): React.J
             .catch(e => log('App: private temp clean-up skipped', errorMessage(e)));
         }
         // Only files changed outside gtdpara are read again (technical-design-files-0.6.md §3.2).
-        refreshCache(loadedSettings).catch(e =>
-          logError('App: background cache refresh failed', errorMessage(e)),
-        );
+        // Not while the setup assistant is pending: its access step asks for the file permissions
+        // and says why, and Finish, Load or Skip leave a cache that is built on use
+        // (docs/dev/history/technical-design-fresh-start-profile.md §3.6).
+        if (loadedSettings.setupAssistant !== 'pending') {
+          refreshCache(loadedSettings).catch(e =>
+            logError('App: background cache refresh failed', errorMessage(e)),
+          );
+        }
 
         // Where to land is one pure decision (domain/returnContext.ts's
         // decideLanding, docs/dev/history/technical-design-return-to-origin.md), in this
@@ -829,8 +834,11 @@ function AppShell({onProfileSwitched}: {onProfileSwitched: () => void}): React.J
         <View style={styles.body}>
           {keepTabsAlive ? (
             <>
+              {/* While the setup assistant runs at start, no hidden kept screen is mounted: it would
+                  read the files before the assistant asked for access
+                  (docs/dev/history/technical-design-fresh-start-profile.md §3.6). */}
               {KEPT_TABS.map(tab =>
-                visitedRef.current.has(tab) ? (
+                visitedRef.current.has(tab) && !(setupAtStart && tab !== activeTab) ? (
                   <KeepAliveTab key={tab} tab={tab} active={activeTab === tab}>
                     {keptScreens[tab as keyof typeof keptScreens]}
                   </KeepAliveTab>
