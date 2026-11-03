@@ -1,6 +1,6 @@
 # Technical design - 0.25.0 "Clean break"
 
-Status: **draft for review (2026-11-03).** Requirements: `claude/feature-clean-break-0.25.md`, open points
+Status: **built (2026-11-03).** Requirements: `claude/feature-clean-break-0.25.md`, open points
 O1-O5 decided 2026-11-03 (Tilman, all as proposed), plus O7 (below).
 Base: `main` at `ff1d032` (0.24.0 released, plus the README screenshots). Branch: `feature/clean-break`.
 Implementation: a Claude Code cloud session with the prompt `claude/clean-break-0.25-implementation-prompt.md`.
@@ -184,4 +184,65 @@ markers, `gtdpara-profile`, `.gtdpara-tmp`, native module names, `[GtdPara]`, `o
 
 ## As built
 
-(filled in by the implementation)
+Built as designed in B0-B5 on `feature/clean-break`. Deviations and choices:
+
+- **§3 bundle name.** `buildPlugin.ps1` names the JS bundle inside the package after `package.json`
+  too, so it is `kept-gtd.bundle` (the sn-plugin-lib template default) instead of `gtdpara.bundle`.
+  Output names are unchanged (`kept-gtd.snplg`, `kept-gtd-<label>.snplg`). The CI build passes; D1
+  shows that the host opens it.
+- **§3 scenario 7** is a scenario test (`__tests__/scenarios/cleanBreak.test.tsx`) that reads the
+  identity files; `pluginIdentity.test.ts` pins the same values and the six keys (§4).
+- **§4** `UPDATE_STATE_KEY` moved from `storage/updates.ts` to `domain/storeKeys.ts`; `dataRemoval.ts`
+  no longer exports its own prefix and key constants. Tests and test helpers that wrote the old
+  literals use `kept:` keys or import them from `storeKeys.ts`.
+- **§5 row 1** also removes `domain/profileCopy.ts` (`profilesToCopy`) and its test: its only use was
+  `copyLegacyProfiles`. The three profile-copy scenarios in `scenarios/keptGtd.test.tsx` went with it.
+- **§5 rows 1 and 2** are one commit: the legacy removal used `LEGACY_EXPORT_ROOT` from the copy.
+  The fake file system's delete allowlist (`test-helpers/fakeDevice/fakeFs.ts`) follows
+  `GtdParaFileModule.kt`.
+- **§5 row 3, fresh-install seed.** `migrateNoteSetupSettings` also seeded the Default on a fresh
+  install (and after Start over or Remove Kept's data). That seed is now
+  `DEFAULT_SETTINGS.noteSetupDefaults = seedNoteSetupDefaults()`, so every start from defaults gets
+  the same Default as before. Five unit tests whose mocked settings bypassed the old load
+  (`loopNotes`, `noteCreationPlan`, `areaProjectsTab`, `currentThreadsTab`, `itemDetailFilesTab`)
+  state their empty Default explicitly. `completeDefaultPages` and `completeMigratedSettings` (Home and
+  Reflection pages, the Default's notebook key for settings from before those existed) went with
+  the file: a seeded Default and every profile saved by 0.24.0 have them.
+- **§5 row 3, fields.** `nextTagRuleId` is removed with `tagRules` (its counter, read only by the
+  migration). `NoteSetupDefaults.notebook` stays optional (absent reads as null). The Note setups
+  styles of the notice (`noticeCard`, …, `NOTICE_ROW_HEIGHT`) and `useNoteSetupDraft`'s dismiss
+  handler are gone; the debug bundle's note setups line ends with `default notebook …`. The help's
+  "Coming from Tag Rules" section in `note-setups.md` is gone too (not in §6's list, but it described
+  the removed migration).
+- **§5 row 3, leftover keys.** No extra code: profile files are read through
+  `sanitizeProfileSettings`, which keeps only keys `DEFAULT_SETTINGS` has, and written through
+  `profileSettingsOf`, so the removed keys of a 0.24.0 profile are ignored and never written back
+  (design scenario 3). Stored settings can't hold them: `kept:settings:v1` is written only by 0.25.0.
+- **§5 row 4** renamed `migrateExperimentalFlags` to `prepareFreshInstall` (one caller,
+  `settingsStorage.ts`); its interface keeps only `lastSeenVersion` and `setupAssistant`.
+- **§5 row 5** also removes the `old` flag from `ui/capture/useRecognitionQueue.ts`
+  (`MarkRecognition.old`, `settledRecognition`'s third parameter) and `storedMarkRecognition`'s
+  result. `canRecognize` stays (the recognizer still needs version 2 strokes).
+- **§6** `docs/dev/inkhub-listing.md`: the reviewer summary now names `KeptUpdate` and
+  `GtdParaRuntime` too. The description and the permissions paragraph needed no change.
+- **CHANGELOG** carries `<!-- D2 result -->` in the Upgrade notes until D2 is done; until then the
+  in-app What's new of a test build shows it as text.
+
+Kept on purpose (looks like migration or old naming, not in §5, or about the user's files and notes):
+
+- `storage/dataCache.ts` `migrateMissingAbbrevs` (writes `abbrev:` into data files that lack one),
+  the legacy meeting-note block and link markers (`domain/meetingNoteBlock.ts`), `migrateLegacyTextPieces`
+  (`domain/pageLayout.ts`), the legacy `#waiting-for:` / `#due:` tags, pre-0.13 page anchors
+  (`domain/pageOrder.ts`), the Inbox at the base root until it is moved (`storage/projectFile.ts`):
+  all read the user's files or notes, which carry over unchanged.
+- `android/app/src/main/res/values/strings.xml` `app_name` `gtdpara` and `settings.gradle`
+  `rootProject.name`: Android build names, never shown by the host.
+- `GtdParaKind`, `gtdparaPages`, `onOpenGtdpara`, `GTDPARA_EXPORT_ROOT` (its value is
+  `EXPORT/kept-gtd`), comments that say "gtdpara": invisible names (I4).
+- `.gitignore`'s `gtdpara_*log*.txt` and the fake device's private folder path in
+  `test-helpers/fakeDevice/fakeFs.ts`: development only.
+
+Checks: `npm run check:affected` (with `--area settings`, `note-setups`, `lasso`, `files` as the step
+needed) per step, `npm run coverage` (full + coverage) at the end, CI green on every push with the
+native build.
+
