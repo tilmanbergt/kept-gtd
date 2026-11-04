@@ -659,4 +659,9 @@ Built in S1-S9 on `feature/promises-kept` as designed, with these differences:
   diagram sources and PNGs to `settings`. Cloud sessions can't use GitHub's GraphQL API, so
   `gh pr create` and `gh pr view` don't work there; they open and read pull requests with
   `gh api repos/tilmanbergt/kept-gtd/pulls…` (REST) instead.
-- **OP3 (three-case test).** Running on a throwaway PR; the result follows with S9.
+- **OP3 (three-case test).** On a throwaway PR (`test/codex-guidelines` → `feature/promises-kept`,
+  closed without merging) Codex reviewed within two minutes. It flagged the deliberate violation
+  (a direct whole-file write of `project.txt`, bypassing `writeDataFile`) as P0 and cited
+  `AGENTS.md` lines 15-19, the data-file rule; the same change through `writeDataFile` and an
+  unrelated README line got no finding. So Codex reads `## Review guidelines`; the heading
+  `## Code Review Rules` was not tried, and only `## Review guidelines` is kept.
