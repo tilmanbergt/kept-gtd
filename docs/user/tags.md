@@ -10,6 +10,8 @@ Each todo has at most one of these. The chips in [Quick Add](quick-add.md#adding
 - `#wf/name`: you are waiting for someone, for example `#wf/lena`, or just `#wf` without a name. Shows on Daily until you get it (label `#w/f Lena`); give it a due date to keep it off Daily until that day. You also find them in the Waiting For group of their [project, area](projects-and-areas.md#the-current-tab) or the [Inbox](quick-add.md#the-inbox). The older form `#waiting-for:lena` still works; Kept GTD writes `#wf/lena` the next time you edit the todo in Quick Add.
 - `#someday` and `#maybe`: parked ideas. Never on Daily; a project with only these counts as stalled in the [Review](review.md#the-steps).
 
+![The states of a todo: from the Inbox it is filed into a project or area, where it is Next, w/f, Plan (no flow tag), or Someday or Maybe. Next, due todos and w/f without a date or due show on Daily; Someday and Maybe go to the Review step Someday / Maybe; a project with no #next and nothing you wait for is listed under Stalled projects.](images/diagrams/todo-states.png)
+
 ## Due dates
 
 A due date is not a tag but a field at the end of the line: `[due:: 2026-10-15]`. [Quick Add](quick-add.md#adding-a-todo) writes it for you. Todos due today, tomorrow or earlier show on [Daily](daily.md#what-appears-on-daily). The label reads `#due 15.10.`, with `!` when overdue. For a Waiting for todo the date is when to follow up: it shows on Daily from that day on.

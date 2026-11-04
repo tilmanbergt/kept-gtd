@@ -1,5 +1,7 @@
 // Plain-node checks for scripts/lib/diagrams.mjs.  Run: node scripts/test-diagrams.mjs
 import assert from 'node:assert/strict';
+import {deflateSync} from 'node:zlib';
+import {decodePng, encodeGrayPng, toGrayPng} from './lib/pngGray.mjs';
 import {checkDiagrams, diagramHash, diagramOf, imageRefs, renderDiagramSummary, staleIds} from './lib/diagrams.mjs';
 
 let n = 0;
@@ -71,5 +73,34 @@ t('budget', () => {
   assert.ok(md.includes('1 diagram, 0.1 KB of the 1.0 KB budget (10 %).'));
   assert.ok(md.includes('- todo-states: 960 × 900 px'));
 });
+
+t('PNGs are re-encoded as 8-bit greyscale with the same pixels', () => {
+  // A 3 × 2 RGB PNG built by hand: black, white, mid grey / red, green, blue; filter 0 on each row.
+  const raw = Buffer.from([0, 0, 0, 0, 255, 255, 255, 128, 128, 128, 0, 255, 0, 0, 0, 255, 0, 0, 0, 255]);
+  const rgb = encodeLike(3, 2, 2, raw);
+  const gray = decodePng(toGrayPng(rgb));
+  assert.deepEqual([gray.width, gray.height, gray.channels], [3, 2, 1]);
+  assert.deepEqual([...gray.data], [0, 255, 128, 76, 150, 29]);
+  const round = decodePng(encodeGrayPng(4, 3, Buffer.from([0, 10, 20, 30, 30, 20, 10, 0, 255, 255, 0, 0])));
+  assert.deepEqual([...round.data], [0, 10, 20, 30, 30, 20, 10, 0, 255, 255, 0, 0], 'every filter decodes back');
+  assert.throws(() => decodePng(Buffer.from('not a png')), /not a PNG/);
+});
+
+/** A PNG of color type `colorType` from already filtered rows, to feed the decoder. */
+function encodeLike(width, height, colorType, filtered) {
+  const crcless = (type, data) => {
+    const out = Buffer.alloc(12 + data.length);
+    out.writeUInt32BE(data.length, 0);
+    out.write(type, 4, 'ascii');
+    data.copy(out, 8);
+    return out;
+  };
+  const ihdr = Buffer.alloc(13);
+  ihdr.writeUInt32BE(width, 0);
+  ihdr.writeUInt32BE(height, 4);
+  ihdr[8] = 8;
+  ihdr[9] = colorType;
+  return Buffer.concat([Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]), crcless('IHDR', ihdr), crcless('IDAT', deflateSync(filtered)), crcless('IEND', Buffer.alloc(0))]);
+}
 
 console.log(`diagrams: ${n} groups passed`);

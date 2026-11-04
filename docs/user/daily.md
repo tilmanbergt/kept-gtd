@@ -10,8 +10,6 @@ A todo appears on Daily when it is open and one of these is true:
 - it is [due](tags.md#due-dates) today, tomorrow or overdue
 - it is marked [Waiting for](tags.md#flow-tags-for-todos) and has no date, or its date is today or earlier
 
-![Next todos, todos due today, tomorrow or overdue, and Waiting for todos without a date or due appear on Daily; Someday and Maybe never do.](images/diagrams/daily-test.png)
-
 Todos marked Someday or Maybe never appear on Daily. Todos are grouped by project or area, the [Inbox](quick-add.md#the-inbox) first; Waiting for todos come last in their group.
 
 With a [context](contexts.md#what-a-context-shows) active, Daily shows only the todos of the projects, areas and tags the context shows. The Inbox always shows; todos that are due follow the context too. The last line counts the rest, for example "Hidden by Home: 4 todos · 1 due! · Show" - "due!" counts hidden todos due today or earlier; **Show** shows everything until you switch tabs. Meetings outside the context stay in the list, dimmed.

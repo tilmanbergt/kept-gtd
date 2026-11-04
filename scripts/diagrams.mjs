@@ -17,6 +17,7 @@ import {tmpdir} from 'node:os';
 import {dirname, join, relative, resolve} from 'node:path';
 import {fileURLToPath, pathToFileURL} from 'node:url';
 import {checkDiagrams, DIAGRAM_WIDTH, diagramHash, diagramOf, imageRefs, staleIds} from './lib/diagrams.mjs';
+import {toGrayPng} from './lib/pngGray.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const SRC = join(ROOT, 'docs', 'user', 'diagrams');
@@ -119,8 +120,9 @@ async function render(all) {
         if (d.kind === 'mmd') await renderMermaid(page, d, theme, tmp);
         else await renderHtml(page, d);
         const out = join(OUT, `${id}.png`);
-        await page.locator('#diagram').screenshot({path: out});
-        const buffer = readFileSync(out);
+        // Greyscale: what a diagram may contain, in a third of the bytes (lib/pngGray.mjs).
+        const buffer = toGrayPng(await page.locator('#diagram').screenshot());
+        writeFileSync(out, buffer);
         const {width, height} = pngSize(buffer);
         manifest[id] = {source: d.path, hash: d.hash, width, height, bytes: buffer.length};
         const warn = width !== DIAGRAM_WIDTH ? ` (not ${DIAGRAM_WIDTH} px wide: check #diagram's width)` : height > width * MAX_ASPECT ? ` (taller than 1 : ${MAX_ASPECT}: it won't share a page with its heading)` : '';

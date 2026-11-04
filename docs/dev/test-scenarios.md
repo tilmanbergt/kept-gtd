@@ -733,29 +733,29 @@ Test: `__tests__/scenarios/helpLinks.test.tsx` · design: `docs/dev/history/tech
 ### A help page with a diagram shows the picture as its own block
 
 - **Given** Kept is open on Daily
-- **When** I open Help, which starts on the Daily page
-- **Then** the heading "What appears on Daily" shows, and below it the diagram with its alt text as label
-- **And** the text after it follows on the same page or the next
+- **When** I open Help and pick the Tags page
+- **Then** the heading "Flow tags for todos" shows, and below it the diagram with its alt text as label
+- **And** the text after it, under Due dates, follows on the same page or the next
 
-Test: `__tests__/scenarios/helpLinksDiagram.test.tsx` · design: `docs/dev/history/technical-design-quality-assurance.md` · help: `daily.md#what-appears-on-daily`
+Test: `__tests__/scenarios/helpLinksDiagram.test.tsx` · design: `docs/dev/history/technical-design-quality-assurance.md` · help: `tags.md#flow-tags-for-todos`
 
 ### A tall diagram fits one page
 
-- **Given** the Daily page's diagram is four times as tall as wide
-- **When** I open Help on the Daily page and page to the diagram
+- **Given** the Tags page's diagram is four times as tall as wide
+- **When** I open Help on the Tags page and page to the diagram
 - **Then** the diagram is shrunk to fit below the page header, keeping its aspect
 - **When** I page on with ›
 - **Then** the text after the diagram shows
 
-Test: `__tests__/scenarios/helpLinksTallDiagram.test.tsx` · design: `docs/dev/history/technical-design-quality-assurance.md` · help: `daily.md#what-appears-on-daily`
+Test: `__tests__/scenarios/helpLinksTallDiagram.test.tsx` · design: `docs/dev/history/technical-design-quality-assurance.md` · help: `tags.md#flow-tags-for-todos`
 
 ### A heading link to a page with a diagram still lands on the heading
 
 - **Given** Kept is open with Help on the Quick Add page
-- **When** I page to its link "labels" (daily.md#labels, after the diagram) and tap it
-- **Then** the Daily page opens with the heading Labels on screen, not the diagram
+- **When** I tap its link "due date" (tags.md#due-dates, the heading after the diagram)
+- **Then** the Tags page opens with the heading Due dates on screen, not the diagram
 
-Test: `__tests__/scenarios/helpLinksTallDiagram.test.tsx` · design: `docs/dev/history/technical-design-quality-assurance.md` · help: `daily.md#labels`
+Test: `__tests__/scenarios/helpLinksTallDiagram.test.tsx` · design: `docs/dev/history/technical-design-quality-assurance.md` · help: `tags.md#due-dates`
 
 ## Inbox
 

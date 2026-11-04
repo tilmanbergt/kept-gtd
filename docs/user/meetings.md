@@ -2,6 +2,8 @@
 
 A meeting has a date, an optional time or length, and a title that can carry tags. Meetings live in the file of their project or area ([Inside project.txt](files-and-folders.md#inside-projecttxt)), or in the [Inbox](quick-add.md#the-inbox). Lists of meetings and [focus blocks](meetings.md#focus-blocks) are called *Schedule*.
 
+![A meeting before, during and after. Before: P on the card or Mark prepped, Note from last meeting, the meeting's page. During: write on the page; Quick Add in Engage and lasso captures record the meeting; + Next sparring. After: Reflect opens the Reflection page, R or Mark reviewed, and what you agreed shows under I owe in the thread. Past meetings whose review is open come back in the Weekly Review step Meetings to close out.](images/diagrams/meeting-flow.png)
+
 ## Where meetings show up
 
 - [Daily](daily.md): today and tomorrow

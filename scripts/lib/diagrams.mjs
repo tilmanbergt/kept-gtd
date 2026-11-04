@@ -5,10 +5,10 @@
 import {createHash} from 'node:crypto';
 
 /**
- * Bumped when the renderer changes what a PNG looks like (fonts, width, scale, the page around a
- * diagram): every diagram is then stale and `npm run diagrams` renders them all again.
+ * Bumped when the renderer changes what a PNG looks like or how it is stored (fonts, width, scale,
+ * the page around a diagram, the greyscale encoding): every diagram is then stale and `npm run diagrams` renders them all again.
  */
-export const RENDERER_VERSION = 1;
+export const RENDERER_VERSION = 2;
 
 /** The rendered width of every diagram in pixels: about the help column on the A5 X (§6.5). */
 export const DIAGRAM_WIDTH = 960;

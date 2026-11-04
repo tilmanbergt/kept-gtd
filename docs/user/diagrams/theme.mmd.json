@@ -30,6 +30,17 @@
     "noteTextColor": "#000000"
   },
   "themeCSS": ".node rect, .node polygon, .node circle, .node path { stroke-width: 3px; } .flowchart-link, .edgePath path, .transition { stroke-width: 3px; } .marker { stroke-width: 1px; } .cluster rect { stroke-width: 2px; } .edgeLabel, .edgeLabel p { font-size: 24px; } .statediagram-state rect.basic, .statediagram-state rect.divider { stroke-width: 3px; }",
-  "flowchart": {"htmlLabels": true, "curve": "linear", "nodeSpacing": 40, "rankSpacing": 60, "padding": 16, "useMaxWidth": false},
-  "state": {"useMaxWidth": false}
+  "flowchart": {
+    "htmlLabels": true,
+    "curve": "linear",
+    "nodeSpacing": 40,
+    "rankSpacing": 60,
+    "padding": 16,
+    "useMaxWidth": false,
+    "wrappingWidth": 320
+  },
+  "state": {
+    "useMaxWidth": false
+  },
+  "markdownAutoWrap": true
 }

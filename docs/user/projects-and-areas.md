@@ -2,6 +2,8 @@
 
 In PARA, a *project* is something with a clear end ("Garden renovation", "Team offsite"). An *area* is a responsibility without an end ("Health", "Home", "Team"). Kept GTD gives each its own folder ([The folder layout](files-and-folders.md#the-folder-layout)).
 
+![Two areas as examples. The area Coaching holds its todos and meetings, its notebook Coaching 2026.note, the thread sparring/jordan and the loop workshop/offsite: threads and loops are tags on todos and meetings, kept with their area. The area Home has the project Garden renovation with its own todos, meetings and notebook Garden renovation 2026.note. The Inbox holds what is not filed yet, and no loops or threads.](images/diagrams/projects-and-areas.png)
+
 ## Creating one
 
 On the **Projects** or **Areas** tab, write a name into the field at the top and tap **Create Project** or **Create Area**. Kept creates the folder and its file. A name can't contain `\ / : * ? " < > |` or `# [ ] ^` (see [File names](files-and-folders.md#file-names)); the [status line](index.md#the-status-line) says which character to remove.

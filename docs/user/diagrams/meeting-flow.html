@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- A meeting before, during and after, and where each step happens in Kept (docs/user/meetings.md, engage.md). -->
+<link rel="stylesheet" href="diagram.css">
+<style>
+  h1 { font-size: 32px; margin: 0 0 6px; }
+  .sub { margin-bottom: 18px; }
+  .cols { display: flex; gap: 16px; }
+  .col { flex: 1; display: flex; flex-direction: column; gap: 12px; }
+  .phase { font-weight: 700; font-size: 32px; text-align: center; border-bottom: 4px solid #000; padding-bottom: 6px; }
+  .col .box { font-size: 24px; line-height: 1.25; }
+  .where { display: block; font-size: 21px; color: #444; margin-top: 4px; }
+  .flow { display: flex; justify-content: space-around; font-size: 34px; line-height: 1; margin: 10px 0; }
+  .end { text-align: center; }
+</style>
+</head>
+<body>
+<div id="diagram">
+  <h1>A meeting: before, during, after</h1>
+  <div class="sub small muted">Sparring Jordan <span class="code">#sparring/jordan</span>, in the area Coaching</div>
+  <div class="cols">
+    <div class="col">
+      <div class="phase">Before</div>
+      <div class="box"><b class="label">P</b> on the meeting's card, or <b class="label">Mark prepped</b><span class="where">when its Note setup tracks prep</span></div>
+      <div class="box"><b class="label">Note from last meeting ›</b><span class="where">Engage on the meeting's page</span></div>
+      <div class="box">The meeting's page, from its note icon<span class="where">date, time, related todos</span></div>
+    </div>
+    <div class="col">
+      <div class="phase">During</div>
+      <div class="box">Write on the meeting's page<span class="where">the Supernote note</span></div>
+      <div class="box">Quick Add in <b class="label">Engage</b> records the meeting<span class="where">todos and agreements</span></div>
+      <div class="box">The lasso: capture a todo or an agreement<span class="where">it records the meeting too</span></div>
+      <div class="box"><b class="label">+ Next sparring</b><span class="where">when no next one is planned</span></div>
+    </div>
+    <div class="col">
+      <div class="phase">After</div>
+      <div class="box"><b class="label">Reflect ›</b> opens the <b class="label">Reflection page</b><span class="where">after the meeting's page</span></div>
+      <div class="box"><b class="label">R</b> on the card, or <b class="label">Mark reviewed</b><span class="where">when its Note setup tracks review</span></div>
+      <div class="box">What you agreed shows under <b class="label">I owe</b><span class="where">in Jordan's thread overview</span></div>
+    </div>
+  </div>
+  <div class="flow"><span>↓</span></div>
+  <div class="box end">Weekly Review: <b class="label">Meetings to close out</b><span class="where">the last 7 days' meetings whose review is still open</span></div>
+</div>
+</body>
+</html>
