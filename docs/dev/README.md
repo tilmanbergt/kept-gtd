@@ -215,6 +215,26 @@ to a heading the page doesn't have (`scripts/lib/userDocs.mjs`'s `checkLinks`, w
 rule), and `scripts/test-userdocs.mjs` fails on bold in Getting started that is not a link (only
 buttons the sentence explains may stay bold), so the checks catch most slips.
 
+## Diagrams
+
+Help pages can show a diagram (`technical-design-quality-assurance.md` §6):
+
+- Sources live in `docs/user/diagrams/`, one file per diagram, its name the id: Mermaid (`.mmd`)
+  for states, hierarchies and flows, an HTML page (`.html`, root element `#diagram`, linking
+  `diagram.css`) for hand-designed ones. `theme.mmd.json` and `diagram.css` are the shared look;
+  the font is the poster's Archivo (`docs/dev/inkhub-poster/fonts/`).
+- `npm run diagrams` renders every changed source to `docs/user/images/diagrams/<id>.png` (960 px
+  wide) and records it in `manifest.json`; `--all` renders all. It needs Playwright with Chromium
+  (`npx playwright install chromium` once per machine); CI never renders. The PNGs are committed.
+- Look: black on white, grey (#888 or lighter) only for secondary boxes, no meaning in color; lines
+  at least 2 px; at most 1 : 1.3 tall, so a diagram shares a help page with its heading. App labels
+  as the app shows them, written ``**Label**`` inside a Mermaid markdown string (``A["`**Waiting
+  for**`"]``) or `<b class="label">Label</b>` in HTML, so `npm run quality` checks them; names and
+  tags from the demo space (`userDocsExamples.test.ts` checks nested tags).
+- `node scripts/diagrams.mjs --check` (every tier) fails on a stale, missing or orphaned PNG, a
+  diagram no help page shows, an image line naming no diagram, and when the PNGs together pass
+  the budget of 400 KB: they are bundled into the plugin (`src/generated/helpImages.ts`).
+
 ## Code tour
 
 | Folder | What lives there |

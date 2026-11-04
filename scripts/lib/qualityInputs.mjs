@@ -68,3 +68,9 @@ export function readDiagramSources(root) {
     .sort()
     .map(f => ({path: rel(root, f), source: read(f)}));
 }
+
+/** docs/user/images/diagrams/manifest.json, or {} without diagrams. */
+export function readDiagramManifest(root) {
+  const path = join(root, 'docs', 'user', 'images', 'diagrams', 'manifest.json');
+  return existsSync(path) ? JSON.parse(read(path)) : {};
+}

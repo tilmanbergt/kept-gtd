@@ -6,6 +6,7 @@ import {screen} from '@testing-library/react-native';
 import {StyleSheet} from 'react-native';
 import {expectShows, openApp, shows, tap, tapTab} from '../../test-helpers/scenario/app';
 import {and, given, scenario, then, when} from '../../test-helpers/scenario/scenario';
+import {HELP_IMAGES} from '../../src/generated/helpImages';
 
 const DIAGRAM = /^Next todos, todos due today, tomorrow or overdue, and Waiting for todos/;
 const AFTER = /^Todos marked Someday or Maybe never appear on Daily/;
@@ -30,7 +31,8 @@ scenario('A help page with a diagram shows the picture as its own block', {featu
     expect(String(image.props.source?.uri ?? '')).toMatch(/^data:image\/png;base64,/);
     const {width, height} = StyleSheet.flatten(image.props.style);
     expect(width).toBe(1340);
-    expect(height).toBe(Math.round((1340 * 475) / 960));
+    const png = HELP_IMAGES['daily-test'];
+    expect(height).toBe(Math.round((1340 * png.height) / png.width));
   });
   and('the text after it follows on the same page or the next', async () => {
     await pageTo(AFTER);
