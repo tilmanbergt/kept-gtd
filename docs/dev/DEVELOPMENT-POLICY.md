@@ -242,7 +242,7 @@ A change is not done while the docs describe the old behavior.
     belongs to one area, following the help pages; code-health fails on one that doesn't. A new
     file is usually covered by an area's globs; otherwise add it there.
   - **Quality report** (`npm run quality`, `coverage/quality.md`; `npm run coverage` runs it last,
-    CI shows it in the job summary, each release keeps it in its `test-coverage-<version>.md`):
+    CI shows it at the top of the job summary, each release keeps it in its `test-coverage-<version>.md`):
     help headings with a scenario (`help:` on a scenario, `docs/dev/README.md` "Writing scenarios"),
     help labels and quoted messages against the app's strings, claims by backing, diagram sizes.
     **Only mistakes fail** - a `help:` reference to a heading that doesn't exist, a malformed claim

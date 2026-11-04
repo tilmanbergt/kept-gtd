@@ -52,13 +52,17 @@ t('area totals from the areas\' help pages', () => {
   assert.deepEqual(helpByArea(areas, cov), {review: {covered: 1, total: 3}, planning: {covered: 0, total: 1}, foundation: {covered: 0, total: 0}});
 });
 
-t('render: uncovered pages first, gaps listed, totals line', () => {
+t('render: totals first, emptiest page first, gaps listed, fully covered pages in one line', () => {
   const md = renderHelpCoverage(cov, excluded);
-  assert.ok(md.indexOf('### daily.md - 0 / 1 (+ 1 page-only)') < md.indexOf('### review.md - 1 / 3'), 'pages without a covered heading first');
+  assert.ok(md.indexOf('**Help: 1 / 5 headings have a scenario** (3 pages).') < md.indexOf('### '), 'the totals line comes first');
+  assert.ok(md.indexOf('### daily.md - 0 / 1 (+ 1 page-only)') < md.indexOf('### settings.md - 0 / 1'), 'equal share: alphabetical');
+  assert.ok(md.indexOf('### settings.md - 0 / 1') < md.indexOf('### review.md - 1 / 3'), 'lowest share first');
   assert.ok(md.includes('- review.md#inbox-to-zero - Inbox to zero'));
   assert.ok(!md.includes('review.md#the-steps -'), 'covered headings are not listed');
   assert.ok(md.includes('Excluded: `index.md`, `settings.md#about`.'));
-  assert.ok(md.includes('**Total: 1 / 5 headings covered on 3 pages.**'));
+  const full = renderHelpCoverage(coverHeadings(headings, [...scenarios, {title: 'Data', help: ['settings.md#data']}], excluded), excluded);
+  assert.ok(full.includes('Covered in full: settings.md.'), 'fully covered pages in one line');
+  assert.ok(!full.includes('### settings.md'));
 });
 
 console.log(`help-coverage: ${n} groups passed`);

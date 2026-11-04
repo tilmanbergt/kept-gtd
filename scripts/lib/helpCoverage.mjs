@@ -79,24 +79,33 @@ export function coverageTotals(coverage) {
 }
 
 /**
- * The report section (§3.3): per page `covered / total`, then its uncovered headings as
- * `- page.md#anchor - Title`; pages without any covered heading first; a final totals line.
+ * The report section (§3.3; technical-design-claims-assessment.md §3): a totals line first, then the
+ * pages with uncovered headings, emptiest first (lowest share covered, then most gaps), each with its
+ * uncovered headings as `- page.md#anchor - Title`; the fully covered pages in one line at the end.
  */
 export function renderHelpCoverage(coverage, excluded = {}) {
-  const lines = ['## Help coverage by scenarios', '', 'Help headings (`##`, `###`) named by a scenario\'s `help:` (`docs/dev/test-scenarios.md`). A', 'reference covers its heading only. Excluded in `scripts/help-coverage.json`. Report only.', ''];
-  const ordered = [...coverage].sort((a, b) => (a.covered > 0) - (b.covered > 0) || a.page.localeCompare(b.page));
-  for (const c of ordered) {
+  const t = coverageTotals(coverage);
+  const lines = [
+    '## Help sections without a scenario',
+    '',
+    `**Help: ${t.covered} / ${t.headings} headings have a scenario** (${t.pages} pages).`,
+    '',
+    'A heading counts when a scenario\'s `help:` names it (`docs/dev/test-scenarios.md`); a reference covers',
+    'its heading only. Excluded in `scripts/help-coverage.json`. Report only.',
+    '',
+  ];
+  const share = c => (c.total ? c.covered / c.total : 1);
+  const gaps = c => c.headings.filter(h => !h.scenarios.length);
+  const open = coverage.filter(c => gaps(c).length).sort((a, b) => share(a) - share(b) || gaps(b).length - gaps(a).length || a.page.localeCompare(b.page));
+  for (const c of open) {
     const pageNote = c.pageRefs.length ? ` (+ ${c.pageRefs.length} page-only)` : '';
     lines.push(`### ${c.page} - ${c.covered} / ${c.total}${pageNote}`, '');
-    const gaps = c.headings.filter(h => !h.scenarios.length);
-    if (gaps.length) {
-      for (const h of gaps) lines.push(`- ${h.page}#${h.anchor} - ${h.title}`);
-      lines.push('');
-    }
+    for (const h of gaps(c)) lines.push(`- ${h.page}#${h.anchor} - ${h.title}`);
+    lines.push('');
   }
+  const full = coverage.filter(c => !gaps(c).length).map(c => c.page).sort();
+  if (full.length) lines.push(`Covered in full: ${full.join(', ')}.`, '');
   const excludedKeys = Object.keys(excluded);
   if (excludedKeys.length) lines.push(`Excluded: ${excludedKeys.map(k => `\`${k}\``).join(', ')}.`, '');
-  const t = coverageTotals(coverage);
-  lines.push(`**Total: ${t.covered} / ${t.headings} headings covered on ${t.pages} pages.**`);
   return lines.join('\n') + '\n';
 }

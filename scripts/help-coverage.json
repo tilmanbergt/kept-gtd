@@ -4,6 +4,7 @@
     "index.md": "the overview: links to the pages that describe each part",
     "philosophy.md": "values and reasons, no behavior",
     "features.md": "the list of switches; each feature's behavior is on its own page",
-    "troubleshooting.md": "advice for situations outside Kept's control and how to report a problem"
+    "troubleshooting.md": "advice for situations outside Kept's control and how to report a problem",
+    "getting-started.md": "a walk-through that retells the other pages; their headings carry the scenarios"
   }
 }

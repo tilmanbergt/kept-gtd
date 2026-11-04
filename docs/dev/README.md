@@ -73,7 +73,8 @@ Releases: see `RELEASING.md`.
   (see "Writing scenarios" below).
 - `npm run quality` writes `coverage/quality.md` in seconds, without Jest: help headings with a
   scenario, help labels and quoted messages against the app's strings, claims by backing, diagram
-  sizes. Report only; `npm run coverage` runs it last and CI shows it in the job summary.
+  sizes. Report only; `npm run coverage` runs it last, and CI puts it at the top of the job summary,
+  starting with the help sections no scenario names yet (the area table follows).
   `npm run claims` checks `docs/dev/claims.md`; `npm run diagrams` renders the help diagrams.
 - A useful smoke test mounts `<App />` with `react-test-renderer`.
   `tsc` alone cannot catch a broken default export of `App.tsx`, because `index.js` isn't type
