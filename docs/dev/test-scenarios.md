@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-201 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+204 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -729,6 +729,33 @@ Test: `__tests__/scenarios/helpLinks.test.tsx` · design: `docs/dev/history/tech
 - **Then** the page shows the link again and there is nothing more to go back to
 
 Test: `__tests__/scenarios/helpLinks.test.tsx` · design: `docs/dev/history/technical-design-help-linking.md` · help: `index.md#the-tabs-at-a-glance`
+
+### A help page with a diagram shows the picture as its own block
+
+- **Given** Kept is open on Daily
+- **When** I open Help, which starts on the Daily page
+- **Then** the heading "What appears on Daily" shows, and below it the diagram with its alt text as label
+- **And** the text after it follows on the same page or the next
+
+Test: `__tests__/scenarios/helpLinksDiagram.test.tsx` · design: `docs/dev/history/technical-design-quality-assurance.md` · help: `daily.md#what-appears-on-daily`
+
+### A tall diagram fits one page
+
+- **Given** the Daily page's diagram is four times as tall as wide
+- **When** I open Help on the Daily page and page to the diagram
+- **Then** the diagram is shrunk to fit below the page header, keeping its aspect
+- **When** I page on with ›
+- **Then** the text after the diagram shows
+
+Test: `__tests__/scenarios/helpLinksTallDiagram.test.tsx` · design: `docs/dev/history/technical-design-quality-assurance.md` · help: `daily.md#what-appears-on-daily`
+
+### A heading link to a page with a diagram still lands on the heading
+
+- **Given** Kept is open with Help on the Quick Add page
+- **When** I page to its link "labels" (daily.md#labels, after the diagram) and tap it
+- **Then** the Daily page opens with the heading Labels on screen, not the diagram
+
+Test: `__tests__/scenarios/helpLinksTallDiagram.test.tsx` · design: `docs/dev/history/technical-design-quality-assurance.md` · help: `daily.md#labels`
 
 ## Inbox
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Build info, changelog and user guide (in-app help) for the app, and small helpers for release.ps1.
+// Build info, changelog, user guide (in-app help) and its diagrams for the app, and small helpers for release.ps1.
 // Design: docs/dev/history/technical-design-versioning-release.md
 //
 //   node scripts/gen-bundled-content.mjs                  dev: write src/generated/* (versionCode 0)
@@ -37,7 +37,7 @@ import {
   targetVersion,
   unreleasedIsEmpty,
 } from './lib/versioning.mjs';
-import {buildUserDocs, checkLinks, renderUserDocsTs} from './lib/userDocs.mjs';
+import {buildUserDocs, checkLinks, renderHelpImagesTs, renderUserDocsTs} from './lib/userDocs.mjs';
 import {importTs} from './lib/tsModule.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -47,6 +47,7 @@ const P = {
   pluginConfig: join(ROOT, 'PluginConfig.json'),
   changelog: join(ROOT, 'CHANGELOG.md'),
   userDocsDir: join(ROOT, 'docs', 'user'),
+  diagramsDir: join(ROOT, 'docs', 'user', 'images', 'diagrams'),
   generatedDir: join(ROOT, 'src', 'generated'),
   buildDir: join(ROOT, 'build'),
   buildInfoJson: join(ROOT, 'build', 'build-info.json'),
@@ -103,6 +104,18 @@ function gitInfo(version) {
   return {commit, dirty, release: tagged && !dirty && commit !== 'unknown'};
 }
 
+/** The help diagrams of the manifest, read as base64 (technical-design-quality-assurance.md §6.6). */
+function helpImages() {
+  const manifestPath = join(P.diagramsDir, 'manifest.json');
+  if (!existsSync(manifestPath)) return [];
+  const manifest = JSON.parse(read(manifestPath));
+  return Object.entries(manifest).map(([id, entry]) => {
+    const png = join(P.diagramsDir, `${id}.png`);
+    if (!existsSync(png)) throw new Error(`help diagram ${id}.png is missing - run npm run diagrams`);
+    return {id, base64: readFileSync(png).toString('base64'), width: entry.width, height: entry.height};
+  });
+}
+
 async function generate({build, stage = 'alpha'}) {
   if (!BUILD_STAGES.includes(stage)) throw new Error(`unknown stage "${stage}" (${BUILD_STAGES.join(', ')})`);
   const version = packageVersion();
@@ -152,6 +165,7 @@ async function generate({build, stage = 'alpha'}) {
   const broken = checkLinks(docFiles, pageAnchors);
   if (broken.length > 0) throw new Error(`broken help links:\n  ${broken.join('\n  ')}`);
   writeIfChanged(join(P.generatedDir, 'userDocs.ts'), renderUserDocsTs(buildUserDocs(docFiles)));
+  writeIfChanged(join(P.generatedDir, 'helpImages.ts'), renderHelpImagesTs(helpImages()));
 
   if (build) {
     mkdirSync(P.buildDir, {recursive: true});

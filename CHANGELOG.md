@@ -10,6 +10,9 @@ or your project/area files are stored.
 
 ## [Unreleased]
 
+### New
+- Help pages can show diagrams. The first one, on the Daily page, shows which todos appear on Daily.
+
 ## [0.25.1] — 2026-11-03
 
 ### Upgrade notes

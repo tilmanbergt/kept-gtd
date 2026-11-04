@@ -139,7 +139,10 @@ pages stick to it:
   shows it that is explained right here (**Save**, **+ Add**); `*italic*` for a term at the place
   that defines it, and for the lead word of a definition list; `` `code` `` for what is typed or
   stored - tags, file names, lines of a file; "quotes" for a message or line the app shows
-- no tables, images, HTML (not even `<name>` placeholders) or horizontal rules
+- a diagram as `![alt text](images/diagrams/<id>.png)` alone on its line, between blank lines, with
+  alt text that says what the diagram shows (the app reads it out and shows it if the picture is
+  missing); its source is in `docs/user/diagrams/`
+- no tables, other images, HTML (not even `<name>` placeholders) or horizontal rules
 
 Linking rules (`technical-design-help-linking.md` §3): link every screen, panel, list, step,
 setting, chip or term another page or section explains, at its first mention in each section (`##`,

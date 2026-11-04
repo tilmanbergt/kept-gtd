@@ -163,7 +163,8 @@ A change is not done while the docs describe the old behavior.
     companies from real work. `__tests__/userDocsExamples.test.ts` fails on a nested tag the demo
     doesn't have (a short list of placeholders such as `#wf/name` aside).
   - Only the device-safe markdown subset (see `docs/dev/README.md` "Writing user docs"): no
-    tables, images, HTML or deeper list nesting. `__tests__/docs/userDocs.test.ts` enforces this.
+    tables, HTML or deeper list nesting, and images only as a help diagram line
+    (`![alt](images/diagrams/<id>.png)`). `__tests__/docs/userDocs.test.ts` enforces this.
   - If a new tab or screen gets its own page, add the mapping in `domain/helpTopics.ts`.
 - **CHANGELOG.md**: every user-visible change gets a line under `## [Unreleased]` (New, Changed,
   Fixed, Experimental, Removed, Upgrade notes), written for users. Settings or file-format
