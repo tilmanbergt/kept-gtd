@@ -3,6 +3,11 @@
 
 export const TAGS = ['fixed', 'not applicable', 'noise'];
 
+/** One JSON value per non-empty line (`gh api --paginate --jq '.[]'` output, any number of pages). */
+export function parseJsonLines(text) {
+  return text.split('\n').filter(line => line.trim()).map(line => JSON.parse(line));
+}
+
 /** The tag a reply starts with (`[fixed] …`), or null. */
 export function replyTag(body) {
   const m = /^\s*\[(fixed|not applicable|noise)\]/i.exec(body ?? '');

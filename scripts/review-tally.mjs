@@ -8,7 +8,7 @@
 //   node scripts/review-tally.mjs --since 2026-11-01  PRs merged since that date
 
 import {execFileSync} from 'node:child_process';
-import {countTags, parseSince, renderTally} from './lib/reviewTally.mjs';
+import {countTags, parseJsonLines, parseSince, renderTally} from './lib/reviewTally.mjs';
 
 const REPO = 'tilmanbergt/kept-gtd';
 
@@ -23,11 +23,15 @@ function git(args) {
 const i = process.argv.indexOf('--since');
 const since = parseSince(i > 0 ? process.argv[i + 1] : undefined, tag => git(['log', '-1', '--format=%cs', tag]));
 
-const prs = JSON.parse(gh(['pr', 'list', '--repo', REPO, '--state', 'merged', '--limit', '200', '--search', `merged:>=${since}`, '--json', 'number,title,url']));
+// REST only (`gh api`), so it also runs where GraphQL isn't available. --paginate prints one JSON array
+// per page; `--jq '.[] | …'` turns every page into one object per line.
+const list = (endpoint, fields) => parseJsonLines(gh(['api', '--paginate', endpoint, '--jq', `.[] | ${fields}`]));
+const prs = list(`repos/${REPO}/pulls?state=closed&per_page=100`, '{number, merged_at}').filter(pr => pr.merged_at && pr.merged_at.slice(0, 10) >= since);
 const replies = [];
 for (const pr of prs) {
-  const inline = JSON.parse(gh(['api', '--paginate', `repos/${REPO}/pulls/${pr.number}/comments`]));
-  const issue = JSON.parse(gh(['api', '--paginate', `repos/${REPO}/issues/${pr.number}/comments`]));
+  const comments = endpoint => list(endpoint, '{html_url, body}');
+  const inline = comments(`repos/${REPO}/pulls/${pr.number}/comments`);
+  const issue = comments(`repos/${REPO}/issues/${pr.number}/comments`);
   for (const c of [...inline, ...issue]) replies.push({pr: pr.number, url: c.html_url, body: c.body ?? ''});
 }
 console.log(renderTally(countTags(replies), {since, prs: prs.length}));

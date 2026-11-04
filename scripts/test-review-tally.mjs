@@ -1,6 +1,6 @@
 // Plain-node checks for scripts/lib/reviewTally.mjs.  Run: node scripts/test-review-tally.mjs
 import assert from 'node:assert/strict';
-import {countTags, parseSince, renderTally, replyTag} from './lib/reviewTally.mjs';
+import {countTags, parseJsonLines, parseSince, renderTally, replyTag} from './lib/reviewTally.mjs';
 
 assert.equal(replyTag('[fixed] moved the write into writeDataFile'), 'fixed');
 assert.equal(replyTag('  [Not applicable] the design says so'), 'not applicable');
@@ -25,4 +25,7 @@ assert.throws(() => parseSince('v9', () => ''), /no date for tag v9/);
 const text = renderTally(tally, {since: '2026-11-01', prs: 2});
 assert.ok(text.includes('Review answers on 2 PRs merged since 2026-11-01'));
 assert.ok(text.includes('[noise] #7 formatting only  u2'));
-console.log('review-tally: 4 groups passed');
+// Two pages of comments, as `gh api --paginate --jq '.[]'` prints them: one object per line.
+assert.deepEqual(parseJsonLines('{"html_url":"a","body":"[fixed] x"}\n{"html_url":"b","body":"y"}\n\n{"html_url":"c","body":"z"}\n').map(c => c.html_url), ['a', 'b', 'c']);
+assert.deepEqual(parseJsonLines(''), []);
+console.log('review-tally: 5 groups passed');
