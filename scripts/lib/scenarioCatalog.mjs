@@ -1,16 +1,22 @@
 // Pure parts of scripts/scenario-catalog.mjs: read the scenarios and their steps from the test
 // sources, render the catalog. No I/O here, so scripts/test-scenario-catalog.mjs can test them.
-// Design: docs/dev/history/technical-design-quality-hardening.md §4.4; smoke mark: technical-design-test-tiers.md §3.6.
+// Design: docs/dev/history/technical-design-quality-hardening.md §4.4; smoke mark: technical-design-test-tiers.md §3.6;
+// help references: technical-design-quality-assurance.md §3.1-3.2.
 
 const STRING = String.raw`'((?:[^'\\]|\\.)*)'`;
 const SCENARIO_RE = new RegExp(String.raw`\bscenario\(\s*${STRING}\s*,\s*\{([^}]*)\}`, 'g');
 const STEP_RE = new RegExp(String.raw`\b(given|when|then|and)\(\s*${STRING}`, 'g');
-const META_RE = new RegExp(String.raw`\b(feature|design)\s*:\s*${STRING}`, 'g');
+const META_RE = new RegExp(String.raw`\b(feature|design|help)\s*:\s*${STRING}`, 'g');
 
 const unescape = s => s.replace(/\\(.)/g, '$1');
 const KIND = {given: 'Given', when: 'When', then: 'Then', and: 'And'};
 
-/** The scenarios in one test file: [{title, feature, design, file, steps: [{kind, text}]}]. */
+/** The help references of a `help:` value: `page.md#anchor` or `page.md`, separated by commas. */
+export function splitHelp(value) {
+  return (value ?? '').split(',').map(s => s.trim()).filter(Boolean);
+}
+
+/** The scenarios in one test file: [{title, feature, design, help: [refs], file, steps: [{kind, text}]}]. */
 export function parseScenarios(source, file) {
   const starts = [...source.matchAll(SCENARIO_RE)];
   return starts.map((m, i) => {
@@ -19,7 +25,7 @@ export function parseScenarios(source, file) {
     const end = i + 1 < starts.length ? starts[i + 1].index : source.length;
     const body = source.slice(m.index + m[0].length, end);
     const steps = [...body.matchAll(STEP_RE)].map(s => ({kind: KIND[s[1]], text: unescape(s[2])}));
-    return {title: unescape(m[1]), feature: meta.feature ?? '(no feature)', design: meta.design ?? null, file, steps};
+    return {title: unescape(m[1]), feature: meta.feature ?? '(no feature)', design: meta.design ?? null, help: splitHelp(meta.help), file, steps};
   });
 }
 
@@ -46,8 +52,34 @@ export function renderCatalog(scenarios) {
     for (const s of scenarios.filter(x => x.feature === feature)) {
       lines.push('', `### ${s.title}${s.smoke ? ' (smoke)' : ''}`, '');
       for (const step of s.steps) lines.push(`- **${step.kind}** ${step.text}`);
-      lines.push('', `Test: \`${s.file}\`${s.design ? ` · design: \`docs/dev/history/${s.design}\`` : ''}`);
+      const design = s.design ? ` · design: \`docs/dev/history/${s.design}\`` : '';
+      const help = s.help?.length ? ` · help: ${s.help.map(h => `\`${h}\``).join(', ')}` : '';
+      lines.push('', `Test: \`${s.file}\`${design}${help}`);
     }
   }
   return lines.join('\n') + '\n';
+}
+
+/**
+ * Broken help references (technical-design-quality-assurance.md §3.2): a page that isn't among
+ * `pages` ([{id, markdown}], id = file name without .md) or an anchor that matches no heading of it.
+ * `anchorsOf(markdown)` lists a page's heading slugs, the same rule as the help link check.
+ * Returns `"<file>: <scenario title>: <ref> (no such page|no such heading)"` lines.
+ */
+export function checkHelpRefs(scenarios, pages, anchorsOf) {
+  const byId = new Map(pages.map(p => [p.id, p.markdown]));
+  const anchors = new Map();
+  const anchorsOfPage = id => {
+    if (!anchors.has(id)) anchors.set(id, new Set(anchorsOf(byId.get(id))));
+    return anchors.get(id);
+  };
+  const broken = [];
+  for (const s of scenarios) {
+    for (const ref of s.help ?? []) {
+      const m = /^([a-z0-9-]+)\.md(?:#(.+))?$/.exec(ref);
+      if (!m || !byId.has(m[1])) broken.push(`${s.file}: ${s.title}: ${ref} (no such page)`);
+      else if (m[2] !== undefined && !anchorsOfPage(m[1]).has(m[2])) broken.push(`${s.file}: ${s.title}: ${ref} (no such heading)`);
+    }
+  }
+  return broken;
 }

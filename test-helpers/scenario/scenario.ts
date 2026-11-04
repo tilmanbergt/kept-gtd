@@ -25,6 +25,13 @@ export interface ScenarioMeta {
   feature: string;
   /** The design document the behavior comes from (file name under docs/dev/history/), if any. */
   design?: string;
+  /**
+   * The help headings this scenario proves (docs/dev/history/technical-design-quality-assurance.md §3.1):
+   * one or more `page.md#anchor` (a heading of docs/user/page.md) or `page.md` (the whole page), separated
+   * by `, `. A single-quoted literal like the others; a reference that doesn't exist fails the scenario
+   * catalog check, and docs/dev/test-scenarios.md shows it after the test file.
+   */
+  help?: string;
 }
 
 type Step = {kind: 'Given' | 'When' | 'Then' | 'And'; text: string; run: () => unknown | Promise<unknown>};
