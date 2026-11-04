@@ -1,8 +1,8 @@
 # Kept GTD - notes for agents and reviewers
 
 Kept GTD is a Supernote e-ink plugin (React Native + `sn-plugin-lib`, native Kotlin modules). The
-rules for every change are in `docs/dev/DEVELOPMENT-POLICY.md`; the promises Kept makes, and how
-each is backed, are in `docs/dev/claims.md`. This file doesn't repeat them: it says what a code
+rules for every change are in `docs/dev/DEVELOPMENT-POLICY.md`; what Kept promises, and how well
+each promise is kept, is in `docs/dev/promises.md`. This file doesn't repeat them: it says what a code
 review looks for.
 
 ## Review guidelines
@@ -45,13 +45,14 @@ behavior the design doesn't describe, and design items the change claims but doe
   or file-format change without an Upgrade note.
 - A new permission or data flow without PRIVACY.md (and SECURITY.md where it touches what Kept
   exposes).
-- A change that makes a claim in `docs/dev/claims.md` untrue, or a new public promise not in it.
+- A change that breaks a promise in `docs/dev/promises.md` or one of its "Rules out" lines, or a
+  new public promise not in it.
 - A caught error that is neither logged nor marked `// silent: <reason>`.
 
 **Don't flag** - these are checked already or not worth a comment:
 
 - what `npm run check` enforces: tsc, ESLint and its layer rules, code-health (file length,
   `console`/`Alert`, error text, comments with dates or history, date formatting, design-doc
-  references), the scenario catalog, help links, diagrams, the claims register;
+  references), the scenario catalog, help links, diagrams, the promises register;
 - formatting, style and naming preferences;
 - documents in `docs/dev/history/`: they are historical by design.

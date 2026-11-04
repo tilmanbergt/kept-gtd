@@ -27,28 +27,29 @@ which people and series you still tend. See [Threads](docs/user/threads.md).
 
 ## Why Kept GTD
 
-- **Your files, no lock-in.** Every Project and Area is a folder. Its todos and meetings live
-  in a small plain-text file inside it (`project.txt` / `area.txt`). Any text editor can open it,
-  and if you stop using Kept, your folders, notes and lists are still there.
-- **Calm and made for e-ink.** Only what matters today on Daily, only what belongs to the context
-  you are in. Screens are paged instead of scrolled; no notifications, no timers, no streaks.
-- **Built on what the Supernote already does.** Handwritten notes for todos and meetings,
-  backgrounds from your own templates, keywords for the Supernote's keyword search, links to
-  notes and files, and the lasso to turn handwriting into a todo or meeting.
-- **The whole life of a project.** Create it, work through it, mark it done, then close it out:
-  check nothing is left open, move results to the area or Resources, and turn all its notes into
-  one PDF with a table of contents - a record you can keep and read away from the Supernote.
-  Then it moves into the Archive, sorted by year.
-- **Keep your word clean.** Inspired by Werner Erhard's and Michael Jensen's work on integrity,
-  in particular [Creating Leaders: An Ontological/Phenomenological Model](https://papers.ssrn.com/abstract=1681682)
-  (with Kari Granger) and its four foundations of being a leader: integrity, authenticity, being
-  committed to something bigger than oneself, and being cause in the matter. Say clearly what
-  you are on the hook for, then keep it or consciously renegotiate it. `#next`, focus blocks and
-  Given time exist to make that visible, not to pile up more to do.
-- **Room for rest.** Nothing pushes the next task at you; Engage offers only what you already chose -
-  the same owner, your schedule. The gap after finishing something is yours.
+- **Your promises, kept.** Kept follows GTD and PARA: capture into the Inbox, clarify into next
+  actions, organise into Projects, Areas, Resources and Archive, review once a week. Within that
+  frame the structure is yours - threads, loops, tags, contexts - so you see what you promised, to
+  whom and where, and decide what to keep, renegotiate, drop or focus on. Inspired by Werner
+  Erhard's and Michael Jensen's work on integrity, in particular
+  [Creating Leaders: An Ontological/Phenomenological Model](https://papers.ssrn.com/abstract=1681682)
+  (with Kari Granger): your word is whole when you keep it or consciously renegotiate it.
+- **Your files, kept yours and kept safe.** Your todos and meetings are plain text in your own
+  folders, your notes are Supernote notes, and a finished project becomes one PDF with a table of
+  contents, archived by year - readable without Kept, and beyond the Supernote. Kept never changes
+  your files behind your back. No account, no server, no telemetry. It is open source, so anyone
+  can carry it on or check what it does.
+- **Well made.** Every screen is explained in the built-in help, every release says what changed and
+  how to move on safely, updates keep your content and your setup, and reporting a problem is
+  easy. Developed in the open, every change reviewed and tested before it reaches you.
+- **Made for the Supernote: e-ink, handwriting, calm.** Paged instead of scrolled, sharp in
+  greyscale. Kept builds on what the Supernote already does - notes, your templates, keywords,
+  links, the lasso - and turns what you write by hand into commitments where you write it. No
+  notifications, no timers, no streaks; nothing pushes the next thing at you.
 
-More in [Why Kept GTD works this way](docs/user/philosophy.md).
+These four are spelled out, with an honest rating of how well Kept keeps each today, in
+[What Kept GTD promises](docs/dev/promises.md). More on the ideas behind them in
+[Why Kept GTD works this way](docs/user/philosophy.md).
 
 ## Features at a glance
 

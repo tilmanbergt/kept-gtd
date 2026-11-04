@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Tally of the answers to review findings (docs/dev/history/technical-design-quality-assurance.md
 // §8.4, R10): every reply on a merged pull request starts with [fixed], [not applicable] or [noise].
-// The claims audit (docs/dev/claims-audit.md) uses it to decide which review guidelines in AGENTS.md
+// The promises audit (docs/dev/promises-audit.md) uses it to decide which review guidelines in AGENTS.md
 // to sharpen, add or remove. Needs the GitHub CLI `gh`, signed in.
 //
 //   node scripts/review-tally.mjs --since v0.26.0     PRs merged since that tag's date

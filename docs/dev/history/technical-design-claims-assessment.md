@@ -100,6 +100,35 @@ The Claims section of `quality.md`:
 | A1 | help gaps first: render, CI order, getting-started excluded | none |
 | A2 | claims: format, check, report, register re-rated, P8 wording, audit prompt, policy | none |
 
+## 7. From claims to promises (A3)
+
+Agreed with Tilman after A2, in conversation: 65 specific claims read as a catalogue, not as what
+Kept is. The register becomes the product's vision, spelled out in promises that guide the roadmap
+and the answers to wishes.
+
+- **P1** `docs/dev/claims.md` becomes `docs/dev/promises.md`, "What Kept GTD promises";
+  `claims-audit.md` becomes `promises-audit.md`, the scripts `promises.mjs`, `lib/promises.mjs`,
+  `test-promises.mjs`, `npm run promises`.
+- **P2** Four headlines, in the order of the README's tagline: 1. Your promises, kept (GTD and PARA
+  as the frame, flexible within it); 2. Your files, kept yours and kept safe (content sustainable
+  beyond Kept and the Supernote, the close-out PDF, open source, privacy); 3. Well made
+  (documented, openly developed, tested, robust, bug reports, a clear path through updates);
+  4. Made for the Supernote (e-ink, handwriting, native features, calm). "The whole life of a
+  project" is not a headline; its PDF record is promise 2.2.
+- **P3** Each headline: a vision line, its own ratings (judged on its own, informed by its
+  promises), where it is stated, a table of at most ten promises (id `n.m`, Fulfilled, Confidence,
+  Kept true by, Why), a "Rules out" line, and an Evidence list per promise. Kind, Stated and
+  Re-checked per promise are gone: Stated is on the headline, Re-checked follows from Kept true by.
+- **P4** "Kept true by" combines the keepers that would really catch a break (`test + checklist`);
+  weak ones are dropped. `check`/`test` need a file, `checklist` a checklist step as evidence.
+- **P5** The engineering goals of the first register (layers, file length, error logging, the
+  coverage ratchet, the help checks) are not promises of their own: they are evidence of 3.7
+  ("tested before it reaches you") or 3.1, where they keep a promise true.
+- **P6** A "Using this to decide" section: a wish that contradicts a promise or a "Rules out" line
+  is declined, or becomes an experiment behind a switch. The terms *your content*, *your setup*
+  and *Kept's own data* are defined there, for the register only.
+- **P7** The README's "Why Kept GTD" says the four headlines in short and links to the register.
+
 ## As built
 
 - Built as designed in A1 and A2. With getting-started excluded, help coverage reads 73 / 169.
@@ -113,3 +142,9 @@ The Claims section of `quality.md`:
 - P8 was made true by its wording: PRIVACY.md splits file read from file write and names what Kept
   reads elsewhere (a linked file from the Device tab, a background from MyStyle, the file Kept was
   opened from); SECURITY.md and the InkHub listing say the same in short.
+- A3: the register is `docs/dev/promises.md`, four headlines, 26 promises: 6 not fully kept or
+  unsure (3.8 security reports, never tried; 1.4 renegotiating not always explicit; 3.1 help
+  coverage; 4.1 two screens scroll; 2.4 two automatic changes; 2.2 the PDF only checked on the
+  device), 7 kept true only by a checklist or by nothing. Every claim of A2 went into a promise or
+  its evidence. DEVELOPMENT-POLICY §6 also says that a wish against a promise is declined or
+  becomes an experiment.

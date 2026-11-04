@@ -174,13 +174,16 @@ A change is not done while the docs describe the old behavior.
   experimental. Screenshots are refreshed when a shown screen changes noticeably.
 - **PRIVACY.md**: update whenever data is stored somewhere new, sent over the network, or
   exported. **SECURITY.md** says what Kept touches; update it with PRIVACY.md where that changes.
-- **Claims register** (`docs/dev/claims.md`): a change to README, the InkHub listing, PRIVACY,
-  SECURITY or a philosophy page updates `docs/dev/claims.md` in the same change - a new promise
-  gets an entry, a changed one its text and evidence. `npm run claims` checks every evidence path.
+- **Promises** (`docs/dev/promises.md`): what Kept promises, and how well each promise is kept. A
+  change to README, the InkHub listing, PRIVACY, SECURITY or a philosophy page updates it in the
+  same change - a new promise gets a row, a changed one its text, ratings and evidence; the README's
+  "Why Kept GTD" says the same four headlines in short. A feature or wish that contradicts a
+  promise or a "Rules out" line is declined, or becomes an experiment behind a switch.
+  `npm run promises` checks every evidence path.
 - **Developer docs** come in two kinds (list in `docs/dev/README.md`):
   - **Living documents** (`design-overview.md`, `design-philosophy.md`,
     `design-device-rendering.md`, `supernote-host-facts.md`, `DEVELOPMENT-POLICY.md`,
-    `RELEASING.md`, `inkhub-listing.md`, `claims.md`, `claims-audit.md`, `docs/dev/README.md`) live directly in `docs/dev/` and
+    `RELEASING.md`, `inkhub-listing.md`, `promises.md`, `promises-audit.md`, `docs/dev/README.md`) live directly in `docs/dev/` and
     describe the current state in present tense: no history ("previously", "superseded",
     "not yet verified"), no open questions, no plans. Each starts with a short "About this
     document" note saying what it is for and how it is kept. Update the affected one in the same
@@ -202,7 +205,7 @@ A change is not done while the docs describe the old behavior.
 - **Tiers** (`scripts/check.mjs`, `docs/dev/README.md` "Checking your changes"); each stops at the
   first failure and its last line names the tier:
   - **quick** (`npm run check:quick`): generated content, tsc and ESLint, script tests, scenario
-    catalog (with its help references), help diagrams, claims register, code health;
+    catalog (with its help references), help diagrams, promises, code health;
   - **smoke** (`npm run check:smoke`): quick + one fast scenario per main flow
     (`__tests__/scenarios/smoke/`). Smoke stays at or below 60 s; a new smoke scenario that would
     break that budget is merged into an existing one;
@@ -244,11 +247,11 @@ A change is not done while the docs describe the old behavior.
   - **Quality report** (`npm run quality`, `coverage/quality.md`; `npm run coverage` runs it last,
     CI shows it at the top of the job summary, each release keeps it in its `test-coverage-<version>.md`):
     help headings with a scenario (`help:` on a scenario, `docs/dev/README.md` "Writing scenarios"),
-    help labels and quoted messages against the app's strings, claims not fully true or unsure,
+    help labels and quoted messages against the app's strings, promises not fully kept or unsure,
     diagram sizes. **Only mistakes fail** - a `help:` reference to a heading that doesn't exist, a
-    malformed claim or a missing evidence path, a stale, orphaned or unused diagram, the diagram
-    budget, a bad image line. Coverage, unmatched labels and quotes, a claim's low Fulfilled or
-    Confidence score, and a claim kept true only by a checklist or by nothing are a view, never a
+    malformed promise or a missing evidence path, a stale, orphaned or unused diagram, the diagram
+    budget, a bad image line. Coverage, unmatched labels and quotes, a promise's low Fulfilled or
+    Confidence score, and a promise kept true only by a checklist or by nothing are a view, never a
     gate: they go to the backlog, not into a red check.
   - **Coverage ratchet** (`npm run coverage`, `scripts/coverage-baseline.json`): an area's line or
     branch coverage may not fall more than 2 points below its baseline. `node
@@ -298,10 +301,10 @@ Before running `scripts/release.ps1`:
       `userDocs.test.ts` passes.
 - [ ] **README** feature list and screenshots still true.
 - [ ] **PRIVACY.md** still true.
-- [ ] **Claims register** still true; new claims added (`docs/dev/claims.md`).
+- [ ] **Promises** still true, ratings still right, new promises added (`docs/dev/promises.md`).
 - [ ] **`coverage/quality.md`** read once: new help gaps or unmatched labels? (gaps → backlog)
-- [ ] **Claims audit due?** Before each InkHub (re)submission and every third minor release
-      (`docs/dev/claims-audit.md`); the register's "Last claims audit" line says when it last ran.
+- [ ] **Promises audit due?** Before each InkHub (re)submission and every third minor release
+      (`docs/dev/promises-audit.md`); the register's "Last audit" line says when it last ran.
 - [ ] **Experimental**: anything not reliable enough is behind a switch and listed under
       Experimental.
 - [ ] **Logging**: no debug-only noise left in hot paths; no secrets or excessive content logged.

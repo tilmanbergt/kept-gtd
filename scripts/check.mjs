@@ -3,7 +3,7 @@
 //
 //   npm run check                        full: quick + all of Jest (unit and scenario tests)
 //   npm run check -- --quick             quick: gen, tsc and ESLint (in parallel), script tests,
-//                                        scenario catalog, help diagrams, claims register, code health
+//                                        scenario catalog, help diagrams, promises, code health
 //   npm run check -- --smoke             quick + the smoke scenarios (__tests__/scenarios/smoke/)
 //   npm run check -- --area a,b          quick + the test files of feature areas a and b (scripts/test-areas.json)
 //   npm run check -- --affected          quick + the tests related to the files changed against
@@ -58,7 +58,7 @@ const SCRIPT_TESTS = [
   ['help label tests', 'scripts/test-help-labels.mjs'],
   ['help coverage tests', 'scripts/test-help-coverage.mjs'],
   ['diagram tests', 'scripts/test-diagrams.mjs'],
-  ['claims tests', 'scripts/test-claims.mjs'],
+  ['promises tests', 'scripts/test-promises.mjs'],
   ['review tally tests', 'scripts/test-review-tally.mjs'],
 ];
 
@@ -156,7 +156,7 @@ await runParallel([
 for (const [name, script] of SCRIPT_TESTS) run(name, 'node', [script]);
 run('scenario catalog up to date', 'node', ['scripts/scenario-catalog.mjs', '--check']);
 run('help diagrams up to date', 'node', ['scripts/diagrams.mjs', '--check']);
-run('claims register', 'node', ['scripts/claims.mjs', '--check']);
+run('promises', 'node', ['scripts/promises.mjs', '--check']);
 run('code health', 'node', ['scripts/code-health.mjs', ...(CODE_HEALTH_STRICT ? ['--strict'] : [])]);
 
 const jest = jestCommand();
@@ -170,7 +170,7 @@ if (opts.coverage) {
   const r = spawnSync('node scripts/quality-report.mjs', {cwd: ROOT, stdio: 'inherit', shell: true});
   if (r.status !== 0) console.log(`quality: the report did not finish (exit ${r.status}); the checks above decide.`);
 } else {
-  console.log('\nquality: npm run quality for help coverage, labels and claims');
+  console.log('\nquality: npm run quality for help coverage, labels and promises');
 }
 
 console.log(`\nAll checks passed (${tier}) in ${Math.round((Date.now() - started) / 1000)} s.`);

@@ -10,7 +10,7 @@
     "test": "jest",
     "gen": "node scripts/gen-bundled-content.mjs",
     "postinstall": "node scripts/gen-bundled-content.mjs",
-    "test:scripts": "node scripts/test-versioning.mjs && node scripts/test-userdocs.mjs && node scripts/test-code-health.mjs && node scripts/test-scenario-catalog.mjs && node scripts/test-test-areas.mjs && node scripts/test-check-tiers.mjs && node scripts/test-coverage-report.mjs && node scripts/test-ci-build.mjs && node scripts/test-test-notes.mjs && node scripts/test-app-strings.mjs && node scripts/test-help-labels.mjs && node scripts/test-help-coverage.mjs && node scripts/test-diagrams.mjs && node scripts/test-claims.mjs && node scripts/test-review-tally.mjs",
+    "test:scripts": "node scripts/test-versioning.mjs && node scripts/test-userdocs.mjs && node scripts/test-code-health.mjs && node scripts/test-scenario-catalog.mjs && node scripts/test-test-areas.mjs && node scripts/test-check-tiers.mjs && node scripts/test-coverage-report.mjs && node scripts/test-ci-build.mjs && node scripts/test-test-notes.mjs && node scripts/test-app-strings.mjs && node scripts/test-help-labels.mjs && node scripts/test-help-coverage.mjs && node scripts/test-diagrams.mjs && node scripts/test-promises.mjs && node scripts/test-review-tally.mjs",
     "scenarios": "jest --selectProjects scenarios && node scripts/scenario-catalog.mjs",
     "check": "node scripts/check.mjs",
     "check:quick": "node scripts/check.mjs --quick",
@@ -19,7 +19,7 @@
     "coverage": "node scripts/check.mjs --coverage",
     "quality": "node scripts/quality-report.mjs",
     "diagrams": "node scripts/diagrams.mjs",
-    "claims": "node scripts/claims.mjs",
+    "promises": "node scripts/promises.mjs",
     "code-health": "node scripts/code-health.mjs",
     "test-notes": "node scripts/test-notes.mjs",
     "next-version": "node scripts/gen-bundled-content.mjs --set-next"

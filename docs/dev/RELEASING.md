@@ -189,9 +189,9 @@ page after the release; delete one there (and its tag) if it was a mistake.
    with coverage. `release.ps1` looks this up with `gh` and stops when it isn't green; without `gh`
    it says so and asks.
 2. **Check** the release checklist in `DEVELOPMENT-POLICY.md` §9 (CHANGELOG read as a user, help
-   pages, README, PRIVACY, claims register and `coverage/quality.md`, Experimental, logging). When a
-   claims audit is due (before an InkHub (re)submission, every third minor release), run it first
-   in a fresh session with `docs/dev/claims-audit.md`.
+   pages, README, PRIVACY, the promises and `coverage/quality.md`, Experimental, logging). When a
+   promises audit is due (before an InkHub (re)submission, every third minor release), run it first
+   in a fresh session with `docs/dev/promises-audit.md`.
 3. **Dry run** - shows the new version and what would happen, changes nothing; it checks CI on `main`
    and runs the quick tier only:
    ```powershell

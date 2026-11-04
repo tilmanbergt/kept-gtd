@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // The quality report coverage/quality.md (docs/dev/history/technical-design-quality-assurance.md §5):
-// help coverage by scenarios, help labels and quoted messages, claims (how true, how sure, kept true by), diagrams.
+// help coverage by scenarios, help labels and quoted messages, promises (how well kept, how sure, kept true by), diagrams.
 // Needs no Jest run. Report only: it never fails a check (check.mjs --coverage runs it last).
 //
 //   npm run quality        write coverage/quality.md and print it
@@ -10,7 +10,7 @@ import {dirname, join, resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {collectAppStrings} from './lib/appStrings.mjs';
 import {renderDiagramSummary} from './lib/diagrams.mjs';
-import {parseClaims, renderClaims} from './lib/claims.mjs';
+import {parsePromises, renderPromises} from './lib/promises.mjs';
 import {renderHelpCoverage} from './lib/helpCoverage.mjs';
 import {checkLabels, demoNamesOf, extractDiagramLabels, extractLabels, extractQuotes, quoteMatches, renderLabels} from './lib/helpLabels.mjs';
 import {readAppSources, readDemoFiles, readDiagramManifest, readDiagramSources, readHelpCoverage, readHelpPages} from './lib/qualityInputs.mjs';
@@ -43,7 +43,7 @@ const sections = [
   '',
   renderHelpCoverage(coverage, excluded),
   renderLabels(labelResult, quoteResult),
-  renderClaims(parseClaims(readFileSync(join(ROOT, 'docs', 'dev', 'claims.md'), 'utf8'))),
+  renderPromises(parsePromises(readFileSync(join(ROOT, 'docs', 'dev', 'promises.md'), 'utf8'))),
   renderDiagramSummary(readDiagramManifest(ROOT)),
 ];
 const report = sections.join('\n');

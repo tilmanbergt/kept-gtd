@@ -113,7 +113,7 @@ in its thread with `[fixed]`, `[not applicable]` or `[noise]` and the reason, fi
 session list) and write "Address the Codex review on PR #n". It reads the review-level and inline
 comments with `gh`, fixes or answers each one, re-runs the checks and pushes. Merge only when every
 finding has its answer. `node scripts/review-tally.mjs --since <tag>` counts the answers; the
-claims audit uses it to tune the guidelines.
+promises audit uses it to tune the guidelines.
 
 ### ... handle a bug report
 
