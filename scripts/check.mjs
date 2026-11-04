@@ -9,7 +9,8 @@
 //   npm run check -- --affected          quick + the tests related to the files changed against
 //                                        origin/main (committed or not) + smoke
 //   npm run check -- --coverage          full with coverage, then the area matrix coverage/areas.md and the
-//                                        ratchet against scripts/coverage-baseline.json
+//                                        ratchet against scripts/coverage-baseline.json, then the quality
+//                                        report coverage/quality.md (never failing)
 //
 // Flags combine (--area planning --smoke). Stops at the first failing check; the last line names
 // the tier. Which moment runs which tier: docs/dev/DEVELOPMENT-POLICY.md §7.
@@ -53,6 +54,9 @@ const SCRIPT_TESTS = [
   ['coverage report tests', 'scripts/test-coverage-report.mjs'],
   ['CI build tests', 'scripts/test-ci-build.mjs'],
   ['test notes tests', 'scripts/test-test-notes.mjs'],
+  ['app strings tests', 'scripts/test-app-strings.mjs'],
+  ['help label tests', 'scripts/test-help-labels.mjs'],
+  ['help coverage tests', 'scripts/test-help-coverage.mjs'],
 ];
 
 function fail(name, status) {
@@ -154,5 +158,14 @@ const jest = jestCommand();
 if (jest) run(jest.name, 'npx', ['jest', ...jest.args]);
 if (opts.coverage) run('coverage by feature area (coverage/areas.md, ratchet)', 'node', ['scripts/coverage-report.mjs']);
 else console.log(`\n--- tests (jest): ${tier === 'quick' ? 'skipped (--quick)' : 'nothing to run'}`);
+
+// The quality report is a view, never a gate (docs/dev/history/technical-design-quality-assurance.md §5).
+if (opts.coverage) {
+  console.log('\n--- quality report (coverage/quality.md, report only)');
+  const r = spawnSync('node scripts/quality-report.mjs', {cwd: ROOT, stdio: 'inherit', shell: true});
+  if (r.status !== 0) console.log(`quality: the report did not finish (exit ${r.status}); the checks above decide.`);
+} else {
+  console.log('\nquality: npm run quality for help coverage, labels and claims');
+}
 
 console.log(`\nAll checks passed (${tier}) in ${Math.round((Date.now() - started) / 1000)} s.`);

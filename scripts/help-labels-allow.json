@@ -1,0 +1,8 @@
+{
+  "about": "Bold help labels that are not Kept's own strings: the Supernote's menus, lasso toolbar and keys. Each with why. The quality report lists entries no help page uses any more (scripts/lib/helpLabels.mjs, docs/dev/history/technical-design-quality-assurance.md §4.2).",
+  "labels": {
+    "Allow this time only": "the Supernote's own permission dialog (supernote-host-facts.md), not a Kept string",
+    "Always allow": "the Supernote's own permission dialog, not a Kept string",
+    "Don't allow": "the Supernote's own permission dialog, not a Kept string"
+  }
+}

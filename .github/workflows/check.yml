@@ -28,10 +28,12 @@ jobs:
           cache: npm
       - run: npm ci --no-audit --no-fund
       - run: npm run coverage
-      - name: Coverage by feature area in the job summary
+      - name: Coverage by feature area and the quality report in the job summary
         if: always()
         run: |
           if [ -f coverage/areas.md ]; then cat coverage/areas.md >> "$GITHUB_STEP_SUMMARY"; else echo "No coverage/areas.md - the checks stopped before the coverage report." >> "$GITHUB_STEP_SUMMARY"; fi
+          # The quality report (help coverage, labels, claims, diagrams; report only), after the matrix.
+          if [ -f coverage/quality.md ]; then printf '\n' >> "$GITHUB_STEP_SUMMARY"; cat coverage/quality.md >> "$GITHUB_STEP_SUMMARY"; fi
       - uses: actions/upload-artifact@v7
         if: always()
         with:
