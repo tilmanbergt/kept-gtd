@@ -33,5 +33,6 @@ Short version:
 - **End every change, build or release with a short, numbered, copy-paste-ready guide for
   Tilman**: what to commit (with message) on which branch, whether to build and what to test on
   the device, whether to push/merge, whether a release is advisable (`RELEASING.md` §8).
+- Code review rules (what Codex and other reviewers flag): `AGENTS.md` `## Review guidelines`.
 - Architecture rules in detail: `docs/dev/design-overview.md` §3. Build and code tour:
   `docs/dev/README.md`. Git, build and release workflow: `docs/dev/RELEASING.md`.

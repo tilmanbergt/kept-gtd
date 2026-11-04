@@ -102,6 +102,19 @@ Today, locally: `./scripts/release.ps1` (`RELEASING.md` §5).
 *(coming: workflow **discard release**: deletes the draft and its tag and reverts the version
 commit.)* Today: answer `N` in `release.ps1` and run the two undo commands it prints.
 
+### ... answer the Codex review
+
+Codex reviews every pull request by itself, following `## Review guidelines` in `AGENTS.md`. The
+cloud session that opened the PR waits for the review (up to 15 minutes) and answers each finding
+in its thread with `[fixed]`, `[not applicable]` or `[noise]` and the reason, fixing what is right
+(DEVELOPMENT-POLICY §8).
+
+**When Codex reviewed after the session ended**: reopen that cloud session (claude.ai/code, the
+session list) and write "Address the Codex review on PR #n". It reads the review-level and inline
+comments with `gh`, fixes or answers each one, re-runs the checks and pushes. Merge only when every
+finding has its answer. `node scripts/review-tally.mjs --since <tag>` counts the answers; the
+claims audit uses it to tune the guidelines.
+
 ### ... handle a bug report
 
 **Issues** → the report → label `needs-info`, `confirmed` or `experimental` (`RELEASING.md` §7).

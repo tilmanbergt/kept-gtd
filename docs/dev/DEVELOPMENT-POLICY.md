@@ -173,11 +173,14 @@ A change is not done while the docs describe the old behavior.
 - **README.md**: update "Features at a glance" when a feature is added, removed or becomes
   experimental. Screenshots are refreshed when a shown screen changes noticeably.
 - **PRIVACY.md**: update whenever data is stored somewhere new, sent over the network, or
-  exported.
+  exported. **SECURITY.md** says what Kept touches; update it with PRIVACY.md where that changes.
+- **Claims register** (`docs/dev/claims.md`): a change to README, the InkHub listing, PRIVACY,
+  SECURITY or a philosophy page updates `docs/dev/claims.md` in the same change - a new promise
+  gets an entry, a changed one its text and evidence. `npm run claims` checks every evidence path.
 - **Developer docs** come in two kinds (list in `docs/dev/README.md`):
   - **Living documents** (`design-overview.md`, `design-philosophy.md`,
     `design-device-rendering.md`, `supernote-host-facts.md`, `DEVELOPMENT-POLICY.md`,
-    `RELEASING.md`, `inkhub-listing.md`, `docs/dev/README.md`) live directly in `docs/dev/` and
+    `RELEASING.md`, `inkhub-listing.md`, `claims.md`, `claims-audit.md`, `docs/dev/README.md`) live directly in `docs/dev/` and
     describe the current state in present tense: no history ("previously", "superseded",
     "not yet verified"), no open questions, no plans. Each starts with a short "About this
     document" note saying what it is for and how it is kept. Update the affected one in the same
@@ -199,7 +202,7 @@ A change is not done while the docs describe the old behavior.
 - **Tiers** (`scripts/check.mjs`, `docs/dev/README.md` "Checking your changes"); each stops at the
   first failure and its last line names the tier:
   - **quick** (`npm run check:quick`): generated content, tsc and ESLint, script tests, scenario
-    catalog, code health;
+    catalog (with its help references), help diagrams, claims register, code health;
   - **smoke** (`npm run check:smoke`): quick + one fast scenario per main flow
     (`__tests__/scenarios/smoke/`). Smoke stays at or below 60 s; a new smoke scenario that would
     break that budget is merged into an existing one;
@@ -238,6 +241,14 @@ A change is not done while the docs describe the old behavior.
   - **Feature areas** (`scripts/test-areas.json`): every test file, source file and help page
     belongs to one area, following the help pages; code-health fails on one that doesn't. A new
     file is usually covered by an area's globs; otherwise add it there.
+  - **Quality report** (`npm run quality`, `coverage/quality.md`; `npm run coverage` runs it last,
+    CI shows it in the job summary, each release keeps it in its `test-coverage-<version>.md`):
+    help headings with a scenario (`help:` on a scenario, `docs/dev/README.md` "Writing scenarios"),
+    help labels and quoted messages against the app's strings, claims by backing, diagram sizes.
+    **Only mistakes fail** - a `help:` reference to a heading that doesn't exist, a malformed claim
+    or a missing evidence path, a stale, orphaned or unused diagram, the diagram budget, a bad image
+    line. Coverage, unmatched labels and quotes, and claims backed `reviewed` or `none` are a view,
+    never a gate: they go to the backlog, not into a red check.
   - **Coverage ratchet** (`npm run coverage`, `scripts/coverage-baseline.json`): an area's line or
     branch coverage may not fall more than 2 points below its baseline. `node
     scripts/coverage-report.mjs --update-baseline` raises the baseline after coverage grew; lowering
@@ -268,6 +279,8 @@ A change is not done while the docs describe the old behavior.
       (steps and expected results), or `Device test: none - <reason>`. The CI build shows these
       blocks in its `TESTING.md` (format: `RELEASING.md` §3)
 - [ ] Ideas found on the way are on the backlog, not half-built - §1
+- [ ] Review comments answered: every Codex finding on the PR gets a reply starting with
+      `[fixed]`, `[not applicable]` or `[noise]` and its reason (`AGENTS.md`, `GITHUB-GUIDE.md`) - §10
 - [ ] Step-by-step guide for Tilman given (commit, build, test, push/merge, release?) - §10
 
 ## 9. Release checklist
@@ -284,6 +297,10 @@ Before running `scripts/release.ps1`:
       `userDocs.test.ts` passes.
 - [ ] **README** feature list and screenshots still true.
 - [ ] **PRIVACY.md** still true.
+- [ ] **Claims register** still true; new claims added (`docs/dev/claims.md`).
+- [ ] **`coverage/quality.md`** read once: new help gaps or unmatched labels? (gaps → backlog)
+- [ ] **Claims audit due?** Before each InkHub (re)submission and every third minor release
+      (`docs/dev/claims-audit.md`); the register's "Last claims audit" line says when it last ran.
 - [ ] **Experimental**: anything not reliable enough is behind a switch and listed under
       Experimental.
 - [ ] **Logging**: no debug-only noise left in hot paths; no secrets or excessive content logged.

@@ -189,7 +189,9 @@ page after the release; delete one there (and its tag) if it was a mistake.
    with coverage. `release.ps1` looks this up with `gh` and stops when it isn't green; without `gh`
    it says so and asks.
 2. **Check** the release checklist in `DEVELOPMENT-POLICY.md` §9 (CHANGELOG read as a user, help
-   pages, README, PRIVACY, Experimental, logging).
+   pages, README, PRIVACY, claims register and `coverage/quality.md`, Experimental, logging). When a
+   claims audit is due (before an InkHub (re)submission, every third minor release), run it first
+   in a fresh session with `docs/dev/claims-audit.md`.
 3. **Dry run** - shows the new version and what would happen, changes nothing; it checks CI on `main`
    and runs the quick tier only:
    ```powershell
@@ -205,8 +207,8 @@ page after the release; delete one there (and its tag) if it was a mistake.
    `package-lock.json` and `PluginConfig.json`, turns `[Unreleased]` into `[x.y.z] - date` in the
    CHANGELOG, then runs every check and every test once, with coverage (`npm run coverage`), on
    exactly what it is about to commit. If anything is red it **stops** and prints how to undo the
-   version changes - there is no way to publish past a red run. It copies the coverage table to
-   `docs/dev/history/test-coverage-x.y.z.md`, commits `Release x.y.z`, tags `vx.y.z` and builds
+   version changes - there is no way to publish past a red run. It copies the coverage table, with
+   the quality report (`coverage/quality.md`) below it, to `docs/dev/history/test-coverage-x.y.z.md`, commits `Release x.y.z`, tags `vx.y.z` and builds
    `build\outputs\kept-gtd-x.y.z.snplg`. Then it **pauses**. The tag starts no CI run; the
    release commit is checked by CI when it is pushed to `main`.
 5. **Device check** while the script waits (§6 below), then answer `y` to publish. The script

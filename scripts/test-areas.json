@@ -269,7 +269,8 @@
         "src/supernote/diagnosticFiles.ts",
         "src/ui/{HelpOverlay,MarkdownBlocks}.tsx",
         "src/ui/{useSettings,useSettingsUnreadableNotice,useWhatsNewNotice,featureStore,helpStore}.ts",
-        "src/utils/{log,logSink,perf}.ts"
+        "src/utils/{log,logSink,perf}.ts",
+        "docs/user/{diagrams,images/diagrams}/**"
       ]
     },
     {
@@ -281,7 +282,8 @@
         "__tests__/scenarios/smoke/appStarts*",
         "__tests__/scenarios/narrowScreen*",
         "__tests__/domain/{dateFormat,screenLayout}.test.ts",
-        "__tests__/ui/{measuredHeightMemo,useActionError,useEditTarget,rowTapTargets,taskRow*,itemEntryRow}*"
+        "__tests__/ui/{measuredHeightMemo,useActionError,useEditTarget,rowTapTargets,taskRow*,itemEntryRow}*",
+        "scripts/test-*.mjs"
       ],
       "sources": [
         "App.tsx",
@@ -292,7 +294,11 @@
         "src/ui/status/**",
         "src/domain/{dateFormat,dateLabel,textLineEstimator,buttonIds,screenLayout}.ts",
         "src/utils/**",
-        "src/supernote/**"
+        "src/supernote/**",
+        "scripts/**",
+        "AGENTS.md",
+        "SECURITY.md",
+        "docs/dev/claims*.md"
       ]
     }
   ]

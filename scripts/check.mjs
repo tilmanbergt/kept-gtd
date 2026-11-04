@@ -59,6 +59,7 @@ const SCRIPT_TESTS = [
   ['help coverage tests', 'scripts/test-help-coverage.mjs'],
   ['diagram tests', 'scripts/test-diagrams.mjs'],
   ['claims tests', 'scripts/test-claims.mjs'],
+  ['review tally tests', 'scripts/test-review-tally.mjs'],
 ];
 
 function fail(name, status) {
