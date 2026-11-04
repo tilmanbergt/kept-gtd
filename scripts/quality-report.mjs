@@ -10,6 +10,7 @@ import {dirname, join, resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {collectAppStrings} from './lib/appStrings.mjs';
 import {renderDiagramSummary} from './lib/diagrams.mjs';
+import {parseClaims, renderClaims} from './lib/claims.mjs';
 import {renderHelpCoverage} from './lib/helpCoverage.mjs';
 import {checkLabels, demoNamesOf, extractDiagramLabels, extractLabels, extractQuotes, quoteMatches, renderLabels} from './lib/helpLabels.mjs';
 import {readAppSources, readDemoFiles, readDiagramManifest, readDiagramSources, readHelpCoverage, readHelpPages} from './lib/qualityInputs.mjs';
@@ -42,7 +43,7 @@ const sections = [
   '',
   renderHelpCoverage(coverage, excluded),
   renderLabels(labelResult, quoteResult),
-  '## Claims\n\nThe claims register `docs/dev/claims.md` is not written yet.\n',
+  renderClaims(parseClaims(readFileSync(join(ROOT, 'docs', 'dev', 'claims.md'), 'utf8'))),
   renderDiagramSummary(readDiagramManifest(ROOT)),
 ];
 const report = sections.join('\n');
