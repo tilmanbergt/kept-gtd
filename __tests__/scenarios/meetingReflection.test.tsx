@@ -42,7 +42,7 @@ async function openCoaching(): Promise<void> {
   await tap(/^Coaching/);
 }
 
-scenario('Reflect on a sparring session: the page comes after the meeting\'s page and the pages added to it by hand', {feature: 'Meetings', design: 'technical-design-meeting-reflection.md'}, () => {
+scenario('Reflect on a sparring session: the page comes after the meeting\'s page and the pages added to it by hand', {feature: 'Meetings', design: 'technical-design-meeting-reflection.md', help: 'meetings.md#reflection-page'}, () => {
   given('area "Coaching" has a sparring session three days ago and a check-in since; in "sparring jordan <year>.note" the session\'s page is followed by two pages added by hand, then the check-in\'s page', () => {
     coaching([sparringLine(), checkinLine]);
     sparringNotebook();
@@ -85,7 +85,7 @@ scenario('Reflect on a sparring session: the page comes after the meeting\'s pag
   });
 });
 
-scenario('Reflect on a meeting that has no page yet: one question, then meeting page and reflection in order', {feature: 'Meetings', design: 'technical-design-meeting-reflection.md'}, () => {
+scenario('Reflect on a meeting that has no page yet: one question, then meeting page and reflection in order', {feature: 'Meetings', design: 'technical-design-meeting-reflection.md', help: 'meetings.md#reflection-page, note-setups.md#before-a-note-is-created'}, () => {
   given('area "Coaching" has a sparring session three days ago without a note, and no sparring notebook exists', () => {
     coaching([sparringLine('', false)]);
   });
@@ -112,7 +112,7 @@ scenario('Reflect on a meeting that has no page yet: one question, then meeting 
   });
 });
 
-scenario('A renamed meeting finds its reflection again', {feature: 'Meetings', design: 'technical-design-meeting-reflection.md'}, () => {
+scenario('A renamed meeting finds its reflection again', {feature: 'Meetings', design: 'technical-design-meeting-reflection.md', help: 'meetings.md#reflection-page'}, () => {
   given('the sparring session has a reflection page, and its title was changed to "Sparring Jordan roles" since', () => {
     coaching([`- ${d1} 10:00-11:00 Sparring Jordan roles #sparring/jordan → [[${NOTEBOOK_REL}#${MEETING_KW}]]`]);
     device().sdk.putNote(NOTEBOOK, [{keywords: [d1, MEETING_KW]}, {keywords: [REFLECTION_KW]}]);
@@ -130,7 +130,7 @@ scenario('A renamed meeting finds its reflection again', {feature: 'Meetings', d
   });
 });
 
-scenario('The card follows the selected meeting', {feature: 'Meetings', design: 'technical-design-item-card.md'}, () => {
+scenario('The card follows the selected meeting', {feature: 'Meetings', design: 'technical-design-item-card.md', help: 'meetings.md#the-meeting-row-and-its-card'}, () => {
   given('area "Coaching" has a sparring session three days ago and one in two days, both tracked by the Sparring setup', () => {
     coaching([sparringLine(), `- ${ahead} 10:00-11:00 Next sparring Jordan #sparring/jordan`]);
     sparringNotebook();
@@ -158,7 +158,7 @@ scenario('The card follows the selected meeting', {feature: 'Meetings', design: 
   });
 });
 
-scenario('Edit and save from the card, then tick reviewed on it: the title changes and both ticks stay', {feature: 'Meetings', design: 'technical-design-item-card.md'}, () => {
+scenario('Edit and save from the card, then tick reviewed on it: the title changes and both ticks stay', {feature: 'Meetings', design: 'technical-design-item-card.md', help: 'meetings.md#preparation-and-review'}, () => {
   given('the sparring session three days ago was ticked prepped before it took place', () => {
     coaching([sparringLine(' #prepped')]);
     sparringNotebook();
@@ -189,7 +189,7 @@ scenario('Edit and save from the card, then tick reviewed on it: the title chang
   });
 });
 
-scenario('Daily: tomorrow\'s tracked meeting offers Prepped, and Daily has no Link file', {feature: 'Daily', design: 'technical-design-item-card.md'}, () => {
+scenario('Daily: tomorrow\'s tracked meeting offers Prepped, and Daily has no Link file', {feature: 'Daily', design: 'technical-design-item-card.md', help: 'meetings.md#preparation-and-review'}, () => {
   given('area "Coaching" has a sparring session tomorrow', () => {
     coaching([`- ${isoDateOffset(1)} 10:00-11:00 Sparring Jordan #sparring/jordan`]);
   });
@@ -206,7 +206,7 @@ scenario('Daily: tomorrow\'s tracked meeting offers Prepped, and Daily has no Li
   });
 });
 
-scenario('Reflect from Review\'s "Meetings to close out" without ticking it reviewed', {feature: 'Weekly Review', design: 'technical-design-meeting-reflection.md'}, () => {
+scenario('Reflect from Review\'s "Meetings to close out" without ticking it reviewed', {feature: 'Weekly Review', design: 'technical-design-meeting-reflection.md', help: 'review.md#the-steps, meetings.md#reflection-page'}, () => {
   given('the sparring session three days ago is tracked for review and not reviewed yet; its page is followed by two pages added by hand, then the check-in\'s page', () => {
     coaching([sparringLine(), checkinLine]);
     sparringNotebook();
@@ -230,7 +230,7 @@ scenario('Reflect from Review\'s "Meetings to close out" without ticking it revi
   });
 });
 
-scenario('Engage on the meeting\'s page offers the reflection; on the reflection page it opens on what came out of the thread\'s meetings', {feature: 'Engage', design: 'technical-design-meeting-reflection.md'}, () => {
+scenario('Engage on the meeting\'s page offers the reflection; on the reflection page it opens on what came out of the thread\'s meetings', {feature: 'Engage', design: 'technical-design-meeting-reflection.md', help: 'engage.md#on-a-meetings-page-before-during-after'}, () => {
   given('the todo "Send Jordan the role canvas" was agreed in the sparring session three days ago; in the notebook the session\'s page is followed by a page added by hand, then the page of the todo "Prepare the workshop"', () => {
     const key = meetingKey({date: d1, title: 'Sparring Jordan #sparring/jordan'});
     coaching(

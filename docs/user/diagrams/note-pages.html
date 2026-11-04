@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<!-- How the pages of a Note setup flow into one notebook (docs/user/note-setups.md#order-of-pages-in-a-notebook). -->
+<link rel="stylesheet" href="diagram.css">
+<style>
+  .cols { display: flex; gap: 28px; align-items: flex-start; }
+  .left { width: 330px; padding-top: 70px; display: flex; flex-direction: column; gap: 14px; }
+  .right { flex: 1; }
+  .note { border: 4px solid #000; border-radius: 6px; padding: 14px; background: #fff; }
+  .note-name { font-weight: 700; margin-bottom: 10px; }
+  .page { border: 2px solid #000; border-radius: 4px; padding: 8px 12px; margin-top: 10px; background: #fff; }
+  .page .no { font-weight: 700; margin-right: 8px; }
+  .page.own { border-style: dashed; border-color: #888; background: #f4f4f4; }
+  .kw { font-size: 22px; color: #444; }
+  .arrow { text-align: center; font-size: 34px; line-height: 1; }
+  h1 { font-size: 32px; margin: 0 0 18px; }
+</style>
+</head>
+<body>
+<div id="diagram">
+  <h1>One notebook: pages in time order</h1>
+  <div class="cols">
+    <div class="left">
+      <div class="box secondary small">Note setup <b>Sparring</b><br><b class="label">One notebook</b><br><span class="code">{name} {year}</span></div>
+      <div class="box small">30.9. meeting<br>Sparring Jordan<br><span class="code">#sparring/jordan</span></div>
+      <div class="box small">7.10. todo<br>Invite Jordan to the forum</div>
+      <div class="box small">14.10. meeting<br>Sparring Jordan</div>
+    </div>
+    <div class="right">
+      <div class="note">
+        <div class="note-name">Coaching 2026.note</div>
+        <div class="page"><span class="no">p.1</span><b class="label">Home page</b>: Coaching and its scope</div>
+        <div class="page"><span class="no">p.2</span>30.9.2026 · Sparring Jordan<div class="kw">keyword 2026-09-30 Sparring Jordan #sparring/jordan</div></div>
+        <div class="page own"><span class="no">p.3</span>a page you added: stays with the meeting</div>
+        <div class="page"><span class="no">p.4</span><b class="label">Reflection page</b> of 30.9.<div class="kw">keyword reflection 2026-09-30 Sparring Jordan</div></div>
+        <div class="page"><span class="no">p.5</span>Invite Jordan to the forum</div>
+        <div class="page"><span class="no">p.6</span>14.10.2026 · Sparring Jordan</div>
+      </div>
+    </div>
+  </div>
+  <div class="small muted" style="margin-top:18px">A page is placed once, when it is created, and never moved.</div>
+</div>
+</body>
+</html>

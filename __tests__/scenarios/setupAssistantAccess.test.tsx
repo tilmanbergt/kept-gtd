@@ -22,7 +22,7 @@ function filesNotAllowedYet(): void {
 
 const fileCalls = (): string[] => device().sdk.permissionCalls.filter(c => c.includes('FILE:'));
 
-scenario('On a fresh install nothing asks for file access before the assistant says why', {feature: 'Settings', design: DESIGN}, () => {
+scenario('On a fresh install nothing asks for file access before the assistant says why', {feature: 'Settings', design: DESIGN, help: 'settings.md#setup-assistant'}, () => {
   const seen: Array<[string, boolean]> = [];
   given('a fresh install where Kept may not read or write files yet', () => {
     filesNotAllowedYet();
@@ -37,7 +37,7 @@ scenario('On a fresh install nothing asks for file access before the assistant s
   });
 });
 
-scenario('The assistant asks to read, then to write, then looks at the folders and the saved profiles', {feature: 'Settings', design: DESIGN}, () => {
+scenario('The assistant asks to read, then to write, then looks at the folders and the saved profiles', {feature: 'Settings', design: DESIGN, help: 'settings.md#setup-assistant'}, () => {
   given('a fresh install with a folder "Projects" and a saved profile, and no file access yet', () => {
     filesNotAllowedYet();
     putFile(`${NOTE}/Projects/Garden renovation/notes.txt`, 'x');
@@ -56,7 +56,7 @@ scenario('The assistant asks to read, then to write, then looks at the folders a
   });
 });
 
-scenario('Without file access the assistant stops and offers Try again', {feature: 'Settings', design: DESIGN}, () => {
+scenario('Without file access the assistant stops and offers Try again', {feature: 'Settings', design: DESIGN, help: 'settings.md#setup-assistant'}, () => {
   given('a fresh install with a saved profile, and I deny the file dialog', () => {
     filesNotAllowedYet();
     device().sdk.refuseRequests = true;
@@ -85,7 +85,7 @@ scenario('Without file access the assistant stops and offers Try again', {featur
   });
 });
 
-scenario('Opened from a project note, a fresh install stays in the assistant when the sidebar button event comes again', {feature: 'Settings', design: DESIGN}, () => {
+scenario('Opened from a project note, a fresh install stays in the assistant when the sidebar button event comes again', {feature: 'Settings', design: DESIGN, help: 'settings.md#setup-assistant'}, () => {
   const NOTE_FILE = '/storage/emulated/0/Note/1 Projects/Garden renovation/Garden renovation 2026.note';
   given('a fresh install, a saved profile, and Kept opened from a note in project "Garden renovation"', async () => {
     putFile(projectFile('Garden renovation'), dataFile('project', {Tasks: []}));

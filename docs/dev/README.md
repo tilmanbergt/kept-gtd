@@ -48,7 +48,9 @@ Releases: see `RELEASING.md`.
 ## Checking your changes
 
 - `npm run check` runs everything: `src/generated/`, `npx tsc --noEmit` and ESLint (at the same
-  time), `npm run test:scripts`, the scenario catalog check, `npm run code-health` (the rules are in
+  time), `npm run test:scripts`, the scenario catalog check (with its `help:` references), the help
+  diagrams check (`scripts/diagrams.mjs --check`), the claims register check (`scripts/claims.mjs
+  --check`), `npm run code-health` (the rules are in
   `scripts/lib/codeHealth.mjs`; long existing files are listed in `scripts/code-health-baseline.json`
   and may only shrink; every file belongs to a feature area of `scripts/test-areas.json`), then
   Jest. Smaller tiers (which moment runs which: `DEVELOPMENT-POLICY.md` §7):
@@ -69,6 +71,10 @@ Releases: see `RELEASING.md`.
   it locally); betas come from `.github/workflows/beta.yml` (`RELEASING.md` §4).
 - `npm run scenarios` runs only the scenario tests and writes `docs/dev/test-scenarios.md`
   (see "Writing scenarios" below).
+- `npm run quality` writes `coverage/quality.md` in seconds, without Jest: help headings with a
+  scenario, help labels and quoted messages against the app's strings, claims by backing, diagram
+  sizes. Report only; `npm run coverage` runs it last and CI shows it in the job summary.
+  `npm run claims` checks `docs/dev/claims.md`; `npm run diagrams` renders the help diagrams.
 - A useful smoke test mounts `<App />` with `react-test-renderer`.
   `tsc` alone cannot catch a broken default export of `App.tsx`, because `index.js` isn't type
   checked. See `design-overview.md` for the mocks this needs (`sn-plugin-lib`, AsyncStorage,
@@ -89,9 +95,15 @@ afterwards:
   simple fake text measurement for `TextboxMetrics`), `FakePdf` for `GtdParaPdf` (the PDF file holds its spec). `setup.ts`
   installs them; `device()` is the current one. Faults: `fs.failNext`, `fs.crashAfter(n)` with
   `fs.restart()`, `fs.editExternally`.
-- `test-helpers/scenario/scenario.ts`: `scenario(title, {feature, design}, () => {...})` with
-  `given`/`when`/`then`/`and` steps. Each scenario starts on an empty device. The step texts are
-  what the catalog shows, so write them for a reader and keep them single-quoted literals.
+- `test-helpers/scenario/scenario.ts`: `scenario(title, {feature, design, help}, () => {...})` with
+  `given`/`when`/`then`/`and` steps. Each scenario starts on an empty device. The title, the meta
+  and the step texts are what the catalog shows, so write them for a reader and keep them
+  single-quoted literals.
+- `help`: the help headings the scenario proves, `'review.md#inbox-to-zero'` (or several,
+  separated by `, `; a page-only `'settings.md'` when no heading fits). Point at the heading whose
+  text describes the behavior, the most specific one: a `##` reference doesn't count for the `###`
+  under it. A reference to a page or heading that doesn't exist fails every check tier;
+  `npm run quality` lists the headings no scenario names yet.
 - `test-helpers/scenario/app.tsx`: `openApp()`, `openEngage({fromNote, page})` (the Engage
   button over a note page), `tapTab`, `tap(text | /pattern/, nth)`,
   `type(placeholder, text)`, `fieldValue`, `shows`/`expectShows`, `describeScreen()` (print it
@@ -139,7 +151,10 @@ pages stick to it:
   shows it that is explained right here (**Save**, **+ Add**); `*italic*` for a term at the place
   that defines it, and for the lead word of a definition list; `` `code` `` for what is typed or
   stored - tags, file names, lines of a file; "quotes" for a message or line the app shows
-- no tables, images, HTML (not even `<name>` placeholders) or horizontal rules
+- a diagram as `![alt text](images/diagrams/<id>.png)` alone on its line, between blank lines, with
+  alt text that says what the diagram shows (the app reads it out and shows it if the picture is
+  missing); its source is in `docs/user/diagrams/`
+- no tables, other images, HTML (not even `<name>` placeholders) or horizontal rules
 
 Linking rules (`technical-design-help-linking.md` §3): link every screen, panel, list, step,
 setting, chip or term another page or section explains, at its first mention in each section (`##`,
@@ -212,6 +227,26 @@ to a heading the page doesn't have (`scripts/lib/userDocs.mjs`'s `checkLinks`, w
 rule), and `scripts/test-userdocs.mjs` fails on bold in Getting started that is not a link (only
 buttons the sentence explains may stay bold), so the checks catch most slips.
 
+## Diagrams
+
+Help pages can show a diagram (`technical-design-quality-assurance.md` §6):
+
+- Sources live in `docs/user/diagrams/`, one file per diagram, its name the id: Mermaid (`.mmd`)
+  for states, hierarchies and flows, an HTML page (`.html`, root element `#diagram`, linking
+  `diagram.css`) for hand-designed ones. `theme.mmd.json` and `diagram.css` are the shared look;
+  the font is the poster's Archivo (`docs/dev/inkhub-poster/fonts/`).
+- `npm run diagrams` renders every changed source to `docs/user/images/diagrams/<id>.png` (960 px
+  wide) and records it in `manifest.json`; `--all` renders all. It needs Playwright with Chromium
+  (`npx playwright install chromium` once per machine); CI never renders. The PNGs are committed.
+- Look: black on white, grey (#888 or lighter) only for secondary boxes, no meaning in color; lines
+  at least 2 px; at most 1 : 1.3 tall, so a diagram shares a help page with its heading. App labels
+  as the app shows them, written ``**Label**`` inside a Mermaid markdown string (``A["`**Waiting
+  for**`"]``) or `<b class="label">Label</b>` in HTML, so `npm run quality` checks them; names and
+  tags from the demo space (`userDocsExamples.test.ts` checks nested tags).
+- `node scripts/diagrams.mjs --check` (every tier) fails on a stale, missing or orphaned PNG, a
+  diagram no help page shows, an image line naming no diagram, and when the PNGs together pass
+  the budget of 400 KB: they are bundled into the plugin (`src/generated/helpImages.ts`).
+
 ## Code tour
 
 | Folder | What lives there |
@@ -244,10 +279,14 @@ no history and no open work:
 - `GITHUB-GUIDE.md`: which GitHub flow (button, workflow) to use when, and what it does.
 - `RELEASING.md`: git, build and release workflow.
 - `inkhub-listing.md`: the field values for the InkHub store listing.
+- `claims.md`: every promise Kept makes and every goal behind the policy, with how each is backed
+  (enforced, tested, reviewed, none); `npm run claims` checks it.
+- `claims-audit.md`: the prompt for the independent claims audit in a fresh session.
 - this `README.md`.
 
 `test-scenarios.md` is generated by `npm run scenarios` from the scenario tests and never edited
-by hand.
+by hand. `AGENTS.md` in the repository root holds the code review guidelines (Codex reads its
+`## Review guidelines`).
 
 **Historical documents** live in `docs/dev/history/`. They record how something was decided and built. They are written once,
 get an "As built" section when the feature ships, and are not updated afterwards - if they

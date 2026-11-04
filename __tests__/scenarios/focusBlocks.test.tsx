@@ -13,7 +13,7 @@ afterEach(() => jest.useRealTimers());
 const writingLoops = {...createNoteSetup('1', 'loop'), name: 'Writing', tags: ['writing']};
 const sparring = {...createNoteSetup('2', 'thread'), name: 'Sparring', tags: ['sparring'], tracking: {trackPrep: true, trackReview: true}};
 
-scenario('Focus block from Quick Add: F on, the tag in the file, an F row and a Focus card', {feature: 'Meetings', design: DESIGN}, () => {
+scenario('Focus block from Quick Add: F on, the tag in the file, an F row and a Focus card', {feature: 'Meetings', design: DESIGN, help: 'meetings.md#focus-blocks'}, () => {
   given('the smoke space on Wednesday and a Loop setup for #writing', () => {
     smokeClock();
     putSmokeSpace();
@@ -48,7 +48,7 @@ scenario('Focus block from Quick Add: F on, the tag in the file, an F row and a 
   });
 });
 
-scenario('No close-out for focus blocks', {feature: 'Meetings', design: DESIGN}, () => {
+scenario('No close-out for focus blocks', {feature: 'Meetings', design: DESIGN, help: 'meetings.md#focus-blocks'}, () => {
   given('area Coaching with yesterday\'s "Sparring Jordan" and the focus block "Sparring prep", both of a setup that tracks review', () => {
     smokeClock();
     putFile(
@@ -68,7 +68,7 @@ scenario('No close-out for focus blocks', {feature: 'Meetings', design: DESIGN},
   and('nothing was logged as an error', () => expect(loggedErrors()).toEqual([]));
 });
 
-scenario('Engage fallback: on a note without owner, Engage lists the owners of today\'s remaining schedule', {feature: 'Engage', design: DESIGN}, () => {
+scenario('Engage fallback: on a note without owner, Engage lists the owners of today\'s remaining schedule', {feature: 'Engage', design: DESIGN, help: 'engage.md#choosing-another-owner'}, () => {
   given('on Wednesday 14.10. at 10:00: Garden\'s "Neighbour chat" at 14:00 and a Writing focus block at 11:00, an earlier block at 8:00', () => {
     smokeClock();
     putSmokeSpace();
@@ -87,7 +87,7 @@ scenario('Engage fallback: on a note without owner, Engage lists the owners of t
   and('nothing was logged as an error', () => expect(loggedErrors()).toEqual([]));
 });
 
-scenario('Month: a focus block shows with its name and F only when marked M', {feature: 'Week and Month', design: DESIGN}, () => {
+scenario('Month: a focus block shows with its name and F only when marked M', {feature: 'Week and Month', design: DESIGN, help: 'week-and-month.md#month'}, () => {
   given('area Writing with the focus block "Chapter one" on 15.10. marked M and "Chapter two" on 16.10. without M', () => {
     smokeClock();
     putFile(

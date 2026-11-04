@@ -154,15 +154,24 @@ if ($DryRun) {
 if ($LASTEXITCODE -ne 0) { Stop-Release 'checks failed - see the first failing check above' }
 Write-Host 'All checks passed.' -ForegroundColor Green
 
-# The coverage table of this release goes into the release commit (one file per release: the trend).
+# The coverage table and the quality report of this release go into the release commit (one file per release: the trend).
 $coverageDoc = "docs/dev/history/test-coverage-$newVersion.md"
 if ($DryRun) {
-    Write-Info "[dry run] would copy coverage/areas.md to $coverageDoc"
+    Write-Info "[dry run] would copy coverage/areas.md and coverage/quality.md to $coverageDoc"
 } else {
     $areas = Join-Path $root 'coverage\areas.md'
     if (-not (Test-Path $areas)) { Stop-Release 'coverage/areas.md missing - the coverage report did not run' }
     $lines = @(Get-Content $areas -Encoding UTF8)
     $lines[0] = "# Test coverage by feature area - Kept GTD $newVersion"
+    # The quality report (help coverage, labels, claims, diagrams) below the matrix, so the release keeps both.
+    $quality = Join-Path $root 'coverage\quality.md'
+    if (Test-Path $quality) {
+        $qualityLines = @(Get-Content $quality -Encoding UTF8)
+        $qualityLines[0] = "# Quality report - Kept GTD $newVersion"
+        $lines += @('') + $qualityLines
+    } else {
+        Write-Info 'coverage/quality.md missing - the release file gets the matrix only'
+    }
     [IO.File]::WriteAllText((Join-Path $root $coverageDoc), (($lines -join "`n") + "`n"), (New-Object Text.UTF8Encoding $false))
     $script:coverageCopy = $coverageDoc
     git add -- $coverageDoc

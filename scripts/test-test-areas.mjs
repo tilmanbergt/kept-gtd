@@ -117,6 +117,12 @@ t('area stats and matrix', () => {
   assert.match(md, /\| Foundation \(`foundation`\) \| 0 \| 0 \| 0 \| 0 \| 0 \| 0 \| - \| - \| {2}\|/);
   assert.match(renderMatrix(stats, {planning: {lines: 75.04, branches: 70}}), /\| 75\.0 \| 70\.0 \| \+0\.0 \/ \+0\.0 \|/, 'no -0.0');
   assert.match(md, /\| \*\*All\*\* \| 4 \| 3 \| 2 \| 2 \| 2 \| 200 \| 75\.0 \| 70\.0 \| \|/);
+  assert.ok(!md.includes('Help ✓'), 'no Help column without helpByArea');
+  const withHelp = renderMatrix(stats, {}, undefined, {helpByArea: {planning: {covered: 3, total: 8}}, helpTotal: {covered: 5, total: 20}});
+  assert.match(withHelp, /\| Scenarios \| Help ✓ \| Src lines \|/, 'the Help ✓ column');
+  assert.match(withHelp, /\(`planning`\) \| 4 \| 0 \| 2 \| 2 \| 2 \| 3 \/ 8 \| 200 \|/, 'covered / total per area');
+  assert.match(withHelp, /\(`foundation`\) \| 0 \| 0 \| 0 \| 0 \| 0 \| - \| 0 \|/, 'an area without help pages');
+  assert.match(withHelp, /\| \*\*All\*\* \| 4 \| 3 \| 2 \| 2 \| 2 \| 5 \/ 20 \| 200 \|/, 'the All row is helpTotal');
 });
 
 t('the real areas file is well formed', () => {

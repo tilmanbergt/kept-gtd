@@ -24,7 +24,7 @@ async function openJordanOverview(): Promise<void> {
   expectShows('Looking back');
 }
 
-scenario('An agreement in the thread overview: it shows in the block "Agreements", another thread\'s does not', {feature: 'Agreements', design: 'technical-design-meetings-0.21.md'}, () => {
+scenario('An agreement in the thread overview: it shows in the block "Agreements", another thread\'s does not', {feature: 'Agreements', design: 'technical-design-meetings-0.21.md', help: 'agreements.md#where-agreements-show'}, () => {
   given('area "Coaching" has an agreement tagged #jordan and one tagged #sparring/sam', () => {
     coaching([`- Feedback only in our 1:1s #jordan [created:: ${past}]`, `- Sam owns the slides #sparring/sam [created:: ${past}]`]);
   });
@@ -38,7 +38,7 @@ scenario('An agreement in the thread overview: it shows in the block "Agreements
   then('the agreement shows there too', () => expectShows('◇ Feedback only in our 1:1s #jordan'));
 });
 
-scenario('Add an agreement from the thread overview with valid till end of year', {feature: 'Agreements', design: 'technical-design-meetings-0.21.md'}, () => {
+scenario('Add an agreement from the thread overview with valid till end of year', {feature: 'Agreements', design: 'technical-design-meetings-0.21.md', help: 'agreements.md#adding-one'}, () => {
   given('area "Coaching" has a past sparring session with Jordan and no agreements', () => coaching([]));
   when('I open Jordan\'s thread overview, choose the Agreement tab and type "No calls after six"', async () => {
     await openJordanOverview();
@@ -62,7 +62,7 @@ scenario('Add an agreement from the thread overview with valid till end of year'
   });
 });
 
-scenario('Change an agreement: the old one is ended, the new one added; Cancel changes nothing', {feature: 'Agreements', design: 'technical-design-meetings-0.21.md'}, () => {
+scenario('Change an agreement: the old one is ended, the new one added; Cancel changes nothing', {feature: 'Agreements', design: 'technical-design-meetings-0.21.md', help: 'agreements.md#changing-and-ending'}, () => {
   const line = `- Feedback only in our 1:1s #sparring/jordan [created:: ${past}] [valid:: ${year}-12-31]`;
   given('area "Coaching" has the agreement "Feedback only in our 1:1s" with Jordan', () => coaching([line]));
   when('I open Jordan\'s thread overview, tap the agreement and Change on its card, then Cancel', async () => {
@@ -93,7 +93,7 @@ scenario('Change an agreement: the old one is ended, the new one added; Cancel c
   });
 });
 
-scenario('End an agreement: asked once, then ended today', {feature: 'Agreements', design: 'technical-design-meetings-0.21.md'}, () => {
+scenario('End an agreement: asked once, then ended today', {feature: 'Agreements', design: 'technical-design-meetings-0.21.md', help: 'agreements.md#changing-and-ending'}, () => {
   given('area "Coaching" has the agreement "Feedback only in our 1:1s" with Jordan', () =>
     coaching([`- Feedback only in our 1:1s #sparring/jordan [created:: ${past}]`]),
   );
@@ -115,7 +115,7 @@ scenario('End an agreement: asked once, then ended today', {feature: 'Agreements
   });
 });
 
-scenario('A hand-edited Agreements section keeps every other line byte for byte when one agreement is ended', {feature: 'Agreements', design: 'technical-design-meetings-0.21.md'}, () => {
+scenario('A hand-edited Agreements section keeps every other line byte for byte when one agreement is ended', {feature: 'Agreements', design: 'technical-design-meetings-0.21.md', help: 'agreements.md#in-your-files, files-and-folders.md#editing-by-hand'}, () => {
   given('area "Coaching" has two agreements, one with the unknown field [who:: both], a comment line and a blank line between them', () => {
     coaching([`- Feedback only in our 1:1s #sparring/jordan [created:: ${past}] [who:: both]`, '% agreed on paper', '', `-   Fridays  are quiet #jordan   [created::${past}]`]);
   });
@@ -143,7 +143,7 @@ scenario('A hand-edited Agreements section keeps every other line byte for byte 
   });
 });
 
-scenario('A Project page lists its own agreements; a thread\'s agreement shows in the thread overview instead', {feature: 'Agreements', design: 'technical-design-meetings-0.21.md'}, () => {
+scenario('A Project page lists its own agreements; a thread\'s agreement shows in the thread overview instead', {feature: 'Agreements', design: 'technical-design-meetings-0.21.md', help: 'agreements.md#who-an-agreement-belongs-to, agreements.md#where-agreements-show'}, () => {
   given('project "Leadership program" has one untagged agreement and one tagged #sparring/jordan', () => {
     putFile(
       projectFile('Leadership program'),
@@ -172,7 +172,7 @@ scenario('A Project page lists its own agreements; a thread\'s agreement shows i
   });
 });
 
-scenario('Capture an agreement from a mark on a meeting\'s page: it goes to the thread\'s area with the meeting', {feature: 'Lasso', design: 'technical-design-meetings-0.21.md'}, () => {
+scenario('Capture an agreement from a mark on a meeting\'s page: it goes to the thread\'s area with the meeting', {feature: 'Lasso', design: 'technical-design-meetings-0.21.md', help: 'lasso.md#capturing-an-agreement'}, () => {
   const NOTEBOOK_REL = `Meetings/sparring jordan ${year}.note`;
   const meetingKw = `${today} Sparring Jordan #sparring/jordan`;
   given('today\'s sparring with Jordan has its page, and a mark on that page says "Feedback only in our 1:1s"', () => {
@@ -214,7 +214,7 @@ scenario('Capture an agreement from a mark on a meeting\'s page: it goes to the 
   });
 });
 
-scenario('Review step "Agreements": keep one past its date for three more months, end one with an inactive thread', {feature: 'Agreements', design: 'technical-design-meetings-0.21.md'}, () => {
+scenario('Review step "Agreements": keep one past its date for three more months, end one with an inactive thread', {feature: 'Agreements', design: 'technical-design-meetings-0.21.md', help: 'review.md#agreements, agreements.md#reviewing-and-closing-out'}, () => {
   given('area "Coaching" has "Fridays are quiet" valid till yesterday, Jordan set inactive and an active agreement with her', () => {
     putFile(
       areaFile('Coaching'),

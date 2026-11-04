@@ -34,7 +34,7 @@ function annaLines(): Array<{where: string; noteFound: boolean}> {
 
 const REFILE_WRITES = 6;
 
-scenario('A refile with its note, stopped after any write, loses nothing and is repairable', {feature: 'Interruptions', design: 'technical-design-quality-hardening.md'}, () => {
+scenario('A refile with its note, stopped after any write, loses nothing and is repairable', {feature: 'Interruptions', design: 'technical-design-quality-hardening.md', help: 'files-and-folders.md#editing-by-hand'}, () => {
   then('for every point where Kept GTD can be stopped: the todo and its note still exist, and a broken link is named with the note\'s new place', async () => {
     for (let n = 0; n <= REFILE_WRITES; n++) {
       await freshDevice();
@@ -74,7 +74,7 @@ async function prepareCloseOut(): Promise<void> {
   for (const label of ['Next: Contents ›', 'Next: Outcomes ›', 'Next: PDF ›', 'Create PDF', 'I checked the PDF - it looks right', 'Next: Archive ›']) await tap(label);
 }
 
-scenario('A close-out stopped during "Archive now" can be finished, or is fully archived', {feature: 'Interruptions', design: 'technical-design-quality-hardening.md'}, () => {
+scenario('A close-out stopped during "Archive now" can be finished, or is fully archived', {feature: 'Interruptions', design: 'technical-design-quality-hardening.md', help: 'close-out.md#the-five-steps'}, () => {
   then('for every point where Kept GTD can be stopped: reopening the close-out and tapping "Archive now" finishes it, or the project is archived and the Integrity Check says what is left', async () => {
     for (let n = 0; n <= ARCHIVE_WRITES; n++) {
       await freshDevice();
@@ -100,7 +100,7 @@ scenario('A close-out stopped during "Archive now" can be finished, or is fully 
   });
 });
 
-scenario('A project file saved with Windows line endings shows its todos', {feature: 'Your files', design: 'technical-design-quality-hardening.md'}, () => {
+scenario('A project file saved with Windows line endings shows its todos', {feature: 'Your files', design: 'technical-design-quality-hardening.md', help: 'files-and-folders.md#editing-by-hand'}, () => {
   given('project "Website" was saved in a Windows editor (CRLF line endings)', () => {
     putFile(projectFile('Website'), dataFile('project', {Scope: ['Relaunch'], Tasks: ['- [ ] Write copy #next', '- [ ] Fix footer'], Meetings: []}).replace(/\n/g, '\r\n'));
   });

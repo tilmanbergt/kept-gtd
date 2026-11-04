@@ -53,7 +53,7 @@ function coaching(extra: {tasks?: string[]; meetings?: string[]; agreements?: st
 /** Engage on today's meeting page. */
 const engageOnToday = () => openEngage({fromNote: NOTEBOOK, page: 1, settings: sparringSettings()});
 
-scenario('Engage before the meeting: Before is chosen, the strip offers prep and the last note, From Thread shows the last session', {feature: 'Engage', design: 'technical-design-meetings-0.21.md'}, () => {
+scenario('Engage before the meeting: Before is chosen, the strip offers prep and the last note, From Thread shows the last session', {feature: 'Engage', design: 'technical-design-meetings-0.21.md', help: 'engage.md#on-a-meetings-page-before-during-after'}, () => {
   given('it is 09:30 and today\'s sparring with Jordan is at 10:00; on 14.10. "Draft feedback" and "Org chart from Jordan" were agreed and "Send role canvas" is done', () => {
     clock(9, 30);
     coaching();
@@ -84,7 +84,7 @@ scenario('Engage before the meeting: Before is chosen, the strip offers prep and
   });
 });
 
-scenario('During the meeting: a todo and an agreement carry the meeting and the thread tag', {feature: 'Engage', design: 'technical-design-meetings-0.21.md'}, () => {
+scenario('During the meeting: a todo and an agreement carry the meeting and the thread tag', {feature: 'Engage', design: 'technical-design-meetings-0.21.md', help: 'engage.md#on-a-meetings-page-before-during-after'}, () => {
   given('it is 10:20, during today\'s sparring', () => {
     clock(10, 20);
     coaching();
@@ -130,7 +130,7 @@ scenario('During the meeting: a todo and an agreement carry the meeting and the 
   });
 });
 
-scenario('Ended early: After is chosen by hand and kept when Engage opens again; after the end it is After by time', {feature: 'Engage', design: 'technical-design-meetings-0.21.md'}, () => {
+scenario('Ended early: After is chosen by hand and kept when Engage opens again; after the end it is After by time', {feature: 'Engage', design: 'technical-design-meetings-0.21.md', help: 'engage.md#on-a-meetings-page-before-during-after'}, () => {
   given('it is 10:40, during today\'s sparring', () => {
     clock(10, 40);
     coaching();
@@ -155,7 +155,7 @@ scenario('Ended early: After is chosen by hand and kept when Engage opens again;
   then('the moment is After without a tap', () => expect(labelled('After')?.on).toBe(true));
 });
 
-scenario('Done rows follow the moment: Before the last session\'s, During both, After only today\'s', {feature: 'Engage', design: 'technical-design-meetings-0.21.md'}, () => {
+scenario('Done rows follow the moment: Before the last session\'s, During both, After only today\'s', {feature: 'Engage', design: 'technical-design-meetings-0.21.md', help: 'engage.md#on-a-meetings-page-before-during-after'}, () => {
   given('"Send role canvas" (from 14.10.) is done, and "Book follow-up" was agreed today and is done', () => {
     clock(9, 30);
     coaching({tasks: [`- [x] Book follow-up [meeting:: ${KEY_TODAY}] [completion:: ${TODAY}]`]});
@@ -177,7 +177,7 @@ scenario('Done rows follow the moment: Before the last session\'s, During both, 
   });
 });
 
-scenario('The Waiting tab lists what I wait for from Jordan, where it was agreed, with Done', {feature: 'Engage', design: 'technical-design-meetings-0.21.md'}, () => {
+scenario('The Waiting tab lists what I wait for from Jordan, where it was agreed, with Done', {feature: 'Engage', design: 'technical-design-meetings-0.21.md', help: 'engage.md#the-tabs'}, () => {
   given('"Org chart from Jordan #wf/jordan" was agreed on 14.10. and "Budget numbers #wf/jordan" not in a meeting', () => {
     clock(12, 0);
     coaching({tasks: ['- [ ] Budget numbers #wf/jordan']});
@@ -197,7 +197,7 @@ scenario('The Waiting tab lists what I wait for from Jordan, where it was agreed
   });
 });
 
-scenario('+ Next sparring only when no session follows today\'s', {feature: 'Engage', design: 'technical-design-meetings-0.21.md'}, () => {
+scenario('+ Next sparring only when no session follows today\'s', {feature: 'Engage', design: 'technical-design-meetings-0.21.md', help: 'engage.md#on-a-meetings-page-before-during-after'}, () => {
   given('it is 10:20 during today\'s sparring, and no sparring with Jordan is planned after it', () => {
     clock(10, 20);
     coaching();
@@ -211,7 +211,7 @@ scenario('+ Next sparring only when no session follows today\'s', {feature: 'Eng
   });
 });
 
-scenario('No + Next when the next session is planned already', {feature: 'Engage', design: 'technical-design-meetings-0.21.md'}, () => {
+scenario('No + Next when the next session is planned already', {feature: 'Engage', design: 'technical-design-meetings-0.21.md', help: 'engage.md#on-a-meetings-page-before-during-after'}, () => {
   given('it is 10:20 during today\'s sparring, and a sparring is planned on 6.11.', () => {
     clock(10, 20);
     coaching({meetings: ['- 2026-11-06 10:00-11:00 Sparring Jordan #sparring/jordan']});
@@ -220,7 +220,7 @@ scenario('No + Next when the next session is planned already', {feature: 'Engage
   then('there is no + Next', () => expectNotShows('+ Next sparring'));
 });
 
-scenario('Change an agreement from the Agreements tab: the old one ends, the new one is added', {feature: 'Engage', design: 'technical-design-meetings-0.21.md'}, () => {
+scenario('Change an agreement from the Agreements tab: the old one ends, the new one is added', {feature: 'Engage', design: 'technical-design-meetings-0.21.md', help: 'engage.md#the-tabs, agreements.md#changing-and-ending'}, () => {
   const line = `- Feedback only in our 1:1s #sparring/jordan [meeting:: ${KEY_TODAY}] [created:: ${TODAY}] [valid:: 2026-12-31]`;
   given('today\'s sparring made the agreement "Feedback only in our 1:1s"', () => {
     clock(10, 45);
@@ -255,7 +255,7 @@ scenario('Change an agreement from the Agreements tab: the old one ends, the new
   });
 });
 
-scenario('On a todo\'s page, w/f Jordan turns #next into Waiting For, with Undo', {feature: 'Engage', design: 'technical-design-meetings-0.21.md'}, () => {
+scenario('On a todo\'s page, w/f Jordan turns #next into Waiting For, with Undo', {feature: 'Engage', design: 'technical-design-meetings-0.21.md', help: 'engage.md#working-on'}, () => {
   const TODO_NOTE = `${areaDir('Coaching')}/Todos/Send Jordan the role canvas.note`;
   given('area "Coaching" has "Send Jordan the role canvas #next #sparring/jordan" with its own note', () => {
     clock(12, 0);
@@ -277,7 +277,7 @@ scenario('On a todo\'s page, w/f Jordan turns #next into Waiting For, with Undo'
   });
 });
 
-scenario('An Inbox meeting\'s page: no Agreement tab, agreements are never kept in the Inbox', {feature: 'Engage', design: 'technical-design-meetings-0.21.md'}, () => {
+scenario('An Inbox meeting\'s page: no Agreement tab, agreements are never kept in the Inbox', {feature: 'Engage', design: 'technical-design-meetings-0.21.md', help: 'agreements.md#who-an-agreement-belongs-to'}, () => {
   const INBOX_NOTE = `${INBOX_FILE.replace(/\/[^/]+$/, '')}/Meetings/Call.note`;
   given('the Inbox has a meeting "Call with Sam" today with its own note', () => {
     clock(12, 0);

@@ -18,7 +18,7 @@ const OLD_EXPORT = `${S}/EXPORT/gtdpara`;
 const OLD_DEMO = `${S}/Note/gtdpara-demo`;
 const profile = (name: string) => serializeProfile(name, {...DEFAULT_SETTINGS, inboxFolder: `${name} Inbox`}, new Date('2026-10-01T09:00:00Z'), '0.19.0');
 
-scenario('The plugin identity is consistent', {feature: 'Settings', design: DESIGN}, () => {
+scenario('The plugin identity is consistent', {feature: 'Settings', design: DESIGN, help: 'settings.md#about'}, () => {
   let config: {pluginID: string; pluginKey: string} = {pluginID: '', pluginKey: ''};
   given('the plugin as it is built', () => undefined);
   when('the host reads PluginConfig.json', () => {
@@ -35,7 +35,7 @@ scenario('The plugin identity is consistent', {feature: 'Settings', design: DESI
   });
 });
 
-scenario('A fresh install starts clean and writes only kept: keys', {feature: 'Settings', design: DESIGN}, () => {
+scenario('A fresh install starts clean and writes only kept: keys', {feature: 'Settings', design: DESIGN, help: 'files-and-folders.md#what-kept-gtd-keeps-elsewhere'}, () => {
   given('an empty store', () => undefined);
   when('Kept starts', () => openApp({fresh: true}));
   then('the setup assistant opens', () => {
@@ -48,7 +48,7 @@ scenario('A fresh install starts clean and writes only kept: keys', {feature: 'S
   });
 });
 
-scenario('Settings of gtdpara 0.24.0 are never read', {feature: 'Settings', design: DESIGN}, () => {
+scenario('Settings of gtdpara 0.24.0 are never read', {feature: 'Settings', design: DESIGN, help: 'settings.md'}, () => {
   const old = JSON.stringify({...DEFAULT_SETTINGS, projectsFolder: 'My Projects', inboxFolder: 'My Inbox', setupAssistant: 'done', lastSeenVersion: '0.24.0'});
   given('the store holds gtdpara:settings:v1 with my own folders and no kept: key', async () => {
     await AsyncStorage.setItem('gtdpara:settings:v1', old);
@@ -65,7 +65,7 @@ scenario('Settings of gtdpara 0.24.0 are never read', {feature: 'Settings', desi
   });
 });
 
-scenario("Remove Kept's data lists only Kept's own folders", {feature: 'Remove data', design: DESIGN}, () => {
+scenario('Remove Kept\'s data lists only Kept\'s own folders', {feature: 'Remove data', design: DESIGN, help: 'settings.md#remove-kepts-data'}, () => {
   given('EXPORT/gtdpara and Note/gtdpara-demo hold files from gtdpara', () => {
     putFile(`${OLD_EXPORT}/profiles/work.json`, profile('Work'));
     putFile(`${OLD_DEMO}/Inbox.txt`, '# Inbox');
@@ -84,7 +84,7 @@ scenario("Remove Kept's data lists only Kept's own folders", {feature: 'Remove d
   });
 });
 
-scenario('Profiles in the old export folder are not copied', {feature: 'Profiles and demo space', design: DESIGN}, () => {
+scenario('Profiles in the old export folder are not copied', {feature: 'Profiles and demo space', design: DESIGN, help: 'profiles-and-demo.md#profile-files'}, () => {
   given('EXPORT/gtdpara/profiles holds work.json and home.json, and EXPORT/kept-gtd holds no profile', () => {
     putFile(`${OLD_EXPORT}/profiles/work.json`, profile('Work'));
     putFile(`${OLD_EXPORT}/profiles/home.json`, profile('Home'));
@@ -114,7 +114,7 @@ function profileOf024(): string {
 const LEFTOVER_KEYS = ['noteSetupsMigrated', 'noteSetupsNotice', 'tagRules', 'nextTagRuleId'];
 const WORK_PROFILE = `${S}/EXPORT/kept-gtd/profiles/work.json`;
 
-scenario('A profile saved by 0.24.0 loads, without the keys of removed settings', {feature: 'Profiles and demo space', design: DESIGN}, () => {
+scenario('A profile saved by 0.24.0 loads, without the keys of removed settings', {feature: 'Profiles and demo space', design: DESIGN, help: 'profiles-and-demo.md#profile-files'}, () => {
   given('EXPORT/kept-gtd/profiles/work.json was written by 0.24.0, with noteSetupsMigrated, noteSetupsNotice, tagRules and the experimental switches', () => {
     putFile(WORK_PROFILE, profileOf024());
   });
@@ -148,7 +148,7 @@ scenario('A profile saved by 0.24.0 loads, without the keys of removed settings'
   });
 });
 
-scenario('Note setups show no migration notice', {feature: 'Note setups', design: DESIGN}, () => {
+scenario('Note setups show no migration notice', {feature: 'Note setups', design: DESIGN, help: 'note-setups.md'}, () => {
   given('a fresh install without Note setups', () => undefined);
   when('I open Settings → Note setups', async () => {
     await openApp({fresh: true});

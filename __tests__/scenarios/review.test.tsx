@@ -2,7 +2,7 @@ import {expectShows, firstCheckboxOf, openApp, tap, tapTab, texts, type} from '.
 import {dataFile, INBOX_FILE, projectFile, putFile, sectionLines} from '../../test-helpers/scenario/files';
 import {and, given, scenario, then, when} from '../../test-helpers/scenario/scenario';
 
-scenario('Weekly Review: get the Inbox to zero by filing one todo and finishing the other', {feature: 'Weekly Review', design: 'technical-design-review-hub.md'}, () => {
+scenario('Weekly Review: get the Inbox to zero by filing one todo and finishing the other', {feature: 'Weekly Review', design: 'technical-design-review-hub.md', help: 'review.md#the-steps'}, () => {
   given('the Inbox has "Ask about hosting" and "Buy milk", and project "Website" is #WEB', () => {
     putFile(projectFile('Website'), dataFile('project', {Scope: [], Tasks: ['- [ ] Write copy #next'], Meetings: []}, ['abbrev: WEB']));
     putFile(INBOX_FILE, dataFile('inbox', {Tasks: ['- [ ] Ask about hosting', '- [ ] Buy milk'], Meetings: []}));

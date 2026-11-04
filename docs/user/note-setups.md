@@ -128,6 +128,8 @@ Once a note exists, the note icon opens it directly. A page stays where it was c
 
 A notebook - and a loop note - reads like a timeline. A new page goes where it belongs in time: a meeting by its date, a todo by the day it was created. A todo you create between two meetings lands between them; items of the same day keep the order you created them in. Pages you add yourself after an item's page stay with that item: a new page goes after them, never in between. In a loop note the loop's own page stays first, in a home notebook its [Home page](projects-and-areas.md#the-home-page). Pages are placed once, when they are created, and never moved later - a meeting whose date changes stays where it is.
 
+![The Note setup Sparring puts its pages into one notebook, Coaching 2026.note: p.1 the Home page, p.2 the meeting of 30.9., p.3 a page you added, which stays with that meeting, p.4 the meeting's Reflection page, p.5 the todo Invite Jordan to the forum, p.6 the meeting of 14.10.](images/diagrams/note-pages.png)
+
 ## Finding notes again
 
 - A note of its own is named after its item, for example `2026-10-04 - Site visit with Marco marco`, so the Supernote's file search finds it. File names leave out `#` and the other characters listed in [File names](files-and-folders.md#file-names).

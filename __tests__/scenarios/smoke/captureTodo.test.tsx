@@ -15,7 +15,7 @@ beforeEach(() => {
 });
 afterEach(() => jest.useRealTimers());
 
-scenario('A todo captured on a meeting\'s follow-up page records the meeting', {feature: 'Lasso', design: DESIGN}, () => {
+scenario('A todo captured on a meeting\'s follow-up page records the meeting', {feature: 'Lasso', design: DESIGN, help: 'lasso.md#capturing-right-away'}, () => {
   given('page 4 follows the page of meeting "Coach call" and has a mark "Ask coach about intervals"', () => sport({marks: [sportMark(4, 'Ask coach about intervals')]}));
   when('I process the mark', processSportMarks);
   then('the panel shows "↳ from Coach call"', () => expectShows(/^↳ from Coach call/));

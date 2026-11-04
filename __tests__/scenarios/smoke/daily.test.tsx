@@ -28,7 +28,7 @@ function checkboxOf(title: string): number {
   return all.slice(0, at).filter(t => t === '☐').length - 1;
 }
 
-scenario('Daily under a context shows today\'s meetings and the next todos it shows, and counts the rest', {feature: 'Daily', design: DESIGN}, () => {
+scenario('Daily under a context shows today\'s meetings and the next todos it shows, and counts the rest', {feature: 'Daily', design: DESIGN, help: 'daily.md#what-appears-on-daily, contexts.md#the-hidden-line'}, () => {
   given('the smoke space on Wednesday 14.10.2026 with the context Home (Area Garden) active', () => undefined);
   when('I open Daily', () => openDaily(true));
   then('the Today tab lists "Neighbour chat" and "Dentist"', () => {
@@ -61,7 +61,7 @@ scenario('Daily under a context shows today\'s meetings and the next todos it sh
   and('no error was logged', () => expect(loggedErrors()).toEqual([]));
 });
 
-scenario('Quick Add a todo from Daily', {feature: 'Quick Add', design: DESIGN}, () => {
+scenario('Quick Add a todo from Daily', {feature: 'Quick Add', design: DESIGN, help: 'quick-add.md#adding-a-todo'}, () => {
   given('the smoke space and Daily open', openDaily);
   when('I type "Check gutters", tap the Next chip and + Add', async () => {
     await type('New task', 'Check gutters');
@@ -74,7 +74,7 @@ scenario('Quick Add a todo from Daily', {feature: 'Quick Add', design: DESIGN}, 
   and('Daily lists it in the Inbox group', () => expect(textsBetween('Inbox', 'Garage')).toContain('Check gutters  #next'));
 });
 
-scenario('Tick a todo done on Daily', {feature: 'Daily', design: DESIGN}, () => {
+scenario('Tick a todo done on Daily', {feature: 'Daily', design: DESIGN, help: 'daily.md#schedule-and-cards'}, () => {
   given('the smoke space and Daily open', openDaily);
   when('I tick "Water the lawn"', () => tap('☐', checkboxOf('Water the lawn')));
   then('Garden\'s area.txt has it done with today\'s completion date', () => {

@@ -10,8 +10,11 @@
  * keeps its target as `link`; any other link shows as its text;
  * docs/dev/history/technical-design-easy-start.md §2.1), and fenced code blocks (lines between
  * two ``` fences, kept verbatim; long ones are split into chunks of
- * CODE_CHUNK_LINES so a pager can place them). Anything else is shown as
- * plain text.
+ * CODE_CHUNK_LINES so a pager can place them), and help diagrams: a line that is
+ * exactly `![alt](images/diagrams/<id>.png)`, outside a paragraph or item, is an
+ * image block (docs/dev/history/technical-design-quality-assurance.md §6.6); an
+ * image anywhere else, or with another path, stays text. Anything else is shown
+ * as plain text.
  * Pure; no RN imports.
  */
 
@@ -37,13 +40,16 @@ export type MarkdownBlock =
   | {kind: 'heading'; level: number; spans: InlineSpan[]}
   | {kind: 'item'; depth: number; marker: string; spans: InlineSpan[]}
   | {kind: 'paragraph'; spans: InlineSpan[]}
-  | {kind: 'code'; lines: string[]};
+  | {kind: 'code'; lines: string[]}
+  | {kind: 'image'; id: string; alt: string};
 
 /** Longest code block kept together; longer ones continue in the next block. */
 export const CODE_CHUNK_LINES = 14;
 const FENCE = /^\s*```/;
 
 const HEADING = /^(#{1,6})\s+(.*)$/;
+/** A help diagram on its own line: alt text and the id (file name) in docs/user/images/diagrams/. */
+export const IMAGE = /^!\[([^\]]+)\]\(images\/diagrams\/([a-z0-9-]+)\.png\)$/;
 const ITEM = /^(\s*)([-*+]|\d+[.)])\s+(.*)$/;
 
 /** Plain or link spans of a text without bold or code: a page link keeps its target, other links become their text. */
@@ -129,6 +135,11 @@ export function parseMarkdownBlocks(markdown: string): MarkdownBlock[] {
       close();
       continue;
     }
+    const image = open ? null : IMAGE.exec(line);
+    if (image) {
+      blocks.push({kind: 'image', id: image[2], alt: image[1]});
+      continue;
+    }
     const heading = HEADING.exec(line);
     if (heading) {
       close();
@@ -157,5 +168,6 @@ export function parseMarkdownBlocks(markdown: string): MarkdownBlock[] {
 
 /** Plain text of a block (for line-count estimates and tests). */
 export function blockText(block: MarkdownBlock): string {
+  if (block.kind === 'image') {return block.alt;}
   return block.kind === 'code' ? block.lines.join('\n') : block.spans.map(s => s.text).join('');
 }

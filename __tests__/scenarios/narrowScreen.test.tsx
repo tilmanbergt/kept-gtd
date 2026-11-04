@@ -12,7 +12,7 @@ const past = isoDateOffset(-10);
 
 afterEach(() => jest.useRealTimers());
 
-scenario('On a Nomad-sized screen, Quick Add with four tabs keeps its + Add and calls Agreement "Agree"', {feature: 'Quick Add', design: 'technical-design-launch-ready.md'}, () => {
+scenario('On a Nomad-sized screen, Quick Add with four tabs keeps its + Add and calls Agreement "Agree"', {feature: 'Quick Add', design: 'technical-design-launch-ready.md', help: 'quick-add.md#adding-an-agreement'}, () => {
   given('area "Coaching" has a past sparring session with Jordan, and Kept is drawn at Nomad portrait size', () => {
     putFile(
       areaFile('Coaching'),
@@ -42,7 +42,7 @@ scenario('On a Nomad-sized screen, Quick Add with four tabs keeps its + Add and 
   });
 });
 
-scenario('What\'s new offers the last three versions and says where the earlier ones are', {feature: 'Settings', design: 'technical-design-launch-ready.md'}, () => {
+scenario('What\'s new offers the last three versions and says where the earlier ones are', {feature: 'Settings', design: 'technical-design-launch-ready.md', help: 'settings.md#about'}, () => {
   when('I open Settings → About', async () => {
     await openApp();
     await tapTab('Settings');
@@ -54,7 +54,7 @@ scenario('What\'s new offers the last three versions and says where the earlier 
   });
 });
 
-scenario('Month names its month in the tab row: "Oct 26", ‹ › to move, Now to come back', {feature: 'Week and Month', design: 'technical-design-launch-ready.md'}, () => {
+scenario('Month names its month in the tab row: "Oct 26", ‹ › to move, Now to come back', {feature: 'Week and Month', design: 'technical-design-launch-ready.md', help: 'week-and-month.md#month'}, () => {
   given('the smoke space on Wednesday 14.10.2026', () => {
     smokeClock();
     putSmokeSpace();

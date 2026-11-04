@@ -12,7 +12,7 @@ afterEach(() => jest.useRealTimers());
 /** How often the Files pane listed `folder` (it logs each listing). */
 const listings = (folder: string) => device().logs.filter(l => l.text === `FileBrowserPane: loading ${folder} `).length;
 
-scenario('The area page shows its todos, meetings and agreements, and its folder once Files is opened', {feature: 'Projects and Areas', design: DESIGN}, () => {
+scenario('The area page shows its todos, meetings and agreements, and its folder once Files is opened', {feature: 'Projects and Areas', design: DESIGN, help: 'projects-and-areas.md#the-current-tab'}, () => {
   given('the smoke space on Wednesday 14.10.2026', () => {
     smokeClock();
     putSmokeSpace();

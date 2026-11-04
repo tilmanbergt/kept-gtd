@@ -5,7 +5,7 @@ import {given, scenario, then, when} from '../../test-helpers/scenario/scenario'
 
 const NOTE_IN_INBOX = `${PATHS.inboxFolder}/Todos/Call Anna.note`;
 
-scenario('Refile a todo with its note from the Inbox to a project', {feature: 'Inbox', design: 'technical-design-filing-unification.md'}, () => {
+scenario('Refile a todo with its note from the Inbox to a project', {feature: 'Inbox', design: 'technical-design-filing-unification.md', help: 'quick-add.md#the-inbox'}, () => {
   given('Inbox.txt has the todo "Call Anna" with its note "Call Anna.note", and project "Website" exists', () => {
     putFile(INBOX_FILE, dataFile('inbox', {Tasks: ['- [ ] Call Anna #next → [[Todos/Call Anna.note]]'], Meetings: []}));
     device().sdk.putNote(NOTE_IN_INBOX, [{keywords: ['call']}]);

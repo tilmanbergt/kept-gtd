@@ -29,7 +29,7 @@ const HAND_EDITED = [
   '',
 ].join('\n');
 
-scenario('A hand-edited project file keeps everything Kept GTD does not own when a todo is added', {feature: 'Your files', design: 'technical-design-tags.md'}, () => {
+scenario('A hand-edited project file keeps everything Kept GTD does not own when a todo is added', {feature: 'Your files', design: 'technical-design-tags.md', help: 'files-and-folders.md#editing-by-hand'}, () => {
   given('project "Website" has a frontmatter line, a paragraph, a stray line, an old-style due date and a section of its own, all by hand', () => {
     putFile(projectFile('Website'), HAND_EDITED);
   });
@@ -50,7 +50,7 @@ scenario('A hand-edited project file keeps everything Kept GTD does not own when
   });
 });
 
-scenario('An outside edit to another part of the file is kept when Kept GTD saves', {feature: 'Your files', design: 'technical-design-quality-hardening.md'}, () => {
+scenario('An outside edit to another part of the file is kept when Kept GTD saves', {feature: 'Your files', design: 'technical-design-quality-hardening.md', help: 'files-and-folders.md#editing-by-hand'}, () => {
   given('project "Website" is open in Kept GTD', async () => {
     putFile(projectFile('Website'), dataFile('project', {Scope: ['Old scope'], Tasks: ['- [ ] Write copy'], Meetings: []}));
     await openApp();
@@ -69,7 +69,7 @@ scenario('An outside edit to another part of the file is kept when Kept GTD save
   });
 });
 
-scenario('When Kept GTD and another app changed the same list, the user decides which wins', {feature: 'Your files', design: 'technical-design-quality-hardening.md'}, () => {
+scenario('When Kept GTD and another app changed the same list, the user decides which wins', {feature: 'Your files', design: 'technical-design-quality-hardening.md', help: 'files-and-folders.md#editing-by-hand'}, () => {
   given('project "Website" is open in Kept GTD', async () => {
     putFile(projectFile('Website'), dataFile('project', {Scope: [], Tasks: ['- [ ] Write copy'], Meetings: []}));
     await openApp();
@@ -102,7 +102,7 @@ scenario('When Kept GTD and another app changed the same list, the user decides 
   });
 });
 
-scenario('Unreadable settings are never replaced by the defaults unasked', {feature: 'Settings', design: 'technical-design-quality-hardening.md'}, () => {
+scenario('Unreadable settings are never replaced by the defaults unasked', {feature: 'Settings', design: 'technical-design-quality-hardening.md', help: 'troubleshooting.md#common-situations'}, () => {
   given('the stored settings are broken and the Inbox has a done todo', async () => {
     await AsyncStorage.setItem('kept:settings:v1', '{"inboxFolder": "0 Inbox", "hideDoneIn');
     putFile(INBOX_FILE, dataFile('inbox', {Tasks: ['- [x] Old todo', '- [ ] Open todo'], Meetings: []}));

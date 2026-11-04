@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // The coverage overview per feature area and its ratchet (docs/dev/history/technical-design-test-tiers.md §3.5).
 // Runs after a coverage run of Jest (npm run coverage); reads coverage/coverage-summary.json,
-// coverage/jest-results.json, scripts/test-areas.json and the scenario tests.
+// coverage/jest-results.json, scripts/test-areas.json, the scenario tests and the help pages (the Help ✓
+// column, docs/dev/history/technical-design-quality-assurance.md §3.3).
 //
 //   node scripts/coverage-report.mjs                    write coverage/areas.md; exit 1 when an area's line or
 //                                                      branch % is more than 2 points below scripts/coverage-baseline.json
@@ -13,6 +14,8 @@ import {fileURLToPath} from 'node:url';
 import {coverageByFile, formatFailures, raiseBaseline, ratchetFailures, testsPerFile} from './lib/coverageReport.mjs';
 import {parseScenarios} from './lib/scenarioCatalog.mjs';
 import {areaStats, renderMatrix} from './lib/testAreas.mjs';
+import {coverageTotals, helpByArea} from './lib/helpCoverage.mjs';
+import {readHelpCoverage} from './lib/qualityInputs.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const SUMMARY = join(ROOT, 'coverage', 'coverage-summary.json');
@@ -63,7 +66,11 @@ if (process.argv.includes('--update-baseline')) {
   process.exit(0);
 }
 
-const matrix = renderMatrix(stats, baseline);
+const {coverage: helpCoverage} = await readHelpCoverage(ROOT);
+const matrix = renderMatrix(stats, baseline, undefined, {
+  helpByArea: helpByArea(config.areas, helpCoverage),
+  helpTotal: (t => ({covered: t.covered, total: t.headings}))(coverageTotals(helpCoverage)),
+});
 writeFileSync(OUT, matrix, 'utf8');
 console.log(matrix);
 console.log('coverage-report: wrote coverage/areas.md');

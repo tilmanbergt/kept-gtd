@@ -5,15 +5,20 @@
 //
 //   node scripts/scenario-catalog.mjs          write the catalog
 //   node scripts/scenario-catalog.mjs --check  exit 1 when the catalog is not up to date (npm run check)
+//
+// Both fail on a scenario whose `help:` names a help page or heading that doesn't exist
+// (technical-design-quality-assurance.md §3.2), checked with the app's slug rule (domain/helpLinks.ts).
 
 import {existsSync, readdirSync, readFileSync, statSync, writeFileSync} from 'node:fs';
 import {dirname, join, resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
-import {parseScenarios, renderCatalog} from './lib/scenarioCatalog.mjs';
+import {checkHelpRefs, parseScenarios, renderCatalog} from './lib/scenarioCatalog.mjs';
+import {importTs} from './lib/tsModule.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const DIR = join(ROOT, '__tests__', 'scenarios');
 const OUT = join(ROOT, 'docs', 'dev', 'test-scenarios.md');
+const USER_DOCS = join(ROOT, 'docs', 'user');
 
 const SMOKE = JSON.parse(readFileSync(join(ROOT, 'scripts', 'test-areas.json'), 'utf8')).smoke;
 
@@ -30,6 +35,16 @@ const scenarios = testFiles(DIR).flatMap(f => {
   return parseScenarios(readFileSync(join(DIR, f), 'utf8'), file).map(s => ({...s, smoke: file.startsWith(SMOKE)}));
 });
 const catalog = renderCatalog(scenarios);
+
+const helpPages = readdirSync(USER_DOCS)
+  .filter(f => f.endsWith('.md'))
+  .map(f => ({id: f.slice(0, -3), markdown: readFileSync(join(USER_DOCS, f), 'utf8')}));
+const {pageAnchors} = await importTs(join(ROOT, 'src', 'domain', 'helpLinks.ts'));
+const brokenHelp = checkHelpRefs(scenarios, helpPages, pageAnchors);
+if (brokenHelp.length) {
+  console.error(`scenario-catalog: broken help references:\n  ${brokenHelp.join('\n  ')}`);
+  process.exit(1);
+}
 
 if (process.argv.includes('--check')) {
   const current = existsSync(OUT) ? readFileSync(OUT, 'utf8').replace(/\r\n/g, '\n') : '';

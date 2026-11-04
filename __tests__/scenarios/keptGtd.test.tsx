@@ -5,7 +5,7 @@ import {given, scenario, then, when} from '../../test-helpers/scenario/scenario'
 
 const DESIGN = 'technical-design-kept-gtd.md';
 
-scenario('The demo space lives in Note/kept-gtd-demo', {feature: 'Profiles and demo space', design: DESIGN}, () => {
+scenario('The demo space lives in Note/kept-gtd-demo', {feature: 'Profiles and demo space', design: DESIGN, help: 'profiles-and-demo.md#the-demo-space'}, () => {
   given('an empty PARA folder', () => undefined);
   when('I create the demo space in Settings → Data and switch to it', async () => {
     await openApp();
@@ -21,7 +21,7 @@ scenario('The demo space lives in Note/kept-gtd-demo', {feature: 'Profiles and d
   });
 });
 
-scenario('Settings → About shows the name Kept GTD, its slogan and where it came from', {feature: 'Settings', design: DESIGN}, () => {
+scenario('Settings → About shows the name Kept GTD, its slogan and where it came from', {feature: 'Settings', design: DESIGN, help: 'settings.md#about'}, () => {
   given('an empty PARA folder', () => undefined);
   when('I open Settings → About', async () => {
     await openApp();
@@ -36,7 +36,7 @@ scenario('Settings → About shows the name Kept GTD, its slogan and where it ca
   });
 });
 
-scenario('Export debug bundle writes a file named after Kept GTD', {feature: 'Settings', design: DESIGN}, () => {
+scenario('Export debug bundle writes a file named after Kept GTD', {feature: 'Settings', design: DESIGN, help: 'troubleshooting.md#reporting-a-problem'}, () => {
   given('an empty PARA folder', () => undefined);
   when('I tap Export debug bundle on Settings → Advanced', async () => {
     await openApp();
@@ -54,7 +54,7 @@ scenario('Export debug bundle writes a file named after Kept GTD', {feature: 'Se
   });
 });
 
-scenario('A close-out PDF says it was created by Kept GTD', {feature: 'Close-out', design: DESIGN}, () => {
+scenario('A close-out PDF says it was created by Kept GTD', {feature: 'Close-out', design: DESIGN, help: 'close-out.md#where-things-end-up'}, () => {
   given('project "Website" has only done todos', () => {
     putFile(projectFile('Website'), dataFile('project', {Scope: ['Relaunch the site.'], Tasks: ['- [x] Write copy'], Meetings: []}, ['abbrev: WEB']));
   });

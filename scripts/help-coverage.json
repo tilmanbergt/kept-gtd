@@ -1,0 +1,9 @@
+{
+  "about": "Help pages and headings the help coverage report leaves out, each with why: they make no claim a scenario could prove (scripts/quality-report.mjs, docs/dev/history/technical-design-quality-assurance.md §3.3). Keys: 'page.md' or 'page.md#anchor'.",
+  "excluded": {
+    "index.md": "the overview: links to the pages that describe each part",
+    "philosophy.md": "values and reasons, no behavior",
+    "features.md": "the list of switches; each feature's behavior is on its own page",
+    "troubleshooting.md": "advice for situations outside Kept's control and how to report a problem"
+  }
+}

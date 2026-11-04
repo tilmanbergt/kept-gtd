@@ -12,7 +12,7 @@ function doneWebsite(): void {
   putFile(projectFile('Website'), dataFile('project', {Scope: [], Tasks: ['- [x] Write copy'], Meetings: []}, ['status: done', `doneAt: ${year}-10-01`, 'abbrev: WEB']));
 }
 
-scenario('Close-out off: a Done project archives directly from its page', {feature: 'Settings', design: DESIGN}, () => {
+scenario('Close-out off: a Done project archives directly from its page', {feature: 'Settings', design: DESIGN, help: 'features.md#project-close-out'}, () => {
   given('Project close-out is switched off and project "Website" is Done', doneWebsite);
   when('I open Website on Current', async () => {
     await openApp({settings: {modules: {closeOut: false}}});
@@ -35,7 +35,7 @@ scenario('Close-out off: a Done project archives directly from its page', {featu
   });
 });
 
-scenario('Close-out off: Review\'s Done step archives directly', {feature: 'Settings', design: DESIGN}, () => {
+scenario('Close-out off: Review\'s Done step archives directly', {feature: 'Settings', design: DESIGN, help: 'features.md#project-close-out'}, () => {
   given('Project close-out is switched off and project "Website" is Done', doneWebsite);
   when('I open Review → Done awaiting review and pick Website', async () => {
     await openApp({settings: {modules: {closeOut: false}}});
@@ -57,7 +57,7 @@ scenario('Close-out off: Review\'s Done step archives directly', {feature: 'Sett
   });
 });
 
-scenario('Settings → Features shows the Experimental switches that moved from Advanced', {feature: 'Settings', design: DESIGN}, () => {
+scenario('Settings → Features shows the Experimental switches that moved from Advanced', {feature: 'Settings', design: DESIGN, help: 'settings.md#features'}, () => {
   given('Google Calendar was switched on before and project "Website" is Done', doneWebsite);
   when('I open Settings → Features', async () => {
     await openApp({settings: {experimentalGoogleCalendar: true}});

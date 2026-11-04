@@ -3,13 +3,14 @@
 //
 //   npm run check                        full: quick + all of Jest (unit and scenario tests)
 //   npm run check -- --quick             quick: gen, tsc and ESLint (in parallel), script tests,
-//                                        scenario catalog, code health
+//                                        scenario catalog, help diagrams, claims register, code health
 //   npm run check -- --smoke             quick + the smoke scenarios (__tests__/scenarios/smoke/)
 //   npm run check -- --area a,b          quick + the test files of feature areas a and b (scripts/test-areas.json)
 //   npm run check -- --affected          quick + the tests related to the files changed against
 //                                        origin/main (committed or not) + smoke
 //   npm run check -- --coverage          full with coverage, then the area matrix coverage/areas.md and the
-//                                        ratchet against scripts/coverage-baseline.json
+//                                        ratchet against scripts/coverage-baseline.json, then the quality
+//                                        report coverage/quality.md (never failing)
 //
 // Flags combine (--area planning --smoke). Stops at the first failing check; the last line names
 // the tier. Which moment runs which tier: docs/dev/DEVELOPMENT-POLICY.md §7.
@@ -53,6 +54,12 @@ const SCRIPT_TESTS = [
   ['coverage report tests', 'scripts/test-coverage-report.mjs'],
   ['CI build tests', 'scripts/test-ci-build.mjs'],
   ['test notes tests', 'scripts/test-test-notes.mjs'],
+  ['app strings tests', 'scripts/test-app-strings.mjs'],
+  ['help label tests', 'scripts/test-help-labels.mjs'],
+  ['help coverage tests', 'scripts/test-help-coverage.mjs'],
+  ['diagram tests', 'scripts/test-diagrams.mjs'],
+  ['claims tests', 'scripts/test-claims.mjs'],
+  ['review tally tests', 'scripts/test-review-tally.mjs'],
 ];
 
 function fail(name, status) {
@@ -148,11 +155,22 @@ await runParallel([
 ]);
 for (const [name, script] of SCRIPT_TESTS) run(name, 'node', [script]);
 run('scenario catalog up to date', 'node', ['scripts/scenario-catalog.mjs', '--check']);
+run('help diagrams up to date', 'node', ['scripts/diagrams.mjs', '--check']);
+run('claims register', 'node', ['scripts/claims.mjs', '--check']);
 run('code health', 'node', ['scripts/code-health.mjs', ...(CODE_HEALTH_STRICT ? ['--strict'] : [])]);
 
 const jest = jestCommand();
 if (jest) run(jest.name, 'npx', ['jest', ...jest.args]);
 if (opts.coverage) run('coverage by feature area (coverage/areas.md, ratchet)', 'node', ['scripts/coverage-report.mjs']);
 else console.log(`\n--- tests (jest): ${tier === 'quick' ? 'skipped (--quick)' : 'nothing to run'}`);
+
+// The quality report is a view, never a gate (docs/dev/history/technical-design-quality-assurance.md §5).
+if (opts.coverage) {
+  console.log('\n--- quality report (coverage/quality.md, report only)');
+  const r = spawnSync('node scripts/quality-report.mjs', {cwd: ROOT, stdio: 'inherit', shell: true});
+  if (r.status !== 0) console.log(`quality: the report did not finish (exit ${r.status}); the checks above decide.`);
+} else {
+  console.log('\nquality: npm run quality for help coverage, labels and claims');
+}
 
 console.log(`\nAll checks passed (${tier}) in ${Math.round((Date.now() - started) / 1000)} s.`);

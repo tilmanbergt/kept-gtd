@@ -8,7 +8,7 @@ const DESIGN = 'technical-design-test-tiers.md';
 
 afterEach(() => jest.useRealTimers());
 
-scenario('Switch to the demo space and back', {feature: 'Profiles and demo space', design: DESIGN}, () => {
+scenario('Switch to the demo space and back', {feature: 'Profiles and demo space', design: DESIGN, help: 'profiles-and-demo.md#the-demo-space'}, () => {
   given('the smoke space on Wednesday 14.10.2026', () => {
     smokeClock();
     putSmokeSpace();

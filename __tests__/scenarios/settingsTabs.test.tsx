@@ -4,7 +4,7 @@ import {and, given, scenario, then, when} from '../../test-helpers/scenario/scen
 const DESIGN = 'technical-design-settings-tabs.md';
 const TABS = ['Data', 'Contexts', 'Note setups', 'Features', 'Advanced', 'About'];
 
-scenario('Settings opens on Data, with six tabs', {feature: 'Settings', design: DESIGN}, () => {
+scenario('Settings opens on Data, with six tabs', {feature: 'Settings', design: DESIGN, help: 'settings.md'}, () => {
   given('Kept is open', () => openApp());
   when('I open Settings', () => tapTab('Settings'));
   then('the six tabs show, and Data holds the folders, the setup assistant and the profiles', () => {
@@ -17,7 +17,7 @@ scenario('Settings opens on Data, with six tabs', {feature: 'Settings', design: 
   });
 });
 
-scenario('An unsaved folder field holds back the setup assistant until Save', {feature: 'Settings', design: DESIGN}, () => {
+scenario('An unsaved folder field holds back the setup assistant until Save', {feature: 'Settings', design: DESIGN, help: 'settings.md#setup-assistant'}, () => {
   given('Settings → Data is open', async () => {
     await openApp();
     await tapTab('Settings');
@@ -37,7 +37,7 @@ scenario('An unsaved folder field holds back the setup assistant until Save', {f
   });
 });
 
-scenario('The Gmail account sits on Features while Gmail is on, and stays stored while it is off', {feature: 'Settings', design: DESIGN}, () => {
+scenario('The Gmail account sits on Features while Gmail is on, and stays stored while it is off', {feature: 'Settings', design: DESIGN, help: 'settings.md#google-calendar-and-gmail'}, () => {
   given('Gmail is set up for jordan@example.com and switched off', () => openApp({settings: {experimentalGmail: false, gmailEmail: 'jordan@example.com'}}));
   when('I open Settings → Features', async () => {
     await tapTab('Settings');
@@ -57,7 +57,7 @@ scenario('The Gmail account sits on Features while Gmail is on, and stays stored
   });
 });
 
-scenario('Debug logging and the debug bundle are on Advanced; About invites reports', {feature: 'Settings', design: DESIGN}, () => {
+scenario('Debug logging and the debug bundle are on Advanced; About invites reports', {feature: 'Settings', design: DESIGN, help: 'settings.md#reporting-a-problem'}, () => {
   given('Kept is open', () => openApp());
   when('I open Settings → Advanced', async () => {
     await tapTab('Settings');
@@ -77,7 +77,7 @@ scenario('Debug logging and the debug bundle are on Advanced; About invites repo
   });
 });
 
-scenario('The profile chip in the tab bar opens the profiles on Data', {feature: 'Settings', design: DESIGN}, () => {
+scenario('The profile chip in the tab bar opens the profiles on Data', {feature: 'Settings', design: DESIGN, help: 'settings.md#profiles'}, () => {
   given('the profile "work" is active', () => openApp({settings: {activeProfileId: 'work'}}));
   when('I tap the chip WORK in the tab bar', () => tap('WORK'));
   then('Settings shows Data with the profiles', () => {

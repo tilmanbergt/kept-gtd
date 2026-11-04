@@ -1,0 +1,30 @@
+{
+  "meeting-flow": {
+    "source": "docs/user/diagrams/meeting-flow.html",
+    "hash": "87284678509e6b1f66c1b7108828b85ef50d7dffa68dcaf5082ecd8b43a8c996",
+    "width": 960,
+    "height": 918,
+    "bytes": 69208
+  },
+  "note-pages": {
+    "source": "docs/user/diagrams/note-pages.html",
+    "hash": "638588c6b6574be8d72ef7e85fce510254d120884e18b88a5d5aa99f6d4e41ff",
+    "width": 960,
+    "height": 839,
+    "bytes": 61430
+  },
+  "projects-and-areas": {
+    "source": "docs/user/diagrams/projects-and-areas.html",
+    "hash": "06d9bcd49044f637449841b3ac97a9205377b71031a75c08d2f2ebcda516c582",
+    "width": 960,
+    "height": 916,
+    "bytes": 50124
+  },
+  "todo-states": {
+    "source": "docs/user/diagrams/todo-states.mmd",
+    "hash": "e65565f299534085c3ba48112ae051e9c39a410e1f97e8dc9ed7b1623f13e162",
+    "width": 960,
+    "height": 769,
+    "bytes": 30018
+  }
+}

@@ -1,0 +1,18 @@
+%% The states of a todo (docs/user/tags.md#flow-tags-for-todos, daily.md#what-appears-on-daily).
+flowchart TB
+  IN["`**Inbox**: added without a project or area`"]
+  P["`In a project or area, e.g. Garden renovation`"]
+  IN -- "filed" --> P
+  P --> N["`**Next**
+  #next`"]
+  P --> W["`**w/f**
+  #wf/marco`"]
+  P --> PL["`**Plan**
+  no flow tag`"]
+  P --> S["`**Someday** · **Maybe**`"]
+  N --> D["`**Daily**: every #next, what is due today, tomorrow or overdue, and w/f without a date or due`"]
+  W --> D
+  PL -- "when due" --> D
+  S --> R["`Review step **Someday / Maybe**`"]
+  D --> X["`done ☑ [completion:: date]`"]
+  P -. "no #next and nothing you wait for" .-> ST["`Review step **Stalled projects**: **→ Next**`"]

@@ -93,3 +93,25 @@ describe('italics', () => {
     expect(parseInline('**Save** *now*')).toEqual([{text: 'Save', bold: true}, {text: ' '}, {text: 'now', italic: true}]);
   });
 });
+
+describe('help diagrams (technical-design-quality-assurance.md §6.6)', () => {
+  it('a diagram line alone is an image block with id and alt text', () => {
+    expect(parseMarkdownBlocks('## States\n\n![The states of a todo](images/diagrams/todo-states.png)\n\nAfter it.')).toEqual([
+      {kind: 'heading', level: 2, spans: [{text: 'States'}]},
+      {kind: 'image', id: 'todo-states', alt: 'The states of a todo'},
+      {kind: 'paragraph', spans: [{text: 'After it.'}]},
+    ]);
+  });
+  it('an image inside a paragraph stays text', () => {
+    const blocks = parseMarkdownBlocks('Text before\n![x](images/diagrams/todo-states.png)');
+    expect(blocks.map(b => b.kind)).toEqual(['paragraph']);
+    expect(blockText(blocks[0])).toBe('Text before !x');
+  });
+  it('an image with another path stays text', () => {
+    expect(parseMarkdownBlocks('![x](images/screen-daily.png)').map(b => b.kind)).toEqual(['paragraph']);
+    expect(parseMarkdownBlocks('![x](images/diagrams/Todo_States.png)').map(b => b.kind)).toEqual(['paragraph']);
+  });
+  it('blockText of an image is its alt text', () => {
+    expect(blockText({kind: 'image', id: 'a', alt: 'Alt'})).toBe('Alt');
+  });
+});

@@ -13,7 +13,7 @@ beforeEach(() => {
 });
 afterEach(() => jest.useRealTimers());
 
-scenario('Engage on a meeting\'s follow-up page: the meeting is passed on', {feature: 'Engage', design: DESIGN}, () => {
+scenario('Engage on a meeting\'s follow-up page: the meeting is passed on', {feature: 'Engage', design: DESIGN, help: 'engage.md#which-owner-a-page-belongs-to'}, () => {
   given('page 3 is the page of meeting "Coach call" (Sport, no loop tag), where "Book physio" was agreed; page 4 is handwritten without a title', () => sport());
   when('I open Engage on page 4', () => engageOn(4));
   then('the owner is Area Sport, the moment line shows Coach call with its moment, From offers its group', () => {

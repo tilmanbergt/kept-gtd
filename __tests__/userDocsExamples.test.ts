@@ -9,6 +9,8 @@ import * as path from 'path';
 import {buildDemoFiles} from '../src/domain/demoSpace';
 
 const DIR = path.join(__dirname, '..', 'docs', 'user');
+/** Diagram sources (docs/dev/history/technical-design-quality-assurance.md §6.4) are held to the same rule. */
+const DIAGRAMS = path.join(DIR, 'diagrams');
 const NESTED_TAG = /#[A-Za-z0-9_-]+(?:\/[A-Za-z0-9_-]+)+/g;
 
 /** Nested tags that stand for any name, or show a rule, rather than an example from the demo. */
@@ -30,6 +32,15 @@ describe('help examples', () => {
 
   it.each(pages)('%s uses only nested tags of the demo space', page => {
     const text = fs.readFileSync(path.join(DIR, page), 'utf8');
+    const unknown = [...new Set(text.match(NESTED_TAG) ?? [])].filter(tag => !demoTags.has(tag) && !(tag in ALLOWED_PLACEHOLDERS));
+    expect(unknown).toEqual([]);
+  });
+
+  const diagrams = fs.existsSync(DIAGRAMS) ? fs.readdirSync(DIAGRAMS).filter(f => /\.(mmd|html)$/.test(f)).sort() : [];
+
+  it.each(diagrams.length ? diagrams : ['(none)'])('diagram %s uses only nested tags of the demo space', name => {
+    if (name === '(none)') {return;}
+    const text = fs.readFileSync(path.join(DIAGRAMS, name), 'utf8');
     const unknown = [...new Set(text.match(NESTED_TAG) ?? [])].filter(tag => !demoTags.has(tag) && !(tag in ALLOWED_PLACEHOLDERS));
     expect(unknown).toEqual([]);
   });

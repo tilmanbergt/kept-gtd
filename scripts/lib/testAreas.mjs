@@ -172,27 +172,41 @@ export function areaStats({areas, testsPerFile, coverage, scenariosPerFile = {},
   });
 }
 
-/** The matrix as markdown (coverage/areas.md): one row per area plus a total, Δ against `baseline` lines %. */
-export function renderMatrix(stats, baseline = {}, title = 'Test coverage by feature area') {
+/**
+ * The matrix as markdown (coverage/areas.md): one row per area plus a total, Δ against `baseline` lines %.
+ * With `helpByArea` ({id: {covered, total}}, scripts/lib/helpCoverage.mjs) it adds the column Help ✓: the
+ * area's help headings that a scenario names (docs/dev/history/technical-design-quality-assurance.md §3.3).
+ * `helpTotal` ({covered, total}) is its All row: areas can share a page, so it is not their sum.
+ */
+export function renderMatrix(stats, baseline = {}, title = 'Test coverage by feature area', {helpByArea = null, helpTotal = null} = {}) {
+  const help = id => {
+    const h = helpByArea?.[id];
+    return h && h.total ? `${h.covered} / ${h.total}` : '-';
+  };
+  const helpHead = helpByArea ? ' Help ✓ |' : '';
+  const helpRule = helpByArea ? '---:|' : '';
   const lines = [
     `# ${title}`,
     '',
     'Unit, UI, Scenario: tests per kind (smoke counted again in its own column). Scenarios: catalogued',
     'scenarios (`docs/dev/test-scenarios.md`). Line % and Branch %: of the area\'s source files.',
     'Δ: line and branch points against `scripts/coverage-baseline.json`.',
+    ...(helpByArea ? ['Help ✓: help headings of the area\'s pages that a scenario names (`npm run quality`).'] : []),
     '',
-    '| Area | Unit | UI | Scenario | Smoke | Scenarios | Src lines | Line % | Branch % | Δ vs baseline |',
-    '|---|---:|---:|---:|---:|---:|---:|---:|---:|---|',
+    `| Area | Unit | UI | Scenario | Smoke | Scenarios |${helpHead} Src lines | Line % | Branch % | Δ vs baseline |`,
+    `|---|---:|---:|---:|---:|---:|${helpRule}---:|---:|---:|---|`,
   ];
   const total = {unit: 0, ui: 0, scenario: 0, smoke: 0, scenarios: 0, srcLines: 0, linesCovered: 0, branchTotal: 0, branchCovered: 0};
   for (const s of stats) {
     const base = baseline[s.id] ?? {};
     const d = [delta(s.lines, base.lines), delta(s.branches, base.branches)].filter(Boolean).join(' / ');
-    lines.push(`| ${s.name} (\`${s.id}\`) | ${s.unit} | ${s.ui} | ${s.scenario} | ${s.smoke} | ${s.scenarios} | ${s.srcLines} | ${pct(s.lines)} | ${pct(s.branches)} | ${d} |`);
+    const helpCell = helpByArea ? ` ${help(s.id)} |` : '';
+    lines.push(`| ${s.name} (\`${s.id}\`) | ${s.unit} | ${s.ui} | ${s.scenario} | ${s.smoke} | ${s.scenarios} |${helpCell} ${s.srcLines} | ${pct(s.lines)} | ${pct(s.branches)} | ${d} |`);
     for (const k of Object.keys(total)) total[k] += s[k];
   }
   const allLines = total.srcLines ? (100 * total.linesCovered) / total.srcLines : null;
   const allBranches = total.branchTotal ? (100 * total.branchCovered) / total.branchTotal : null;
-  lines.push(`| **All** | ${total.unit} | ${total.ui} | ${total.scenario} | ${total.smoke} | ${total.scenarios} | ${total.srcLines} | ${pct(allLines)} | ${pct(allBranches)} | |`);
+  const helpAll = helpByArea ? ` ${helpTotal && helpTotal.total ? `${helpTotal.covered} / ${helpTotal.total}` : '-'} |` : '';
+  lines.push(`| **All** | ${total.unit} | ${total.ui} | ${total.scenario} | ${total.smoke} | ${total.scenarios} |${helpAll} ${total.srcLines} | ${pct(allLines)} | ${pct(allBranches)} | |`);
   return lines.join('\n') + '\n';
 }

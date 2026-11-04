@@ -43,7 +43,7 @@ function website(): string {
 const frontMatter = (text: string) => text.slice(0, text.indexOf('\n---', 3) + 4).split('\n');
 const goalSpans = (text: string) => text.slice(text.indexOf('## Weekly Goals'));
 
-scenario('Focus flags, goal spans and #now survive a todo, a meeting and a status change', {feature: 'Projects and Areas', design: DESIGN}, () => {
+scenario('Focus flags, goal spans and #now survive a todo, a meeting and a status change', {feature: 'Projects and Areas', design: DESIGN, help: 'files-and-folders.md#editing-by-hand'}, () => {
   given('Website as 0.21 wrote it: all three focus flags, goals, "Write copy #now"', () => {
     smokeClock();
     putFile(projectFile('Website'), website());
@@ -79,7 +79,7 @@ scenario('Focus flags, goal spans and #now survive a todo, a meeting and a statu
   and('no error was logged', () => expect(loggedErrors()).toEqual([]));
 });
 
-scenario('Upgrade: 0.22 starts on a 0.21 space without writing a file or a setting', {feature: 'Daily', design: DESIGN}, () => {
+scenario('Upgrade: 0.22 starts on a 0.21 space without writing a file or a setting', {feature: 'Daily', design: DESIGN, help: 'files-and-folders.md'}, () => {
   given('a 0.21 space: Website with focus flags, goals and #now, Garage in no focus with a #next todo; focus mode on', async () => {
     smokeClock();
     putFile(projectFile('Website'), website());
