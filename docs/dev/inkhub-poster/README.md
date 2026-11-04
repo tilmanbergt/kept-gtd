@@ -8,7 +8,7 @@ The listing that uses it: `../inkhub-listing.md`.
 
 - `poster.html` - the poster. Texts are plain HTML; sizes, spacing and line widths are the CSS
   variables in `:root`.
-- `render.mjs` - exports the PNG.
+- `render.mjs` - exports the PNG with Playwright (`npm run diagrams` uses the same approach for the help diagrams).
 - `images/icon-white.png`, `images/wordmark-white.png` - the plugin icon and wordmark from
   `assets/icon.png` and `assets/wordmark.png`, made white for the black header, enlarged (icon
   4×4 supersampled from 48 px, edges thresholded and smoothed) and trimmed to their visible
