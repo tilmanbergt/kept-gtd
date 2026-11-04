@@ -11,7 +11,13 @@ or your project/area files are stored.
 ## [Unreleased]
 
 ### New
-- Help pages can show diagrams. The first one, on the Daily page, shows which todos appear on Daily.
+- Help pages now have diagrams: the states of a todo (Tags), how Projects and Areas hold todos,
+  meetings, threads and loops (Projects and Areas), how pages flow into a note file (Note setups),
+  and a meeting before, during and after (Meetings).
+
+### Changed
+- For contributors: `SECURITY.md` says how to report a vulnerability privately and what Kept
+  touches; `docs/dev/claims.md` lists every promise Kept makes and how each is checked.
 
 ## [0.25.1] — 2026-11-03
 

@@ -618,3 +618,45 @@ with a "Device test:" block.
 - **OP3** Codex's guideline heading: OpenAI's docs name `## Review guidelines`; a third-party
   article says `## Code Review Rules`. The three-case test in S8 shows which one Codex follows,
   and only that heading is kept (no duplicated rules).
+
+## As built
+
+Built in S1-S9 on `feature/promises-kept` as designed, with these differences:
+
+- **S2 backfill.** All 201 scenarios have a `help:` reference; four are page-only (`settings.md`
+  twice, `note-setups.md`, `files-and-folders.md`) where no heading describes the behavior. Five
+  scenarios had double-quoted titles, which the catalog's reader skips, so they were missing from
+  `docs/dev/test-scenarios.md`; they are single-quoted now and listed (196 → 201).
+- **S3 inputs.** `scripts/lib/qualityInputs.mjs` reads the help pages, scenarios, app sources,
+  demo files and diagram sources for both `quality-report.mjs` and `coverage-report.mjs`, so the
+  Help ✓ column and the report count the same way. The Help ✓ All row is the total over distinct
+  pages (`settings.md` belongs to two areas).
+- **S3 matching.** Besides literals and template expressions, a JSX element whose text is mixed
+  with `{…}` expressions is a pattern (`{n} mark{…} to process`), and a label also matches when it
+  is a template's static text (**Save to** for `Save to ${name}`). The allowlist starts with the
+  three buttons of the Supernote's permission dialog only; the other unmatched labels (Obsidian's,
+  GitHub's, composed texts) stay listed.
+- **S4.** The image cap is the measured column height minus the pager header line (33) and two
+  block gaps. `userDocs.test.ts` now numbers lines including fenced code, so its messages give the
+  file's line.
+- **S5.** `playwright` is pinned to 1.63.0, the version whose Chromium is installed. A Mermaid
+  diagram's SVG is scaled to the target width by its `width` attribute (vector scaling) rather than
+  by `deviceScaleFactor`; the result is the same 960 px PNG. The renderer warns when a diagram is
+  taller than 1 : 1.3. The README "Diagrams" section came with S5, with the pipeline.
+- **S6.** The todo states diagram is Mermaid; the hierarchy, the notebook pages and the meeting
+  flow are HTML. Mermaid ignored the left-to-right direction of linked subgraphs (the meeting flow
+  came out 960 × 4751) and shrank the hierarchy's text below the help's body size. The four RGB
+  PNGs took 403.6 KB, over the budget, so the renderer stores 8-bit greyscale
+  (`scripts/lib/pngGray.mjs`, `RENDERER_VERSION` 2): 206 KB. The theme wraps Mermaid labels at
+  320 px. The Review cycle (5) is not drawn. The S4 test diagram is gone; the S4 scenarios use the
+  todo states diagram.
+- **S7.** 65 claims: 10 enforced, 27 tested, 21 reviewed, 7 none. The check also verifies that a
+  quoted checklist step (`DEVELOPMENT-POLICY §9 "PRIVACY.md still true"`) is in that section,
+  ignoring bold and code marks.
+- **S8.** `AGENTS.md` names the real section helpers (`readSectionLines` / `writeSectionLines`):
+  `getSpan`/`setSpan`, which DEVELOPMENT-POLICY §3 and §8.1 above name, don't exist in the code.
+  Scripts, `AGENTS.md`, `SECURITY.md` and the claims documents belong to the area `foundation`, the
+  diagram sources and PNGs to `settings`. Cloud sessions can't use GitHub's GraphQL API, so
+  `gh pr create` and `gh pr view` don't work there; they open and read pull requests with
+  `gh api repos/tilmanbergt/kept-gtd/pulls…` (REST) instead.
+- **OP3 (three-case test).** Running on a throwaway PR; the result follows with S9.
