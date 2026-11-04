@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // The claims register docs/dev/claims.md (docs/dev/history/technical-design-quality-assurance.md §7.2).
 //
-//   npm run claims                      check it and print the claims by backing
+//   npm run claims                      check it and print the claims report
 //   node scripts/claims.mjs --check     exit 1 on a malformed entry or an evidence path that
 //                                       doesn't exist (every check tier)
 

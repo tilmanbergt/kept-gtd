@@ -244,11 +244,12 @@ A change is not done while the docs describe the old behavior.
   - **Quality report** (`npm run quality`, `coverage/quality.md`; `npm run coverage` runs it last,
     CI shows it at the top of the job summary, each release keeps it in its `test-coverage-<version>.md`):
     help headings with a scenario (`help:` on a scenario, `docs/dev/README.md` "Writing scenarios"),
-    help labels and quoted messages against the app's strings, claims by backing, diagram sizes.
-    **Only mistakes fail** - a `help:` reference to a heading that doesn't exist, a malformed claim
-    or a missing evidence path, a stale, orphaned or unused diagram, the diagram budget, a bad image
-    line. Coverage, unmatched labels and quotes, and claims backed `reviewed` or `none` are a view,
-    never a gate: they go to the backlog, not into a red check.
+    help labels and quoted messages against the app's strings, claims not fully true or unsure,
+    diagram sizes. **Only mistakes fail** - a `help:` reference to a heading that doesn't exist, a
+    malformed claim or a missing evidence path, a stale, orphaned or unused diagram, the diagram
+    budget, a bad image line. Coverage, unmatched labels and quotes, a claim's low Fulfilled or
+    Confidence score, and a claim kept true only by a checklist or by nothing are a view, never a
+    gate: they go to the backlog, not into a red check.
   - **Coverage ratchet** (`npm run coverage`, `scripts/coverage-baseline.json`): an area's line or
     branch coverage may not fall more than 2 points below its baseline. `node
     scripts/coverage-report.mjs --update-baseline` raises the baseline after coverage grew; lowering

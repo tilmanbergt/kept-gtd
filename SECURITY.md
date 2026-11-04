@@ -37,7 +37,8 @@ The details are in [PRIVACY.md](PRIVACY.md). In short:
 
 - **Your files**: the project, area and Inbox files and the notes in your PARA folders on the
   Supernote, `EXPORT/kept-gtd` for what you export, and `MyStyle/kept-gtd` for an update you
-  download. It deletes only after a confirmation that names what is deleted.
+  download; elsewhere it only reads a file you choose (to link it, or as a note background). It
+  deletes only after a confirmation that names what is deleted.
 - **The plugin's private folder** on the device: settings, lasso mark pictures and temporary files.
 - **Google Calendar and Gmail**, both optional, experimental and off by default: the private
   calendar (ICS) link and the Gmail app password you enter are stored unencrypted in the plugin

@@ -16,6 +16,8 @@ or your project/area files are stored.
   and a meeting before, during and after (Meetings).
 
 ### Changed
+- PRIVACY.md now also says which files Kept reads outside your folders: a file you link from the
+  Device tab, a background from MyStyle, and the note or document you opened Kept from.
 - For contributors: `SECURITY.md` says how to report a vulnerability privately and what Kept
   touches; `docs/dev/claims.md` lists every promise Kept makes and how each is checked.
 

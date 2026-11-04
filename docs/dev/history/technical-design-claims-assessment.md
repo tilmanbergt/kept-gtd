@@ -99,3 +99,17 @@ The Claims section of `quality.md`:
 |---|---|---|
 | A1 | help gaps first: render, CI order, getting-started excluded | none |
 | A2 | claims: format, check, report, register re-rated, P8 wording, audit prompt, policy | none |
+
+## As built
+
+- Built as designed in A1 and A2. With getting-started excluded, help coverage reads 73 / 169.
+- The first ratings (0.26.0): 13 claims are not fully true or unsure. Two ratings changed from what
+  the first audit assumed:
+  - F10 (Kept never deletes notes) is 4: removing the demo space with Remove Kept's data deletes
+    the demo folder, notes included.
+  - V6 (outside the private folders, only empty folders are deleted natively) is 2: Remove Kept's
+    data also uses `deleteKeptTree` and `deleteKeptFile`. `AGENTS.md`'s delete rule now names them,
+    so a review doesn't flag Remove Kept's data.
+- P8 was made true by its wording: PRIVACY.md splits file read from file write and names what Kept
+  reads elsewhere (a linked file from the Device tab, a background from MyStyle, the file Kept was
+  opened from); SECURITY.md and the InkHub listing say the same in short.

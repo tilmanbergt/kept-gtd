@@ -20,7 +20,8 @@ behavior the design doesn't describe, and design items the change claims but doe
 - **Deletes need a confirmation, then permission, then the empty-folder delete.** Flag a delete in
   shared storage without a confirmation that names what is deleted, without
   `ensureFileDeletePermission(<text naming it>)`, or with a native delete other than
-  `deleteEmptyFolder`, `deleteTempTree` or `deletePrivateDataTree`. Instead: that sequence.
+  `deleteEmptyFolder`, `deleteTempTree`, `deletePrivateDataTree`, and `deleteKeptTree` /
+  `deleteKeptFile` for Remove Kept's data. Instead: that sequence.
 - **Secrets never leave the plugin settings.** Flag a Gmail app password, calendar (ICS) link or
   other secret that reaches a file, a log line, the debug bundle or a profile file. Instead:
   classify it as secret in `domain/profiles.ts` and log counts or yes/no.

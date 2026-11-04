@@ -26,8 +26,12 @@ Kept GTD is a local plugin. There is no account, no server and no telemetry.
 
 Each permission is requested right before the first action that needs it:
 
-- **File read / file write**: your PARA folders, `EXPORT/kept-gtd`, and `MyStyle/kept-gtd` for a
-  downloaded update.
+- **File write**: your PARA folders, `EXPORT/kept-gtd`, and `MyStyle/kept-gtd` for a downloaded
+  update. Kept writes nowhere else.
+- **File read**: the same folders, and elsewhere on the Supernote only what you choose: a file you
+  link from the **Device** tab of the Files pane (which lists the Supernote's own folders such as
+  `Document` or `Download`, and an SD card), a template from `MyStyle` as a note background, and the
+  note or document you opened Kept from.
 - **File delete**: only after you confirmed a delete that names what is deleted - the empty folder
   left behind when an area is archived into an Archive folder that already exists, and what you
   check in **Remove Kept's data** (below). Kept never deletes notes.

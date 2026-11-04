@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // The quality report coverage/quality.md (docs/dev/history/technical-design-quality-assurance.md §5):
-// help coverage by scenarios, help labels and quoted messages, claims by backing, diagrams.
+// help coverage by scenarios, help labels and quoted messages, claims (how true, how sure, kept true by), diagrams.
 // Needs no Jest run. Report only: it never fails a check (check.mjs --coverage runs it last).
 //
 //   npm run quality        write coverage/quality.md and print it

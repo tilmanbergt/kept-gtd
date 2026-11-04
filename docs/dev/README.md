@@ -72,7 +72,7 @@ Releases: see `RELEASING.md`.
 - `npm run scenarios` runs only the scenario tests and writes `docs/dev/test-scenarios.md`
   (see "Writing scenarios" below).
 - `npm run quality` writes `coverage/quality.md` in seconds, without Jest: help headings with a
-  scenario, help labels and quoted messages against the app's strings, claims by backing, diagram
+  scenario, help labels and quoted messages against the app's strings, claims not fully true or unsure, diagram
   sizes. Report only; `npm run coverage` runs it last, and CI puts it at the top of the job summary,
   starting with the help sections no scenario names yet (the area table follows).
   `npm run claims` checks `docs/dev/claims.md`; `npm run diagrams` renders the help diagrams.
@@ -281,7 +281,8 @@ no history and no open work:
 - `RELEASING.md`: git, build and release workflow.
 - `inkhub-listing.md`: the field values for the InkHub store listing.
 - `claims.md`: every promise Kept makes and every goal behind the policy, with how each is backed
-  (enforced, tested, reviewed, none); `npm run claims` checks it.
+  how true each is today (Fulfilled 1-5), how sure (Confidence 1-5) and what keeps it true (check,
+  test, checklist, nothing); `npm run claims` checks it.
 - `claims-audit.md`: the prompt for the independent claims audit in a fresh session.
 - this `README.md`.
 
