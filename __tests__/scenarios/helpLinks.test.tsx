@@ -8,7 +8,7 @@ async function pageTo(text: string): Promise<void> {
   for (let i = 0; i < 10 && !shows(text); i++) await tap('›');
 }
 
-scenario('Follow links between help pages and walk back with ‹ Back', {feature: 'Help', design: 'technical-design-easy-start.md'}, () => {
+scenario('Follow links between help pages and walk back with ‹ Back', {feature: 'Help', design: 'technical-design-easy-start.md', help: 'index.md#the-tabs-at-a-glance'}, () => {
   given('Kept is open on the Projects tab', async () => {
     await openApp();
     await tapTab('Projects');
@@ -62,7 +62,7 @@ scenario('Follow links between help pages and walk back with ‹ Back', {feature
   });
 });
 
-scenario('A link to a heading of the same page jumps there, and ‹ Back returns', {feature: 'Help', design: 'technical-design-help-linking.md'}, () => {
+scenario('A link to a heading of the same page jumps there, and ‹ Back returns', {feature: 'Help', design: 'technical-design-help-linking.md', help: 'index.md#the-tabs-at-a-glance'}, () => {
   given('the help shows Projects and Areas at its top', async () => {
     await openApp();
     await tapTab('Projects');

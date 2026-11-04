@@ -32,7 +32,7 @@ async function openDaily(): Promise<void> {
   await tapTab('Daily');
 }
 
-scenario('Daily: tapping a thread meeting shows its card and the context panel', {feature: 'Daily', design: DESIGN}, () => {
+scenario('Daily: tapping a thread meeting shows its card and the context panel', {feature: 'Daily', design: DESIGN, help: 'meetings.md#the-context-panel'}, () => {
   given('"1:1 Jordan #sparring/jordan" today at 15:00, an owed todo from the last 1:1, a waiting todo and an agreement', () => {
     smokeClock();
     coaching(['- 2026-10-14 15:00-16:00 1:1 Jordan #sparring/jordan']);
@@ -57,7 +57,7 @@ scenario('Daily: tapping a thread meeting shows its card and the context panel',
   });
 });
 
-scenario('Daily: a plain meeting with nothing linked shows its project', {feature: 'Daily', design: DESIGN}, () => {
+scenario('Daily: a plain meeting with nothing linked shows its project', {feature: 'Daily', design: DESIGN, help: 'meetings.md#the-context-panel'}, () => {
   given('"Steering committee" today in project Website, which has the Next todo "Draft homepage"', () => {
     smokeClock();
     putFile(projectFile('Website'), dataFile('project', {Scope: [], Tasks: ['- [ ] Draft homepage #next'], Meetings: ['- 2026-10-14 16:00 Steering committee']}));
@@ -72,7 +72,7 @@ scenario('Daily: a plain meeting with nothing linked shows its project', {featur
   });
 });
 
-scenario('Quick Add to meeting before it starts: an agenda item with the thread tag', {feature: 'Daily', design: DESIGN}, () => {
+scenario('Quick Add to meeting before it starts: an agenda item with the thread tag', {feature: 'Daily', design: DESIGN, help: 'meetings.md#the-context-panel'}, () => {
   given('the thread meeting "1:1 Jordan" today at 15:00', () => {
     smokeClock();
     coaching(['- 2026-10-14 15:00-16:00 1:1 Jordan #sparring/jordan']);
@@ -94,7 +94,7 @@ scenario('Quick Add to meeting before it starts: an agenda item with the thread 
   });
 });
 
-scenario('Quick Add to meeting during it: the meeting is recorded', {feature: 'Daily', design: DESIGN}, () => {
+scenario('Quick Add to meeting during it: the meeting is recorded', {feature: 'Daily', design: DESIGN, help: 'meetings.md#the-context-panel'}, () => {
   given('the thread meeting "1:1 Jordan" today 9:30-10:30, running now', () => {
     smokeClock();
     coaching(['- 2026-10-14 09:30-10:30 1:1 Jordan #sparring/jordan']);
@@ -112,7 +112,7 @@ scenario('Quick Add to meeting during it: the meeting is recorded', {feature: 'D
   });
 });
 
-scenario('Quick Add to meeting opens the Todo tab and names where it adds, without an abbreviation in the text', {feature: 'Daily', design: DESIGN}, () => {
+scenario('Quick Add to meeting opens the Todo tab and names where it adds, without an abbreviation in the text', {feature: 'Daily', design: DESIGN, help: 'meetings.md#the-context-panel'}, () => {
   given('the thread meeting "1:1 Jordan" today at 15:00, and Quick Add left on its Meeting tab', () => {
     smokeClock();
     coaching(['- 2026-10-14 15:00-16:00 1:1 Jordan #sparring/jordan']);
@@ -130,7 +130,7 @@ scenario('Quick Add to meeting opens the Todo tab and names where it adds, witho
   });
 });
 
-scenario('A todo in the panel opens its card and edit form; Save and ✕ return to the meeting', {feature: 'Daily', design: DESIGN}, () => {
+scenario('A todo in the panel opens its card and edit form; Save and ✕ return to the meeting', {feature: 'Daily', design: DESIGN, help: 'meetings.md#the-context-panel'}, () => {
   given('the thread meeting "1:1 Jordan" today at 15:00 with "Send the slides" owed', () => {
     smokeClock();
     coaching(['- 2026-10-14 15:00-16:00 1:1 Jordan #sparring/jordan']);
@@ -163,7 +163,7 @@ scenario('A todo in the panel opens its card and edit form; Save and ✕ return 
   });
 });
 
-scenario('✕ Close in the panel\'s header closes the meeting: Daily shows its next todos again', {feature: 'Daily', design: DESIGN}, () => {
+scenario('✕ Close in the panel\'s header closes the meeting: Daily shows its next todos again', {feature: 'Daily', design: DESIGN, help: 'meetings.md#the-context-panel'}, () => {
   given('the thread meeting "1:1 Jordan" today at 15:00', () => {
     smokeClock();
     coaching(['- 2026-10-14 15:00-16:00 1:1 Jordan #sparring/jordan']);
@@ -180,7 +180,7 @@ scenario('✕ Close in the panel\'s header closes the meeting: Daily shows its n
   });
 });
 
-scenario('The panel gives the full context: Next, Planned and a Waiting for dated later, which Daily leaves out', {feature: 'Daily', design: DESIGN}, () => {
+scenario('The panel gives the full context: Next, Planned and a Waiting for dated later, which Daily leaves out', {feature: 'Daily', design: DESIGN, help: 'meetings.md#the-context-panel'}, () => {
   given('the thread meeting "1:1 Jordan" today, an agenda point without a flow state and a Waiting for due on 30.10.', () => {
     smokeClock();
     putFile(
@@ -207,7 +207,7 @@ scenario('The panel gives the full context: Next, Planned and a Waiting for date
   });
 });
 
-scenario('Tapping the title on a card opens its edit form, like Edit', {feature: 'Daily', design: DESIGN}, () => {
+scenario('Tapping the title on a card opens its edit form, like Edit', {feature: 'Daily', design: DESIGN, help: 'quick-add.md#editing'}, () => {
   given('the thread meeting "1:1 Jordan" today with "Send the slides" owed', () => {
     smokeClock();
     coaching(['- 2026-10-14 15:00-16:00 1:1 Jordan #sparring/jordan']);
@@ -224,7 +224,7 @@ scenario('Tapping the title on a card opens its edit form, like Edit', {feature:
   });
 });
 
-scenario('Week: a day header opens the day, a chip the card and panel, "‹ Back to Week 42" the normal side', {feature: 'Week and Month', design: DESIGN}, () => {
+scenario('Week: a day header opens the day, a chip the card and panel, "‹ Back to Week 42" the normal side', {feature: 'Week and Month', design: DESIGN, help: 'week-and-month.md#week, meetings.md#the-context-panel'}, () => {
   given('"1:1 Jordan" on Thursday 15.10.', () => {
     smokeClock();
     coaching(['- 2026-10-15 15:00-16:00 1:1 Jordan #sparring/jordan']);
@@ -249,7 +249,7 @@ scenario('Week: a day header opens the day, a chip the card and panel, "‹ Back
   });
 });
 
-scenario('Month: a day, then a meeting in it, then "‹ Back to October 2026"', {feature: 'Week and Month', design: DESIGN}, () => {
+scenario('Month: a day, then a meeting in it, then "‹ Back to October 2026"', {feature: 'Week and Month', design: DESIGN, help: 'week-and-month.md#month'}, () => {
   given('"1:1 Jordan" on 15.10.', () => {
     smokeClock();
     coaching(['- 2026-10-15 15:00-16:00 1:1 Jordan #sparring/jordan']);

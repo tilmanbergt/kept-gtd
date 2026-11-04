@@ -47,7 +47,7 @@ function textBoxesOn(page: number): Array<{text: string; x: number; y: number; f
     });
 }
 
-scenario('On a Manta notebook the reflection page keeps its layout, scaled to the bigger page', {feature: 'Note setups', design: DESIGN}, () => {
+scenario('On a Manta notebook the reflection page keeps its layout, scaled to the bigger page', {feature: 'Note setups', design: DESIGN, help: 'note-setups.md#the-page-layout'}, () => {
   given('a sparring notebook made on a Manta (1920 × 2560 px pages)', () => coachingWithNotebook({width: 1920, height: 2560}, 5));
   when('I reflect on the session', () => reflect(settingsWithQuestionAt(400)));
   then('the question sits at the Manta position of reference (x, 400), in a bigger font', () => {
@@ -57,7 +57,7 @@ scenario('On a Manta notebook the reflection page keeps its layout, scaled to th
   });
 });
 
-scenario('On a horizontal notebook a piece that would land below the page is left out, and Kept says so', {feature: 'Note setups', design: DESIGN}, () => {
+scenario('On a horizontal notebook a piece that would land below the page is left out, and Kept says so', {feature: 'Note setups', design: DESIGN, help: 'note-setups.md#the-page-layout'}, () => {
   given('a sparring notebook with horizontal pages (1872 × 1404 px)', () => coachingWithNotebook({width: 1872, height: 1404}, 3));
   when('I reflect with a setup whose question sits at reference y 1600', () => reflect(settingsWithQuestionAt(1600)));
   then('the page gets its heading but not the question, and the status line explains', () => {
@@ -67,7 +67,7 @@ scenario('On a horizontal notebook a piece that would land below the page is lef
   });
 });
 
-scenario('On an A5 X notebook every piece stays exactly where the setup puts it', {feature: 'Note setups', design: DESIGN}, () => {
+scenario('On an A5 X notebook every piece stays exactly where the setup puts it', {feature: 'Note setups', design: DESIGN, help: 'note-setups.md#the-page-layout'}, () => {
   given('a sparring notebook made on the A5 X', () => coachingWithNotebook({width: 1404, height: 1872}, 3));
   when('I reflect with the question at reference y 1600', () => reflect(settingsWithQuestionAt(1600)));
   then('the question is written at y 1600, unscaled', () => {

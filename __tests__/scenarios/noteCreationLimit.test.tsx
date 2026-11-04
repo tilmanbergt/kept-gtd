@@ -17,7 +17,7 @@ function coachingWithoutNotebook(): void {
   putFile(BOOK, '%PDF');
 }
 
-scenario('Opened from a PDF, a note that needs a new file is not tried: the status says why', {feature: 'Note setups', design: DESIGN}, () => {
+scenario('Opened from a PDF, a note that needs a new file is not tried: the status says why', {feature: 'Note setups', design: DESIGN, help: 'index.md#opening-kept-gtd-from-a-note'}, () => {
   given('a sparring session whose notebook does not exist yet, and a PDF', coachingWithoutNotebook);
   when('I open Kept from the PDF, open the session and tap Reflect', async () => {
     await openApp({fromNote: BOOK, settings: sparringSettings()});
@@ -35,7 +35,7 @@ scenario('Opened from a PDF, a note that needs a new file is not tried: the stat
   });
 });
 
-scenario('Opened from a note, the same Reflect asks first and creates the notebook', {feature: 'Note setups', design: DESIGN}, () => {
+scenario('Opened from a note, the same Reflect asks first and creates the notebook', {feature: 'Note setups', design: DESIGN, help: 'note-setups.md#before-a-note-is-created'}, () => {
   given('the same session, and a note to open Kept from', () => {
     coachingWithoutNotebook();
     device().sdk.putNote('/storage/emulated/0/Note/Ideas.note');

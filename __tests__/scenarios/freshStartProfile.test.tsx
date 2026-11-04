@@ -35,7 +35,7 @@ async function startFreshAndFinish(): Promise<void> {
   await tap('Finish');
 }
 
-scenario('Welcome back loads the saved profile after a fresh install', {feature: 'Profiles and demo space', design: DESIGN}, () => {
+scenario('Welcome back loads the saved profile after a fresh install', {feature: 'Profiles and demo space', design: DESIGN, help: 'profiles-and-demo.md#saved-profiles'}, () => {
   let before = '';
   given('a fresh install and production.json with two contexts and one Note setup', () => {
     before = savedProfile('Production', '2026-11-01T09:00:00Z');
@@ -61,7 +61,7 @@ scenario('Welcome back loads the saved profile after a fresh install', {feature:
   });
 });
 
-scenario('Welcome back lists the newest profile first and selects it', {feature: 'Profiles and demo space', design: DESIGN}, () => {
+scenario('Welcome back lists the newest profile first and selects it', {feature: 'Profiles and demo space', design: DESIGN, help: 'profiles-and-demo.md#saved-profiles'}, () => {
   given('production.json saved 1 Nov and work.json saved 3 Nov', () => {
     putFile(PRODUCTION, savedProfile('Production', '2026-11-01T09:00:00Z'));
     putFile(`${PROFILES}/work.json`, savedProfile('Work', '2026-11-03T09:00:00Z'));
@@ -78,7 +78,7 @@ scenario('Welcome back lists the newest profile first and selects it', {feature:
   });
 });
 
-scenario('Start fresh, then Restore from Settings → Data → Profiles', {feature: 'Profiles and demo space', design: DESIGN}, () => {
+scenario('Start fresh, then Restore from Settings → Data → Profiles', {feature: 'Profiles and demo space', design: DESIGN, help: 'profiles-and-demo.md#saved-profiles'}, () => {
   let before = '';
   given('a fresh install and a saved production.json', () => {
     before = savedProfile('Production', '2026-11-01T09:00:00Z');
@@ -106,7 +106,7 @@ scenario('Start fresh, then Restore from Settings → Data → Profiles', {featu
   });
 });
 
-scenario('Switching away from fresh settings does not overwrite the saved profile', {feature: 'Profiles and demo space', design: DESIGN}, () => {
+scenario('Switching away from fresh settings does not overwrite the saved profile', {feature: 'Profiles and demo space', design: DESIGN, help: 'profiles-and-demo.md#saved-profiles'}, () => {
   let before = '';
   given('a fresh start with a saved production.json (Start fresh)', async () => {
     before = savedProfile('Production', '2026-11-01T09:00:00Z');
@@ -129,7 +129,7 @@ scenario('Switching away from fresh settings does not overwrite the saved profil
   });
 });
 
-scenario('Save on fresh settings asks before replacing the saved profile', {feature: 'Profiles and demo space', design: DESIGN}, () => {
+scenario('Save on fresh settings asks before replacing the saved profile', {feature: 'Profiles and demo space', design: DESIGN, help: 'profiles-and-demo.md#saved-profiles'}, () => {
   let before = '';
   given('a fresh start with a saved production.json (Start fresh)', async () => {
     before = savedProfile('Production', '2026-11-01T09:00:00Z');
@@ -161,7 +161,7 @@ scenario('Save on fresh settings asks before replacing the saved profile', {feat
   });
 });
 
-scenario("Remove Kept's data on fresh settings does not save over the saved profile unasked", {feature: 'Profiles and demo space', design: DESIGN}, () => {
+scenario('Remove Kept\'s data on fresh settings does not save over the saved profile unasked', {feature: 'Profiles and demo space', design: DESIGN, help: 'settings.md#remove-kepts-data, profiles-and-demo.md#saved-profiles'}, () => {
   let before = '';
   given('a fresh start with a saved production.json (Start fresh)', async () => {
     before = savedProfile('Production', '2026-11-01T09:00:00Z');
@@ -185,7 +185,7 @@ scenario("Remove Kept's data on fresh settings does not save over the saved prof
   });
 });
 
-scenario('Without saved profiles the assistant starts at Folders and creates no profiles folder', {feature: 'Profiles and demo space', design: DESIGN}, () => {
+scenario('Without saved profiles the assistant starts at Folders and creates no profiles folder', {feature: 'Profiles and demo space', design: DESIGN, help: 'settings.md#setup-assistant'}, () => {
   given('a fresh install without EXPORT/kept-gtd/profiles', () => undefined);
   when('Kept starts for the first time', () => openApp({fresh: true}));
   then('the assistant starts at Folders as before', () => {
@@ -197,7 +197,7 @@ scenario('Without saved profiles the assistant starts at Folders and creates no 
   });
 });
 
-scenario('An unreadable profile file shows no Welcome back', {feature: 'Profiles and demo space', design: DESIGN}, () => {
+scenario('An unreadable profile file shows no Welcome back', {feature: 'Profiles and demo space', design: DESIGN, help: 'profiles-and-demo.md#saved-profiles'}, () => {
   given('a fresh install and a production.json that is not valid JSON', () => {
     putFile(PRODUCTION, '{"name": "Production", ');
   });
@@ -208,7 +208,7 @@ scenario('An unreadable profile file shows no Welcome back', {feature: 'Profiles
   });
 });
 
-scenario("After Remove Kept's data, Welcome back offers the saved profile", {feature: 'Profiles and demo space', design: DESIGN}, () => {
+scenario('After Remove Kept\'s data, Welcome back offers the saved profile', {feature: 'Profiles and demo space', design: DESIGN, help: 'profiles-and-demo.md#saved-profiles'}, () => {
   given('Kept runs on stored settings with two contexts', async () => {
     await openApp({settings: SAVED});
   });

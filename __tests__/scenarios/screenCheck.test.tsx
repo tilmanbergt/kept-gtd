@@ -5,7 +5,7 @@ import {and, given, scenario, then, when} from '../../test-helpers/scenario/scen
 const MANTA_NOTE = '/storage/emulated/0/Note/Sketches.note';
 const TEST_NOTE = '/storage/emulated/0/EXPORT/kept-gtd/debug/landscape-test.note';
 
-scenario('Check screen and pages shows the launch note\'s page size and tries a horizontal test note', {feature: 'Settings', design: 'technical-design-launch-ready.md'}, () => {
+scenario('Check screen and pages shows the launch note\'s page size and tries a horizontal test note', {feature: 'Settings', design: 'technical-design-launch-ready.md', help: 'settings.md#tools'}, () => {
   given('a two-page note made on a Manta, and debug logging on', () => {
     device().sdk.putNote(MANTA_NOTE, [{}, {}], 'style_white', {size: {width: 1920, height: 2560}, machineType: 5});
   });
@@ -49,7 +49,7 @@ scenario('Check screen and pages shows the launch note\'s page size and tries a 
   });
 });
 
-scenario('Check screen and pages is hidden while debug logging is off', {feature: 'Settings', design: 'technical-design-launch-ready.md'}, () => {
+scenario('Check screen and pages is hidden while debug logging is off', {feature: 'Settings', design: 'technical-design-launch-ready.md', help: 'settings.md#tools'}, () => {
   when('I open Settings → Advanced with debug logging off', async () => {
     await openApp();
     await tapTab('Settings');

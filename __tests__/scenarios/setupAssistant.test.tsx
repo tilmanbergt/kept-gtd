@@ -5,7 +5,7 @@ import {and, given, scenario, then, when} from '../../test-helpers/scenario/scen
 
 const NOTE = '/storage/emulated/0/Note';
 
-scenario('A fresh install opens the setup assistant; Finish saves the folders found and creates only the missing ones', {feature: 'Settings', design: 'technical-design-easy-start.md'}, () => {
+scenario('A fresh install opens the setup assistant; Finish saves the folders found and creates only the missing ones', {feature: 'Settings', design: 'technical-design-easy-start.md', help: 'settings.md#setup-assistant'}, () => {
   given('Note holds a folder "Projects" with 3 project folders and nothing else of PARA, and Kept may not use the internet yet', () => {
     for (const p of ['Garden renovation', 'Team offsite', 'Bike repair']) putFile(`${NOTE}/Projects/${p}/notes.txt`, 'x');
     device().sdk.deniedPermissions.add('plugin.permission.INTERNET');
@@ -56,7 +56,7 @@ scenario('A fresh install opens the setup assistant; Finish saves the folders fo
   });
 });
 
-scenario('Skip closes the assistant without saving or creating anything', {feature: 'Settings', design: 'technical-design-easy-start.md'}, () => {
+scenario('Skip closes the assistant without saving or creating anything', {feature: 'Settings', design: 'technical-design-easy-start.md', help: 'settings.md#setup-assistant'}, () => {
   when('Kept starts for the first time and I tap ? Help', async () => {
     await openApp({fresh: true});
     await tap('? Help');
@@ -79,7 +79,7 @@ scenario('Skip closes the assistant without saving or creating anything', {featu
   });
 });
 
-scenario('An existing install opens on Daily as before; Run setup assistant starts it from Settings → Data, Simple with own notes', {feature: 'Settings', design: 'technical-design-easy-start.md'}, () => {
+scenario('An existing install opens on Daily as before; Run setup assistant starts it from Settings → Data, Simple with own notes', {feature: 'Settings', design: 'technical-design-easy-start.md', help: 'settings.md#setup-assistant'}, () => {
   when('Kept starts with stored settings', () => openApp());
   then('it lands on Daily, without the assistant', () => {
     expectNotShows('Setup · 1 of 5');

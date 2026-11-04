@@ -8,7 +8,7 @@ const DESIGN = 'technical-design-test-tiers.md';
 
 afterEach(() => jest.useRealTimers());
 
-scenario('A file changed elsewhere is read again when the plugin opens', {feature: 'Your files', design: DESIGN}, () => {
+scenario('A file changed elsewhere is read again when the plugin opens', {feature: 'Your files', design: DESIGN, help: 'files-and-folders.md#editing-by-hand'}, () => {
   given('the smoke space and Daily open', async () => {
     smokeClock();
     putSmokeSpace();

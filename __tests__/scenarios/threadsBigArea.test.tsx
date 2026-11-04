@@ -58,7 +58,7 @@ const goldenLines = () => {
 
 const rosterBuilds = () => device().logs.filter(l => l.text.startsWith('tendingRoster: built')).length;
 
-scenario('A big Area\'s Threads tab shows the same counterparts and signals as before, built once', {feature: 'Threads', design: 'technical-design-perf-threads.md'}, () => {
+scenario('A big Area\'s Threads tab shows the same counterparts and signals as before, built once', {feature: 'Threads', design: 'technical-design-perf-threads.md', help: 'projects-and-areas.md#threads'}, () => {
   given('area "Team" with 2 projects, 26 counterparts, 133 meetings and 97 todos (half agreed in a meeting, some in the Inbox and in area "Zen", two with a renamed meeting)', () => {
     clock();
     putBigScope();
@@ -79,7 +79,7 @@ scenario('A big Area\'s Threads tab shows the same counterparts and signals as b
   });
 });
 
-scenario('Renaming a meeting in Quick Add updates the Threads tab of the big Area', {feature: 'Threads', design: 'technical-design-perf-threads.md'}, () => {
+scenario('Renaming a meeting in Quick Add updates the Threads tab of the big Area', {feature: 'Threads', design: 'technical-design-perf-threads.md', help: 'projects-and-areas.md#threads'}, () => {
   const meetingDay = bigDay(9);
   given('area "Team" of the big data set also has a todo agreed in "1:1 Ines" on a day only "1:1 Vera" has a meeting', () => {
     clock();

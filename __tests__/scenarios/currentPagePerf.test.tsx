@@ -51,7 +51,7 @@ async function openCounted(item: RegExp): Promise<OpenWork> {
 
 const work: Record<string, OpenWork> = {};
 
-scenario('Opening an Area page renders each part a bounded number of times and reads no settings it knows', {feature: 'Projects and Areas', design: 'technical-design-perf-current-page.md'}, () => {
+scenario('Opening an Area page renders each part a bounded number of times and reads no settings it knows', {feature: 'Projects and Areas', design: 'technical-design-perf-current-page.md', help: 'projects-and-areas.md#the-current-tab'}, () => {
   given('the big data set and the app started', async () => {
     clock();
     for (const f of bigScopeFiles()) putFile(f.path, f.content);
@@ -80,7 +80,7 @@ scenario('Opening an Area page renders each part a bounded number of times and r
 
 const listings = (folder: string) => device().logs.filter(l => l.text === `FileBrowserPane: loading ${folder} `).length;
 
-scenario('An Area page lists its folder only when the Files tab is opened', {feature: 'Projects and Areas', design: 'technical-design-perf-current-page.md'}, () => {
+scenario('An Area page lists its folder only when the Files tab is opened', {feature: 'Projects and Areas', design: 'technical-design-perf-current-page.md', help: 'projects-and-areas.md#files-and-linked-files'}, () => {
   given('the big data set and the app started', async () => {
     clock();
     for (const f of bigScopeFiles()) putFile(f.path, f.content);
@@ -99,7 +99,7 @@ scenario('An Area page lists its folder only when the Files tab is opened', {fea
   });
 });
 
-scenario('Hiding done todos on an Area page changes the Todos list and nothing else, and is kept', {feature: 'Projects and Areas', design: 'technical-design-perf-current-page.md'}, () => {
+scenario('Hiding done todos on an Area page changes the Todos list and nothing else, and is kept', {feature: 'Projects and Areas', design: 'technical-design-perf-current-page.md', help: 'projects-and-areas.md#the-current-tab'}, () => {
   given('the big data set and Team\'s page open', async () => {
     clock();
     for (const f of bigScopeFiles()) putFile(f.path, f.content);

@@ -55,7 +55,7 @@ afterAll(() => {
   fs.writeFileSync(GOLDEN, JSON.stringify(recorded, null, 1) + '\n');
 });
 
-scenario('The Current pages of the big data set show what was recorded before the performance work', {feature: 'Projects and Areas', design: 'technical-design-perf-current-page.md'}, () => {
+scenario('The Current pages of the big data set show what was recorded before the performance work', {feature: 'Projects and Areas', design: 'technical-design-perf-current-page.md', help: 'projects-and-areas.md#the-current-tab'}, () => {
   given('the big data set: area "Team" with projects "Tender" and "Migration", area "Zen", project "Solo" and the Inbox', () => {
     clock();
     for (const f of bigScopeFiles()) putFile(f.path, f.content);

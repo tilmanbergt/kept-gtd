@@ -6,7 +6,7 @@ import {sparringSettings} from '../../test-helpers/scenario/setups';
 
 const today = isoDateOffset(0);
 
-scenario('Save to <Name>: an abbreviation tag typed while editing saves the meeting and moves it there', {feature: 'Quick Add', design: 'technical-design-item-card.md'}, () => {
+scenario('Save to <Name>: an abbreviation tag typed while editing saves the meeting and moves it there', {feature: 'Quick Add', design: 'technical-design-item-card.md', help: 'quick-add.md#filing-directly-with-an-abbreviation'}, () => {
   given('project "Garden renovation" (#GR) and the Inbox meeting "Site visit" today', () => {
     putFile(projectFile('Garden renovation'), dataFile('project', {Scope: [], Tasks: [], Meetings: []}, ['abbrev: GR']));
     putFile(INBOX_FILE, dataFile('inbox', {Tasks: [], Meetings: [`- ${today} 14:00 Site visit`]}));
@@ -30,7 +30,7 @@ scenario('Save to <Name>: an abbreviation tag typed while editing saves the meet
   });
 });
 
-scenario('After + Add with an abbreviation tag, the next todo starts with that tag', {feature: 'Quick Add', design: 'technical-design-item-card.md'}, () => {
+scenario('After + Add with an abbreviation tag, the next todo starts with that tag', {feature: 'Quick Add', design: 'technical-design-item-card.md', help: 'quick-add.md#filing-directly-with-an-abbreviation'}, () => {
   given('project "Website" (#WEB) and an empty Inbox', () => {
     putFile(projectFile('Website'), dataFile('project', {Scope: [], Tasks: [], Meetings: []}, ['abbrev: WEB']));
     putFile(INBOX_FILE, dataFile('inbox', {Tasks: [], Meetings: []}));
@@ -71,7 +71,7 @@ scenario('After + Add with an abbreviation tag, the next todo starts with that t
   });
 });
 
-scenario('In a thread overview, Quick Add adds the thread tag it shows in Row 4', {feature: 'Quick Add', design: 'technical-design-item-card.md'}, () => {
+scenario('In a thread overview, Quick Add adds the thread tag it shows in Row 4', {feature: 'Quick Add', design: 'technical-design-item-card.md', help: 'threads.md#adding-from-the-overview'}, () => {
   given('area "Coaching" has the todo "Draft agenda #retro/alpha"', () => {
     putFile(areaFile('Coaching'), dataFile('area', {Scope: [], Tasks: ['- [ ] Draft agenda #retro/alpha'], Meetings: []}));
   });
@@ -98,7 +98,7 @@ scenario('In a thread overview, Quick Add adds the thread tag it shows in Row 4'
 const nextWeek = isoDateOffset(7);
 const lastWeek = isoDateOffset(-7);
 
-scenario('Tap a meeting shows its card; ✕ brings back the half-typed todo', {feature: 'Quick Add', design: 'technical-design-item-card.md'}, () => {
+scenario('Tap a meeting shows its card; ✕ brings back the half-typed todo', {feature: 'Quick Add', design: 'technical-design-item-card.md', help: 'quick-add.md#the-card-one-tap-selects'}, () => {
   given('the Inbox meeting "Team sync" next week', () => {
     putFile(INBOX_FILE, dataFile('inbox', {Tasks: [], Meetings: [`- ${nextWeek} 10:00 Team sync`]}));
   });
@@ -121,7 +121,7 @@ scenario('Tap a meeting shows its card; ✕ brings back the half-typed todo', {f
   });
 });
 
-scenario('A second tap edits; Save writes it and shows the card again', {feature: 'Quick Add', design: 'technical-design-item-card.md'}, () => {
+scenario('A second tap edits; Save writes it and shows the card again', {feature: 'Quick Add', design: 'technical-design-item-card.md', help: 'quick-add.md#editing'}, () => {
   given('the Inbox meeting "Team sync" next week', () => {
     putFile(INBOX_FILE, dataFile('inbox', {Tasks: [], Meetings: [`- ${nextWeek} 10:00 Team sync`]}));
   });
@@ -143,7 +143,7 @@ scenario('A second tap edits; Save writes it and shows the card again', {feature
   });
 });
 
-scenario('Tick R and M on the card: only the tags change', {feature: 'Meetings', design: 'technical-design-item-card.md'}, () => {
+scenario('Tick R and M on the card: only the tags change', {feature: 'Meetings', design: 'technical-design-item-card.md', help: 'meetings.md#the-meeting-row-and-its-card'}, () => {
   const line = `- ${lastWeek} 10:00-11:00 Sparring Jordan #sparring/jordan`;
   given('area "Coaching" has a sparring session last week, tracked for review', () => {
     putFile(areaFile('Coaching'), dataFile('area', {Scope: [], Tasks: [], Meetings: [line]}, ['abbrev: Co']));
@@ -165,7 +165,7 @@ scenario('Tick R and M on the card: only the tags change', {feature: 'Meetings',
   });
 });
 
-scenario('Refile a meeting from the card\'s area chip', {feature: 'Inbox', design: 'technical-design-item-card.md'}, () => {
+scenario('Refile a meeting from the card\'s area chip', {feature: 'Inbox', design: 'technical-design-item-card.md', help: 'quick-add.md#the-card-one-tap-selects'}, () => {
   given('the Inbox meeting "Kick-off" next week and project "Website"', () => {
     putFile(INBOX_FILE, dataFile('inbox', {Tasks: [], Meetings: [`- ${nextWeek} 10:00 Kick-off`]}));
     putFile(projectFile('Website'), dataFile('project', {Scope: [], Tasks: [], Meetings: []}));
@@ -184,7 +184,7 @@ scenario('Refile a meeting from the card\'s area chip', {feature: 'Inbox', desig
   });
 });
 
-scenario('New from this and Cancel meeting from the card', {feature: 'Meetings', design: 'technical-design-item-card.md'}, () => {
+scenario('New from this and Cancel meeting from the card', {feature: 'Meetings', design: 'technical-design-item-card.md', help: 'meetings.md#the-meeting-row-and-its-card, meetings.md#cancelling-and-repeating'}, () => {
   given('the Inbox meeting "Retro" next week', () => {
     putFile(INBOX_FILE, dataFile('inbox', {Tasks: [], Meetings: [`- ${nextWeek} 15:00-16:00 Retro`]}));
   });
@@ -212,7 +212,7 @@ scenario('New from this and Cancel meeting from the card', {feature: 'Meetings',
   });
 });
 
-scenario('Switching to another meeting while editing saves first and shows the other\'s card', {feature: 'Quick Add', design: 'technical-design-item-card.md'}, () => {
+scenario('Switching to another meeting while editing saves first and shows the other\'s card', {feature: 'Quick Add', design: 'technical-design-item-card.md', help: 'quick-add.md#editing'}, () => {
   given('the Inbox meetings "Team sync" and "Retro" next week', () => {
     putFile(INBOX_FILE, dataFile('inbox', {Tasks: [], Meetings: [`- ${nextWeek} 10:00 Team sync`, `- ${nextWeek} 15:00 Retro`]}));
   });
@@ -236,7 +236,7 @@ scenario('Switching to another meeting while editing saves first and shows the o
   });
 });
 
-scenario('Link a file from the card on an Area page, and unlink it', {feature: 'Meetings', design: 'technical-design-item-card.md'}, () => {
+scenario('Link a file from the card on an Area page, and unlink it', {feature: 'Meetings', design: 'technical-design-item-card.md', help: 'quick-add.md#notes-and-files-on-a-todo-or-meeting'}, () => {
   given('area "Coaching" has the meeting "Sparring" next week and the file "brief.pdf" in its folder', () => {
     putFile(areaFile('Coaching'), dataFile('area', {Scope: [], Tasks: [], Meetings: [`- ${nextWeek} 10:00 Sparring`]}));
     putFile(`${areaDir('Coaching')}/brief.pdf`, '%PDF');
@@ -261,7 +261,7 @@ scenario('Link a file from the card on an Area page, and unlink it', {feature: '
   });
 });
 
-scenario('Todo card: a flow chip, done and delete act at once; a retired #now leaves with Next', {feature: 'Quick Add', design: 'technical-design-item-card.md'}, () => {
+scenario('Todo card: a flow chip, done and delete act at once; a retired #now leaves with Next', {feature: 'Quick Add', design: 'technical-design-item-card.md', help: 'quick-add.md#the-card-one-tap-selects'}, () => {
   given('project "Garden renovation" has the todos "Order soil #next #now" (left from focus mode) and "Fix the fence"', () => {
     putFile(projectFile('Garden renovation'), dataFile('project', {Scope: [], Tasks: ['- [ ] Order soil #next #now', '- [ ] Fix the fence'], Meetings: []}));
   });
@@ -297,7 +297,7 @@ scenario('Todo card: a flow chip, done and delete act at once; a retired #now le
   });
 });
 
-scenario('Todo card: the meeting a todo was agreed in opens its thread', {feature: 'Threads', design: 'technical-design-item-card.md'}, () => {
+scenario('Todo card: the meeting a todo was agreed in opens its thread', {feature: 'Threads', design: 'technical-design-item-card.md', help: 'threads.md#where-a-todo-was-agreed'}, () => {
   given('area "Coaching" has a sparring session last week and a todo agreed in it', () => {
     putFile(
       areaFile('Coaching'),

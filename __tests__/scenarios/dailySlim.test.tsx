@@ -17,7 +17,7 @@ async function openDaily(): Promise<void> {
   await tapTab('Daily');
 }
 
-scenario('Daily: a todo\'s card, then its edit, saved into its own file', {feature: 'Daily', design: DESIGN}, () => {
+scenario('Daily: a todo\'s card, then its edit, saved into its own file', {feature: 'Daily', design: DESIGN, help: 'daily.md#schedule-and-cards, quick-add.md#editing'}, () => {
   given('the smoke space and Daily open', openDaily);
   when('I tap "Water the lawn"', () => tap(/^Water the lawn/));
   then('its card shows in Quick Add\'s place, with its owner', () => {
@@ -36,7 +36,7 @@ scenario('Daily: a todo\'s card, then its edit, saved into its own file', {featu
   });
 });
 
-scenario('Daily has no tag filter: its todos all show, with no "#" row above the columns', {feature: 'Daily', design: 'technical-design-launch-ready.md'}, () => {
+scenario('Daily has no tag filter: its todos all show, with no "#" row above the columns', {feature: 'Daily', design: 'technical-design-launch-ready.md', help: 'daily.md#what-appears-on-daily'}, () => {
   given('the smoke space with "Buy bulbs #garden" in Garden', () => {
     smokeClock();
     putSmokeSpace();
@@ -54,7 +54,7 @@ scenario('Daily has no tag filter: its todos all show, with no "#" row above the
   });
 });
 
-scenario('Quick-file from a Daily edit: "Save to <Name>" moves the todo', {feature: 'Daily', design: DESIGN}, () => {
+scenario('Quick-file from a Daily edit: "Save to <Name>" moves the todo', {feature: 'Daily', design: DESIGN, help: 'quick-add.md#filing-directly-with-an-abbreviation'}, () => {
   given('"Buy bulbs" in the Inbox and project Garage (#GAR)', () => {
     smokeClock();
     putSmokeSpace();

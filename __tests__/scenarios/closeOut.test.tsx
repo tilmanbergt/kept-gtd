@@ -6,7 +6,7 @@ import {and, given, scenario, then, when} from '../../test-helpers/scenario/scen
 const year = String(new Date().getFullYear());
 const archiveDir = `${PATHS.archive}/${year}/Website`;
 
-scenario('Close out a finished project: PDF, archive folder and Archived status', {feature: 'Close-out', design: 'technical-design-project-close-out.md'}, () => {
+scenario('Close out a finished project: PDF, archive folder and Archived status', {feature: 'Close-out', design: 'technical-design-project-close-out.md', help: 'close-out.md#the-five-steps, close-out.md#where-things-end-up'}, () => {
   given('project "Website" has only done todos and a meeting note in its folder', () => {
     putFile(projectFile('Website'), dataFile('project', {Scope: ['Relaunch the site.'], Tasks: ['- [x] Write copy'], Meetings: []}, ['abbrev: WEB']));
     device().sdk.putNote(`${projectDir('Website')}/Meetings/Kick-off.note`);

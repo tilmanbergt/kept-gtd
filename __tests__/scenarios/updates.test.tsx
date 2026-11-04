@@ -35,7 +35,7 @@ function privateTmpFiles(): string[] {
   return device().fs.calls.filter(c => c.path.startsWith(`${PRIVATE_DIR}/tmp/`) && c.method === 'deleteTempTree').map(c => c.path);
 }
 
-scenario('About says Kept is up to date when GitHub has nothing newer', {feature: 'Settings', design: DESIGN}, () => {
+scenario('About says Kept is up to date when GitHub has nothing newer', {feature: 'Settings', design: DESIGN, help: 'settings.md#updates'}, () => {
   given('the latest release on GitHub is 0.0.1', () => device().github.publish('0.0.1'));
   when('I open Settings → About and tap Check now', async () => {
     await openApp();
@@ -52,7 +52,7 @@ scenario('About says Kept is up to date when GitHub has nothing newer', {feature
   });
 });
 
-scenario('A newer release shows a notice; Download saves it into MyStyle/kept-gtd', {feature: 'Settings', design: DESIGN}, () => {
+scenario('A newer release shows a notice; Download saves it into MyStyle/kept-gtd', {feature: 'Settings', design: DESIGN, help: 'settings.md#updates'}, () => {
   given('GitHub has 99.0.0 and I checked for it in About', async () => {
     device().github.publish('99.0.0');
     await openApp();
@@ -90,7 +90,7 @@ scenario('A newer release shows a notice; Download saves it into MyStyle/kept-gt
   and('no error was logged', () => expect(loggedErrors()).toEqual([]));
 });
 
-scenario('A download that does not match the release leaves nothing in MyStyle', {feature: 'Settings', design: DESIGN}, () => {
+scenario('A download that does not match the release leaves nothing in MyStyle', {feature: 'Settings', design: DESIGN, help: 'settings.md#updates'}, () => {
   given('GitHub has 99.0.0, but its bytes arrive changed', async () => {
     device().github.publish('99.0.0');
     device().github.corrupt.add([...device().github.assets.keys()][0]);
@@ -106,7 +106,7 @@ scenario('A download that does not match the release leaves nothing in MyStyle',
   });
 });
 
-scenario('Not now hides the notice for that version only', {feature: 'Settings', design: DESIGN}, () => {
+scenario('Not now hides the notice for that version only', {feature: 'Settings', design: DESIGN, help: 'settings.md#updates'}, () => {
   given('GitHub has 99.0.0 and Kept found it', async () => {
     device().github.publish('99.0.0');
     await openApp();
@@ -133,7 +133,7 @@ scenario('Not now hides the notice for that version only', {feature: 'Settings',
   then('the notice shows the new version', () => expectShows('Kept GTD 99.1.0 is available.'));
 });
 
-scenario('The daily check without internet permission stays silent', {feature: 'Settings', design: DESIGN}, () => {
+scenario('The daily check without internet permission stays silent', {feature: 'Settings', design: DESIGN, help: 'settings.md#updates'}, () => {
   given('the daily check is on, GitHub has 99.0.0, and Kept may not use the internet', () => {
     device().github.publish('99.0.0');
     device().sdk.deniedPermissions.add(INTERNET_PERMISSION);
@@ -153,7 +153,7 @@ scenario('The daily check without internet permission stays silent', {feature: '
   });
 });
 
-scenario('The daily check with internet permission finds a new version without a dialog', {feature: 'Settings', design: DESIGN}, () => {
+scenario('The daily check with internet permission finds a new version without a dialog', {feature: 'Settings', design: DESIGN, help: 'settings.md#updates'}, () => {
   given('the daily check is on and GitHub has 99.0.0', () => device().github.publish('99.0.0'));
   when('I open Kept and wait for the daily check', async () => {
     await openApp({settings: {updateCheck: 'daily'}});
@@ -170,7 +170,7 @@ scenario('The daily check with internet permission finds a new version without a
   then('GitHub was asked only once', () => expect(device().github.requests).toHaveLength(1));
 });
 
-scenario('Check automatically once a day is switched in About and asks for internet once', {feature: 'Settings', design: DESIGN}, () => {
+scenario('Check automatically once a day is switched in About and asks for internet once', {feature: 'Settings', design: DESIGN, help: 'settings.md#updates'}, () => {
   given('Kept may not use the internet yet', async () => {
     device().sdk.deniedPermissions.add(INTERNET_PERMISSION);
     await openApp();
@@ -186,7 +186,7 @@ scenario('Check automatically once a day is switched in About and asks for inter
   });
 });
 
-scenario('Update test: treat this build as 0.0.0 offers the latest real release', {feature: 'Settings', design: DESIGN}, () => {
+scenario('Update test: treat this build as 0.0.0 offers the latest real release', {feature: 'Settings', design: DESIGN, help: 'settings.md#tools'}, () => {
   given('Debug logging is on and the latest release is 0.0.1', async () => {
     device().github.publish('0.0.1');
     await openApp({settings: {debugLogging: true}});

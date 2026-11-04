@@ -5,7 +5,7 @@ import {and, given, scenario, then, when} from '../../test-helpers/scenario/scen
 
 const DEMO_INBOX = '/storage/emulated/0/Note/kept-gtd-demo/2 Areas/0 Inbox/Inbox.txt';
 
-scenario('Try things in the demo space without touching the real files, then switch back', {feature: 'Profiles and demo space', design: 'technical-design-profiles-demo-space.md'}, () => {
+scenario('Try things in the demo space without touching the real files, then switch back', {feature: 'Profiles and demo space', design: 'technical-design-profiles-demo-space.md', help: 'profiles-and-demo.md#the-demo-space'}, () => {
   given('my real PARA folder has project "Website" and an empty Inbox', () => {
     putFile(projectFile('Website'), dataFile('project', {Scope: [], Tasks: ['- [ ] Write copy #next'], Meetings: []}, ['abbrev: WEB']));
     putFile(INBOX_FILE, dataFile('inbox', {Tasks: [], Meetings: []}));

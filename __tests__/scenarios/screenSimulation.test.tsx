@@ -5,7 +5,7 @@ import {and, scenario, then, when} from '../../test-helpers/scenario/scenario';
 
 const LINE = 'Simulated Nomad portrait · Settings → Advanced → Simulate screen: Off';
 
-scenario('Simulate screen draws Kept at Nomad size until it is turned off', {feature: 'Settings', design: 'technical-design-launch-ready.md'}, () => {
+scenario('Simulate screen draws Kept at Nomad size until it is turned off', {feature: 'Settings', design: 'technical-design-launch-ready.md', help: 'settings.md#tools'}, () => {
   when('I turn on debug logging and choose Settings → Advanced → Simulate screen: Nomad portrait', async () => {
     await openApp({settings: {debugLogging: true}});
     await tapTab('Settings');
@@ -26,7 +26,7 @@ scenario('Simulate screen draws Kept at Nomad size until it is turned off', {fea
   });
 });
 
-scenario('Simulate screen is hidden while debug logging is off', {feature: 'Settings', design: 'technical-design-launch-ready.md'}, () => {
+scenario('Simulate screen is hidden while debug logging is off', {feature: 'Settings', design: 'technical-design-launch-ready.md', help: 'settings.md#tools'}, () => {
   when('I open Settings → Advanced with debug logging off', async () => {
     await openApp();
     await tapTab('Settings');

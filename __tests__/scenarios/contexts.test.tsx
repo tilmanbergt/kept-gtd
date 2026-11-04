@@ -43,7 +43,7 @@ async function chooseContext(name: string, tab = 'Daily'): Promise<void> {
   await tapTab(tab);
 }
 
-scenario('A context filters Daily: hidden todos, dimmed meetings, the hidden line and Show', {feature: 'Contexts', design: DESIGN}, () => {
+scenario('A context filters Daily: hidden todos, dimmed meetings, the hidden line and Show', {feature: 'Contexts', design: DESIGN, help: 'contexts.md#where-it-applies, contexts.md#the-hidden-line'}, () => {
   given('contexts Work (Area Team) and Home (Area Garden)', space);
   when('I open Daily, tap the chip in the tab bar, choose Home in Settings → Contexts and go back to Daily', async () => {
     await openApp({settings: SETTINGS});
@@ -79,7 +79,7 @@ scenario('A context filters Daily: hidden todos, dimmed meetings, the hidden lin
   });
 });
 
-scenario('A context filters Areas; Review starts in Everything and narrows on request; Reviewed stays global', {feature: 'Contexts', design: 'technical-design-contexts-tags.md'}, () => {
+scenario('A context filters Areas; Review starts in Everything and narrows on request; Reviewed stays global', {feature: 'Contexts', design: 'technical-design-contexts-tags.md', help: 'contexts.md#where-it-applies, review.md#reviewing-in-a-context'}, () => {
   given('contexts Work and Home, Home active', space);
   when('I open Areas', async () => {
     await openApp({settings: {...SETTINGS, activeContextId: 'c2'}});
@@ -122,7 +122,7 @@ scenario('A context filters Areas; Review starts in Everything and narrows on re
   });
 });
 
-scenario('Quick Add says when the entry lands outside the context', {feature: 'Contexts', design: DESIGN}, () => {
+scenario('Quick Add says when the entry lands outside the context', {feature: 'Contexts', design: DESIGN, help: 'contexts.md#the-hidden-line'}, () => {
   given('Home is active and Team has the abbreviation AT', space);
   when('I add "Prepare offer #AT" on Daily', async () => {
     await openApp({settings: {...SETTINGS, activeContextId: 'c2'}});
@@ -136,7 +136,7 @@ scenario('Quick Add says when the entry lands outside the context', {feature: 'C
   });
 });
 
-scenario('Settings → Contexts: create Café, listed with its sentence, then choose it from the chip', {feature: 'Contexts', design: DESIGN}, () => {
+scenario('Settings → Contexts: create Café, listed with its sentence, then choose it from the chip', {feature: 'Contexts', design: DESIGN, help: 'contexts.md#setting-up-contexts, contexts.md#choosing-one'}, () => {
   given('a space with todos tagged #reading and #computer', () => {
     smokeClock();
     putFile(areaFile('Home'), dataFile('area', {Scope: [], Tasks: ['- [ ] Novel #reading #next', '- [ ] Backup #computer #reading #next', '- [ ] Laundry #next'], Meetings: []}, ['dailyFocus: true']));
@@ -172,7 +172,7 @@ scenario('Settings → Contexts: create Café, listed with its sentence, then ch
   });
 });
 
-scenario('Settings → Contexts: a context that shows one Area, named and saved from the top row', {feature: 'Contexts', design: DESIGN}, () => {
+scenario('Settings → Contexts: a context that shows one Area, named and saved from the top row', {feature: 'Contexts', design: DESIGN, help: 'contexts.md#setting-up-contexts'}, () => {
   given('the areas Home and Team, each with a next todo', () => {
     smokeClock();
     putFile(areaFile('Home'), dataFile('area', {Scope: [], Tasks: ['- [ ] Laundry #next'], Meetings: []}));
@@ -217,7 +217,7 @@ async function expectSentence(sentence: string): Promise<void> {
   expect(readTexts().some(t => t.endsWith(` next · ${sentence}`))).toBe(true);
 }
 
-scenario('A tag-only context lists the areas holding its todos', {feature: 'Contexts', design: TAGS_DESIGN}, () => {
+scenario('A tag-only context lists the areas holding its todos', {feature: 'Contexts', design: TAGS_DESIGN, help: 'contexts.md#what-a-context-shows'}, () => {
   given('"Errands" shows #errand; Garden holds "Buy bulbs #errand", Team has no errand todo', () => {
     smokeClock();
     putFile(areaFile('Garden'), dataFile('area', {Scope: [], Tasks: ['- [ ] Buy bulbs #errand'], Meetings: []}));
@@ -234,7 +234,7 @@ scenario('A tag-only context lists the areas holding its todos', {feature: 'Cont
   });
 });
 
-scenario('An area is listed through its project\'s todos', {feature: 'Contexts', design: TAGS_DESIGN}, () => {
+scenario('An area is listed through its project\'s todos', {feature: 'Contexts', design: TAGS_DESIGN, help: 'contexts.md#what-a-context-shows'}, () => {
   given('Project Shed (Area Garden) has "Paint #errand"; Garden itself has none', () => {
     smokeClock();
     putFile(areaFile('Garden'), dataFile('area', {Scope: [], Tasks: ['- [ ] Weed'], Meetings: []}));
@@ -258,7 +258,7 @@ const leadership = (meetings: string[]) => {
   putFile(projectFile('Tender'), dataFile('project', {Scope: [], Tasks: ['- [ ] Price list'], Meetings: []}));
 };
 
-scenario('An upcoming meeting keeps a project listed', {feature: 'Contexts', design: TAGS_DESIGN}, () => {
+scenario('An upcoming meeting keeps a project listed', {feature: 'Contexts', design: TAGS_DESIGN, help: 'contexts.md#what-a-context-shows'}, () => {
   given('"Coaching" shows all #jf threads; Leadership has no #jf todo, a meeting "Sparring #jf/anna" next Tuesday and one last month', () =>
     leadership(['- 2026-09-15 10:00 Sparring #jf/anna', '- 2026-10-20 10:00 Sparring #jf/anna']),
   );
@@ -272,7 +272,7 @@ scenario('An upcoming meeting keeps a project listed', {feature: 'Contexts', des
   });
 });
 
-scenario('A past meeting alone keeps no project listed', {feature: 'Contexts', design: TAGS_DESIGN}, () => {
+scenario('A past meeting alone keeps no project listed', {feature: 'Contexts', design: TAGS_DESIGN, help: 'contexts.md#what-a-context-shows'}, () => {
   given('the same, with only last month\'s meeting left', () => leadership(['- 2026-09-15 10:00 Sparring #jf/anna']));
   when('I open Projects under Coaching', async () => {
     await openApp({settings: active(coaching)});
@@ -284,7 +284,7 @@ scenario('A past meeting alone keeps no project listed', {feature: 'Contexts', d
   });
 });
 
-scenario('A loop root shows every loop of its kind', {feature: 'Contexts', design: TAGS_DESIGN}, () => {
+scenario('A loop root shows every loop of its kind', {feature: 'Contexts', design: TAGS_DESIGN, help: 'contexts.md#what-a-context-shows'}, () => {
   given('a loop setup on #read, "#read/novel" in Home, "#read/paper" in Team and a plain todo in Garden', () => {
     smokeClock();
     putFile(areaFile('Home'), dataFile('area', {Scope: [], Tasks: ['- [ ] Next chapter #read/novel #next'], Meetings: []}));
@@ -310,7 +310,7 @@ function workAndHome(): void {
   putFile(areaFile('Home'), dataFile('area', {Scope: [], Tasks: ['- [ ] Backup photos #computer #next', '- [ ] Laundry #next'], Meetings: []}));
 }
 
-scenario('Show a place and a tag: either one shows', {feature: 'Contexts', design: TAGS_DESIGN}, () => {
+scenario('Show a place and a tag: either one shows', {feature: 'Contexts', design: TAGS_DESIGN, help: 'contexts.md#what-a-context-shows'}, () => {
   given('Show Area Work and #computer, "Only inside" off', workAndHome);
   when('I open Daily', async () => {
     await openApp({settings: active(named('Desk', [area('Work'), tag('computer')]))});
@@ -325,7 +325,7 @@ scenario('Show a place and a tag: either one shows', {feature: 'Contexts', desig
   and('the sentence reads "Show Work, plus #computer everywhere"', () => expectSentence('Show Work, plus #computer everywhere'));
 });
 
-scenario('Only inside the selected areas: the tag in the place', {feature: 'Contexts', design: TAGS_DESIGN}, () => {
+scenario('Only inside the selected areas: the tag in the place', {feature: 'Contexts', design: TAGS_DESIGN, help: 'contexts.md#what-a-context-shows'}, () => {
   given('the same with "Only inside the selected areas and projects" on', workAndHome);
   when('I open Daily', async () => {
     await openApp({settings: active(named('Desk', [area('Work'), tag('computer')], [], {onlyInPlaces: true}))});
@@ -340,7 +340,7 @@ scenario('Only inside the selected areas: the tag in the place', {feature: 'Cont
   and('the sentence reads "Show #computer in Work"', () => expectSentence('Show #computer in Work'));
 });
 
-scenario('Except cuts a tag out of a place', {feature: 'Contexts', design: TAGS_DESIGN}, () => {
+scenario('Except cuts a tag out of a place', {feature: 'Contexts', design: TAGS_DESIGN, help: 'contexts.md#what-a-context-shows'}, () => {
   given('Show Home, Except #computer', workAndHome);
   when('I open Areas, then Daily', async () => {
     await openApp({settings: active(named('Home', [area('Home')], [tag('computer')]))});
@@ -358,7 +358,7 @@ scenario('Except cuts a tag out of a place', {feature: 'Contexts', design: TAGS_
   and('the sentence reads "Show Home except #computer"', () => expectSentence('Show Home except #computer'));
 });
 
-scenario('Except a place: the sentence says "except in"', {feature: 'Contexts', design: TAGS_DESIGN}, () => {
+scenario('Except a place: the sentence says "except in"', {feature: 'Contexts', design: TAGS_DESIGN, help: 'contexts.md#the-sentence'}, () => {
   given('Show #computer, Except Home', workAndHome);
   when('I open Daily', async () => {
     await openApp({settings: active(named('Desk', [tag('computer')], [area('Home')]))});
@@ -371,7 +371,7 @@ scenario('Except a place: the sentence says "except in"', {feature: 'Contexts', 
   and('the sentence reads "Show #computer everywhere except in Home"', () => expectSentence('Show #computer everywhere except in Home'));
 });
 
-scenario('The Tend line opens Review narrowed, filtered by place', {feature: 'Contexts', design: TAGS_DESIGN}, () => {
+scenario('The Tend line opens Review narrowed, filtered by place', {feature: 'Contexts', design: TAGS_DESIGN, help: 'review.md#reviewing-in-a-context'}, () => {
   given('"Coaching" shows all #jf threads; Area Team has a #jf/anna todo and the quiet threads anna and #retro/demand; Garden has the quiet thread #retro/beds', () => {
     smokeClock();
     putFile(
@@ -410,7 +410,7 @@ async function newContextNamed(name: string, settings?: Partial<GtdParaSettings>
   await tap('Show');
 }
 
-scenario('A tag not in use yet is added from New tag', {feature: 'Contexts', design: TAGS_DESIGN}, () => {
+scenario('A tag not in use yet is added from New tag', {feature: 'Contexts', design: TAGS_DESIGN, help: 'contexts.md#setting-up-contexts'}, () => {
   given('no todo carries #shopping; one carries #project/piplanning/q1', () => {
     smokeClock();
     putFile(areaFile('Home'), dataFile('area', {Scope: [], Tasks: ['- [ ] Laundry #next', '- [ ] Plan the quarter #project/piplanning/q1 #next'], Meetings: []}));
@@ -447,7 +447,7 @@ scenario('A tag not in use yet is added from New tag', {feature: 'Contexts', des
   then('the context is listed with its sentence', () => expectShows('1 next · Show #shopping or #project/piplanning everywhere'));
 });
 
-scenario('The "Only inside" switch appears only while Show names a place and a tag', {feature: 'Contexts', design: TAGS_DESIGN}, () => {
+scenario('The "Only inside" switch appears only while Show names a place and a tag', {feature: 'Contexts', design: TAGS_DESIGN, help: 'contexts.md#setting-up-contexts'}, () => {
   given('Work and Home, with #computer todos in both', workAndHome);
   when('I create "Desk" with Show Area Work and Tags #computer', async () => {
     await newContextNamed('Desk');
@@ -478,7 +478,7 @@ scenario('The "Only inside" switch appears only while Show names a place and a t
   });
 });
 
-scenario('Save is active only after a change; a new context opens on General', {feature: 'Contexts', design: TAGS_DESIGN}, () => {
+scenario('Save is active only after a change; a new context opens on General', {feature: 'Contexts', design: TAGS_DESIGN, help: 'contexts.md#setting-up-contexts'}, () => {
   given('the areas Home and Team, and the context Home showing Home', () => {
     smokeClock();
     putFile(areaFile('Home'), dataFile('area', {Scope: [], Tasks: ['- [ ] Laundry #next'], Meetings: []}));
@@ -515,7 +515,7 @@ scenario('Save is active only after a change; a new context opens on General', {
   });
 });
 
-scenario('The Tags tab offers the thread types of the Thread setups, not wf and owe', {feature: 'Contexts', design: TAGS_DESIGN}, () => {
+scenario('The Tags tab offers the thread types of the Thread setups, not wf and owe', {feature: 'Contexts', design: TAGS_DESIGN, help: 'contexts.md#setting-up-contexts'}, () => {
   given('a Thread setup on #sparring and a todo waiting for Marco', () => {
     smokeClock();
     putFile(areaFile('Home'), dataFile('area', {Scope: [], Tasks: ['- [ ] Quote #wf/marco'], Meetings: []}));

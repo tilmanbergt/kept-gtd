@@ -21,7 +21,7 @@ async function openRemoveData(): Promise<void> {
   await tap("Remove Kept's data…");
 }
 
-scenario("Remove Kept's data lists every kind, with profiles and data files unchecked", {feature: 'Remove data', design: DESIGN}, () => {
+scenario('Remove Kept\'s data lists every kind, with profiles and data files unchecked', {feature: 'Remove data', design: DESIGN, help: 'settings.md#remove-kepts-data'}, () => {
   given('Kept has settings, a log, a profile, a project and two open marks', async () => {
     keptFiles();
     await openApp();
@@ -42,7 +42,7 @@ scenario("Remove Kept's data lists every kind, with profiles and data files unch
   });
 });
 
-scenario('Removing with the defaults, then Start fresh, opens the setup assistant on Welcome back', {feature: 'Remove data', design: DESIGN}, () => {
+scenario('Removing with the defaults, then Start fresh, opens the setup assistant on Welcome back', {feature: 'Remove data', design: DESIGN, help: 'settings.md#remove-kepts-data, profiles-and-demo.md#saved-profiles'}, () => {
   given('Kept has settings, a log, a profile, a project and open marks', async () => {
     keptFiles();
     await AsyncStorage.setItem('otherplugin:settings', 'theirs');
@@ -71,7 +71,7 @@ scenario('Removing with the defaults, then Start fresh, opens the setup assistan
   });
 });
 
-scenario('Cancel on the question removes nothing', {feature: 'Remove data', design: DESIGN}, () => {
+scenario('Cancel on the question removes nothing', {feature: 'Remove data', design: DESIGN, help: 'settings.md#remove-kepts-data'}, () => {
   given("Remove Kept's data is open", async () => {
     keptFiles();
     await openApp();
@@ -88,7 +88,7 @@ scenario('Cancel on the question removes nothing', {feature: 'Remove data', desi
   });
 });
 
-scenario('With the demo profile active, the demo space goes only with the settings', {feature: 'Remove data', design: DESIGN}, () => {
+scenario('With the demo profile active, the demo space goes only with the settings', {feature: 'Remove data', design: DESIGN, help: 'settings.md#remove-kepts-data'}, () => {
   given('the demo profile is active and the demo space exists', async () => {
     putFile(`${S}/Note/kept-gtd-demo/1 Projects/Garden renovation/project.txt`, 'demo');
     await openApp({settings: {activeProfileId: 'demo'}});

@@ -15,7 +15,7 @@ beforeEach(() => {
 });
 afterEach(() => jest.useRealTimers());
 
-scenario('Engage on the Home page of a home notebook that is also a loop\'s note: the Area, not the loop', {feature: 'Engage', design: DESIGN}, () => {
+scenario('Engage on the Home page of a home notebook that is also a loop\'s note: the Area, not the loop', {feature: 'Engage', design: DESIGN, help: 'engage.md#which-owner-a-page-belongs-to'}, () => {
   given('Sport 2026.note is Area Sport\'s home notebook and the note of loop marathon; page 1 is its Home page', () => sport());
   when('I open Engage on page 1', () => engageOn(1));
   then('the owner is Area Sport and the line reads "Section: Sport"', () => {
@@ -26,7 +26,7 @@ scenario('Engage on the Home page of a home notebook that is also a loop\'s note
   });
 });
 
-scenario('Engage on a free page after the Home page: the Area, from p. 1', {feature: 'Engage', design: DESIGN}, () => {
+scenario('Engage on a free page after the Home page: the Area, from p. 1', {feature: 'Engage', design: DESIGN, help: 'engage.md#which-owner-a-page-belongs-to'}, () => {
   given('page 2 has no title and no keyword', () => sport());
   when('I open Engage on page 2', () => engageOn(2));
   then('the owner is Area Sport and the line reads "Section: Sport · from p. 1"', () => {
@@ -35,7 +35,7 @@ scenario('Engage on a free page after the Home page: the Area, from p. 1', {feat
   });
 });
 
-scenario('Engage on a loop todo\'s follow-up page: the loop, with that todo current', {feature: 'Engage', design: DESIGN}, () => {
+scenario('Engage on a loop todo\'s follow-up page: the loop, with that todo current', {feature: 'Engage', design: DESIGN, help: 'engage.md#which-owner-a-page-belongs-to'}, () => {
   given('page 5 is the page of the open todo "Plan long runs #loop/marathon", page 6 a follow-up', () => sport());
   when('I open Engage on page 6', () => engageOn(6));
   then('the owner is Loop marathon, the todo is current, and the line names it from p. 5', () => {
@@ -47,7 +47,7 @@ scenario('Engage on a loop todo\'s follow-up page: the loop, with that todo curr
   });
 });
 
-scenario('Your own heading starts a section of the notebook owner', {feature: 'Engage', design: DESIGN}, () => {
+scenario('Your own heading starts a section of the notebook owner', {feature: 'Engage', design: DESIGN, help: 'engage.md#which-owner-a-page-belongs-to'}, () => {
   given('page 7 has my typed heading "Training plan"', () => sport());
   when('I open Engage on page 8', () => engageOn(8));
   then('the owner is Area Sport and the line reads "Section: Training plan · from p. 7"', () => {
@@ -57,7 +57,7 @@ scenario('Your own heading starts a section of the notebook owner', {feature: 'E
   });
 });
 
-scenario('A handwritten heading starts a section too', {feature: 'Engage', design: DESIGN}, () => {
+scenario('A handwritten heading starts a section too', {feature: 'Engage', design: DESIGN, help: 'engage.md#which-owner-a-page-belongs-to'}, () => {
   given('page 9 has a handwritten title', () => sport());
   when('I open Engage on page 9', () => engageOn(9));
   then('the owner is Area Sport and the line reads "Section: Handwritten section"', () => {
@@ -66,7 +66,7 @@ scenario('A handwritten heading starts a section too', {feature: 'Engage', desig
   });
 });
 
-scenario('A todo\'s keyword without a title still starts its section', {feature: 'Engage', design: DESIGN}, () => {
+scenario('A todo\'s keyword without a title still starts its section', {feature: 'Engage', design: DESIGN, help: 'engage.md#which-owner-a-page-belongs-to'}, () => {
   given('page 10 carries the keyword of todo "Buy shoes" but no title; page 11 is a follow-up', () => sport());
   when('I open Engage on page 11', () => engageOn(11));
   then('"Buy shoes" is current and the section is p. 10', () => {
@@ -76,7 +76,7 @@ scenario('A todo\'s keyword without a title still starts its section', {feature:
   });
 });
 
-scenario('A cancelled todo\'s page still starts a section, but nothing becomes current', {feature: 'Engage', design: DESIGN}, () => {
+scenario('A cancelled todo\'s page still starts a section, but nothing becomes current', {feature: 'Engage', design: DESIGN, help: 'engage.md#which-owner-a-page-belongs-to'}, () => {
   given('the todo "Buy shoes" of page 10 is cancelled', () => sport({shoes: 'cancelled'}));
   when('I open Engage on page 11', () => engageOn(11));
   then('the owner is Area Sport, no todo is current, and the line still reads "Section: Buy shoes · from p. 10"', () => {
@@ -86,7 +86,7 @@ scenario('A cancelled todo\'s page still starts a section, but nothing becomes c
   });
 });
 
-scenario('A closed loop\'s todo page goes back to the Area', {feature: 'Engage', design: DESIGN}, () => {
+scenario('A closed loop\'s todo page goes back to the Area', {feature: 'Engage', design: DESIGN, help: 'engage.md#which-owner-a-page-belongs-to'}, () => {
   given('loop marathon is done', () => sport({loop: 'done'}));
   when('I open Engage on page 6', () => engageOn(6));
   then('the owner is Area Sport', () => {
@@ -96,7 +96,7 @@ scenario('A closed loop\'s todo page goes back to the Area', {feature: 'Engage',
   });
 });
 
-scenario('A pure loop note: a free page after the loop page belongs to the loop', {feature: 'Engage', design: DESIGN}, () => {
+scenario('A pure loop note: a free page after the loop page belongs to the loop', {feature: 'Engage', design: DESIGN, help: 'engage.md#which-owner-a-page-belongs-to'}, () => {
   const LOOP_NOTE = `${SPORT}/2026-11 loop marathon.note`;
   given('loop marathon\'s note "2026-11 loop marathon.note" is not a home notebook; page 2 is free', () => {
     sport();
@@ -110,7 +110,7 @@ scenario('A pure loop note: a free page after the loop page belongs to the loop'
   });
 });
 
-scenario('A thread notebook\'s follow-up page: the thread and its sparring', {feature: 'Engage', design: DESIGN}, () => {
+scenario('A thread notebook\'s follow-up page: the thread and its sparring', {feature: 'Engage', design: DESIGN, help: 'engage.md#which-owner-a-page-belongs-to'}, () => {
   const THREADS = `${areaDir('Coaching')}/Meetings/sparring jordan 2026.note`;
   const kw = '2026-10-24 Sparring Jordan #sparring/jordan';
   given('a thread notebook with a sparring page for Jordan and a follow-up page', () => {
@@ -130,7 +130,7 @@ scenario('A thread notebook\'s follow-up page: the thread and its sparring', {fe
   });
 });
 
-scenario('A todo\'s own note: as before, no section line', {feature: 'Engage', design: DESIGN}, () => {
+scenario('A todo\'s own note: as before, no section line', {feature: 'Engage', design: DESIGN, help: 'engage.md#which-owner-a-page-belongs-to'}, () => {
   given('the todo "Stretch daily" has its own note', () => {
     sport();
     const file = areaFile('Sport');
@@ -145,7 +145,7 @@ scenario('A todo\'s own note: as before, no section line', {feature: 'Engage', d
   });
 });
 
-scenario('The page index can\'t be read: the single-page lookup, and the panel opens', {feature: 'Engage', design: DESIGN}, () => {
+scenario('The page index can\'t be read: the single-page lookup, and the panel opens', {feature: 'Engage', design: DESIGN, help: 'engage.md#opening-engage'}, () => {
   given('the notebook\'s headings can\'t be read', () => {
     sport();
     Object.assign(device().sdk.module.PluginFileAPI, {getTitles: async () => ({success: false, error: {code: 1, message: 'not readable'}})});
@@ -162,7 +162,7 @@ scenario('The page index can\'t be read: the single-page lookup, and the panel o
 
 // Capture (§6.2 16-19). The fake device has no lasso; marks go through the same capture panel and provenance.
 
-scenario('An agreement from a mark on a thread notebook\'s follow-up page: for the thread, with the sparring', {feature: 'Lasso', design: DESIGN}, () => {
+scenario('An agreement from a mark on a thread notebook\'s follow-up page: for the thread, with the sparring', {feature: 'Lasso', design: DESIGN, help: 'lasso.md#capturing-an-agreement'}, () => {
   const kw = '2026-10-24 Sparring Jordan #sparring/jordan';
   given('Jordan\'s sparring notebook has the sparring\'s page and a follow-up page with a mark "Feedback only in our 1:1s"', () => {
     putFile(
@@ -202,7 +202,7 @@ scenario('An agreement from a mark on a thread notebook\'s follow-up page: for t
   });
 });
 
-scenario('Your own heading stops the provenance', {feature: 'Lasso', design: DESIGN}, () => {
+scenario('Your own heading stops the provenance', {feature: 'Lasso', design: DESIGN, help: 'lasso.md#capturing-right-away'}, () => {
   given('page 8 follows the heading "Training plan" and has a mark "Book track time"', () => sport({marks: [sportMark(8, 'Book track time')]}));
   when('I process the mark', processSportMarks);
   then('no "↳ from" line shows', () => expectNotShows(/^↳ from/));
@@ -214,7 +214,7 @@ scenario('Your own heading stops the provenance', {feature: 'Lasso', design: DES
   });
 });
 
-scenario('A cancelled meeting\'s follow-up page records no meeting', {feature: 'Lasso', design: DESIGN}, () => {
+scenario('A cancelled meeting\'s follow-up page records no meeting', {feature: 'Lasso', design: DESIGN, help: 'lasso.md#capturing-right-away'}, () => {
   given('the meeting "Coach call" of page 3 is cancelled; page 4 has a mark "Ask coach about intervals"', () => sport({coach: 'cancelled', marks: [sportMark(4, 'Ask coach about intervals')]}));
   when('I process the mark', processSportMarks);
   then('no "↳ from" line shows', () => expectNotShows(/^↳ from/));

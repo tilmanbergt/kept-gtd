@@ -2,7 +2,7 @@ import {expectNotShows, expectShows, fieldValue, firstCheckboxOf, focus, openApp
 import {dataFile, expectFileContains, INBOX_FILE, loggedErrors, projectFile, putFile, sectionLines} from '../../test-helpers/scenario/files';
 import {given, scenario, then, when} from '../../test-helpers/scenario/scenario';
 
-scenario('Quick Add a todo in a project', {feature: 'Quick Add', design: 'technical-design-filing-unification.md'}, () => {
+scenario('Quick Add a todo in a project', {feature: 'Quick Add', design: 'technical-design-filing-unification.md', help: 'quick-add.md#adding-a-todo'}, () => {
   given('project "Website" has the todo "Write copy" and a hand-written Scope', () => {
     putFile(
       projectFile('Website'),
@@ -32,7 +32,7 @@ scenario('Quick Add a todo in a project', {feature: 'Quick Add', design: 'techni
   });
 });
 
-scenario('Edit a todo, then tap another one: the first edit is saved', {feature: 'Quick Add', design: 'technical-design-meeting-lists.md'}, () => {
+scenario('Edit a todo, then tap another one: the first edit is saved', {feature: 'Quick Add', design: 'technical-design-meeting-lists.md', help: 'quick-add.md#editing'}, () => {
   given('project "Website" has the todos "Write copy" and "Fix footer"', () => {
     putFile(projectFile('Website'), dataFile('project', {Scope: [], Tasks: ['- [ ] Write copy #next', '- [ ] Fix footer'], Meetings: []}));
   });
@@ -54,7 +54,7 @@ scenario('Edit a todo, then tap another one: the first edit is saved', {feature:
   });
 });
 
-scenario('An abbreviation tag files a todo into its project while editing', {feature: 'Quick Add', design: 'technical-design-abbrev-quick-file.md'}, () => {
+scenario('An abbreviation tag files a todo into its project while editing', {feature: 'Quick Add', design: 'technical-design-abbrev-quick-file.md', help: 'quick-add.md#filing-directly-with-an-abbreviation'}, () => {
   given('project "Website" (#WEB) and the Inbox todo "Ask about hosting"', () => {
     putFile(projectFile('Website'), dataFile('project', {Scope: [], Tasks: [], Meetings: []}, ['abbrev: WEB']));
     putFile(INBOX_FILE, dataFile('inbox', {Tasks: ['- [ ] Ask about hosting'], Meetings: []}));
@@ -75,7 +75,7 @@ scenario('An abbreviation tag files a todo into its project while editing', {fea
   });
 });
 
-scenario('Ticking a todo off writes its completion date', {feature: 'Quick Add', design: 'technical-design-tags.md'}, () => {
+scenario('Ticking a todo off writes its completion date', {feature: 'Quick Add', design: 'technical-design-tags.md', help: 'tags.md#dates-kept-gtd-records'}, () => {
   given('project "Website" has the todo "Write copy"', () => {
     putFile(projectFile('Website'), dataFile('project', {Scope: [], Tasks: ['- [ ] Write copy #next'], Meetings: []}));
   });
@@ -90,7 +90,7 @@ scenario('Ticking a todo off writes its completion date', {feature: 'Quick Add',
   });
 });
 
-scenario('The ✕ puts a hovering strip away until the field gains focus again', {feature: 'Quick Add', design: 'technical-design-item-card.md'}, () => {
+scenario('The ✕ puts a hovering strip away until the field gains focus again', {feature: 'Quick Add', design: 'technical-design-item-card.md', help: 'quick-add.md#adding-a-todo'}, () => {
   given('project "Website"', () => {
     putFile(projectFile('Website'), dataFile('project', {Scope: [], Tasks: [], Meetings: []}));
   });

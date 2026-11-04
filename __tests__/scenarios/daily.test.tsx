@@ -5,7 +5,7 @@ import {given, scenario, then, when} from '../../test-helpers/scenario/scenario'
 
 const inAWeek = () => isoDateOffset(7);
 
-scenario('Add a meeting for next week from Daily', {feature: 'Daily', design: 'technical-design-cache-subscription-and-shared-add-path.md'}, () => {
+scenario('Add a meeting for next week from Daily', {feature: 'Daily', design: 'technical-design-cache-subscription-and-shared-add-path.md', help: 'quick-add.md#adding-a-meeting'}, () => {
   given('an empty PARA folder', () => undefined);
   when('I open Daily, switch Quick Add to Meeting, enter "Team sync" a week from today and tap + Add', async () => {
     await openApp();

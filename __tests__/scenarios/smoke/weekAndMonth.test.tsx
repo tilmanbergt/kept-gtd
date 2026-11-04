@@ -23,7 +23,7 @@ async function openTab(tab: string): Promise<void> {
   await tapTab(tab);
 }
 
-scenario('Week shows this week\'s meetings and the time given to each owner', {feature: 'Week and Month', design: DESIGN}, () => {
+scenario('Week shows this week\'s meetings and the time given to each owner', {feature: 'Week and Month', design: DESIGN, help: 'week-and-month.md#week, week-and-month.md#given-time'}, () => {
   given('the smoke space on Wednesday 14.10.2026', () => undefined);
   when('I open Week', () => openTab('Week'));
   then('the grid shows Wednesday 14 "Neighbour chat" and "Dentist", Thursday 15 "Supplier call" and the focus block, Friday 16 "Delivery"', () => {
@@ -42,7 +42,7 @@ scenario('Week shows this week\'s meetings and the time given to each owner', {f
   and('no error was logged', () => expect(loggedErrors()).toEqual([]));
 });
 
-scenario('Month shows the highlights and the time given this month', {feature: 'Week and Month', design: DESIGN}, () => {
+scenario('Month shows the highlights and the time given this month', {feature: 'Week and Month', design: DESIGN, help: 'week-and-month.md#month, week-and-month.md#given-time'}, () => {
   given('the smoke space on Wednesday 14.10.2026', () => undefined);
   when('I open Month', () => openTab('Month'));
   then('the 28th shows "Garden fair"; no other day shows a meeting or the F of the focus block on the 15th, since none is a highlight (marked M)', () => {

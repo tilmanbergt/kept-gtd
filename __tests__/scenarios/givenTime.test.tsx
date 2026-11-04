@@ -12,7 +12,7 @@ afterEach(() => jest.useRealTimers());
 
 const writingLoops = {...createNoteSetup('1', 'loop'), name: 'Writing', tags: ['writing']};
 
-scenario('Given time: areas and projects by time, an all-day event as "1 day", Worked on for todos done', {feature: 'Week and Month', design: DESIGN}, () => {
+scenario('Given time: areas and projects by time, an all-day event as "1 day", Worked on for todos done', {feature: 'Week and Month', design: DESIGN, help: 'week-and-month.md#given-time'}, () => {
   given('on Wednesday 14.10.: Writing with two focus blocks this week, Garden with an all-day delivery, Website with a todo done and nothing scheduled', () => {
     smokeClock();
     putFile(
@@ -38,7 +38,7 @@ scenario('Given time: areas and projects by time, an all-day event as "1 day", W
   and('no error was logged', () => expect(loggedErrors()).toEqual([]));
 });
 
-scenario('Tend: a thread without a meeting in 14 days counts in the Tend line and shows "nothing planned"', {feature: 'Review', design: DESIGN}, () => {
+scenario('Tend: a thread without a meeting in 14 days counts in the Tend line and shows "nothing planned"', {feature: 'Review', design: DESIGN, help: 'review.md#tending-threads'}, () => {
   given('on Wednesday 14.10.: Coaching\'s active thread jordan met yesterday and has nothing ahead', () => {
     smokeClock();
     putFile(
@@ -59,7 +59,7 @@ scenario('Tend: a thread without a meeting in 14 days counts in the Tend line an
   and('no error was logged', () => expect(loggedErrors()).toEqual([]));
 });
 
-scenario('Open loops: "+ F block" fills Quick Add\'s Meeting tab with the loop and F on', {feature: 'Review', design: DESIGN}, () => {
+scenario('Open loops: "+ F block" fills Quick Add\'s Meeting tab with the loop and F on', {feature: 'Review', design: DESIGN, help: 'review.md#open-loops'}, () => {
   given('on Wednesday 14.10.: Writing with the active loop #writing/novel, nothing planned and no next todo', () => {
     smokeClock();
     putFile(areaFile('Writing'), dataFile('area', {Scope: [], Tasks: ['- [ ] Outline #writing/novel'], Meetings: [], Loops: ['- writing/novel: active']}));
@@ -83,7 +83,7 @@ scenario('Open loops: "+ F block" fills Quick Add\'s Meeting tab with the loop a
   and('no error was logged', () => expect(loggedErrors()).toEqual([]));
 });
 
-scenario('Given time lists loops and counterparts from the threshold up, never the Inbox', {feature: 'Week and Month', design: DESIGN}, () => {
+scenario('Given time lists loops and counterparts from the threshold up, never the Inbox', {feature: 'Week and Month', design: DESIGN, help: 'week-and-month.md#given-time'}, () => {
   given('on Wednesday 14.10.: Writing with 2 h for the loop novel and 30 min for the loop essay this week, and an Inbox meeting', () => {
     smokeClock();
     putFile(
@@ -119,7 +119,7 @@ scenario('Given time lists loops and counterparts from the threshold up, never t
   and('no error was logged', () => expect(loggedErrors()).toEqual([]));
 });
 
-scenario('Given time sums a counterpart\'s threads into one row', {feature: 'Week and Month', design: DESIGN}, () => {
+scenario('Given time sums a counterpart\'s threads into one row', {feature: 'Week and Month', design: DESIGN, help: 'week-and-month.md#given-time'}, () => {
   given('on Wednesday 14.10.: Team with Retro, Review and Replenishment with "value" this week, 1 h each', () => {
     smokeClock();
     putFile(

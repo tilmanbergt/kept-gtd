@@ -41,7 +41,7 @@ async function removeWith(patch: Partial<RemovalChoices> = {}, saveProfileFirst 
 
 const keptKeys = async () => (await AsyncStorage.getAllKeys()).filter(k => k.startsWith('kept:'));
 
-scenario('Removing with the defaults leaves no Kept data but keeps profiles, data files and notes', {feature: 'Remove data', design: DESIGN}, () => {
+scenario('Removing with the defaults leaves no Kept data but keeps profiles, data files and notes', {feature: 'Remove data', design: DESIGN, help: 'settings.md#remove-kepts-data'}, () => {
   given('Kept has data in every place it uses', () => keptEverywhere());
   when('I remove with the defaults', () => removeWith());
   then('no Kept entry, log, demo space or private file is left', async () => {
@@ -61,7 +61,7 @@ scenario('Removing with the defaults leaves no Kept data but keeps profiles, dat
   });
 });
 
-scenario('A failing log deletion still removes the rest and keeps the settings', {feature: 'Remove data', design: DESIGN}, () => {
+scenario('A failing log deletion still removes the rest and keeps the settings', {feature: 'Remove data', design: DESIGN, help: 'settings.md#remove-kepts-data'}, () => {
   given('Kept has data in every place it uses, and deleting the logs will fail', async () => {
     await keptEverywhere();
     device().fs.failNext('deleteKeptTree', /\/debug$/, 'disk busy');
@@ -78,7 +78,7 @@ scenario('A failing log deletion still removes the rest and keeps the settings',
   });
 });
 
-scenario('Save the active profile first keeps the setup in production.json', {feature: 'Remove data', design: DESIGN}, () => {
+scenario('Save the active profile first keeps the setup in production.json', {feature: 'Remove data', design: DESIGN, help: 'settings.md#remove-kepts-data'}, () => {
   given('my Projects folder is "Work projects"', () => keptEverywhere({projectsFolder: 'Work projects'}));
   when('I remove the settings with Save the active profile first on', () => removeWith({}, true));
   then('production.json holds the folder and the settings are gone', async () => {
@@ -87,7 +87,7 @@ scenario('Save the active profile first keeps the setup in production.json', {fe
   });
 });
 
-scenario("Removing Kept's data files leaves the folders, notes and other files", {feature: 'Remove data', design: DESIGN}, () => {
+scenario('Removing Kept\'s data files leaves the folders, notes and other files', {feature: 'Remove data', design: DESIGN, help: 'settings.md#remove-kepts-data'}, () => {
   given('Kept has data in every place it uses', () => keptEverywhere());
   when("I also check Kept's data files", () => removeWith({dataFiles: true}));
   then('project.txt, area.txt, Inbox.txt and the archived project.txt are gone', () => {
@@ -101,7 +101,7 @@ scenario("Removing Kept's data files leaves the folders, notes and other files",
   });
 });
 
-scenario('The scan counts what is there', {feature: 'Remove data', design: DESIGN}, () => {
+scenario('The scan counts what is there', {feature: 'Remove data', design: DESIGN, help: 'settings.md#remove-kepts-data'}, () => {
   given('Kept has data in every place it uses', () => keptEverywhere());
   then('each kind has its count and the open mark is counted', async () => {
     const {inventory} = await scanRemoval();

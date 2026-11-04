@@ -19,7 +19,7 @@ const TABS: Array<[string, string | RegExp]> = [
   ['Settings', 'Base root'],
 ];
 
-scenario('The app starts and every main tab shows', {feature: 'Smoke', design: DESIGN}, () => {
+scenario('The app starts and every main tab shows', {feature: 'Smoke', design: DESIGN, help: 'index.md#the-tabs-at-a-glance'}, () => {
   const missing: string[] = [];
   given('the smoke space on Wednesday 14.10.2026', () => {
     smokeClock();

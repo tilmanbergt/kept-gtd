@@ -19,7 +19,7 @@ function stepCount(step: string): string {
   return all[at + 1];
 }
 
-scenario('The Review hub lists its steps with counts, and the Inbox step shows the Inbox', {feature: 'Weekly Review', design: DESIGN}, () => {
+scenario('The Review hub lists its steps with counts, and the Inbox step shows the Inbox', {feature: 'Weekly Review', design: DESIGN, help: 'review.md#the-overview'}, () => {
   given('the smoke space on Wednesday 14.10.2026', () => {
     smokeClock();
     putSmokeSpace();

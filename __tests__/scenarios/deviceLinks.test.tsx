@@ -11,7 +11,7 @@ function gardenWithTodo(): void {
   putFile(projectFile(GARDEN), dataFile('project', {Scope: [], Tasks: ['- [ ] Order soil'], Meetings: []}));
 }
 
-scenario('Link a PDF from Document on the Device tab; re-editing finds it there', {feature: 'Your files', design: 'technical-design-easy-start.md'}, () => {
+scenario('Link a PDF from Document on the Device tab; re-editing finds it there', {feature: 'Your files', design: 'technical-design-easy-start.md', help: 'files-and-folders.md#files-outside-note'}, () => {
   given('project "Garden renovation" has the todo "Order soil", Document holds Book.pdf, and the device has Android and DCIM folders', () => {
     forgetDeviceRoots();
     gardenWithTodo();
@@ -47,7 +47,7 @@ scenario('Link a PDF from Document on the Device tab; re-editing finds it there'
   });
 });
 
-scenario('This file: link the PDF Kept was opened from, with its page, in the Files pane and from Quick Add', {feature: 'Your files', design: 'technical-design-easy-start.md'}, () => {
+scenario('This file: link the PDF Kept was opened from, with its page, in the Files pane and from Quick Add', {feature: 'Your files', design: 'technical-design-easy-start.md', help: 'quick-add.md#the-file-you-opened-kept-from, files-and-folders.md#files-outside-note'}, () => {
   given('project "Garden renovation" has the todo "Order soil" and Document holds Book.pdf', () => {
     forgetDeviceRoots();
     gardenWithTodo();
@@ -80,7 +80,7 @@ scenario('This file: link the PDF Kept was opened from, with its page, in the Fi
   });
 });
 
-scenario('This file from a note: Quick Add starts off and links the note relative to Note; launch file unknown: nothing is offered', {feature: 'Your files', design: 'technical-design-easy-start.md'}, () => {
+scenario('This file from a note: Quick Add starts off and links the note relative to Note; launch file unknown: nothing is offered', {feature: 'Your files', design: 'technical-design-easy-start.md', help: 'quick-add.md#the-file-you-opened-kept-from'}, () => {
   const NOTE = `${projectDir(GARDEN)}/Ideas.note`;
   given('project "Garden renovation" has the todo "Order soil" and the note Ideas.note', () => {
     forgetDeviceRoots();

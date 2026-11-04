@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-196 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+201 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -17,7 +17,7 @@
 - **When** I switch to All jordan
 - **Then** the agreement shows there too
 
-Test: `__tests__/scenarios/agreements.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md`
+Test: `__tests__/scenarios/agreements.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md` · help: `agreements.md#where-agreements-show`
 
 ### Add an agreement from the thread overview with valid till end of year
 
@@ -27,7 +27,7 @@ Test: `__tests__/scenarios/agreements.test.tsx` · design: `docs/dev/history/tec
 - **Then** the area file has the agreement with the thread tag, the meeting it was made in, today and the valid-till date
 - **And** the status slot says where it went, and the overview lists it
 
-Test: `__tests__/scenarios/agreements.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md`
+Test: `__tests__/scenarios/agreements.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md` · help: `agreements.md#adding-one`
 
 ### Change an agreement: the old one is ended, the new one added; Cancel changes nothing
 
@@ -38,7 +38,7 @@ Test: `__tests__/scenarios/agreements.test.tsx` · design: `docs/dev/history/tec
 - **Then** the old line is ended today and the new one is added after it, made in the meeting the overview shows
 - **And** the overview lists only the new one, and Looking back counts the ended one
 
-Test: `__tests__/scenarios/agreements.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md`
+Test: `__tests__/scenarios/agreements.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md` · help: `agreements.md#changing-and-ending`
 
 ### End an agreement: asked once, then ended today
 
@@ -47,7 +47,7 @@ Test: `__tests__/scenarios/agreements.test.tsx` · design: `docs/dev/history/tec
 - **Then** the line gets [ended:: today]
 - **And** the overview shows "1 agreement ended ›" in Looking back
 
-Test: `__tests__/scenarios/agreements.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md`
+Test: `__tests__/scenarios/agreements.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md` · help: `agreements.md#changing-and-ending`
 
 ### A hand-edited Agreements section keeps every other line byte for byte when one agreement is ended
 
@@ -55,7 +55,7 @@ Test: `__tests__/scenarios/agreements.test.tsx` · design: `docs/dev/history/tec
 - **When** I end the first one in Jordan's thread overview
 - **Then** only that line changed; everything else is byte-identical
 
-Test: `__tests__/scenarios/agreements.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md`
+Test: `__tests__/scenarios/agreements.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md` · help: `agreements.md#in-your-files`, `files-and-folders.md#editing-by-hand`
 
 ### A Project page lists its own agreements; a thread's agreement shows in the thread overview instead
 
@@ -67,7 +67,7 @@ Test: `__tests__/scenarios/agreements.test.tsx` · design: `docs/dev/history/tec
 - **When** I open Jordan's thread overview from the meeting
 - **Then** the tagged one shows there
 
-Test: `__tests__/scenarios/agreements.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md`
+Test: `__tests__/scenarios/agreements.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md` · help: `agreements.md#who-an-agreement-belongs-to`, `agreements.md#where-agreements-show`
 
 ### Review step "Agreements": keep one past its date for three more months, end one with an inactive thread
 
@@ -79,7 +79,7 @@ Test: `__tests__/scenarios/agreements.test.tsx` · design: `docs/dev/history/tec
 - **When** I end the agreement with Jordan
 - **Then** it is ended today, and both rows carry a checkmark
 
-Test: `__tests__/scenarios/agreements.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md`
+Test: `__tests__/scenarios/agreements.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md` · help: `review.md#agreements`, `agreements.md#reviewing-and-closing-out`
 
 ## Close-out
 
@@ -94,7 +94,7 @@ Test: `__tests__/scenarios/agreements.test.tsx` · design: `docs/dev/history/tec
 - **And** the PDF sits next to it and holds the project record
 - **And** its project.txt says archived, and the screen says so
 
-Test: `__tests__/scenarios/closeOut.test.tsx` · design: `docs/dev/history/technical-design-project-close-out.md`
+Test: `__tests__/scenarios/closeOut.test.tsx` · design: `docs/dev/history/technical-design-project-close-out.md` · help: `close-out.md#the-five-steps`, `close-out.md#where-things-end-up`
 
 ### A close-out PDF says it was created by Kept GTD
 
@@ -102,7 +102,7 @@ Test: `__tests__/scenarios/closeOut.test.tsx` · design: `docs/dev/history/techn
 - **When** I close it out up to the PDF and tap "Create PDF"
 - **Then** the PDF's footer line says "Created by Kept GTD"
 
-Test: `__tests__/scenarios/keptGtd.test.tsx`
+Test: `__tests__/scenarios/keptGtd.test.tsx` · help: `close-out.md#where-things-end-up`
 
 ## Contexts
 
@@ -118,7 +118,7 @@ Test: `__tests__/scenarios/keptGtd.test.tsx`
 - **When** I switch to Week and back to Daily
 - **Then** Home filters again
 
-Test: `__tests__/scenarios/contexts.test.tsx`
+Test: `__tests__/scenarios/contexts.test.tsx` · help: `contexts.md#where-it-applies`, `contexts.md#the-hidden-line`
 
 ### A context filters Areas; Review starts in Everything and narrows on request; Reviewed stays global
 
@@ -134,7 +134,7 @@ Test: `__tests__/scenarios/contexts.test.tsx`
 - **When** I mark it Reviewed, leave Review for Daily and come back to Review's overview
 - **Then** Review shows Everything again: both projects, and today's review (the mark is global)
 
-Test: `__tests__/scenarios/contexts.test.tsx` · design: `docs/dev/history/technical-design-contexts-tags.md`
+Test: `__tests__/scenarios/contexts.test.tsx` · design: `docs/dev/history/technical-design-contexts-tags.md` · help: `contexts.md#where-it-applies`, `review.md#reviewing-in-a-context`
 
 ### Quick Add says when the entry lands outside the context
 
@@ -142,7 +142,7 @@ Test: `__tests__/scenarios/contexts.test.tsx` · design: `docs/dev/history/techn
 - **When** I add "Prepare offer #AT" on Daily
 - **Then** it is in Team's file, and the status line says "Saved to Team · hidden by Home"
 
-Test: `__tests__/scenarios/contexts.test.tsx`
+Test: `__tests__/scenarios/contexts.test.tsx` · help: `contexts.md#the-hidden-line`
 
 ### Settings → Contexts: create Café, listed with its sentence, then choose it from the chip
 
@@ -155,7 +155,7 @@ Test: `__tests__/scenarios/contexts.test.tsx`
 - **When** I tap its radio
 - **Then** the chip names Café
 
-Test: `__tests__/scenarios/contexts.test.tsx`
+Test: `__tests__/scenarios/contexts.test.tsx` · help: `contexts.md#setting-up-contexts`, `contexts.md#choosing-one`
 
 ### Settings → Contexts: a context that shows one Area, named and saved from the top row
 
@@ -165,7 +165,7 @@ Test: `__tests__/scenarios/contexts.test.tsx`
 - **When** I tap its radio and open Daily
 - **Then** Daily shows Home's todo and hides Team's
 
-Test: `__tests__/scenarios/contexts.test.tsx`
+Test: `__tests__/scenarios/contexts.test.tsx` · help: `contexts.md#setting-up-contexts`
 
 ### A tag-only context lists the areas holding its todos
 
@@ -173,7 +173,7 @@ Test: `__tests__/scenarios/contexts.test.tsx`
 - **When** I open Areas under Errands
 - **Then** Garden is listed, Team is not, and the hidden line counts Team
 
-Test: `__tests__/scenarios/contexts.test.tsx`
+Test: `__tests__/scenarios/contexts.test.tsx` · help: `contexts.md#what-a-context-shows`
 
 ### An area is listed through its project's todos
 
@@ -181,7 +181,7 @@ Test: `__tests__/scenarios/contexts.test.tsx`
 - **When** I open Areas under Errands
 - **Then** Garden is listed, Team is not
 
-Test: `__tests__/scenarios/contexts.test.tsx`
+Test: `__tests__/scenarios/contexts.test.tsx` · help: `contexts.md#what-a-context-shows`
 
 ### An upcoming meeting keeps a project listed
 
@@ -189,7 +189,7 @@ Test: `__tests__/scenarios/contexts.test.tsx`
 - **When** I open Projects under Coaching
 - **Then** Leadership is listed, Tender is not
 
-Test: `__tests__/scenarios/contexts.test.tsx`
+Test: `__tests__/scenarios/contexts.test.tsx` · help: `contexts.md#what-a-context-shows`
 
 ### A past meeting alone keeps no project listed
 
@@ -197,7 +197,7 @@ Test: `__tests__/scenarios/contexts.test.tsx`
 - **When** I open Projects under Coaching
 - **Then** Leadership is not listed
 
-Test: `__tests__/scenarios/contexts.test.tsx`
+Test: `__tests__/scenarios/contexts.test.tsx` · help: `contexts.md#what-a-context-shows`
 
 ### A loop root shows every loop of its kind
 
@@ -206,7 +206,7 @@ Test: `__tests__/scenarios/contexts.test.tsx`
 - **Then** both loops' todos show, Garden's does not
 - **And** the contexts list reads "Show all #read loops everywhere"
 
-Test: `__tests__/scenarios/contexts.test.tsx`
+Test: `__tests__/scenarios/contexts.test.tsx` · help: `contexts.md#what-a-context-shows`
 
 ### Show a place and a tag: either one shows
 
@@ -215,7 +215,7 @@ Test: `__tests__/scenarios/contexts.test.tsx`
 - **Then** every Work todo and Home's #computer todo show, Home's other todo does not
 - **And** the sentence reads "Show Work, plus #computer everywhere"
 
-Test: `__tests__/scenarios/contexts.test.tsx`
+Test: `__tests__/scenarios/contexts.test.tsx` · help: `contexts.md#what-a-context-shows`
 
 ### Only inside the selected areas: the tag in the place
 
@@ -224,7 +224,7 @@ Test: `__tests__/scenarios/contexts.test.tsx`
 - **Then** only Work's #computer todo shows
 - **And** the sentence reads "Show #computer in Work"
 
-Test: `__tests__/scenarios/contexts.test.tsx`
+Test: `__tests__/scenarios/contexts.test.tsx` · help: `contexts.md#what-a-context-shows`
 
 ### Except cuts a tag out of a place
 
@@ -235,7 +235,7 @@ Test: `__tests__/scenarios/contexts.test.tsx`
 - **Then** Home's #computer todo is hidden, its other todo shows
 - **And** the sentence reads "Show Home except #computer"
 
-Test: `__tests__/scenarios/contexts.test.tsx`
+Test: `__tests__/scenarios/contexts.test.tsx` · help: `contexts.md#what-a-context-shows`
 
 ### Except a place: the sentence says "except in"
 
@@ -244,7 +244,7 @@ Test: `__tests__/scenarios/contexts.test.tsx`
 - **Then** Work's #computer todo shows, Home's does not
 - **And** the sentence reads "Show #computer everywhere except in Home"
 
-Test: `__tests__/scenarios/contexts.test.tsx`
+Test: `__tests__/scenarios/contexts.test.tsx` · help: `contexts.md#the-sentence`
 
 ### The Tend line opens Review narrowed, filtered by place
 
@@ -252,7 +252,7 @@ Test: `__tests__/scenarios/contexts.test.tsx`
 - **When** I tap the Tend line on Week under Coaching
 - **Then** Tending threads lists both of Team's threads, not Garden's, and the title ends "· in Coaching"
 
-Test: `__tests__/scenarios/contexts.test.tsx`
+Test: `__tests__/scenarios/contexts.test.tsx` · help: `review.md#reviewing-in-a-context`
 
 ### A tag not in use yet is added from New tag
 
@@ -266,7 +266,7 @@ Test: `__tests__/scenarios/contexts.test.tsx`
 - **When** I save
 - **Then** the context is listed with its sentence
 
-Test: `__tests__/scenarios/contexts.test.tsx`
+Test: `__tests__/scenarios/contexts.test.tsx` · help: `contexts.md#setting-up-contexts`
 
 ### The "Only inside" switch appears only while Show names a place and a tag
 
@@ -282,7 +282,7 @@ Test: `__tests__/scenarios/contexts.test.tsx`
 - **When** I save
 - **Then** the stored context does not keep the switch
 
-Test: `__tests__/scenarios/contexts.test.tsx`
+Test: `__tests__/scenarios/contexts.test.tsx` · help: `contexts.md#setting-up-contexts`
 
 ### Save is active only after a change; a new context opens on General
 
@@ -296,7 +296,7 @@ Test: `__tests__/scenarios/contexts.test.tsx`
 - **When** I start a new context and type "Desk"
 - **Then** it opens on General, and the header shows the name
 
-Test: `__tests__/scenarios/contexts.test.tsx`
+Test: `__tests__/scenarios/contexts.test.tsx` · help: `contexts.md#setting-up-contexts`
 
 ### The Tags tab offers the thread types of the Thread setups, not wf and owe
 
@@ -304,7 +304,7 @@ Test: `__tests__/scenarios/contexts.test.tsx`
 - **When** I open the Tags of a new context
 - **Then** "All #sparring threads" is offered, "All #wf threads" and "All #owe threads" are not
 
-Test: `__tests__/scenarios/contexts.test.tsx`
+Test: `__tests__/scenarios/contexts.test.tsx` · help: `contexts.md#setting-up-contexts`
 
 ## Daily
 
@@ -315,7 +315,7 @@ Test: `__tests__/scenarios/contexts.test.tsx`
 - **Then** Inbox.txt has the meeting on that date
 - **Then** the status line says where it went, since Daily doesn't show next week
 
-Test: `__tests__/scenarios/daily.test.tsx` · design: `docs/dev/history/technical-design-cache-subscription-and-shared-add-path.md`
+Test: `__tests__/scenarios/daily.test.tsx` · design: `docs/dev/history/technical-design-cache-subscription-and-shared-add-path.md` · help: `quick-add.md#adding-a-meeting`
 
 ### Daily: a todo's card, then its edit, saved into its own file
 
@@ -325,7 +325,7 @@ Test: `__tests__/scenarios/daily.test.tsx` · design: `docs/dev/history/technica
 - **When** I tap Edit on the card, change the text to "Water the lawn early" and save
 - **Then** Garden's area.txt has the new text and the card shows again
 
-Test: `__tests__/scenarios/dailySlim.test.tsx`
+Test: `__tests__/scenarios/dailySlim.test.tsx` · help: `daily.md#schedule-and-cards`, `quick-add.md#editing`
 
 ### Daily has no tag filter: its todos all show, with no "#" row above the columns
 
@@ -333,7 +333,7 @@ Test: `__tests__/scenarios/dailySlim.test.tsx`
 - **When** I open Daily
 - **Then** the todos the Daily rule lets through show, and there is no filter pill
 
-Test: `__tests__/scenarios/dailySlim.test.tsx` · design: `docs/dev/history/technical-design-launch-ready.md`
+Test: `__tests__/scenarios/dailySlim.test.tsx` · design: `docs/dev/history/technical-design-launch-ready.md` · help: `daily.md#what-appears-on-daily`
 
 ### Quick-file from a Daily edit: "Save to <Name>" moves the todo
 
@@ -341,7 +341,7 @@ Test: `__tests__/scenarios/dailySlim.test.tsx` · design: `docs/dev/history/tech
 - **When** I edit it on Daily, add "#GAR" and tap Save to Garage
 - **Then** it is in Garage's file and not in Inbox.txt
 
-Test: `__tests__/scenarios/dailySlim.test.tsx`
+Test: `__tests__/scenarios/dailySlim.test.tsx` · help: `quick-add.md#filing-directly-with-an-abbreviation`
 
 ### Daily: tapping a thread meeting shows its card and the context panel
 
@@ -351,7 +351,7 @@ Test: `__tests__/scenarios/dailySlim.test.tsx`
 - **When** I close the card
 - **Then** Next todos are back
 
-Test: `__tests__/scenarios/meetingContext.test.tsx`
+Test: `__tests__/scenarios/meetingContext.test.tsx` · help: `meetings.md#the-context-panel`
 
 ### Daily: a plain meeting with nothing linked shows its project
 
@@ -359,7 +359,7 @@ Test: `__tests__/scenarios/meetingContext.test.tsx`
 - **When** I tap it
 - **Then** the panel says so and lists Website's next todos
 
-Test: `__tests__/scenarios/meetingContext.test.tsx`
+Test: `__tests__/scenarios/meetingContext.test.tsx` · help: `meetings.md#the-context-panel`
 
 ### Quick Add to meeting before it starts: an agenda item with the thread tag
 
@@ -368,7 +368,7 @@ Test: `__tests__/scenarios/meetingContext.test.tsx`
 - **Then** the todo carries the thread tag and no meeting field
 - **And** the card is back and the panel lists it
 
-Test: `__tests__/scenarios/meetingContext.test.tsx`
+Test: `__tests__/scenarios/meetingContext.test.tsx` · help: `meetings.md#the-context-panel`
 
 ### Quick Add to meeting during it: the meeting is recorded
 
@@ -376,7 +376,7 @@ Test: `__tests__/scenarios/meetingContext.test.tsx`
 - **When** I add "Send the contract" through + Quick Add to meeting
 - **Then** the todo has the thread tag and [meeting:: …] of this meeting
 
-Test: `__tests__/scenarios/meetingContext.test.tsx`
+Test: `__tests__/scenarios/meetingContext.test.tsx` · help: `meetings.md#the-context-panel`
 
 ### Quick Add to meeting opens the Todo tab and names where it adds, without an abbreviation in the text
 
@@ -384,7 +384,7 @@ Test: `__tests__/scenarios/meetingContext.test.tsx`
 - **When** I switch Quick Add to Meeting, tap the meeting and + Quick Add to meeting
 - **Then** the Todo tab shows, its button reads "+ Add to Coaching" and the text is empty
 
-Test: `__tests__/scenarios/meetingContext.test.tsx`
+Test: `__tests__/scenarios/meetingContext.test.tsx` · help: `meetings.md#the-context-panel`
 
 ### A todo in the panel opens its card and edit form; Save and ✕ return to the meeting
 
@@ -396,7 +396,7 @@ Test: `__tests__/scenarios/meetingContext.test.tsx`
 - **When** I tap "Send the slides" twice, change it to "Send the final slides" and save
 - **Then** the file has the new text and the meeting's card is back
 
-Test: `__tests__/scenarios/meetingContext.test.tsx`
+Test: `__tests__/scenarios/meetingContext.test.tsx` · help: `meetings.md#the-context-panel`
 
 ### ✕ Close in the panel's header closes the meeting: Daily shows its next todos again
 
@@ -404,7 +404,7 @@ Test: `__tests__/scenarios/meetingContext.test.tsx`
 - **When** I tap the meeting, then ✕ Close next to Overview ›
 - **Then** the card and the panel are gone; Next todos shows
 
-Test: `__tests__/scenarios/meetingContext.test.tsx`
+Test: `__tests__/scenarios/meetingContext.test.tsx` · help: `meetings.md#the-context-panel`
 
 ### The panel gives the full context: Next, Planned and a Waiting for dated later, which Daily leaves out
 
@@ -414,7 +414,7 @@ Test: `__tests__/scenarios/meetingContext.test.tsx`
 - **When** I tap the meeting
 - **Then** the panel lists Next, Planned and Waiting for
 
-Test: `__tests__/scenarios/meetingContext.test.tsx`
+Test: `__tests__/scenarios/meetingContext.test.tsx` · help: `meetings.md#the-context-panel`
 
 ### Tapping the title on a card opens its edit form, like Edit
 
@@ -422,7 +422,7 @@ Test: `__tests__/scenarios/meetingContext.test.tsx`
 - **When** I tap "Send the slides" in the panel, then the title on its card
 - **Then** the todo's edit form shows with Save
 
-Test: `__tests__/scenarios/meetingContext.test.tsx`
+Test: `__tests__/scenarios/meetingContext.test.tsx` · help: `quick-add.md#editing`
 
 ### Daily: tomorrow's tracked meeting offers Prepped, and Daily has no Link file
 
@@ -430,7 +430,7 @@ Test: `__tests__/scenarios/meetingContext.test.tsx`
 - **When** I open Daily, switch to Tomorrow and tap the session
 - **Then** its card offers P, no +clip and no Reflect
 
-Test: `__tests__/scenarios/meetingReflection.test.tsx` · design: `docs/dev/history/technical-design-item-card.md`
+Test: `__tests__/scenarios/meetingReflection.test.tsx` · design: `docs/dev/history/technical-design-item-card.md` · help: `meetings.md#preparation-and-review`
 
 ### Upgrade: 0.22 starts on a 0.21 space without writing a file or a setting
 
@@ -440,7 +440,7 @@ Test: `__tests__/scenarios/meetingReflection.test.tsx` · design: `docs/dev/hist
 - **And** no file changed
 - **And** the stored settings still hold the focus keys
 
-Test: `__tests__/scenarios/rollback.test.tsx`
+Test: `__tests__/scenarios/rollback.test.tsx` · help: `files-and-folders.md`
 
 ### Daily under a context shows today's meetings and the next todos it shows, and counts the rest (smoke)
 
@@ -455,7 +455,7 @@ Test: `__tests__/scenarios/rollback.test.tsx`
 - **Then** it lists "Supplier call"
 - **And** no error was logged
 
-Test: `__tests__/scenarios/smoke/daily.test.tsx`
+Test: `__tests__/scenarios/smoke/daily.test.tsx` · help: `daily.md#what-appears-on-daily`, `contexts.md#the-hidden-line`
 
 ### Tick a todo done on Daily (smoke)
 
@@ -463,7 +463,7 @@ Test: `__tests__/scenarios/smoke/daily.test.tsx`
 - **When** I tick "Water the lawn"
 - **Then** Garden's area.txt has it done with today's completion date
 
-Test: `__tests__/scenarios/smoke/daily.test.tsx`
+Test: `__tests__/scenarios/smoke/daily.test.tsx` · help: `daily.md#schedule-and-cards`
 
 ## Engage
 
@@ -478,7 +478,7 @@ Test: `__tests__/scenarios/smoke/daily.test.tsx`
 - **When** I tap Mark prepped
 - **Then** today's meeting line in area.txt carries #prepped and the button is gone
 
-Test: `__tests__/scenarios/engageMoment.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md`
+Test: `__tests__/scenarios/engageMoment.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md` · help: `engage.md#on-a-meetings-page-before-during-after`
 
 ### During the meeting: a todo and an agreement carry the meeting and the thread tag
 
@@ -490,7 +490,7 @@ Test: `__tests__/scenarios/engageMoment.test.tsx` · design: `docs/dev/history/t
 - **Then** area.txt has it under ## Agreements with the meeting, today and the end of the year
 - **And** the Agreements tab lists it, and From Thread lists it in today's group
 
-Test: `__tests__/scenarios/engageMoment.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md`
+Test: `__tests__/scenarios/engageMoment.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md` · help: `engage.md#on-a-meetings-page-before-during-after`
 
 ### Ended early: After is chosen by hand and kept when Engage opens again; after the end it is After by time
 
@@ -502,7 +502,7 @@ Test: `__tests__/scenarios/engageMoment.test.tsx` · design: `docs/dev/history/t
 - **When** it is 11:01 and I open Engage again
 - **Then** the moment is After without a tap
 
-Test: `__tests__/scenarios/engageMoment.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md`
+Test: `__tests__/scenarios/engageMoment.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md` · help: `engage.md#on-a-meetings-page-before-during-after`
 
 ### Done rows follow the moment: Before the last session's, During both, After only today's
 
@@ -514,7 +514,7 @@ Test: `__tests__/scenarios/engageMoment.test.tsx` · design: `docs/dev/history/t
 - **When** I choose After
 - **Then** only today's shows
 
-Test: `__tests__/scenarios/engageMoment.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md`
+Test: `__tests__/scenarios/engageMoment.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md` · help: `engage.md#on-a-meetings-page-before-during-after`
 
 ### The Waiting tab lists what I wait for from Jordan, where it was agreed, with Done
 
@@ -524,7 +524,7 @@ Test: `__tests__/scenarios/engageMoment.test.tsx` · design: `docs/dev/history/t
 - **When** I tap Done on the first
 - **Then** it is ticked in the file
 
-Test: `__tests__/scenarios/engageMoment.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md`
+Test: `__tests__/scenarios/engageMoment.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md` · help: `engage.md#the-tabs`
 
 ### + Next sparring only when no session follows today's
 
@@ -534,7 +534,7 @@ Test: `__tests__/scenarios/engageMoment.test.tsx` · design: `docs/dev/history/t
 - **When** I tap it
 - **Then** Quick Add's Meeting tab holds the next session, ten days on
 
-Test: `__tests__/scenarios/engageMoment.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md`
+Test: `__tests__/scenarios/engageMoment.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md` · help: `engage.md#on-a-meetings-page-before-during-after`
 
 ### No + Next when the next session is planned already
 
@@ -542,7 +542,7 @@ Test: `__tests__/scenarios/engageMoment.test.tsx` · design: `docs/dev/history/t
 - **When** I open Engage on the meeting page
 - **Then** there is no + Next
 
-Test: `__tests__/scenarios/engageMoment.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md`
+Test: `__tests__/scenarios/engageMoment.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md` · help: `engage.md#on-a-meetings-page-before-during-after`
 
 ### Change an agreement from the Agreements tab: the old one ends, the new one is added
 
@@ -553,7 +553,7 @@ Test: `__tests__/scenarios/engageMoment.test.tsx` · design: `docs/dev/history/t
 - **Then** the old line is ended today and the new one added with today as created
 - **And** the tab lists only the new one
 
-Test: `__tests__/scenarios/engageMoment.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md`
+Test: `__tests__/scenarios/engageMoment.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md` · help: `engage.md#the-tabs`, `agreements.md#changing-and-ending`
 
 ### On a todo's page, w/f Jordan turns #next into Waiting For, with Undo
 
@@ -562,7 +562,7 @@ Test: `__tests__/scenarios/engageMoment.test.tsx` · design: `docs/dev/history/t
 - **Then** the line carries #wf/jordan instead of #next
 - **And** the ack offers Undo, and the todo is on the Waiting tab
 
-Test: `__tests__/scenarios/engageMoment.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md`
+Test: `__tests__/scenarios/engageMoment.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md` · help: `engage.md#working-on`
 
 ### An Inbox meeting's page: no Agreement tab, agreements are never kept in the Inbox
 
@@ -570,7 +570,7 @@ Test: `__tests__/scenarios/engageMoment.test.tsx` · design: `docs/dev/history/t
 - **When** I open Engage on its page and open Quick Add if offered
 - **Then** Quick Add has no Agreement tab
 
-Test: `__tests__/scenarios/engageMoment.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md`
+Test: `__tests__/scenarios/engageMoment.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md` · help: `agreements.md#who-an-agreement-belongs-to`
 
 ### Engage fallback: on a note without owner, Engage lists the owners of today's remaining schedule
 
@@ -579,7 +579,7 @@ Test: `__tests__/scenarios/engageMoment.test.tsx` · design: `docs/dev/history/t
 - **Then** it shows today's schedule: Writing (the block at 11:00), then Garden (14:00); the Inbox's Dentist has no owner
 - **And** nothing was logged as an error
 
-Test: `__tests__/scenarios/focusBlocks.test.tsx`
+Test: `__tests__/scenarios/focusBlocks.test.tsx` · help: `engage.md#choosing-another-owner`
 
 ### Engage on the meeting's page offers the reflection; on the reflection page it opens on what came out of the thread's meetings
 
@@ -592,7 +592,7 @@ Test: `__tests__/scenarios/focusBlocks.test.tsx`
 - **Then** it opens on "From Thread 1" with the sparring session's group and the agreed todo
 - **And** it doesn't offer to reflect again
 
-Test: `__tests__/scenarios/meetingReflection.test.tsx` · design: `docs/dev/history/technical-design-meeting-reflection.md`
+Test: `__tests__/scenarios/meetingReflection.test.tsx` · design: `docs/dev/history/technical-design-meeting-reflection.md` · help: `engage.md#on-a-meetings-page-before-during-after`
 
 ### Engage on the Home page of a home notebook that is also a loop's note: the Area, not the loop
 
@@ -600,7 +600,7 @@ Test: `__tests__/scenarios/meetingReflection.test.tsx` · design: `docs/dev/hist
 - **When** I open Engage on page 1
 - **Then** the owner is Area Sport and the line reads "Section: Sport"
 
-Test: `__tests__/scenarios/pageSection.test.tsx`
+Test: `__tests__/scenarios/pageSection.test.tsx` · help: `engage.md#which-owner-a-page-belongs-to`
 
 ### Engage on a free page after the Home page: the Area, from p. 1
 
@@ -608,7 +608,7 @@ Test: `__tests__/scenarios/pageSection.test.tsx`
 - **When** I open Engage on page 2
 - **Then** the owner is Area Sport and the line reads "Section: Sport · from p. 1"
 
-Test: `__tests__/scenarios/pageSection.test.tsx`
+Test: `__tests__/scenarios/pageSection.test.tsx` · help: `engage.md#which-owner-a-page-belongs-to`
 
 ### Engage on a loop todo's follow-up page: the loop, with that todo current
 
@@ -616,7 +616,7 @@ Test: `__tests__/scenarios/pageSection.test.tsx`
 - **When** I open Engage on page 6
 - **Then** the owner is Loop marathon, the todo is current, and the line names it from p. 5
 
-Test: `__tests__/scenarios/pageSection.test.tsx`
+Test: `__tests__/scenarios/pageSection.test.tsx` · help: `engage.md#which-owner-a-page-belongs-to`
 
 ### Your own heading starts a section of the notebook owner
 
@@ -624,7 +624,7 @@ Test: `__tests__/scenarios/pageSection.test.tsx`
 - **When** I open Engage on page 8
 - **Then** the owner is Area Sport and the line reads "Section: Training plan · from p. 7"
 
-Test: `__tests__/scenarios/pageSection.test.tsx`
+Test: `__tests__/scenarios/pageSection.test.tsx` · help: `engage.md#which-owner-a-page-belongs-to`
 
 ### A handwritten heading starts a section too
 
@@ -632,7 +632,7 @@ Test: `__tests__/scenarios/pageSection.test.tsx`
 - **When** I open Engage on page 9
 - **Then** the owner is Area Sport and the line reads "Section: Handwritten section"
 
-Test: `__tests__/scenarios/pageSection.test.tsx`
+Test: `__tests__/scenarios/pageSection.test.tsx` · help: `engage.md#which-owner-a-page-belongs-to`
 
 ### A todo's keyword without a title still starts its section
 
@@ -640,7 +640,7 @@ Test: `__tests__/scenarios/pageSection.test.tsx`
 - **When** I open Engage on page 11
 - **Then** "Buy shoes" is current and the section is p. 10
 
-Test: `__tests__/scenarios/pageSection.test.tsx`
+Test: `__tests__/scenarios/pageSection.test.tsx` · help: `engage.md#which-owner-a-page-belongs-to`
 
 ### A cancelled todo's page still starts a section, but nothing becomes current
 
@@ -648,7 +648,7 @@ Test: `__tests__/scenarios/pageSection.test.tsx`
 - **When** I open Engage on page 11
 - **Then** the owner is Area Sport, no todo is current, and the line still reads "Section: Buy shoes · from p. 10"
 
-Test: `__tests__/scenarios/pageSection.test.tsx`
+Test: `__tests__/scenarios/pageSection.test.tsx` · help: `engage.md#which-owner-a-page-belongs-to`
 
 ### A closed loop's todo page goes back to the Area
 
@@ -656,7 +656,7 @@ Test: `__tests__/scenarios/pageSection.test.tsx`
 - **When** I open Engage on page 6
 - **Then** the owner is Area Sport
 
-Test: `__tests__/scenarios/pageSection.test.tsx`
+Test: `__tests__/scenarios/pageSection.test.tsx` · help: `engage.md#which-owner-a-page-belongs-to`
 
 ### A pure loop note: a free page after the loop page belongs to the loop
 
@@ -664,7 +664,7 @@ Test: `__tests__/scenarios/pageSection.test.tsx`
 - **When** I open Engage on page 2 of the loop note
 - **Then** the owner is the loop and the line names the loop page
 
-Test: `__tests__/scenarios/pageSection.test.tsx`
+Test: `__tests__/scenarios/pageSection.test.tsx` · help: `engage.md#which-owner-a-page-belongs-to`
 
 ### A thread notebook's follow-up page: the thread and its sparring
 
@@ -672,7 +672,7 @@ Test: `__tests__/scenarios/pageSection.test.tsx`
 - **When** I open Engage on the follow-up page
 - **Then** the owner is Thread #sparring/jordan and the moment line shows that sparring
 
-Test: `__tests__/scenarios/pageSection.test.tsx`
+Test: `__tests__/scenarios/pageSection.test.tsx` · help: `engage.md#which-owner-a-page-belongs-to`
 
 ### A todo's own note: as before, no section line
 
@@ -680,7 +680,7 @@ Test: `__tests__/scenarios/pageSection.test.tsx`
 - **When** I open Engage on its page 2
 - **Then** the todo is current and no section line shows
 
-Test: `__tests__/scenarios/pageSection.test.tsx`
+Test: `__tests__/scenarios/pageSection.test.tsx` · help: `engage.md#which-owner-a-page-belongs-to`
 
 ### The page index can't be read: the single-page lookup, and the panel opens
 
@@ -690,7 +690,7 @@ Test: `__tests__/scenarios/pageSection.test.tsx`
 - **When** I tap Close
 - **Then** the panel closed without an error
 
-Test: `__tests__/scenarios/pageSection.test.tsx`
+Test: `__tests__/scenarios/pageSection.test.tsx` · help: `engage.md#opening-engage`
 
 ### Engage on a meeting's follow-up page: the meeting is passed on (smoke)
 
@@ -699,7 +699,7 @@ Test: `__tests__/scenarios/pageSection.test.tsx`
 - **Then** the owner is Area Sport, the moment line shows Coach call with its moment, From offers its group
 - **And** the line reads "Section: Coach call · 24.10. · from p. 3"
 
-Test: `__tests__/scenarios/smoke/engagePage.test.tsx`
+Test: `__tests__/scenarios/smoke/engagePage.test.tsx` · help: `engage.md#which-owner-a-page-belongs-to`
 
 ## Help
 
@@ -718,7 +718,7 @@ Test: `__tests__/scenarios/smoke/engagePage.test.tsx`
 - **Then** Quick Add and capture shows again on the screen with the link
 - **And** after ✕ Close and opening the help again there is no ‹ Back
 
-Test: `__tests__/scenarios/helpLinks.test.tsx` · design: `docs/dev/history/technical-design-easy-start.md`
+Test: `__tests__/scenarios/helpLinks.test.tsx` · design: `docs/dev/history/technical-design-easy-start.md` · help: `index.md#the-tabs-at-a-glance`
 
 ### A link to a heading of the same page jumps there, and ‹ Back returns
 
@@ -728,7 +728,7 @@ Test: `__tests__/scenarios/helpLinks.test.tsx` · design: `docs/dev/history/tech
 - **When** I tap ‹ Back
 - **Then** the page shows the link again and there is nothing more to go back to
 
-Test: `__tests__/scenarios/helpLinks.test.tsx` · design: `docs/dev/history/technical-design-help-linking.md`
+Test: `__tests__/scenarios/helpLinks.test.tsx` · design: `docs/dev/history/technical-design-help-linking.md` · help: `index.md#the-tabs-at-a-glance`
 
 ## Inbox
 
@@ -740,7 +740,7 @@ Test: `__tests__/scenarios/helpLinks.test.tsx` · design: `docs/dev/history/tech
 - **Then** Inbox.txt no longer has it
 - **Then** the note moved into the project's folder, keywords and all
 
-Test: `__tests__/scenarios/inbox.test.tsx` · design: `docs/dev/history/technical-design-filing-unification.md`
+Test: `__tests__/scenarios/inbox.test.tsx` · design: `docs/dev/history/technical-design-filing-unification.md` · help: `quick-add.md#the-inbox`
 
 ### Refile a meeting from the card's area chip
 
@@ -748,7 +748,7 @@ Test: `__tests__/scenarios/inbox.test.tsx` · design: `docs/dev/history/technica
 - **When** I tap the meeting, tap the refile arrow and pick Website in the Files pane
 - **Then** the meeting is in Website and no longer in the Inbox
 
-Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/technical-design-item-card.md`
+Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/technical-design-item-card.md` · help: `quick-add.md#the-card-one-tap-selects`
 
 ## Interruptions
 
@@ -756,13 +756,13 @@ Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/techn
 
 - **Then** for every point where Kept GTD can be stopped: the todo and its note still exist, and a broken link is named with the note's new place
 
-Test: `__tests__/scenarios/interruptions.test.tsx` · design: `docs/dev/history/technical-design-quality-hardening.md`
+Test: `__tests__/scenarios/interruptions.test.tsx` · design: `docs/dev/history/technical-design-quality-hardening.md` · help: `files-and-folders.md#editing-by-hand`
 
 ### A close-out stopped during "Archive now" can be finished, or is fully archived
 
 - **Then** for every point where Kept GTD can be stopped: reopening the close-out and tapping "Archive now" finishes it, or the project is archived and the Integrity Check says what is left
 
-Test: `__tests__/scenarios/interruptions.test.tsx` · design: `docs/dev/history/technical-design-quality-hardening.md`
+Test: `__tests__/scenarios/interruptions.test.tsx` · design: `docs/dev/history/technical-design-quality-hardening.md` · help: `close-out.md#the-five-steps`
 
 ## Lasso
 
@@ -774,7 +774,7 @@ Test: `__tests__/scenarios/interruptions.test.tsx` · design: `docs/dev/history/
 - **When** I tap Save & close
 - **Then** Coaching's file has the agreement with the thread tag and the meeting
 
-Test: `__tests__/scenarios/agreements.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md`
+Test: `__tests__/scenarios/agreements.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md` · help: `lasso.md#capturing-an-agreement`
 
 ### An agreement from a mark on a thread notebook's follow-up page: for the thread, with the sparring
 
@@ -784,7 +784,7 @@ Test: `__tests__/scenarios/agreements.test.tsx` · design: `docs/dev/history/tec
 - **When** I tap Save & close
 - **Then** the agreement records the sparring meeting
 
-Test: `__tests__/scenarios/pageSection.test.tsx`
+Test: `__tests__/scenarios/pageSection.test.tsx` · help: `lasso.md#capturing-an-agreement`
 
 ### Your own heading stops the provenance
 
@@ -794,7 +794,7 @@ Test: `__tests__/scenarios/pageSection.test.tsx`
 - **When** I save it as a todo
 - **Then** no meeting is recorded
 
-Test: `__tests__/scenarios/pageSection.test.tsx`
+Test: `__tests__/scenarios/pageSection.test.tsx` · help: `lasso.md#capturing-right-away`
 
 ### A cancelled meeting's follow-up page records no meeting
 
@@ -804,7 +804,7 @@ Test: `__tests__/scenarios/pageSection.test.tsx`
 - **When** I save it as a todo
 - **Then** no meeting is recorded
 
-Test: `__tests__/scenarios/pageSection.test.tsx`
+Test: `__tests__/scenarios/pageSection.test.tsx` · help: `lasso.md#capturing-right-away`
 
 ### A todo captured on a meeting's follow-up page records the meeting (smoke)
 
@@ -814,7 +814,7 @@ Test: `__tests__/scenarios/pageSection.test.tsx`
 - **When** I save it as a todo
 - **Then** the todo ends with the meeting
 
-Test: `__tests__/scenarios/smoke/captureTodo.test.tsx`
+Test: `__tests__/scenarios/smoke/captureTodo.test.tsx` · help: `lasso.md#capturing-right-away`
 
 ## Meetings
 
@@ -828,7 +828,7 @@ Test: `__tests__/scenarios/smoke/captureTodo.test.tsx`
 - **When** I tap it
 - **Then** the card says "Focus · ahead" with "writing novel ›" and has no P or R
 
-Test: `__tests__/scenarios/focusBlocks.test.tsx`
+Test: `__tests__/scenarios/focusBlocks.test.tsx` · help: `meetings.md#focus-blocks`
 
 ### No close-out for focus blocks
 
@@ -837,7 +837,7 @@ Test: `__tests__/scenarios/focusBlocks.test.tsx`
 - **Then** it lists the meeting and not the focus block
 - **And** nothing was logged as an error
 
-Test: `__tests__/scenarios/focusBlocks.test.tsx`
+Test: `__tests__/scenarios/focusBlocks.test.tsx` · help: `meetings.md#focus-blocks`
 
 ### Tick R and M on the card: only the tags change
 
@@ -846,7 +846,7 @@ Test: `__tests__/scenarios/focusBlocks.test.tsx`
 - **Then** the line gains #reviewed and #monthly and nothing else
 - **And** both show filled on the card
 
-Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/technical-design-item-card.md`
+Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/technical-design-item-card.md` · help: `meetings.md#the-meeting-row-and-its-card`
 
 ### New from this and Cancel meeting from the card
 
@@ -856,7 +856,7 @@ Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/techn
 - **When** I tap the meeting again, Cancel meeting, and confirm
 - **Then** the meeting is marked cancelled in Inbox.txt, and the card says so
 
-Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/technical-design-item-card.md`
+Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/technical-design-item-card.md` · help: `meetings.md#the-meeting-row-and-its-card`, `meetings.md#cancelling-and-repeating`
 
 ### Link a file from the card on an Area page, and unlink it
 
@@ -866,7 +866,7 @@ Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/techn
 - **When** I tap ✕ next to the file on the card
 - **Then** the line has no link any more, and the card offers +clip again
 
-Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/technical-design-item-card.md`
+Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/technical-design-item-card.md` · help: `quick-add.md#notes-and-files-on-a-todo-or-meeting`
 
 ### Reflect on a sparring session: the page comes after the meeting's page and the pages added to it by hand
 
@@ -880,7 +880,7 @@ Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/techn
 - **And** it was opened, and the card's Reflect is filled now
 - **And** the meeting is not ticked reviewed and its line is unchanged
 
-Test: `__tests__/scenarios/meetingReflection.test.tsx` · design: `docs/dev/history/technical-design-meeting-reflection.md`
+Test: `__tests__/scenarios/meetingReflection.test.tsx` · design: `docs/dev/history/technical-design-meeting-reflection.md` · help: `meetings.md#reflection-page`
 
 ### Reflect on a meeting that has no page yet: one question, then meeting page and reflection in order
 
@@ -889,7 +889,7 @@ Test: `__tests__/scenarios/meetingReflection.test.tsx` · design: `docs/dev/hist
 - **Then** the notebook exists with the meeting's page first and the reflection second
 - **And** the meeting links its page, and the reflection is what opened
 
-Test: `__tests__/scenarios/meetingReflection.test.tsx` · design: `docs/dev/history/technical-design-meeting-reflection.md`
+Test: `__tests__/scenarios/meetingReflection.test.tsx` · design: `docs/dev/history/technical-design-meeting-reflection.md` · help: `meetings.md#reflection-page`, `note-setups.md#before-a-note-is-created`
 
 ### A renamed meeting finds its reflection again
 
@@ -899,7 +899,7 @@ Test: `__tests__/scenarios/meetingReflection.test.tsx` · design: `docs/dev/hist
 - **When** I tap it
 - **Then** the same page opens, now with the keyword of the new title
 
-Test: `__tests__/scenarios/meetingReflection.test.tsx` · design: `docs/dev/history/technical-design-meeting-reflection.md`
+Test: `__tests__/scenarios/meetingReflection.test.tsx` · design: `docs/dev/history/technical-design-meeting-reflection.md` · help: `meetings.md#reflection-page`
 
 ### The card follows the selected meeting
 
@@ -911,7 +911,7 @@ Test: `__tests__/scenarios/meetingReflection.test.tsx` · design: `docs/dev/hist
 - **When** I tap the session three days ago
 - **Then** the card switches to it: R, Reflect and +clip
 
-Test: `__tests__/scenarios/meetingReflection.test.tsx` · design: `docs/dev/history/technical-design-item-card.md`
+Test: `__tests__/scenarios/meetingReflection.test.tsx` · design: `docs/dev/history/technical-design-item-card.md` · help: `meetings.md#the-meeting-row-and-its-card`
 
 ### Edit and save from the card, then tick reviewed on it: the title changes and both ticks stay
 
@@ -924,7 +924,7 @@ Test: `__tests__/scenarios/meetingReflection.test.tsx` · design: `docs/dev/hist
 - **Then** R is filled
 - **And** the meeting has the new title and keeps both #prepped and #reviewed
 
-Test: `__tests__/scenarios/meetingReflection.test.tsx` · design: `docs/dev/history/technical-design-item-card.md`
+Test: `__tests__/scenarios/meetingReflection.test.tsx` · design: `docs/dev/history/technical-design-item-card.md` · help: `meetings.md#preparation-and-review`
 
 ## Note setups
 
@@ -934,7 +934,7 @@ Test: `__tests__/scenarios/meetingReflection.test.tsx` · design: `docs/dev/hist
 - **When** I open Settings → Note setups
 - **Then** no migration notice shows, and the Default is offered with its pages
 
-Test: `__tests__/scenarios/cleanBreak.test.tsx`
+Test: `__tests__/scenarios/cleanBreak.test.tsx` · help: `note-setups.md`
 
 ### Opened from a PDF, a note that needs a new file is not tried: the status says why
 
@@ -942,7 +942,7 @@ Test: `__tests__/scenarios/cleanBreak.test.tsx`
 - **When** I open Kept from the PDF, open the session and tap Reflect
 - **Then** the status line says Supernote does not allow it, nothing is asked and no note is made
 
-Test: `__tests__/scenarios/noteCreationLimit.test.tsx`
+Test: `__tests__/scenarios/noteCreationLimit.test.tsx` · help: `index.md#opening-kept-gtd-from-a-note`
 
 ### Opened from a note, the same Reflect asks first and creates the notebook
 
@@ -950,7 +950,7 @@ Test: `__tests__/scenarios/noteCreationLimit.test.tsx`
 - **When** I open Kept from the note, open the session and tap Reflect
 - **Then** Kept asks before it creates anything
 
-Test: `__tests__/scenarios/noteCreationLimit.test.tsx`
+Test: `__tests__/scenarios/noteCreationLimit.test.tsx` · help: `note-setups.md#before-a-note-is-created`
 
 ### On a Manta notebook the reflection page keeps its layout, scaled to the bigger page
 
@@ -958,7 +958,7 @@ Test: `__tests__/scenarios/noteCreationLimit.test.tsx`
 - **When** I reflect on the session
 - **Then** the question sits at the Manta position of reference (x, 400), in a bigger font
 
-Test: `__tests__/scenarios/pageFrame.test.tsx`
+Test: `__tests__/scenarios/pageFrame.test.tsx` · help: `note-setups.md#the-page-layout`
 
 ### On a horizontal notebook a piece that would land below the page is left out, and Kept says so
 
@@ -966,7 +966,7 @@ Test: `__tests__/scenarios/pageFrame.test.tsx`
 - **When** I reflect with a setup whose question sits at reference y 1600
 - **Then** the page gets its heading but not the question, and the status line explains
 
-Test: `__tests__/scenarios/pageFrame.test.tsx`
+Test: `__tests__/scenarios/pageFrame.test.tsx` · help: `note-setups.md#the-page-layout`
 
 ### On an A5 X notebook every piece stays exactly where the setup puts it
 
@@ -974,7 +974,7 @@ Test: `__tests__/scenarios/pageFrame.test.tsx`
 - **When** I reflect with the question at reference y 1600
 - **Then** the question is written at y 1600, unscaled
 
-Test: `__tests__/scenarios/pageFrame.test.tsx`
+Test: `__tests__/scenarios/pageFrame.test.tsx` · help: `note-setups.md#the-page-layout`
 
 ## Profiles and demo space
 
@@ -984,7 +984,7 @@ Test: `__tests__/scenarios/pageFrame.test.tsx`
 - **When** Kept starts
 - **Then** nothing is copied into EXPORT/kept-gtd/profiles and no copy notice shows
 
-Test: `__tests__/scenarios/cleanBreak.test.tsx`
+Test: `__tests__/scenarios/cleanBreak.test.tsx` · help: `profiles-and-demo.md#profile-files`
 
 ### A profile saved by 0.24.0 loads, without the keys of removed settings
 
@@ -994,7 +994,7 @@ Test: `__tests__/scenarios/cleanBreak.test.tsx`
 - **When** I save the profile in Settings → Data
 - **Then** work.json is written in the same format, without the leftover keys
 
-Test: `__tests__/scenarios/cleanBreak.test.tsx`
+Test: `__tests__/scenarios/cleanBreak.test.tsx` · help: `profiles-and-demo.md#profile-files`
 
 ### Welcome back loads the saved profile after a fresh install
 
@@ -1005,7 +1005,7 @@ Test: `__tests__/scenarios/cleanBreak.test.tsx`
 - **Then** the contexts and the Note setup are active, the assistant is closed and the status names the profile
 - **And** production.json is byte-identical
 
-Test: `__tests__/scenarios/freshStartProfile.test.tsx`
+Test: `__tests__/scenarios/freshStartProfile.test.tsx` · help: `profiles-and-demo.md#saved-profiles`
 
 ### Welcome back lists the newest profile first and selects it
 
@@ -1015,7 +1015,7 @@ Test: `__tests__/scenarios/freshStartProfile.test.tsx`
 - **When** I pick Production
 - **Then** the Load button names it
 
-Test: `__tests__/scenarios/freshStartProfile.test.tsx`
+Test: `__tests__/scenarios/freshStartProfile.test.tsx` · help: `profiles-and-demo.md#saved-profiles`
 
 ### Start fresh, then Restore from Settings → Data → Profiles
 
@@ -1027,7 +1027,7 @@ Test: `__tests__/scenarios/freshStartProfile.test.tsx`
 - **When** I confirm with Restore
 - **Then** the contexts and the Note setup are active, and the file is unchanged
 
-Test: `__tests__/scenarios/freshStartProfile.test.tsx`
+Test: `__tests__/scenarios/freshStartProfile.test.tsx` · help: `profiles-and-demo.md#saved-profiles`
 
 ### Switching away from fresh settings does not overwrite the saved profile
 
@@ -1037,7 +1037,7 @@ Test: `__tests__/scenarios/freshStartProfile.test.tsx`
 - **When** I confirm with Switch
 - **Then** Demo is active and production.json is unchanged
 
-Test: `__tests__/scenarios/freshStartProfile.test.tsx`
+Test: `__tests__/scenarios/freshStartProfile.test.tsx` · help: `profiles-and-demo.md#saved-profiles`
 
 ### Save on fresh settings asks before replacing the saved profile
 
@@ -1048,12 +1048,17 @@ Test: `__tests__/scenarios/freshStartProfile.test.tsx`
 - **Then** the confirm is gone and the file is unchanged
 - **When** I tap Save again and confirm with Save
 - **Then** the file holds the fresh settings and the fresh mark is cleared
+
+Test: `__tests__/scenarios/freshStartProfile.test.tsx` · help: `profiles-and-demo.md#saved-profiles`
+
+### Remove Kept's data on fresh settings does not save over the saved profile unasked
+
 - **Given** a fresh start with a saved production.json (Start fresh)
 - **Then** Save the active profile first is unchecked
 - **When** I remove with the defaults
 - **Then** production.json is unchanged
 
-Test: `__tests__/scenarios/freshStartProfile.test.tsx`
+Test: `__tests__/scenarios/freshStartProfile.test.tsx` · help: `settings.md#remove-kepts-data`, `profiles-and-demo.md#saved-profiles`
 
 ### Without saved profiles the assistant starts at Folders and creates no profiles folder
 
@@ -1062,19 +1067,24 @@ Test: `__tests__/scenarios/freshStartProfile.test.tsx`
 - **Then** the assistant starts at Folders as before
 - **And** the profiles folder was not created
 
-Test: `__tests__/scenarios/freshStartProfile.test.tsx`
+Test: `__tests__/scenarios/freshStartProfile.test.tsx` · help: `settings.md#setup-assistant`
 
 ### An unreadable profile file shows no Welcome back
 
 - **Given** a fresh install and a production.json that is not valid JSON
 - **When** Kept starts for the first time
 - **Then** the assistant starts at Folders
+
+Test: `__tests__/scenarios/freshStartProfile.test.tsx` · help: `profiles-and-demo.md#saved-profiles`
+
+### After Remove Kept's data, Welcome back offers the saved profile
+
 - **Given** Kept runs on stored settings with two contexts
 - **Then** Welcome back offers Production
 - **When** I tap Load "Production"
 - **Then** the contexts and the Note setup are back
 
-Test: `__tests__/scenarios/freshStartProfile.test.tsx`
+Test: `__tests__/scenarios/freshStartProfile.test.tsx` · help: `profiles-and-demo.md#saved-profiles`
 
 ### The demo space lives in Note/kept-gtd-demo
 
@@ -1082,7 +1092,7 @@ Test: `__tests__/scenarios/freshStartProfile.test.tsx`
 - **When** I create the demo space in Settings → Data and switch to it
 - **Then** its folders are under Note/kept-gtd-demo and nothing is written under Note/gtdpara-demo
 
-Test: `__tests__/scenarios/keptGtd.test.tsx`
+Test: `__tests__/scenarios/keptGtd.test.tsx` · help: `profiles-and-demo.md#the-demo-space`
 
 ### Try things in the demo space without touching the real files, then switch back
 
@@ -1096,7 +1106,7 @@ Test: `__tests__/scenarios/keptGtd.test.tsx`
 - **Then** "Website" is back, and the demo todo is not in my Inbox
 - **And** both profiles are saved as files in EXPORT/kept-gtd/profiles
 
-Test: `__tests__/scenarios/profiles.test.tsx` · design: `docs/dev/history/technical-design-profiles-demo-space.md`
+Test: `__tests__/scenarios/profiles.test.tsx` · design: `docs/dev/history/technical-design-profiles-demo-space.md` · help: `profiles-and-demo.md#the-demo-space`
 
 ### Switch to the demo space and back (smoke)
 
@@ -1107,7 +1117,7 @@ Test: `__tests__/scenarios/profiles.test.tsx` · design: `docs/dev/history/techn
 - **Then** Daily shows the smoke space again
 - **And** no error was logged
 
-Test: `__tests__/scenarios/smoke/profiles.test.tsx`
+Test: `__tests__/scenarios/smoke/profiles.test.tsx` · help: `profiles-and-demo.md#the-demo-space`
 
 ## Projects and Areas
 
@@ -1121,7 +1131,7 @@ Test: `__tests__/scenarios/smoke/profiles.test.tsx`
 - **When** I open project Tender (in Team) and project Solo
 - **Then** both show the recorded texts and list rows
 
-Test: `__tests__/scenarios/currentPageGolden.test.tsx` · design: `docs/dev/history/technical-design-perf-current-page.md`
+Test: `__tests__/scenarios/currentPageGolden.test.tsx` · design: `docs/dev/history/technical-design-perf-current-page.md` · help: `projects-and-areas.md#the-current-tab`
 
 ### Opening an Area page renders each part a bounded number of times and reads no settings it knows
 
@@ -1130,7 +1140,7 @@ Test: `__tests__/scenarios/currentPageGolden.test.tsx` · design: `docs/dev/hist
 - **Then** Quick Add, the page and its parts render at most as often as recorded
 - **And** the settings are read at most as often as recorded
 
-Test: `__tests__/scenarios/currentPagePerf.test.tsx` · design: `docs/dev/history/technical-design-perf-current-page.md`
+Test: `__tests__/scenarios/currentPagePerf.test.tsx` · design: `docs/dev/history/technical-design-perf-current-page.md` · help: `projects-and-areas.md#the-current-tab`
 
 ### An Area page lists its folder only when the Files tab is opened
 
@@ -1140,7 +1150,7 @@ Test: `__tests__/scenarios/currentPagePerf.test.tsx` · design: `docs/dev/histor
 - **When** I tap Files
 - **Then** the folder is listed once and its entries show
 
-Test: `__tests__/scenarios/currentPagePerf.test.tsx` · design: `docs/dev/history/technical-design-perf-current-page.md`
+Test: `__tests__/scenarios/currentPagePerf.test.tsx` · design: `docs/dev/history/technical-design-perf-current-page.md` · help: `projects-and-areas.md#files-and-linked-files`
 
 ### Hiding done todos on an Area page changes the Todos list and nothing else, and is kept
 
@@ -1149,7 +1159,7 @@ Test: `__tests__/scenarios/currentPagePerf.test.tsx` · design: `docs/dev/histor
 - **Then** the Todos list offers to show the done ones again, and neither Quick Add nor the left pane rendered
 - **And** after opening Zen and coming back, done todos are still hidden
 
-Test: `__tests__/scenarios/currentPagePerf.test.tsx` · design: `docs/dev/history/technical-design-perf-current-page.md`
+Test: `__tests__/scenarios/currentPagePerf.test.tsx` · design: `docs/dev/history/technical-design-perf-current-page.md` · help: `projects-and-areas.md#the-current-tab`
 
 ### Focus flags, goal spans and #now survive a todo, a meeting and a status change
 
@@ -1162,7 +1172,7 @@ Test: `__tests__/scenarios/currentPagePerf.test.tsx` · design: `docs/dev/histor
 - **Then** the status line changed and the focus lines are still there, in place
 - **And** no error was logged
 
-Test: `__tests__/scenarios/rollback.test.tsx`
+Test: `__tests__/scenarios/rollback.test.tsx` · help: `files-and-folders.md#editing-by-hand`
 
 ### The area page shows its todos, meetings and agreements, and its folder once Files is opened (smoke)
 
@@ -1176,7 +1186,7 @@ Test: `__tests__/scenarios/rollback.test.tsx`
 - **Then** the folder is listed once and its entries show
 - **And** no error was logged
 
-Test: `__tests__/scenarios/smoke/areaPage.test.tsx`
+Test: `__tests__/scenarios/smoke/areaPage.test.tsx` · help: `projects-and-areas.md#the-current-tab`
 
 ## Quick Add
 
@@ -1188,7 +1198,7 @@ Test: `__tests__/scenarios/smoke/areaPage.test.tsx`
 - **When** I tap it
 - **Then** the meeting, renamed and without the tag, is in the project and no longer in the Inbox
 
-Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/technical-design-item-card.md`
+Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/technical-design-item-card.md` · help: `quick-add.md#filing-directly-with-an-abbreviation`
 
 ### After + Add with an abbreviation tag, the next todo starts with that tag
 
@@ -1202,7 +1212,7 @@ Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/techn
 - **When** I delete the tag from the field and add a todo
 - **Then** it goes to the Inbox, and the next draft starts empty
 
-Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/technical-design-item-card.md`
+Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/technical-design-item-card.md` · help: `quick-add.md#filing-directly-with-an-abbreviation`
 
 ### In a thread overview, Quick Add adds the thread tag it shows in Row 4
 
@@ -1211,7 +1221,7 @@ Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/techn
 - **When** I add the todo "Book room" there
 - **Then** the area has the new todo with the thread tag
 
-Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/technical-design-item-card.md`
+Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/technical-design-item-card.md` · help: `threads.md#adding-from-the-overview`
 
 ### Tap a meeting shows its card; ✕ brings back the half-typed todo
 
@@ -1221,7 +1231,7 @@ Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/techn
 - **When** I tap ✕ on the card
 - **Then** Quick Add is back with "Call Anna" still in the field
 
-Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/technical-design-item-card.md`
+Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/technical-design-item-card.md` · help: `quick-add.md#the-card-one-tap-selects`
 
 ### A second tap edits; Save writes it and shows the card again
 
@@ -1230,7 +1240,7 @@ Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/techn
 - **Then** Inbox.txt has the new title
 - **And** the card shows the meeting again, not the edit form
 
-Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/technical-design-item-card.md`
+Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/technical-design-item-card.md` · help: `quick-add.md#editing`
 
 ### Switching to another meeting while editing saves first and shows the other's card
 
@@ -1239,7 +1249,7 @@ Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/techn
 - **Then** the rename is saved
 - **And** "Retro" shows as card
 
-Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/technical-design-item-card.md`
+Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/technical-design-item-card.md` · help: `quick-add.md#editing`
 
 ### Todo card: a flow chip, done and delete act at once; a retired #now leaves with Next
 
@@ -1253,7 +1263,7 @@ Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/techn
 - **When** I tap the row "Fix the fence", Delete on its card, and confirm
 - **Then** it is marked cancelled, and Quick Add is back
 
-Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/technical-design-item-card.md`
+Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/technical-design-item-card.md` · help: `quick-add.md#the-card-one-tap-selects`
 
 ### On a Nomad-sized screen, Quick Add with four tabs keeps its + Add and calls Agreement "Agree"
 
@@ -1262,7 +1272,7 @@ Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/techn
 - **Then** its Quick Add shows the short tab name and the main button
 - **And** back at full size the tab is called Agreement again
 
-Test: `__tests__/scenarios/narrowScreen.test.tsx` · design: `docs/dev/history/technical-design-launch-ready.md`
+Test: `__tests__/scenarios/narrowScreen.test.tsx` · design: `docs/dev/history/technical-design-launch-ready.md` · help: `quick-add.md#adding-an-agreement`
 
 ### Quick Add a todo in a project
 
@@ -1272,7 +1282,7 @@ Test: `__tests__/scenarios/narrowScreen.test.tsx` · design: `docs/dev/history/t
 - **Then** the Scope and the rest of the file are unchanged
 - **Then** the status line confirms it and nothing was logged as an error
 
-Test: `__tests__/scenarios/quickAdd.test.tsx` · design: `docs/dev/history/technical-design-filing-unification.md`
+Test: `__tests__/scenarios/quickAdd.test.tsx` · design: `docs/dev/history/technical-design-filing-unification.md` · help: `quick-add.md#adding-a-todo`
 
 ### Edit a todo, then tap another one: the first edit is saved
 
@@ -1281,7 +1291,7 @@ Test: `__tests__/scenarios/quickAdd.test.tsx` · design: `docs/dev/history/techn
 - **Then** project.txt has the changed todo, still #next, and "Fix footer" unchanged
 - **Then** "Fix footer" is now the selected one, shown as its card (technical-design-item-card.md §3)
 
-Test: `__tests__/scenarios/quickAdd.test.tsx` · design: `docs/dev/history/technical-design-meeting-lists.md`
+Test: `__tests__/scenarios/quickAdd.test.tsx` · design: `docs/dev/history/technical-design-meeting-lists.md` · help: `quick-add.md#editing`
 
 ### An abbreviation tag files a todo into its project while editing
 
@@ -1290,7 +1300,7 @@ Test: `__tests__/scenarios/quickAdd.test.tsx` · design: `docs/dev/history/techn
 - **Then** the todo is in Website's project.txt, without the #WEB tag
 - **Then** Inbox.txt no longer has it
 
-Test: `__tests__/scenarios/quickAdd.test.tsx` · design: `docs/dev/history/technical-design-abbrev-quick-file.md`
+Test: `__tests__/scenarios/quickAdd.test.tsx` · design: `docs/dev/history/technical-design-abbrev-quick-file.md` · help: `quick-add.md#filing-directly-with-an-abbreviation`
 
 ### Ticking a todo off writes its completion date
 
@@ -1298,7 +1308,7 @@ Test: `__tests__/scenarios/quickAdd.test.tsx` · design: `docs/dev/history/techn
 - **When** I open "Website" and tick "Write copy" off
 - **Then** project.txt has it done, with today's date as completion field
 
-Test: `__tests__/scenarios/quickAdd.test.tsx` · design: `docs/dev/history/technical-design-tags.md`
+Test: `__tests__/scenarios/quickAdd.test.tsx` · design: `docs/dev/history/technical-design-tags.md` · help: `tags.md#dates-kept-gtd-records`
 
 ### The ✕ puts a hovering strip away until the field gains focus again
 
@@ -1314,7 +1324,7 @@ Test: `__tests__/scenarios/quickAdd.test.tsx` · design: `docs/dev/history/techn
 - **When** I open the due date and put the cursor into it
 - **Then** the date strip hovers there with its own ✕, which puts it away
 
-Test: `__tests__/scenarios/quickAdd.test.tsx` · design: `docs/dev/history/technical-design-item-card.md`
+Test: `__tests__/scenarios/quickAdd.test.tsx` · design: `docs/dev/history/technical-design-item-card.md` · help: `quick-add.md#adding-a-todo`
 
 ### Quick Add a todo from Daily (smoke)
 
@@ -1323,9 +1333,24 @@ Test: `__tests__/scenarios/quickAdd.test.tsx` · design: `docs/dev/history/techn
 - **Then** Inbox.txt has it
 - **And** Daily lists it in the Inbox group
 
-Test: `__tests__/scenarios/smoke/daily.test.tsx`
+Test: `__tests__/scenarios/smoke/daily.test.tsx` · help: `quick-add.md#adding-a-todo`
 
 ## Remove data
+
+### Remove Kept's data lists only Kept's own folders
+
+- **Given** EXPORT/gtdpara and Note/gtdpara-demo hold files from gtdpara
+- **Then** no row offered the old folders and both are still there
+
+Test: `__tests__/scenarios/cleanBreak.test.tsx` · help: `settings.md#remove-kepts-data`
+
+### Remove Kept's data lists every kind, with profiles and data files unchecked
+
+- **Given** Kept has settings, a log, a profile, a project and two open marks
+- **Then** every kind shows with its count; empty ones say nothing here
+- **And** the open marks are warned about, and what stays is listed
+
+Test: `__tests__/scenarios/removeData.test.tsx` · help: `settings.md#remove-kepts-data`
 
 ### Removing with the defaults, then Start fresh, opens the setup assistant on Welcome back
 
@@ -1336,14 +1361,14 @@ Test: `__tests__/scenarios/smoke/daily.test.tsx`
 - **When** I tap Start fresh
 - **Then** the setup assistant opens as on a first install and offers the saved profile
 
-Test: `__tests__/scenarios/removeData.test.tsx`
+Test: `__tests__/scenarios/removeData.test.tsx` · help: `settings.md#remove-kepts-data`, `profiles-and-demo.md#saved-profiles`
 
 ### Cancel on the question removes nothing
 
 - **When** I tap Remove… and then ✕ on the question
 - **Then** nothing is removed and the list is still there
 
-Test: `__tests__/scenarios/removeData.test.tsx`
+Test: `__tests__/scenarios/removeData.test.tsx` · help: `settings.md#remove-kepts-data`
 
 ### With the demo profile active, the demo space goes only with the settings
 
@@ -1351,7 +1376,7 @@ Test: `__tests__/scenarios/removeData.test.tsx`
 - **When** I uncheck the settings
 - **Then** the demo space is unchecked and says why
 
-Test: `__tests__/scenarios/removeData.test.tsx`
+Test: `__tests__/scenarios/removeData.test.tsx` · help: `settings.md#remove-kepts-data`
 
 ### Removing with the defaults leaves no Kept data but keeps profiles, data files and notes
 
@@ -1360,7 +1385,7 @@ Test: `__tests__/scenarios/removeData.test.tsx`
 - **Then** no Kept entry, log, demo space or private file is left
 - **And** the profiles, every data file, the note and the other plugin stay
 
-Test: `__tests__/scenarios/removeDataRun.test.ts`
+Test: `__tests__/scenarios/removeDataRun.test.ts` · help: `settings.md#remove-kepts-data`
 
 ### A failing log deletion still removes the rest and keeps the settings
 
@@ -1368,25 +1393,30 @@ Test: `__tests__/scenarios/removeDataRun.test.ts`
 - **When** I remove with the defaults
 - **Then** the logs report the failure, the settings are kept and the rest is gone
 
-Test: `__tests__/scenarios/removeDataRun.test.ts`
+Test: `__tests__/scenarios/removeDataRun.test.ts` · help: `settings.md#remove-kepts-data`
 
 ### Save the active profile first keeps the setup in production.json
 
 - **Given** my Projects folder is "Work projects"
 - **When** I remove the settings with Save the active profile first on
 - **Then** production.json holds the folder and the settings are gone
+
+Test: `__tests__/scenarios/removeDataRun.test.ts` · help: `settings.md#remove-kepts-data`
+
+### Removing Kept's data files leaves the folders, notes and other files
+
 - **Given** Kept has data in every place it uses
 - **Then** project.txt, area.txt, Inbox.txt and the archived project.txt are gone
 - **And** the project folder and its note stay
 
-Test: `__tests__/scenarios/removeDataRun.test.ts`
+Test: `__tests__/scenarios/removeDataRun.test.ts` · help: `settings.md#remove-kepts-data`
 
 ### The scan counts what is there
 
 - **Given** Kept has data in every place it uses
 - **Then** each kind has its count and the open mark is counted
 
-Test: `__tests__/scenarios/removeDataRun.test.ts`
+Test: `__tests__/scenarios/removeDataRun.test.ts` · help: `settings.md#remove-kepts-data`
 
 ## Review
 
@@ -1399,7 +1429,7 @@ Test: `__tests__/scenarios/removeDataRun.test.ts`
 - **Then** Review opens Tending threads, where jordan's row says "nothing planned"
 - **And** no error was logged
 
-Test: `__tests__/scenarios/givenTime.test.tsx`
+Test: `__tests__/scenarios/givenTime.test.tsx` · help: `review.md#tending-threads`
 
 ### Open loops: "+ F block" fills Quick Add's Meeting tab with the loop and F on
 
@@ -1410,7 +1440,7 @@ Test: `__tests__/scenarios/givenTime.test.tsx`
 - **Then** Writing gets a focus block today with the loop tag
 - **And** no error was logged
 
-Test: `__tests__/scenarios/givenTime.test.tsx`
+Test: `__tests__/scenarios/givenTime.test.tsx` · help: `review.md#open-loops`
 
 ## Settings
 
@@ -1421,7 +1451,7 @@ Test: `__tests__/scenarios/givenTime.test.tsx`
 - **Then** pluginKey, the app.json name and the MainActivity component name are all keptgtd
 - **Then** pluginID is nj7yssrvl7g778tz, the same as the fallback of the runtime guard
 
-Test: `__tests__/scenarios/cleanBreak.test.tsx`
+Test: `__tests__/scenarios/cleanBreak.test.tsx` · help: `settings.md#about`
 
 ### A fresh install starts clean and writes only kept: keys
 
@@ -1430,7 +1460,7 @@ Test: `__tests__/scenarios/cleanBreak.test.tsx`
 - **Then** the setup assistant opens
 - **And** every key Kept wrote starts with kept:
 
-Test: `__tests__/scenarios/cleanBreak.test.tsx`
+Test: `__tests__/scenarios/cleanBreak.test.tsx` · help: `files-and-folders.md#what-kept-gtd-keeps-elsewhere`
 
 ### Settings of gtdpara 0.24.0 are never read
 
@@ -1438,10 +1468,8 @@ Test: `__tests__/scenarios/cleanBreak.test.tsx`
 - **When** Kept starts
 - **Then** it behaves as a fresh install: the setup assistant opens
 - **And** the gtdpara: key is still there, untouched, and the new settings have the default folders
-- **Given** EXPORT/gtdpara and Note/gtdpara-demo hold files from gtdpara
-- **Then** no row offered the old folders and both are still there
 
-Test: `__tests__/scenarios/cleanBreak.test.tsx`
+Test: `__tests__/scenarios/cleanBreak.test.tsx` · help: `settings.md`
 
 ### Close-out off: a Done project archives directly from its page
 
@@ -1451,7 +1479,7 @@ Test: `__tests__/scenarios/cleanBreak.test.tsx`
 - **When** I archive it and confirm
 - **Then** the folder is in the Archive and no close-out wizard opened
 
-Test: `__tests__/scenarios/features.test.tsx`
+Test: `__tests__/scenarios/features.test.tsx` · help: `features.md#project-close-out`
 
 ### Close-out off: Review's Done step archives directly
 
@@ -1461,7 +1489,7 @@ Test: `__tests__/scenarios/features.test.tsx`
 - **When** I archive it and confirm
 - **Then** the folder is in the Archive
 
-Test: `__tests__/scenarios/features.test.tsx`
+Test: `__tests__/scenarios/features.test.tsx` · help: `features.md#project-close-out`
 
 ### Settings → Features shows the Experimental switches that moved from Advanced
 
@@ -1474,7 +1502,7 @@ Test: `__tests__/scenarios/features.test.tsx`
 - **And** open the Done project Website
 - **Then** its page offers Archive at once
 
-Test: `__tests__/scenarios/features.test.tsx`
+Test: `__tests__/scenarios/features.test.tsx` · help: `settings.md#features`
 
 ### Unreadable settings are never replaced by the defaults unasked
 
@@ -1484,7 +1512,7 @@ Test: `__tests__/scenarios/features.test.tsx`
 - **And** a setting changed on the way (Inbox: hide done) leaves the stored settings as they were
 - **And** "Start over" stores the defaults and the message goes away
 
-Test: `__tests__/scenarios/fileSafety.test.tsx` · design: `docs/dev/history/technical-design-quality-hardening.md`
+Test: `__tests__/scenarios/fileSafety.test.tsx` · design: `docs/dev/history/technical-design-quality-hardening.md` · help: `troubleshooting.md#common-situations`
 
 ### Settings → About shows the name Kept GTD, its slogan and where it came from
 
@@ -1492,7 +1520,7 @@ Test: `__tests__/scenarios/fileSafety.test.tsx` · design: `docs/dev/history/tec
 - **When** I open Settings → About
 - **Then** it shows "Kept GTD" with the version, the slogan, "Formerly gtdpara" and the project link
 
-Test: `__tests__/scenarios/keptGtd.test.tsx`
+Test: `__tests__/scenarios/keptGtd.test.tsx` · help: `settings.md#about`
 
 ### Export debug bundle writes a file named after Kept GTD
 
@@ -1500,14 +1528,14 @@ Test: `__tests__/scenarios/keptGtd.test.tsx`
 - **When** I tap Export debug bundle on Settings → Advanced
 - **Then** one kept-gtd-debug file is in EXPORT/kept-gtd/debug, it says Kept GTD, and the status line names it
 
-Test: `__tests__/scenarios/keptGtd.test.tsx`
+Test: `__tests__/scenarios/keptGtd.test.tsx` · help: `troubleshooting.md#reporting-a-problem`
 
 ### What's new offers the last three versions and says where the earlier ones are
 
 - **When** I open Settings → About
 - **Then** the newest version's notes show, with a pointer to the rest on GitHub
 
-Test: `__tests__/scenarios/narrowScreen.test.tsx` · design: `docs/dev/history/technical-design-launch-ready.md`
+Test: `__tests__/scenarios/narrowScreen.test.tsx` · design: `docs/dev/history/technical-design-launch-ready.md` · help: `settings.md#about`
 
 ### Check screen and pages shows the launch note's page size and tries a horizontal test note
 
@@ -1521,14 +1549,14 @@ Test: `__tests__/scenarios/narrowScreen.test.tsx` · design: `docs/dev/history/t
 - **And** Open test note asks the host to open it on its last page
 - **And** Close returns to Advanced
 
-Test: `__tests__/scenarios/screenCheck.test.tsx` · design: `docs/dev/history/technical-design-launch-ready.md`
+Test: `__tests__/scenarios/screenCheck.test.tsx` · design: `docs/dev/history/technical-design-launch-ready.md` · help: `settings.md#tools`
 
 ### Check screen and pages is hidden while debug logging is off
 
 - **When** I open Settings → Advanced with debug logging off
 - **Then** there is no Check screen and pages
 
-Test: `__tests__/scenarios/screenCheck.test.tsx` · design: `docs/dev/history/technical-design-launch-ready.md`
+Test: `__tests__/scenarios/screenCheck.test.tsx` · design: `docs/dev/history/technical-design-launch-ready.md` · help: `settings.md#tools`
 
 ### Simulate screen draws Kept at Nomad size until it is turned off
 
@@ -1536,14 +1564,14 @@ Test: `__tests__/scenarios/screenCheck.test.tsx` · design: `docs/dev/history/te
 - **Then** Kept says it is simulating, and estimates rows for the narrower columns
 - **And** Off in the same place ends it
 
-Test: `__tests__/scenarios/screenSimulation.test.tsx` · design: `docs/dev/history/technical-design-launch-ready.md`
+Test: `__tests__/scenarios/screenSimulation.test.tsx` · design: `docs/dev/history/technical-design-launch-ready.md` · help: `settings.md#tools`
 
 ### Simulate screen is hidden while debug logging is off
 
 - **When** I open Settings → Advanced with debug logging off
 - **Then** there is no Simulate screen
 
-Test: `__tests__/scenarios/screenSimulation.test.tsx` · design: `docs/dev/history/technical-design-launch-ready.md`
+Test: `__tests__/scenarios/screenSimulation.test.tsx` · design: `docs/dev/history/technical-design-launch-ready.md` · help: `settings.md#tools`
 
 ### Settings opens on Data, with six tabs
 
@@ -1551,7 +1579,7 @@ Test: `__tests__/scenarios/screenSimulation.test.tsx` · design: `docs/dev/histo
 - **When** I open Settings
 - **Then** the six tabs show, and Data holds the folders, the setup assistant and the profiles
 
-Test: `__tests__/scenarios/settingsTabs.test.tsx`
+Test: `__tests__/scenarios/settingsTabs.test.tsx` · help: `settings.md`
 
 ### An unsaved folder field holds back the setup assistant until Save
 
@@ -1561,7 +1589,7 @@ Test: `__tests__/scenarios/settingsTabs.test.tsx`
 - **When** I tap Save under the folder fields
 - **Then** the folder is stored and the assistant can start again
 
-Test: `__tests__/scenarios/settingsTabs.test.tsx`
+Test: `__tests__/scenarios/settingsTabs.test.tsx` · help: `settings.md#setup-assistant`
 
 ### The Gmail account sits on Features while Gmail is on, and stays stored while it is off
 
@@ -1572,7 +1600,7 @@ Test: `__tests__/scenarios/settingsTabs.test.tsx`
 - **Then** its block shows the stored address
 - **And** the address is still stored
 
-Test: `__tests__/scenarios/settingsTabs.test.tsx`
+Test: `__tests__/scenarios/settingsTabs.test.tsx` · help: `settings.md#google-calendar-and-gmail`
 
 ### Debug logging and the debug bundle are on Advanced; About invites reports
 
@@ -1582,7 +1610,7 @@ Test: `__tests__/scenarios/settingsTabs.test.tsx`
 - **When** I open About
 - **Then** it invites reports and points to Advanced, without the debug switches
 
-Test: `__tests__/scenarios/settingsTabs.test.tsx`
+Test: `__tests__/scenarios/settingsTabs.test.tsx` · help: `settings.md#reporting-a-problem`
 
 ### The profile chip in the tab bar opens the profiles on Data
 
@@ -1590,7 +1618,7 @@ Test: `__tests__/scenarios/settingsTabs.test.tsx`
 - **When** I tap the chip WORK in the tab bar
 - **Then** Settings shows Data with the profiles
 
-Test: `__tests__/scenarios/settingsTabs.test.tsx`
+Test: `__tests__/scenarios/settingsTabs.test.tsx` · help: `settings.md#profiles`
 
 ### A fresh install opens the setup assistant; Finish saves the folders found and creates only the missing ones
 
@@ -1604,7 +1632,7 @@ Test: `__tests__/scenarios/settingsTabs.test.tsx`
 - **And** the settings hold the choices
 - **And** Kept asked for internet access once, after saving
 
-Test: `__tests__/scenarios/setupAssistant.test.tsx` · design: `docs/dev/history/technical-design-easy-start.md`
+Test: `__tests__/scenarios/setupAssistant.test.tsx` · design: `docs/dev/history/technical-design-easy-start.md` · help: `settings.md#setup-assistant`
 
 ### Skip closes the assistant without saving or creating anything
 
@@ -1613,7 +1641,7 @@ Test: `__tests__/scenarios/setupAssistant.test.tsx` · design: `docs/dev/history
 - **When** I close the help and tap Skip
 - **Then** Settings shows its tabs, no folder was created, and the assistant is done
 
-Test: `__tests__/scenarios/setupAssistant.test.tsx` · design: `docs/dev/history/technical-design-easy-start.md`
+Test: `__tests__/scenarios/setupAssistant.test.tsx` · design: `docs/dev/history/technical-design-easy-start.md` · help: `settings.md#setup-assistant`
 
 ### An existing install opens on Daily as before; Run setup assistant starts it from Settings → Data, Simple with own notes
 
@@ -1623,7 +1651,7 @@ Test: `__tests__/scenarios/setupAssistant.test.tsx` · design: `docs/dev/history
 - **Then** close-out, Calendar, Gmail and Notebook contents are off and the Default has no notebook
 - **And** Run setup assistant waits while the Folders fields have unsaved changes
 
-Test: `__tests__/scenarios/setupAssistant.test.tsx` · design: `docs/dev/history/technical-design-easy-start.md`
+Test: `__tests__/scenarios/setupAssistant.test.tsx` · design: `docs/dev/history/technical-design-easy-start.md` · help: `settings.md#setup-assistant`
 
 ### On a fresh install nothing asks for file access before the assistant says why
 
@@ -1631,7 +1659,7 @@ Test: `__tests__/scenarios/setupAssistant.test.tsx` · design: `docs/dev/history
 - **When** Kept starts for the first time
 - **Then** every file permission call came while the assistant showed why it needs access
 
-Test: `__tests__/scenarios/setupAssistantAccess.test.tsx`
+Test: `__tests__/scenarios/setupAssistantAccess.test.tsx` · help: `settings.md#setup-assistant`
 
 ### The assistant asks to read, then to write, then looks at the folders and the saved profiles
 
@@ -1640,7 +1668,7 @@ Test: `__tests__/scenarios/setupAssistantAccess.test.tsx`
 - **Then** read was asked before write, one dialog each
 - **And** then Welcome back offers the saved profile, and Start fresh suggests the existing folder
 
-Test: `__tests__/scenarios/setupAssistantAccess.test.tsx`
+Test: `__tests__/scenarios/setupAssistantAccess.test.tsx` · help: `settings.md#setup-assistant`
 
 ### Without file access the assistant stops and offers Try again
 
@@ -1651,7 +1679,7 @@ Test: `__tests__/scenarios/setupAssistantAccess.test.tsx`
 - **When** I tap Try again and allow the dialogs
 - **Then** the assistant goes on: Welcome back offers the saved profile
 
-Test: `__tests__/scenarios/setupAssistantAccess.test.tsx`
+Test: `__tests__/scenarios/setupAssistantAccess.test.tsx` · help: `settings.md#setup-assistant`
 
 ### Opened from a project note, a fresh install stays in the assistant when the sidebar button event comes again
 
@@ -1659,7 +1687,7 @@ Test: `__tests__/scenarios/setupAssistantAccess.test.tsx`
 - **When** the host delivers the sidebar button press again (on opening, or when the permission dialog closes)
 - **Then** the assistant is still on screen with Welcome back, not the project page
 
-Test: `__tests__/scenarios/setupAssistantAccess.test.tsx`
+Test: `__tests__/scenarios/setupAssistantAccess.test.tsx` · help: `settings.md#setup-assistant`
 
 ### About says Kept is up to date when GitHub has nothing newer
 
@@ -1668,7 +1696,7 @@ Test: `__tests__/scenarios/setupAssistantAccess.test.tsx`
 - **Then** the status slot and the Updates block say it is up to date
 - **And** the check asked GitHub once and nothing was downloaded
 
-Test: `__tests__/scenarios/updates.test.tsx`
+Test: `__tests__/scenarios/updates.test.tsx` · help: `settings.md#updates`
 
 ### A newer release shows a notice; Download saves it into MyStyle/kept-gtd
 
@@ -1682,7 +1710,7 @@ Test: `__tests__/scenarios/updates.test.tsx`
 - **Then** it is not downloaded twice
 - **And** no error was logged
 
-Test: `__tests__/scenarios/updates.test.tsx`
+Test: `__tests__/scenarios/updates.test.tsx` · help: `settings.md#updates`
 
 ### A download that does not match the release leaves nothing in MyStyle
 
@@ -1691,7 +1719,7 @@ Test: `__tests__/scenarios/updates.test.tsx`
 - **Then** it says nothing was saved
 - **And** MyStyle/kept-gtd holds no file, and the temp file is gone
 
-Test: `__tests__/scenarios/updates.test.tsx`
+Test: `__tests__/scenarios/updates.test.tsx` · help: `settings.md#updates`
 
 ### Not now hides the notice for that version only
 
@@ -1701,7 +1729,7 @@ Test: `__tests__/scenarios/updates.test.tsx`
 - **When** GitHub gets 99.1.0, I check again and open Kept
 - **Then** the notice shows the new version
 
-Test: `__tests__/scenarios/updates.test.tsx`
+Test: `__tests__/scenarios/updates.test.tsx` · help: `settings.md#updates`
 
 ### The daily check without internet permission stays silent
 
@@ -1710,7 +1738,7 @@ Test: `__tests__/scenarios/updates.test.tsx`
 - **Then** no dialog was shown, nothing was fetched and no notice shows
 - **And** About says the daily check needs internet access
 
-Test: `__tests__/scenarios/updates.test.tsx`
+Test: `__tests__/scenarios/updates.test.tsx` · help: `settings.md#updates`
 
 ### The daily check with internet permission finds a new version without a dialog
 
@@ -1720,7 +1748,7 @@ Test: `__tests__/scenarios/updates.test.tsx`
 - **When** I open Kept again the same day
 - **Then** GitHub was asked only once
 
-Test: `__tests__/scenarios/updates.test.tsx`
+Test: `__tests__/scenarios/updates.test.tsx` · help: `settings.md#updates`
 
 ### Check automatically once a day is switched in About and asks for internet once
 
@@ -1728,7 +1756,7 @@ Test: `__tests__/scenarios/updates.test.tsx`
 - **When** I tick Check automatically once a day
 - **Then** the choice is stored and the permission dialog showed
 
-Test: `__tests__/scenarios/updates.test.tsx`
+Test: `__tests__/scenarios/updates.test.tsx` · help: `settings.md#updates`
 
 ### Update test: treat this build as 0.0.0 offers the latest real release
 
@@ -1736,7 +1764,7 @@ Test: `__tests__/scenarios/updates.test.tsx`
 - **When** I switch on the update test on Advanced and tap Check now in About
 - **Then** 0.0.1 is offered
 
-Test: `__tests__/scenarios/updates.test.tsx`
+Test: `__tests__/scenarios/updates.test.tsx` · help: `settings.md#tools`
 
 ## Smoke
 
@@ -1747,7 +1775,7 @@ Test: `__tests__/scenarios/updates.test.tsx`
 - **Then** each shows its main heading
 - **And** no error was logged
 
-Test: `__tests__/scenarios/smoke/appStarts.test.tsx`
+Test: `__tests__/scenarios/smoke/appStarts.test.tsx` · help: `index.md#the-tabs-at-a-glance`
 
 ## Threads
 
@@ -1759,7 +1787,7 @@ Test: `__tests__/scenarios/smoke/appStarts.test.tsx`
 - **When** I tap it
 - **Then** the thread overview opens
 
-Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/technical-design-item-card.md`
+Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/technical-design-item-card.md` · help: `threads.md#where-a-todo-was-agreed`
 
 ### A big Area's Threads tab shows the same counterparts and signals as before, built once
 
@@ -1769,7 +1797,7 @@ Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/techn
 - **Then** the Threads tab lists New, Active and Inactive counterparts with the recorded last/next, I-owe and Waiting
 - **And** the roster was built once for this open
 
-Test: `__tests__/scenarios/threadsBigArea.test.tsx` · design: `docs/dev/history/technical-design-perf-threads.md`
+Test: `__tests__/scenarios/threadsBigArea.test.tsx` · design: `docs/dev/history/technical-design-perf-threads.md` · help: `projects-and-areas.md#threads`
 
 ### Renaming a meeting in Quick Add updates the Threads tab of the big Area
 
@@ -1780,7 +1808,7 @@ Test: `__tests__/scenarios/threadsBigArea.test.tsx` · design: `docs/dev/history
 - **Then** the file has the new title
 - **And** Ines shows the meeting as next, and the todo agreed in it as one more I-owe
 
-Test: `__tests__/scenarios/threadsBigArea.test.tsx` · design: `docs/dev/history/technical-design-perf-threads.md`
+Test: `__tests__/scenarios/threadsBigArea.test.tsx` · design: `docs/dev/history/technical-design-perf-threads.md` · help: `projects-and-areas.md#threads`
 
 ## Week and Month
 
@@ -1790,7 +1818,7 @@ Test: `__tests__/scenarios/threadsBigArea.test.tsx` · design: `docs/dev/history
 - **When** I open Month
 - **Then** the 15th shows "Chapter one" and F; the 16th shows nothing
 
-Test: `__tests__/scenarios/focusBlocks.test.tsx`
+Test: `__tests__/scenarios/focusBlocks.test.tsx` · help: `week-and-month.md#month`
 
 ### Given time: areas and projects by time, an all-day event as "1 day", Worked on for todos done
 
@@ -1801,7 +1829,7 @@ Test: `__tests__/scenarios/focusBlocks.test.tsx`
 - **And** Worked on lists Website with its todo done
 - **And** no error was logged
 
-Test: `__tests__/scenarios/givenTime.test.tsx`
+Test: `__tests__/scenarios/givenTime.test.tsx` · help: `week-and-month.md#given-time`
 
 ### Given time lists loops and counterparts from the threshold up, never the Inbox
 
@@ -1812,7 +1840,7 @@ Test: `__tests__/scenarios/givenTime.test.tsx`
 - **Then** essay shows too
 - **And** no error was logged
 
-Test: `__tests__/scenarios/givenTime.test.tsx`
+Test: `__tests__/scenarios/givenTime.test.tsx` · help: `week-and-month.md#given-time`
 
 ### Given time sums a counterpart's threads into one row
 
@@ -1821,7 +1849,7 @@ Test: `__tests__/scenarios/givenTime.test.tsx`
 - **Then** Loops and counterparts lists "value" once, with 3 h and its three series
 - **And** no error was logged
 
-Test: `__tests__/scenarios/givenTime.test.tsx`
+Test: `__tests__/scenarios/givenTime.test.tsx` · help: `week-and-month.md#given-time`
 
 ### Week: a day header opens the day, a chip the card and panel, "‹ Back to Week 42" the normal side
 
@@ -1833,7 +1861,7 @@ Test: `__tests__/scenarios/givenTime.test.tsx`
 - **When** I tap "‹ Back to Week 42"
 - **Then** the panel is gone and the day panel is there again
 
-Test: `__tests__/scenarios/meetingContext.test.tsx`
+Test: `__tests__/scenarios/meetingContext.test.tsx` · help: `week-and-month.md#week`, `meetings.md#the-context-panel`
 
 ### Month: a day, then a meeting in it, then "‹ Back to October 2026"
 
@@ -1845,7 +1873,7 @@ Test: `__tests__/scenarios/meetingContext.test.tsx`
 - **When** I tap the meeting again and then "‹ Back to October 2026"
 - **Then** neither the panel nor the day panel shows
 
-Test: `__tests__/scenarios/meetingContext.test.tsx`
+Test: `__tests__/scenarios/meetingContext.test.tsx` · help: `week-and-month.md#month`
 
 ### Month names its month in the tab row: "Oct 26", ‹ › to move, Now to come back
 
@@ -1856,7 +1884,7 @@ Test: `__tests__/scenarios/meetingContext.test.tsx`
 - **Then** it shows November, and Now
 - **And** Now goes back to October
 
-Test: `__tests__/scenarios/narrowScreen.test.tsx` · design: `docs/dev/history/technical-design-launch-ready.md`
+Test: `__tests__/scenarios/narrowScreen.test.tsx` · design: `docs/dev/history/technical-design-launch-ready.md` · help: `week-and-month.md#month`
 
 ### Week shows this week's meetings and the time given to each owner (smoke)
 
@@ -1869,7 +1897,7 @@ Test: `__tests__/scenarios/narrowScreen.test.tsx` · design: `docs/dev/history/t
 - **Then** the grid shows Tuesday 20 "Soil test"
 - **And** no error was logged
 
-Test: `__tests__/scenarios/smoke/weekAndMonth.test.tsx`
+Test: `__tests__/scenarios/smoke/weekAndMonth.test.tsx` · help: `week-and-month.md#week`, `week-and-month.md#given-time`
 
 ### Month shows the highlights and the time given this month (smoke)
 
@@ -1881,7 +1909,7 @@ Test: `__tests__/scenarios/smoke/weekAndMonth.test.tsx`
 - **Then** the right side lists both meetings of that day
 - **And** no error was logged
 
-Test: `__tests__/scenarios/smoke/weekAndMonth.test.tsx`
+Test: `__tests__/scenarios/smoke/weekAndMonth.test.tsx` · help: `week-and-month.md#month`, `week-and-month.md#given-time`
 
 ## Weekly Review
 
@@ -1892,7 +1920,7 @@ Test: `__tests__/scenarios/smoke/weekAndMonth.test.tsx`
 - **Then** the reflection page comes after the two hand-added pages and before the check-in's page
 - **And** the meeting is still not reviewed
 
-Test: `__tests__/scenarios/meetingReflection.test.tsx` · design: `docs/dev/history/technical-design-meeting-reflection.md`
+Test: `__tests__/scenarios/meetingReflection.test.tsx` · design: `docs/dev/history/technical-design-meeting-reflection.md` · help: `review.md#the-steps`, `meetings.md#reflection-page`
 
 ### Weekly Review: get the Inbox to zero by filing one todo and finishing the other
 
@@ -1903,7 +1931,7 @@ Test: `__tests__/scenarios/meetingReflection.test.tsx` · design: `docs/dev/hist
 - **When** I tap "Reviewed ›" and go back to the overview
 - **Then** the overview says "2 inbox items cleared" and the Inbox step has nothing left to review
 
-Test: `__tests__/scenarios/review.test.tsx` · design: `docs/dev/history/technical-design-review-hub.md`
+Test: `__tests__/scenarios/review.test.tsx` · design: `docs/dev/history/technical-design-review-hub.md` · help: `review.md#the-steps`
 
 ### The Review hub lists its steps with counts, and the Inbox step shows the Inbox (smoke)
 
@@ -1917,7 +1945,7 @@ Test: `__tests__/scenarios/review.test.tsx` · design: `docs/dev/history/technic
 - **Then** every step opens there too
 - **And** no error was logged
 
-Test: `__tests__/scenarios/smoke/review.test.tsx`
+Test: `__tests__/scenarios/smoke/review.test.tsx` · help: `review.md#the-overview`
 
 ## Your files
 
@@ -1930,7 +1958,7 @@ Test: `__tests__/scenarios/smoke/review.test.tsx`
 - **Then** the todo links the PDF by its full path
 - **And** selecting the todo again shows the Device tab at Document
 
-Test: `__tests__/scenarios/deviceLinks.test.tsx` · design: `docs/dev/history/technical-design-easy-start.md`
+Test: `__tests__/scenarios/deviceLinks.test.tsx` · design: `docs/dev/history/technical-design-easy-start.md` · help: `files-and-folders.md#files-outside-note`
 
 ### This file: link the PDF Kept was opened from, with its page, in the Files pane and from Quick Add
 
@@ -1942,7 +1970,7 @@ Test: `__tests__/scenarios/deviceLinks.test.tsx` · design: `docs/dev/history/te
 - **When** I close the card and add the todo "Read chapter 3" with Quick Add
 - **Then** the new todo links the page too: the line is on by default for a document
 
-Test: `__tests__/scenarios/deviceLinks.test.tsx` · design: `docs/dev/history/technical-design-easy-start.md`
+Test: `__tests__/scenarios/deviceLinks.test.tsx` · design: `docs/dev/history/technical-design-easy-start.md` · help: `quick-add.md#the-file-you-opened-kept-from`, `files-and-folders.md#files-outside-note`
 
 ### This file from a note: Quick Add starts off and links the note relative to Note; launch file unknown: nothing is offered
 
@@ -1954,7 +1982,7 @@ Test: `__tests__/scenarios/deviceLinks.test.tsx` · design: `docs/dev/history/te
 - **When** I reopen Kept and the host gives no launch file, open the project and tap +clip on "Order soil"
 - **Then** neither Quick Add nor the Files pane offers This file
 
-Test: `__tests__/scenarios/deviceLinks.test.tsx` · design: `docs/dev/history/technical-design-easy-start.md`
+Test: `__tests__/scenarios/deviceLinks.test.tsx` · design: `docs/dev/history/technical-design-easy-start.md` · help: `quick-add.md#the-file-you-opened-kept-from`
 
 ### A hand-edited project file keeps everything Kept GTD does not own when a todo is added
 
@@ -1963,7 +1991,7 @@ Test: `__tests__/scenarios/deviceLinks.test.tsx` · design: `docs/dev/history/te
 - **Then** the new todo is in the Tasks section
 - **And** the frontmatter line, the paragraph, the stray line, the old due date and the own section are all still there
 
-Test: `__tests__/scenarios/fileSafety.test.tsx` · design: `docs/dev/history/technical-design-tags.md`
+Test: `__tests__/scenarios/fileSafety.test.tsx` · design: `docs/dev/history/technical-design-tags.md` · help: `files-and-folders.md#editing-by-hand`
 
 ### An outside edit to another part of the file is kept when Kept GTD saves
 
@@ -1971,7 +1999,7 @@ Test: `__tests__/scenarios/fileSafety.test.tsx` · design: `docs/dev/history/tec
 - **When** its Scope is changed in Obsidian, and I then add a todo in Kept GTD
 - **Then** project.txt has both: the new Scope and the new todo, and nobody was asked
 
-Test: `__tests__/scenarios/fileSafety.test.tsx` · design: `docs/dev/history/technical-design-quality-hardening.md`
+Test: `__tests__/scenarios/fileSafety.test.tsx` · design: `docs/dev/history/technical-design-quality-hardening.md` · help: `files-and-folders.md#editing-by-hand`
 
 ### When Kept GTD and another app changed the same list, the user decides which wins
 
@@ -1981,7 +2009,7 @@ Test: `__tests__/scenarios/fileSafety.test.tsx` · design: `docs/dev/history/tec
 - **And** "Use the file" keeps the Obsidian version, says nothing was saved and keeps what I typed
 - **And** after another change in Obsidian, + Add asks again, and "Use mine" saves the list as Kept GTD shows it, with the new todo
 
-Test: `__tests__/scenarios/fileSafety.test.tsx` · design: `docs/dev/history/technical-design-quality-hardening.md`
+Test: `__tests__/scenarios/fileSafety.test.tsx` · design: `docs/dev/history/technical-design-quality-hardening.md` · help: `files-and-folders.md#editing-by-hand`
 
 ### A project file saved with Windows line endings shows its todos
 
@@ -1990,7 +2018,7 @@ Test: `__tests__/scenarios/fileSafety.test.tsx` · design: `docs/dev/history/tec
 - **Then** both todos and the Scope show
 - **And** adding a todo keeps both and writes the file with plain line endings
 
-Test: `__tests__/scenarios/interruptions.test.tsx` · design: `docs/dev/history/technical-design-quality-hardening.md`
+Test: `__tests__/scenarios/interruptions.test.tsx` · design: `docs/dev/history/technical-design-quality-hardening.md` · help: `files-and-folders.md#editing-by-hand`
 
 ### A file changed elsewhere is read again when the plugin opens (smoke)
 
@@ -1999,4 +2027,4 @@ Test: `__tests__/scenarios/interruptions.test.tsx` · design: `docs/dev/history/
 - **Then** Daily lists it
 - **And** no error was logged
 
-Test: `__tests__/scenarios/smoke/outsideEdits.test.tsx`
+Test: `__tests__/scenarios/smoke/outsideEdits.test.tsx` · help: `files-and-folders.md#editing-by-hand`
