@@ -130,7 +130,7 @@ describe('editing contexts', () => {
   it('unknown item entries are listed, and reported by the Integrity Check', () => {
     expect(unknownContextEntries([work], [garden])).toEqual([{context: 'Work', entry: {kind: 'item', itemKind: 'area', name: 'Team'}}]);
     expect(unknownContextEntries([work], [team])).toEqual([]);
-    const findings = checkUnknownContextEntries([work], [{itemKind: 'area', itemPath: '/a/Garden', itemName: 'Garden', inArchive: false, area: null, abbrev: null}]);
+    const findings = checkUnknownContextEntries([work], [{itemKind: 'area', itemPath: '/a/Garden', itemName: 'Garden', inArchive: false, area: null, abbrev: null, tagCounts: {}}]);
     expect(findings.map(f => f.checkId)).toEqual(['unknownContextEntry']);
     expect(findings[0].message).toContain('Area "Team"');
   });

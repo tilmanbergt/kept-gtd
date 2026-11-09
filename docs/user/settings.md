@@ -1,6 +1,6 @@
 # Settings
 
-Settings has six tabs: Data, Contexts, Note setups, Features, Advanced and About. It opens on Data.
+Settings has seven tabs: Data, Contexts, Note setups, Input, Features, Advanced and About. It opens on Data.
 
 ## Data
 
@@ -58,6 +58,15 @@ Your contexts - Work, Home, Café: for each one the areas, projects and tags it 
 
 Where the notes of todos and meetings go and how they look, see [Note setups](note-setups.md). A setup is saved with **Save** on [its own page](note-setups.md#editing-a-setup). [Heading style](note-setups.md#heading-style) at the top (Black, Light grey, Dark grey, Shadow) is saved as soon as you tap it.
 
+## Input
+
+How text gets into Kept: what the [writing help](quick-add.md#writing-help) has learned, and tags that look like a typo. Every tap here acts at once; there is no **Save**.
+
+- *Learned corrections* (left): each tag you corrected once with a suggestion, for example "#sparrlng → #sparring" - Quick Add writes it that way next time ([Learned corrections](tags.md#learned-corrections)). **✕** forgets one.
+- *Tags that look like a typo* (right): tags used on one todo or meeting only that are close to a tag you use, with that line and its project or area below. **→ #sparring** changes the tag on that one line in its file; nothing else in the file changes. **Keep** leaves it as written and takes it off the list for this profile. The [Integrity Check](settings.md#tools) lists the same tags in its report.
+
+Both lists belong to the active [profile](profiles-and-demo.md#profiles) and page with **‹** and **›**.
+
 ## Features
 
 Switch parts of Kept GTD on or off, see [Features and integrations](features.md). The switches on the left take effect immediately:
@@ -81,7 +90,7 @@ How to report, and what the bundle contains: [Reporting a problem](troubleshooti
 ### Tools
 
 - **Reload all files**: reads all projects, areas and the Inbox again, for every tab. Opening Kept already reads files changed outside it, for example on your computer or in [Obsidian](files-and-folders.md#using-kept-gtd-with-obsidian); use this when a change still doesn't show up.
-- **Run Integrity Check**: looks for broken note links and similar file problems, including archived projects and areas, a [project close-out](close-out.md) that was interrupted, todos and meetings whose note is missing (with where a note of that name is, if there is one), [lasso marks](lasso.md#marking-for-later) whose note is gone, [renamed project or area folders](projects-and-areas.md#when-you-rename-a-project-or-area) whose home notebook still has the old name, [hidden copies left by an interrupted save](files-and-folders.md#editing-by-hand), and note [file names](files-and-folders.md#file-names) that break links in Obsidian, and writes a report to `EXPORT/kept-gtd/debug`. When it finds such names, its message offers **Fix file names (n)**: after one confirmation it renames all of them and updates their links
+- **Run Integrity Check**: looks for broken note links and similar file problems, including archived projects and areas, a [project close-out](close-out.md) that was interrupted, todos and meetings whose note is missing (with where a note of that name is, if there is one), tags used once that look like a typo of a tag you use (also listed on [Input](settings.md#input)), [lasso marks](lasso.md#marking-for-later) whose note is gone, [renamed project or area folders](projects-and-areas.md#when-you-rename-a-project-or-area) whose home notebook still has the old name, [hidden copies left by an interrupted save](files-and-folders.md#editing-by-hand), and note [file names](files-and-folders.md#file-names) that break links in Obsidian, and writes a report to `EXPORT/kept-gtd/debug`. When it finds such names, its message offers **Fix file names (n)**: after one confirmation it renames all of them and updates their links
 - **Update test: treat this build as 0.0.0** (only while Debug logging is on): makes Kept look like the oldest version to the [update check](settings.md#updates), so **Check now** offers the latest release on GitHub - to try the download and **Add plugin** once. Not saved: closing Kept turns it off.
 - **Simulate screen** (only while Debug logging is on): draws Kept in a framed box the size of a Nomad, to check that nothing is cut off. **Nomad portrait** fits while the device is upright, **Nomad landscape** while it is turned; **Off** ends it, and so does closing Kept. Kept starts again on its first tab when you choose one.
 - **Check screen and pages** (only while Debug logging is on): shows the screen size Kept gets, the page size of the note Kept was opened from and which device it was made on, and lets you try a horizontal test note that Kept keeps in `EXPORT/kept-gtd/debug`: create it, add a page, write three test text boxes, open it. It never changes your own notes; it is there to answer questions about other devices and landscape in a bug report.

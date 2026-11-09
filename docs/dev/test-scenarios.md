@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-222 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+224 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -1600,11 +1600,11 @@ Test: `__tests__/scenarios/screenSimulation.test.tsx` · design: `docs/dev/histo
 
 Test: `__tests__/scenarios/screenSimulation.test.tsx` · design: `docs/dev/history/technical-design-launch-ready.md` · help: `settings.md#tools`
 
-### Settings opens on Data, with six tabs
+### Settings opens on Data, with seven tabs
 
 - **Given** Kept is open
 - **When** I open Settings
-- **Then** the six tabs show, and Data holds the folders, the setup assistant and the profiles
+- **Then** the seven tabs show, and Data holds the folders, the setup assistant and the profiles
 
 Test: `__tests__/scenarios/settingsTabs.test.tsx` · help: `settings.md`
 
@@ -2043,6 +2043,28 @@ Test: `__tests__/scenarios/writingHelpDates.test.tsx` · design: `docs/dev/histo
 - **Then** date, time and end are filled
 
 Test: `__tests__/scenarios/writingHelpDates.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md`
+
+### A tag used once next to a known one is reported, listed and fixed on its line
+
+- **Given** #daily on two meetings, and "Retro #daiiy" once in project "Garden renovation"
+- **When** the Integrity Check runs
+- **Then** the report lists #daiiy with → #daily
+- **When** I open Settings → Input
+- **Then** it lists #daiiy with its line and project
+- **When** I tap → #daily
+- **Then** that line in the file reads #daily, the rest of the file is unchanged, and the list is empty
+- **When** I page the status line past the Integrity Check message
+- **Then** it names the change
+
+Test: `__tests__/scenarios/writingHelpInput.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `settings.md#input`
+
+### Keep takes a typo tag off the list without touching the file
+
+- **Given** #daily twice and #daiiy once
+- **When** I open Settings → Input and tap Keep
+- **Then** the tag is off the list and the file is as it was
+
+Test: `__tests__/scenarios/writingHelpInput.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `settings.md#input`
 
 ### The capture panel checks the recognized text when it opens
 

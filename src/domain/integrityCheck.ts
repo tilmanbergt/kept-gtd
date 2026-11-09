@@ -33,6 +33,8 @@ import {parseFrontMatter, parseMarksSpan} from './markdown';
 import {HomeNotebookSpec, readStoredName, renameCase, renamedNotebookMove, renameFindingText} from './homeNotebook';
 import {resolveMarkPath} from './marks';
 import {ContextDef, unknownContextEntries} from './contexts';
+import {RESERVED_BARE_TAGS} from './flowState';
+import {tagTypos, typoIndex} from './writing/tagTypos';
 
 export interface IntegrityFinding {
   checkId: string;
@@ -483,6 +485,8 @@ export interface ScannedItemSummary {
   area: string | null;
   /** This item's `abbrev:` frontmatter field, or null - always null for Inbox. */
   abbrev: string | null;
+  /** How often each tag (lowercase) appears on this item's todos and meetings - for the `tagTypo` check. */
+  tagCounts: Record<string, number>;
 }
 
 export type WholeRunCheck = (items: ScannedItemSummary[]) => IntegrityFinding[];
@@ -558,9 +562,40 @@ function checkDuplicateAbbrev(items: ScannedItemSummary[]): IntegrityFinding[] {
   return findings;
 }
 
+/**
+ * Tags used once in the whole run (archive left out) that look like a typo
+ * of a known tag (docs/dev/history/technical-design-writing-help.md §3.9,
+ * domain/writing/tagTypos.ts). Known here: tags used more than once, the live
+ * abbreviations and Kept's own words - the Note setups are compared in
+ * Settings → Input, which also offers the fix. Report only.
+ */
+function checkTagTypo(items: ScannedItemSummary[]): IntegrityFinding[] {
+  const live = items.filter(i => !i.inArchive);
+  const usage = new Map<string, number>();
+  for (const item of live) for (const [tag, n] of Object.entries(item.tagCounts)) usage.set(tag, (usage.get(tag) ?? 0) + n);
+  const abbrevs = live.flatMap(i => (i.abbrev ? [{tag: i.abbrev.toLowerCase(), name: i.itemName}] : []));
+  const index = typoIndex(usage, {setupTags: [], abbrevs, counterparts: [], contextTags: [], reservedTags: [...RESERVED_BARE_TAGS]});
+  return tagTypos(usage, index).flatMap(typo => {
+    const item = live.find(i => i.tagCounts[typo.tag]);
+    if (!item) return [];
+    return [
+      {
+        checkId: 'tagTypo',
+        itemKind: item.itemKind,
+        itemPath: item.itemPath,
+        entityKind: 'item' as const,
+        entityLabel: `#${typo.tag}`,
+        notePath: '',
+        message: `#${typo.tag} is used once and looks like a typo: → #${typo.suggestion}. Settings → Input lists it with the fix.`,
+      },
+    ];
+  });
+}
+
 export const WHOLE_RUN_CHECKS: Record<string, WholeRunCheck> = {
   orphanedAreaAssignment: checkOrphanedAreaAssignment,
   duplicateAbbrev: checkDuplicateAbbrev,
+  tagTypo: checkTagTypo,
 };
 
 /** Runs every registered whole-run check once, given every scanned item's summary. */

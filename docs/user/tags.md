@@ -55,7 +55,7 @@ A tag that matches a project's or area's [abbreviation](projects-and-areas.md#ab
 
 When you tap a suggestion of the [writing help](quick-add.md#tag-suggestions) - **→ #sparring** for a handwritten `#sparrlng` - Kept remembers the pair. The next time recognition writes `#sparrlng`, Quick Add writes `#sparring` straight away and the strip says "read as #sparring" with **Undo**. **Undo** puts the written tag back and forgets the pair.
 
-Learned corrections belong to the active [profile](profiles-and-demo.md#profiles), like the recent tags, and are stored inside the plugin, never in your files.
+Learned corrections belong to the active [profile](profiles-and-demo.md#profiles), like the recent tags, and are stored inside the plugin, never in your files. Settings → [Input](settings.md#input) lists them; **✕** forgets one.
 
 ## Tags the app sets itself
 
