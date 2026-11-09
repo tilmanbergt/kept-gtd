@@ -24,6 +24,7 @@ import {Agreement, isActiveAgreement} from '../domain/agreements';
 import {getCachedData} from './dataCache';
 import {errorMessage} from '../utils/errorMessage';
 import {getSettingsUnreadable} from './settingsUnreadable';
+import {keptTypoTags, learnedFixList, loadLearnedFixes} from './learnedTagFixes';
 
 function pad(n: number): string {
   return String(n).padStart(2, '0');
@@ -114,6 +115,7 @@ export async function buildDebugInfo(settings: GtdParaSettings, now: Date = new 
   lines.push(counterpartsLine());
   lines.push(loopsLine());
   lines.push(agreementsSummary(getCachedData()?.items ?? null));
+  lines.push(await writingHelpLine());
   lines.push(`log file: ${isFileLoggingOn() ? `ON (${LOG_FILE_NAME})` : 'OFF'}`);
   const errors = getRecentErrors(10);
   lines.push(`recent errors (${errors.length}):`);
@@ -192,4 +194,10 @@ export async function exportDebugBundle(settings: GtdParaSettings): Promise<stri
     googleCalendarIcsUrl: settings.googleCalendarIcsUrl,
   });
   return writeDebugBundleFile(`kept-gtd-debug-${fileStamp(now)}.txt`, redacted);
+}
+
+/** The writing help's memory as counts (docs/dev/history/technical-design-writing-help.md §3.8): never the tags. */
+async function writingHelpLine(): Promise<string> {
+  await loadLearnedFixes();
+  return `writing help: ${learnedFixList().length} learned corrections, ${keptTypoTags().size} kept tags`;
 }

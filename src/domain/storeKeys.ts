@@ -10,6 +10,8 @@ export const SETTINGS_KEY = `${STORE_PREFIX}settings:v1`;
 export const SECRETS_KEY = `${STORE_PREFIX}profileSecrets:v1`;
 export const CAPTURE_DESTINATIONS_KEY = `${STORE_PREFIX}captureDestinations:v1`;
 export const TAG_USAGE_KEY = `${STORE_PREFIX}tagUsage:v1`;
+/** Learned tag corrections and tags kept as written (storage/learnedTagFixes.ts), per profile. */
+export const TAG_FIXES_KEY = `${STORE_PREFIX}tagFixes:v1`;
 export const GOOGLE_CALENDAR_CACHE_KEY = `${STORE_PREFIX}googleCalendarCache:v1`;
 /** Device-wide, not per profile: switching profiles doesn't show the update notice again. */
 export const UPDATE_STATE_KEY = `${STORE_PREFIX}updates:v1`;

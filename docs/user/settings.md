@@ -36,7 +36,7 @@ For when you stop using Kept, give the device away, or want to start over: **Rem
 
 The list, each with where it is and how much there is:
 
-- *Settings*; *Gmail app password and calendar link* (for every profile); *Recent tags, recent places, calendar cache*: stored inside the plugin. Checking Settings checks the other two as well; you can uncheck them again.
+- *Settings*; *Gmail app password and calendar link* (for every profile); *Recent tags, learned corrections, recent places, calendar cache*: stored inside the plugin. Checking Settings checks the other two as well; you can uncheck them again.
 - *Lasso mark pictures and temporary files*: the plugin's private folder. [Open marks](lasso.md#processing-marks) lose their picture and handwriting - the line says how many; process them first.
 - *Debug and performance logs*: `EXPORT/kept-gtd/debug`.
 - *Demo space*: `Note/kept-gtd-demo` and the profile Demo. While the demo profile is active, it goes only together with the settings.

@@ -19,6 +19,7 @@ import {
   SECRETS_KEY,
   SETTINGS_KEY,
   STORE_PREFIX,
+  TAG_FIXES_KEY,
   TAG_USAGE_KEY,
   UPDATE_STATE_KEY,
 } from '../src/domain/storeKeys';
@@ -67,11 +68,12 @@ describe('plugin identity', () => {
 describe('storage keys', () => {
   it('puts every key under the kept: prefix', () => {
     expect(STORE_PREFIX).toBe('kept:');
-    expect([SETTINGS_KEY, SECRETS_KEY, CAPTURE_DESTINATIONS_KEY, TAG_USAGE_KEY, GOOGLE_CALENDAR_CACHE_KEY, UPDATE_STATE_KEY]).toEqual([
+    expect([SETTINGS_KEY, SECRETS_KEY, CAPTURE_DESTINATIONS_KEY, TAG_USAGE_KEY, TAG_FIXES_KEY, GOOGLE_CALENDAR_CACHE_KEY, UPDATE_STATE_KEY]).toEqual([
       'kept:settings:v1',
       'kept:profileSecrets:v1',
       'kept:captureDestinations:v1',
       'kept:tagUsage:v1',
+      'kept:tagFixes:v1',
       'kept:googleCalendarCache:v1',
       'kept:updates:v1',
     ]);
@@ -82,6 +84,7 @@ describe('storage keys', () => {
     'src/storage/profiles.ts',
     'src/storage/destinationUsage.ts',
     'src/storage/tagUsage.ts',
+    'src/storage/learnedTagFixes.ts',
     'src/storage/googleCalendarCache.ts',
     'src/storage/updates.ts',
     'src/storage/dataRemoval.ts',

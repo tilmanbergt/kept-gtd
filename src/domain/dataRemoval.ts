@@ -23,7 +23,7 @@ export interface RemovalKindInfo {
 export const REMOVAL_KINDS: readonly RemovalKindInfo[] = [
   {kind: 'settings', label: 'Settings', where: 'stored inside the plugin', defaultOn: true, unit: ['entry', 'entries']},
   {kind: 'secrets', label: 'Gmail app password and calendar link', where: 'stored inside the plugin, for every profile', defaultOn: true, unit: ['profile', 'profiles']},
-  {kind: 'caches', label: 'Recent tags, recent places, calendar cache', where: 'stored inside the plugin', defaultOn: true, unit: ['entry', 'entries']},
+  {kind: 'caches', label: 'Recent tags, learned corrections, recent places, calendar cache', where: 'stored inside the plugin', defaultOn: true, unit: ['entry', 'entries']},
   {kind: 'privateData', label: 'Lasso mark pictures and temporary files', where: "the plugin's private folder", defaultOn: true, unit: ['file', 'files']},
   {kind: 'logs', label: 'Debug and performance logs', where: 'EXPORT/kept-gtd/debug', defaultOn: true, unit: ['file', 'files']},
   {kind: 'demo', label: 'Demo space', where: 'Note/kept-gtd-demo and the profile Demo', defaultOn: true, unit: ['file', 'files']},
