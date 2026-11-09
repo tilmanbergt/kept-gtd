@@ -103,7 +103,7 @@ describe('performance (design §7)', () => {
     let index = buildKnownTagIndex(sources());
     for (let run = 0; run < 3; run++) {
       const t0 = performance.now();
-      index = buildKnownTagIndex(sources({usedTags: used, recentTags: used.slice(0, 30).map(u => u.tag)}));
+      index = buildKnownTagIndex(sources({usedTags: used, recentTags: used.slice(0, 30).map(u => u.tag), threadTypes: ['type3']}));
       build = Math.min(build, performance.now() - t0);
     }
     const text = `stand-up #DaiIy with #${used[1].tag}x and #type3/persn9 #${used[4].tag.toUpperCase()}`;
@@ -115,14 +115,18 @@ describe('performance (design §7)', () => {
     // The measured times, for the release report.
     process.stdout.write(`writing-help perf: index of ${index.size} tags built in ${build.toFixed(1)} ms, burst check ${check.toFixed(3)} ms\n`);
     // Completion runs on every keystroke and cursor report inside a tag: the unfinished tag and the prefix walk.
-    const field = `stand-up #${used[2].tag.slice(0, 2)}`;
-    unfinishedTagAt(field, field.length);
+    // With a place of 50 loops and 200 counterparts, after a type and a slash and after a plain prefix.
+    const scope = {loops: used.slice(0, 50).map(u => `type1/${u.tag.split('/').pop()}`), counterparts: used.slice(50, 250).map(u => u.tag.split('/').pop() ?? '')};
+    const fields = [`stand-up #${used[2].tag.slice(0, 2)}`, 'ask #type3/', 'ask #type3/a'];
+    for (const f of fields) unfinishedTagAt(f, f.length);
     const t2 = performance.now();
     for (let i = 0; i < runs; i++) {
-      const unfinished = unfinishedTagAt(field, field.length);
-      if (unfinished) completions(unfinished.token, index);
+      for (const f of fields) {
+        const unfinished = unfinishedTagAt(f, f.length);
+        if (unfinished) completions(unfinished.token, index, scope);
+      }
     }
-    const complete = (performance.now() - t2) / runs;
+    const complete = (performance.now() - t2) / runs / fields.length;
     process.stdout.write(`writing-help perf: completion ${complete.toFixed(3)} ms\n`);
     expect(build).toBeLessThan(50);
     expect(check).toBeLessThan(1);

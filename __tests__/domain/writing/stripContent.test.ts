@@ -32,7 +32,7 @@ describe('stripContent', () => {
     for (const moment of [
       {kind: 'read' as const, label: 'read as #daily'},
       {kind: 'choice' as const, options: [{value: '15:00', label: '15:00'}]},
-      {kind: 'complete' as const, options: [{tag: 'sparring'}]},
+      {kind: 'complete' as const, options: [{tag: 'sparring', label: '#sparring'}]},
       {kind: 'feedback' as const, text: '✓ Daily · Meetings/Daily.note'},
     ]) {
       expect(stripContent(state({moment}))).toEqual(moment);

@@ -67,7 +67,7 @@ export default function WritingStrip({visible, content, actions, clipboard, plac
       body = [label('Did you mean'), ...content.options.map(o => button(o.label, () => actions.choose(o.value), `choice:${o.value}`))];
       break;
     case 'complete':
-      body = [...content.options.map(o => button(`#${o.tag}`, () => actions.complete(o.tag), `complete:${o.tag}`, o.name)), button('Edit ›', actions.edit)];
+      body = [...content.options.map(o => button(o.label, () => actions.complete(o.tag), `complete:${o.tag}`, o.name)), button('Edit ›', actions.edit)];
       break;
     case 'feedback':
       body = [label(content.text)];

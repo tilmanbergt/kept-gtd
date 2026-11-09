@@ -27,6 +27,8 @@ export interface KnownTagSources {
   recentTags: readonly string[];
   /** Every tag of every todo and meeting, with the entry's date ('' for none). */
   usedTags: ReadonlyArray<{tag: string; date: string}>;
+  /** The types whose second segment is a counterpart (the Thread setups' types). */
+  threadTypes?: readonly string[];
 }
 
 /** Ranking order (§1.2): Note setup tags, abbreviations, counterparts, recent tags, the rest. */
@@ -66,6 +68,10 @@ export interface KnownTagIndex {
   complete(prefix: string, limit: number): KnownTag[];
   /** The known subtags of `parent`, most recent first. */
   childrenOf(parent: string): string[];
+  /** Whether `tag` (any case) is a Project/Area abbreviation - always written upper case. */
+  isAbbrev(tag: string): boolean;
+  /** Whether `type`'s second segment is a counterpart (`101` in `#101/mieke`). */
+  isThreadType(type: string): boolean;
 }
 
 function better(a: Entry, b: Entry): number {
@@ -156,6 +162,8 @@ export function buildKnownTagIndex(sources: KnownTagSources): KnownTagIndex {
     else topBySkeleton.set(e.skeleton, [e]);
   }
   const topList = Array.from(top.values());
+  const abbrevSet = new Set(sources.abbrevs.map(a => a.tag.toLowerCase()));
+  const threadTypes = new Set((sources.threadTypes ?? []).map(t => t.toLowerCase()));
   const ordered = Array.from(full.values()).sort(better);
 
   return {
@@ -192,5 +200,7 @@ export function buildKnownTagIndex(sources: KnownTagSources): KnownTagIndex {
       const kids = children.get(parent.toLowerCase());
       return kids ? Array.from(kids.values()).sort(byRecency).map(e => e.tag) : [];
     },
+    isAbbrev: tag => abbrevSet.has(tag.toLowerCase()),
+    isThreadType: type => threadTypes.has(type.toLowerCase()),
   };
 }

@@ -80,12 +80,12 @@ function timeCandidates(text: string): string[] {
   return out;
 }
 
-/** The meeting time field (§1.6 "Times"): `15,30`, `15 30`, `1530`, `930`, `15h`, `l5,3O-l6`, `3-4`, `15,3`. */
+/** The meeting time field (§1.6 "Times"; `bis` dropped, §10.4): `15,30`, `15 30`, `1530`, `930`, `15h`, `l5,3O-l6`, `3-4`, `15,3`, `g`. */
 export function readTime(text: string): Reading {
   const trimmed = text.trim();
   const written = parseMeetingWhen(trimmed);
   if (!trimmed || /^\d+\s*d$/i.test(trimmed)) return written.ok ? {kind: 'ok', value: formatMeetingWhen(written.value)} : {kind: 'none'};
-  const unified = foldDigits(trimmed.replace(/\s*(?:–|—|\bbis\b)\s*/gi, '-').replace(/(\d)\s*h\b/gi, '$1'));
+  const unified = foldDigits(trimmed.replace(/\s*[–—]\s*/g, '-').replace(/(\d)\s*h\b/gi, '$1'));
   const valid: string[] = [];
   for (const candidate of timeCandidates(unified.replace(/\s*-\s*/g, '-'))) {
     const parsed = parseMeetingWhen(candidate);
@@ -147,4 +147,14 @@ export function readDate(text: string, today: string): Reading {
   if (!trimmed || isValidIsoDate(trimmed)) return {kind: 'ok', value: trimmed};
   const value = dateOf(trimmed, today);
   return value ? {kind: 'read', value} : {kind: 'none'};
+}
+
+/**
+ * Whether `text` holds a character a date (or time) field can't mean as
+ * written - a look-alike letter like `g` for 9 (§10.4). Digits, the
+ * separators, `-`, `–` and, in a time field, the `d` of `2d` and the `h` of
+ * `15h` are what such a field may hold.
+ */
+export function hasLookAlike(field: 'date' | 'time', text: string): boolean {
+  return field === 'time' ? /[^\d\s:.,;'\-–—dhDH]/.test(text) : /[^\d\s.,;'\-–—/]/.test(text);
 }

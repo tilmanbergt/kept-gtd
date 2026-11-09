@@ -25,14 +25,15 @@ const ALLOWED_PLACEHOLDERS: Record<string, string> = {
 const demoText = buildDemoFiles(new Date(2026, 9, 1))
   .map(f => f.content)
   .join('\n');
-const demoTags = new Set(demoText.match(NESTED_TAG) ?? []);
+// Tags compare without case everywhere in Kept: `#sparring/Jordan` is the demo's `#sparring/jordan`.
+const demoTags = new Set((demoText.match(NESTED_TAG) ?? []).map(t => t.toLowerCase()));
 
 describe('help examples', () => {
   const pages = fs.readdirSync(DIR).filter(f => f.endsWith('.md')).sort();
 
   it.each(pages)('%s uses only nested tags of the demo space', page => {
     const text = fs.readFileSync(path.join(DIR, page), 'utf8');
-    const unknown = [...new Set(text.match(NESTED_TAG) ?? [])].filter(tag => !demoTags.has(tag) && !(tag in ALLOWED_PLACEHOLDERS));
+    const unknown = [...new Set(text.match(NESTED_TAG) ?? [])].filter(tag => !demoTags.has(tag.toLowerCase()) && !(tag in ALLOWED_PLACEHOLDERS));
     expect(unknown).toEqual([]);
   });
 

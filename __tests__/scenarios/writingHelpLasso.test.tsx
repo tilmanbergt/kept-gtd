@@ -20,15 +20,15 @@ scenario('The capture panel checks the recognized text when it opens', {feature:
     await processSportMarks();
     await focus('Todo text');
   });
-  then('the strip shows → #lena and the text is as recognized', () => {
-    expectShows('→ #lena');
+  then('the strip shows → #Lena and the text is as recognized', () => {
+    expectShows('→ #Lena');
     expect(fieldValue('Todo text')).toBe('call #Iena');
   });
-  when('I tap → #lena and save', async () => {
-    await tap('→ #lena');
+  when('I tap → #Lena and save', async () => {
+    await tap('→ #Lena');
     await tap(/^Save & close/);
   });
-  then('the todo is saved with #lena', () => {
-    expect(sectionLines(areaFile('Sport'), 'Tasks')).toContainEqual(expect.stringMatching(/^- \[ \] call #lena/));
+  then('the todo is saved with #Lena', () => {
+    expect(sectionLines(areaFile('Sport'), 'Tasks')).toContainEqual(expect.stringMatching(/^- \[ \] call #Lena/));
   });
 });

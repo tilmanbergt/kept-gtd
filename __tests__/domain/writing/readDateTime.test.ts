@@ -1,5 +1,5 @@
 // docs/dev/history/technical-design-writing-help.md §1.6: every example of "Dates" and "Times".
-import {foldDigits, readDate, readTime} from '../../../src/domain/writing/readDateTime';
+import {foldDigits, hasLookAlike, readDate, readTime} from '../../../src/domain/writing/readDateTime';
 
 const TODAY = '2026-11-09';
 
@@ -24,7 +24,8 @@ describe('readTime', () => {
     ['15;30', '15:30'],
     ["15'30", '15:30'],
     ['15 – 16', '15:00-16:00'],
-    ['15 bis 16', '15:00-16:00'],
+    ['g', '09:00'],
+    ['l9', '19:00'],
     ['1O.3O', '10:30'],
   ])('reads %s as %s', (written, value) => {
     expect(readTime(written)).toEqual({kind: 'read', value});
@@ -39,6 +40,14 @@ describe('readTime', () => {
   it('takes 7 and later as written (scenario 14)', () => {
     expect(readTime('8')).toEqual({kind: 'ok', value: '08:00'});
     expect(readTime('7')).toEqual({kind: 'ok', value: '07:00'});
+  });
+
+  it('offers the afternoon for a single 1 or 6 too', () => {
+    expect(readTime('1')).toEqual({kind: 'choice', values: ['13:00', '01:00']});
+  });
+
+  it('reads no "bis": it is no range word', () => {
+    expect(readTime('15 bis 16')).toEqual({kind: 'none'});
   });
 
   it('offers 15:30 and 15:03 for a one-digit minute (scenario 15)', () => {
@@ -100,5 +109,18 @@ describe('readDate', () => {
     expect(readDate('31.2.2026', TODAY)).toEqual({kind: 'none'});
     expect(readDate('2026-11-', TODAY)).toEqual({kind: 'none'});
     expect(readDate('tomorrow', TODAY)).toEqual({kind: 'none'});
+  });
+});
+
+describe('hasLookAlike', () => {
+  it('finds letters a time or date field cannot mean as written', () => {
+    expect(hasLookAlike('time', 'g')).toBe(true);
+    expect(hasLookAlike('time', 'l5')).toBe(true);
+    expect(hasLookAlike('time', '15:30-16')).toBe(false);
+    expect(hasLookAlike('time', '2d')).toBe(false);
+    expect(hasLookAlike('time', '15h')).toBe(false);
+    expect(hasLookAlike('date', '9.ll.26')).toBe(true);
+    expect(hasLookAlike('date', '2026-11-09')).toBe(false);
+    expect(hasLookAlike('date', '9/11/26')).toBe(false);
   });
 });

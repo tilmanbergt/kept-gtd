@@ -42,7 +42,7 @@ describe('normalizeTagSpacing', () => {
 describe('checkTags', () => {
   it('suggests the known tag for a handwriting look-alike (scenario 1)', () => {
     expect(checkTags('stand-up #DaiIy', null, index(), none, noLearned)).toEqual([
-      {start: 9, end: 15, written: 'DaiIy', suggestion: 'daily', kind: 'fix'},
+      {start: 9, end: 15, written: 'DaiIy', suggestion: 'Daily', kind: 'fix'},
     ]);
   });
 
@@ -62,13 +62,13 @@ describe('checkTags', () => {
     const found = checkTags('for #retros #Iena', null, index(), none, noLearned);
     expect(found.map(f => [f.written, f.suggestion, f.kind])).toEqual([
       ['retros', 'retro', 'fix'],
-      ['Iena', 'lena', 'fix'],
+      ['Iena', 'Lena', 'fix'],
     ]);
   });
 
   it('applies a learned correction before anything else (scenario 3)', () => {
     expect(checkTags('#DaiIy', null, index(), none, new Map([['daiiy', 'daily']]))).toEqual([
-      {start: 0, end: 6, written: 'DaiIy', suggestion: 'daily', kind: 'learned'},
+      {start: 0, end: 6, written: 'DaiIy', suggestion: 'Daily', kind: 'learned'},
     ]);
   });
 

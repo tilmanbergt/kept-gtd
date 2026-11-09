@@ -10,6 +10,7 @@
 import {isContextTag} from '../flowState';
 import {stripSpaceAfterHash, tagSpans} from '../markdown';
 import {KnownTagIndex} from './knownTags';
+import {fixSpelling} from './tagCase';
 
 export type TagFindingKind = 'fix' | 'learned' | 'new';
 
@@ -19,7 +20,7 @@ export interface TagFinding {
   end: number;
   /** The tag as written, without `#`. */
   written: string;
-  /** The tag to write instead, without `#`; null for a new tag with nothing close. */
+  /** The tag to write instead, without `#`, spelled as domain/writing/tagCase.ts says; null for a new tag with nothing close. */
   suggestion: string | null;
   kind: TagFindingKind;
 }
@@ -79,11 +80,12 @@ export function checkTags(
     if (isUncheckedTag(lower) || kept.has(lower)) continue;
     const taught = learned.get(lower);
     if (taught !== undefined && taught.toLowerCase() !== lower) {
-      findings.push({start: t.start, end: t.end, written: t.tag, suggestion: taught, kind: 'learned'});
+      findings.push({start: t.start, end: t.end, written: t.tag, suggestion: fixSpelling(t.tag, taught, index), kind: 'learned'});
       continue;
     }
     if (index.has(lower)) continue;
-    const suggestion = suggestionFor(t.tag, index);
+    const raw = suggestionFor(t.tag, index);
+    const suggestion = raw ? fixSpelling(t.tag, raw, index) : null;
     findings.push({start: t.start, end: t.end, written: t.tag, suggestion, kind: suggestion ? 'fix' : 'new'});
   }
   return findings;

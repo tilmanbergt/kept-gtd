@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-230 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+235 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -2046,6 +2046,15 @@ Test: `__tests__/scenarios/writingHelpDates.test.tsx` · design: `docs/dev/histo
 
 Test: `__tests__/scenarios/writingHelpDates.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `quick-add.md#warnings-and-the-usual-time`
 
+### A single letter that looks like a digit is read in the time field
+
+- **When** recognition writes "g" for a 9 into the time field
+- **Then** the field holds 09:00 and the strip says "read as 9:00"
+- **When** the field holds a single "1" instead
+- **Then** the strip offers 13:00 and 1:00, and the field keeps "1"
+
+Test: `__tests__/scenarios/writingHelpDates.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `quick-add.md#dates-and-times`
+
 ### A tag used once next to a known one is reported, listed and fixed on its line
 
 - **Given** #daily on two meetings, and "Retro #daiiy" once in project "Garden renovation"
@@ -2072,25 +2081,63 @@ Test: `__tests__/scenarios/writingHelpInput.test.tsx` · design: `docs/dev/histo
 
 - **Given** a mark recognized as "call #Iena", and the tag #lena in use
 - **When** I process the mark and put the cursor into the text
-- **Then** the strip shows → #lena and the text is as recognized
-- **When** I tap → #lena and save
-- **Then** the todo is saved with #lena
+- **Then** the strip shows → #Lena and the text is as recognized
+- **When** I tap → #Lena and save
+- **Then** the todo is saved with #Lena
 
 Test: `__tests__/scenarios/writingHelpLasso.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `lasso.md#capturing-right-away`
+
+### A new loop no todo carries yet is offered in its area
+
+- **Given** area "Team" has the loop #workshop/offsite, and no todo or meeting uses it
+- **When** I write "#work" in Team's Quick Add
+- **Then** the strip offers #workshop/offsite
+- **When** I write "#workshop/" instead
+- **Then** it offers /offsite
+
+Test: `__tests__/scenarios/writingHelpPlaces.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `quick-add.md#completing-a-tag`
+
+### An active counterpart nobody has tagged yet is offered after type/
+
+- **Given** area "Team" lists the counterpart sven under Threads, and nothing is tagged #101/sven
+- **When** I write "#101/" in Team's Quick Add
+- **Then** the strip offers /Sven
+
+Test: `__tests__/scenarios/writingHelpPlaces.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `quick-add.md#completing-a-tag`
+
+### An abbreviation in the text switches the place whose loops and counterparts are offered
+
+- **Given** project "Website", and area "Team" (#TE) with the counterpart sven
+- **When** on Website's page I write "#101/"
+- **Then** sven is not offered - he belongs to Team
+- **When** I write "#TE ask #101/" instead
+- **Then** the strip offers /Sven
+
+Test: `__tests__/scenarios/writingHelpPlaces.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `quick-add.md#completing-a-tag`
+
+### Daily offers the loops of the places the active context shows
+
+- **Given** the context "Work" shows area Team (loop #workshop/offsite), not Home (loop #build/shed)
+- **When** on Daily I write "#workshop/"
+- **Then** it offers /offsite
+- **When** I write "#build/"
+- **Then** nothing of Home is offered
+
+Test: `__tests__/scenarios/writingHelpPlaces.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `quick-add.md#completing-a-tag`
 
 ### Handwriting writes #DaiIy: the strip suggests #daily
 
 - **When** recognition writes "stand-up #DaiIy" into the meeting title
-- **Then** the strip shows → #daily, Keep and Edit ›, and the title is unchanged
-- **When** I tap → #daily
-- **Then** the title reads "stand-up #daily" and the strip says where its page goes
+- **Then** the strip shows → #Daily, Keep and Edit ›, and the title is unchanged
+- **When** I tap → #Daily
+- **Then** the title reads "stand-up #Daily" and the strip says where its page goes
 
 Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `quick-add.md#tag-suggestions`
 
 ### A learned correction is applied directly, with Undo
 
 - **When** I correct #DaiIy to #daily once and then write "#DaiIy" again
-- **Then** the title reads "retro #daily" and the strip says "read as #daily" with Undo
+- **Then** the title reads "retro #Daily" and the strip says "read as #Daily" with Undo
 - **When** I tap Undo
 - **Then** #DaiIy is back and the pair is forgotten
 
@@ -2114,7 +2161,7 @@ Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/histor
 ### Two flagged tags show in text order, a third is left out
 
 - **When** with #retro, #lena and #garden known I write "for #retros #Iena #gardn"
-- **Then** the strip shows → #retro, then → #lena, and not → #garden
+- **Then** the strip shows → #retro, then → #Lena, and not → #garden
 
 Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `quick-add.md#tag-suggestions`
 
@@ -2149,21 +2196,21 @@ Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/histor
 
 - **Given** project "Garden renovation" with the abbreviation GR
 - **When** I write "#g"
-- **Then** the strip offers #gr with "Garden renovation"
+- **Then** the strip offers #GR with "Garden renovation"
 
 Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `quick-add.md#completing-a-tag`
 
 ### One tap fixes every place the tag is written so
 
-- **When** recognition writes "#DaiIy notes for #DaiIy" and I tap → #daily
-- **Then** both read #daily
+- **When** recognition writes "#DaiIy notes for #DaiIy" and I tap → #Daily
+- **Then** both read #Daily
 
 Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `quick-add.md#tag-suggestions`
 
 ### A learned correction ended by a typed space keeps the cursor after the space
 
 - **When** daiiy → daily is learned and I type "#DaiIy" and then a space
-- **Then** the title reads "x #daily " with the cursor at its end
+- **Then** the title reads "x #Daily " with the cursor at its end
 
 Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `tags.md#learned-corrections`
 
@@ -2172,16 +2219,16 @@ Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/histor
 - **When** recognition writes "# Dai"
 - **Then** the title reads "#Dai" and the cursor is put after it
 - **When** the field still reports its cursor where it was before the space went, then where it is now
-- **Then** the strip offers #daily
-- **When** I tap #daily
-- **Then** the title reads "#daily "
+- **Then** the strip offers #Daily
+- **When** I tap #Daily
+- **Then** the title reads "#Daily "
 
 Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `quick-add.md#completing-a-tag`
 
 ### A tag typed letter by letter is completed, not after a space
 
 - **When** I type "#", "D", "a"
-- **Then** the strip offers #daily
+- **Then** the strip offers #Daily
 - **When** I type a space
 - **Then** the completion is gone
 
@@ -2191,7 +2238,7 @@ Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/histor
 
 - **Given** project "Atruvia" with the abbreviation ATR
 - **When** the title reads "call #AT about it" and I put the cursor right after "#AT"
-- **Then** the strip offers #atr with "Atruvia"
+- **Then** the strip offers #ATR with "Atruvia"
 - **When** I put the cursor at the start
 - **Then** the completion is gone
 

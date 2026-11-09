@@ -27,7 +27,7 @@ import {composeTaskText} from '../../domain/quickAddCompose';
 import {FlowState} from '../../domain/types';
 import {errorMessage} from '../../utils/errorMessage';
 import {clipboardActions} from '../ClipboardStrip';
-import {draftNotePlace} from '../writing/notePlace';
+import {draftNotePlace, draftScope} from '../writing/notePlace';
 import {useWritingHelp} from '../writing/useWritingHelp';
 import {DateInputHandle} from '../DateInput';
 import {TaskEditFields} from './editFields';
@@ -125,6 +125,7 @@ export function useTaskDraft(core: QuickAddCore, input: Input) {
     setSelectionOverride,
     inputRef,
     recentTags: core.recentTags,
+    scopeOf: text => draftScope({text, abbrevItems: core.abbrevItems, excludePath: core.abbrevExcludePath, fixedDestination: input.fixedDestination}),
     place: text =>
       draftNotePlace({
         text,

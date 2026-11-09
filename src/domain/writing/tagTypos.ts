@@ -7,12 +7,13 @@
  * only reports.
  */
 import {buildKnownTagIndex, KnownTagIndex, KnownTagSources} from './knownTags';
+import {fixSpelling} from './tagCase';
 import {isUncheckedTag, suggestionFor} from './tagCheck';
 
 export interface TagTypo {
   /** The tag as used, lowercase, without `#`. */
   tag: string;
-  /** The known tag it is probably meant to be. */
+  /** The known tag it is probably meant to be: lower case, an abbreviation upper case. */
   suggestion: string;
 }
 
@@ -34,7 +35,8 @@ export function tagTypos(usage: TagUsage, index: KnownTagIndex, kept: ReadonlySe
   for (const [tag, count] of usage) {
     if (count !== 1 || isUncheckedTag(tag) || kept.has(tag) || index.has(tag)) continue;
     const suggestion = suggestionFor(tag, index);
-    if (suggestion) typos.push({tag, suggestion: suggestion.toLowerCase()});
+    // Lower case, an abbreviation upper case (domain/writing/tagCase.ts).
+    if (suggestion) typos.push({tag, suggestion: fixSpelling(tag, suggestion.toLowerCase(), index)});
   }
   return typos.sort((a, b) => (a.tag < b.tag ? -1 : a.tag > b.tag ? 1 : 0));
 }

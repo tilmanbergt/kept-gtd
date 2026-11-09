@@ -20,7 +20,7 @@
 import {formatFullDate, formatLength, formatTime, formatTimeSpan} from '../dateFormat';
 import {isValidIsoDate} from '../dateNudge';
 import {parseMeetingWhen} from '../meetingTime';
-import {KnownTag} from './knownTags';
+import {Completion} from './completion';
 import {UsualSlot} from './meetingHints';
 
 export type StripField = 'text' | 'date' | 'time';
@@ -41,7 +41,7 @@ export interface ChoiceOption {
 export type StripMoment =
   | {kind: 'read'; label: string}
   | {kind: 'choice'; options: ChoiceOption[]}
-  | {kind: 'complete'; options: KnownTag[]}
+  | {kind: 'complete'; options: Completion[]}
   | {kind: 'feedback'; text: string};
 
 export type StripContent =

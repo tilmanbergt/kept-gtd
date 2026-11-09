@@ -54,7 +54,7 @@ export function useAgreementDraft(core: QuickAddCore, handlers: AgreementHandler
   /** Puts the words into the draft as they are - the writing help has run, or a chip changed them. */
   const writeText = (t: string) => update({text: t});
   // The writing help (docs/dev/history/technical-design-writing-help.md §3.5); an agreement has no note page to name.
-  const textField = useWritingField({value: fields.text, write: writeText, recentTags: core.recentTags});
+  const textField = useWritingField({value: fields.text, write: writeText, recentTags: core.recentTags, scopeOf: () => core.fixedExcludePath});
   const setText = textField.help.onChangeText;
   const setValid = (valid: string | null) => update({valid});
   const insertTag = (tag: string) => writeText(insertTagAtPosition(fields.text, tag, null).text);

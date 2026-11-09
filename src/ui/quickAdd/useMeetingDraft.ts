@@ -18,7 +18,7 @@ import {setHighlight} from '../../domain/monthHighlight';
 import {errorMessage} from '../../utils/errorMessage';
 import {log} from '../../utils/log';
 import {clipboardActions} from '../ClipboardStrip';
-import {draftNotePlace} from '../writing/notePlace';
+import {draftNotePlace, draftScope} from '../writing/notePlace';
 import {draftMeetingHints, NO_MEETING_HINTS} from '../writing/draftMeetingHints';
 import {useWritingHelp} from '../writing/useWritingHelp';
 import {UsualSlot} from '../../domain/writing/meetingHints';
@@ -116,6 +116,7 @@ export function useMeetingDraft(core: QuickAddCore, input: Input) {
     setSelectionOverride,
     inputRef,
     recentTags: core.recentTags,
+    scopeOf: text => draftScope({text, abbrevItems: core.abbrevItems, excludePath: core.abbrevExcludePath, fixedDestination: input.fixedDestination}),
     place: text =>
       draftNotePlace({
         text,

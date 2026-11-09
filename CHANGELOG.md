@@ -12,9 +12,10 @@ or your project/area files are stored.
 
 ### New
 - Writing help in Quick Add: after handwriting recognition writes a word, the strip over the tabs
-  checks it. A tag close to one you use (`#Iena`, `#sparrlng`) gets a suggestion - **→ #lena**,
-  **Keep**, **Edit ›** - and an unfinished tag at the cursor is completed from your own tags, counterparts
-  and abbreviations. A tag you corrected once is corrected the same way next time ("read as #lena",
+  checks it. A tag close to one you use (`#sparrlng`, `#Iena`) gets a suggestion - **→ #sparring**,
+  **Keep**, **Edit ›** - and an unfinished tag at the cursor is completed from your own tags, abbreviations
+  and the active loops and counterparts of the place - also new ones nothing is tagged with yet;
+  after `#type/` it offers `/name`. What you wrote keeps its letters. A tag you corrected once is corrected the same way next time ("read as #lena",
   with **Undo**). When all tags are known, the strip says where the item's note page goes. + Add
   with a suggestion still open asks once; a second + Add saves as written. Also in the note title,
   the agreement words and lasso capture.

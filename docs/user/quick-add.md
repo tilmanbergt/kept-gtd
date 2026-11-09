@@ -52,7 +52,7 @@ Handwriting recognition makes small mistakes: a capital I for an l, an o for a 0
 
 Each tag that recognition writes is compared with the tags you already use: in your todos and meetings, your [Note setups](note-setups.md#what-a-setup-is), [abbreviations](projects-and-areas.md#abbreviations), [counterparts](threads.md), [contexts](contexts.md) and recent tags. Capital letters never count as a difference: `#Sparring` is your `#sparring`.
 
-- When a tag is close to one you use - `#sparrlng`, `#Iena`, `#workshops` - the strip shows the tag it means, for example **→ #sparring**, then **Keep** and **Edit ›**. Up to two such tags, in the order of the text.
+- When a tag is close to one you use - `#sparrlng`, `#Iena`, `#workshops` - the strip shows the tag it means, for example **→ #sparring**, then **Keep** and **Edit ›**. Up to two such tags, in the order of the text. A tag you began upper case stays so: `#Iena` gets **→ #Lena**.
 - **→ #sparring** replaces the tag, wherever it is written that way in the text; **Keep** leaves every suggested tag as written; **Edit ›** shows **All**, **Copy**, **Cut** and **Paste**.
 - A nested tag is checked part by part: the type against your tags, the part after the slash against that type's counterparts. A part that is right keeps its spelling, so only the part that is off changes, and the strip shows the whole tag, for example **→ #sparring/jordan**.
 - Two spaces are removed without asking, so a handwritten tag is one tag: a space right after `#`, and a space right after a `/` inside a tag (`#sparring/ jordan` becomes `#sparring/jordan`). A wide ＃ counts as `#`.
@@ -63,16 +63,20 @@ A tag you corrected once is corrected the same way next time, see [Learned corre
 
 ### Completing a tag
 
-Whenever the cursor sits right after an unfinished tag - written, typed, or put there with a tap - the strip offers up to three of your tags that start with it: `#spa` offers **#sparring** and **#sparring/jordan**. After a type and a slash, `#sparring/`, it offers that type's counterparts, the most recent first. An abbreviation shows its project or area next to it: **#gr Garden renovation**. A tap puts the tag in place, followed by a space. Once a space follows the tag, or the tag is one you use as it is, nothing is offered.
+Whenever the cursor sits right after an unfinished tag - written, typed, or put there with a tap - the strip offers up to three of your tags that start with it: `#spa` offers **#sparring** and **#sparring/Jordan**. A tap puts the tag in place, followed by a space. Once a space follows the tag, or the tag is one you use as it is, nothing is offered.
+
+- *After a type and a slash*, `#sparring/`, the strip offers only the part after the slash, up to four: **/Jordan**, **/Lena**. What you write after the slash narrows them: an `l` there offers only **/lena**. For a thread type, the counterparts you already met under that type come first, then the other active counterparts of the place.
+- *The place*: the active [loops](loops.md) and the active counterparts of the project or area the item goes to come first, also those no todo or meeting carries yet - a loop you just started is offered right away. On [Daily](daily.md), Week, Month and the Inbox they come from the projects and areas the current [context](contexts.md#choosing-one) shows. An abbreviation in the text, like `#GR`, makes its project or area the place, the same one **+ Add to Garden renovation** names.
+- *Spelling*: what you wrote keeps its letters, what Kept adds is lower case - `#Spa` gives `#Sparring`, `#spa` gives `#sparring`. A counterpart you haven't started writing starts upper case (**/Jordan**). An abbreviation is always written upper case and shows its project or area next to it: **#GR Garden renovation**.
 
 ### Dates and times
 
 In the date fields and the meeting's time field, letters that look like digits are read as digits (`l` and `I` as 1, `O` as 0, `S` as 5, `B` as 8 and so on), and a comma, semicolon or space between digits as a separator.
 
 - *Dates*: `9.11.2026`, `09.11.26`, `9.11.` and `9.11` (the next 9 November), `2026 11 09`, `2026.11.09` and `20261109`. Where only one order of day and month is a date, that one is taken: `11.13` is 13 November.
-- *Times*: `15,30`, `15 30` and `1530` are 15:30, `930` is 9:30, `15h` is 15:00; `–` and `bis` make a range, as `-` does ([Meeting length](week-and-month.md#meeting-length)).
+- *Times*: `15,30`, `15 30` and `1530` are 15:30, `930` is 9:30, `15h` is 15:00, a single `g` is 9:00; `–` makes a range, as `-` does ([Meeting length](week-and-month.md#meeting-length)).
 
-When what recognition wrote can be read only one way, Quick Add writes it and the strip says so: "read as Mon 9 Nov 2026" or "read as 15:30 – 16:00 · 30 min", with **Undo**, which puts back what was written. When it can be read two ways, the strip asks "Did you mean" with both: an hour from 1 to 6 without minutes offers the afternoon first (`3-4`: 15:00 – 16:00, then 3:00 – 4:00), and one digit after the hour offers both minutes (`15,3`: 15:30 or 15:03). What cannot be read stays as written, and **+ Add** says what is wrong, as before.
+When what recognition wrote - or a letter that looks like a digit, even a single one - can be read only one way, Quick Add writes it and the strip says so: "read as Mon 9 Nov 2026" or "read as 15:30 – 16:00 · 30 min", with **Undo**, which puts back what was written. When it can be read two ways, the strip asks "Did you mean" with both: an hour from 1 to 6 without minutes offers the afternoon first (`3-4`: 15:00 – 16:00, then 3:00 – 4:00; a single `1`: 13:00 or 1:00), and one digit after the hour offers both minutes (`15,3`: 15:30 or 15:03). What cannot be read stays as written, and **+ Add** says what is wrong, as before.
 
 While the cursor is in a date field, its strip starts with the full date and weekday, "Tue 10 Nov 2026", then -1, **Today**, +1 and +7. The meeting's time field has a strip too, with the time and its length: "15:30 – 16:00 · 30 min".
 

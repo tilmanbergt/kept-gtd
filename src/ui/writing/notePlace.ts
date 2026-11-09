@@ -25,6 +25,13 @@ export interface DraftPlaceInput {
   date?: string;
 }
 
+/** The Project/Area the draft's item goes to - its abbreviation tag's, else the screen's - or null for the Inbox. */
+export function draftScope(input: Pick<DraftPlaceInput, 'text' | 'abbrevItems' | 'excludePath' | 'fixedDestination'>): string | null {
+  const target = resolveAbbrevFileTarget(input.text, input.abbrevItems, input.excludePath);
+  if (target) return target.path;
+  return input.fixedDestination.type === 'item' ? input.fixedDestination.path : null;
+}
+
 /** `{setupName, file}` of the best note place for the draft, or null without settings. */
 export function draftNotePlace(input: DraftPlaceInput): {setupName: string | null; file: string} | null {
   const settings = peekSettings();

@@ -165,3 +165,23 @@ scenario('The usual date and the usual time of a thread each fill their own fiel
     expect(fieldValue(DATE)).toBe('2026-11-10');
   });
 });
+
+scenario('A single letter that looks like a digit is read in the time field', {feature: 'Writing help', design: 'technical-design-writing-help.md', help: 'quick-add.md#dates-and-times'}, () => {
+  when('recognition writes "g" for a 9 into the time field', async () => {
+    await openMeetingTab();
+    await focus(TIME);
+    await type(TIME, 'g');
+  });
+  then('the field holds 09:00 and the strip says "read as 9:00"', () => {
+    expect(fieldValue(TIME)).toBe('09:00');
+    expectShows('read as 9:00');
+  });
+  when('the field holds a single "1" instead', async () => {
+    await type(TIME, '');
+    await type(TIME, '1');
+  });
+  then('the strip offers 13:00 and 1:00, and the field keeps "1"', () => {
+    expect(textsBetween('Did you mean').slice(0, 2)).toEqual(['13:00', '1:00']);
+    expect(fieldValue(TIME)).toBe('1');
+  });
+});

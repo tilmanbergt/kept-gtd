@@ -38,7 +38,7 @@ export function useNoteDraft(core: QuickAddCore, {onAddNote, noteFolderPath}: In
     clearJustAdded();
   };
   // The writing help (docs/dev/history/technical-design-writing-help.md §3.5); a note has no note page to name.
-  const titleField = useWritingField({value: draft.titleRaw, write: writeTitle, recentTags: core.recentTags});
+  const titleField = useWritingField({value: draft.titleRaw, write: writeTitle, recentTags: core.recentTags, scopeOf: () => core.fixedExcludePath});
   const setTitleRaw = titleField.help.onChangeText;
   const insertTag = (tag: string) => writeTitle(insertTagAtPosition(draft.titleRaw, tag, null).text);
   const removeTag = (tag: string) => writeTitle(removeTagFromText(draft.titleRaw, tag));

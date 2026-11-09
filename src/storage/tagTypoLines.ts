@@ -11,6 +11,7 @@
  */
 import {deriveMeetingFields, tagSpans} from '../domain/markdown';
 import {withTaskText} from '../domain/taskEdit';
+import {fixSpelling} from '../domain/writing/tagCase';
 import {replaceTag} from '../domain/writing/tagCheck';
 import {countTags, TagTypo, tagTypos, typoIndex} from '../domain/writing/tagTypos';
 import {getCachedData, getCachedInbox, setCachedInbox} from './dataCache';
@@ -65,11 +66,14 @@ export function currentTypoLines(): TypoLine[] {
   });
 }
 
-/** `text` with every `#typo` (any case) written as `#suggestion`. */
+/** An upper-case suggestion is an abbreviation (domain/writing/tagTypos.ts spells it so). */
+const ABBREV_SPELLING = {isAbbrev: (tag: string) => /[A-Z]/.test(tag) && tag === tag.toUpperCase()};
+
+/** `text` with every `#typo` (any case) written as `#suggestion`, its first letter's case kept (domain/writing/tagCase.ts). */
 export function fixedText(text: string, typo: TagTypo): string {
   let out = text;
   for (const span of tagSpans(text).reverse()) {
-    if (span.tag.toLowerCase() === typo.tag) out = replaceTag(out, span, typo.suggestion).text;
+    if (span.tag.toLowerCase() === typo.tag) out = replaceTag(out, span, fixSpelling(span.tag, typo.suggestion, ABBREV_SPELLING)).text;
   }
   return out;
 }

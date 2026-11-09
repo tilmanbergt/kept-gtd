@@ -31,10 +31,10 @@ import {Selection} from '../../domain/clipboardText';
 import {formatFullDate, formatTimeSpan} from '../../domain/dateFormat';
 import {tagSpans} from '../../domain/markdown';
 import {parseMeetingWhen, todayIso} from '../../domain/meetingTime';
-import {applyCompletion, completions, UnfinishedTag, unfinishedTagAt} from '../../domain/writing/completion';
+import {applyCompletion, completions, NO_SCOPE, UnfinishedTag, unfinishedTagAt} from '../../domain/writing/completion';
 import {caretAfterChange, insertedSpan, isBurst, tagsEndedBy} from '../../domain/writing/insertion';
 import {UsualSlot} from '../../domain/writing/meetingHints';
-import {readDate, readTime} from '../../domain/writing/readDateTime';
+import {hasLookAlike, readDate, readTime} from '../../domain/writing/readDateTime';
 import {
   addAgainHint,
   MAX_SHOWN_FIXES,
@@ -49,7 +49,7 @@ import {
   timeLabel,
 } from '../../domain/writing/stripContent';
 import {checkTags, normalizeTagSpacing, replaceTag, TagFinding} from '../../domain/writing/tagCheck';
-import {currentKnownTagIndex} from '../../storage/knownTagIndex';
+import {currentKnownTagIndex, scopeTags} from '../../storage/knownTagIndex';
 import {forgetFix, getLearnedFixesSync, learnFix, loadLearnedFixes} from '../../storage/learnedTagFixes';
 import {errorMessage} from '../../utils/errorMessage';
 import {log, logWarn} from '../../utils/log';
@@ -66,6 +66,12 @@ export interface WritingHelpOptions {
   /** Focused again after a tap on the strip, so the strip stays and writing goes on. */
   inputRef?: RefObject<TextInput | null>;
   recentTags?: readonly string[];
+  /**
+   * The Project/Area the item goes to with `text` - an abbreviation tag in it
+   * switches it - or null for the Inbox; its loops and counterparts come first
+   * in completions (§10.4). Absent: no place.
+   */
+  scopeOf?: (text: string) => string | null;
   /** Where the item's page would go with `text` (§1.7); null when that is not known. */
   place?: (text: string) => {setupName: string | null; file: string} | null;
   /** A meeting's date and time strips: past or overlap. */
@@ -171,7 +177,8 @@ export function useWritingHelp(options: WritingHelpOptions) {
     const index = known ?? currentKnownTagIndex(options.recentTags ?? NO_RECENT);
     const token = unfinished.token.toLowerCase();
     if (!token.endsWith('/') && index.has(token)) return null;
-    const offered = completions(unfinished.token, index);
+    const scope = options.scopeOf ? scopeTags(options.scopeOf(text)) : NO_SCOPE;
+    const offered = completions(unfinished.token, index, scope);
     return offered.length > 0 ? {unfinished, offered} : null;
   };
   /** Shows `offer` - unless the strip shows these completions already, so a cursor report costs no render. */
@@ -232,15 +239,18 @@ export function useWritingHelp(options: WritingHelpOptions) {
     ownCursorsRef.current = [cursor, rawCursor];
   };
 
+  /**
+   * One change of a date or time field (§1.6, §10.4). A reading that writes
+   * into the field needs recognition's burst or a look-alike letter (`g` for
+   * 9), so digits typed one by one are never rewritten halfway; a choice
+   * writes nothing and is offered on every change (`1` -> 13:00 or 1:00).
+   */
   const changeDateTime = (next: string, span: ReturnType<typeof insertedSpan>) => {
-    if (!isBurst(span)) {
-      if (moment) startMoment(null, null);
-      write(next);
-      return;
-    }
-    const reading = field === 'date' ? readDate(next, todayIso(new Date())) : readTime(next);
-    log(`writing: burst field=${field} reading=${reading.kind}`);
-    if (reading.kind === 'read') {
+    const burst = isBurst(span);
+    const lookAlike = field !== 'text' && hasLookAlike(field, next);
+    const reading = !next.trim() ? null : field === 'date' ? readDate(next, todayIso(new Date())) : readTime(next);
+    if (reading && (burst || lookAlike)) log(`writing: ${burst ? 'burst' : 'look-alike'} field=${field} reading=${reading.kind}`);
+    if (reading?.kind === 'read' && (burst || lookAlike)) {
       write(reading.value);
       undoRef.current = {text: next, forget: []};
       const what = field === 'date' ? formatFullDate(reading.value) : timeLabel(reading.value) ?? reading.value;
@@ -249,8 +259,8 @@ export function useWritingHelp(options: WritingHelpOptions) {
       return;
     }
     write(next);
-    if (reading.kind === 'choice') {
-      startMoment({kind: 'choice', options: reading.values.map(v => ({value: v, label: choiceLabel(field, v)}))}, span ? span.end : null);
+    if (reading?.kind === 'choice') {
+      startMoment({kind: 'choice', options: reading.values.map(v => ({value: v, label: choiceLabel(field, v)}))}, caretAfterChange(value, next));
     } else if (moment) startMoment(null, null);
   };
 

@@ -34,17 +34,17 @@ scenario('Handwriting writes #DaiIy: the strip suggests #daily', {feature: 'Writ
     await openMeetingTab();
     await type(TITLE, 'stand-up #DaiIy');
   });
-  then('the strip shows → #daily, Keep and Edit ›, and the title is unchanged', () => {
-    expectShows('→ #daily');
+  then('the strip shows → #Daily, Keep and Edit ›, and the title is unchanged', () => {
+    expectShows('→ #Daily');
     expectShows('Keep');
     expectShows('Edit ›');
     expect(fieldValue(TITLE)).toBe('stand-up #DaiIy');
   });
-  when('I tap → #daily', async () => {
-    await tap('→ #daily');
+  when('I tap → #Daily', async () => {
+    await tap('→ #Daily');
   });
-  then('the title reads "stand-up #daily" and the strip says where its page goes', () => {
-    expect(fieldValue(TITLE)).toBe('stand-up #daily');
+  then('the title reads "stand-up #Daily" and the strip says where its page goes', () => {
+    expect(fieldValue(TITLE)).toBe('stand-up #Daily');
     expectShows('✓ Daily · Meetings/Daily.note');
   });
 });
@@ -53,13 +53,13 @@ scenario('A learned correction is applied directly, with Undo', {feature: 'Writi
   when('I correct #DaiIy to #daily once and then write "#DaiIy" again', async () => {
     await openMeetingTab();
     await type(TITLE, 'stand-up #DaiIy');
-    await tap('→ #daily');
+    await tap('→ #Daily');
     await type(TITLE, '');
     await type(TITLE, 'retro #DaiIy');
   });
-  then('the title reads "retro #daily" and the strip says "read as #daily" with Undo', () => {
-    expect(fieldValue(TITLE)).toBe('retro #daily');
-    expectShows('read as #daily');
+  then('the title reads "retro #Daily" and the strip says "read as #Daily" with Undo', () => {
+    expect(fieldValue(TITLE)).toBe('retro #Daily');
+    expectShows('read as #Daily');
     expectShows('Undo');
   });
   when('I tap Undo', async () => {
@@ -68,7 +68,7 @@ scenario('A learned correction is applied directly, with Undo', {feature: 'Writi
   then('#DaiIy is back and the pair is forgotten', async () => {
     expect(fieldValue(TITLE)).toBe('retro #DaiIy');
     expect(JSON.parse((await AsyncStorage.getItem('kept:tagFixes:v1')) ?? '{}').fixes).toEqual([]);
-    expectNotShows('→ #daily');
+    expectNotShows('→ #Daily');
   });
 });
 
@@ -101,9 +101,9 @@ scenario('Two flagged tags show in text order, a third is left out', {feature: '
     await openMeetingTab([], ['- [ ] Plan #retro', '- [ ] Call #lena', '- [ ] Dig #garden']);
     await type(TITLE, 'for #retros #Iena #gardn');
   });
-  then('the strip shows → #retro, then → #lena, and not → #garden', () => {
+  then('the strip shows → #retro, then → #Lena, and not → #garden', () => {
     expectShows('→ #retro');
-    expectShows('→ #lena');
+    expectShows('→ #Lena');
     expectNotShows('→ #garden');
   });
 });
@@ -117,7 +117,7 @@ scenario('+ Add with a suggestion open asks once, the second + Add saves as writ
   then('nothing is saved and the status line asks', () => {
     expect(sectionLines(projectFile('Website'), 'Meetings')).toEqual([]);
     expectShows('Check #DaiIy, or Add again to keep it');
-    expectShows('→ #daily');
+    expectShows('→ #Daily');
   });
   when('I tap + Add again', async () => {
     await tap('+ Add');
@@ -168,19 +168,19 @@ scenario('Completion shows an abbreviation with its project', {feature: 'Writing
     await openMeetingTab();
     await type(TITLE, 'call #g');
   });
-  then('the strip offers #gr with "Garden renovation"', () => {
-    expectShows('#gr Garden renovation');
+  then('the strip offers #GR with "Garden renovation"', () => {
+    expectShows('#GR Garden renovation');
   });
 });
 
 scenario('One tap fixes every place the tag is written so', {feature: 'Writing help', design: 'technical-design-writing-help.md', help: 'quick-add.md#tag-suggestions'}, () => {
-  when('recognition writes "#DaiIy notes for #DaiIy" and I tap → #daily', async () => {
+  when('recognition writes "#DaiIy notes for #DaiIy" and I tap → #Daily', async () => {
     await openMeetingTab();
     await type(TITLE, '#DaiIy notes for #DaiIy');
-    await tap('→ #daily');
+    await tap('→ #Daily');
   });
-  then('both read #daily', () => {
-    expect(fieldValue(TITLE)).toBe('#daily notes for #daily');
+  then('both read #Daily', () => {
+    expect(fieldValue(TITLE)).toBe('#Daily notes for #Daily');
   });
 });
 
@@ -188,13 +188,13 @@ scenario('A learned correction ended by a typed space keeps the cursor after the
   when('daiiy → daily is learned and I type "#DaiIy" and then a space', async () => {
     await openMeetingTab();
     await type(TITLE, 'stand-up #DaiIy');
-    await tap('→ #daily');
+    await tap('→ #Daily');
     await type(TITLE, '');
     await type(TITLE, 'x #DaiIy');
     await type(TITLE, 'x #DaiIy ');
   });
-  then('the title reads "x #daily " with the cursor at its end', () => {
-    expect(fieldValue(TITLE)).toBe('x #daily ');
+  then('the title reads "x #Daily " with the cursor at its end', () => {
+    expect(fieldValue(TITLE)).toBe('x #Daily ');
     expect(screen.getByPlaceholderText(TITLE).props.selection).toEqual({start: 9, end: 9});
   });
 });
@@ -219,14 +219,14 @@ scenario('A space after # is removed and the tag is still completed', {feature: 
     await cursorAt(5);
     await cursorAt(4);
   });
-  then('the strip offers #daily', () => {
-    expectShows('#daily');
+  then('the strip offers #Daily', () => {
+    expectShows('#Daily');
   });
-  when('I tap #daily', async () => {
-    await tap('#daily');
+  when('I tap #Daily', async () => {
+    await tap('#Daily');
   });
-  then('the title reads "#daily "', () => {
-    expect(fieldValue(TITLE)).toBe('#daily ');
+  then('the title reads "#Daily "', () => {
+    expect(fieldValue(TITLE)).toBe('#Daily ');
   });
 });
 
@@ -237,14 +237,14 @@ scenario('A tag typed letter by letter is completed, not after a space', {featur
     await type(TITLE, '#D');
     await type(TITLE, '#Da');
   });
-  then('the strip offers #daily', () => {
-    expectShows('#daily');
+  then('the strip offers #Daily', () => {
+    expectShows('#Daily');
   });
   when('I type a space', async () => {
     await type(TITLE, '#Da ');
   });
   then('the completion is gone', () => {
-    expectNotShows('#daily');
+    expectNotShows('#Daily');
   });
 });
 
@@ -257,14 +257,14 @@ scenario('Putting the cursor after an unfinished tag offers its completions', {f
     await type(TITLE, 'call #AT about it');
     await cursorAt(8);
   });
-  then('the strip offers #atr with "Atruvia"', () => {
-    expectShows('#atr Atruvia');
+  then('the strip offers #ATR with "Atruvia"', () => {
+    expectShows('#ATR Atruvia');
   });
   when('I put the cursor at the start', async () => {
     await cursorAt(0);
   });
   then('the completion is gone', () => {
-    expectNotShows('#atr Atruvia');
+    expectNotShows('#ATR Atruvia');
   });
 });
 
@@ -274,6 +274,6 @@ scenario('After type/ the strip offers that type\'s counterparts', {feature: 'Wr
     await type(TITLE, '1:1 #101/');
   });
   then('the strip offers both counterparts', () => {
-    expect(textsBetween('Meeting', 'Edit ›').filter(t => t.startsWith('#101/'))).toEqual(['#101/jordan', '#101/mieke']);
+    expect(textsBetween('Meeting', 'Edit ›').filter(t => t.startsWith('/'))).toEqual(['/Jordan', '/Mieke']);
   });
 });

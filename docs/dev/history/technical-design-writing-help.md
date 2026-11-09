@@ -412,3 +412,17 @@ Decided with Tilman after trying the merged build:
   each fills only its own field. The usual time is the series' usual time, whatever weekday is chosen.
 - **The time strip is drawn over the whole time row**, so "… · overlaps …" stays on one line; strip
   labels never wrap, and the other meeting's title is cut to 20 characters.
+- **Second round of device feedback:**
+  - Date and time fields read a look-alike letter on any change, even a single one (`g` -> 9:00);
+    a choice (`1` -> 13:00 or 1:00) is offered on every change, since it writes nothing; digits
+    typed one by one are read only after a burst. `bis` is no range word any more.
+  - After `type/` the strip shows only `/name`, up to four, narrowed by what follows the slash.
+  - Spelling (`domain/writing/tagCase.ts`): what the user wrote keeps its letters, what Kept adds is
+    lower case; an abbreviation is always upper case; a counterpart not yet started is capitalised;
+    a fix keeps the first letter's case (`#DaiIy` -> `#Daily`).
+  - The place (`storage/knownTagIndex.ts` `scopeTags`): the active loops (`## Loops`) and active
+    counterparts (`## Threads`) of the item's scope come first in completions, also when nothing is
+    tagged with them yet; unused counterparts follow the used ones of a thread type. Daily, Week,
+    Month and the Inbox take the places the active context shows; an abbreviation in the text
+    switches the place. Unused loops are not in the global index, so they never show outside their
+    place.
