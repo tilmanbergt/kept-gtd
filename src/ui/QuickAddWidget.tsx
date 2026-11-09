@@ -58,7 +58,8 @@ import React, {useEffect, useState} from 'react';
 import {onNextEinkFlush} from '../utils/einkFlush';
 import {Keyboard} from 'react-native';
 import {AbbrevFileMatch, resolveAbbrevFileTarget} from '../domain/abbrev';
-import {insertTagAtPosition, stripSpaceAfterHash} from '../domain/markdown';
+import {insertTagAtPosition} from '../domain/markdown';
+import {normalizeTagSpacing} from '../domain/writing/tagCheck';
 import {replacesLabel} from '../domain/agreementText';
 import {formatMeetingWhen, todayIso} from '../domain/meetingTime';
 import {meetingDisplayTitle} from '../domain/meetingTracking';
@@ -288,10 +289,10 @@ function QuickAddWidget(props: Props): React.JSX.Element {
     text: (kind, addition) => {
       const appendTo = (current: string): string => (current.trim() ? `${current.replace(/\s+$/, '')} ${addition}` : addition);
       if (kind === 'meeting') {
-        if (!taskOnly) meeting.showDraft({...meeting.draft, title: stripSpaceAfterHash(appendTo(meeting.draft.title))}, null);
+        if (!taskOnly) meeting.showDraft({...meeting.draft, title: normalizeTagSpacing(appendTo(meeting.draft.title))}, null);
         return;
       }
-      task.setDraft(d => ({...d, text: stripSpaceAfterHash(appendTo(d.text))}));
+      task.setDraft(d => ({...d, text: normalizeTagSpacing(appendTo(d.text))}));
       task.lastSelectionRef.current = null;
       task.setJustAdded(null);
       task.setTagPage(0);

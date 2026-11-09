@@ -21,7 +21,8 @@ import {Keyboard, TextInput} from 'react-native';
 import {AbbrevFileMatch, resolveAbbrevFileTarget} from '../../domain/abbrev';
 import {Selection} from '../../domain/clipboardText';
 import {Destination, destinationLabel} from '../../domain/destination';
-import {extractContextTags, insertTagAtPosition, removeTagFromText, stripSpaceAfterHash} from '../../domain/markdown';
+import {extractContextTags, insertTagAtPosition, removeTagFromText} from '../../domain/markdown';
+import {normalizeTagSpacing} from '../../domain/writing/tagCheck';
 import {composeTaskText} from '../../domain/quickAddCompose';
 import {FlowState} from '../../domain/types';
 import {errorMessage} from '../../utils/errorMessage';
@@ -107,7 +108,7 @@ export function useTaskDraft(core: QuickAddCore, input: Input) {
 
   const setText = (t: string) => {
     input.onUserEdit?.();
-    update({text: stripSpaceAfterHash(t)});
+    update({text: normalizeTagSpacing(t)});
     clearJustAdded();
   };
   const setDueDate = (d: string) => {
@@ -124,7 +125,7 @@ export function useTaskDraft(core: QuickAddCore, input: Input) {
     clearJustAdded();
   };
   const setWaitingOn = (w: string) => {
-    update({waitingOnText: stripSpaceAfterHash(w)});
+    update({waitingOnText: normalizeTagSpacing(w)});
     clearJustAdded();
   };
   const clearLinkedFile = () => updateEditField({linkedFile: ''});

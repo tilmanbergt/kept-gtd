@@ -10,7 +10,8 @@ import {AbbrevFileMatch, resolveAbbrevFileTarget} from '../../domain/abbrev';
 import {Selection} from '../../domain/clipboardText';
 import {describeAddedDate} from '../../domain/dateLabel';
 import {Destination, destinationLabel} from '../../domain/destination';
-import {extractContextTags, insertTagAtPosition, removeTagFromText, stripSpaceAfterHash} from '../../domain/markdown';
+import {extractContextTags, insertTagAtPosition, removeTagFromText} from '../../domain/markdown';
+import {normalizeTagSpacing} from '../../domain/writing/tagCheck';
 import {meetingDisplayTitle} from '../../domain/meetingTracking';
 import {validateMeetingFields} from '../../domain/meetingTime';
 import {setFocusBlock} from '../../domain/focusBlock';
@@ -94,7 +95,7 @@ export function useMeetingDraft(core: QuickAddCore, input: Input) {
 
   const setTitle = (t: string) => {
     input.onUserEdit?.();
-    update({title: stripSpaceAfterHash(t)});
+    update({title: normalizeTagSpacing(t)});
     clearJustAdded();
   };
   const setDate = (d: string) => {

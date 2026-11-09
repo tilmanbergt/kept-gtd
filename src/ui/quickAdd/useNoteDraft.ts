@@ -11,7 +11,8 @@
  */
 import {useState} from 'react';
 import {Keyboard} from 'react-native';
-import {extractContextTags, insertTagAtPosition, removeTagFromText, stripSpaceAfterHash} from '../../domain/markdown';
+import {extractContextTags, insertTagAtPosition, removeTagFromText} from '../../domain/markdown';
+import {normalizeTagSpacing} from '../../domain/writing/tagCheck';
 import {errorMessage} from '../../utils/errorMessage';
 import {makeNoteDraft, NoteDraft, truncateItemName} from './types';
 import {QuickAddCore} from './useQuickAddCore';
@@ -32,7 +33,7 @@ export function useNoteDraft(core: QuickAddCore, {onAddNote, noteFolderPath}: In
     core.clearTransientMessages();
   };
   const setTitleRaw = (t: string) => {
-    setDraft(d => ({...d, titleRaw: stripSpaceAfterHash(t)}));
+    setDraft(d => ({...d, titleRaw: normalizeTagSpacing(t)}));
     clearJustAdded();
   };
   const insertTag = (tag: string) => setTitleRaw(insertTagAtPosition(draft.titleRaw, tag, null).text);

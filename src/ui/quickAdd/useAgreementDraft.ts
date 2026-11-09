@@ -12,7 +12,8 @@ import {useState} from 'react';
 import {Keyboard} from 'react-native';
 import {agreementPlainText} from '../../domain/agreementText';
 import {AGREEMENT_CHANGED_TEXT} from '../../domain/fileChangeText';
-import {extractContextTags, insertTagAtPosition, removeTagFromText, stripSpaceAfterHash} from '../../domain/markdown';
+import {extractContextTags, insertTagAtPosition, removeTagFromText} from '../../domain/markdown';
+import {normalizeTagSpacing} from '../../domain/writing/tagCheck';
 import {errorMessage} from '../../utils/errorMessage';
 import {AgreementEditFields} from './editFields';
 import {AgreementDraft, truncateItemName} from './types';
@@ -49,7 +50,7 @@ export function useAgreementDraft(core: QuickAddCore, handlers: AgreementHandler
     if (justAdded !== null) setJustAdded(null);
     core.clearTransientMessages();
   };
-  const setText = (t: string) => update({text: stripSpaceAfterHash(t)});
+  const setText = (t: string) => update({text: normalizeTagSpacing(t)});
   const setValid = (valid: string | null) => update({valid});
   const insertTag = (tag: string) => setText(insertTagAtPosition(fields.text, tag, null).text);
   const removeTag = (tag: string) => setText(removeTagFromText(fields.text, tag));
@@ -117,7 +118,7 @@ export function useAgreementDraft(core: QuickAddCore, handlers: AgreementHandler
     setValidTyping(false);
   };
   /** The capture panel's recognized text as the create draft's words. */
-  const seedText = (text: string) => setDraft(d => ({...d, text: stripSpaceAfterHash(text)}));
+  const seedText = (text: string) => setDraft(d => ({...d, text: normalizeTagSpacing(text)}));
 
   return {
     draft,

@@ -13,7 +13,8 @@ import {resolveAbbrevFileTarget} from '../../domain/abbrev';
 import {joinItems, splitAtSelection, splitByHand} from '../../domain/captureText';
 import {Selection} from '../../domain/clipboardText';
 import {Destination, destinationLabel} from '../../domain/destination';
-import {extractContextTags, insertTagAtPosition, removeTagFromText, stripSpaceAfterHash} from '../../domain/markdown';
+import {extractContextTags, insertTagAtPosition, removeTagFromText} from '../../domain/markdown';
+import {normalizeTagSpacing} from '../../domain/writing/tagCheck';
 import {composeTaskText} from '../../domain/quickAddCompose';
 import {getRecentDestinations, getRecentDestinationsSync, recordDestinationUsed} from '../../storage/destinationUsage';
 import {errorMessage} from '../../utils/errorMessage';
@@ -126,7 +127,7 @@ export function useCapture(core: QuickAddCore, task: TaskDraftState, meeting: Me
   };
   const updateSplitRow = (index: number, value: string) => {
     touch();
-    setSplitRows(rows => (rows ? rows.map((r, i) => (i === index ? stripSpaceAfterHash(value) : r)) : rows));
+    setSplitRows(rows => (rows ? rows.map((r, i) => (i === index ? normalizeTagSpacing(value) : r)) : rows));
   };
   const removeSplitRow = (index: number) => {
     touch();
