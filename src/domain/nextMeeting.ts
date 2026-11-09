@@ -79,8 +79,13 @@ export function nextMeetingSeed(threadMeetings: readonly Meeting[], today: strin
  * §4.4). Null when `tag` has no meeting.
  */
 export function nextMeetingOf<T extends {meeting: Meeting}>(entries: readonly T[], tag: string, today: string): {seed: MeetingSeedFields; base: T} | null {
-  const own = entries.filter(e => !e.meeting.cancelled && e.meeting.tags.some(t => t === tag || t.startsWith(`${tag}/`)));
+  const own = meetingsOfTag(entries, tag);
   const seed = nextMeetingSeed(own.map(e => e.meeting), today);
   const base = own.reduce<T | null>((latest, e) => (!latest || startKey(e.meeting) > startKey(latest.meeting) ? e : latest), null);
   return seed && base ? {seed, base} : null;
+}
+
+/** The entries whose meeting is not cancelled and tagged `tag` or nested below it - the meetings of a thread or loop. */
+export function meetingsOfTag<T extends {meeting: Meeting}>(entries: readonly T[], tag: string): T[] {
+  return entries.filter(e => !e.meeting.cancelled && e.meeting.tags.some(t => t === tag || t.startsWith(`${tag}/`)));
 }
