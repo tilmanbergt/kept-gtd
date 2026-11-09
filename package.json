@@ -1,7 +1,7 @@
 {
   "name": "kept-gtd",
   "version": "0.25.1",
-  "nextVersion": "0.25.0",
+  "nextVersion": "0.26.0",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
