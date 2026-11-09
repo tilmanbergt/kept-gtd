@@ -1,6 +1,6 @@
 /**
  * Quick Add's Agreement rows (docs/dev/history/technical-design-meetings-0.21.md
- * §5, R21): R2 the words (ClipboardTextInput) and the valid-till field, whose
+ * §5, R21): R2 the words (ui/writing/WritingTextInput.tsx) and the valid-till field, whose
  * strip hovers over the tabs; R3 and R4 the tag chips, or R3 the tags and R4
  * a grey line when one is given (what the screen adds, or "↳ replaces …"
  * while changing an agreement). Mounted with the other tabs' rows and hidden
@@ -9,7 +9,7 @@
 import React from 'react';
 import {usePerfRender} from '../../utils/perf';
 import {View} from 'react-native';
-import ClipboardTextInput from '../ClipboardTextInput';
+import WritingTextInput from '../writing/WritingTextInput';
 import TagChips, {useTwoRowTagChips} from '../TagChips';
 import {useTagRowBudget} from '../tagChipLayout';
 import ValidTillInput, {ValidTillStrip} from '../ValidTillInput';
@@ -38,9 +38,9 @@ export function AgreementInputRow({core, agreement, today, textColor, borderColo
       <View style={rowStyles.row2Wrap}>
         <View style={rowStyles.inputFlex}>
           <MarkWrap mark={core.fieldMark('text')} textColor={textColor} flex>
-            <ClipboardTextInput
+            <WritingTextInput
+              field={agreement.textField}
               value={fields.text}
-              onChangeText={agreement.setText}
               onSubmitEditing={agreement.editing ? agreement.submitEdit : agreement.submitCreate}
               placeholder="New agreement"
               placeholderColor={placeholderColor}

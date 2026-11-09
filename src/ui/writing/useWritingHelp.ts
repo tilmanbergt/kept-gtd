@@ -331,6 +331,24 @@ export function useWritingHelp(options: WritingHelpOptions) {
     return false;
   };
 
+  /**
+   * The lasso capture panel's recognized text, checked as one burst when the
+   * panel opens (§1.8, §3.5). Only offered, never written - a learned
+   * correction shows as a suggestion too - so the seed stays as recognized.
+   */
+  const checkSeed = (text: string) => {
+    const index = currentKnownTagIndex(options.recentTags ?? NO_RECENT);
+    const found = checkTags(text, null, index, new Set(), getLearnedFixesSync()).filter(f => f.kind !== 'new');
+    keptRef.current = new Set();
+    askedRef.current = false;
+    setHint(null);
+    setShowClipboard(false);
+    startMoment(null, null);
+    const fixesFound = mergeFixes([], found, text);
+    setPending(fixesFound);
+    if (found.length > 0) log(`writing: capture checked tags=${tagSpans(text).length} fix=${fixesFound.length}`);
+  };
+
   /** After a save: a new draft starts without fixes, kept tags or hint. */
   const reset = () => {
     setPending([]);
@@ -343,7 +361,7 @@ export function useWritingHelp(options: WritingHelpOptions) {
   };
 
   const strip: StripContent = stripContent({field, value, fixes, moment, showClipboard, warning: options.warning, usual: options.usual});
-  return {strip, actions, onChangeText, onSelectionChange, onFocus, confirmAdd, reset};
+  return {strip, actions, onChangeText, onSelectionChange, onFocus, confirmAdd, reset, checkSeed};
 }
 
 export type WritingHelp = ReturnType<typeof useWritingHelp>;

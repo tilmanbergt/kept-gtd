@@ -18,6 +18,7 @@ import {errorMessage} from '../../utils/errorMessage';
 import {AgreementEditFields} from './editFields';
 import {AgreementDraft, truncateItemName} from './types';
 import {QuickAddCore} from './useQuickAddCore';
+import {useWritingField} from '../writing/useWritingField';
 
 export interface AgreementHandlers {
   /** Adds a new agreement; `valid` is YYYY-MM-DD or null. Resolves the status text to show ("Agreement added to Coaching"). Present: the tab is offered. */
@@ -50,10 +51,14 @@ export function useAgreementDraft(core: QuickAddCore, handlers: AgreementHandler
     if (justAdded !== null) setJustAdded(null);
     core.clearTransientMessages();
   };
-  const setText = (t: string) => update({text: normalizeTagSpacing(t)});
+  /** Puts the words into the draft as they are - the writing help has run, or a chip changed them. */
+  const writeText = (t: string) => update({text: t});
+  // The writing help (docs/dev/history/technical-design-writing-help.md §3.5); an agreement has no note page to name.
+  const textField = useWritingField({value: fields.text, write: writeText, recentTags: core.recentTags});
+  const setText = textField.help.onChangeText;
   const setValid = (valid: string | null) => update({valid});
-  const insertTag = (tag: string) => setText(insertTagAtPosition(fields.text, tag, null).text);
-  const removeTag = (tag: string) => setText(removeTagFromText(fields.text, tag));
+  const insertTag = (tag: string) => writeText(insertTagAtPosition(fields.text, tag, null).text);
+  const removeTag = (tag: string) => writeText(removeTagFromText(fields.text, tag));
 
   const run = (save: () => Promise<void | boolean | string>, done: (text: string | null) => void): Promise<boolean> => {
     setError(null);
@@ -75,11 +80,14 @@ export function useAgreementDraft(core: QuickAddCore, handlers: AgreementHandler
     Keyboard.dismiss();
     const text = draft.text.trim();
     if (!text || !handlers.onAddAgreement) return;
+    // The Add-twice rule: an unanswered flagged tag is shown once more first.
+    if (!textField.help.confirmAdd()) return;
     const add = handlers.onAddAgreement;
     run(
       () => add(text, draft.valid),
       added => {
         setDraft(emptyDraft());
+        textField.help.reset();
         setTagPage(0);
         setValidOpen(false);
         setJustAdded(added ?? `Added agreement "${truncateItemName(agreementPlainText({text}), 40)}"`);
@@ -113,6 +121,7 @@ export function useAgreementDraft(core: QuickAddCore, handlers: AgreementHandler
   /** Empties the create draft (the capture panel after a save). */
   const reset = () => {
     setDraft(emptyDraft());
+    textField.help.reset();
     setTagPage(0);
     setValidOpen(false);
     setValidTyping(false);
@@ -136,6 +145,7 @@ export function useAgreementDraft(core: QuickAddCore, handlers: AgreementHandler
     validTyping,
     setValidTyping,
     setText,
+    textField,
     setValid,
     insertTag,
     removeTag,

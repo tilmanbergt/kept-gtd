@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-221 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+222 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -2043,6 +2043,16 @@ Test: `__tests__/scenarios/writingHelpDates.test.tsx` · design: `docs/dev/histo
 - **Then** date, time and end are filled
 
 Test: `__tests__/scenarios/writingHelpDates.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md`
+
+### The capture panel checks the recognized text when it opens
+
+- **Given** a mark recognized as "call #Iena", and the tag #lena in use
+- **When** I process the mark and put the cursor into the text
+- **Then** the strip shows → #lena and the text is as recognized
+- **When** I tap → #lena and save
+- **Then** the todo is saved with #lena
+
+Test: `__tests__/scenarios/writingHelpLasso.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `lasso.md#capturing-right-away`
 
 ### Handwriting writes #DaiIy: the strip suggests #daily
 
