@@ -142,3 +142,15 @@ export function setupForLink(input: NoteTargetInput & {linkedFile: string | null
   const match = candidateForLink(placed, input.linkedFile ?? OWN_NOTE_KEY, noteFileKey);
   return match?.candidate.setup ?? null;
 }
+
+/**
+ * Where the page of a new item would go, for the writing help's feedback line
+ * (docs/dev/history/technical-design-writing-help.md §1.7): the best of
+ * `placeNoteCandidates` - the note icon's own call, so the line never disagrees
+ * with it. `setupName` null for the Default; `file` 'own note' for an own note.
+ */
+export function notePlaceOf(input: NoteTargetInput): {setupName: string | null; file: string} | null {
+  const best = placeNoteCandidates(input)[0];
+  if (!best) return null;
+  return {setupName: best.candidate.setup?.name ?? null, file: best.shared?.relativeFile ?? 'own note'};
+}

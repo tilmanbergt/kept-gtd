@@ -9,8 +9,8 @@
  */
 import React from 'react';
 import {usePerfRender} from '../../utils/perf';
+import WritingStrip from '../writing/WritingStrip';
 import {Pressable, StyleSheet, Text, TextInput, View} from 'react-native';
-import ClipboardStrip from '../ClipboardStrip';
 import DateInput, {DateNudgeStrip} from '../DateInput';
 import FlowStateChips from '../FlowStateChips';
 import {ClipIcon, WarningIcon} from '../icons';
@@ -94,7 +94,10 @@ export function TaskInputRow({core, task, placeholder, capture, ...colors}: Inpu
             onSubmitEditing={task.editing ? task.submitEdit : task.submitCreate}
             onSelectionChange={e => task.onSelectionChange(e.nativeEvent.selection)}
             selection={task.selectionOverride ?? undefined}
-            onFocus={() => task.setInputFocused(true)}
+            onFocus={() => {
+              task.setInputFocused(true);
+              task.textHelp.onFocus();
+            }}
             onBlur={() => task.setInputFocused(false)}
             placeholder={placeholder}
             placeholderTextColor={placeholderColor}
@@ -118,9 +121,11 @@ export function TaskInputRow({core, task, placeholder, capture, ...colors}: Inpu
           borderColor={borderColor}
         />
       )}
-      <ClipboardStrip
+      <WritingStrip
         visible={task.inputFocused}
-        actions={task.clipboard}
+        content={task.textHelp.strip}
+        actions={task.textHelp.actions}
+        clipboard={task.clipboard}
         placement={capture ? 'above-right' : 'above-left'}
         textColor={textColor}
         borderColor={borderColor}

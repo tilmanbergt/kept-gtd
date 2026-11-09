@@ -22,7 +22,7 @@ While you write in the text or date field, a small strip hovers over the tabs: *
 
 Kept GTD writes the due date as `[due:: …]` at the end of the line and records the day you added the todo as `[created:: …]`, see [Dates Kept GTD records](tags.md#dates-kept-gtd-records). When you edit a todo, its created and done dates stay; clearing the due date in Quick Add removes it.
 
-Recently used tags fill rows 3 and 4: tap one to insert it into the text, tap a filled one to remove it. **›** and **‹** at the end of row 4 page through more. A space typed right after `#` is removed automatically, so handwritten tags are recognized.
+Recently used tags fill rows 3 and 4: tap one to insert it into the text, tap a filled one to remove it. **›** and **‹** at the end of row 4 page through more. A space typed right after `#` is removed automatically, so handwritten tags are recognized; the [writing help](quick-add.md#writing-help) checks the rest.
 
 ## Adding a meeting
 
@@ -43,6 +43,31 @@ On a project's or area's [Current](projects-and-areas.md#the-current-tab) tab, t
 ## Filing directly with an abbreviation
 
 Every project and area has a short [abbreviation](projects-and-areas.md#abbreviations), for example `GR` for "Garden renovation". Write `#GR` in the text and the button changes to **+ Add to Garden renovation**: the item is created right there instead of in the Inbox, and the tag is removed from the text. The next item then starts with `#GR ` already in the field, so a run of items for one project needs the tag once; delete it to add the next item where the screen adds.
+
+## Writing help
+
+Handwriting recognition makes small mistakes: a capital I for an l, an o for a 0, a space after a slash. Quick Add looks at what it just wrote - only then, never while you write - and the hovering strip over the tabs shows one thing at a time. It only suggests: a tag changes when you tap, and a date or time only when it can be read just one way, always shown with **Undo**. The strip goes back to **All**, **Copy**, **Cut** and **Paste** the next time you tap into the field.
+
+### Tag suggestions
+
+Each tag that recognition writes is compared with the tags you already use: in your todos and meetings, your [Note setups](note-setups.md#what-a-setup-is), [abbreviations](projects-and-areas.md#abbreviations), [counterparts](threads.md), [contexts](contexts.md) and recent tags. Capital letters never count as a difference: `#Sparring` is your `#sparring`.
+
+- When a tag is close to one you use - `#sparrlng`, `#Iena`, `#workshops` - the strip shows the tag it means, for example **→ #sparring**, then **Keep** and **Edit ›**. Up to two such tags, in the order of the text.
+- **→ #sparring** replaces the tag; **Keep** leaves every suggested tag as written; **Edit ›** shows **All**, **Copy**, **Cut** and **Paste**.
+- A nested tag is checked part by part: the type against your tags, the part after the slash against that type's counterparts. A part that is right keeps its spelling, so only the part that is off changes, and the strip shows the whole tag, for example **→ #sparring/jordan**.
+- Two spaces are removed without asking, so a handwritten tag is one tag: a space right after `#`, and a space right after a `/` inside a tag (`#sparring/ jordan` becomes `#sparring/jordan`). A wide ＃ counts as `#`.
+
+When every tag is known or answered, the strip says where the item's note page would go, for example "✓ Sparring · Coaching 2026.note" - the same place the [note icon](quick-add.md#notes-and-files-on-a-todo-or-meeting) uses. A tag you have never used, with nothing close, is no question: "New tag #offsite27 · Team offsite 2026.note".
+
+A tag you corrected once is corrected the same way next time, see [Learned corrections](tags.md#learned-corrections).
+
+### Completing a tag
+
+When recognition ends with an unfinished tag, the strip offers up to three of your tags that start with it: `#spa` offers **#sparring** and **#sparring/jordan**. After a type and a slash, `#sparring/`, it offers that type's counterparts, the most recent first. An abbreviation shows its project or area next to it: **#gr Garden renovation**. A tap puts the tag in place, followed by a space.
+
+### Adding with a suggestion open
+
+When you tap **+ Add** while a tag suggestion is still open, Kept saves nothing yet: the strip shows the suggestion again and the [status line](index.md#the-status-line) says "Check #sparrlng, or Add again to keep it". Tap **+ Add** a second time to save the item as written.
 
 ## The Inbox
 

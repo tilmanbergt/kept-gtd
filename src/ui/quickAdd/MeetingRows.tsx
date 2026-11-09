@@ -10,8 +10,8 @@
  */
 import React from 'react';
 import {usePerfRender} from '../../utils/perf';
+import WritingStrip from '../writing/WritingStrip';
 import {StyleSheet, TextInput, View} from 'react-native';
-import ClipboardStrip from '../ClipboardStrip';
 import DateInput, {DateNudgeStrip} from '../DateInput';
 import MarkWrap from '../status/StatusMark';
 import TagChips, {useTwoRowTagChips} from '../TagChips';
@@ -55,6 +55,7 @@ export function MeetingInputRow({core, meeting, capture = false, textColor, bord
             onFocus={() => {
               log('QuickAdd: meeting title focused');
               meeting.setInputFocused(true);
+              meeting.titleHelp.onFocus();
             }}
             onBlur={() => meeting.setInputFocused(false)}
             placeholder="New meeting title"
@@ -92,9 +93,11 @@ export function MeetingInputRow({core, meeting, capture = false, textColor, bord
           borderColor={borderColor}
         />
       )}
-      <ClipboardStrip
+      <WritingStrip
         visible={meeting.inputFocused}
-        actions={meeting.clipboard}
+        content={meeting.titleHelp.strip}
+        actions={meeting.titleHelp.actions}
+        clipboard={meeting.clipboard}
         placement={capture ? 'above-right' : 'above-left'}
         textColor={textColor}
         borderColor={borderColor}

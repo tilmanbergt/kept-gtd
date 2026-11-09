@@ -21,6 +21,11 @@ jest.mock('../../src/ui/useLoopKinds', () => ({useLoopKinds: () => ({kinds: ['wo
 const mockLoops: Array<{tag: string}> = [];
 jest.mock('../../src/storage/dataCache', () => ({
   findCachedItem: (path: string) => (path === '/a' ? {path, loops: mockLoops} : undefined),
+  // The writing help's known-tag index reads these.
+  getCachedData: () => null,
+  getCachedInbox: () => null,
+  getCacheVersion: () => 0,
+  getInboxVersion: () => 0,
 }));
 
 import React from 'react';

@@ -27,6 +27,8 @@ import {composeTaskText} from '../../domain/quickAddCompose';
 import {FlowState} from '../../domain/types';
 import {errorMessage} from '../../utils/errorMessage';
 import {clipboardActions} from '../ClipboardStrip';
+import {draftNotePlace} from '../writing/notePlace';
+import {useWritingHelp} from '../writing/useWritingHelp';
 import {DateInputHandle} from '../DateInput';
 import {TaskEditFields} from './editFields';
 import {abbrevDestination, makeTaskDraft, TaskDraft, truncateItemName} from './types';
@@ -106,11 +108,31 @@ export function useTaskDraft(core: QuickAddCore, input: Input) {
     else setDraft(d => ({...d, ...patch}));
   };
 
-  const setText = (t: string) => {
+  /** Puts the text into the draft as it is - the writing help has run, or a chip changed it. */
+  const writeText = (t: string) => {
     input.onUserEdit?.();
-    update({text: normalizeTagSpacing(t)});
+    update({text: t});
     clearJustAdded();
   };
+  // The writing help (docs/dev/history/technical-design-writing-help.md §3.5): every typed or recognized change.
+  const textHelp = useWritingHelp({
+    field: 'text',
+    value: fields.text,
+    write: writeText,
+    selectionRef: lastSelectionRef,
+    setSelectionOverride,
+    inputRef,
+    recentTags: core.recentTags,
+    place: text =>
+      draftNotePlace({
+        text,
+        abbrevItems: core.abbrevItems,
+        excludePath: core.abbrevExcludePath,
+        fixedDestination: input.fixedDestination,
+        pageKind: 'todo',
+      }),
+  });
+  const setText = textHelp.onChangeText;
   const setDueDate = (d: string) => {
     update({dueDate: d});
     clearJustAdded();
@@ -131,15 +153,16 @@ export function useTaskDraft(core: QuickAddCore, input: Input) {
   const clearLinkedFile = () => updateEditField({linkedFile: ''});
   const insertTag = (tag: string) => {
     const {text, cursor} = insertTagAtPosition(fields.text, tag, lastSelectionRef.current?.start ?? null);
-    setText(text);
+    writeText(text);
     const selection = {start: cursor, end: cursor};
     lastSelectionRef.current = selection;
     setSelectionOverride(selection);
   };
-  const removeTag = (tag: string) => setText(removeTagFromText(fields.text, tag));
+  const removeTag = (tag: string) => writeText(removeTagFromText(fields.text, tag));
   const onSelectionChange = (selection: Selection) => {
     lastSelectionRef.current = selection;
     if (selectionOverride) setSelectionOverride(null);
+    textHelp.onSelectionChange(selection);
   };
   // Custom Select All/Copy/Cut/Paste (domain/clipboardText.ts says why).
   const clipboard = clipboardActions(fields.text, lastSelectionRef, setText, setSelectionOverride);
@@ -148,6 +171,7 @@ export function useTaskDraft(core: QuickAddCore, input: Input) {
   const resetAfterAdd = () => {
     setDraft(d => ({...d, text: '', flowState: null, waitingOnText: '', dueDate: ''}));
     lastSelectionRef.current = null;
+    textHelp.reset();
   };
 
   const submitCreate = () => {
@@ -157,6 +181,8 @@ export function useTaskDraft(core: QuickAddCore, input: Input) {
     // prefilled tag is not a todo yet.
     const words = abbrevTarget ? removeTagFromText(trimmed, abbrevTarget.tag).trim() : trimmed;
     if (!words) return;
+    // The Add-twice rule: an unanswered flagged tag is shown once more first.
+    if (!textHelp.confirmAdd()) return;
     // Flow-state, due and - for abbreviation quick-file - removing the
     // matched #tag, which did its job picking the destination.
     const finalText = composeTaskText(draft, abbrevTarget ? abbrevTarget.tag : null);
@@ -239,6 +265,7 @@ export function useTaskDraft(core: QuickAddCore, input: Input) {
     setDueFocused,
     clearJustAdded,
     setText,
+    textHelp,
     setDueDate,
     openDueDate,
     setFlowState,

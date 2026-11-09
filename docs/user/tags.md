@@ -51,6 +51,12 @@ A tag can have parts separated by `/`, for example `#sparring/jordan`. It is one
 
 A tag that matches a project's or area's [abbreviation](projects-and-areas.md#abbreviations) (for example `#GR`) is shown in capitals. It lets you [file an item directly](quick-add.md#filing-directly-with-an-abbreviation) into that project from Quick Add. Abbreviations are not case-sensitive.
 
+## Learned corrections
+
+When you tap a suggestion of the [writing help](quick-add.md#tag-suggestions) - **→ #sparring** for a handwritten `#sparrlng` - Kept remembers the pair. The next time recognition writes `#sparrlng`, Quick Add writes `#sparring` straight away and the strip says "read as #sparring" with **Undo**. **Undo** puts the written tag back and forgets the pair.
+
+Learned corrections belong to the active [profile](profiles-and-demo.md#profiles), like the recent tags, and are stored inside the plugin, never in your files.
+
 ## Tags the app sets itself
 
 - `#prepped` and `#reviewed`: [meeting preparation and review](meetings.md#preparation-and-review)

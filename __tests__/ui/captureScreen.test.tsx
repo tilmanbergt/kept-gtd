@@ -39,6 +39,10 @@ jest.mock('../../src/storage/dataCache', () => {
       return {scannedAt: 0, paths, items: []};
     },
     rebuildCache: async () => ({scannedAt: 0, paths, items: []}),
+    // The writing help's known-tag index reads these.
+    getCachedInbox: () => null,
+    getCacheVersion: () => 0,
+    getInboxVersion: () => 0,
     setCachedInbox: jest.fn(),
   };
 });

@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-204 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+213 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -1973,6 +1973,83 @@ Test: `__tests__/scenarios/review.test.tsx` · design: `docs/dev/history/technic
 - **And** no error was logged
 
 Test: `__tests__/scenarios/smoke/review.test.tsx` · help: `review.md#the-overview`
+
+## Writing help
+
+### Handwriting writes #DaiIy: the strip suggests #daily
+
+- **When** recognition writes "stand-up #DaiIy" into the meeting title
+- **Then** the strip shows → #daily, Keep and Edit ›, and the title is unchanged
+- **When** I tap → #daily
+- **Then** the title reads "stand-up #daily" and the strip says where its page goes
+
+Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md`
+
+### A learned correction is applied directly, with Undo
+
+- **When** I correct #DaiIy to #daily once and then write "#DaiIy" again
+- **Then** the title reads "retro #daily" and the strip says "read as #daily" with Undo
+- **When** I tap Undo
+- **Then** #DaiIy is back and the pair is forgotten
+
+Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `tags.md#learned-corrections`
+
+### A known tag in another case is never questioned
+
+- **When** I write "stand-up #Daily"
+- **Then** nothing is flagged and the strip says where its page goes
+
+Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md`
+
+### A space after the slash goes silently, the parent tag is suggested
+
+- **Given** the setup on #101 and an earlier meeting with #101/mieke
+- **When** I write "#1o1/ Mieke"
+- **Then** the title reads "#1o1/Mieke" and the strip offers → #101/Mieke
+
+Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md`
+
+### Two flagged tags show in text order, a third is left out
+
+- **When** with #retro, #lena and #garden known I write "for #retros #Iena #gardn"
+- **Then** the strip shows → #retro, then → #lena, and not → #garden
+
+Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md`
+
+### + Add with a suggestion open asks once, the second + Add saves as written
+
+- **When** I write "stand-up #DaiIy" and tap + Add
+- **Then** nothing is saved and the status line asks
+- **When** I tap + Add again
+- **Then** the meeting is saved with #DaiIy
+
+Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `quick-add.md#adding-with-a-suggestion-open`
+
+### A new tag with nothing close is no question
+
+- **When** I write "plan #offsite27"
+- **Then** the strip names the new tag and the home notebook
+- **When** I tap + Add
+- **Then** the meeting is saved at once
+
+Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md`
+
+### An unfinished tag is completed from the known ones
+
+- **When** with #sparring and #sparring/lena known I write "call #spa"
+- **Then** the strip offers both
+- **When** I tap #sparring/lena
+- **Then** the tag is replaced and followed by a space
+
+Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `quick-add.md#completing-a-tag`
+
+### Completion shows an abbreviation with its project
+
+- **Given** project "Garden renovation" with the abbreviation GR
+- **When** I write "#g"
+- **Then** the strip offers #gr with "Garden renovation"
+
+Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `quick-add.md#completing-a-tag`
 
 ## Your files
 

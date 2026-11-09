@@ -11,7 +11,6 @@ import {Selection} from '../../domain/clipboardText';
 import {describeAddedDate} from '../../domain/dateLabel';
 import {Destination, destinationLabel} from '../../domain/destination';
 import {extractContextTags, insertTagAtPosition, removeTagFromText} from '../../domain/markdown';
-import {normalizeTagSpacing} from '../../domain/writing/tagCheck';
 import {meetingDisplayTitle} from '../../domain/meetingTracking';
 import {validateMeetingFields} from '../../domain/meetingTime';
 import {setFocusBlock} from '../../domain/focusBlock';
@@ -19,6 +18,8 @@ import {setHighlight} from '../../domain/monthHighlight';
 import {errorMessage} from '../../utils/errorMessage';
 import {log} from '../../utils/log';
 import {clipboardActions} from '../ClipboardStrip';
+import {draftNotePlace} from '../writing/notePlace';
+import {useWritingHelp} from '../writing/useWritingHelp';
 import {MeetingEditFields} from './editFields';
 import {abbrevDestination, makeMeetingDraft, MeetingDraft, MeetingQuickAddFields, truncateItemName} from './types';
 import {QuickAddCore} from './useQuickAddCore';
@@ -93,11 +94,32 @@ export function useMeetingDraft(core: QuickAddCore, input: Input) {
     else setDraft(d => ({...d, ...patch}));
   };
 
-  const setTitle = (t: string) => {
+  /** Puts the title into the draft as it is - the writing help has run, or a chip changed it. */
+  const writeTitle = (t: string) => {
     input.onUserEdit?.();
-    update({title: normalizeTagSpacing(t)});
+    update({title: t});
     clearJustAdded();
   };
+  // The writing help (docs/dev/history/technical-design-writing-help.md §3.5): every typed or recognized change.
+  const titleHelp = useWritingHelp({
+    field: 'text',
+    value: fields.title,
+    write: writeTitle,
+    selectionRef: lastSelectionRef,
+    setSelectionOverride,
+    inputRef,
+    recentTags: core.recentTags,
+    place: text =>
+      draftNotePlace({
+        text,
+        abbrevItems: core.abbrevItems,
+        excludePath: core.abbrevExcludePath,
+        fixedDestination: input.fixedDestination,
+        pageKind: 'meeting',
+        date: fields.date,
+      }),
+  });
+  const setTitle = titleHelp.onChangeText;
   const setDate = (d: string) => {
     update({date: d});
     clearJustAdded();
@@ -117,16 +139,17 @@ export function useMeetingDraft(core: QuickAddCore, input: Input) {
   };
   const insertTag = (tag: string) => {
     const {text, cursor} = insertTagAtPosition(fields.title, tag, lastSelectionRef.current?.start ?? null);
-    setTitle(text);
+    writeTitle(text);
     const selection = {start: cursor, end: cursor};
     lastSelectionRef.current = selection;
     setSelectionOverride(selection);
   };
-  const removeTag = (tag: string) => setTitle(removeTagFromText(fields.title, tag));
+  const removeTag = (tag: string) => writeTitle(removeTagFromText(fields.title, tag));
   // No setState here on purpose - see useTaskDraft's module comment.
   const onSelectionChange = (selection: Selection) => {
     lastSelectionRef.current = selection;
     if (selectionOverride) setSelectionOverride(null);
+    titleHelp.onSelectionChange(selection);
   };
   const clipboard = clipboardActions(fields.title, lastSelectionRef, setTitle, setSelectionOverride);
 
@@ -136,6 +159,7 @@ export function useMeetingDraft(core: QuickAddCore, input: Input) {
     log('QuickAdd: meeting draft shown', {titleLength: next.title.length, rowWasHidden: core.displayType !== 'meeting', editing: core.isEditing});
     setDraft(next);
     lastSelectionRef.current = null;
+    titleHelp.reset();
     setTagPage(0);
     setJustAdded(null);
     setAddedWhen(null);
@@ -165,6 +189,8 @@ export function useMeetingDraft(core: QuickAddCore, input: Input) {
 
   const submitCreate = () => {
     Keyboard.dismiss();
+    // The Add-twice rule: an unanswered flagged tag is shown once more first.
+    if (!titleHelp.confirmAdd()) return;
     // The matched abbreviation tag did its job picking the destination; a
     // title that is only that tag counts as empty.
     const source = abbrevTarget ? {...draft, title: removeTagFromText(draft.title.trim(), abbrevTarget.tag)} : draft;
@@ -179,6 +205,7 @@ export function useMeetingDraft(core: QuickAddCore, input: Input) {
       .onAddMeeting(composed.fields, destination, input.linkedFileForAdd?.())
       .then(() => {
         setDraft({...makeMeetingDraft(initialDate, initialMonthly), title: prefill});
+        titleHelp.reset();
         const end = {start: prefill.length, end: prefill.length};
         lastSelectionRef.current = prefill ? end : null;
         if (prefill) setSelectionOverride(end);
@@ -250,6 +277,7 @@ export function useMeetingDraft(core: QuickAddCore, input: Input) {
     lastSelectionRef,
     clearJustAdded,
     setTitle,
+    titleHelp,
     setDate,
     setTime,
     clearLinkedFile,

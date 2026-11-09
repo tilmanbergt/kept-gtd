@@ -44,19 +44,31 @@ function parse(raw: string | null): Stored {
   return {fixes, kept};
 }
 
-/** Reads the store into memory (once per profile); an unreadable store starts empty. */
-export async function loadLearnedFixes(): Promise<void> {
-  if (memory) return;
+/** Bumped by every save: a read that started before a save must not overwrite it. */
+let generation = 0;
+
+/**
+ * Reads the store into memory - once per profile, or again with `fresh` (a
+ * Quick Add field mounting: Remove Kept's data may have emptied the store
+ * meanwhile). An unreadable store starts empty.
+ */
+export async function loadLearnedFixes(fresh = false): Promise<void> {
+  if (memory && !fresh) return;
+  const started = generation;
+  let read: Stored;
   try {
-    memory = parse(await AsyncStorage.getItem(profileScopedKey(TAG_FIXES_KEY)));
+    read = parse(await AsyncStorage.getItem(profileScopedKey(TAG_FIXES_KEY)));
   } catch (e) {
     logWarn('learnedTagFixes: unreadable, starting empty', errorMessage(e));
-    memory = EMPTY;
+    read = EMPTY;
   }
+  if (generation !== started) return;
+  memory = read;
   listeners.forEach(l => l());
 }
 
 async function save(next: Stored): Promise<void> {
+  generation += 1;
   memory = next;
   listeners.forEach(l => l());
   try {
