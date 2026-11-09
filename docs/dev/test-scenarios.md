@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-224 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+226 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -2150,6 +2150,20 @@ Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/histor
 - **Then** the strip offers #gr with "Garden renovation"
 
 Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `quick-add.md#completing-a-tag`
+
+### One tap fixes every place the tag is written so
+
+- **When** recognition writes "#DaiIy notes for #DaiIy" and I tap → #daily
+- **Then** both read #daily
+
+Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `quick-add.md#tag-suggestions`
+
+### A learned correction ended by a typed space keeps the cursor after the space
+
+- **When** daiiy → daily is learned and I type "#DaiIy" and then a space
+- **Then** the title reads "x #daily " with the cursor at its end
+
+Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `tags.md#learned-corrections`
 
 ## Your files
 

@@ -171,7 +171,8 @@ export function useWritingHelp(options: WritingHelpOptions) {
     const tagCount = tagSpans(next).filter(t => checked.some(s => t.end > s.start && t.start < s.end)).length;
     if (burst && span) log(`writing: burst len=${span.end - span.start} tags=${tagCount} fix=${flagged.length} learned=${learned.length}`);
     write(text);
-    const end = checked[checked.length - 1].end;
+    // After what was inserted: a burst's end, or the typed space or punctuation that ended the tag.
+    const end = Math.max(span ? span.end : 0, checked[checked.length - 1].end);
     const cursor = end + (text.length - next.length);
     if (learned.length > 0) moveCursor(cursor);
     const merged = mergeFixes(pending, flagged, text);
@@ -246,10 +247,14 @@ export function useWritingHelp(options: WritingHelpOptions) {
   const actions: WritingStripActions = {
     apply: i => {
       const fix = fixes[i];
-      const at = fix ? tagSpans(value).find(t => t.tag === fix.written) : undefined;
-      if (!fix || !at) return;
-      log('writing: tap apply');
-      const {text, cursor} = replaceTag(value, at, fix.suggestion);
+      // Every place the tag is written so is the same tag: one tap fixes them all.
+      const spots = fix ? tagSpans(value).filter(t => t.tag === fix.written) : [];
+      if (!fix || spots.length === 0) return;
+      log(`writing: tap apply n=${spots.length}`);
+      let text = value;
+      for (const at of [...spots].reverse()) text = replaceTag(text, at, fix.suggestion).text;
+      const last = spots[spots.length - 1];
+      const cursor = last.start + 1 + fix.suggestion.length + (text.length - value.length) - (fix.suggestion.length - last.tag.length);
       write(text);
       moveCursor(cursor);
       learnFix(fix.written, fix.suggestion).catch(e => logWarn('writing: learning a fix failed', errorMessage(e)));

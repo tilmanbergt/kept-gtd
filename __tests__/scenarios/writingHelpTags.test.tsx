@@ -1,5 +1,6 @@
 // docs/dev/history/technical-design-writing-help.md §6, scenarios 1-10: tags in Quick Add.
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {screen} from '@testing-library/react-native';
 import {NoteSetup, seedNoteSetupDefaults} from '../../src/domain/noteSetups';
 import {GtdParaSettings} from '../../src/domain/settings';
 import {expectNotShows, expectShows, fieldValue, focus, openApp, tap, tapTab, type} from '../../test-helpers/scenario/app';
@@ -169,5 +170,31 @@ scenario('Completion shows an abbreviation with its project', {feature: 'Writing
   });
   then('the strip offers #gr with "Garden renovation"', () => {
     expectShows('#gr Garden renovation');
+  });
+});
+
+scenario('One tap fixes every place the tag is written so', {feature: 'Writing help', design: 'technical-design-writing-help.md', help: 'quick-add.md#tag-suggestions'}, () => {
+  when('recognition writes "#DaiIy notes for #DaiIy" and I tap → #daily', async () => {
+    await openMeetingTab();
+    await type(TITLE, '#DaiIy notes for #DaiIy');
+    await tap('→ #daily');
+  });
+  then('both read #daily', () => {
+    expect(fieldValue(TITLE)).toBe('#daily notes for #daily');
+  });
+});
+
+scenario('A learned correction ended by a typed space keeps the cursor after the space', {feature: 'Writing help', design: 'technical-design-writing-help.md', help: 'tags.md#learned-corrections'}, () => {
+  when('daiiy → daily is learned and I type "#DaiIy" and then a space', async () => {
+    await openMeetingTab();
+    await type(TITLE, 'stand-up #DaiIy');
+    await tap('→ #daily');
+    await type(TITLE, '');
+    await type(TITLE, 'x #DaiIy');
+    await type(TITLE, 'x #DaiIy ');
+  });
+  then('the title reads "x #daily " with the cursor at its end', () => {
+    expect(fieldValue(TITLE)).toBe('x #daily ');
+    expect(screen.getByPlaceholderText(TITLE).props.selection).toEqual({start: 9, end: 9});
   });
 });
