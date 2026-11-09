@@ -1,9 +1,9 @@
 // docs/dev/history/technical-design-writing-help.md §6, scenarios 1-10: tags in Quick Add.
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {screen} from '@testing-library/react-native';
+import {act, fireEvent, screen} from '@testing-library/react-native';
 import {NoteSetup, seedNoteSetupDefaults} from '../../src/domain/noteSetups';
 import {GtdParaSettings} from '../../src/domain/settings';
-import {expectNotShows, expectShows, fieldValue, focus, openApp, tap, tapTab, type} from '../../test-helpers/scenario/app';
+import {expectNotShows, expectShows, fieldValue, focus, openApp, tap, tapTab, textsBetween, type} from '../../test-helpers/scenario/app';
 import {dataFile, projectFile, putFile, sectionLines} from '../../test-helpers/scenario/files';
 import {given, scenario, then, when} from '../../test-helpers/scenario/scenario';
 
@@ -196,5 +196,84 @@ scenario('A learned correction ended by a typed space keeps the cursor after the
   then('the title reads "x #daily " with the cursor at its end', () => {
     expect(fieldValue(TITLE)).toBe('x #daily ');
     expect(screen.getByPlaceholderText(TITLE).props.selection).toEqual({start: 9, end: 9});
+  });
+});
+
+/** The field reports its cursor, as Android does after a change or a tap. */
+async function cursorAt(position: number): Promise<void> {
+  await act(async () => {
+    fireEvent(screen.getByPlaceholderText(TITLE), 'selectionChange', {nativeEvent: {selection: {start: position, end: position}}});
+  });
+}
+
+scenario('A space after # is removed and the tag is still completed', {feature: 'Writing help', design: 'technical-design-writing-help.md', help: 'quick-add.md#completing-a-tag'}, () => {
+  when('recognition writes "# Dai"', async () => {
+    await openMeetingTab();
+    await type(TITLE, '# Dai');
+  });
+  then('the title reads "#Dai" and the cursor is put after it', () => {
+    expect(fieldValue(TITLE)).toBe('#Dai');
+    expect(screen.getByPlaceholderText(TITLE).props.selection).toEqual({start: 4, end: 4});
+  });
+  when('the field still reports its cursor where it was before the space went, then where it is now', async () => {
+    await cursorAt(5);
+    await cursorAt(4);
+  });
+  then('the strip offers #daily', () => {
+    expectShows('#daily');
+  });
+  when('I tap #daily', async () => {
+    await tap('#daily');
+  });
+  then('the title reads "#daily "', () => {
+    expect(fieldValue(TITLE)).toBe('#daily ');
+  });
+});
+
+scenario('A tag typed letter by letter is completed, not after a space', {feature: 'Writing help', design: 'technical-design-writing-help.md', help: 'quick-add.md#completing-a-tag'}, () => {
+  when('I type "#", "D", "a"', async () => {
+    await openMeetingTab();
+    await type(TITLE, '#');
+    await type(TITLE, '#D');
+    await type(TITLE, '#Da');
+  });
+  then('the strip offers #daily', () => {
+    expectShows('#daily');
+  });
+  when('I type a space', async () => {
+    await type(TITLE, '#Da ');
+  });
+  then('the completion is gone', () => {
+    expectNotShows('#daily');
+  });
+});
+
+scenario('Putting the cursor after an unfinished tag offers its completions', {feature: 'Writing help', design: 'technical-design-writing-help.md', help: 'quick-add.md#completing-a-tag'}, () => {
+  given('project "Atruvia" with the abbreviation ATR', () => {
+    putFile(projectFile('Atruvia'), dataFile('project', {Scope: [], Tasks: [], Meetings: []}, ['abbrev: ATR']));
+  });
+  when('the title reads "call #AT about it" and I put the cursor right after "#AT"', async () => {
+    await openMeetingTab();
+    await type(TITLE, 'call #AT about it');
+    await cursorAt(8);
+  });
+  then('the strip offers #atr with "Atruvia"', () => {
+    expectShows('#atr Atruvia');
+  });
+  when('I put the cursor at the start', async () => {
+    await cursorAt(0);
+  });
+  then('the completion is gone', () => {
+    expectNotShows('#atr Atruvia');
+  });
+});
+
+scenario('After type/ the strip offers that type\'s counterparts', {feature: 'Writing help', design: 'technical-design-writing-help.md', help: 'quick-add.md#completing-a-tag'}, () => {
+  when('with #101/mieke and #101/jordan known I write "#101/"', async () => {
+    await openMeetingTab(['- 2026-10-01 10:00 1:1 #101/mieke', '- 2026-10-08 10:00 1:1 #101/jordan']);
+    await type(TITLE, '1:1 #101/');
+  });
+  then('the strip offers both counterparts', () => {
+    expect(textsBetween('Meeting', 'Edit ›').filter(t => t.startsWith('#101/'))).toEqual(['#101/jordan', '#101/mieke']);
   });
 });

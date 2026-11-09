@@ -39,14 +39,14 @@ export default function WritingStrip({visible, content, actions, clipboard, plac
   const {shown, hide} = useStripHide(visible);
   const button = (label: string, onPress: () => void, key = label, extra?: string) => (
     <Pressable key={key} style={[common.floatingStripButton, {borderColor}]} onPress={onPress} hitSlop={6}>
-      <Text style={[common.floatingStripButtonText, {color: textColor}]}>
+      <Text numberOfLines={1} style={[common.floatingStripButtonText, {color: textColor}]}>
         {label}
         {extra ? <Text style={styles.secondary}>{` ${extra}`}</Text> : null}
       </Text>
     </Pressable>
   );
   const label = (text: string) => (
-    <Text key={`label:${text}`} style={[common.floatingStripButtonText, styles.label, {color: textColor}]}>
+    <Text key={`label:${text}`} numberOfLines={1} style={[common.floatingStripButtonText, styles.label, {color: textColor}]}>
       {text}
     </Text>
   );

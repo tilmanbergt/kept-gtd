@@ -498,14 +498,16 @@ recent tags and Kept's own words, and kept per cache version and settings object
 skeleton (`tagSkeleton.ts`, Rule A), one step off (Rule B), plural endings (Rule P), nested tags
 per part (`tagCheck.ts`). The strip (`ui/writing/WritingStrip.tsx`, and `DateNudgeStrip`'s lead slot
 for dates) shows the one thing `domain/writing/stripContent.ts` picks: up to two fixes (→ #x, Keep,
-Edit ›), "read as … · Undo", a choice, completions (`completion.ts`), the feedback line - where the
+Edit ›), "read as … · Undo", a choice, completions (`completion.ts`, whenever the cursor sits right after an unfinished tag), the
+feedback line - where the
 page goes, from `storage/noteTargets.ts` `notePlaceOf`, the note icon's own placement - or the
 resting buttons. A tag changes only on a tap, except the two spacing fixes of
 `normalizeTagSpacing`; learned corrections (`storage/learnedTagFixes.ts`, per profile, plugin-internal)
 and dates and times with exactly one reading (`readDateTime.ts`, wrapping `parseMeetingWhen`)
 are applied visibly with Undo. No timer: a moment ends on the next touch, focus or burst. + Add
 with an unanswered fix shows it and asks once in the status slot (`confirmAdd`). Meetings get past
-and overlap warnings and the usual slot of their thread or loop (`meetingHints.ts`,
+and overlap warnings and the usual slot of their thread or loop - the date strip offers its date,
+the time strip its time, each filling only its own field (`meetingHints.ts`,
 `ui/writing/draftMeetingHints.ts`). Settings → Input (`screens/settings/InputTab.tsx`) lists the
 learned corrections and the tags used once that look like a typo (`domain/writing/tagTypos.ts`,
 `storage/tagTypoLines.ts`), whose → rewrites that one line through `mutateEntryTasks` /

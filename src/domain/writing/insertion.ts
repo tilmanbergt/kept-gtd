@@ -23,6 +23,15 @@ export function insertedSpan(prev: string, next: string): TextSpan | null {
   return end > start ? {start, end} : null;
 }
 
+/** Where the cursor is after the change from `prev` to `next`: after the inserted part, or where text was deleted. */
+export function caretAfterChange(prev: string, next: string): number {
+  const span = insertedSpan(prev, next);
+  if (span) return span.end;
+  let start = 0;
+  while (start < next.length && prev[start] === next[start]) start++;
+  return start;
+}
+
 /** Whether `span` holds more than one character - recognition or Paste, not typing. */
 export function isBurst(span: TextSpan | null): boolean {
   return span !== null && span.end - span.start > 1;

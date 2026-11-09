@@ -13,8 +13,8 @@ or your project/area files are stored.
 ### New
 - Writing help in Quick Add: after handwriting recognition writes a word, the strip over the tabs
   checks it. A tag close to one you use (`#Iena`, `#sparrlng`) gets a suggestion - **→ #lena**,
-  **Keep**, **Edit ›** - and unfinished tags are completed from your own tags, counterparts and
-  abbreviations. A tag you corrected once is corrected the same way next time ("read as #lena",
+  **Keep**, **Edit ›** - and an unfinished tag at the cursor is completed from your own tags, counterparts
+  and abbreviations. A tag you corrected once is corrected the same way next time ("read as #lena",
   with **Undo**). When all tags are known, the strip says where the item's note page goes. + Add
   with a suggestion still open asks once; a second + Add saves as written. Also in the note title,
   the agreement words and lasso capture.
@@ -22,8 +22,8 @@ or your project/area files are stored.
   15:30-16:00, always shown ("read as Mon 9 Nov 2026") with **Undo**; `3-4` and `15,3` offer both
   readings. The date strip leads with the full date and weekday, the meeting's time field gets a
   strip with the length, and a new meeting shows "past" or "overlaps …" when it does.
-- The usual time of a thread or loop: the date strip offers its usual slot, for example
-  "Tue 17 Nov 14:00 · 45 min", and one tap fills date, time and end.
+- The usual time of a thread or loop: the date strip offers its usual day ("Tue 17 Nov") and the
+  empty time field its usual time ("14:00 – 14:45 · 45 min"); each fills only its own field.
 - Settings → Input: the learned corrections (✕ forgets one) and tags used once that look like a
   typo, each with → to fix that one line or Keep. The Integrity Check reports the same tags.
 - Help pages now have diagrams: the states of a todo (Tags), how Projects and Areas hold todos,

@@ -153,7 +153,7 @@ export function DateNudgeStrip({visible, value, onChangeText, help, placement = 
     </Pressable>
   );
   const lead = (text: string) => (
-    <Text key="lead" style={[common.floatingStripButtonText, styles.lead, {color: textColor}]}>
+    <Text key="lead" numberOfLines={1} style={[common.floatingStripButtonText, styles.lead, {color: textColor}]}>
       {text}
     </Text>
   );

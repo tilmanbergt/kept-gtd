@@ -132,7 +132,7 @@ scenario('A new meeting in the past is marked', {feature: 'Writing help', design
   });
 });
 
-scenario('The usual slot of a thread fills date, time and end in one tap', {feature: 'Writing help', design: 'technical-design-writing-help.md', help: 'quick-add.md#warnings-and-the-usual-time'}, () => {
+scenario('The usual date and the usual time of a thread each fill their own field', {feature: 'Writing help', design: 'technical-design-writing-help.md', help: 'quick-add.md#warnings-and-the-usual-time'}, () => {
   given('the last meetings of #101/mieke: three on Tuesdays 14:00-14:45, two at other times', () => undefined);
   when('I write "1:1 #101/mieke" and tap into the date field', async () => {
     await openMeetingTab([
@@ -145,14 +145,23 @@ scenario('The usual slot of a thread fills date, time and end in one tap', {feat
     await type(TITLE, '1:1 #101/mieke');
     await focus(DATE);
   });
-  then('the strip offers "Tue 10 Nov 14:00 · 45 min"', () => {
-    expectShows('Tue 10 Nov 14:00 · 45 min');
+  then('the date strip offers "Tue 10 Nov"', () => {
+    expectShows('Tue 10 Nov');
   });
   when('I tap it', async () => {
-    await tap('Tue 10 Nov 14:00 · 45 min');
+    await tap('Tue 10 Nov');
   });
-  then('date, time and end are filled', () => {
+  then('only the date is filled', () => {
     expect(fieldValue(DATE)).toBe('2026-11-10');
+    expect(fieldValue(TIME)).toBe('');
+  });
+  when('I tap into the empty time field and tap "14:00 – 14:45 · 45 min"', async () => {
+    await focus(DATE, false);
+    await focus(TIME);
+    await tap('14:00 – 14:45 · 45 min');
+  });
+  then('only the time is filled', () => {
     expect(fieldValue(TIME)).toBe('14:00-14:45');
+    expect(fieldValue(DATE)).toBe('2026-11-10');
   });
 });

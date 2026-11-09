@@ -393,3 +393,22 @@ Built in steps W1-W8 on `feature/writing-help`, as designed except where noted.
 - Still on the device: the checklist of §7 (one `onChangeText` per recognition burst on the A5 X,
   the strip's single redraw, date/time strips, lasso capture, Settings → Input fix), as listed in
   the commits' Device test blocks.
+
+### 10.4 Changes after the first device test
+
+Decided with Tilman after trying the merged build:
+
+- **Completion at the cursor** (replaces "Completion only after a burst" in §10.2): completions show
+  whenever the cursor sits right after an unfinished tag - after recognition, after a typed letter,
+  or after a tap that puts the cursor there - and not once a space follows, nor for a tag that is
+  known as it is (except `type/`, which offers the counterparts). Cost per keystroke or cursor report
+  inside a tag: about 0.2 ms with 3,000 tags (Jest); a cursor report elsewhere sets no state.
+- **Bug: recognition's "# Dai" lost its completion.** The spacing fix shortened the text, but the
+  field's next cursor report still named the old position, which the hook took for a touch and ended
+  the moment. The hook now puts the cursor where it belongs after a spacing fix and treats both
+  positions as the change's own.
+- **Usual slot per field** (replaces "One tap fills date, time and end", §1.6): the date strip offers
+  the usual date (unless the field holds it), the time strip, while empty, the usual time and end;
+  each fills only its own field. The usual time is the series' usual time, whatever weekday is chosen.
+- **The time strip is drawn over the whole time row**, so "… · overlaps …" stays on one line; strip
+  labels never wrap, and the other meeting's title is cut to 20 characters.

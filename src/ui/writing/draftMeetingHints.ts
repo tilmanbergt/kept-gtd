@@ -59,9 +59,7 @@ export function draftMeetingHints(draft: {title: string; date: string; time: str
     timeWarning = overlap ?? past;
   }
   let usual: UsualSlot | null = null;
-  if (!draft.time.trim()) {
-    const tag = seriesTag(extractContextTags(draft.title));
-    if (tag) usual = usualSlot(meetingsOfTag(meetings.map(meeting => ({meeting})), tag).map(e => e.meeting), now);
-  }
+  const tag = seriesTag(extractContextTags(draft.title));
+  if (tag) usual = usualSlot(meetingsOfTag(meetings.map(meeting => ({meeting})), tag).map(e => e.meeting), now);
   return {dateWarning, timeWarning, usual};
 }

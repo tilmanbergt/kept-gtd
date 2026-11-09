@@ -1,6 +1,7 @@
 // docs/dev/history/technical-design-writing-help.md §1.2, §1.3, §3.1, §7.
 import {buildKnownTagIndex, KnownTagSources} from '../../../src/domain/writing/knownTags';
 import {checkTags} from '../../../src/domain/writing/tagCheck';
+import {completions, unfinishedTagAt} from '../../../src/domain/writing/completion';
 
 function sources(over: Partial<KnownTagSources> = {}): KnownTagSources {
   return {setupTags: [], abbrevs: [], counterparts: [], contextTags: [], reservedTags: [], recentTags: [], usedTags: [], ...over};
@@ -88,7 +89,7 @@ describe('buildKnownTagIndex', () => {
 });
 
 describe('performance (design §7)', () => {
-  it('builds an index of 3,000 tags in under 50 ms and checks a burst in under 1 ms', () => {
+  it('builds an index of 3,000 tags in under 50 ms, checks a burst and completes a tag in under 1 ms', () => {
     // 3,000 word-like tags (a fixed pseudo-random sequence), a third of them nested.
     let seed = 7;
     const letter = () => {
@@ -113,7 +114,18 @@ describe('performance (design §7)', () => {
     const check = (performance.now() - t1) / runs;
     // The measured times, for the release report.
     process.stdout.write(`writing-help perf: index of ${index.size} tags built in ${build.toFixed(1)} ms, burst check ${check.toFixed(3)} ms\n`);
+    // Completion runs on every keystroke and cursor report inside a tag: the unfinished tag and the prefix walk.
+    const field = `stand-up #${used[2].tag.slice(0, 2)}`;
+    unfinishedTagAt(field, field.length);
+    const t2 = performance.now();
+    for (let i = 0; i < runs; i++) {
+      const unfinished = unfinishedTagAt(field, field.length);
+      if (unfinished) completions(unfinished.token, index);
+    }
+    const complete = (performance.now() - t2) / runs;
+    process.stdout.write(`writing-help perf: completion ${complete.toFixed(3)} ms\n`);
     expect(build).toBeLessThan(50);
     expect(check).toBeLessThan(1);
+    expect(complete).toBeLessThan(1);
   });
 });

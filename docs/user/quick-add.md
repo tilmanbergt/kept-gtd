@@ -63,7 +63,7 @@ A tag you corrected once is corrected the same way next time, see [Learned corre
 
 ### Completing a tag
 
-When recognition ends with an unfinished tag, the strip offers up to three of your tags that start with it: `#spa` offers **#sparring** and **#sparring/jordan**. After a type and a slash, `#sparring/`, it offers that type's counterparts, the most recent first. An abbreviation shows its project or area next to it: **#gr Garden renovation**. A tap puts the tag in place, followed by a space.
+Whenever the cursor sits right after an unfinished tag - written, typed, or put there with a tap - the strip offers up to three of your tags that start with it: `#spa` offers **#sparring** and **#sparring/jordan**. After a type and a slash, `#sparring/`, it offers that type's counterparts, the most recent first. An abbreviation shows its project or area next to it: **#gr Garden renovation**. A tap puts the tag in place, followed by a space. Once a space follows the tag, or the tag is one you use as it is, nothing is offered.
 
 ### Dates and times
 
@@ -80,7 +80,7 @@ While the cursor is in a date field, its strip starts with the full date and wee
 
 The date and time strips of a new meeting add a warning when the meeting starts in the past ("past"), or when it overlaps another meeting that day ("overlaps Team sync 15:00"). They only inform: nothing is moved or held back.
 
-When the meeting's tags name a [thread](threads.md) or a [loop](loops.md) that has met before, the date strip - and the time strip while its field is empty - offers the usual slot as one more button, for example "Tue 17 Nov 14:00 · 45 min": the weekday and start most of its last five meetings share, else the last one, with the usual length, on the next such day. One tap fills the date, the time and the end.
+When the meeting's tags name a [thread](threads.md) or a [loop](loops.md) that has met before, its usual slot is offered - the weekday and start most of its last five meetings share, else the last one, with the usual length. Each strip offers only its own part and fills only its own field: the date strip the next such day, for example "Tue 17 Nov", and the time strip, while its field is empty, the usual time, for example "14:00 – 14:45 · 45 min".
 
 ### Adding with a suggestion open
 

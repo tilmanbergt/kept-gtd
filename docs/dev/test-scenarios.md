@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-226 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+230 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -2034,13 +2034,15 @@ Test: `__tests__/scenarios/writingHelpDates.test.tsx` · design: `docs/dev/histo
 
 Test: `__tests__/scenarios/writingHelpDates.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `quick-add.md#warnings-and-the-usual-time`
 
-### The usual slot of a thread fills date, time and end in one tap
+### The usual date and the usual time of a thread each fill their own field
 
 - **Given** the last meetings of #101/mieke: three on Tuesdays 14:00-14:45, two at other times
 - **When** I write "1:1 #101/mieke" and tap into the date field
-- **Then** the strip offers "Tue 10 Nov 14:00 · 45 min"
+- **Then** the date strip offers "Tue 10 Nov"
 - **When** I tap it
-- **Then** date, time and end are filled
+- **Then** only the date is filled
+- **When** I tap into the empty time field and tap "14:00 – 14:45 · 45 min"
+- **Then** only the time is filled
 
 Test: `__tests__/scenarios/writingHelpDates.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `quick-add.md#warnings-and-the-usual-time`
 
@@ -2164,6 +2166,43 @@ Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/histor
 - **Then** the title reads "x #daily " with the cursor at its end
 
 Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `tags.md#learned-corrections`
+
+### A space after # is removed and the tag is still completed
+
+- **When** recognition writes "# Dai"
+- **Then** the title reads "#Dai" and the cursor is put after it
+- **When** the field still reports its cursor where it was before the space went, then where it is now
+- **Then** the strip offers #daily
+- **When** I tap #daily
+- **Then** the title reads "#daily "
+
+Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `quick-add.md#completing-a-tag`
+
+### A tag typed letter by letter is completed, not after a space
+
+- **When** I type "#", "D", "a"
+- **Then** the strip offers #daily
+- **When** I type a space
+- **Then** the completion is gone
+
+Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `quick-add.md#completing-a-tag`
+
+### Putting the cursor after an unfinished tag offers its completions
+
+- **Given** project "Atruvia" with the abbreviation ATR
+- **When** the title reads "call #AT about it" and I put the cursor right after "#AT"
+- **Then** the strip offers #atr with "Atruvia"
+- **When** I put the cursor at the start
+- **Then** the completion is gone
+
+Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `quick-add.md#completing-a-tag`
+
+### After type/ the strip offers that type's counterparts
+
+- **When** with #101/mieke and #101/jordan known I write "#101/"
+- **Then** the strip offers both counterparts
+
+Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `quick-add.md#completing-a-tag`
 
 ## Your files
 

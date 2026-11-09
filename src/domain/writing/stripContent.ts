@@ -8,9 +8,10 @@
  * 3. `choice` - a date or time with two readings;
  * 4. `complete` - up to three completions + Edit ›;
  * 5. `feedback` - where the page goes, or "New tag …";
- * 6. a date field: the full date (+ warning) and the nudges, and the usual
- *    slot while the time is empty; a time field: the read time and length (+ warning), or the
- *    usual slot when empty;
+ * 6. a date field: the full date (+ warning), the nudges, and the usual date
+ *    of the meeting's series; a time field: the read time and length
+ *    (+ warning), or the series' usual time while empty - each strip fills only
+ *    its own field;
  * 7. a text field: All · Copy · Cut · Paste.
  *
  * States 2-5 are a *moment*: the hook ends one on the next touch in the field,
@@ -64,9 +65,8 @@ export interface StripState {
   /** Past or overlap, for a meeting's date and time strips. */
   warning?: string | null;
   /**
-   * A meeting's usual slot. The time strip offers it while its field is empty;
-   * the date strip whenever the caller passes it (while the time is still empty,
-   * since the date field starts with today's date).
+   * The usual slot of the meeting's series. The date strip offers its date
+   * (unless the field holds it), the time strip its time and end while empty.
    */
   usual?: UsualSlot | null;
 }
@@ -74,9 +74,19 @@ export interface StripState {
 /** The most fixes the strip shows at once (§1.4). */
 export const MAX_SHOWN_FIXES = 2;
 
-/** `Tue 17 Nov 14:00 · 45 min` - the usual slot's button. */
-export function usualSlotLabel(slot: UsualSlot): string {
-  return `${formatFullDate(slot.date, false)} ${formatTime(slot.time)} · ${formatLength(slot.minutes)}`;
+/** `Tue 17 Nov` - the usual date's button on the date strip. */
+export function usualDateLabel(slot: UsualSlot): string {
+  return formatFullDate(slot.date, false);
+}
+
+/** `14:00 – 14:45 · 45 min` - the usual time's button on the time strip. */
+export function usualTimeLabel(slot: UsualSlot): string {
+  return `${formatTimeSpan(slot.time, slot.endTime)} · ${formatLength(slot.minutes)}`;
+}
+
+/** What the usual time writes into the time field: `14:00-14:45`. */
+export function usualTimeValue(slot: UsualSlot): string {
+  return slot.endTime ? `${slot.time}-${slot.endTime}` : slot.time;
 }
 
 /** `15:30 – 16:00 · 30 min`, `15:30`, `2 days` - what a valid time field means; null when it means nothing. */
@@ -98,14 +108,14 @@ export function stripContent(state: StripState): StripContent {
   if (showClipboard && field === 'text') return {kind: 'clipboard'};
   if (fixes.length > 0) return {kind: 'fixes', fixes: fixes.slice(0, MAX_SHOWN_FIXES)};
   if (moment) return moment;
-  const usual = state.usual ? usualSlotLabel(state.usual) : null;
   const empty = !value.trim();
   if (field === 'date') {
     const label = isValidIsoDate(value.trim()) ? formatFullDate(value.trim()) : null;
+    const usual = state.usual && state.usual.date !== value.trim() ? usualDateLabel(state.usual) : null;
     return {kind: 'date', label, warning: label ? state.warning ?? null : null, usual};
   }
   if (field === 'time') {
-    if (empty) return usual ? {kind: 'usual', usual} : {kind: 'none'};
+    if (empty) return state.usual ? {kind: 'usual', usual: usualTimeLabel(state.usual)} : {kind: 'none'};
     const label = timeLabel(value);
     return label ? {kind: 'time', label, warning: state.warning ?? null} : {kind: 'none'};
   }
@@ -135,7 +145,11 @@ export function readAsLabel(what: string): string {
 
 /** The warning text for a meeting's strips: `past`, or `overlaps Jour Fixe 15:00`. */
 export function overlapWarning(title: string, time: string): string {
-  return `overlaps ${title} ${formatTime(time)}`;
+  const short = title.length > OVERLAP_TITLE_MAX ? `${title.slice(0, OVERLAP_TITLE_MAX - 1).trimEnd()}…` : title;
+  return `overlaps ${short} ${formatTime(time)}`;
 }
+
+/** The other meeting's title in the warning is cut to this many characters, so the strip stays one short line. */
+export const OVERLAP_TITLE_MAX = 20;
 
 export const PAST_WARNING = 'past';

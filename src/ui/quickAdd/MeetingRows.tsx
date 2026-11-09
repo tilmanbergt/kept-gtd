@@ -164,18 +164,19 @@ export function MeetingMetaRows({core, meeting, layoutKey, capture = false, row4
               autoCapitalize="none"
             />
           </MarkWrap>
-          {/* The time strip hovers above the field, left-aligned (§3.4). */}
-          <WritingStrip
-            visible={meeting.timeFocused}
-            content={meeting.timeHelp.strip}
-            actions={meeting.timeHelp.actions}
-            placement="above-left"
-            textColor={textColor}
-            borderColor={borderColor}
-          />
         </View>
         {tags}
       </View>
+      {/* The time strip hovers above the row, left-aligned over the time field: the
+          row's width keeps "15:30 – 16:30 · 1 h · overlaps …" on one line (§3.4). */}
+      <WritingStrip
+        visible={meeting.timeFocused}
+        content={meeting.timeHelp.strip}
+        actions={meeting.timeHelp.actions}
+        placement="above-left"
+        textColor={textColor}
+        borderColor={borderColor}
+      />
     </View>
   );
   if (capture) return row3;

@@ -8,7 +8,12 @@
  *   burst (more than one character - recognition or Paste) is checked, or a
  *   typed space or punctuation that ends a tag. Learned corrections and the
  *   one valid reading of a date or time are applied here, visibly ("read as
- *   …") and with Undo; everything else waits for a tap.
+ *   …") and with Undo; everything else waits for a tap. When a spacing fix
+ *   shortens the text, the cursor is put where it belongs.
+ * - Completion is offered whenever the cursor sits right after an
+ *   unfinished tag - after a burst, a typed letter, or a tap that puts the
+ *   cursor there - never after a space (§1.3 as built). A cursor report
+ *   elsewhere sets no state.
  * - Unanswered flagged tags (`fixes`) stay until they are answered (→, Keep),
  *   or the tag has left the text. The other states are a *moment*:
  *   a touch in the field (a selection change that is not the change's own),
@@ -27,7 +32,7 @@ import {formatFullDate, formatTimeSpan} from '../../domain/dateFormat';
 import {tagSpans} from '../../domain/markdown';
 import {parseMeetingWhen, todayIso} from '../../domain/meetingTime';
 import {applyCompletion, completions, UnfinishedTag, unfinishedTagAt} from '../../domain/writing/completion';
-import {insertedSpan, isBurst, tagsEndedBy} from '../../domain/writing/insertion';
+import {caretAfterChange, insertedSpan, isBurst, tagsEndedBy} from '../../domain/writing/insertion';
 import {UsualSlot} from '../../domain/writing/meetingHints';
 import {readDate, readTime} from '../../domain/writing/readDateTime';
 import {
@@ -65,9 +70,9 @@ export interface WritingHelpOptions {
   place?: (text: string) => {setupName: string | null; file: string} | null;
   /** A meeting's date and time strips: past or overlap. */
   warning?: string | null;
-  /** A meeting's usual slot, offered while the field is empty. */
+  /** The usual slot of the meeting's series: the date strip offers its date, the empty time strip its time. */
   usual?: UsualSlot | null;
-  /** Fills date, time and end from the usual slot. */
+  /** Fills this field - only this one - from the usual slot. */
   onUsual?: (slot: UsualSlot) => void;
 }
 
@@ -118,9 +123,10 @@ export function useWritingHelp(options: WritingHelpOptions) {
   const keptRef = useRef(new Set<string>());
   const undoRef = useRef<{text: string; forget: string[]} | null>(null);
   const completionRef = useRef<UnfinishedTag | null>(null);
-  // The cursor right after the change that started the moment: a selection
-  // change to anywhere else is a touch, and ends the moment.
-  const momentCursorRef = useRef<number | null>(null);
+  // Where the last change left the cursor (and, before a spacing fix, where
+  // the field itself put it): a cursor report there is the change's own; one
+  // anywhere else is a touch.
+  const ownCursorsRef = useRef<number[]>([]);
   const askedRef = useRef(false);
   const statusId = useRef(`writing.${++nextHelpInstance}`).current;
   useStatus(statusId, hint ? {kind: 'info', text: hint, onDismiss: () => setHint(null)} : null);
@@ -139,7 +145,7 @@ export function useWritingHelp(options: WritingHelpOptions) {
     setSelectionOverride(selection);
   };
   const startMoment = (next: StripMoment | null, cursor: number | null) => {
-    momentCursorRef.current = cursor;
+    ownCursorsRef.current = cursor === null ? [] : [cursor];
     setMoment(next);
   };
   const refocus = () => {
@@ -154,16 +160,46 @@ export function useWritingHelp(options: WritingHelpOptions) {
     return {kind: 'feedback', text: newTag ? newTagFeedback(newTag, place.file) : placeFeedback(place.setupName, place.file)};
   };
 
-  const changeText = (next: string, span: ReturnType<typeof insertedSpan>) => {
-    const burst = isBurst(span);
-    const checked = burst && span ? [span] : tagsEndedBy(next, span);
-    if (checked.length === 0) {
-      if (moment) startMoment(null, null);
-      write(next);
+  /**
+   * The completions for the unfinished tag right before `cursor`, or null:
+   * none after a space, none for a tag that is complete and known (`#daily`),
+   * except `type/`, which offers that type's counterparts (§1.3).
+   */
+  const completionAt = (text: string, cursor: number, known?: ReturnType<typeof currentKnownTagIndex>) => {
+    const unfinished = unfinishedTagAt(text, cursor);
+    if (!unfinished) return null;
+    const index = known ?? currentKnownTagIndex(options.recentTags ?? NO_RECENT);
+    const token = unfinished.token.toLowerCase();
+    if (!token.endsWith('/') && index.has(token)) return null;
+    const offered = completions(unfinished.token, index);
+    return offered.length > 0 ? {unfinished, offered} : null;
+  };
+  /** Shows `offer` - unless the strip shows these completions already, so a cursor report costs no render. */
+  const offerCompletion = (offer: NonNullable<ReturnType<typeof completionAt>>, cursor: number) => {
+    const same =
+      moment?.kind === 'complete' &&
+      completionRef.current?.start === offer.unfinished.start &&
+      completionRef.current?.end === offer.unfinished.end &&
+      moment.options.map(o => o.tag).join(' ') === offer.offered.map(o => o.tag).join(' ');
+    completionRef.current = offer.unfinished;
+    if (same) {
+      ownCursorsRef.current = [cursor];
       return;
     }
-    const index = currentKnownTagIndex(options.recentTags ?? NO_RECENT);
-    const found = checked.flatMap(s => checkTags(next, s, index, keptRef.current, getLearnedFixesSync()));
+    setShowClipboard(false);
+    startMoment({kind: 'complete', options: offer.offered}, cursor);
+  };
+
+  /**
+   * One change of a text field. `rawCursor` is where the field itself puts the
+   * cursor before the spacing fix: its next cursor report may still say so.
+   */
+  const changeText = (next: string, span: ReturnType<typeof insertedSpan>, normalized: boolean, rawCursor: number) => {
+    const burst = isBurst(span);
+    const checked = burst && span ? [span] : tagsEndedBy(next, span);
+    const caret = caretAfterChange(value, next);
+    const index = checked.length > 0 ? currentKnownTagIndex(options.recentTags ?? NO_RECENT) : undefined;
+    const found = index ? checked.flatMap(s => checkTags(next, s, index, keptRef.current, getLearnedFixesSync())) : [];
     const learned = found.filter(f => f.kind === 'learned');
     let text = next;
     for (const f of [...learned].reverse()) text = replaceTag(text, f, f.suggestion ?? f.written).text;
@@ -172,9 +208,10 @@ export function useWritingHelp(options: WritingHelpOptions) {
     if (burst && span) log(`writing: burst len=${span.end - span.start} tags=${tagCount} fix=${flagged.length} learned=${learned.length}`);
     write(text);
     // After what was inserted: a burst's end, or the typed space or punctuation that ended the tag.
-    const end = Math.max(span ? span.end : 0, checked[checked.length - 1].end);
+    const end = checked.length > 0 ? Math.max(caret, checked[checked.length - 1].end) : caret;
     const cursor = end + (text.length - next.length);
-    if (learned.length > 0) moveCursor(cursor);
+    // A spacing fix or a learned fix shortened the text: the field's cursor is put where it belongs.
+    if (learned.length > 0 || normalized) moveCursor(cursor);
     const merged = mergeFixes(pending, flagged, text);
     if (flagged.length > 0) {
       setPending(merged);
@@ -184,18 +221,15 @@ export function useWritingHelp(options: WritingHelpOptions) {
     if (learned.length > 0) {
       undoRef.current = {text: next, forget: learned.map(f => f.written)};
       startMoment({kind: 'read', label: readAsLabel(learned.map(f => `#${f.suggestion}`).join(' '))}, cursor);
-      return;
+    } else {
+      const offer = completionAt(text, cursor, index);
+      if (offer) offerCompletion(offer, cursor);
+      else if (checked.length > 0) {
+        const fresh = found.find(f => f.kind === 'new');
+        startMoment(merged.length === 0 && tagCount > 0 ? feedbackFor(text, fresh?.written ?? null) : null, cursor);
+      } else if (moment) startMoment(null, cursor);
     }
-    const unfinished = burst ? unfinishedTagAt(text, cursor) : null;
-    const options3 = unfinished ? completions(unfinished.token, index) : [];
-    if (unfinished && options3.length > 0) {
-      completionRef.current = unfinished;
-      setShowClipboard(false);
-      startMoment({kind: 'complete', options: options3}, cursor);
-      return;
-    }
-    const fresh = found.find(f => f.kind === 'new');
-    startMoment(merged.length === 0 && tagCount > 0 ? feedbackFor(text, fresh?.written ?? null) : null, cursor);
+    ownCursorsRef.current = [cursor, rawCursor];
   };
 
   const changeDateTime = (next: string, span: ReturnType<typeof insertedSpan>) => {
@@ -226,16 +260,24 @@ export function useWritingHelp(options: WritingHelpOptions) {
     askedRef.current = false;
     if (hint) setHint(null);
     if (isBurst(span) && showClipboard) setShowClipboard(false);
-    if (field === 'text') changeText(next, span);
+    if (field === 'text') changeText(next, span, next !== raw, caretAfterChange(value, raw));
     else changeDateTime(next, span);
   };
 
-  /** A touch in the field ends a moment; the change's own selection does not. */
+  /**
+   * A cursor report. The change's own is ignored. A touch that puts the cursor
+   * right after an unfinished tag offers its completions; any other touch ends
+   * a moment. Most reports set no state at all (domain/clipboardText.ts says
+   * why that matters on this hardware).
+   */
   const onSelectionChange = (selection: Selection) => {
-    if (!moment || !selection) return;
-    const at = momentCursorRef.current;
-    if (selection.start === selection.end && selection.start === at) return;
-    startMoment(null, null);
+    if (!selection) return;
+    const collapsed = selection.start === selection.end;
+    if (collapsed && ownCursorsRef.current.includes(selection.start)) return;
+    ownCursorsRef.current = collapsed ? [selection.start] : [];
+    const offer = collapsed && field === 'text' ? completionAt(value, selection.start) : null;
+    if (offer) offerCompletion(offer, selection.start);
+    else if (moment) startMoment(null, null);
   };
 
   /** A new focus starts at rest (the strip was hidden while the field had none). */

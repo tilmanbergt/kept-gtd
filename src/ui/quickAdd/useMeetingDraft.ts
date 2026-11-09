@@ -22,6 +22,7 @@ import {draftNotePlace} from '../writing/notePlace';
 import {draftMeetingHints, NO_MEETING_HINTS} from '../writing/draftMeetingHints';
 import {useWritingHelp} from '../writing/useWritingHelp';
 import {UsualSlot} from '../../domain/writing/meetingHints';
+import {usualTimeValue} from '../../domain/writing/stripContent';
 import {MeetingEditFields} from './editFields';
 import {abbrevDestination, makeMeetingDraft, MeetingDraft, MeetingQuickAddFields, truncateItemName} from './types';
 import {QuickAddCore} from './useQuickAddCore';
@@ -137,10 +138,9 @@ export function useMeetingDraft(core: QuickAddCore, input: Input) {
   };
   // The date and time strips' hints, worked out only while one of them shows (§3.6).
   const hints = dateFocused || timeFocused ? draftMeetingHints(fields, editing) : NO_MEETING_HINTS;
-  const applyUsual = (slot: UsualSlot) => {
-    update({date: slot.date, time: slot.endTime ? `${slot.time}-${slot.endTime}` : slot.time});
-    clearJustAdded();
-  };
+  // Each strip fills only its own field (§1.6 as built): the usual date, or the usual time and end.
+  const applyUsualDate = (slot: UsualSlot) => writeDate(slot.date);
+  const applyUsualTime = (slot: UsualSlot) => writeTime(usualTimeValue(slot));
   // The date and time fields keep no selection of their own; the help only reads what recognition wrote.
   const whenSelectionRef = useRef<Selection>(null);
   const dateHelp = useWritingHelp({
@@ -151,7 +151,7 @@ export function useMeetingDraft(core: QuickAddCore, input: Input) {
     setSelectionOverride: ignoreSelection,
     warning: hints.dateWarning,
     usual: hints.usual,
-    onUsual: applyUsual,
+    onUsual: applyUsualDate,
   });
   const timeHelp = useWritingHelp({
     field: 'time',
@@ -161,7 +161,7 @@ export function useMeetingDraft(core: QuickAddCore, input: Input) {
     setSelectionOverride: ignoreSelection,
     warning: hints.timeWarning,
     usual: hints.usual,
-    onUsual: applyUsual,
+    onUsual: applyUsualTime,
   });
   const setDate = dateHelp.onChangeText;
   const setTime = timeHelp.onChangeText;

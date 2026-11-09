@@ -7,7 +7,9 @@ import {
   StripState,
   stripContent,
   timeLabel,
-  usualSlotLabel,
+  usualDateLabel,
+  usualTimeLabel,
+  usualTimeValue,
 } from '../../../src/domain/writing/stripContent';
 
 const usual = {date: '2026-11-17', time: '14:00', endTime: '14:45', minutes: 45};
@@ -41,24 +43,24 @@ describe('stripContent', () => {
     expect(stripContent(state({fixes: [fix(1)], showClipboard: true}))).toEqual({kind: 'clipboard'});
   });
 
-  it('6. a date field shows the full date with its warning and the usual slot it is given', () => {
+  it('6. a date field shows the full date with its warning, and the usual date unless it holds it', () => {
     expect(stripContent(state({field: 'date', value: '2026-11-10', warning: 'past', usual}))).toEqual({
       kind: 'date',
       label: 'Tue 10 Nov 2026',
       warning: 'past',
-      usual: 'Tue 17 Nov 14:00 · 45 min',
+      usual: 'Tue 17 Nov',
     });
-    expect(stripContent(state({field: 'date', value: '', usual}))).toEqual({kind: 'date', label: null, warning: null, usual: 'Tue 17 Nov 14:00 · 45 min'});
+    expect(stripContent(state({field: 'date', value: '2026-11-17', usual}))).toEqual({kind: 'date', label: 'Tue 17 Nov 2026', warning: null, usual: null});
     expect(stripContent(state({field: 'date', value: '2026-11-', warning: 'past'}))).toEqual({kind: 'date', label: null, warning: null, usual: null});
   });
 
-  it('6. a time field shows the time and length, or the usual slot while empty', () => {
-    expect(stripContent(state({field: 'time', value: '15:30-16:00', warning: 'overlaps Jour Fixe 15:00'}))).toEqual({
+  it('6. a time field shows the time and length, or the usual time while empty', () => {
+    expect(stripContent(state({field: 'time', value: '15:30-16:00', warning: 'overlaps Jour Fixe 15:00', usual}))).toEqual({
       kind: 'time',
       label: '15:30 – 16:00 · 30 min',
       warning: 'overlaps Jour Fixe 15:00',
     });
-    expect(stripContent(state({field: 'time', value: '', usual}))).toEqual({kind: 'usual', usual: 'Tue 17 Nov 14:00 · 45 min'});
+    expect(stripContent(state({field: 'time', value: '', usual}))).toEqual({kind: 'usual', usual: '14:00 – 14:45 · 45 min'});
     expect(stripContent(state({field: 'time', value: ''}))).toEqual({kind: 'none'});
     expect(stripContent(state({field: 'time', value: 'soon'}))).toEqual({kind: 'none'});
   });
@@ -78,7 +80,9 @@ describe('labels', () => {
   });
 
   it('writes the usual slot, the feedback, the hint and the warning', () => {
-    expect(usualSlotLabel(usual)).toBe('Tue 17 Nov 14:00 · 45 min');
+    expect(usualDateLabel(usual)).toBe('Tue 17 Nov');
+    expect(usualTimeLabel(usual)).toBe('14:00 – 14:45 · 45 min');
+    expect(usualTimeValue(usual)).toBe('14:00-14:45');
     expect(placeFeedback('Daily', 'Meetings/Daily.note')).toBe('✓ Daily · Meetings/Daily.note');
     expect(placeFeedback(null, 'Website 2026.note')).toBe('✓ Website 2026.note');
     expect(newTagFeedback('offsite27', 'Website 2026.note')).toBe('New tag #offsite27 · Website 2026.note');
@@ -87,5 +91,6 @@ describe('labels', () => {
       'Check #retros and #Iena, or Add again to keep them',
     );
     expect(overlapWarning('Jour Fixe', '09:00')).toBe('overlaps Jour Fixe 9:00');
+    expect(overlapWarning('Quarterly planning with the whole team', '15:00')).toBe('overlaps Quarterly planning… 15:00');
   });
 });
