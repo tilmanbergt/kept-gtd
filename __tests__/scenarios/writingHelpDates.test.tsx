@@ -22,10 +22,8 @@ async function openMeetingTab(meetings: string[] = []): Promise<void> {
   await tap('Meeting');
 }
 
-const dates = 'quick-add.md#dates-and-times';
-const hints = 'quick-add.md#warnings-and-the-usual-time';
 
-scenario('A handwritten date is read, shown in full, with Undo', {feature: 'Writing help', design: 'technical-design-writing-help.md', help: dates}, () => {
+scenario('A handwritten date is read, shown in full, with Undo', {feature: 'Writing help', design: 'technical-design-writing-help.md', help: 'quick-add.md#dates-and-times'}, () => {
   when('recognition writes "9.ll.26" into the meeting date', async () => {
     await openMeetingTab();
     await focus(DATE);
@@ -44,7 +42,7 @@ scenario('A handwritten date is read, shown in full, with Undo', {feature: 'Writ
   });
 });
 
-scenario('The date strip leads with the full date', {feature: 'Writing help', design: 'technical-design-writing-help.md', help: dates}, () => {
+scenario('The date strip leads with the full date', {feature: 'Writing help', design: 'technical-design-writing-help.md', help: 'quick-add.md#dates-and-times'}, () => {
   when('the meeting date is 2026-11-10 and the cursor is in it', async () => {
     await openMeetingTab();
     await focus(DATE);
@@ -62,7 +60,7 @@ scenario('The date strip leads with the full date', {feature: 'Writing help', de
   });
 });
 
-scenario('A handwritten time is read with its length', {feature: 'Writing help', design: 'technical-design-writing-help.md', help: dates}, () => {
+scenario('A handwritten time is read with its length', {feature: 'Writing help', design: 'technical-design-writing-help.md', help: 'quick-add.md#dates-and-times'}, () => {
   when('recognition writes "l5,3O-l6" into the time field', async () => {
     await openMeetingTab();
     await focus(TIME);
@@ -74,7 +72,7 @@ scenario('A handwritten time is read with its length', {feature: 'Writing help',
   });
 });
 
-scenario('An hour from 1 to 6 offers the afternoon first', {feature: 'Writing help', design: 'technical-design-writing-help.md', help: dates}, () => {
+scenario('An hour from 1 to 6 offers the afternoon first', {feature: 'Writing help', design: 'technical-design-writing-help.md', help: 'quick-add.md#dates-and-times'}, () => {
   when('recognition writes "3-4" into the time field', async () => {
     await openMeetingTab();
     await focus(TIME);
@@ -99,7 +97,7 @@ scenario('An hour from 1 to 6 offers the afternoon first', {feature: 'Writing he
   });
 });
 
-scenario('A one-digit minute offers both readings and keeps what is written', {feature: 'Writing help', design: 'technical-design-writing-help.md', help: dates}, () => {
+scenario('A one-digit minute offers both readings and keeps what is written', {feature: 'Writing help', design: 'technical-design-writing-help.md', help: 'quick-add.md#dates-and-times'}, () => {
   when('recognition writes "15,3" into the time field', async () => {
     await openMeetingTab();
     await focus(TIME);
@@ -111,7 +109,7 @@ scenario('A one-digit minute offers both readings and keeps what is written', {f
   });
 });
 
-scenario('An overlap with another meeting that day is named', {feature: 'Writing help', design: 'technical-design-writing-help.md', help: hints}, () => {
+scenario('An overlap with another meeting that day is named', {feature: 'Writing help', design: 'technical-design-writing-help.md', help: 'quick-add.md#warnings-and-the-usual-time'}, () => {
   given('the meeting "Jour Fixe" today 15:00-16:00', () => undefined);
   when('I enter 15:30-16:30 for a new meeting today', async () => {
     await openMeetingTab(['- 2026-11-09 15:00-16:00 Jour Fixe']);
@@ -123,7 +121,7 @@ scenario('An overlap with another meeting that day is named', {feature: 'Writing
   });
 });
 
-scenario('A new meeting in the past is marked', {feature: 'Writing help', design: 'technical-design-writing-help.md', help: hints}, () => {
+scenario('A new meeting in the past is marked', {feature: 'Writing help', design: 'technical-design-writing-help.md', help: 'quick-add.md#warnings-and-the-usual-time'}, () => {
   when('I date a new meeting yesterday', async () => {
     await openMeetingTab();
     await focus(DATE);
@@ -134,7 +132,7 @@ scenario('A new meeting in the past is marked', {feature: 'Writing help', design
   });
 });
 
-scenario('The usual slot of a thread fills date, time and end in one tap', {feature: 'Writing help', design: 'technical-design-writing-help.md', help: hints}, () => {
+scenario('The usual slot of a thread fills date, time and end in one tap', {feature: 'Writing help', design: 'technical-design-writing-help.md', help: 'quick-add.md#warnings-and-the-usual-time'}, () => {
   given('the last meetings of #101/mieke: three on Tuesdays 14:00-14:45, two at other times', () => undefined);
   when('I write "1:1 #101/mieke" and tap into the date field', async () => {
     await openMeetingTab([

@@ -79,6 +79,8 @@ More in [Why Kept GTD works this way](docs/user/philosophy.md).
 - **Quick Add** for todos, meetings and notes, with tags, due dates and refiling - one box of one
   height; tap a todo or meeting and its card takes the box's place, with everything you can do
   with it
+- **Writing help** for handwriting: tag suggestions and completion from your own tags, dates and
+  times read with Undo, the usual meeting time - it suggests, a tag changes only when you tap
 - **Projects & Areas** with status, scope, abbreviations and linked files - from your folders or
   anywhere on the Supernote (`Document`, the SD card), and the PDF you are reading at its page
 - **Home notebooks**: one notebook per project and area (and year), one tap away from every list -

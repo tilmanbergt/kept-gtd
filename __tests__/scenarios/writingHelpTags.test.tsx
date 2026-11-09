@@ -27,9 +27,8 @@ async function openMeetingTab(meetings: string[] = [], tasks: string[] = []): Pr
   await focus(TITLE);
 }
 
-const help = 'quick-add.md#tag-suggestions';
 
-scenario('Handwriting writes #DaiIy: the strip suggests #daily', {feature: 'Writing help', design: 'technical-design-writing-help.md', help}, () => {
+scenario('Handwriting writes #DaiIy: the strip suggests #daily', {feature: 'Writing help', design: 'technical-design-writing-help.md', help: 'quick-add.md#tag-suggestions'}, () => {
   when('recognition writes "stand-up #DaiIy" into the meeting title', async () => {
     await openMeetingTab();
     await type(TITLE, 'stand-up #DaiIy');
@@ -72,7 +71,7 @@ scenario('A learned correction is applied directly, with Undo', {feature: 'Writi
   });
 });
 
-scenario('A known tag in another case is never questioned', {feature: 'Writing help', design: 'technical-design-writing-help.md', help}, () => {
+scenario('A known tag in another case is never questioned', {feature: 'Writing help', design: 'technical-design-writing-help.md', help: 'quick-add.md#tag-suggestions'}, () => {
   when('I write "stand-up #Daily"', async () => {
     await openMeetingTab();
     await type(TITLE, 'stand-up #Daily');
@@ -84,7 +83,7 @@ scenario('A known tag in another case is never questioned', {feature: 'Writing h
   });
 });
 
-scenario('A space after the slash goes silently, the parent tag is suggested', {feature: 'Writing help', design: 'technical-design-writing-help.md', help}, () => {
+scenario('A space after the slash goes silently, the parent tag is suggested', {feature: 'Writing help', design: 'technical-design-writing-help.md', help: 'quick-add.md#tag-suggestions'}, () => {
   given('the setup on #101 and an earlier meeting with #101/mieke', () => undefined);
   when('I write "#1o1/ Mieke"', async () => {
     await openMeetingTab(['- 2026-10-01 10:00 One on one #101/mieke']);
@@ -96,7 +95,7 @@ scenario('A space after the slash goes silently, the parent tag is suggested', {
   });
 });
 
-scenario('Two flagged tags show in text order, a third is left out', {feature: 'Writing help', design: 'technical-design-writing-help.md', help}, () => {
+scenario('Two flagged tags show in text order, a third is left out', {feature: 'Writing help', design: 'technical-design-writing-help.md', help: 'quick-add.md#tag-suggestions'}, () => {
   when('with #retro, #lena and #garden known I write "for #retros #Iena #gardn"', async () => {
     await openMeetingTab([], ['- [ ] Plan #retro', '- [ ] Call #lena', '- [ ] Dig #garden']);
     await type(TITLE, 'for #retros #Iena #gardn');
@@ -127,7 +126,7 @@ scenario('+ Add with a suggestion open asks once, the second + Add saves as writ
   });
 });
 
-scenario('A new tag with nothing close is no question', {feature: 'Writing help', design: 'technical-design-writing-help.md', help}, () => {
+scenario('A new tag with nothing close is no question', {feature: 'Writing help', design: 'technical-design-writing-help.md', help: 'quick-add.md#tag-suggestions'}, () => {
   when('I write "plan #offsite27"', async () => {
     await openMeetingTab();
     await type(TITLE, 'plan #offsite27');

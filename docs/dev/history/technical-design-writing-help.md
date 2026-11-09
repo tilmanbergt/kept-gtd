@@ -332,3 +332,64 @@ burst?), strip redraw, the date and time strips, lasso capture, Settings → Inp
 - **Q1** No mark in the field's text; the strip alone (§3.7).
 - **Q2** The tag lists live in a new Settings area **Input** (§3.9), not in Data.
 - **Q3** The usual time is for meetings only.
+
+## 10. As built
+
+Built in steps W1-W8 on `feature/writing-help`, as designed except where noted.
+
+### 10.1 Files
+
+- Domain, all pure: `src/domain/writing/{tagSkeleton,knownTags,tagCheck,insertion,completion,readDateTime,
+  meetingHints,stripContent,tagTypos}.ts`; `formatFullDate`, `formatLength`, `formatTimeSpan` in
+  `domain/dateFormat.ts`; `tagSpans` in `domain/markdown.ts` (positions over `TAG_RE`);
+  `meetingsOfTag` in `domain/nextMeeting.ts`, shared with `nextMeetingOf`.
+- Storage: `storage/learnedTagFixes.ts` (`kept:tagFixes:v1`, per profile, also holds the tags kept as
+  written in Settings → Input); `storage/knownTagIndex.ts` (sources and memo, not in §5);
+  `storage/tagTypoLines.ts` (the Input tab's list and its fix, not in §5); `notePlaceOf` in
+  `storage/noteTargets.ts`.
+- UI: `ui/writing/{useWritingHelp.ts,WritingStrip.tsx}`, plus `useWritingField.ts` and
+  `WritingTextInput.tsx` (note title, agreement words), `notePlace.ts` (feedback place),
+  `draftMeetingHints.ts` (warnings, usual slot); `screens/settings/InputTab.tsx`.
+
+### 10.2 Deviations and decisions
+
+- **Index memo** (§3.1): the cache is changed in place, so the index is kept per cache version and
+  Inbox version (`getCacheVersion`, `getInboxVersion`), settings object and recent-tags list, not per
+  cache object.
+- **Completion only after a burst** (§1.3): a tag typed letter by letter gets no completions - the
+  principle "no suggestion while you are writing" (§1.9) wins over "cursor after an unfinished tag".
+- **Moments end on the next focus, not on blur** (§3.3): blur fires on touch-down on the strip's own
+  buttons; ending the moment there would replace the button under the finger. The strip is hidden while
+  the field has no focus, so the user sees the same.
+- **Usual slot on the date strip while the time is empty** (§1.6): the date field starts with today's
+  date, so it is rarely empty; the slot is offered while the meeting's time field is still empty, on
+  the date strip and on the time strip.
+- **Warnings only for new meetings** (§4): while editing, past and overlap are off (the edited meeting
+  would overlap itself).
+- **Learned corrections, kept tags and the Add-twice rule in edit mode**: Quick Add's edit form uses
+  the same fields, so it gets the same help; the Add-twice rule applies to + Add and the capture
+  panel's Save only, not to Save of an edit.
+- **Capture panel** (§3.5): the seed is checked with `checkSeed` and only offered - a learned
+  correction there shows as a suggestion too - so the recognized text stays as it is until a tap,
+  and the panel's "untouched seed" rule keeps working.
+- **Note and agreement fields** have no feedback line (they have no note page to name).
+- **Integrity Check** (§3.9): known for `tagTypo` are tags used more than once, live abbreviations and
+  Kept's words - the report has no settings; Settings → Input also compares with the Note setups,
+  counterparts and contexts. Two tags used once are never paired with each other, and recent tags
+  don't count (a typo saved lately is one of them).
+- **Input tab**: two paged lists (`PagedSection`), not `ScrollColumn`, so nothing scrolls. A fix
+  checks that the line is still the one shown before writing.
+- **Learned corrections are read again when a field mounts**, so Remove Kept's data and a profile
+  switch never leave a stale copy in memory.
+- **Hint text** keeps the tag as written: "Check #DaiIy, or Add again to keep it".
+
+### 10.3 Checks
+
+- Unit tests in `__tests__/domain/writing/`, `__tests__/storage/learnedTagFixesQuickAdd.test.ts`;
+  scenarios 1-20 of §6 in `__tests__/scenarios/writingHelp{Tags,Dates,Input,Lasso}.test.tsx`
+  (1 and 2 are one scenario; scenario 19 has a second one for Keep).
+- Performance (§7), Jest, 3,000 word-like tags: index built in 13-23 ms (best of three), a burst check
+  0.4-0.5 ms.
+- Still on the device: the checklist of §7 (one `onChangeText` per recognition burst on the A5 X,
+  the strip's single redraw, date/time strips, lasso capture, Settings → Input fix), as listed in
+  the commits' Device test blocks.

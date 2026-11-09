@@ -1983,7 +1983,7 @@ Test: `__tests__/scenarios/smoke/review.test.tsx` · help: `review.md#the-overvi
 - **When** I tap Undo
 - **Then** the written text is back
 
-Test: `__tests__/scenarios/writingHelpDates.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md`
+Test: `__tests__/scenarios/writingHelpDates.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `quick-add.md#dates-and-times`
 
 ### The date strip leads with the full date
 
@@ -1992,14 +1992,14 @@ Test: `__tests__/scenarios/writingHelpDates.test.tsx` · design: `docs/dev/histo
 - **When** I tap +1
 - **Then** it reads "Wed 11 Nov 2026"
 
-Test: `__tests__/scenarios/writingHelpDates.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md`
+Test: `__tests__/scenarios/writingHelpDates.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `quick-add.md#dates-and-times`
 
 ### A handwritten time is read with its length
 
 - **When** recognition writes "l5,3O-l6" into the time field
 - **Then** the field holds 15:30-16:00 and the strip says "read as 15:30 – 16:00 · 30 min"
 
-Test: `__tests__/scenarios/writingHelpDates.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md`
+Test: `__tests__/scenarios/writingHelpDates.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `quick-add.md#dates-and-times`
 
 ### An hour from 1 to 6 offers the afternoon first
 
@@ -2010,14 +2010,14 @@ Test: `__tests__/scenarios/writingHelpDates.test.tsx` · design: `docs/dev/histo
 - **When** recognition writes "8" instead
 - **Then** it is 8:00 without a choice - already past at 10:00 today
 
-Test: `__tests__/scenarios/writingHelpDates.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md`
+Test: `__tests__/scenarios/writingHelpDates.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `quick-add.md#dates-and-times`
 
 ### A one-digit minute offers both readings and keeps what is written
 
 - **When** recognition writes "15,3" into the time field
 - **Then** the strip offers 15:30 and 15:03 and the field keeps "15,3"
 
-Test: `__tests__/scenarios/writingHelpDates.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md`
+Test: `__tests__/scenarios/writingHelpDates.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `quick-add.md#dates-and-times`
 
 ### An overlap with another meeting that day is named
 
@@ -2025,14 +2025,14 @@ Test: `__tests__/scenarios/writingHelpDates.test.tsx` · design: `docs/dev/histo
 - **When** I enter 15:30-16:30 for a new meeting today
 - **Then** the time strip says "overlaps Jour Fixe 15:00"
 
-Test: `__tests__/scenarios/writingHelpDates.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md`
+Test: `__tests__/scenarios/writingHelpDates.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `quick-add.md#warnings-and-the-usual-time`
 
 ### A new meeting in the past is marked
 
 - **When** I date a new meeting yesterday
 - **Then** the date strip says "past"
 
-Test: `__tests__/scenarios/writingHelpDates.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md`
+Test: `__tests__/scenarios/writingHelpDates.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `quick-add.md#warnings-and-the-usual-time`
 
 ### The usual slot of a thread fills date, time and end in one tap
 
@@ -2042,7 +2042,7 @@ Test: `__tests__/scenarios/writingHelpDates.test.tsx` · design: `docs/dev/histo
 - **When** I tap it
 - **Then** date, time and end are filled
 
-Test: `__tests__/scenarios/writingHelpDates.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md`
+Test: `__tests__/scenarios/writingHelpDates.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `quick-add.md#warnings-and-the-usual-time`
 
 ### A tag used once next to a known one is reported, listed and fixed on its line
 
@@ -2083,7 +2083,7 @@ Test: `__tests__/scenarios/writingHelpLasso.test.tsx` · design: `docs/dev/histo
 - **When** I tap → #daily
 - **Then** the title reads "stand-up #daily" and the strip says where its page goes
 
-Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md`
+Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `quick-add.md#tag-suggestions`
 
 ### A learned correction is applied directly, with Undo
 
@@ -2099,7 +2099,7 @@ Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/histor
 - **When** I write "stand-up #Daily"
 - **Then** nothing is flagged and the strip says where its page goes
 
-Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md`
+Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `quick-add.md#tag-suggestions`
 
 ### A space after the slash goes silently, the parent tag is suggested
 
@@ -2107,14 +2107,14 @@ Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/histor
 - **When** I write "#1o1/ Mieke"
 - **Then** the title reads "#1o1/Mieke" and the strip offers → #101/Mieke
 
-Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md`
+Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `quick-add.md#tag-suggestions`
 
 ### Two flagged tags show in text order, a third is left out
 
 - **When** with #retro, #lena and #garden known I write "for #retros #Iena #gardn"
 - **Then** the strip shows → #retro, then → #lena, and not → #garden
 
-Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md`
+Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `quick-add.md#tag-suggestions`
 
 ### + Add with a suggestion open asks once, the second + Add saves as written
 
@@ -2132,7 +2132,7 @@ Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/histor
 - **When** I tap + Add
 - **Then** the meeting is saved at once
 
-Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md`
+Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `quick-add.md#tag-suggestions`
 
 ### An unfinished tag is completed from the known ones
 
