@@ -8,8 +8,8 @@
  * 3. `choice` - a date or time with two readings;
  * 4. `complete` - up to three completions + Edit ›;
  * 5. `feedback` - where the page goes, or "New tag …";
- * 6. a date field: the full date (+ warning) and the nudges, the usual slot
- *    when empty; a time field: the read time and length (+ warning), or the
+ * 6. a date field: the full date (+ warning) and the nudges, and the usual
+ *    slot while the time is empty; a time field: the read time and length (+ warning), or the
  *    usual slot when empty;
  * 7. a text field: All · Copy · Cut · Paste.
  *
@@ -63,7 +63,11 @@ export interface StripState {
   showClipboard: boolean;
   /** Past or overlap, for a meeting's date and time strips. */
   warning?: string | null;
-  /** A meeting's usual slot, offered while the field is empty. */
+  /**
+   * A meeting's usual slot. The time strip offers it while its field is empty;
+   * the date strip whenever the caller passes it (while the time is still empty,
+   * since the date field starts with today's date).
+   */
   usual?: UsualSlot | null;
 }
 
@@ -98,7 +102,7 @@ export function stripContent(state: StripState): StripContent {
   const empty = !value.trim();
   if (field === 'date') {
     const label = isValidIsoDate(value.trim()) ? formatFullDate(value.trim()) : null;
-    return {kind: 'date', label, warning: label ? state.warning ?? null : null, usual: empty ? usual : null};
+    return {kind: 'date', label, warning: label ? state.warning ?? null : null, usual};
   }
   if (field === 'time') {
     if (empty) return usual ? {kind: 'usual', usual} : {kind: 'none'};

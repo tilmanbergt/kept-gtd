@@ -65,6 +65,23 @@ A tag you corrected once is corrected the same way next time, see [Learned corre
 
 When recognition ends with an unfinished tag, the strip offers up to three of your tags that start with it: `#spa` offers **#sparring** and **#sparring/jordan**. After a type and a slash, `#sparring/`, it offers that type's counterparts, the most recent first. An abbreviation shows its project or area next to it: **#gr Garden renovation**. A tap puts the tag in place, followed by a space.
 
+### Dates and times
+
+In the date fields and the meeting's time field, letters that look like digits are read as digits (`l` and `I` as 1, `O` as 0, `S` as 5, `B` as 8 and so on), and a comma, semicolon or space between digits as a separator.
+
+- *Dates*: `9.11.2026`, `09.11.26`, `9.11.` and `9.11` (the next 9 November), `2026 11 09`, `2026.11.09` and `20261109`. Where only one order of day and month is a date, that one is taken: `11.13` is 13 November.
+- *Times*: `15,30`, `15 30` and `1530` are 15:30, `930` is 9:30, `15h` is 15:00; `–` and `bis` make a range, as `-` does ([Meeting length](week-and-month.md#meeting-length)).
+
+When what recognition wrote can be read only one way, Quick Add writes it and the strip says so: "read as Mon 9 Nov 2026" or "read as 15:30 – 16:00 · 30 min", with **Undo**, which puts back what was written. When it can be read two ways, the strip asks "Did you mean" with both: an hour from 1 to 6 without minutes offers the afternoon first (`3-4`: 15:00 – 16:00, then 3:00 – 4:00), and one digit after the hour offers both minutes (`15,3`: 15:30 or 15:03). What cannot be read stays as written, and **+ Add** says what is wrong, as before.
+
+While the cursor is in a date field, its strip starts with the full date and weekday, "Tue 10 Nov 2026", then -1, **Today**, +1 and +7. The meeting's time field has a strip too, with the time and its length: "15:30 – 16:00 · 30 min".
+
+### Warnings and the usual time
+
+The date and time strips of a new meeting add a warning when the meeting starts in the past ("past"), or when it overlaps another meeting that day ("overlaps Team sync 15:00"). They only inform: nothing is moved or held back.
+
+When the meeting's tags name a [thread](threads.md) or a [loop](loops.md) that has met before, the date strip - and the time strip while its field is empty - offers the usual slot as one more button, for example "Tue 17 Nov 14:00 · 45 min": the weekday and start most of its last five meetings share, else the last one, with the usual length, on the next such day. One tap fills the date, the time and the end.
+
 ### Adding with a suggestion open
 
 When you tap **+ Add** while a tag suggestion is still open, Kept saves nothing yet: the strip shows the suggestion again and the [status line](index.md#the-status-line) says "Check #sparrlng, or Add again to keep it". Tap **+ Add** a second time to save the item as written.

@@ -41,12 +41,12 @@ describe('stripContent', () => {
     expect(stripContent(state({fixes: [fix(1)], showClipboard: true}))).toEqual({kind: 'clipboard'});
   });
 
-  it('6. a date field shows the full date with its warning, the usual slot only while empty', () => {
+  it('6. a date field shows the full date with its warning and the usual slot it is given', () => {
     expect(stripContent(state({field: 'date', value: '2026-11-10', warning: 'past', usual}))).toEqual({
       kind: 'date',
       label: 'Tue 10 Nov 2026',
       warning: 'past',
-      usual: null,
+      usual: 'Tue 17 Nov 14:00 · 45 min',
     });
     expect(stripContent(state({field: 'date', value: '', usual}))).toEqual({kind: 'date', label: null, warning: null, usual: 'Tue 17 Nov 14:00 · 45 min'});
     expect(stripContent(state({field: 'date', value: '2026-11-', warning: 'past'}))).toEqual({kind: 'date', label: null, warning: null, usual: null});

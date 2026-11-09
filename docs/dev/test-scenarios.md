@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-213 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+221 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -1975,6 +1975,74 @@ Test: `__tests__/scenarios/review.test.tsx` · design: `docs/dev/history/technic
 Test: `__tests__/scenarios/smoke/review.test.tsx` · help: `review.md#the-overview`
 
 ## Writing help
+
+### A handwritten date is read, shown in full, with Undo
+
+- **When** recognition writes "9.ll.26" into the meeting date
+- **Then** the field holds 2026-11-09 and the strip says "read as Mon 9 Nov 2026" with Undo
+- **When** I tap Undo
+- **Then** the written text is back
+
+Test: `__tests__/scenarios/writingHelpDates.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md`
+
+### The date strip leads with the full date
+
+- **When** the meeting date is 2026-11-10 and the cursor is in it
+- **Then** the strip shows "Tue 10 Nov 2026" before -1, Today, +1 and +7
+- **When** I tap +1
+- **Then** it reads "Wed 11 Nov 2026"
+
+Test: `__tests__/scenarios/writingHelpDates.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md`
+
+### A handwritten time is read with its length
+
+- **When** recognition writes "l5,3O-l6" into the time field
+- **Then** the field holds 15:30-16:00 and the strip says "read as 15:30 – 16:00 · 30 min"
+
+Test: `__tests__/scenarios/writingHelpDates.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md`
+
+### An hour from 1 to 6 offers the afternoon first
+
+- **When** recognition writes "3-4" into the time field
+- **Then** the strip offers 15:00 – 16:00 first, then 3:00 – 4:00
+- **When** I tap 15:00 – 16:00
+- **Then** the field holds it
+- **When** recognition writes "8" instead
+- **Then** it is 8:00 without a choice - already past at 10:00 today
+
+Test: `__tests__/scenarios/writingHelpDates.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md`
+
+### A one-digit minute offers both readings and keeps what is written
+
+- **When** recognition writes "15,3" into the time field
+- **Then** the strip offers 15:30 and 15:03 and the field keeps "15,3"
+
+Test: `__tests__/scenarios/writingHelpDates.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md`
+
+### An overlap with another meeting that day is named
+
+- **Given** the meeting "Jour Fixe" today 15:00-16:00
+- **When** I enter 15:30-16:30 for a new meeting today
+- **Then** the time strip says "overlaps Jour Fixe 15:00"
+
+Test: `__tests__/scenarios/writingHelpDates.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md`
+
+### A new meeting in the past is marked
+
+- **When** I date a new meeting yesterday
+- **Then** the date strip says "past"
+
+Test: `__tests__/scenarios/writingHelpDates.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md`
+
+### The usual slot of a thread fills date, time and end in one tap
+
+- **Given** the last meetings of #101/mieke: three on Tuesdays 14:00-14:45, two at other times
+- **When** I write "1:1 #101/mieke" and tap into the date field
+- **Then** the strip offers "Tue 10 Nov 14:00 · 45 min"
+- **When** I tap it
+- **Then** date, time and end are filled
+
+Test: `__tests__/scenarios/writingHelpDates.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md`
 
 ### Handwriting writes #DaiIy: the strip suggests #daily
 

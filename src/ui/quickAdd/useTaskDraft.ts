@@ -50,6 +50,8 @@ interface Input {
   onUserEdit?: () => void;
 }
 
+const ignoreSelection = () => {};
+
 export function useTaskDraft(core: QuickAddCore, input: Input) {
   const {editFields, setEditFields, setError, setPending} = core;
   const [draft, setDraft] = useState<TaskDraft>(makeTaskDraft);
@@ -133,10 +135,21 @@ export function useTaskDraft(core: QuickAddCore, input: Input) {
       }),
   });
   const setText = textHelp.onChangeText;
-  const setDueDate = (d: string) => {
+  /** Puts a due date into the draft as it is (the nudge buttons, ✕, the writing help). */
+  const writeDueDate = (d: string) => {
     update({dueDate: d});
     clearJustAdded();
   };
+  // A recognized due date is read like a meeting's date (§1.6); no warnings or usual slot for todos.
+  const dueSelectionRef = useRef<Selection>(null);
+  const dueHelp = useWritingHelp({
+    field: 'date',
+    value: fields.dueDate,
+    write: writeDueDate,
+    selectionRef: dueSelectionRef,
+    setSelectionOverride: ignoreSelection,
+  });
+  const setDueDate = dueHelp.onChangeText;
   const openDueDate = () => {
     update({dueDateOpen: true});
     // Focus the freshly unfolded field so its -1/Today/+1/+7 strip shows at once.
@@ -267,6 +280,8 @@ export function useTaskDraft(core: QuickAddCore, input: Input) {
     setText,
     textHelp,
     setDueDate,
+    writeDueDate,
+    dueHelp,
     openDueDate,
     setFlowState,
     setWaitingOn,

@@ -19,7 +19,9 @@ import {errorMessage} from '../../utils/errorMessage';
 import {log} from '../../utils/log';
 import {clipboardActions} from '../ClipboardStrip';
 import {draftNotePlace} from '../writing/notePlace';
+import {draftMeetingHints, NO_MEETING_HINTS} from '../writing/draftMeetingHints';
 import {useWritingHelp} from '../writing/useWritingHelp';
+import {UsualSlot} from '../../domain/writing/meetingHints';
 import {MeetingEditFields} from './editFields';
 import {abbrevDestination, makeMeetingDraft, MeetingDraft, MeetingQuickAddFields, truncateItemName} from './types';
 import {QuickAddCore} from './useQuickAddCore';
@@ -37,6 +39,8 @@ interface Input {
   /** Called on every user change of the title (the capture panel's "typed since the seed"). */
   onUserEdit?: () => void;
 }
+
+const ignoreSelection = () => {};
 
 /** A validated meeting ready to hand to the screen, or null after showing the error. */
 type Composed = {fields: MeetingQuickAddFields} | null;
@@ -71,6 +75,8 @@ export function useMeetingDraft(core: QuickAddCore, input: Input) {
   const [inputFocused, setInputFocused] = useState(false);
   // Whether the date field has focus - shows its -1/Today/+1/+7 strip, drawn by the row.
   const [dateFocused, setDateFocused] = useState(false);
+  // Whether the time field has focus - shows its strip (time and length, or the usual slot).
+  const [timeFocused, setTimeFocused] = useState(false);
   const inputRef = useRef<TextInput>(null);
   const lastSelectionRef = useRef<Selection>(null);
 
@@ -120,14 +126,45 @@ export function useMeetingDraft(core: QuickAddCore, input: Input) {
       }),
   });
   const setTitle = titleHelp.onChangeText;
-  const setDate = (d: string) => {
+  /** Puts a date into the draft as it is (the nudge buttons, the writing help). */
+  const writeDate = (d: string) => {
     update({date: d});
     clearJustAdded();
   };
-  const setTime = (t: string) => {
+  const writeTime = (t: string) => {
     update({time: t});
     clearJustAdded();
   };
+  // The date and time strips' hints, worked out only while one of them shows (§3.6).
+  const hints = dateFocused || timeFocused ? draftMeetingHints(fields, editing) : NO_MEETING_HINTS;
+  const applyUsual = (slot: UsualSlot) => {
+    update({date: slot.date, time: slot.endTime ? `${slot.time}-${slot.endTime}` : slot.time});
+    clearJustAdded();
+  };
+  // The date and time fields keep no selection of their own; the help only reads what recognition wrote.
+  const whenSelectionRef = useRef<Selection>(null);
+  const dateHelp = useWritingHelp({
+    field: 'date',
+    value: fields.date,
+    write: writeDate,
+    selectionRef: whenSelectionRef,
+    setSelectionOverride: ignoreSelection,
+    warning: hints.dateWarning,
+    usual: hints.usual,
+    onUsual: applyUsual,
+  });
+  const timeHelp = useWritingHelp({
+    field: 'time',
+    value: fields.time,
+    write: writeTime,
+    selectionRef: whenSelectionRef,
+    setSelectionOverride: ignoreSelection,
+    warning: hints.timeWarning,
+    usual: hints.usual,
+    onUsual: applyUsual,
+  });
+  const setDate = dateHelp.onChangeText;
+  const setTime = timeHelp.onChangeText;
   const clearLinkedFile = () => updateEditField({linkedFile: ''});
   const toggleMonthly = () => {
     if (editFields?.kind === 'meeting') updateEditField({monthly: !editFields.fields.monthly});
@@ -279,7 +316,12 @@ export function useMeetingDraft(core: QuickAddCore, input: Input) {
     setTitle,
     titleHelp,
     setDate,
+    writeDate,
+    dateHelp,
     setTime,
+    timeHelp,
+    timeFocused,
+    setTimeFocused,
     clearLinkedFile,
     toggleMonthly,
     toggleFocusBlock,

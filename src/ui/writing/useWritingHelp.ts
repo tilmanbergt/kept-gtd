@@ -127,8 +127,9 @@ export function useWritingHelp(options: WritingHelpOptions) {
 
   // The learned corrections are read when the field mounts, before the first burst.
   useEffect(() => {
+    if (field !== 'text') return;
     loadLearnedFixes(true).catch(e => logWarn('writing: learned fixes not loaded', errorMessage(e)));
-  }, []);
+  }, [field]);
 
   const fixes = liveFixes(pending, value);
 
