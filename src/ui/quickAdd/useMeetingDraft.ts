@@ -10,7 +10,7 @@ import {AbbrevFileMatch, resolveAbbrevFileTarget} from '../../domain/abbrev';
 import {Selection} from '../../domain/clipboardText';
 import {describeAddedDate} from '../../domain/dateLabel';
 import {Destination, destinationLabel} from '../../domain/destination';
-import {extractContextTags, insertTagAtPosition, removeTagFromText, stripSpaceAfterHash} from '../../domain/markdown';
+import {extractContextTags, insertTagAtPosition, removeTagFromText} from '../../domain/markdown';
 import {meetingDisplayTitle} from '../../domain/meetingTracking';
 import {validateMeetingFields} from '../../domain/meetingTime';
 import {setFocusBlock} from '../../domain/focusBlock';
@@ -18,6 +18,10 @@ import {setHighlight} from '../../domain/monthHighlight';
 import {errorMessage} from '../../utils/errorMessage';
 import {log} from '../../utils/log';
 import {clipboardActions} from '../ClipboardStrip';
+import {draftNotePlace} from '../writing/notePlace';
+import {draftMeetingHints, NO_MEETING_HINTS} from '../writing/draftMeetingHints';
+import {useWritingHelp} from '../writing/useWritingHelp';
+import {UsualSlot} from '../../domain/writing/meetingHints';
 import {MeetingEditFields} from './editFields';
 import {abbrevDestination, makeMeetingDraft, MeetingDraft, MeetingQuickAddFields, truncateItemName} from './types';
 import {QuickAddCore} from './useQuickAddCore';
@@ -35,6 +39,8 @@ interface Input {
   /** Called on every user change of the title (the capture panel's "typed since the seed"). */
   onUserEdit?: () => void;
 }
+
+const ignoreSelection = () => {};
 
 /** A validated meeting ready to hand to the screen, or null after showing the error. */
 type Composed = {fields: MeetingQuickAddFields} | null;
@@ -69,6 +75,8 @@ export function useMeetingDraft(core: QuickAddCore, input: Input) {
   const [inputFocused, setInputFocused] = useState(false);
   // Whether the date field has focus - shows its -1/Today/+1/+7 strip, drawn by the row.
   const [dateFocused, setDateFocused] = useState(false);
+  // Whether the time field has focus - shows its strip (time and length, or the usual slot).
+  const [timeFocused, setTimeFocused] = useState(false);
   const inputRef = useRef<TextInput>(null);
   const lastSelectionRef = useRef<Selection>(null);
 
@@ -92,19 +100,71 @@ export function useMeetingDraft(core: QuickAddCore, input: Input) {
     else setDraft(d => ({...d, ...patch}));
   };
 
-  const setTitle = (t: string) => {
+  /** Puts the title into the draft as it is - the writing help has run, or a chip changed it. */
+  const writeTitle = (t: string) => {
     input.onUserEdit?.();
-    update({title: stripSpaceAfterHash(t)});
+    update({title: t});
     clearJustAdded();
   };
-  const setDate = (d: string) => {
+  // The writing help (docs/dev/history/technical-design-writing-help.md §3.5): every typed or recognized change.
+  const titleHelp = useWritingHelp({
+    field: 'text',
+    value: fields.title,
+    write: writeTitle,
+    selectionRef: lastSelectionRef,
+    setSelectionOverride,
+    inputRef,
+    recentTags: core.recentTags,
+    place: text =>
+      draftNotePlace({
+        text,
+        abbrevItems: core.abbrevItems,
+        excludePath: core.abbrevExcludePath,
+        fixedDestination: input.fixedDestination,
+        pageKind: 'meeting',
+        date: fields.date,
+      }),
+  });
+  const setTitle = titleHelp.onChangeText;
+  /** Puts a date into the draft as it is (the nudge buttons, the writing help). */
+  const writeDate = (d: string) => {
     update({date: d});
     clearJustAdded();
   };
-  const setTime = (t: string) => {
+  const writeTime = (t: string) => {
     update({time: t});
     clearJustAdded();
   };
+  // The date and time strips' hints, worked out only while one of them shows (§3.6).
+  const hints = dateFocused || timeFocused ? draftMeetingHints(fields, editing) : NO_MEETING_HINTS;
+  const applyUsual = (slot: UsualSlot) => {
+    update({date: slot.date, time: slot.endTime ? `${slot.time}-${slot.endTime}` : slot.time});
+    clearJustAdded();
+  };
+  // The date and time fields keep no selection of their own; the help only reads what recognition wrote.
+  const whenSelectionRef = useRef<Selection>(null);
+  const dateHelp = useWritingHelp({
+    field: 'date',
+    value: fields.date,
+    write: writeDate,
+    selectionRef: whenSelectionRef,
+    setSelectionOverride: ignoreSelection,
+    warning: hints.dateWarning,
+    usual: hints.usual,
+    onUsual: applyUsual,
+  });
+  const timeHelp = useWritingHelp({
+    field: 'time',
+    value: fields.time,
+    write: writeTime,
+    selectionRef: whenSelectionRef,
+    setSelectionOverride: ignoreSelection,
+    warning: hints.timeWarning,
+    usual: hints.usual,
+    onUsual: applyUsual,
+  });
+  const setDate = dateHelp.onChangeText;
+  const setTime = timeHelp.onChangeText;
   const clearLinkedFile = () => updateEditField({linkedFile: ''});
   const toggleMonthly = () => {
     if (editFields?.kind === 'meeting') updateEditField({monthly: !editFields.fields.monthly});
@@ -116,16 +176,17 @@ export function useMeetingDraft(core: QuickAddCore, input: Input) {
   };
   const insertTag = (tag: string) => {
     const {text, cursor} = insertTagAtPosition(fields.title, tag, lastSelectionRef.current?.start ?? null);
-    setTitle(text);
+    writeTitle(text);
     const selection = {start: cursor, end: cursor};
     lastSelectionRef.current = selection;
     setSelectionOverride(selection);
   };
-  const removeTag = (tag: string) => setTitle(removeTagFromText(fields.title, tag));
+  const removeTag = (tag: string) => writeTitle(removeTagFromText(fields.title, tag));
   // No setState here on purpose - see useTaskDraft's module comment.
   const onSelectionChange = (selection: Selection) => {
     lastSelectionRef.current = selection;
     if (selectionOverride) setSelectionOverride(null);
+    titleHelp.onSelectionChange(selection);
   };
   const clipboard = clipboardActions(fields.title, lastSelectionRef, setTitle, setSelectionOverride);
 
@@ -135,6 +196,7 @@ export function useMeetingDraft(core: QuickAddCore, input: Input) {
     log('QuickAdd: meeting draft shown', {titleLength: next.title.length, rowWasHidden: core.displayType !== 'meeting', editing: core.isEditing});
     setDraft(next);
     lastSelectionRef.current = null;
+    titleHelp.reset();
     setTagPage(0);
     setJustAdded(null);
     setAddedWhen(null);
@@ -164,6 +226,8 @@ export function useMeetingDraft(core: QuickAddCore, input: Input) {
 
   const submitCreate = () => {
     Keyboard.dismiss();
+    // The Add-twice rule: an unanswered flagged tag is shown once more first.
+    if (!titleHelp.confirmAdd()) return;
     // The matched abbreviation tag did its job picking the destination; a
     // title that is only that tag counts as empty.
     const source = abbrevTarget ? {...draft, title: removeTagFromText(draft.title.trim(), abbrevTarget.tag)} : draft;
@@ -178,6 +242,7 @@ export function useMeetingDraft(core: QuickAddCore, input: Input) {
       .onAddMeeting(composed.fields, destination, input.linkedFileForAdd?.())
       .then(() => {
         setDraft({...makeMeetingDraft(initialDate, initialMonthly), title: prefill});
+        titleHelp.reset();
         const end = {start: prefill.length, end: prefill.length};
         lastSelectionRef.current = prefill ? end : null;
         if (prefill) setSelectionOverride(end);
@@ -249,8 +314,14 @@ export function useMeetingDraft(core: QuickAddCore, input: Input) {
     lastSelectionRef,
     clearJustAdded,
     setTitle,
+    titleHelp,
     setDate,
+    writeDate,
+    dateHelp,
     setTime,
+    timeHelp,
+    timeFocused,
+    setTimeFocused,
     clearLinkedFile,
     toggleMonthly,
     toggleFocusBlock,

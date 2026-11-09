@@ -488,6 +488,30 @@ parts (`SquareButton`, `CardRow1`, `AreaChip`, `FileSlot`) are `ui/itemCard/part
 `docs/dev/history/technical-design-meeting-reflection.md`,
 `docs/dev/history/technical-design-item-card.md`.
 
+**Writing help.** Every Quick Add text field (todo, meeting title, note title, agreement words),
+the date fields and the meeting time field run their changes through `ui/writing/useWritingHelp.ts`.
+Only a burst (a change inserting more than one character: recognition or Paste,
+`domain/writing/insertion.ts`) is checked, or a typed space or punctuation that ends a tag. Tags
+are compared with a known-tag index (`domain/writing/knownTags.ts`, built by
+`storage/knownTagIndex.ts` from the cache, the Note setups, abbreviations, counterparts, contexts,
+recent tags and Kept's own words, and kept per cache version and settings object): a handwriting
+skeleton (`tagSkeleton.ts`, Rule A), one step off (Rule B), plural endings (Rule P), nested tags
+per part (`tagCheck.ts`). The strip (`ui/writing/WritingStrip.tsx`, and `DateNudgeStrip`'s lead slot
+for dates) shows the one thing `domain/writing/stripContent.ts` picks: up to two fixes (→ #x, Keep,
+Edit ›), "read as … · Undo", a choice, completions (`completion.ts`), the feedback line - where the
+page goes, from `storage/noteTargets.ts` `notePlaceOf`, the note icon's own placement - or the
+resting buttons. A tag changes only on a tap, except the two spacing fixes of
+`normalizeTagSpacing`; learned corrections (`storage/learnedTagFixes.ts`, per profile, plugin-internal)
+and dates and times with exactly one reading (`readDateTime.ts`, wrapping `parseMeetingWhen`)
+are applied visibly with Undo. No timer: a moment ends on the next touch, focus or burst. + Add
+with an unanswered fix shows it and asks once in the status slot (`confirmAdd`). Meetings get past
+and overlap warnings and the usual slot of their thread or loop (`meetingHints.ts`,
+`ui/writing/draftMeetingHints.ts`). Settings → Input (`screens/settings/InputTab.tsx`) lists the
+learned corrections and the tags used once that look like a typo (`domain/writing/tagTypos.ts`,
+`storage/tagTypoLines.ts`), whose → rewrites that one line through `mutateEntryTasks` /
+`mutateEntryMeetings`; the Integrity Check's whole-run `tagTypo` reports them. Detail:
+`docs/dev/history/technical-design-writing-help.md`.
+
 ### 2.5 Moving and filing
 
 **One move.** Every move of a todo or meeting to another Project, Area or the Inbox — Inbox
@@ -1063,7 +1087,8 @@ at its old place with an error. Credentials: `gmailEmail`, `gmailAppPassword` (s
 ### 2.12 Settings, profiles and diagnostics
 
 **Settings screen** (`screens/settings/`; `docs/dev/history/technical-design-settings-tabs.md`):
-mini-tabs Data, Contexts, Note setups, Features, Advanced, About; Settings opens on Data. The folder
+mini-tabs Data, Contexts, Note setups, Input, Features, Advanced, About; Settings opens on Data
+(Input: the writing help's lists, §2.4 "Writing help", no draft - every tap acts at once). The folder
 fields (Data) and the Google Calendar and Gmail blocks (Features, shown while their switch is on)
 edit one draft (`useSettingsDraft.ts`); each block's Save (`saveFields(scope)`) writes only its own
 fields over what is stored. A folder Save clears the cache (the next screen builds it again) and a

@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-204 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+226 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -1600,11 +1600,11 @@ Test: `__tests__/scenarios/screenSimulation.test.tsx` · design: `docs/dev/histo
 
 Test: `__tests__/scenarios/screenSimulation.test.tsx` · design: `docs/dev/history/technical-design-launch-ready.md` · help: `settings.md#tools`
 
-### Settings opens on Data, with six tabs
+### Settings opens on Data, with seven tabs
 
 - **Given** Kept is open
 - **When** I open Settings
-- **Then** the six tabs show, and Data holds the folders, the setup assistant and the profiles
+- **Then** the seven tabs show, and Data holds the folders, the setup assistant and the profiles
 
 Test: `__tests__/scenarios/settingsTabs.test.tsx` · help: `settings.md`
 
@@ -1973,6 +1973,197 @@ Test: `__tests__/scenarios/review.test.tsx` · design: `docs/dev/history/technic
 - **And** no error was logged
 
 Test: `__tests__/scenarios/smoke/review.test.tsx` · help: `review.md#the-overview`
+
+## Writing help
+
+### A handwritten date is read, shown in full, with Undo
+
+- **When** recognition writes "9.ll.26" into the meeting date
+- **Then** the field holds 2026-11-09 and the strip says "read as Mon 9 Nov 2026" with Undo
+- **When** I tap Undo
+- **Then** the written text is back
+
+Test: `__tests__/scenarios/writingHelpDates.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `quick-add.md#dates-and-times`
+
+### The date strip leads with the full date
+
+- **When** the meeting date is 2026-11-10 and the cursor is in it
+- **Then** the strip shows "Tue 10 Nov 2026" before -1, Today, +1 and +7
+- **When** I tap +1
+- **Then** it reads "Wed 11 Nov 2026"
+
+Test: `__tests__/scenarios/writingHelpDates.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `quick-add.md#dates-and-times`
+
+### A handwritten time is read with its length
+
+- **When** recognition writes "l5,3O-l6" into the time field
+- **Then** the field holds 15:30-16:00 and the strip says "read as 15:30 – 16:00 · 30 min"
+
+Test: `__tests__/scenarios/writingHelpDates.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `quick-add.md#dates-and-times`
+
+### An hour from 1 to 6 offers the afternoon first
+
+- **When** recognition writes "3-4" into the time field
+- **Then** the strip offers 15:00 – 16:00 first, then 3:00 – 4:00
+- **When** I tap 15:00 – 16:00
+- **Then** the field holds it
+- **When** recognition writes "8" instead
+- **Then** it is 8:00 without a choice - already past at 10:00 today
+
+Test: `__tests__/scenarios/writingHelpDates.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `quick-add.md#dates-and-times`
+
+### A one-digit minute offers both readings and keeps what is written
+
+- **When** recognition writes "15,3" into the time field
+- **Then** the strip offers 15:30 and 15:03 and the field keeps "15,3"
+
+Test: `__tests__/scenarios/writingHelpDates.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `quick-add.md#dates-and-times`
+
+### An overlap with another meeting that day is named
+
+- **Given** the meeting "Jour Fixe" today 15:00-16:00
+- **When** I enter 15:30-16:30 for a new meeting today
+- **Then** the time strip says "overlaps Jour Fixe 15:00"
+
+Test: `__tests__/scenarios/writingHelpDates.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `quick-add.md#warnings-and-the-usual-time`
+
+### A new meeting in the past is marked
+
+- **When** I date a new meeting yesterday
+- **Then** the date strip says "past"
+
+Test: `__tests__/scenarios/writingHelpDates.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `quick-add.md#warnings-and-the-usual-time`
+
+### The usual slot of a thread fills date, time and end in one tap
+
+- **Given** the last meetings of #101/mieke: three on Tuesdays 14:00-14:45, two at other times
+- **When** I write "1:1 #101/mieke" and tap into the date field
+- **Then** the strip offers "Tue 10 Nov 14:00 · 45 min"
+- **When** I tap it
+- **Then** date, time and end are filled
+
+Test: `__tests__/scenarios/writingHelpDates.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `quick-add.md#warnings-and-the-usual-time`
+
+### A tag used once next to a known one is reported, listed and fixed on its line
+
+- **Given** #daily on two meetings, and "Retro #daiiy" once in project "Garden renovation"
+- **When** the Integrity Check runs
+- **Then** the report lists #daiiy with → #daily
+- **When** I open Settings → Input
+- **Then** it lists #daiiy with its line and project
+- **When** I tap → #daily
+- **Then** that line in the file reads #daily, the rest of the file is unchanged, and the list is empty
+- **When** I page the status line past the Integrity Check message
+- **Then** it names the change
+
+Test: `__tests__/scenarios/writingHelpInput.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `settings.md#input`
+
+### Keep takes a typo tag off the list without touching the file
+
+- **Given** #daily twice and #daiiy once
+- **When** I open Settings → Input and tap Keep
+- **Then** the tag is off the list and the file is as it was
+
+Test: `__tests__/scenarios/writingHelpInput.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `settings.md#input`
+
+### The capture panel checks the recognized text when it opens
+
+- **Given** a mark recognized as "call #Iena", and the tag #lena in use
+- **When** I process the mark and put the cursor into the text
+- **Then** the strip shows → #lena and the text is as recognized
+- **When** I tap → #lena and save
+- **Then** the todo is saved with #lena
+
+Test: `__tests__/scenarios/writingHelpLasso.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `lasso.md#capturing-right-away`
+
+### Handwriting writes #DaiIy: the strip suggests #daily
+
+- **When** recognition writes "stand-up #DaiIy" into the meeting title
+- **Then** the strip shows → #daily, Keep and Edit ›, and the title is unchanged
+- **When** I tap → #daily
+- **Then** the title reads "stand-up #daily" and the strip says where its page goes
+
+Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `quick-add.md#tag-suggestions`
+
+### A learned correction is applied directly, with Undo
+
+- **When** I correct #DaiIy to #daily once and then write "#DaiIy" again
+- **Then** the title reads "retro #daily" and the strip says "read as #daily" with Undo
+- **When** I tap Undo
+- **Then** #DaiIy is back and the pair is forgotten
+
+Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `tags.md#learned-corrections`
+
+### A known tag in another case is never questioned
+
+- **When** I write "stand-up #Daily"
+- **Then** nothing is flagged and the strip says where its page goes
+
+Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `quick-add.md#tag-suggestions`
+
+### A space after the slash goes silently, the parent tag is suggested
+
+- **Given** the setup on #101 and an earlier meeting with #101/mieke
+- **When** I write "#1o1/ Mieke"
+- **Then** the title reads "#1o1/Mieke" and the strip offers → #101/Mieke
+
+Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `quick-add.md#tag-suggestions`
+
+### Two flagged tags show in text order, a third is left out
+
+- **When** with #retro, #lena and #garden known I write "for #retros #Iena #gardn"
+- **Then** the strip shows → #retro, then → #lena, and not → #garden
+
+Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `quick-add.md#tag-suggestions`
+
+### + Add with a suggestion open asks once, the second + Add saves as written
+
+- **When** I write "stand-up #DaiIy" and tap + Add
+- **Then** nothing is saved and the status line asks
+- **When** I tap + Add again
+- **Then** the meeting is saved with #DaiIy
+
+Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `quick-add.md#adding-with-a-suggestion-open`
+
+### A new tag with nothing close is no question
+
+- **When** I write "plan #offsite27"
+- **Then** the strip names the new tag and the home notebook
+- **When** I tap + Add
+- **Then** the meeting is saved at once
+
+Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `quick-add.md#tag-suggestions`
+
+### An unfinished tag is completed from the known ones
+
+- **When** with #sparring and #sparring/lena known I write "call #spa"
+- **Then** the strip offers both
+- **When** I tap #sparring/lena
+- **Then** the tag is replaced and followed by a space
+
+Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `quick-add.md#completing-a-tag`
+
+### Completion shows an abbreviation with its project
+
+- **Given** project "Garden renovation" with the abbreviation GR
+- **When** I write "#g"
+- **Then** the strip offers #gr with "Garden renovation"
+
+Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `quick-add.md#completing-a-tag`
+
+### One tap fixes every place the tag is written so
+
+- **When** recognition writes "#DaiIy notes for #DaiIy" and I tap → #daily
+- **Then** both read #daily
+
+Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `quick-add.md#tag-suggestions`
+
+### A learned correction ended by a typed space keeps the cursor after the space
+
+- **When** daiiy → daily is learned and I type "#DaiIy" and then a space
+- **Then** the title reads "x #daily " with the cursor at its end
+
+Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `tags.md#learned-corrections`
 
 ## Your files
 

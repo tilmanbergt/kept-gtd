@@ -13,7 +13,8 @@ import {resolveAbbrevFileTarget} from '../../domain/abbrev';
 import {joinItems, splitAtSelection, splitByHand} from '../../domain/captureText';
 import {Selection} from '../../domain/clipboardText';
 import {Destination, destinationLabel} from '../../domain/destination';
-import {extractContextTags, insertTagAtPosition, removeTagFromText, stripSpaceAfterHash} from '../../domain/markdown';
+import {extractContextTags, insertTagAtPosition, removeTagFromText} from '../../domain/markdown';
+import {normalizeTagSpacing} from '../../domain/writing/tagCheck';
 import {composeTaskText} from '../../domain/quickAddCompose';
 import {getRecentDestinations, getRecentDestinationsSync, recordDestinationUsed} from '../../storage/destinationUsage';
 import {errorMessage} from '../../utils/errorMessage';
@@ -85,15 +86,20 @@ export function useCapture(core: QuickAddCore, task: TaskDraftState, meeting: Me
     touchedRef.current = false;
     const items = captureSeed.items.length > 0 ? captureSeed.items : [''];
     const split = captureSeed.split && items.length > 1;
-    const meetingTitle = captureSeed.meetingTitle ?? joinItems(items);
+    const meetingTitle = normalizeTagSpacing(captureSeed.meetingTitle ?? joinItems(items));
+    const taskText = split ? '' : normalizeTagSpacing(items[0]);
     input.agreement?.seedText(joinItems(items));
     if (newKey) {
-      task.setDraft({...makeTaskDraft(), text: split ? '' : items[0]});
+      task.setDraft({...makeTaskDraft(), text: taskText});
       meeting.setDraft({...makeMeetingDraft(captureSeed.date ?? input.initialDate), title: meetingTitle});
     } else {
-      task.setDraft(d => ({...d, text: split ? '' : items[0]}));
+      task.setDraft(d => ({...d, text: taskText}));
       meeting.setDraft(d => ({...d, title: meetingTitle}));
     }
+    // The recognized text is checked as one burst (docs/dev/history/technical-design-writing-help.md §3.5).
+    task.textHelp.checkSeed(taskText);
+    meeting.titleHelp.checkSeed(meetingTitle);
+    input.agreement?.textField.help.checkSeed(normalizeTagSpacing(joinItems(items)));
     setSplitRows(split ? items : null);
     setSplitPage(0);
     task.lastSelectionRef.current = null;
@@ -126,7 +132,7 @@ export function useCapture(core: QuickAddCore, task: TaskDraftState, meeting: Me
   };
   const updateSplitRow = (index: number, value: string) => {
     touch();
-    setSplitRows(rows => (rows ? rows.map((r, i) => (i === index ? stripSpaceAfterHash(value) : r)) : rows));
+    setSplitRows(rows => (rows ? rows.map((r, i) => (i === index ? normalizeTagSpacing(value) : r)) : rows));
   };
   const removeSplitRow = (index: number) => {
     touch();
@@ -202,6 +208,7 @@ export function useCapture(core: QuickAddCore, task: TaskDraftState, meeting: Me
         setError('Nothing to save - write the agreement first.', 'text');
         return;
       }
+      if (!agreement.textField.help.confirmAdd()) return;
       setError(null);
       setPending(true);
       try {
@@ -220,6 +227,8 @@ export function useCapture(core: QuickAddCore, task: TaskDraftState, meeting: Me
       return;
     }
     if (displayType === 'meeting') {
+      // The Add-twice rule (§1.4), as in Quick Add.
+      if (!meeting.titleHelp.confirmAdd()) return;
       const composed = meeting.compose(meeting.draft, meeting.abbrevTarget ? meeting.abbrevTarget.tag : null);
       if (!composed) return;
       setError(null);
@@ -233,6 +242,7 @@ export function useCapture(core: QuickAddCore, task: TaskDraftState, meeting: Me
       }
       setPending(false);
       meeting.setDraft(d => ({...makeMeetingDraft(d.date, false)}));
+      meeting.titleHelp.reset();
       meeting.setJustAdded(meeting.addedText(composed.fields.title, destination));
       core.recordTags(extractContextTags(composed.fields.title));
       rememberDestination(destination);
@@ -245,6 +255,7 @@ export function useCapture(core: QuickAddCore, task: TaskDraftState, meeting: Me
       setError('Nothing to save - write a todo first.', 'text');
       return;
     }
+    if (!splitRows && !task.textHelp.confirmAdd()) return;
     const tag = abbrevTarget ? abbrevTarget.tag : null;
     const texts = list.map(item => composeTaskText({...task.draft, text: item}, tag));
     setError(null);

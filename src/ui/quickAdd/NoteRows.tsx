@@ -1,12 +1,12 @@
 /**
- * Quick Add's Note rows: R2 a plain title field (ClipboardTextInput brings
- * its own Select All/Copy/Cut/Paste) and R3/R4 the tag chips that pin
+ * Quick Add's Note rows: R2 the title field with the writing strip
+ * (ui/writing/WritingTextInput.tsx) and R3/R4 the tag chips that pin
  * `#tag` tokens in the title. No due date, no edit mode.
  */
 import React from 'react';
 import {usePerfRender} from '../../utils/perf';
 import {View} from 'react-native';
-import ClipboardTextInput from '../ClipboardTextInput';
+import WritingTextInput from '../writing/WritingTextInput';
 import {useTwoRowTagChips} from '../TagChips';
 import {useTagRowBudget} from '../tagChipLayout';
 import {rowStyles} from './styles';
@@ -24,9 +24,9 @@ export function NoteInputRow({core, note, textColor, borderColor, placeholderCol
   usePerfRender('QuickAddRows:note');
   return (
     <View style={[rowStyles.row2, core.displayType !== 'note' && rowStyles.hidden]}>
-      <ClipboardTextInput
+      <WritingTextInput
+        field={note.titleField}
         value={note.draft.titleRaw}
-        onChangeText={note.setTitleRaw}
         onSubmitEditing={note.submitCreate}
         placeholder="New note"
         placeholderColor={placeholderColor}

@@ -39,6 +39,7 @@ import {requestEinkRefresh} from '../../utils/screenRefresh';
 import AboutTab from './AboutTab';
 import AdvancedTab from './AdvancedTab';
 import FeaturesTab from './FeaturesTab';
+import InputTab from './InputTab';
 import ContextsTab from './contexts/ContextsTab';
 import {useContextsDraft} from './contexts/useContextsDraft';
 import DataTab from './DataTab';
@@ -51,11 +52,12 @@ import {useMyStylePngs} from './noteSetups/useMyStylePngs';
 import {useNoteSetupDraft} from './noteSetups/useNoteSetupDraft';
 import {useSettingsDraft} from './useSettingsDraft';
 
-export type SettingsTab = 'data' | 'contexts' | 'templates' | 'features' | 'advanced' | 'about';
+export type SettingsTab = 'data' | 'contexts' | 'templates' | 'input' | 'features' | 'advanced' | 'about';
 const SETTINGS_TABS: MiniTabDef<SettingsTab>[] = [
   {key: 'data', label: 'Data'},
   {key: 'contexts', label: 'Contexts'},
   {key: 'templates', label: 'Note setups'},
+  {key: 'input', label: 'Input'},
   {key: 'features', label: 'Features'},
   {key: 'advanced', label: 'Advanced'},
   {key: 'about', label: 'About'},
@@ -306,6 +308,7 @@ export default function Settings({initialTab, onSwitchProfile, startSetup = fals
           {activeTab === 'templates' && (
             <NoteSetupsTab draft={noteSetups} values={values} myStyle={myStyle} {...tabProps} />
           )}
+          {activeTab === 'input' && <InputTab textColor={textColor} borderColor={borderColor} />}
           {activeTab === 'features' && (
             <FeaturesTab
               closeOut={modulesOf(values).closeOut}

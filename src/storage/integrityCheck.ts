@@ -48,6 +48,7 @@ import {log, logError} from '../utils/log';
 import {stripPageAnchor} from '../domain/sharedNotePages';
 import {classifyNotePath} from './noteLinks';
 import {dataFilePath, loadProjectFile} from './projectFile';
+import {countTags} from '../domain/writing/tagTypos';
 import {errorMessage} from '../utils/errorMessage';
 
 export interface IntegrityCheckSummary {
@@ -235,6 +236,7 @@ export async function runIntegrityCheck(settings: GtdParaSettings): Promise<Inte
           inArchive: target.inArchive,
           area: file.area,
           abbrev: file.abbrev,
+          tagCounts: Object.fromEntries(countTags([...file.tasks, ...file.meetings].map(e => e.tags))),
         };
         return {findings, summary, loaded: {target, tasks: file.tasks, meetings: file.meetings}};
       } catch (e) {

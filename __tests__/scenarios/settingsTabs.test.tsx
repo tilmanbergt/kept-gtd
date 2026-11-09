@@ -2,12 +2,12 @@ import {expectNotShows, expectShows, openApp, storedSettings, tap, tapTab, texts
 import {and, given, scenario, then, when} from '../../test-helpers/scenario/scenario';
 
 const DESIGN = 'technical-design-settings-tabs.md';
-const TABS = ['Data', 'Contexts', 'Note setups', 'Features', 'Advanced', 'About'];
+const TABS = ['Data', 'Contexts', 'Note setups', 'Input', 'Features', 'Advanced', 'About'];
 
-scenario('Settings opens on Data, with six tabs', {feature: 'Settings', design: DESIGN, help: 'settings.md'}, () => {
+scenario('Settings opens on Data, with seven tabs', {feature: 'Settings', design: DESIGN, help: 'settings.md'}, () => {
   given('Kept is open', () => openApp());
   when('I open Settings', () => tapTab('Settings'));
-  then('the six tabs show, and Data holds the folders, the setup assistant and the profiles', () => {
+  then('the seven tabs show, and Data holds the folders, the setup assistant and the profiles', () => {
     const all = texts();
     expect(TABS.every(t => all.includes(t))).toBe(true);
     expectNotShows('Folders ›');

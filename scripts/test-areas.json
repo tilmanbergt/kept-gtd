@@ -183,10 +183,16 @@
       "name": "Quick Add, item card and Inbox",
       "help": ["quick-add.md"],
       "tests": [
-        "__tests__/**/*{quickAdd,QuickAdd,itemCard,ItemCard,todoCard,destination,clipboard,inbox,entryMove,EntryMove,createItem}*"
+        "__tests__/**/*{quickAdd,QuickAdd,itemCard,ItemCard,todoCard,destination,clipboard,inbox,entryMove,EntryMove,createItem}*",
+        "__tests__/**/writing/**",
+        "__tests__/scenarios/writingHelp*"
       ],
       "sources": [
         "src/ui/quickAdd/**",
+        "src/domain/writing/**",
+        "src/ui/writing/**",
+        "src/storage/{learnedTagFixes,knownTagIndex,tagTypoLines}.ts",
+        "src/screens/settings/InputTab.tsx",
         "src/ui/itemCard/**",
         "src/ui/{QuickAddWidget,CollapsedQuickAdd,DestinationPicker,DateInput,ValidTillInput,FlowStateChips,InlineTextEditor,ClipboardStrip,ClipboardTextInput}.tsx",
         "src/ui/{useEntryMoveUi,useEditFlush}.ts",

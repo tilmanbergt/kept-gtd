@@ -23,10 +23,9 @@
  *   touch-down; the already-claimed touch responder keeps receiving the rest
  *   of the gesture only as long as the view instance itself survives).
  * - a ✕ at its end hides it until the field gains focus again (useStripHide).
- * The two strips' styles are deliberately duplicated rather than shared, so
- * the device-verified clipboard code stays untouched (tracked in
- * docs/dev/history/technical-design-meeting-date-nudge-and-new-from-this.md's
- * follow-ups).
+ * In Quick Add the strip also carries the writing help's lead slot (`help`):
+ * the full date, a warning, the usual meeting slot, or "read as … · Undo"
+ * (docs/dev/history/technical-design-writing-help.md §3.4).
  *
  * Layout: `containerStyle` (margins/flex) goes on the wrapper, which is the
  * strip's positioning context, so the strip's right edge lines up with the
@@ -41,6 +40,8 @@ import {DATE_NUDGES, nudgeIsoDate} from '../domain/dateNudge';
 import {FONT} from './theme';
 import {common} from './commonStyles';
 import {StripHideButton, useStripHide} from './ClipboardStrip';
+import {StripContent} from '../domain/writing/stripContent';
+import {WritingStripActions} from './writing/useWritingHelp';
 
 export interface DateInputHandle {
   focus: () => void;
@@ -123,10 +124,19 @@ const DateInput = forwardRef<DateInputHandle, Props>(function DateInput(
 
 export default DateInput;
 
+/** The writing help's part of the date strip (docs/dev/history/technical-design-writing-help.md §1.6, §3.4). */
+export interface DateStripHelp {
+  content: StripContent;
+  actions: WritingStripActions;
+}
+
 interface StripProps {
   visible: boolean;
   value: string;
+  /** The nudge buttons' setter: the date goes into the field as it is. */
   onChangeText: (next: string) => void;
+  /** Quick Add: the full date (+ warning) and the usual slot lead the buttons; "read as … · Undo" replaces them until the next touch. */
+  help?: DateStripHelp;
   /** 'above-left': left-aligned over the positioning context (Quick Add's R2, so the strip sits over the tabs). */
   placement?: 'above-right' | 'above-left';
   textColor: string;
@@ -134,19 +144,34 @@ interface StripProps {
 }
 
 /** The -1/Today/+1/+7 strip; stays mounted, hidden while not `visible` (see the module doc comment). */
-export function DateNudgeStrip({visible, value, onChangeText, placement = 'above-right', textColor, borderColor}: StripProps): React.JSX.Element {
+export function DateNudgeStrip({visible, value, onChangeText, help, placement = 'above-right', textColor, borderColor}: StripProps): React.JSX.Element {
   const {shown, hide} = useStripHide(visible);
+  const content = help?.content;
+  const button = (key: string, label: string, onPress: () => void) => (
+    <Pressable key={key} style={[common.floatingStripButton, {borderColor}]} onPress={onPress} hitSlop={6}>
+      <Text style={[common.floatingStripButtonText, {color: textColor}]}>{label}</Text>
+    </Pressable>
+  );
+  const lead = (text: string) => (
+    <Text key="lead" style={[common.floatingStripButtonText, styles.lead, {color: textColor}]}>
+      {text}
+    </Text>
+  );
+  let body: React.ReactNode[];
+  if (content?.kind === 'read' && help) {
+    body = [lead(content.label), button('undo', 'Undo', help.actions.undo)];
+  } else {
+    const nudges = DATE_NUDGES.map(({kind, label}) => button(kind, label, () => onChangeText(nudgeIsoDate(value, kind))));
+    const date = content?.kind === 'date' ? content : null;
+    body = [
+      ...(date?.label ? [lead(date.warning ? `${date.label} · ${date.warning}` : date.label)] : []),
+      ...nudges,
+      ...(date?.usual && help ? [button('usual', date.usual, help.actions.usual)] : []),
+    ];
+  }
   return (
     <View style={[common.floatingStrip, placement === 'above-left' && common.floatingStripLeft, {borderColor}, !shown && styles.hidden]}>
-      {DATE_NUDGES.map(({kind, label}) => (
-        <Pressable
-          key={kind}
-          style={[common.floatingStripButton, {borderColor}]}
-          onPress={() => onChangeText(nudgeIsoDate(value, kind))}
-          hitSlop={6}>
-          <Text style={[common.floatingStripButtonText, {color: textColor}]}>{label}</Text>
-        </Pressable>
-      ))}
+      {body}
       <StripHideButton onPress={hide} textColor={textColor} />
     </View>
   );
@@ -163,6 +188,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 5,
     fontSize: FONT.small,
+  },
+  /** The writing help's full date, before the buttons. */
+  lead: {
+    alignSelf: 'center',
+    paddingVertical: 3,
+    paddingHorizontal: 6,
   },
   /** Keeps the strip mounted (see the module doc comment) - Yoga skips display:none, so it costs no space. */
   hidden: {

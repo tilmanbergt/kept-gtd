@@ -136,6 +136,13 @@ checklist steps (`DEVELOPMENT-POLICY §n`, `RELEASING §n`), separated by `; `.
 - Evidence: DEVELOPMENT-POLICY §8 "Architecture rules kept"; __tests__/supernote/removeDataNative.test.ts
 - Re-checked: every change (§8)
 
+### V7 Quick Add never changes a tag without a tap, except two spacing fixes; a date or time is read only when it can mean one thing, shown with Undo
+- Kind: promise
+- Stated: docs/user/quick-add.md#writing-help; docs/user/tags.md#learned-corrections
+- Backing: tested
+- Evidence: __tests__/scenarios/writingHelpTags.test.tsx; __tests__/scenarios/writingHelpDates.test.tsx; __tests__/scenarios/writingHelpLasso.test.tsx; __tests__/domain/writing/tagCheck.test.ts; __tests__/domain/writing/readDateTime.test.ts
+- Re-checked: every push (CI)
+
 ## Privacy, network and accounts
 
 ### P1 There is no account, no server and no telemetry

@@ -9,7 +9,8 @@ Kept GTD is a local plugin. There is no account, no server and no telemetry.
   folders, so you can read and edit them without Kept.
 - **Notes it creates for you** (linked notes, meeting notes, standalone notes), in the same folders.
 - **Plugin settings**, stored in the plugin's own storage on the device (Android AsyncStorage).
-  They include the todo you are working on in Engage: its text and the folder it is filed in.
+  They include the todo you are working on in Engage: its text and the folder it is filed in, and
+  the recently used tags and the tag corrections Quick Add's writing help learned, per profile.
 - **Lasso marks** ("Mark for later"): a picture and the handwriting strokes of each marked
   selection, plus the text once it is recognized, in the plugin's own private folder on the device -
   not in your folders. They are deleted when the mark is processed or discarded. Recognition runs
@@ -47,8 +48,8 @@ handwriting. In a PDF, or where an icon can't be identified safely, it is left a
 ## Removing Kept's data
 
 **Remove Kept's data** (Settings → Data) lists everything Kept has put on the device, with where
-it is and how much: settings, the Gmail app password and calendar link, caches (recent tags and
-places, the calendar cache), lasso mark pictures and temporary files, logs, the demo space and
+it is and how much: settings, the Gmail app password and calendar link, caches (recent tags, learned
+tag corrections, recent places, the calendar cache), lasso mark pictures and temporary files, logs, the demo space and
 leftover save copies. Your data files (`project.txt`, `area.txt`,
 `Inbox.txt`) and saved profiles are listed too, but not checked. You tick what to remove; one
 confirmation names it before anything is deleted. Notes Kept created, its icons, keywords and

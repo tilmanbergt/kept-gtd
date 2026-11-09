@@ -10,8 +10,8 @@
  */
 import React from 'react';
 import {usePerfRender} from '../../utils/perf';
+import WritingStrip from '../writing/WritingStrip';
 import {StyleSheet, TextInput, View} from 'react-native';
-import ClipboardStrip from '../ClipboardStrip';
 import DateInput, {DateNudgeStrip} from '../DateInput';
 import MarkWrap from '../status/StatusMark';
 import TagChips, {useTwoRowTagChips} from '../TagChips';
@@ -55,6 +55,7 @@ export function MeetingInputRow({core, meeting, capture = false, textColor, bord
             onFocus={() => {
               log('QuickAdd: meeting title focused');
               meeting.setInputFocused(true);
+              meeting.titleHelp.onFocus();
             }}
             onBlur={() => meeting.setInputFocused(false)}
             placeholder="New meeting title"
@@ -70,6 +71,7 @@ export function MeetingInputRow({core, meeting, capture = false, textColor, bord
                 : focused => {
                     log('QuickAdd: meeting date', focused ? 'focused' : 'blurred', {titleLength: meeting.fields.title.length});
                     meeting.setDateFocused(focused);
+                    if (focused) meeting.dateHelp.onFocus();
                   }
             }
             value={meeting.fields.date}
@@ -86,15 +88,18 @@ export function MeetingInputRow({core, meeting, capture = false, textColor, bord
         <DateNudgeStrip
           visible={meeting.dateFocused}
           value={meeting.fields.date}
-          onChangeText={meeting.setDate}
+          onChangeText={meeting.writeDate}
+          help={{content: meeting.dateHelp.strip, actions: meeting.dateHelp.actions}}
           placement="above-left"
           textColor={textColor}
           borderColor={borderColor}
         />
       )}
-      <ClipboardStrip
+      <WritingStrip
         visible={meeting.inputFocused}
-        actions={meeting.clipboard}
+        content={meeting.titleHelp.strip}
+        actions={meeting.titleHelp.actions}
+        clipboard={meeting.clipboard}
         placement={capture ? 'above-right' : 'above-left'}
         textColor={textColor}
         borderColor={borderColor}
@@ -149,11 +154,25 @@ export function MeetingMetaRows({core, meeting, layoutKey, capture = false, row4
               style={[rowStyles.input, styles.timeInputCompact, {color: textColor, borderColor}]}
               value={meeting.fields.time}
               onChangeText={meeting.setTime}
+              onFocus={() => {
+                meeting.setTimeFocused(true);
+                meeting.timeHelp.onFocus();
+              }}
+              onBlur={() => meeting.setTimeFocused(false)}
               placeholder="15 · 15-16.30 · 2d"
               placeholderTextColor={placeholderColor}
               autoCapitalize="none"
             />
           </MarkWrap>
+          {/* The time strip hovers above the field, left-aligned (§3.4). */}
+          <WritingStrip
+            visible={meeting.timeFocused}
+            content={meeting.timeHelp.strip}
+            actions={meeting.timeHelp.actions}
+            placement="above-left"
+            textColor={textColor}
+            borderColor={borderColor}
+          />
         </View>
         {tags}
       </View>

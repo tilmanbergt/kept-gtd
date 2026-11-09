@@ -82,3 +82,31 @@ export function formatWeekdayDate(date: Date, today?: string): string {
   const iso = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
   return formatDayHeader(iso, today);
 }
+
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+/**
+ * `Mon 9 Nov 2026`: weekday, day, month name and year - the date strip's
+ * confirmation of what a date field holds, where `9.11.` could be read two
+ * ways (docs/dev/history/technical-design-writing-help.md §1.6). Without the
+ * year (`Tue 17 Nov`) for the usual meeting slot.
+ */
+export function formatFullDate(iso: string, withYear = true): string {
+  const p = parts(iso);
+  if (!p) return iso;
+  const weekday = WEEKDAYS[new Date(p.year, p.month - 1, p.day).getDay()];
+  const date = `${weekday} ${p.day} ${MONTHS[p.month - 1]}`;
+  return withYear ? `${date} ${p.year}` : date;
+}
+
+/** A meeting's length: `45 min`, `1 h`, `1 h 30 min`. */
+export function formatLength(minutes: number): string {
+  if (minutes < 60) return `${minutes} min`;
+  const rest = minutes % 60;
+  return `${Math.floor(minutes / 60)} h${rest > 0 ? ` ${rest} min` : ''}`;
+}
+
+/** `15:30 – 16:00`, or just `15:30` without an end. */
+export function formatTimeSpan(start: string, end: string): string {
+  return end ? `${formatTime(start)} – ${formatTime(end)}` : formatTime(start);
+}

@@ -11,10 +11,11 @@
  */
 import {useState} from 'react';
 import {Keyboard} from 'react-native';
-import {extractContextTags, insertTagAtPosition, removeTagFromText, stripSpaceAfterHash} from '../../domain/markdown';
+import {extractContextTags, insertTagAtPosition, removeTagFromText} from '../../domain/markdown';
 import {errorMessage} from '../../utils/errorMessage';
 import {makeNoteDraft, NoteDraft, truncateItemName} from './types';
 import {QuickAddCore} from './useQuickAddCore';
+import {useWritingField} from '../writing/useWritingField';
 
 interface Input {
   onAddNote?: (title: string, tags: string[], folderPath: string) => Promise<void>;
@@ -31,12 +32,16 @@ export function useNoteDraft(core: QuickAddCore, {onAddNote, noteFolderPath}: In
     if (justAdded !== null) setJustAdded(null);
     core.clearTransientMessages();
   };
-  const setTitleRaw = (t: string) => {
-    setDraft(d => ({...d, titleRaw: stripSpaceAfterHash(t)}));
+  /** Puts the title into the draft as it is - the writing help has run, or a chip changed it. */
+  const writeTitle = (t: string) => {
+    setDraft(d => ({...d, titleRaw: t}));
     clearJustAdded();
   };
-  const insertTag = (tag: string) => setTitleRaw(insertTagAtPosition(draft.titleRaw, tag, null).text);
-  const removeTag = (tag: string) => setTitleRaw(removeTagFromText(draft.titleRaw, tag));
+  // The writing help (docs/dev/history/technical-design-writing-help.md §3.5); a note has no note page to name.
+  const titleField = useWritingField({value: draft.titleRaw, write: writeTitle, recentTags: core.recentTags});
+  const setTitleRaw = titleField.help.onChangeText;
+  const insertTag = (tag: string) => writeTitle(insertTagAtPosition(draft.titleRaw, tag, null).text);
+  const removeTag = (tag: string) => writeTitle(removeTagFromText(draft.titleRaw, tag));
 
   const submitCreate = () => {
     Keyboard.dismiss();
@@ -44,6 +49,8 @@ export function useNoteDraft(core: QuickAddCore, {onAddNote, noteFolderPath}: In
     const tags = extractContextTags(draft.titleRaw);
     const cleanTitle = tags.reduce((t, tag) => removeTagFromText(t, tag), draft.titleRaw).trim();
     if (!cleanTitle) return;
+    // The Add-twice rule: an unanswered flagged tag is shown once more first.
+    if (!titleField.help.confirmAdd()) return;
     if (!noteFolderPath) {
       setError('Switch the Files pane back to Project Files/Area Files to add a note here.');
       return;
@@ -53,6 +60,7 @@ export function useNoteDraft(core: QuickAddCore, {onAddNote, noteFolderPath}: In
     onAddNote(cleanTitle, tags, noteFolderPath)
       .then(() => {
         setDraft(makeNoteDraft());
+        titleField.help.reset();
         setJustAdded(`Created note "${truncateItemName(cleanTitle, 40)}"`);
         setTagPage(0);
         core.recordTags(tags);
@@ -61,7 +69,7 @@ export function useNoteDraft(core: QuickAddCore, {onAddNote, noteFolderPath}: In
       .finally(() => setPending(false));
   };
 
-  return {draft, justAdded, setJustAdded, tagPage, setTagPage, setTitleRaw, insertTag, removeTag, submitCreate};
+  return {draft, justAdded, setJustAdded, tagPage, setTagPage, setTitleRaw, titleField, insertTag, removeTag, submitCreate};
 }
 
 export type NoteDraftState = ReturnType<typeof useNoteDraft>;

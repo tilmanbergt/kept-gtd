@@ -22,7 +22,7 @@ While you write in the text or date field, a small strip hovers over the tabs: *
 
 Kept GTD writes the due date as `[due:: …]` at the end of the line and records the day you added the todo as `[created:: …]`, see [Dates Kept GTD records](tags.md#dates-kept-gtd-records). When you edit a todo, its created and done dates stay; clearing the due date in Quick Add removes it.
 
-Recently used tags fill rows 3 and 4: tap one to insert it into the text, tap a filled one to remove it. **›** and **‹** at the end of row 4 page through more. A space typed right after `#` is removed automatically, so handwritten tags are recognized.
+Recently used tags fill rows 3 and 4: tap one to insert it into the text, tap a filled one to remove it. **›** and **‹** at the end of row 4 page through more. A space typed right after `#` is removed automatically, so handwritten tags are recognized; the [writing help](quick-add.md#writing-help) checks the rest.
 
 ## Adding a meeting
 
@@ -43,6 +43,48 @@ On a project's or area's [Current](projects-and-areas.md#the-current-tab) tab, t
 ## Filing directly with an abbreviation
 
 Every project and area has a short [abbreviation](projects-and-areas.md#abbreviations), for example `GR` for "Garden renovation". Write `#GR` in the text and the button changes to **+ Add to Garden renovation**: the item is created right there instead of in the Inbox, and the tag is removed from the text. The next item then starts with `#GR ` already in the field, so a run of items for one project needs the tag once; delete it to add the next item where the screen adds.
+
+## Writing help
+
+Handwriting recognition makes small mistakes: a capital I for an l, an o for a 0, a space after a slash. Quick Add looks at what it just wrote - only then, never while you write - and the hovering strip over the tabs shows one thing at a time. It only suggests: a tag changes when you tap, and a date or time only when it can be read just one way, always shown with **Undo**. The strip goes back to **All**, **Copy**, **Cut** and **Paste** the next time you tap into the field.
+
+### Tag suggestions
+
+Each tag that recognition writes is compared with the tags you already use: in your todos and meetings, your [Note setups](note-setups.md#what-a-setup-is), [abbreviations](projects-and-areas.md#abbreviations), [counterparts](threads.md), [contexts](contexts.md) and recent tags. Capital letters never count as a difference: `#Sparring` is your `#sparring`.
+
+- When a tag is close to one you use - `#sparrlng`, `#Iena`, `#workshops` - the strip shows the tag it means, for example **→ #sparring**, then **Keep** and **Edit ›**. Up to two such tags, in the order of the text.
+- **→ #sparring** replaces the tag, wherever it is written that way in the text; **Keep** leaves every suggested tag as written; **Edit ›** shows **All**, **Copy**, **Cut** and **Paste**.
+- A nested tag is checked part by part: the type against your tags, the part after the slash against that type's counterparts. A part that is right keeps its spelling, so only the part that is off changes, and the strip shows the whole tag, for example **→ #sparring/jordan**.
+- Two spaces are removed without asking, so a handwritten tag is one tag: a space right after `#`, and a space right after a `/` inside a tag (`#sparring/ jordan` becomes `#sparring/jordan`). A wide ＃ counts as `#`.
+
+When every tag is known or answered, the strip says where the item's note page would go, for example "✓ Sparring · Coaching 2026.note" - the same place the [note icon](quick-add.md#notes-and-files-on-a-todo-or-meeting) uses. A tag you have never used, with nothing close, is no question: "New tag #offsite27 · Team offsite 2026.note".
+
+A tag you corrected once is corrected the same way next time, see [Learned corrections](tags.md#learned-corrections).
+
+### Completing a tag
+
+When recognition ends with an unfinished tag, the strip offers up to three of your tags that start with it: `#spa` offers **#sparring** and **#sparring/jordan**. After a type and a slash, `#sparring/`, it offers that type's counterparts, the most recent first. An abbreviation shows its project or area next to it: **#gr Garden renovation**. A tap puts the tag in place, followed by a space.
+
+### Dates and times
+
+In the date fields and the meeting's time field, letters that look like digits are read as digits (`l` and `I` as 1, `O` as 0, `S` as 5, `B` as 8 and so on), and a comma, semicolon or space between digits as a separator.
+
+- *Dates*: `9.11.2026`, `09.11.26`, `9.11.` and `9.11` (the next 9 November), `2026 11 09`, `2026.11.09` and `20261109`. Where only one order of day and month is a date, that one is taken: `11.13` is 13 November.
+- *Times*: `15,30`, `15 30` and `1530` are 15:30, `930` is 9:30, `15h` is 15:00; `–` and `bis` make a range, as `-` does ([Meeting length](week-and-month.md#meeting-length)).
+
+When what recognition wrote can be read only one way, Quick Add writes it and the strip says so: "read as Mon 9 Nov 2026" or "read as 15:30 – 16:00 · 30 min", with **Undo**, which puts back what was written. When it can be read two ways, the strip asks "Did you mean" with both: an hour from 1 to 6 without minutes offers the afternoon first (`3-4`: 15:00 – 16:00, then 3:00 – 4:00), and one digit after the hour offers both minutes (`15,3`: 15:30 or 15:03). What cannot be read stays as written, and **+ Add** says what is wrong, as before.
+
+While the cursor is in a date field, its strip starts with the full date and weekday, "Tue 10 Nov 2026", then -1, **Today**, +1 and +7. The meeting's time field has a strip too, with the time and its length: "15:30 – 16:00 · 30 min".
+
+### Warnings and the usual time
+
+The date and time strips of a new meeting add a warning when the meeting starts in the past ("past"), or when it overlaps another meeting that day ("overlaps Team sync 15:00"). They only inform: nothing is moved or held back.
+
+When the meeting's tags name a [thread](threads.md) or a [loop](loops.md) that has met before, the date strip - and the time strip while its field is empty - offers the usual slot as one more button, for example "Tue 17 Nov 14:00 · 45 min": the weekday and start most of its last five meetings share, else the last one, with the usual length, on the next such day. One tap fills the date, the time and the end.
+
+### Adding with a suggestion open
+
+When you tap **+ Add** while a tag suggestion is still open, Kept saves nothing yet: the strip shows the suggestion again and the [status line](index.md#the-status-line) says "Check #sparrlng, or Add again to keep it". Tap **+ Add** a second time to save the item as written.
 
 ## The Inbox
 

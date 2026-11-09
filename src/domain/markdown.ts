@@ -68,12 +68,28 @@ const DUE_TAG_ANY_RE = /#due:\d{4}-\d{2}-\d{2}\b/gi;
  * handwriting recognition often inserts a space there, and TAG_RE above
  * requires a non-space character right after `#` to parse as a tag at all,
  * so a "# " sequence doesn't just look wrong, it silently never becomes a
- * tag. Wired into every ui/QuickAddWidget.tsx text field's onChangeText, so
- * it applies live regardless of whether the text arrived by typing,
- * handwriting recognition, or paste.
+ * tag. Part of domain/writing/tagCheck.ts's `normalizeTagSpacing`, which
+ * every Quick Add text field runs on each change.
  */
 export function stripSpaceAfterHash(text: string): string {
   return text.replace(/#\s+/g, '#');
+}
+
+/** Where each #tag of `text` sits (TAG_RE): `start` at the `#`, `end` after the tag, `tag` as written without `#`. */
+export interface TagSpan {
+  start: number;
+  end: number;
+  tag: string;
+}
+
+/** Every #tag of `text` with its position, in text order - the writing help checks tags by place (domain/writing/tagCheck.ts). */
+export function tagSpans(text: string): TagSpan[] {
+  const spans: TagSpan[] = [];
+  for (const match of text.matchAll(TAG_RE)) {
+    const start = match.index ?? 0;
+    spans.push({start, end: start + match[0].length, tag: match[1]});
+  }
+  return spans;
 }
 
 /** `text` without its #tags (TAG_RE), spacing left as it is - for a keyword that must get shorter (domain/keywordLength.ts). */
