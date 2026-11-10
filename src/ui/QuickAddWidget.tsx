@@ -83,6 +83,7 @@ import ProvenanceLine, {QuickAddAdds} from './quickAdd/ProvenanceLine';
 import QuickAddFrame from './quickAdd/QuickAddFrame';
 import TabsRow from './quickAdd/TabsRow';
 import KindButtons from './quickAdd/KindButtons';
+import FrozenWhileHidden from './quickAdd/FrozenWhileHidden';
 import {AttachmentCluster, TaskInputRow, TaskMetaRows} from './quickAdd/TaskRows';
 import {MeetingQuickAddFields, QuickAddEditTarget, QuickAddType, QuickFilePayload, sameEditTarget, truncateItemName} from './quickAdd/types';
 import {DraftPrefill, MeetingSeed, useDraftRequests} from './quickAdd/useDraftRequests';
@@ -568,6 +569,8 @@ function QuickAddWidget(props: Props): React.JSX.Element {
       <ProvenanceLine parts={provenance} textColor={textColor} />
     ) : undefined;
   const today = todayIso();
+  // Nobody sees R2-R4 behind a card or in the collapsed box: their re-renders are skipped then.
+  const rowsHidden = collapsed || cardShown || (!editTarget && !!props.ownerCard);
 
   return (
     <QuickAddFrame
@@ -597,15 +600,15 @@ function QuickAddWidget(props: Props): React.JSX.Element {
         )
       }
       row2={
-        <>
+        <FrozenWhileHidden hidden={rowsHidden} buildKey={allTabs}>
           {needs('task') && <TaskInputRow core={core} task={task} placeholder={props.placeholder ?? 'New task'} {...colors} />}
           {needs('meeting') && <MeetingInputRow core={core} meeting={meeting} {...colors} />}
           {needs('note') && <NoteInputRow core={core} note={note} {...colors} />}
           {needs('agreement') && <AgreementInputRow core={core} agreement={agreement} today={today} {...colors} />}
-        </>
+        </FrozenWhileHidden>
       }
       rows34={
-        <>
+        <FrozenWhileHidden hidden={rowsHidden} buildKey={allTabs}>
           {needs('task') && <TaskMetaRows core={core} task={task} layoutKey={layoutKey} row4={taskRow4} {...colors} />}
           {needs('meeting') && (
             <MeetingMetaRows
@@ -620,7 +623,7 @@ function QuickAddWidget(props: Props): React.JSX.Element {
           {needs('agreement') && (
             <AgreementTagRows core={core} agreement={agreement} layoutKey={layoutKey} row4={agreementRow4} textColor={textColor} borderColor={borderColor} />
           )}
-        </>
+        </FrozenWhileHidden>
       }
       card={
         !editTarget && props.ownerCard ? props.ownerCard : !cardShown ? null : editTarget?.kind === 'agreement' && props.agreementCard ? (

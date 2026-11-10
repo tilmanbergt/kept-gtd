@@ -330,7 +330,7 @@ Test: `__tests__/scenarios/calmerRows.test.tsx` · design: `docs/dev/history/tec
 - **Given** project "Garden renovation" with three #next todos
 - **When** I open Daily and tap the todo "Buy seeds"
 - **Then** its card shows in Quick Add's place
-- **And** neither the screen nor the todos list rendered again; only the rows whose mark changed did
+- **And** neither the screen, the todos list nor Quick Add's hidden rows rendered again; only the rows whose mark changed did
 
 Test: `__tests__/scenarios/calmerSelection.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `quick-add.md#the-card-one-tap-selects`
 

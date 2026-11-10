@@ -27,11 +27,13 @@ scenario('A tap on a Daily todo shows its card without re-rendering the list', {
     expectShows(/^Buy seeds/);
     expectShows('More ›');
   });
-  and('neither the screen nor the todos list rendered again; only the rows whose mark changed did', () => {
+  and('neither the screen, the todos list nor Quick Add\'s hidden rows rendered again; only the rows whose mark changed did', () => {
     expect(renders.DailyView ?? 0).toBe(0);
     expect(renders.DailyTodosColumn ?? 0).toBe(0);
     expect(renders.TaskRow ?? 0).toBeLessThanOrEqual(1);
     expect(renders.SelectionZone ?? 0).toBeGreaterThan(0);
+    // Quick Add's hidden rows behind the card don't render again either.
+    for (const rows of ['QuickAddRows:task', 'QuickAddRows:meeting', 'QuickAddRows:note', 'QuickAddRows:agreement']) expect([rows, renders[rows] ?? 0]).toEqual([rows, 0]);
     expect(loggedErrors()).toEqual([]);
   });
 });
@@ -54,6 +56,7 @@ scenario('A tap on a todo on the Current page shows its card without re-renderin
     expectShows('More ›');
     expect(renders.TodosSection ?? 0).toBe(0);
     expect(renders.MeetingsSection ?? 0).toBe(0);
+    for (const rows of ['QuickAddRows:task', 'QuickAddRows:meeting', 'QuickAddRows:note', 'QuickAddRows:agreement']) expect([rows, renders[rows] ?? 0]).toEqual([rows, 0]);
     expect(renders.TaskRow ?? 0).toBeLessThanOrEqual(1);
     expect(loggedErrors()).toEqual([]);
   });

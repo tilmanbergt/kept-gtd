@@ -57,22 +57,33 @@ function card(m: Meeting, extra: Partial<MeetingCardInput> = {}, handlers: Parti
   };
 }
 
+/** Quick Add with `m`'s card, as a screen holds it: ending the edit clears the target. */
+function Screen({m, data, onCancelEdit}: {m: Meeting; data: MeetingCardData; onCancelEdit: () => void}) {
+  const [selected, setSelected] = React.useState(true);
+  return (
+    <QuickAddWidget
+      fixedDestination={{type: 'inbox'}}
+      onAddTask={async () => undefined}
+      onAddMeeting={async () => undefined}
+      editTarget={selected ? editTargetFor('meeting:0', {meeting: m}, 'card') : null}
+      meetingCard={selected ? data : null}
+      onCancelEdit={() => {
+        onCancelEdit();
+        setSelected(false);
+      }}
+      textColor="#000"
+      borderColor="#000"
+      placeholderColor="#888"
+    />
+  );
+}
+
 function render(m: Meeting, data: MeetingCardData, onCancelEdit = jest.fn()) {
   let r!: TestRenderer.ReactTestRenderer;
   act(() => {
     r = TestRenderer.create(
       <StatusProvider>
-        <QuickAddWidget
-          fixedDestination={{type: 'inbox'}}
-          onAddTask={async () => undefined}
-          onAddMeeting={async () => undefined}
-          editTarget={editTargetFor('meeting:0', {meeting: m}, 'card')}
-          meetingCard={data}
-          onCancelEdit={onCancelEdit}
-          textColor="#000"
-          borderColor="#000"
-          placeholderColor="#888"
-        />
+        <Screen m={m} data={data} onCancelEdit={onCancelEdit} />
       </StatusProvider>,
     );
   });

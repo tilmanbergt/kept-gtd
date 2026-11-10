@@ -19,6 +19,7 @@ import {CardPage, MeetingCardButton, meetingCardPage} from '../../domain/itemCar
 import {CancelMeetingIcon, NewFromThisIcon, ReflectIcon, RefileIcon} from './icons';
 import {cardStyles, CardRow1, DetailLine, FileSlot, letter, SquareButton, TextButton} from './parts';
 import {useCardCommitTrace} from './useCardCommitTrace';
+import {usePerfRender} from '../../utils/perf';
 import {MeetingCardData} from './useMeetingCard';
 
 interface Props {
@@ -30,6 +31,7 @@ interface Props {
 }
 
 export default function MeetingCard({card, onNewFromThis, textColor, borderColor}: Props): React.JSX.Element {
+  usePerfRender('MeetingCard');
   useCardCommitTrace('meeting');
   const {model, busy} = card;
   const colors = {textColor, borderColor};

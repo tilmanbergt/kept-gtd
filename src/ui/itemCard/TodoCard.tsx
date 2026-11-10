@@ -18,6 +18,7 @@ import {TrashIcon} from '../icons';
 import {RefileIcon} from './icons';
 import {cardStyles, CardRow1, DetailLine, FileSlot, SquareButton, TextButton} from './parts';
 import {useCardCommitTrace} from './useCardCommitTrace';
+import {usePerfRender} from '../../utils/perf';
 import {TodoCardData} from './useTodoCard';
 
 interface Props {
@@ -27,6 +28,7 @@ interface Props {
 }
 
 export default function TodoCard({card, textColor, borderColor}: Props): React.JSX.Element {
+  usePerfRender('TodoCard');
   useCardCommitTrace('todo');
   const {model} = card;
   const colors = {textColor, borderColor};

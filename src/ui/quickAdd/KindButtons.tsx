@@ -8,9 +8,10 @@
  * folder) is greyed here too. Below 800 dp Agreement is called "Agree".
  */
 import React from 'react';
-import {StyleSheet, View} from 'react-native';
-import PillButton from '../PillButton';
+import {Pressable, StyleSheet, Text, View} from 'react-native';
 import {useLayoutClass} from '../ScreenSize';
+import {FONT, RADII} from '../theme';
+import {QUICK_ADD_ROWS} from './QuickAddFrame';
 import {QuickAddType} from './types';
 
 interface Props {
@@ -29,14 +30,17 @@ export const KIND_BUTTON_LABEL: Record<QuickAddType, string> = {task: '+ Todo', 
 export default function KindButtons({hasAgreement, hasNote, taskOnly, noteFolderPath, onOpen, textColor, borderColor}: Props): React.JSX.Element {
   const narrow = useLayoutClass() === 'narrow';
   const button = (type: QuickAddType, disabled = false) => (
-    <PillButton
+    <Pressable
       key={type}
-      label={type === 'agreement' && narrow ? '+ Agree' : KIND_BUTTON_LABEL[type]}
       onPress={() => onOpen(type)}
       disabled={disabled}
-      textColor={textColor}
-      borderColor={borderColor}
-    />
+      hitSlop={6}
+      accessibilityRole="button"
+      style={[styles.pill, {borderColor}, disabled && styles.disabled]}>
+      <Text style={[styles.text, {color: textColor}]} numberOfLines={1}>
+        {type === 'agreement' && narrow ? '+ Agree' : KIND_BUTTON_LABEL[type]}
+      </Text>
+    </Pressable>
   );
   return (
     <View style={styles.row} testID="quick-add-kinds">
@@ -48,7 +52,21 @@ export default function KindButtons({hasAgreement, hasNote, taskOnly, noteFolder
   );
 }
 
+/** The pill's height: it fits R1 (QUICK_ADD_ROWS.tabs) with room for its border, so nothing is cut. */
+export const KIND_BUTTON_HEIGHT = QUICK_ADD_ROWS.tabs - 4;
+
 const styles = StyleSheet.create({
-  // PillButton's own bottom margin would push the pills up in R1's fixed height.
-  row: {flexDirection: 'row', alignItems: 'center', flexWrap: 'nowrap', overflow: 'hidden', marginBottom: -6},
+  row: {flexDirection: 'row', alignItems: 'center', flexWrap: 'nowrap', overflow: 'hidden'},
+  // The look of ui/PillButton.tsx at R1's height: the text without font padding, centred.
+  pill: {
+    height: KIND_BUTTON_HEIGHT,
+    borderWidth: 1,
+    borderRadius: RADII.pillMd,
+    paddingHorizontal: 10,
+    marginRight: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  text: {fontSize: FONT.small, fontWeight: '600', includeFontPadding: false},
+  disabled: {opacity: 0.35},
 });

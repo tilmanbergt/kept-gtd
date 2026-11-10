@@ -25,6 +25,7 @@ jest.mock('../../src/ui/useAbbrevItems', () => ({
 
 import React from 'react';
 import {Pressable, StyleSheet, Text, TextInput, View, ViewStyle} from 'react-native';
+import {KIND_BUTTON_HEIGHT} from '../../src/ui/quickAdd/KindButtons';
 import TestRenderer, {act} from 'react-test-renderer';
 import QuickAddWidget, {editTargetFor, QuickAddEditTarget} from '../../src/ui/QuickAddWidget';
 import {QUICK_ADD_HEIGHT, QUICK_ADD_ROWS} from '../../src/ui/quickAdd/QuickAddFrame';
@@ -119,6 +120,10 @@ const pressText = (r: TestRenderer.ReactTestRenderer, label: string) =>
 describe('Quick Add box height', () => {
   it('is 174 dp: border, padding, four rows and three gaps', () => {
     expect(QUICK_ADD_HEIGHT).toBe(174);
+  });
+
+  it('the kind buttons fit R1 with their border, so nothing is cut', () => {
+    expect(KIND_BUTTON_HEIGHT).toBeLessThanOrEqual(QUICK_ADD_ROWS.tabs - 2);
   });
 
   // docs/dev/history/technical-design-calmer-screens.md §6 scenario 1, §3.2.
