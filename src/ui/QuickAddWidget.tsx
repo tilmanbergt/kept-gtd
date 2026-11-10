@@ -147,6 +147,8 @@ interface Props extends AgreementHandlers {
   meetingCard?: MeetingCardData | null;
   /** The selected todo's card (ui/itemCard/useTodoCard.ts), the same way: shown while `editTarget` is a todo in 'card' mode. */
   todoCard?: TodoCardData | null;
+  /** A card that is not an item's (Week's and Month's owner card, ui/period/useOwnerCard.tsx): shown while there is no `editTarget`. */
+  ownerCard?: React.ReactNode;
   /** The selected agreement's card (ui/itemCard/useAgreementCard.ts): shown while `editTarget` is an agreement in 'card' mode. */
   agreementCard?: AgreementCardData | null;
   /** Resolve `false` when the save failed (the screen showed its own error) - the widget then keeps the edit open. */
@@ -621,7 +623,7 @@ function QuickAddWidget(props: Props): React.JSX.Element {
         </>
       }
       card={
-        !cardShown ? null : editTarget?.kind === 'agreement' && props.agreementCard ? (
+        !editTarget && props.ownerCard ? props.ownerCard : !cardShown ? null : editTarget?.kind === 'agreement' && props.agreementCard ? (
           <AgreementCard card={props.agreementCard} textColor={textColor} borderColor={borderColor} />
         ) : editTarget?.kind === 'task' && todoCard ? (
           <TodoCard key={editTarget.key ?? ''} card={todoCard} textColor={textColor} borderColor={borderColor} />

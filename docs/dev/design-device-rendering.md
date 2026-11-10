@@ -210,7 +210,7 @@ See §3. Other single-line rows:
 
 | Row | File | Height (dp) | Composition |
 |---|---|---|---|
-| Given time row | `ui/period/GivenTimePanel.tsx` | **57** | `GIVEN_TIME_ROW_PX`: name and time 22 + grey line 18 + `paddingVertical 7 × 2` + border 1, like a 2-line meeting row; its captions ("Loops and counterparts", "Worked on …") and hint lines 28. |
+| Given time row | `ui/period/GivenTimePanel.tsx` | **37** | `GIVEN_TIME_ROW_PX`: name and time 22 + `paddingVertical 7 × 2` + border 1, like a 1-line meeting row (the grey line is on the owner card); its captions ("Loops and counterparts", "Worked on …") and hint lines 28. |
 | Context panel rows | `ui/meetingContext/MeetingContextPanel.tsx` | **task row** / **57** / **28** | todos as `TaskRow` (§3), an agreement 57 (`AGREEMENT_ROW_HEIGHT`), a caption ("I owe", "Agreed last time") 28. |
 | Hidden line | `ui/context/HiddenLine.tsx` | **~30** | `paddingVertical 6 × 2` + small line ~18; shown only while a context hides something. |
 | Tend line | `ui/period/GivenTimePanel.tsx` | **~30** | `paddingVertical 6 × 2` + small line ~18; only when something is quiet. |
@@ -284,9 +284,9 @@ the exception: it grows with its multi-line text and adds rows below.
   about 40 dp (6 + 22 + 6 + underline 2 + margin 8), over the list; the list's own header line
   stays for its page arrows, without text. The collapsed Quick Add box keeps its 174 dp.
 - **Week / Month, right column**: Quick Add (174) or the card, then either the back row (~30) with
-  the context panel as above, or Given time: header ~31 + rows of 57 + captions ("Loops and
+  the context panel as above, or Given time: header ~31 + rows of 37 + captions ("Loops and
   counterparts", "Worked on …") and the hint line ("Nothing above 1 h this week") 28 each, Tend line
-  ~30, hidden line ~30. 1227 − 174 − 31 − 60 ≈ 960 dp: about 16 owner rows per page.
+  ~30, hidden line ~30. 1227 − 174 − 31 − 60 ≈ 960 dp: about 25 owner rows per page.
 - **Settings → Contexts**: the list on the left like Note setups (`SETUP_ROW_HEIGHT` rows), the editor
   on the right: name input ~33, three chip grids (Areas, Projects, tags; chips ~32, wrapping), the
   "outside meetings" switch, the two Given time threshold rows (MiniTabs, ~40 each) and the preview

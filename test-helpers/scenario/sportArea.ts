@@ -8,7 +8,7 @@ import {meetingKey} from '../../src/domain/provenance';
 import {NoteSetup, seedNoteSetupDefaults} from '../../src/domain/noteSetups';
 import {GtdParaSettings} from '../../src/domain/settings';
 import {device} from '../fakeDevice/device';
-import {openApp, openEngage, tap, tapTab, texts} from './app';
+import {openApp, openEngage, tap, tapTab} from './app';
 import {fixedClock} from './clock';
 import {areaDir, areaFile, dataFile, putFile} from './files';
 import {sparringSettings} from './setups';
@@ -84,8 +84,6 @@ export function sport(options: {loop?: 'active' | 'done'; shoes?: 'open' | 'canc
 
 /** Engage on page `page` (1-based) of `note`. */
 export const engageOn = (page: number, note = NOTEBOOK, loopNoteName?: string) => openEngage({fromNote: note, page: page - 1, settings: settings(loopNoteName)});
-
-export const sectionLine = () => texts().filter(l => l.startsWith('Section: '));
 
 /** A mark in Sport 2026.note on page `page` (1-based) saying `text`. */
 export const sportMark = (page: number, text: string) => `- 2026-10-25 09:00 [[Sport 2026.note]] p${page} ${text} ^m-20261025-0900${String(page).padStart(2, '0')}-000`;

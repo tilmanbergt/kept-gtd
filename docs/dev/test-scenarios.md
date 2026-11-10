@@ -651,7 +651,7 @@ Test: `__tests__/scenarios/meetingReflection.test.tsx` · design: `docs/dev/hist
 
 - **Given** Sport 2026.note is Area Sport's home notebook and the note of loop marathon; page 1 is its Home page
 - **When** I open Engage on page 1
-- **Then** the owner is Area Sport and the line reads "Section: Sport"
+- **Then** the owner is Area Sport
 
 Test: `__tests__/scenarios/pageSection.test.tsx` · help: `engage.md#which-owner-a-page-belongs-to`
 
@@ -659,7 +659,7 @@ Test: `__tests__/scenarios/pageSection.test.tsx` · help: `engage.md#which-owner
 
 - **Given** page 2 has no title and no keyword
 - **When** I open Engage on page 2
-- **Then** the owner is Area Sport and the line reads "Section: Sport · from p. 1"
+- **Then** the owner is Area Sport
 
 Test: `__tests__/scenarios/pageSection.test.tsx` · help: `engage.md#which-owner-a-page-belongs-to`
 
@@ -667,7 +667,7 @@ Test: `__tests__/scenarios/pageSection.test.tsx` · help: `engage.md#which-owner
 
 - **Given** page 5 is the page of the open todo "Plan long runs #loop/marathon", page 6 a follow-up
 - **When** I open Engage on page 6
-- **Then** the owner is Loop marathon, the todo is current, and the line names it from p. 5
+- **Then** the owner is Loop marathon and the todo is current
 
 Test: `__tests__/scenarios/pageSection.test.tsx` · help: `engage.md#which-owner-a-page-belongs-to`
 
@@ -675,7 +675,7 @@ Test: `__tests__/scenarios/pageSection.test.tsx` · help: `engage.md#which-owner
 
 - **Given** page 7 has my typed heading "Training plan"
 - **When** I open Engage on page 8
-- **Then** the owner is Area Sport and the line reads "Section: Training plan · from p. 7"
+- **Then** the owner is Area Sport
 
 Test: `__tests__/scenarios/pageSection.test.tsx` · help: `engage.md#which-owner-a-page-belongs-to`
 
@@ -683,7 +683,7 @@ Test: `__tests__/scenarios/pageSection.test.tsx` · help: `engage.md#which-owner
 
 - **Given** page 9 has a handwritten title
 - **When** I open Engage on page 9
-- **Then** the owner is Area Sport and the line reads "Section: Handwritten section"
+- **Then** the owner is Area Sport
 
 Test: `__tests__/scenarios/pageSection.test.tsx` · help: `engage.md#which-owner-a-page-belongs-to`
 
@@ -699,7 +699,7 @@ Test: `__tests__/scenarios/pageSection.test.tsx` · help: `engage.md#which-owner
 
 - **Given** the todo "Buy shoes" of page 10 is cancelled
 - **When** I open Engage on page 11
-- **Then** the owner is Area Sport, no todo is current, and the line still reads "Section: Buy shoes · from p. 10"
+- **Then** the owner is Area Sport and no todo is current
 
 Test: `__tests__/scenarios/pageSection.test.tsx` · help: `engage.md#which-owner-a-page-belongs-to`
 
@@ -715,7 +715,7 @@ Test: `__tests__/scenarios/pageSection.test.tsx` · help: `engage.md#which-owner
 
 - **Given** loop marathon's note "2026-11 loop marathon.note" is not a home notebook; page 2 is free
 - **When** I open Engage on page 2 of the loop note
-- **Then** the owner is the loop and the line names the loop page
+- **Then** the owner is the loop
 
 Test: `__tests__/scenarios/pageSection.test.tsx` · help: `engage.md#which-owner-a-page-belongs-to`
 
@@ -750,7 +750,6 @@ Test: `__tests__/scenarios/pageSection.test.tsx` · help: `engage.md#opening-eng
 - **Given** page 3 is the page of meeting "Coach call" (Sport, no loop tag), where "Book physio" was agreed; page 4 is handwritten without a title
 - **When** I open Engage on page 4
 - **Then** the owner is Area Sport, the moment line shows Coach call with its moment, From offers its group
-- **And** the line reads "Section: Coach call · 24.10. · from p. 3"
 
 Test: `__tests__/scenarios/smoke/engagePage.test.tsx` · help: `engage.md#which-owner-a-page-belongs-to`
 
@@ -1961,7 +1960,11 @@ Test: `__tests__/scenarios/focusBlocks.test.tsx` · help: `week-and-month.md#mon
 - **When** I open Week
 - **Then** Given time lists Garden (1 day) above Writing (3.5 h, two blocks, its next todo)
 - **And** no loop or counterpart reaches 1 h
-- **And** Worked on lists Website with its todo done
+- **And** Worked on lists Website
+- **When** I tap Website there
+- **Then** its card says "1 done" and offers Open ›; the page is not opened yet
+- **When** I tap Open ›
+- **Then** Website's page opens
 - **And** no error was logged
 
 Test: `__tests__/scenarios/givenTime.test.tsx` · help: `week-and-month.md#given-time`
@@ -2027,7 +2030,10 @@ Test: `__tests__/scenarios/narrowScreen.test.tsx` · design: `docs/dev/history/t
 - **When** I open Week
 - **Then** the grid shows Wednesday 14 "Neighbour chat" and "Dentist", Thursday 15 "Supplier call" and the focus block, Friday 16 "Delivery"
 - **And** not "Soil test", which is next week
-- **And** Given time lists Garden with "Delivery" as 1 day, its two timed meetings and its focus block; never the Inbox's Dentist
+- **And** Given time lists Garden on one line with "Delivery" as 1 day and its timed meetings and focus block; never the Inbox's Dentist
+- **When** I tap Garden's line
+- **Then** its card shows in the box with the grey line and Open ›
+- **When** I tap ✕ on the card
 - **When** I tap ›
 - **Then** the grid shows Tuesday 20 "Soil test"
 - **And** no error was logged

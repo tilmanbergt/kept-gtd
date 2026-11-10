@@ -5,12 +5,13 @@
  * (due date or Waiting For with its follow-up) and the meeting it was agreed
  * in as a link to that meeting's note ("From Sparring Jordan · 14.10. ›"), a
  * large check box on the right that marks it done, and the buttons
- * (docs/dev/history/technical-design-meetings-0.21.md R15): w/f <Counterpart>
- * (Waiting For on the owner thread's counterpart, "w/f" without one), Do
- * someday, Remove #next (with `#next`), its note (Note › / + Note through
- * the one note flow) and its linked file ("File: <name> ›").
+ * (docs/dev/history/technical-design-calmer-screens.md §3.9): w/f <Counterpart>
+ * (Waiting For on the owner thread's counterpart, "w/f" without one),
+ * Someday, its note (Note › / + Note through the one note flow) and More ›,
+ * which shows Remove #next (with `#next`) and its linked file ("File: <name> ›")
+ * in the same row, with ‹ back.
  */
-import React from 'react';
+import React, {useState} from 'react';
 import {Pressable, Text, View} from 'react-native';
 import {todayIso} from '../../domain/meetingTime';
 import {EngageTodoRef} from '../../domain/engageOwner';
@@ -68,6 +69,7 @@ export default function NowBox({
   const next = isNextTask(todo.task);
   const waiting = todo.task.flowState === 'waiting-for';
   const file = todo.task.linkedFile;
+  const [more, setMore] = useState(false);
   return (
     <View style={[styles.nowBox, {borderColor: textColor}]}>
       <View style={styles.nowRow}>
@@ -104,44 +106,20 @@ export default function NowBox({
         </Pressable>
       </View>
       <View style={styles.buttonRow}>
-        {waiting ? null : (
-          <PillButton
-            label={waitingForButtonText(counterpart)}
-            onPress={onWaiting}
-            textColor={textColor}
-            borderColor={borderColor}
-          />
+        {more ? (
+          <>
+            <PillButton label="‹" onPress={() => setMore(false)} textColor={textColor} borderColor={borderColor} />
+            {next ? <PillButton label={ENGAGE_TEXT.removeNext} onPress={onRemoveNext} textColor={textColor} borderColor={borderColor} /> : null}
+            {file ? <PillButton label={linkedFileButtonText(file)} onPress={() => onFile(file)} textColor={textColor} borderColor={borderColor} /> : null}
+          </>
+        ) : (
+          <>
+            {waiting ? null : <PillButton label={waitingForButtonText(counterpart)} onPress={onWaiting} textColor={textColor} borderColor={borderColor} />}
+            <PillButton label={ENGAGE_TEXT.someday} onPress={onSomeday} textColor={textColor} borderColor={borderColor} />
+            <PillButton label={todo.task.notePath ? ENGAGE_TEXT.openNote : ENGAGE_TEXT.newNote} onPress={onNote} textColor={textColor} borderColor={borderColor} />
+            {next || file ? <PillButton label={ENGAGE_TEXT.more} onPress={() => setMore(true)} textColor={textColor} borderColor={borderColor} /> : null}
+          </>
         )}
-        <PillButton
-          label={ENGAGE_TEXT.doSomeday}
-          onPress={onSomeday}
-          textColor={textColor}
-          borderColor={borderColor}
-        />
-        {next ? (
-          <PillButton
-            label={ENGAGE_TEXT.removeNext}
-            onPress={onRemoveNext}
-            textColor={textColor}
-            borderColor={borderColor}
-          />
-        ) : null}
-        <PillButton
-          label={
-            todo.task.notePath ? ENGAGE_TEXT.openNote : ENGAGE_TEXT.newNote
-          }
-          onPress={onNote}
-          textColor={textColor}
-          borderColor={borderColor}
-        />
-        {file ? (
-          <PillButton
-            label={linkedFileButtonText(file)}
-            onPress={() => onFile(file)}
-            textColor={textColor}
-            borderColor={borderColor}
-          />
-        ) : null}
       </View>
     </View>
   );

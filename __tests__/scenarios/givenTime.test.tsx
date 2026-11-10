@@ -27,14 +27,22 @@ scenario('Given time: areas and projects by time, an all-day event as "1 day", W
     await tapTab('Week');
   });
   then('Given time lists Garden (1 day) above Writing (3.5 h, two blocks, its next todo)', () => {
-    expect(textsBetween('Given time this week', 'Loops and counterparts')).toEqual(['Garden', 'AREA', '1 day', '1 meeting', 'Writing', 'AREA', '3.5 h', '2 blocks · next: Draft chapter']);
+    expect(textsBetween('Given time this week', 'Loops and counterparts')).toEqual(['Garden', 'AREA', '1 day', 'Writing', 'AREA', '3.5 h']);
   });
   and('no loop or counterpart reaches 1 h', () => {
     expect(textsBetween('Loops and counterparts', 'Worked on this week')).toEqual(['Nothing above 1 h this week']);
   });
-  and('Worked on lists Website with its todo done', () => {
-    expect(textsBetween('Worked on this week').slice(0, 3)).toEqual(['Website', 'PROJECT', '1 done']);
+  and('Worked on lists Website', () => {
+    expect(textsBetween('Worked on this week').slice(0, 2)).toEqual(['Website', 'PROJECT']);
   });
+  when('I tap Website there', () => tap('Website'));
+  then('its card says "1 done" and offers Open ›; the page is not opened yet', () => {
+    expectShows('1 done');
+    expectShows('Open ›');
+    expectShows('Given time this week');
+  });
+  when('I tap Open ›', () => tap('Open ›'));
+  then('Website\'s page opens', () => expectShows(/^Next \d+$/));
   and('no error was logged', () => expect(loggedErrors()).toEqual([]));
 });
 
@@ -102,7 +110,7 @@ scenario('Given time lists loops and counterparts from the threshold up, never t
     await tapTab('Week');
   });
   then('Writing has all 2.5 h; Loops and counterparts lists novel, not essay (below 1 h); no Inbox row', () => {
-    expect(textsBetween('Given time this week', 'Loops and counterparts')).toEqual(['Writing', 'AREA', '2.5 h', '2 blocks']);
+    expect(textsBetween('Given time this week', 'Loops and counterparts')).toEqual(['Writing', 'AREA', '2.5 h']);
     expect(textsBetween('Loops and counterparts').slice(0, 3)).toEqual(['novel', 'LOOP', '2 h']);
     expect(readTexts()).not.toContain('INBOX');
     expect(readTexts()).not.toContain('essay');
@@ -141,7 +149,7 @@ scenario('Given time sums a counterpart\'s threads into one row', {feature: 'Wee
     await tapTab('Week');
   });
   then('Loops and counterparts lists "value" once, with 3 h and its three series', () => {
-    expect(textsBetween('Loops and counterparts').slice(0, 4)).toEqual(['value', 'COUNTERPART', '3 h', 'retro · review · replenishment · 3 meetings']);
+    expect(textsBetween('Loops and counterparts').slice(0, 3)).toEqual(['value', 'COUNTERPART', '3 h']);
   });
   and('no error was logged', () => expect(loggedErrors()).toEqual([]));
 });

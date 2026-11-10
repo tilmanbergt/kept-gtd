@@ -1,4 +1,4 @@
-import {expectNotShows, openApp, tap, tapTab, textsBetween} from '../../../test-helpers/scenario/app';
+import {expectNotShows, expectShows, openApp, tap, tapLabel, tapTab, textsBetween} from '../../../test-helpers/scenario/app';
 import {loggedErrors} from '../../../test-helpers/scenario/files';
 import {and, given, scenario, then, when} from '../../../test-helpers/scenario/scenario';
 import {putSmokeSpace, smokeClock} from '../../../test-helpers/scenario/smokeSpace';
@@ -32,11 +32,18 @@ scenario('Week shows this week\'s meetings and the time given to each owner', {f
     expect(weekDay('Fr 16.10.')).toEqual(['all day', 'Delivery']);
   });
   and('not "Soil test", which is next week', () => expectNotShows('Soil test'));
-  and('Given time lists Garden with "Delivery" as 1 day, its two timed meetings and its focus block; never the Inbox\'s Dentist', () => {
+  and('Given time lists Garden on one line with "Delivery" as 1 day and its timed meetings and focus block; never the Inbox\'s Dentist', () => {
     const panel = textsBetween('Given time this week');
-    expect(panel.slice(0, 6)).toEqual(['Garden', 'AREA', '1 day · 3 h', '1 block · 3 meetings · next: Buy bulbs', 'Loops and counterparts', 'Nothing above 1 h this week']);
+    expect(panel.slice(0, 5)).toEqual(['Garden', 'AREA', '1 day · 3 h', 'Loops and counterparts', 'Nothing above 1 h this week']);
     expect(panel).not.toContain('INBOX');
   });
+  when('I tap Garden\'s line', () => tap('Garden'));
+  then('its card shows in the box with the grey line and Open ›', () => {
+    expectShows('Garden · Area');
+    expectShows('1 block · 3 meetings · next: Buy bulbs');
+    expectShows('Open ›');
+  });
+  when('I tap ✕ on the card', () => tapLabel('Close'));
   when('I tap ›', () => tap('›'));
   then('the grid shows Tuesday 20 "Soil test"', () => expect(weekDay('Tu 20.10.')).toEqual(['11:00', 'Soil test']));
   and('no error was logged', () => expect(loggedErrors()).toEqual([]));
@@ -52,7 +59,7 @@ scenario('Month shows the highlights and the time given this month', {feature: '
   });
   and('Given time counts all of Garden\'s meetings, highlight or not, and its todo done this month', () => {
     const panel = textsBetween('Given time this month');
-    expect(panel.slice(0, 4)).toEqual(['Garden', 'AREA', '2 days · 4 h', '1 block · 5 meetings · 1 done · next: Buy bulbs']);
+    expect(panel.slice(0, 3)).toEqual(['Garden', 'AREA', '2 days · 4 h']);
   });
   when('I tap the 14th', () => tap(/^We 14/));
   then('the right side lists both meetings of that day', () => {

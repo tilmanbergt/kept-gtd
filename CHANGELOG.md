@@ -53,6 +53,10 @@ or your project/area files are stored.
   page; **Done** lists what you finished today (on a project's page: in the last 14 days).
 - Daily's schedule has no summary line any more; its one-line/two-line buttons sit next to Today
   and Tomorrow.
+- Week and Month: Given time is one line per owner; a tap shows its card with the details and
+  **Open ›**.
+- Engage is quieter: no section line and no "Loop since" line; the current todo offers w/f,
+  **Someday**, its note and **More ›** (Remove #next, the linked file).
 - A tap on a row shows its card faster: the list no longer redraws for it.
 - For contributors: `SECURITY.md` says how to report a vulnerability privately and what Kept
   touches; `docs/dev/claims.md` lists every promise Kept makes and how each is checked.
