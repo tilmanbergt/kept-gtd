@@ -1,7 +1,8 @@
 // domain/listTabs.ts and flowState's doneWithin (docs/dev/history/technical-design-calmer-screens.md §3.5).
 import {doneWithin} from '../../src/domain/flowState';
 import {currentTabOf, splitCurrent, splitDaily} from '../../src/domain/listTabs';
-import {task} from '../../test-helpers/fixtures';
+import {meeting, task} from '../../test-helpers/fixtures';
+import {inboxSummary, inboxTodoMeta} from '../../src/domain/inboxCount';
 
 const TODAY = '2026-11-10';
 const done = (text: string, completion: string) => task(text, {done: true, fields: {...task('x').fields, completion}});
@@ -18,7 +19,7 @@ describe('doneWithin', () => {
 
 describe('splitDaily', () => {
   const entry = (text: string, extra: Parameters<typeof task>[1] = {}, kind = 'area') => ({task: task(text, extra), item: {kind}});
-  it('splits Next and Waiting, lists the Inbox, counts open ones and the due ones under the bell', () => {
+  it('splits Next and Waiting without the Inbox\'s todos, counts open ones and the due waiting ones under the bell', () => {
     const shown = [
       entry('a #next', {flowState: 'next'}),
       entry('b #wf/lena', {flowState: 'waiting-for', dueDate: '2026-11-09'}),
@@ -26,11 +27,10 @@ describe('splitDaily', () => {
       entry('d #next', {flowState: 'next', dueDate: TODAY}, 'inbox'),
       entry('e', {done: true, flowState: 'next'}),
     ];
-    const split = splitDaily(shown, [entry('e', {done: true})], TODAY, true);
-    expect(split.lists.next.map(e => e.task.text)).toEqual(['a #next', 'd #next', 'e']);
-    expect(split.counts).toEqual({next: 2, waiting: 2, inbox: 1, done: 1});
-    expect(split.bells).toEqual({waiting: 1, inbox: 1});
-    expect(splitDaily(shown, [], TODAY, false).lists.next.map(e => e.task.text)).toEqual(['a #next', 'e']);
+    const split = splitDaily(shown, [entry('e', {done: true})], TODAY);
+    expect(split.lists.next.map(e => e.task.text)).toEqual(['a #next', 'e']);
+    expect(split.counts).toEqual({next: 1, waiting: 2, done: 1});
+    expect(split.bells).toEqual({waiting: 1});
   });
 });
 
@@ -51,5 +51,18 @@ describe('splitCurrent', () => {
     expect(split.counts).toEqual({next: 1, waiting: 1, plan: 1, someday: 2, done: 1});
     expect(splitCurrent(tasks, TODAY, new Set()).lists.next).toEqual([0]);
     expect(currentTabOf(task('x'))).toBe('plan');
+  });
+});
+
+describe('inboxSummary', () => {
+  it('lists open todos and not cancelled meetings, counts marks too, and bells the due todos', () => {
+    const tasks = [task('a'), task('b', {done: true}), task('c #someday', {flowState: 'someday'}), task('d', {dueDate: '2026-11-09'}), task('e', {cancelled: true})];
+    const meetings = [meeting('2026-10-01', 'Past'), meeting('2026-12-01', 'Later', {cancelled: true})];
+    expect(inboxSummary(tasks, meetings, 4, TODAY)).toEqual({todos: [0, 3], meetings: [0], count: 7, bell: 1});
+  });
+  it('the grey note: due today or earlier (bold), else when it was captured', () => {
+    expect(inboxTodoMeta(task('a', {dueDate: TODAY}), TODAY)).toEqual({text: 'due today', strong: true});
+    expect(inboxTodoMeta(task('a', {fields: {...task('x').fields, created: '2026-11-02'}}), TODAY)).toEqual({text: '2.11.', strong: false});
+    expect(inboxTodoMeta(task('a', {dueDate: '2026-11-20', fields: {...task('x').fields, created: null}}), TODAY)).toEqual({text: 'due 20.11.', strong: false});
   });
 });

@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-239 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+240 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -111,7 +111,10 @@ Test: `__tests__/scenarios/keptGtd.test.tsx` · help: `close-out.md#where-things
 - **Given** contexts Work (Area Team) and Home (Area Garden)
 - **When** I open Daily, tap the chip in the tab bar, choose Home in Settings → Contexts and go back to Daily
 - **Then** the chip names Home, and the status line says so
-- **And** Team's todos are hidden, its overdue one too; Garden's and the Inbox show
+- **And** Team's todos are hidden, its overdue one too; Garden's show, and the Inbox counts its todo
+- **When** I open the Inbox tab
+- **Then** the Inbox's todo shows there, the context ignored
+- **When** I go back to Next
 - **And** Team's meeting is still listed (dimmed), and the hidden line counts the hidden todos and warns of the due one
 - **When** I tap Show
 - **Then** everything shows
@@ -308,6 +311,17 @@ Test: `__tests__/scenarios/contexts.test.tsx` · help: `contexts.md#setting-up-c
 
 ## Daily
 
+### Daily counts the Inbox's marks, todos and meetings in its Inbox tab; the bell counts the due todos
+
+- **Given** on 10.11. two #next todos, one waiting todo due today, and an Inbox with 4 todos (one due today), 1 meeting and 4 open marks
+- **When** I open Daily
+- **Then** the tabs read Next 2, Waiting 1 with the bell, Inbox 9 with the bell
+- **And** the Inbox's #next todo is not under Next
+- **When** I tap Inbox 9
+- **Then** it lists the marks card, the four todos and the past meeting, not the Someday one
+
+Test: `__tests__/scenarios/calmerInbox.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `daily.md#count-tabs-and-the-bell`
+
 ### A Daily row keeps its words; the due date moves to a grey note on the right; no note icon without a note
 
 - **Given** on 3.11.2026, project "Garden renovation" with "Order soil #next" due 5.11. and "Collect topics #lena #next"
@@ -389,7 +403,7 @@ Test: `__tests__/scenarios/dailySlim.test.tsx` · design: `docs/dev/history/tech
 ### Quick-file from a Daily edit: "Save to <Name>" moves the todo
 
 - **Given** "Buy bulbs" in the Inbox and project Garage (#GAR)
-- **When** I edit it on Daily, add "#GAR" and tap Save to Garage
+- **When** I edit it on Daily's Inbox tab, add "#GAR" and tap Save to Garage
 - **Then** it is in Garage's file and not in Inbox.txt
 
 Test: `__tests__/scenarios/dailySlim.test.tsx` · help: `quick-add.md#filing-directly-with-an-abbreviation`
@@ -498,7 +512,7 @@ Test: `__tests__/scenarios/rollback.test.tsx` · help: `files-and-folders.md`
 - **Given** the smoke space on Wednesday 14.10.2026 with the context Home (Area Garden) active
 - **When** I open Daily
 - **Then** the Today tab lists "Neighbour chat" and "Dentist"
-- **And** the todos are the Inbox's, Garden's project Garage's and Garden's, a due one with its grey note; the rest is counted, Website's overdue one as "1 due!"
+- **And** the todos under Next are Garden's project Garage's and Garden's (the Inbox's are under Inbox), a due one with its grey note; the rest is counted, Website's overdue one as "1 due!"
 - **And** Someday, Maybe and done todos don't show
 - **When** I tap Show
 - **Then** Website's next todo shows too
@@ -1465,7 +1479,8 @@ Test: `__tests__/scenarios/quickAdd.test.tsx` · design: `docs/dev/history/techn
 - **Given** the smoke space and Daily open
 - **When** I type "Check gutters", tap the Next chip and + Add
 - **Then** Inbox.txt has it
-- **And** Daily lists it in the Inbox group
+- **When** I open the Inbox tab
+- **Then** it lists it, not Next
 
 Test: `__tests__/scenarios/smoke/daily.test.tsx` · help: `quick-add.md#adding-a-todo`
 

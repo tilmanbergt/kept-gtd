@@ -31,28 +31,26 @@ interface DailyEntry {
 }
 
 /**
- * Daily's tabs. `shown`: the todos Daily's rule shows (just-done ones
- * included, struck); `doneToday`: every todo done today, the Inbox's
- * included. Next is the rule minus Waiting For; Waiting is the waiting rule;
- * Inbox the Inbox's own todos (`inboxInNext`: they show under Next as well).
+ * Daily's tabs but the Inbox (that one is domain/inboxCount.ts's). `shown`:
+ * the todos Daily's rule shows (just-done ones included, struck);
+ * `doneToday`: every todo done today, the Inbox's included. The Inbox's own
+ * todos are only under Inbox (§3.7): Next is the rule minus Waiting For and
+ * the Inbox; Waiting the waiting rule minus the Inbox.
  */
-export function splitDaily<E extends DailyEntry>(shown: readonly E[], doneToday: readonly E[], today: string, inboxInNext: boolean): TabSplit<DailyTab, E> {
+export function splitDaily<E extends DailyEntry>(shown: readonly E[], doneToday: readonly E[], today: string): TabSplit<Exclude<DailyTab, 'inbox'>, E> {
   const next: E[] = [];
   const waiting: E[] = [];
-  const inbox: E[] = [];
   for (const entry of shown) {
-    const isInbox = entry.item.kind === 'inbox';
-    if (isInbox) inbox.push(entry);
-    if (isInbox && !inboxInNext) continue;
+    if (entry.item.kind === 'inbox') continue;
     if (entry.task.flowState === 'waiting-for') waiting.push(entry);
     else next.push(entry);
   }
   const open = (list: E[]) => list.filter(e => !e.task.done).length;
   const due = (list: E[]) => list.filter(e => !e.task.done && e.task.dueDate !== null && e.task.dueDate <= today).length;
   return {
-    lists: {next, waiting, inbox, done: [...doneToday]},
-    counts: {next: open(next), waiting: open(waiting), inbox: open(inbox), done: doneToday.length},
-    bells: {waiting: due(waiting), inbox: due(inbox)},
+    lists: {next, waiting, done: [...doneToday]},
+    counts: {next: open(next), waiting: open(waiting), done: doneToday.length},
+    bells: {waiting: due(waiting)},
   };
 }
 

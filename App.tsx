@@ -568,7 +568,6 @@ function AppShell({onProfileSwitched}: {onProfileSwitched: () => void}): React.J
       daily: (
         <DailyView
           onOpenItem={stableOpenItem}
-          onOpenInbox={stableNav.openInbox}
           onOpenCalendarSettings={stableNav.openSettingsCalendar}
         />
       ),
@@ -873,7 +872,6 @@ function AppShell({onProfileSwitched}: {onProfileSwitched: () => void}): React.J
               {activeTab === 'daily' && (
                 <DailyView
                   onOpenItem={stableOpenItem}
-                  onOpenInbox={openInbox}
                   onOpenCalendarSettings={openSettingsCalendar}
                 />
               )}

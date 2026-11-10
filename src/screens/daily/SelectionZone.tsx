@@ -17,7 +17,7 @@ import {Destination} from '../../domain/destination';
 import {GtdParaSettings, ResolvedParaPaths} from '../../domain/settings';
 import {displayTaskText} from '../../domain/taskLabels';
 import {CachedItem} from '../../storage/dataCache';
-import {DailyAggregate, DailyItemRef, DailyTaskEntry} from '../../storage/dailyAggregate';
+import {DailyAggregate, DailyItemRef, DailyMeetingEntry, DailyTaskEntry} from '../../storage/dailyAggregate';
 import {linkedFileStatus} from '../../storage/linkedFiles';
 import {ProjectFileState} from '../../storage/projectFile';
 import {common} from '../../ui/commonStyles';
@@ -49,6 +49,9 @@ interface Props {
   isMeetingDateVisible: (date: string) => boolean;
   openItem: (item: DailyItemRef) => void;
   onOpenOwner: (path: string) => void;
+  /** The Inbox tab's todos and meetings: the selection is found among them too. */
+  extraTasks: readonly DailyTaskEntry[];
+  extraMeetings: readonly DailyMeetingEntry[];
   /** Ticks a todo done or open (DailyView: it stays struck through in its tab, §3.5). */
   onTickTodo: (entry: DailyTaskEntry) => void;
   /** The list under the box while no meeting's context panel replaces it. */
@@ -71,6 +74,8 @@ export default function SelectionZone({
   openItem,
   onOpenOwner,
   onTickTodo,
+  extraTasks,
+  extraMeetings,
   list,
   textColor,
   borderColor,
@@ -83,9 +88,12 @@ export default function SelectionZone({
   // The rows open in Quick Add, looked up in the unfiltered aggregate (the Done tab's todos included).
   const editingTaskEntry =
     editTarget?.type === 'task'
-      ? (aggregate?.tasks ?? []).find(e => taskKey(e) === editTarget.key) ?? (aggregate?.doneToday ?? []).find(e => taskKey(e) === editTarget.key) ?? null
+      ? [aggregate?.tasks ?? [], aggregate?.doneToday ?? [], extraTasks].flatMap(entries => entries.find(e => taskKey(e) === editTarget.key) ?? [])[0] ?? null
       : null;
-  const editingMeetingEntry = editTarget?.type === 'meeting' ? (aggregate?.meetings ?? []).find(e => meetingKey(e) === editTarget.key) ?? null : null;
+  const editingMeetingEntry =
+    editTarget?.type === 'meeting'
+      ? (aggregate?.meetings ?? []).find(e => meetingKey(e) === editTarget.key) ?? extraMeetings.find(e => meetingKey(e) === editTarget.key) ?? null
+      : null;
   // Quick-file needs the edited row's real location: this screen's fixedDestination is always the Inbox.
   const editingEntryItem = editingTaskEntry?.item ?? editingMeetingEntry?.item ?? null;
   const editingItemPath = editingEntryItem && editingEntryItem.kind !== 'inbox' ? editingEntryItem.path : null;

@@ -27,7 +27,8 @@ import {setFlowStateTag, titleCaseSlug, withoutNow} from './flowState';
 import {setDueInLine} from './markdown';
 import {Task} from './types';
 
-export type TaskLabelContext = 'flat' | 'grouped' | 'quiet';
+/** 'inbox': a quiet row on Daily's Inbox tab, whose grey note is when it was captured (domain/inboxCount.ts). */
+export type TaskLabelContext = 'flat' | 'grouped' | 'quiet' | 'inbox';
 
 export type TaskLabelKind = 'next' | 'waiting' | 'due' | 'overdue';
 
@@ -49,7 +50,7 @@ function waitingLabel(task: Task): string {
 /** The labels for `task`, flow state first, then due date. */
 export function taskLabels(task: Task, context: TaskLabelContext, today: string): TaskLabel[] {
   const labels: TaskLabel[] = [];
-  if (context === 'quiet') return labels;
+  if (context === 'quiet' || context === 'inbox') return labels;
   if (context === 'flat') {
     if (task.flowState === 'next') labels.push({kind: 'next', text: '#next'});
     if (task.flowState === 'waiting-for') labels.push({kind: 'waiting', text: waitingLabel(task)});
@@ -76,7 +77,7 @@ export function taskLabels(task: Task, context: TaskLabelContext, today: string)
 export function isFlowStateConveyed(task: Task, context: TaskLabelContext): boolean {
   if (!task.flowState) return false;
   if (context === 'grouped') return true;
-  if (context === 'quiet') return task.flowState === 'next' || task.flowState === 'waiting-for';
+  if (context === 'quiet' || context === 'inbox') return task.flowState === 'next' || task.flowState === 'waiting-for';
   return task.flowState === 'next' || task.flowState === 'waiting-for';
 }
 

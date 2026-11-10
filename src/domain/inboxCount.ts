@@ -1,0 +1,45 @@
+/**
+ * What Daily's Inbox tab lists and counts (docs/dev/history/technical-design-calmer-screens.md
+ * §3.7): the open marks, the open Inbox todos (not done, not cancelled, not
+ * Someday or Maybe) and the Inbox meetings that are not cancelled, past ones
+ * included - in file order. Everything counts; the active context never
+ * hides anything here. The bell counts the todos due today or earlier. Pure.
+ */
+import {formatDate} from './dateFormat';
+import {QuietMeta, quietMeta} from './taskLabels';
+import {Meeting, Task} from './types';
+
+/** Whether an Inbox todo still needs a place: open, and not parked as Someday or Maybe. */
+export function isOpenInboxTodo(task: Task): boolean {
+  return !task.done && !task.cancelled && task.flowState !== 'someday' && task.flowState !== 'maybe';
+}
+
+/** Whether an Inbox meeting is listed: not cancelled, whenever it is. */
+export function isOpenInboxMeeting(meeting: Meeting): boolean {
+  return !meeting.cancelled;
+}
+
+export interface InboxSummary {
+  /** Indexes into the Inbox's tasks, file order. */
+  todos: number[];
+  /** Indexes into the Inbox's meetings, file order. */
+  meetings: number[];
+  count: number;
+  /** Open todos due today or earlier. */
+  bell: number;
+}
+
+export function inboxSummary(tasks: readonly Task[], meetings: readonly Meeting[], openMarks: number, today: string): InboxSummary {
+  const todos = tasks.map((t, i) => (isOpenInboxTodo(t) ? i : -1)).filter(i => i >= 0);
+  const listed = meetings.map((m, i) => (isOpenInboxMeeting(m) ? i : -1)).filter(i => i >= 0);
+  const bell = todos.filter(i => tasks[i].dueDate !== null && tasks[i].dueDate! <= today).length;
+  return {todos, meetings: listed, count: openMarks + todos.length + listed.length, bell};
+}
+
+/** An Inbox row's grey note: a due date today or earlier first (bold), else when it was captured ("2.11."). */
+export function inboxTodoMeta(task: Task, today: string): QuietMeta | null {
+  const due = quietMeta(task, today);
+  if (due?.strong) return due;
+  const created = task.fields.created;
+  return created ? {text: formatDate(created, today), strong: false} : due;
+}

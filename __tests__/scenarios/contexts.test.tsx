@@ -54,12 +54,15 @@ scenario('A context filters Daily: hidden todos, dimmed meetings, the hidden lin
     expectShows('Home ›');
     expectShows('Context: Home');
   });
-  and('Team\'s todos are hidden, its overdue one too; Garden\'s and the Inbox show', () => {
+  and('Team\'s todos are hidden, its overdue one too; Garden\'s show, and the Inbox counts its todo', () => {
     expectNotShows(/^Prepare offer/);
     expectNotShows(/^Send the report/);
     expectShows(/^Buy bulbs/);
-    expectShows(/^Call the plumber/);
+    expectShows('Inbox 1');
   });
+  when('I open the Inbox tab', () => tap('Inbox 1'));
+  then('the Inbox\'s todo shows there, the context ignored', () => expectShows(/^Call the plumber/));
+  when('I go back to Next', () => tap(/^Next \d+$/));
   and('Team\'s meeting is still listed (dimmed), and the hidden line counts the hidden todos and warns of the due one', () => {
     expectShows(/^Steering committee/);
     expectShows('Hidden by Home: 3 todos · 1 due! ·');

@@ -151,7 +151,7 @@ function TaskRow({
   const layout = taskRowLayout(task, columnWidthPx, context);
   // A quiet row (docs/dev/history/technical-design-calmer-screens.md §3.4): the note on the
   // right, the notebook icon only where a note exists, no create-note icon, no clip.
-  const quiet = context === 'quiet';
+  const quiet = context === 'quiet' || context === 'inbox';
   return (
     <View style={styles.wrap}>
       <View

@@ -60,9 +60,10 @@ scenario('Quick-file from a Daily edit: "Save to <Name>" moves the todo', {featu
     putSmokeSpace();
     putFile(INBOX_FILE, dataFile('inbox', {Tasks: ['- [ ] Buy bulbs #next'], Meetings: []}));
   });
-  when('I edit it on Daily, add "#GAR" and tap Save to Garage', async () => {
+  when('I edit it on Daily\'s Inbox tab, add "#GAR" and tap Save to Garage', async () => {
     await openApp();
     await tapTab('Daily');
+    await tap(/^Inbox \d+$/);
     await tap(/^Buy bulbs/);
     await tap('Edit');
     await type('New task', 'Buy bulbs #GAR');

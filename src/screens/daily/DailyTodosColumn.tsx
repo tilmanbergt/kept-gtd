@@ -22,6 +22,8 @@ import {estimatorWidth} from '../../ui/ScreenSize';
 import {usePerfRender} from '../../utils/perf';
 
 interface Props {
+  /** The Inbox tab's list (screens/daily/InboxList.tsx), shown in place of the grouped list. */
+  inboxList: React.ReactNode;
   tabs: CountTabDef<DailyTab>[];
   tab: DailyTab;
   onTabChange: (tab: DailyTab) => void;
@@ -43,7 +45,7 @@ const EMPTY_HINT: Record<DailyTab, string> = {
   done: 'Nothing done today yet.',
 };
 
-function DailyTodosColumn({tabs, tab, onTabChange, rows, renderEntry, onOpenItem, failedItemNames, footer, textColor, borderColor}: Props): React.JSX.Element {
+function DailyTodosColumn({inboxList, tabs, tab, onTabChange, rows, renderEntry, onOpenItem, failedItemNames, footer, textColor, borderColor}: Props): React.JSX.Element {
   usePerfRender('DailyTodosColumn');
   const rowHeight = (row: FlatTaskRow) => (row.kind === 'header' ? GROUP_HEADER_ROW_PX : taskRowHeight(row.entry.task, estimatorWidth(), 'quiet'));
   const renderRow = (row: FlatTaskRow) => {
@@ -62,6 +64,7 @@ function DailyTodosColumn({tabs, tab, onTabChange, rows, renderEntry, onOpenItem
   return (
     <View style={styles.column}>
       <CountTabs tabs={tabs} activeKey={tab} onChange={onTabChange} textColor={textColor} borderColor={borderColor} />
+      {tab === 'inbox' ? inboxList : (
       <PagedSection
         header=""
         rows={rows}
@@ -74,6 +77,7 @@ function DailyTodosColumn({tabs, tab, onTabChange, rows, renderEntry, onOpenItem
         textColor={textColor}
         borderColor={borderColor}
       />
+      )}
       {tab === 'next' ? footer : null}
       {failedItemNames.length > 0 && (
         <Text style={[common.error, common.sectionSpacingSmall, {color: textColor}]}>

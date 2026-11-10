@@ -29,7 +29,7 @@
         "src/screens/daily/**",
         "src/ui/{Daily,Period,Week,Month,DayMeetings}*",
         "src/storage/{daily,weekly,monthly}Aggregate.ts",
-        "src/domain/{period,weekDate,monthHighlight,givenTime,listTabs}.ts",
+        "src/domain/{period,weekDate,monthHighlight,givenTime,listTabs,inboxCount}.ts",
         "src/ui/period/**",
         "src/ui/{KindBadge,CountTabs}.tsx",
         "src/ui/{listTabStore,useJustDone}.ts"

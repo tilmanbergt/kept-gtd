@@ -18,6 +18,7 @@
  * docs/dev/history/technical-design-calmer-screens.md) lays out differently.
  * Perf counters: `calc:taskRowLayout` (computed), `calc:taskRowLayoutHit`.
  */
+import {inboxTodoMeta} from '../domain/inboxCount';
 import {QuietMeta, quietMeta, TaskLabel, TaskLabelContext, displayTaskText, taskLabels} from '../domain/taskLabels';
 import {todayIso} from '../domain/meetingTime';
 import {Task} from '../domain/types';
@@ -103,7 +104,7 @@ export function taskRowLayout(
   context: TaskLabelContext,
   today: string = todayIso(),
 ): TaskRowLayout {
-  const key = `${columnWidthPx}|${context}|${today}|${task.dueDate ?? ''}|${task.done ? 1 : 0}|${task.notePath ? 1 : 0}|${task.text}`;
+  const key = `${columnWidthPx}|${context}|${today}|${task.dueDate ?? ''}|${task.fields.created ?? ''}|${task.done ? 1 : 0}|${task.notePath ? 1 : 0}|${task.text}`;
   const known = layoutCache.get(task);
   if (known && known.key === key) {
     perfCount('calc:taskRowLayoutHit');
@@ -116,8 +117,8 @@ export function taskRowLayout(
 }
 
 function computeTaskRowLayout(task: Task, columnWidthPx: number, context: TaskLabelContext, today: string): TaskRowLayout {
-  if (context === 'quiet') {
-    const meta = quietMeta(task, today);
+  if (context === 'quiet' || context === 'inbox') {
+    const meta = context === 'inbox' ? inboxTodoMeta(task, today) : quietMeta(task, today);
     const widthPx = quietTextWidthPx(columnWidthPx, meta, !!task.notePath);
     const title = fitTitleToLines(displayTaskText(task, context), '', widthPx, TASK_ROW_MAX_LINES);
     return {title, labels: [], lines: Math.min(TASK_ROW_MAX_LINES, linesFor(title, widthPx)), meta};
