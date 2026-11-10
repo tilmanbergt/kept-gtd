@@ -6,6 +6,7 @@ import {and, given, scenario, then, when} from '../../test-helpers/scenario/scen
 import {fixedClock} from '../../test-helpers/scenario/clock';
 import {device} from '../../test-helpers/fakeDevice/device';
 import {seedNoteSetupDefaults} from '../../src/domain/noteSetups';
+import {settings as sportSettings, sport, sportClock} from '../../test-helpers/scenario/sportArea';
 
 afterEach(() => jest.useRealTimers());
 const clock = () => fixedClock(new Date(2026, 10, 10, 10, 0));
@@ -173,4 +174,36 @@ scenario('The header names a project\'s area (a tap opens it) and its time this 
   });
   when('I tap the area', () => tap('· Home ›'));
   then("the area's page opens", () => expectShows('#HOME'));
+});
+
+scenario('On an area, Projects and Loops are hidden each on their own inside its Projects tab', {feature: 'Projects and Areas', design: 'technical-design-calmer-screens.md', help: 'projects-and-areas.md#show-on-this-page, projects-and-areas.md#projects-of-an-area'}, () => {
+  given('area Sport with the active loop marathon and the assigned project "Race kit"', () => {
+    sportClock();
+    sport();
+    putFile(projectFile('Race kit'), dataFile('project', {Scope: [], Tasks: ['- [ ] Buy gels #next'], Meetings: []}, ['abbrev: RK', 'area: Sport']));
+  });
+  when('I open Sport, set Projects to Never on ⚙ Settings and open its Projects tab', async () => {
+    await openApp({settings: sportSettings()});
+    await tapTab('Areas');
+    await tap(/^Sport/);
+    await openItemSettings();
+    await tapLabel('Projects Never');
+    await tap('Close');
+    await tap('Projects', 1);
+  });
+  then('the tab lists the loop, not the project', () => {
+    expectShows(/^Loops · 1/);
+    expectNotShows('Race kit');
+  });
+});
+
+scenario('A loop tag in use without a loop yet shows the Loops tab under Auto, so its New row is not hidden', {feature: 'Projects and Areas', design: 'technical-design-calmer-screens.md', help: 'projects-and-areas.md#show-on-this-page, loops.md#where-loops-show'}, () => {
+  given('project "Garden renovation" with a todo tagged #loop/hike and no ## Loops line', () => {
+    putFile(projectFile('Garden renovation'), dataFile('project', {Scope: [], Tasks: ['- [ ] Pack boots #next #loop/hike'], Meetings: []}, ['abbrev: GR']));
+  });
+  when('I open its page with the Marathon loop setup on #loop', () => openGarden({settings: sportSettings()}));
+  then('the Loops tab shows and lists the tag as new', async () => {
+    await tap('Loops');
+    expectShows('New · used, no loop yet');
+  });
 });

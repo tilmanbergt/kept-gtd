@@ -28,6 +28,7 @@ import AbbrevEditor from './AbbrevEditor';
 import ShowOnPage from './ShowOnPage';
 import StatusBlock from './StatusBlock';
 import {useThreadRuleTypes} from '../thread/useTending';
+import {useLoopKinds} from '../../ui/useLoopKinds';
 
 interface Props {
   kind: 'project' | 'area';
@@ -69,6 +70,7 @@ export default function ItemSettings({
   usePerfRender('ItemSettings');
   const items = useCachedItems();
   const ruleTypes = useThreadRuleTypes();
+  const {kinds} = useLoopKinds();
   const item = useMemo(
     () => items.find(i => i.path === path) ?? null,
     [items, path],
@@ -80,8 +82,8 @@ export default function ItemSettings({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rawContent]);
   const counts = useMemo(
-    () => (item ? pageShowCounts(item, items, ruleTypes, hasHomeNotebook) : null),
-    [item, items, ruleTypes, hasHomeNotebook],
+    () => (item ? pageShowCounts(item, items, ruleTypes, kinds, hasHomeNotebook) : null),
+    [item, items, ruleTypes, kinds, hasHomeNotebook],
   );
 
   return (

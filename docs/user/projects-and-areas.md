@@ -36,7 +36,7 @@ On the right: [Show on this page](projects-and-areas.md#show-on-this-page).
 
 One row per part of the page - **Threads**, **Loops**, **Agreements**, **Schedule**, **Notebook** and, on an area, **Projects** - each **Auto**, **Always** or **Never**:
 
-- **Auto** (the default): shown when there is something - threads, active loops, active agreements, meetings, a home notebook, assigned projects.
+- **Auto** (the default): shown when there is something - threads (also new ones from tags), active loops or loop tags in use without a loop yet, active agreements, meetings, a home notebook, assigned projects. On an area, **Projects** and **Loops** share the Projects tab; each one hides its own part of it.
 - **Always**: shown even when empty.
 - **Never**: hidden. When a hidden part has something, its row says so, for example **Never · 2 loops**, so nothing disappears silently.
 

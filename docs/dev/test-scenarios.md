@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-256 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+258 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -1363,6 +1363,22 @@ Test: `__tests__/scenarios/calmerCurrent.test.tsx` · design: `docs/dev/history/
 - **When** I tap the area
 
 Test: `__tests__/scenarios/calmerCurrent.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `projects-and-areas.md#the-current-tab`
+
+### On an area, Projects and Loops are hidden each on their own inside its Projects tab
+
+- **Given** area Sport with the active loop marathon and the assigned project "Race kit"
+- **When** I open Sport, set Projects to Never on ⚙ Settings and open its Projects tab
+- **Then** the tab lists the loop, not the project
+
+Test: `__tests__/scenarios/calmerCurrent.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `projects-and-areas.md#show-on-this-page`, `projects-and-areas.md#projects-of-an-area`
+
+### A loop tag in use without a loop yet shows the Loops tab under Auto, so its New row is not hidden
+
+- **Given** project "Garden renovation" with a todo tagged #loop/hike and no ## Loops line
+- **When** I open its page with the Marathon loop setup on #loop
+- **Then** the Loops tab shows and lists the tag as new
+
+Test: `__tests__/scenarios/calmerCurrent.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `projects-and-areas.md#show-on-this-page`, `loops.md#where-loops-show`
 
 ### A tap on a todo on the Current page shows its card without re-rendering the lists
 

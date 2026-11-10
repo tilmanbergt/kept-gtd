@@ -481,6 +481,8 @@ export default function ItemDetail({
           onOpenItem={onOpenItem}
           onLinkFile={loopLink.arm}
           viewportHeight={viewportHeight}
+          showProjects={pageLayout?.visible.projects ?? true}
+          showLoops={pageLayout?.visible.loops ?? true}
           textColor={textColor}
           borderColor={borderColor}
         />

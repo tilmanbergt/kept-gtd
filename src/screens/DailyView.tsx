@@ -59,7 +59,7 @@ import {tallyHidden} from '../domain/contexts';
 import HiddenLine from '../ui/context/HiddenLine';
 import {useContextMatcher} from '../ui/context/useContextMatcher';
 import {DailyTab, splitDaily} from '../domain/listTabs';
-import {CountTabDef} from '../ui/CountTabs';
+import {CountTabDef, shownCountTabs} from '../ui/CountTabs';
 import {useListTab} from '../ui/listTabStore';
 import {useJustDone} from '../ui/useJustDone';
 import DailyTodosColumn from './daily/DailyTodosColumn';
@@ -137,7 +137,6 @@ export default function DailyView({onOpenItem, onOpenCalendarSettings}: Props): 
     () => splitDaily(displayAggregate.tasks, displayAggregate.doneToday ?? [], todayDate),
     [displayAggregate.tasks, displayAggregate.doneToday, todayDate],
   );
-  const taskRows = useMemo(() => (tab === 'inbox' ? [] : flattenTaskGroups(groupDailyTasksByItem(split.lists[tab]))), [split, tab]);
   // The Inbox tab (§3.7): marks, open todos and meetings, never hidden by the context. A todo ticked
   // there stays, struck through, like on the other tabs.
   const openMarks = useOpenMarks(ALL_MARKS).length;
@@ -168,6 +167,9 @@ export default function DailyView({onOpenItem, onOpenCalendarSettings}: Props): 
     ],
     [split, inboxLists],
   );
+  // The tab shown: Done, once empty (its last item unticked), falls back to the first tab - the list follows it.
+  const shownTab = shownCountTabs(countTabs, tab).activeKey;
+  const taskRows = useMemo(() => (shownTab === 'inbox' ? [] : flattenTaskGroups(groupDailyTasksByItem(split.lists[shownTab]))), [split, shownTab]);
   const failedNamesKey = displayAggregate.failedItems.map(f => f.item.name).join('\n');
   const failedItemNames = useMemo(() => (failedNamesKey ? failedNamesKey.split('\n') : []), [failedNamesKey]);
 
@@ -292,7 +294,7 @@ export default function DailyView({onOpenItem, onOpenCalendarSettings}: Props): 
     <DailyTodosColumn
       inboxList={inboxList}
       tabs={countTabs}
-      tab={tab}
+      tab={shownTab}
       onTabChange={setTab}
       rows={taskRows}
       renderEntry={renderTaskEntry}
@@ -358,7 +360,7 @@ export default function DailyView({onOpenItem, onOpenCalendarSettings}: Props): 
                 onTickTodo={tickTodo}
                 extraTasks={inboxLists.todos}
                 extraMeetings={inboxLists.meetings}
-                inboxTab={tab === 'inbox'}
+                inboxTab={shownTab === 'inbox'}
                 inboxOrder={inboxOrder}
                 list={list}
                 textColor={textColor}

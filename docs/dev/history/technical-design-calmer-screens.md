@@ -524,7 +524,9 @@ target of 150 ms holds for every later tap.
   and inactive counterparts of the page's scope - not only the `## Threads` lines; otherwise a page with
   New counterparts from tags would hide them. `pageScope` moved from ThreadsTab to
   `storage/pageShowCounts.ts`.
-- C3: an Area's Projects tab carries its projects and its loops; it shows when either is visible.
+- C3: an Area's Projects tab carries its projects and its loops; it shows when either is visible, and each
+  setting hides its own section inside it (from the PR review). Auto for Loops also counts loop tags in use
+  without a loop yet (the tab's "New" rows), for the same reason as Threads.
   Agreements: Never hides the "◇ Agreements n ›" link, Always shows it at 0 (opening the empty list).
   Schedule hidden: the Todos take the column; the short layout (Todos | Schedule | Google) keeps its tabs
   (§3.10).

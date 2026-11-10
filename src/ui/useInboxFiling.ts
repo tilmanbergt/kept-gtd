@@ -10,6 +10,7 @@ import {FileToItem} from '../domain/captureFileTo';
 import {inboxFiledText, INBOX_FILE_UNDONE_TEXT} from '../domain/fileChangeText';
 import {meetingDisplayTitle} from '../domain/meetingTracking';
 import {displayTaskText} from '../domain/taskLabels';
+import {serializeMeetingLine, serializeTaskLine} from '../domain/markdown';
 import {Meeting, Task} from '../domain/types';
 import {findCachedItem, getCachedInbox, setCachedInbox} from '../storage/dataCache';
 import {mutateEntryTasks} from '../storage/itemMutations';
@@ -38,10 +39,12 @@ export function useInboxFiling(name: string, inboxPath: string | null) {
       await action.run(async () => {
         const owner = findCachedItem(place.path);
         const list: Array<Task | Meeting> = moved.kind === 'task' ? owner?.tasks ?? [] : owner?.meetings ?? [];
-        // Appended by the move: the last entry with what was written.
-        const same = (e: Task | Meeting) =>
-          moved.kind === 'task' ? (e as Task).text === moved.task.text : (e as Meeting).title === moved.meeting.title && (e as Meeting).date === moved.meeting.date;
-        const at = list.map(same).lastIndexOf(true);
+        // Appended by the move: the last entry whose whole line is the one written (text, tags and
+        // fields - a later entry with only the same text or title is not it). Lines identical in
+        // every part are the same item to the file, so either one goes back.
+        const line = (e: Task | Meeting) => (moved.kind === 'task' ? serializeTaskLine(e as Task) : serializeMeetingLine(e as Meeting));
+        const written = moved.kind === 'task' ? serializeTaskLine(moved.task) : serializeMeetingLine(moved.meeting);
+        const at = list.map(line).lastIndexOf(written);
         if (at < 0) throw new Error('It changed in the meantime - it stays where it is.');
         const source = {kind: place.kind, path: place.path};
         const back = moved.kind === 'task' ? await moveTask(source, at, list[at] as Task, {type: 'inbox'}, moveUi) : await moveMeeting(source, at, list[at] as Meeting, {type: 'inbox'}, moveUi);

@@ -70,6 +70,9 @@ scenario('A todo ticked on Next stays struck through until another tab; then it 
   });
   then('it is open again and back under Next', async () => {
     expect(sectionLines(projectFile('Garden renovation'), 'Tasks')[0]).toBe('- [ ] Order soil #next');
+    // Done is empty and gone: the list follows the tab now shown, Next.
+    expectNotShows(/^Done \d+$/);
+    expect(textsBetween('Garden renovation')).toEqual(expect.arrayContaining(['Order soil', 'Buy seeds']));
     await tap('Next 2');
     expectShows('Order soil');
   });

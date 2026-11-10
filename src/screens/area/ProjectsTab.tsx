@@ -67,11 +67,25 @@ interface Props {
   /** Arms the page's Files pane to link a file to the loop `tag` (screens/area/useLoopLinkArm.ts). */
   onLinkFile?: (tag: string) => void;
   viewportHeight?: number;
+  /** "Show on this page" (domain/pageShow.ts) on an Area: its Projects and its loops each shown or hidden. */
+  showProjects?: boolean;
+  showLoops?: boolean;
   textColor: string;
   borderColor: string;
 }
 
-export default function ProjectsTab({ownerKind, ownerPath, areaName, onOpenItem, onLinkFile, viewportHeight, textColor, borderColor}: Props): React.JSX.Element {
+export default function ProjectsTab({
+  ownerKind,
+  ownerPath,
+  areaName,
+  onOpenItem,
+  onLinkFile,
+  viewportHeight,
+  showProjects = true,
+  showLoops = true,
+  textColor,
+  borderColor,
+}: Props): React.JSX.Element {
   const items = useCachedItems();
   const {kinds} = useLoopKinds();
   const [open, setOpen] = useState<Record<Fold, boolean>>({onHold: false, ideas: false, closed: false});
@@ -79,15 +93,15 @@ export default function ProjectsTab({ownerKind, ownerPath, areaName, onOpenItem,
   useErrorStatus('ProjectsTab.action', actionError, () => setActionError(null));
   const today = todayIso();
   const projects = useMemo(
-    () => (ownerKind === 'area' ? buildProjectGlance(areaName, items, today, new Date()) : []),
-    [ownerKind, areaName, items, today],
+    () => (ownerKind === 'area' && showProjects ? buildProjectGlance(areaName, items, today, new Date()) : []),
+    [ownerKind, areaName, items, today, showProjects],
   );
   // Keyed on `items`, not on the owner: the cache updates an item in place, so
   // the owner object stays the same when its loops change.
   const loops = useMemo(() => {
-    const owner = items.find(i => i.path === ownerPath);
+    const owner = showLoops ? items.find(i => i.path === ownerPath) : undefined;
     return owner ? buildLoopGlance(owner, kinds, today, new Date()) : null;
-  }, [items, ownerPath, kinds, today]);
+  }, [items, ownerPath, kinds, today, showLoops]);
 
   const rows: Row[] = [];
   const fold = (key: Fold, count: number, label: string, children: Row[]) => {

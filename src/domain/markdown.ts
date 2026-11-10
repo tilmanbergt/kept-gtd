@@ -757,7 +757,8 @@ export function parseMeetingsSpan(content: string): ParsedMeetings {
   return {meetings, extraLines};
 }
 
-function serializeMeetingLine(meeting: Meeting): string {
+/** One meeting as its file line. */
+export function serializeMeetingLine(meeting: Meeting): string {
   const cancelledMark = meeting.cancelled ? '[-] ' : '';
   // Always one slot (see MEETING_LINE_RE): "HH:mm", "HH:mm-HH:mm" or "Nd".
   const timePart = meeting.time

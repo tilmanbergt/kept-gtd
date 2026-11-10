@@ -2,12 +2,14 @@
  * What each "Show on this page" part of a project or area has
  * (domain/pageShow.ts ShowCounts), from the cache only: the counterparts its
  * Threads tab lists (tracked, new and inactive - the same scope as
- * screens/thread/ThreadsTab.tsx), its active loops, its active agreements,
+ * screens/thread/ThreadsTab.tsx), its active loops and the loop tags in use
+ * without a loop yet (the "New" rows of its Loops tab), its active agreements,
  * its meetings (F blocks included), its home notebook, and - for an area -
  * the projects assigned to it.
  */
 import {counterpartsOf, CounterpartScope, scopeMembers, scopeOwnerOf} from '../domain/counterparts';
 import {isActiveAgreement} from '../domain/agreements';
+import {loopsInUse} from '../domain/loops';
 import {ShowCounts} from '../domain/pageShow';
 import {assignedProjects} from './areaAssignment';
 import {CachedItem} from './dataCache';
@@ -32,10 +34,10 @@ function threadCount(path: string, items: CachedItem[], ruleTypes: readonly stri
   return page.only === null ? all.length : all.filter(c => page.only?.has(c.leaf)).length;
 }
 
-export function pageShowCounts(item: CachedItem, items: CachedItem[], ruleTypes: readonly string[], hasHomeNotebook: boolean): ShowCounts {
+export function pageShowCounts(item: CachedItem, items: CachedItem[], ruleTypes: readonly string[], loopKinds: readonly string[], hasHomeNotebook: boolean): ShowCounts {
   return {
     threads: threadCount(item.path, items, ruleTypes),
-    loops: item.loops.filter(l => l.status === 'active').length,
+    loops: item.loops.filter(l => l.status === 'active').length + loopsInUse(item, loopKinds).length,
     agreements: item.agreements.filter(isActiveAgreement).length,
     schedule: item.meetings.length,
     notebook: hasHomeNotebook ? 1 : 0,

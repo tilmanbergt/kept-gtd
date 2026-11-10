@@ -14,6 +14,7 @@ import {findCachedItem, getCachedData} from '../../storage/dataCache';
 import {pageShowCounts} from '../../storage/pageShowCounts';
 import {useCacheSignature} from '../../ui/useCacheSignature';
 import {useThreadRuleTypes} from '../thread/useTending';
+import {useLoopKinds} from '../../ui/useLoopKinds';
 
 export interface PageFacts {
   counts: ShowCounts;
@@ -34,11 +35,12 @@ interface Signed {
 
 export function usePageFacts(path: string, hasHomeNotebook: boolean): PageFacts | null {
   const ruleTypes = useThreadRuleTypes();
+  const {kinds} = useLoopKinds();
   const signature = useCacheSignature(() => {
     const item = findCachedItem(path);
     if (!item) return '';
     const signed: Signed = {
-      counts: pageShowCounts(item, getCachedData()?.items ?? [], ruleTypes, hasHomeNotebook),
+      counts: pageShowCounts(item, getCachedData()?.items ?? [], ruleTypes, kinds, hasHomeNotebook),
       show: serializePageShow(item.show) ?? '',
       scope: item.scope,
       area: item.area,
