@@ -536,6 +536,11 @@ target of 150 ms holds for every later tap.
 - C3: the page's facts come through `ui/useCacheSignature.ts` (`screens/item/usePageFacts.ts`): ItemDetail
   re-renders only when the counts, the `show:` value, the scope, the Area or the week's time change, not for
   a todo edit.
+- Device stop 2: an Inbox meeting's More… lost to its context panel on Daily (the picker now wins); the
+  recent places are read by the Inbox card itself. Quick Add's ✕ and the strip's ✕ act on touch-down
+  as well (the field's blur at that moment could lose the tap).
+- Device stop 3: the kind buttons are 40 dp high with medium text and wrap onto a second row (Nomad
+  portrait); while collapsed R1 has no fixed height, the box keeps its 174 dp.
 - C4: scenarios 1-23 and 25-31 are scenario tests with `help:` (`__tests__/scenarios/calmer*.test.tsx`;
   30 in `givenTime` and the Week smoke test). Screenshots in `docs/user/images/` (Daily, Current, Review,
   Week, Engage) need the device and are listed for Tilman.
