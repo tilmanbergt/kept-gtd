@@ -79,7 +79,15 @@ export default function TabsRow({core, taskOnly, hasNoteTab, hasAgreementTab = f
         <View style={[styles.actions, styles.actionsRow]}>
           {actions}
           {onCollapse && (
-            <Pressable onPress={onCollapse} hitSlop={8} accessibilityRole="button" accessibilityLabel="Close Quick Add" style={styles.collapse}>
+            // On touch-down as well: the field gives up its focus at that moment and the box redraws, and a pen
+            // that moves a little on the way up would lose a plain press. Closing twice changes nothing.
+            <Pressable
+              onPressIn={onCollapse}
+              onPress={onCollapse}
+              hitSlop={12}
+              accessibilityRole="button"
+              accessibilityLabel="Close Quick Add"
+              style={styles.collapse}>
               <Text style={[styles.collapseText, {color: textColor}]}>✕</Text>
             </Pressable>
           )}
@@ -105,7 +113,7 @@ const styles = StyleSheet.create({
     flexShrink: 0,
   },
   actionsRow: {flexDirection: 'row', alignItems: 'center'},
-  collapse: {marginLeft: 12, paddingHorizontal: 4},
+  collapse: {marginLeft: 8, paddingHorizontal: 10, paddingVertical: 2},
   collapseText: {fontSize: FONT.medium, fontWeight: '700'},
   tabText: {
     fontSize: FONT.small,

@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-259 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+260 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -1486,6 +1486,16 @@ Test: `__tests__/scenarios/smoke/areaPage.test.tsx` · help: `projects-and-areas
 - **Then** the buttons are back
 - **When** I tap + Todo again
 - **Then** the text is still there
+
+Test: `__tests__/scenarios/calmerQuickAdd.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `quick-add.md`
+
+### With the field still empty and in focus, ✕ closes the box on touch-down, the strip's ✕ hides the strip
+
+- **Given** project "Garden renovation" and an empty Inbox
+- **When** I open Daily, tap + Meeting and touch down on the strip's ✕ of the empty title
+- **Then** the box stays open
+- **When** I touch down on ✕ of the first row (the field blurs at that moment)
+- **Then** the kind buttons are back
 
 Test: `__tests__/scenarios/calmerQuickAdd.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `quick-add.md`
 

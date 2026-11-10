@@ -99,7 +99,8 @@ export function useStripHide(visible: boolean): {shown: boolean; hide: () => voi
 /** The ✕ at a hovering strip's end. */
 export function StripHideButton({onPress, textColor}: {onPress: () => void; textColor: string}): React.JSX.Element {
   return (
-    <Pressable style={styles.hideButton} onPress={onPress} hitSlop={6} accessibilityLabel="Hide">
+    // On touch-down as well, like Quick Add's ✕: the field's blur at that moment must not lose the tap.
+    <Pressable style={styles.hideButton} onPressIn={onPress} onPress={onPress} hitSlop={8} accessibilityLabel="Hide">
       <Text style={[common.floatingStripButtonText, {color: textColor}]}>✕</Text>
     </Pressable>
   );
