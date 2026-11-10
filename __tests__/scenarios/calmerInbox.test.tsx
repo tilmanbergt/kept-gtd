@@ -1,5 +1,5 @@
 // docs/dev/history/technical-design-calmer-screens.md §6 scenarios 12-13: the Inbox on Daily (14, the context: contexts.test.tsx).
-import {expectNotShows, expectShows, fieldValue, labelled, openApp, tap, tapLabel, tapTab, textsBetween} from '../../test-helpers/scenario/app';
+import {expectNotShows, expectShows, fieldValue, labelled, openApp, shows, tap, tapLabel, tapTab, textsBetween} from '../../test-helpers/scenario/app';
 import {areaFile, dataFile, fileText, INBOX_FILE, loggedErrors, projectFile, putFile, sectionLines} from '../../test-helpers/scenario/files';
 import {device} from '../../test-helpers/fakeDevice/device';
 import {fixedClock} from '../../test-helpers/scenario/clock';
@@ -170,5 +170,32 @@ scenario('Someday / Maybe in the picker parks the todo: #someday, still in Inbox
   then('it lists the parked todo, under the Inbox', () => {
     expectShows('Inbox');
     expectShows(/^Fix the gate/);
+  });
+});
+
+scenario('Review\'s Inbox to zero shows the same list and card, and filing works the same, past meetings included', {feature: 'Weekly Review', design: 'technical-design-calmer-screens.md', help: 'review.md#the-steps'}, () => {
+  given('an Inbox with "Ask Lena #lena", "Order soil" and last week\'s meeting, and project Team offsite (#TO) using #lena', () => {
+    offsite();
+    putFile(INBOX_FILE, dataFile('inbox', {Tasks: ['- [ ] Ask Lena #lena', '- [ ] Order soil'], Meetings: ['- 2026-11-02 10:00 Chat with Sam']}));
+  });
+  when('I open Review → Inbox to zero and tap "Ask Lena"', async () => {
+    await openApp();
+    await tapTab('Review');
+    // The Review remembers its last step; the overview lists them all.
+    if (shows('Overview')) await tap('Overview');
+    await tap('Inbox to zero');
+    await tap('Ask Lena #lena');
+  });
+  then('the list has the two todos and the past meeting, and the card offers #TO', () => {
+    expectShows('Order soil');
+    expectShows('Chat with Sam');
+    expect(labelled('File to Team offsite')).not.toBeNull();
+  });
+  when('I tap #TO', () => tap('#TO'));
+  then('the todo is in Team offsite, and "Order soil"\'s card is open', () => {
+    expect(sectionLines(projectFile('Team offsite'), 'Tasks')).toEqual(['- [ ] Collect topics #lena', expect.stringMatching(/^- \[ \] Ask Lena #lena/)]);
+    expectShows(/^Filed "Ask Lena #lena" to Team offsite/);
+    expectShows('File to');
+    expect(loggedErrors()).toEqual([]);
   });
 });

@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-246 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+247 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -2125,6 +2125,16 @@ Test: `__tests__/scenarios/smoke/weekAndMonth.test.tsx` · help: `week-and-month
 
 ## Weekly Review
 
+### Review's Inbox to zero shows the same list and card, and filing works the same, past meetings included
+
+- **Given** an Inbox with "Ask Lena #lena", "Order soil" and last week's meeting, and project Team offsite (#TO) using #lena
+- **When** I open Review → Inbox to zero and tap "Ask Lena"
+- **Then** the list has the two todos and the past meeting, and the card offers #TO
+- **When** I tap #TO
+- **Then** the todo is in Team offsite, and "Order soil"'s card is open
+
+Test: `__tests__/scenarios/calmerInbox.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `review.md#the-steps`
+
 ### Reflect from Review's "Meetings to close out" without ticking it reviewed
 
 - **Given** the sparring session three days ago is tracked for review and not reviewed yet; its page is followed by two pages added by hand, then the check-in's page
@@ -2149,7 +2159,7 @@ Test: `__tests__/scenarios/review.test.tsx` · design: `docs/dev/history/technic
 
 - **Given** the smoke space on Wednesday 14.10.2026
 - **When** I open Review
-- **Then** the hub lists its steps with counts: the week's schedule (focus block included), the Inbox's two todos and its meeting; no focus steps
+- **Then** the hub lists its steps with counts: the week's schedule (focus block included), the Inbox's open todo and its meeting (its Maybe todo waits in Someday / Maybe); no focus steps
 - **When** I open the step "Inbox to zero"
 - **Then** it shows "Call the plumber"
 - **And** every step opens with its title, one after the other, up to the end page

@@ -57,6 +57,8 @@ interface Input {
   onNewProject?: () => void;
   /** Open › on the new project's status line. */
   onOpenProject?: (path: string) => void;
+  /** After the item left the Inbox list (filed, parked, made a project): the Review counts it. */
+  onCleared?: () => void;
 }
 
 export interface InboxCardApi {
@@ -84,6 +86,7 @@ export function useInboxCard(input: Input): InboxCardApi | null {
   const filed: InboxListEntry = {type: entry.kind, index: entry.index};
   /** The next Inbox row's card, or the collapsed box. */
   const showNext = (moved: boolean) => {
+    input.onCleared?.();
     const next = nextInboxRow(input.order, filed, moved);
     log(`inbox next ${next ? 'shown' : 'none'}`);
     if (next) input.select(next);

@@ -58,7 +58,7 @@ import {clearReviewStepFilter, takeReviewStepRequest, useReviewStepRequestNonce}
 import {bump, endVisit, getSavedView, rememberView, ReviewView, startVisit} from './reviewVisit';
 import {ReviewStepProps} from './shared';
 import GmailStep from './steps/GmailStep';
-import InboxStep, {inboxStepEntries} from './steps/InboxStep';
+import InboxStep, {inboxStepCount} from './steps/InboxStep';
 import ItemListStep from './steps/ItemListStep';
 import MeetingsCloseOutStep from './steps/MeetingsCloseOutStep';
 import OpenLoopsStep, {openLoopsCount, useLoopRoster} from './steps/OpenLoopsStep';
@@ -234,7 +234,6 @@ export default function ReviewScreen({onOpenItem, onReviewRecorded, onOpenCalend
   const loopRosterAll = useLoopRoster(allData);
   const agreementReviewAll = useAgreementReview(allData);
   // The hub's per-step numbers, from the same aggregate the steps read.
-  const inboxEntries = inboxStepEntries(inbox);
   const week = weekAheadRangeIso();
   const countsOf = (
     agg: typeof aggregate,
@@ -243,7 +242,7 @@ export default function ReviewScreen({onOpenItem, onReviewRecorded, onOpenCalend
     agg && settings
       ? buildReviewStepCounts(
           agg,
-          inboxEntries.openTasks.length + inboxEntries.openMeetings.length + openMarkCount,
+          inboxStepCount(inbox, openMarkCount),
           getCachedGmailInbox()?.length ?? 0,
           countMeetingsInRange(inbox?.meetings ?? [], week.start, week.end),
           tendingCount(rosters.tending),
