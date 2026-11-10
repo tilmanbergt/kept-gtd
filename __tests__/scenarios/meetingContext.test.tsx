@@ -48,11 +48,11 @@ scenario('Daily: tapping a thread meeting shows its card and the context panel',
     expect(panel.some(t => t.startsWith('◇ Feedback only in our 1:1s'))).toBe(true);
     expect(panel.some(t => t.startsWith('Send the slides'))).toBe(true);
     expect(panel.some(t => t.startsWith('Unrelated'))).toBe(false);
-    expectNotShows('Next todos');
+    expectNotShows(/^Next \d+$/);
   });
   when('I close the card', () => tapLabel('Close'));
   then('Next todos are back', () => {
-    expectShows('Next todos');
+    expectShows(/^Next \d+$/);
     expectNotShows(/^\+ Quick Add to meeting/);
   });
 });
@@ -176,7 +176,7 @@ scenario('✕ Close in the panel\'s header closes the meeting: Daily shows its n
   then('the card and the panel are gone; Next todos shows', () => {
     expectNotShows(/^Meeting · .+ · today$/);
     expectNotShows('I owe');
-    expectShows('Next todos');
+    expectShows(/^Next \d+$/);
   });
 });
 

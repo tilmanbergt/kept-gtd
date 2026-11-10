@@ -10,9 +10,17 @@ A todo appears on Daily when it is open and one of these is true:
 - it is [due](tags.md#due-dates) today, tomorrow or overdue
 - it is marked [Waiting for](tags.md#flow-tags-for-todos) and has no date, or its date is today or earlier
 
-Todos marked Someday or Maybe never appear on Daily. Todos are grouped by project or area, the [Inbox](quick-add.md#the-inbox) first; Waiting for todos come last in their group.
+Todos marked Someday or Maybe never appear on Daily. Todos are grouped by project or area, the [Inbox](quick-add.md#the-inbox) first.
 
-With a [context](contexts.md#what-a-context-shows) active, Daily shows only the todos of the projects, areas and tags the context shows. The Inbox always shows; todos that are due follow the context too. The last line counts the rest, for example "Hidden by Home: 4 todos · 1 due! · Show" - "due!" counts hidden todos due today or earlier; **Show** shows everything until you switch tabs. Meetings outside the context stay in the list, dimmed.
+## Count tabs and the bell
+
+Over the todos, count tabs show one list at a time: **Next**, **Waiting**, **Inbox** and, once you have finished something today, **Done** - each with its number, for example `Next 11` and `Waiting 5`. **Next** holds the todos marked Next or due; **Waiting** the ones you wait for; **Inbox** the Inbox's todos (they show under Next as well). A small bell with a number on **Waiting** or **Inbox** counts the todos there that are due today or earlier, for example `Waiting 5` with the bell and `1`. Kept starts on **Next**; the tab you choose stays while Kept is open.
+
+## Done
+
+Tick a todo and it stays in its list, struck through, so you can see what you just finished - until you open another tab or leave Daily. Then it is under **Done**, which lists everything finished today. Untick a todo there and it goes back to its list.
+
+With a [context](contexts.md#what-a-context-shows) active, Daily shows only the todos of the projects, areas and tags the context shows. The Inbox always shows; todos that are due follow the context too. The last line under **Next** counts the rest, for example "Hidden by Home: 4 todos · 1 due! · Show" - "due!" counts hidden todos due today or earlier; **Show** shows everything until you switch tabs. Meetings outside the context stay in the list, dimmed.
 
 ## Labels
 
@@ -24,7 +32,7 @@ Other lists (the [Inbox](quick-add.md#the-inbox), the [Review](review.md), the [
 
 ## Schedule and cards
 
-The left column is the schedule with the tabs **Today** and **Tomorrow** (and **Google** when the [Google Calendar](features.md#google-calendar) integration is on): [meetings](meetings.md) and [focus blocks](meetings.md#focus-blocks).
+The left column is the schedule with the tabs **Today** and **Tomorrow** (and **Google** when the [Google Calendar](features.md#google-calendar) integration is on): [meetings](meetings.md) and [focus blocks](meetings.md#focus-blocks). The two small buttons at the right of the tabs switch between one-line and two-line rows.
 
 Tap a meeting or focus block to see its [card](meetings.md#the-meeting-row-and-its-card) in [Quick Add](quick-add.md)'s place, and its [context panel](meetings.md#the-context-panel) in place of the todos: what you owe, what is next, what you are waiting for and what was agreed last time. **+ Quick Add to meeting** at the end of the panel adds a todo to it. Tap it again, [Edit](quick-add.md#editing) or the title on the card to change it. Daily has no [Files pane](projects-and-areas.md#files-and-linked-files), so linking a file happens on the project's page.
 

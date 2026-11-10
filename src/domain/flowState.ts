@@ -234,6 +234,21 @@ export function isWaitingForShownOnDaily(task: Task, todayDate: string): boolean
   return task.dueDate === null || task.dueDate <= todayDate;
 }
 
+/**
+ * Whether `task` was done within the last `days` days, today included
+ * (the Current page's Done tab, docs/dev/history/technical-design-calmer-screens.md §3.5):
+ * its completion date is after `today` minus `days`. A done todo without a
+ * completion date is not counted.
+ */
+export function doneWithin(task: Task, today: string, days: number): boolean {
+  if (!task.done || task.cancelled) return false;
+  const completion = task.fields.completion;
+  if (!completion) return false;
+  const [y, m, d] = today.split('-').map(Number);
+  const cutoff = new Date(Date.UTC(y, m - 1, d - days)).toISOString().slice(0, 10);
+  return completion > cutoff && completion <= today;
+}
+
 export interface TaskGroup {
   key: Exclude<FlowState, null> | 'other';
   label: string;

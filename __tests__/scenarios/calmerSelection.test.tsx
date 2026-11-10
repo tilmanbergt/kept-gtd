@@ -38,7 +38,7 @@ scenario('A tap on a Daily todo shows its card without re-rendering the list', {
 
 scenario('A tap on a todo on the Current page shows its card without re-rendering the lists', {feature: 'Projects and Areas', design: 'technical-design-calmer-screens.md', help: 'quick-add.md#the-card-one-tap-selects'}, () => {
   given('project "Garden renovation" with three todos and a meeting', () => {
-    putFile(projectFile('Garden renovation'), dataFile('project', {Scope: [], Tasks: ['- [ ] Order soil #next', '- [ ] Buy seeds', '- [ ] Call Marco'], Meetings: ['- 2026-12-01 10:00 Site visit']}, ['abbrev: GR']));
+    putFile(projectFile('Garden renovation'), dataFile('project', {Scope: [], Tasks: ['- [ ] Order soil #next', '- [ ] Buy seeds #next', '- [ ] Call Marco'], Meetings: ['- 2026-12-01 10:00 Site visit']}, ['abbrev: GR']));
   });
   when('I open the project and tap the todo "Buy seeds"', async () => {
     await openApp();

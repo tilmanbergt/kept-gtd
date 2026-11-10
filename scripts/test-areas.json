@@ -20,7 +20,7 @@
       "name": "Daily, Week and Month",
       "help": ["daily.md", "week-and-month.md"],
       "tests": [
-        "__tests__/**/*{daily,month,period,planning,givenTime}*",
+        "__tests__/**/*{daily,month,period,planning,givenTime,listTabs}*",
         "__tests__/scenarios/smoke/weekAndMonth*",
         "__tests__/scenarios/calmer{Rows,Tabs,Daily,Inbox}*"
       ],
@@ -29,9 +29,10 @@
         "src/screens/daily/**",
         "src/ui/{Daily,Period,Week,Month,DayMeetings}*",
         "src/storage/{daily,weekly,monthly}Aggregate.ts",
-        "src/domain/{period,weekDate,monthHighlight,givenTime}.ts",
+        "src/domain/{period,weekDate,monthHighlight,givenTime,listTabs}.ts",
         "src/ui/period/**",
-        "src/ui/KindBadge.tsx"
+        "src/ui/{KindBadge,CountTabs}.tsx",
+        "src/ui/{listTabStore,useJustDone}.ts"
       ]
     },
     {

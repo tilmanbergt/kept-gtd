@@ -105,7 +105,9 @@ const pressText = async (r: TestRenderer.ReactTestRenderer, label: string | RegE
 };
 /** The rows a list was handed (lists measure themselves on the device). */
 const listRows = (r: TestRenderer.ReactTestRenderer, header: string) =>
-  r.root.findAll(n => n.props.header === header && Array.isArray(n.props.rows))[0]?.props.rows ?? [];
+  r.root.findAll(n => Array.isArray(n.props.rows) && (header === 'Todos' ? isTodosList(n.props.heightKey) : n.props.header === header))[0]?.props.rows ?? [];
+/** The Todos list has no header of its own (count tabs over it); its height key names it. */
+const isTodosList = (heightKey: unknown) => Array.isArray(heightKey) && heightKey.includes('current:Todos');
 
 /**
  * Presses `label` inside the first row of list `header` that `pick` accepts: the row is rendered on
@@ -188,7 +190,8 @@ describe('the Threads tab on the Current page', () => {
     await pressText(r, 'alpha ✕');
     await settle();
     expect(texts(r)).not.toContain('alpha ✕');
-    expect(listRows(r, 'Todos').filter((row: {kind: string}) => row.kind === 'entry')).toHaveLength(4);
+    // Unfiltered, the list opens on its first tab with todos again: Waiting, with Anna's.
+    expect(listRows(r, 'Todos').map((row: {task?: {text: string}}) => row.task?.text)).toContain('Ask Anna #wf/anna');
     act(() => r.unmount());
   });
 

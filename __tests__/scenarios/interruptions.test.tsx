@@ -109,10 +109,11 @@ scenario('A project file saved with Windows line endings shows its todos', {feat
     await tapTab('Projects');
     await tap(/^Website/);
   });
-  then('both todos and the Scope show', () => {
+  then('both todos (under Next and Plan) and the Scope show', async () => {
     expectShows('Write copy');
-    expectShows('Fix footer');
     expectShows('Relaunch');
+    await tap(/^Plan \d+$/);
+    expectShows('Fix footer');
   });
   and('adding a todo keeps both and writes the file with plain line endings', async () => {
     await type('New task', 'Call the designer');

@@ -17,8 +17,8 @@ async function openDaily(underHome = false): Promise<void> {
   await tapTab('Daily');
 }
 
-/** The todo list under "Next todos": group names and rows (title and labels), without the checkboxes and note buttons. */
-const todoList = () => textsBetween('Next todos').filter(t => t !== '☐' && t !== '+📓');
+/** The list under the Next tab: group names and rows (title and grey note), without the checkboxes, the other count tabs and note buttons. */
+const todoList = () => textsBetween(/^Inbox \d+$/).filter(t => t !== '☐' && t !== '+📓');
 
 /** The index among the "☐" on screen of the checkbox in front of the row starting with `title`. */
 function checkboxOf(title: string): number {
@@ -49,10 +49,9 @@ scenario('Daily under a context shows today\'s meetings and the next todos it sh
     expectNotShows(/^Order seeds/);
   });
   when('I tap Show', () => tap('Show'));
-  then('Website\'s next todo and its Waiting For show too', () => {
-    expectShows(/^Draft homepage/);
-    expectShows(/^Feedback on layout/);
-  });
+  then('Website\'s next todo shows too', () => expectShows(/^Draft homepage/));
+  when('I tap the Waiting tab', () => tap(/^Waiting \d+$/));
+  then('Website\'s Waiting For shows there', () => expectShows(/^Feedback on layout/));
   when('I tap Tomorrow', () => tap('Tomorrow'));
   then('it lists "Supplier call"', () => {
     expect(textsBetween('Tomorrow', 'Todo')).toContain('Supplier call');
@@ -71,7 +70,7 @@ scenario('Quick Add a todo from Daily', {feature: 'Quick Add', design: DESIGN, h
   then('Inbox.txt has it', () => {
     expect(sectionLines(INBOX_FILE, 'Tasks')).toContainEqual(expect.stringMatching(/^- \[ \] Check gutters #next/));
   });
-  and('Daily lists it in the Inbox group', () => expect(textsBetween('Inbox', 'Garage')).toContain('Check gutters'));
+  and('Daily lists it in the Inbox group', () => expect(textsBetween(/^Inbox \d+$/, 'Garage')).toContain('Check gutters'));
 });
 
 scenario('Tick a todo done on Daily', {feature: 'Daily', design: DESIGN, help: 'daily.md#schedule-and-cards'}, () => {

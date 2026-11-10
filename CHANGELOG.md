@@ -46,9 +46,24 @@ or your project/area files are stored.
   `#next`, the due date and the waiting-for tag move to one grey note on the right ("due 5.11.",
   **due today**, "w/f Lena"). The notebook icon shows only where a note exists; creating a note and
   linking a file happen on the card.
+- Count tabs over the todos: Daily shows **Next**, **Waiting**, **Inbox** and **Done**, a project's
+  or area's page **Next**, **Waiting**, **Plan**, **Someday** and **Done**, one list at a time, each
+  with its number. A bell with a number on Daily's Waiting and Inbox counts what is due today or
+  earlier. A todo you tick stays struck through in its list until you change the tab or leave the
+  page; **Done** lists what you finished today (on a project's page: in the last 14 days).
+- Daily's schedule has no summary line any more; its one-line/two-line buttons sit next to Today
+  and Tomorrow.
 - A tap on a row shows its card faster: the list no longer redraws for it.
 - For contributors: `SECURITY.md` says how to report a vulnerability privately and what Kept
   touches; `docs/dev/claims.md` lists every promise Kept makes and how each is checked.
+
+### Removed
+- The **hide done** / **show n done** switch on a project's or area's page: the Done tab replaces
+  it.
+
+### Upgrade notes
+- The project page's "hide done" choice is no longer used. It stays in your settings, so an older
+  version still finds it.
 
 ## [0.25.1] — 2026-11-03
 

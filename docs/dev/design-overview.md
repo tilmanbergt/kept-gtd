@@ -820,10 +820,10 @@ per-screen wiring.
 **Daily** (`screens/DailyView.tsx`, aggregate `storage/dailyAggregate.ts`; data from
 `screens/daily/useDailyData.ts`: the cache at mount without a loading pass when it is ready, a
 `daily:firstContent` perf span; every write through `ui/useEntryActions.ts`, the overviews' write
-path; the right column `screens/daily/DailyTodosColumn.tsx`). Left column: the day panel (`ui/DayMeetingsPanel.tsx`,
-Today | Tomorrow | Google), full height. Right column: Quick Add (always to the Inbox) or the
-selected row's card, above the Next todos grouped by source item (the Inbox first, then cache
-order) or the selected meeting's context panel; the hidden line last. A task shows when it is
+path; the right column `screens/daily/SelectionZone.tsx` over `screens/daily/DailyTodosColumn.tsx`). Left column: the day panel (`ui/DayMeetingsPanel.tsx`,
+Today | Tomorrow | Google, compact: no header line, the row-layout switch in the tab row), full height. Right column: the Quick Add zone (Quick Add, always to the Inbox, collapsed to its kind buttons, or the
+selected row's card; the only part that reads the selection), above the count tabs Next · Waiting · Inbox · Done (`domain/listTabs.ts`, `ui/CountTabs.tsx`) and the chosen tab's todos grouped by source item (the Inbox first, then cache
+order), or the selected meeting's context panel; the hidden line under Next. A task shows when it is
 open, the active context shows it, and
 
 - due today, tomorrow or overdue (`dueDate <= tomorrow`), or

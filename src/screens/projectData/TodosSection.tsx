@@ -1,27 +1,29 @@
 /**
  * The Todos list of the Current page's right pane (screens/ProjectDataPanel.tsx):
- * the todos of each active loop first, under the loop's name and main date
- * (docs/dev/history/technical-design-loops.md §4.7), then the rest grouped
- * by flow state, flattened into one PagedSection, with its own row
- * actions (done toggle, note) and "hide done" / "show n done" in its header line
- * (ui/DoneToggle.tsx), and below it
- * the `footer` (the agreements line). Add, edit and delete live in
- * ProjectDataPanel's single Quick Add above both lists.
+ * count tabs Next · Waiting · Plan · Someday · Done
+ * (docs/dev/history/technical-design-calmer-screens.md §3.5) over one
+ * PagedSection with the chosen tab's todos - the todos of each active loop
+ * first, under the loop's name and main date
+ * (docs/dev/history/technical-design-loops.md §4.7) - with its own row
+ * actions (done toggle, note), and below it the `footer` (the agreements
+ * line). Add, edit and delete live in ProjectDataPanel's single Quick Add
+ * above both lists.
  */
 import React, {useState} from 'react';
 import {usePerfRender} from '../../utils/perf';
-import DoneToggle from '../../ui/DoneToggle';
 import {Keyboard, Text, View} from 'react-native';
 import {Task} from '../../domain/types';
 import {formatDate} from '../../domain/dateFormat';
 import {groupTodosByLoop} from '../../domain/loops';
 import {LoopLine} from '../../domain/loopsSection';
-import {groupTasksByFlowState} from '../../domain/flowState';
 import {withTaskDone} from '../../domain/taskEdit';
 import {todayIso} from '../../domain/meetingTime';
 import {openOrCreateTodoNote} from '../../storage/meetingNoteContent';
-import {loadSettings, saveSettings} from '../../storage/settingsStorage';
-import {useSettingsValue} from '../../ui/useSettings';
+import {loadSettings} from '../../storage/settingsStorage';
+import {CurrentTab, splitCurrent} from '../../domain/listTabs';
+import CountTabs, {CountTabDef, shownCountTabs} from '../../ui/CountTabs';
+import {useListTab} from '../../ui/listTabStore';
+import {useJustDone} from '../../ui/useJustDone';
 import {useEngagePrompt} from '../../ui/useEngagePrompt';
 import {useNoteCreateConfirm} from '../../ui/useNoteCreateConfirm';
 import PagedSection from '../../ui/PagedSection';
@@ -76,74 +78,50 @@ function TodosSection({
   useErrorStatus('ProjectDataPanel.actionError', actionError, () => setActionError(null));
   const confirmNoteCreate = useNoteCreateConfirm('ProjectDataPanel.todoNoteCreateConfirm');
 
-  // "Hide done tasks" - remembered across visits via
-  // GtdParaSettings.hideDoneProjectTasks (domain/settings.ts), read from the
-  // settings snapshot (ui/useSettings.ts); done tasks are shown by default
-  // (false). A tap shows at once (`toggled`) and saves; the saved settings then
-  // arrive through the snapshot.
-  const stored = useSettingsValue(s => s.hideDoneProjectTasks);
-  const [toggled, setToggled] = useState<boolean | null>(null);
-  const hideDone = toggled ?? stored ?? false;
+  // Count tabs (docs/dev/history/technical-design-calmer-screens.md §3.5): Next · Waiting · Plan ·
+  // Someday (with Maybe) · Done (the last 14 days). A todo ticked here stays struck through in its
+  // tab until the tab changes, the page is left or another item opens.
+  const [tab, setTab, tabChosen] = useListTab<CurrentTab>('current', 'next');
+  const justDone = useJustDone<number>(`${tab}|${itemPath}`);
+  const today = todayIso();
+  const split = splitCurrent(tasks, today, justDone.keys);
+  const passes = (index: number) => !filter || filter(tasks[index]);
+  const shownIn = (key: CurrentTab) => split.lists[key].filter(passes);
+  const countOf = (key: CurrentTab) => shownIn(key).filter(i => key === 'done' || !tasks[i].done).length;
+  const countTabs: CountTabDef<CurrentTab>[] = [
+    {key: 'next', label: 'Next', count: countOf('next'), fixed: true},
+    {key: 'waiting', label: 'Waiting', count: countOf('waiting'), fixed: false},
+    {key: 'plan', label: 'Plan', count: countOf('plan'), fixed: false},
+    {key: 'someday', label: 'Someday', count: countOf('someday'), fixed: false},
+    {key: 'done', label: 'Done', count: countOf('done'), fixed: false},
+  ];
+  // Until a tab is chosen, an empty Next gives way to the first tab with todos, so a page with only
+  // planned todos doesn't open on an empty list.
+  const firstFull = countTabs.find(t => t.count > 0)?.key ?? 'next';
+  const activeTab = shownCountTabs(countTabs, !tabChosen && countTabs[0].count === 0 ? firstFull : tab).activeKey;
 
-  const toggleHideDone = () => {
-    const next = !hideDone;
-    setToggled(next);
-    loadSettings()
-      .then(s => saveSettings({...s, hideDoneProjectTasks: next}))
-      .catch(e => logError('TodosSection: save hideDoneProjectTasks failed', errorMessage(e)));
-  };
-
-  const doneCount = tasks.filter(t => !t.cancelled && t.done).length;
-
-  // Grouped by flow-state (technical-design-tags.md §4) - Next, Waiting
-  // For, Someday, Maybe, then Other (no flow tag), empty groups omitted.
-  // Not-cancelled only.
-  //
-  // groupTasksByFlowState is called against the *full*, unfiltered `tasks`
-  // array (not a hideDone-prefiltered copy) so each entry's `index` stays a
-  // valid position into `tasks` - every row action below (commitEdit,
-  // handleToggleDone, handleCancel, ...) does `tasks.slice(); next[index] =
-  // ...` against that same full array. Pre-filtering before grouping would
-  // renumber entries relative to the *shorter* filtered array instead, so
-  // e.g. editing the first visible task while an earlier task happens to be
-  // done-and-hidden would silently edit that unrelated hidden task instead
-  // (index 0 of the filtered list isn't index 0 of `tasks` once something
-  // ahead of it was removed). Hiding done tasks is applied *after*
-  // grouping instead, by filtering each group's already-indexed `entries`
-  // in place - that keeps every surviving entry's `index` correct and still
-  // drops a group left with nothing but done tasks.
+  // The chosen tab's todos, the todos of each active loop first under the loop's name and main
+  // date (docs/dev/history/technical-design-loops.md §4.7). Each entry keeps its index into the full
+  // `tasks` array, which every row action writes back to.
+  const inTab = shownIn(activeTab);
   const loopGroups = groupTodosByLoop(
-    tasks.map((task, index) => ({task, index, tags: task.tags})).filter(({task}) => !task.cancelled),
+    inTab.map(index => ({task: tasks[index], index, tags: tasks[index].tags})),
     loops,
   ).filter(group => group.loop !== null);
   const inLoop = new Set(loopGroups.flatMap(group => group.todos.map(t => t.index)));
-  const groupsByFlowState = [
-    ...loopGroups.map(group => ({
-      key: `loop-${group.loop!.tag}`,
-      label: `○ ${group.loop!.tag.split('/').slice(1).join('/')}${group.loop!.mainDate ? ` · ${formatDate(group.loop!.mainDate, todayIso())}` : ''}`,
-      entries: group.todos.map(({task, index}) => ({task, index})),
-    })),
-    ...groupTasksByFlowState(tasks, 'item').map(group => ({...group, entries: group.entries.filter(e => !inLoop.has(e.index))})),
-  ].filter(group => group.entries.length > 0);
-  const groups =
-    hideDone || filter
-      ? groupsByFlowState
-          .map(group => ({
-            ...group,
-            entries: group.entries.filter(({task}) => (!hideDone || !task.done) && (!filter || filter(task))),
-          }))
-          .filter(group => group.entries.length > 0)
-      : groupsByFlowState;
-
-  // Flattened into one paginated sequence (docs/dev/technical-design-pagination-
-  // edit-reuse.md §2/§4) - each group's label becomes a header row counted
-  // as content within that sequence, rather than paging per-group.
-  const flatRows: TodoFlatRow[] = groups.flatMap(group => [
-    {kind: 'header', rowKey: `header-${group.key}`, label: group.label} as TodoFlatRow,
-    ...group.entries.map(
-      ({task, index}): TodoFlatRow => ({kind: 'entry', rowKey: `task-${index}`, task, index}),
-    ),
-  ]);
+  const rest = inTab.filter(index => !inLoop.has(index));
+  const flatRows: TodoFlatRow[] = [
+    ...loopGroups.flatMap(group => [
+      {
+        kind: 'header',
+        rowKey: `header-loop-${group.loop!.tag}`,
+        label: `○ ${group.loop!.tag.split('/').slice(1).join('/')}${group.loop!.mainDate ? ` · ${formatDate(group.loop!.mainDate, today)}` : ''}`,
+      } as TodoFlatRow,
+      ...group.todos.map(({index}): TodoFlatRow => ({kind: 'entry', rowKey: `task-${index}`, task: tasks[index], index})),
+    ]),
+    ...(loopGroups.length > 0 && rest.length > 0 ? [{kind: 'header', rowKey: 'header-rest', label: 'Other'} as TodoFlatRow] : []),
+    ...rest.map((index): TodoFlatRow => ({kind: 'entry', rowKey: `task-${index}`, task: tasks[index], index})),
+  ];
   const engagePrompt = useEngagePrompt('TodosSection');
   const runAction = async (fn: () => Promise<void>) => {
     setActionError(null);
@@ -158,6 +136,7 @@ function TodosSection({
 
   const handleToggleDone = (index: number) => {
     Keyboard.dismiss();
+    if (!tasks[index].done) justDone.add(index);
     runAction(async () => {
       const next = tasks.slice();
       next[index] = withTaskDone(next[index], !next[index].done, todayIso());
@@ -192,10 +171,11 @@ function TodosSection({
           (docs/dev/history/technical-design-pagination-fixed-height.md §3.4). An
           empty list shows `emptyHint` and still reserves the box's full
           height - these boxes are fixed and always there. */}
+      <CountTabs tabs={countTabs} activeKey={activeTab} onChange={setTab} textColor={textColor} borderColor={borderColor} />
       <PagedSection
-        header="Todos"
-        headerAccessory={<DoneToggle doneCount={doneCount} hideDone={hideDone} onToggle={toggleHideDone} textColor={textColor} />}
-        heightKey={[`current:Todos:${itemPath}`, 'current:Todos']}
+        header=""
+        heightKey={[`current:Todos:${activeTab}:${itemPath}`, 'current:Todos']}
+        resetKey={`${activeTab}|${itemPath}`}
         rows={flatRows}
         rowHeight={row => (row.kind === 'header' ? SUBHEADING_ROW_PX : taskRowHeight(row.task, estimatorWidth(), 'quiet'))}
         isCountableRow={row => row.kind === 'entry'}
@@ -226,7 +206,7 @@ function TodosSection({
             />
           )
         }
-        emptyHint={filter ? 'No todos for this counterpart here.' : 'No todos yet.'}
+        emptyHint={filter ? 'No todos for this counterpart here.' : tasks.length === 0 ? 'No todos yet.' : 'Nothing here.'}
         textColor={textColor}
         borderColor={borderColor}
       />

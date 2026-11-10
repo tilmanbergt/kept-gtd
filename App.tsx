@@ -50,6 +50,7 @@ import {clearCachedData, refreshCache} from './src/storage/dataCache';
 import {clearCachedGmailInbox} from './src/storage/gmailInboxCache';
 import {setActiveProfileId} from './src/storage/profileKeys';
 import {switchProfile} from './src/storage/profiles';
+import {resetListTabs} from './src/ui/listTabStore';
 import {DEFAULT_PROFILE_ID} from './src/domain/profiles';
 import {DEMO_PROFILE_ID} from './src/domain/demoSpace';
 import {activeContext, EVERYTHING_LABEL} from './src/domain/contexts';
@@ -154,6 +155,9 @@ function AppRoot(): React.JSX.Element {
 function AppShell({onProfileSwitched}: {onProfileSwitched: () => void}): React.JSX.Element {
   usePerfRender('AppShell');
   const {textColor} = useThemeColors();
+  // A new shell (start, profile switch) starts every list on its first count tab
+  // (ui/listTabStore.ts, docs/dev/history/technical-design-calmer-screens.md §4).
+  useState(resetListTabs);
 
   const [mode, setMode] = useState<Mode>('loading');
   // Explicit e-ink refresh once the initial reorient() below actually lands

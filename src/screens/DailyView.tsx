@@ -54,6 +54,10 @@ import {useEntryActions} from '../ui/useEntryActions';
 import {tallyHidden} from '../domain/contexts';
 import HiddenLine from '../ui/context/HiddenLine';
 import {useContextMatcher} from '../ui/context/useContextMatcher';
+import {DailyTab, splitDaily} from '../domain/listTabs';
+import {CountTabDef} from '../ui/CountTabs';
+import {useListTab} from '../ui/listTabStore';
+import {useJustDone} from '../ui/useJustDone';
 import DailyTodosColumn from './daily/DailyTodosColumn';
 import SelectionZone from './daily/SelectionZone';
 import {flattenTaskGroups, FlatTaskRow, meetingKey, taskKey} from './daily/dailyRows';
@@ -89,6 +93,14 @@ export default function DailyView({onOpenItem, onOpenInbox, onOpenCalendarSettin
   const {select: selectEditTarget, store: selection} = actions.edit;
   const features = useFeatures();
   const [calendarTab, setCalendarTab] = useState<CalendarTab>('today');
+  // The count tabs (docs/dev/history/technical-design-calmer-screens.md §3.5): the chosen one, and the
+  // todos ticked here, which stay struck through in their tab until the tab changes or Daily is left.
+  const [tab, setTab] = useListTab<DailyTab>('daily', 'next');
+  const justDone = useJustDone<string>(tab);
+  const tickTodo = useStableCallback((entry: DailyTaskEntry) => {
+    if (!entry.task.done) justDone.add(taskKey(entry));
+    actions.toggleDone(entry);
+  });
 
   const openItem = useStableCallback((item: DailyItemRef) => {
     if (item.kind === 'inbox') {
@@ -108,9 +120,9 @@ export default function DailyView({onOpenItem, onOpenInbox, onOpenCalendarSettin
   const {matcher} = contextFilter;
   // Recomputed after midnight through todayDate (render-perf-ab §3 B4).
   const aggregate: DailyAggregate | null = useMemo(
-    () => (inboxPath !== null ? buildDailyAggregate(items, inboxInput, inboxPath, new Date(), matcher) : null),
+    () => (inboxPath !== null ? buildDailyAggregate(items, inboxInput, inboxPath, new Date(), matcher, justDone.keys) : null),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- todayDate: recompute after midnight
-    [items, inbox, inboxPath, todayDate, matcher],
+    [items, inbox, inboxPath, todayDate, matcher, justDone.keys],
   );
   const displayAggregate: DailyAggregate = aggregate ?? EMPTY_DAILY_AGGREGATE;
   const hiddenText = contextFilter.lineText(tallyHidden(displayAggregate.hiddenTasks ?? [], contextFilter.kinds, todayDate));
@@ -118,7 +130,21 @@ export default function DailyView({onOpenItem, onOpenInbox, onOpenCalendarSettin
   // dailyEntryDate: a multi-day meeting is listed on each day it covers.
   const meetingsToday = displayAggregate.meetings.filter(entry => dailyEntryDate(entry) === todayDate);
   const meetingsTomorrow = displayAggregate.meetings.filter(entry => dailyEntryDate(entry) === tomorrowDate);
-  const taskRows = useMemo(() => flattenTaskGroups(groupDailyTasksByItem(displayAggregate.tasks)), [displayAggregate.tasks]);
+  // The Inbox's todos show under Next as well until the Inbox tab takes them over (§3.7).
+  const split = useMemo(
+    () => splitDaily(displayAggregate.tasks, displayAggregate.doneToday ?? [], todayDate, true),
+    [displayAggregate.tasks, displayAggregate.doneToday, todayDate],
+  );
+  const taskRows = useMemo(() => flattenTaskGroups(groupDailyTasksByItem(split.lists[tab])), [split, tab]);
+  const countTabs: CountTabDef<DailyTab>[] = useMemo(
+    () => [
+      {key: 'next', label: 'Next', count: split.counts.next, fixed: true},
+      {key: 'waiting', label: 'Waiting', count: split.counts.waiting, bell: split.bells.waiting, fixed: true},
+      {key: 'inbox', label: 'Inbox', count: split.counts.inbox, bell: split.bells.inbox, fixed: true},
+      {key: 'done', label: 'Done', count: split.counts.done, fixed: false},
+    ],
+    [split],
+  );
   const failedNamesKey = displayAggregate.failedItems.map(f => f.item.name).join('\n');
   const failedItemNames = useMemo(() => (failedNamesKey ? failedNamesKey.split('\n') : []), [failedNamesKey]);
 
@@ -131,7 +157,7 @@ export default function DailyView({onOpenItem, onOpenInbox, onOpenCalendarSettin
         task={entry.task}
         selection={{store: selection, key: `task:${key}`}}
         onStartEdit={() => selectEditTarget({type: 'task', key})}
-        onToggleDone={() => actions.toggleDone(entry)}
+        onToggleDone={() => tickTodo(entry)}
         onCreateNote={() => actions.taskNote(entry)}
         onOpenNote={() => actions.taskNote(entry)}
         linkedFile={entry.task.linkedFile}
@@ -183,6 +209,9 @@ export default function DailyView({onOpenItem, onOpenInbox, onOpenCalendarSettin
   );
   const list = (
     <DailyTodosColumn
+      tabs={countTabs}
+      tab={tab}
+      onTabChange={setTab}
       rows={taskRows}
       renderEntry={renderTaskEntry}
       onOpenItem={openItem}
@@ -210,6 +239,7 @@ export default function DailyView({onOpenItem, onOpenInbox, onOpenCalendarSettin
                   onTabChange={setCalendarTab}
                   renderRow={renderMeetingEntry}
                   emptyHint={`Nothing ${calendarTab === 'tomorrow' ? 'tomorrow' : 'today'}.`}
+                  compact
                   googlePanel={
                     features.googleCalendar ? (
                       <GoogleCalendarPanel
@@ -243,6 +273,7 @@ export default function DailyView({onOpenItem, onOpenInbox, onOpenCalendarSettin
                 isMeetingDateVisible={stableIsMeetingDateVisible}
                 openItem={openItem}
                 onOpenOwner={openOwner}
+                onTickTodo={tickTodo}
                 list={list}
                 textColor={textColor}
                 borderColor={borderColor}

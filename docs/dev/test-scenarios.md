@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-236 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+239 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -334,6 +334,31 @@ Test: `__tests__/scenarios/calmerRows.test.tsx` · design: `docs/dev/history/tec
 
 Test: `__tests__/scenarios/calmerSelection.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `quick-add.md#the-card-one-tap-selects`
 
+### Daily counts Next and Waiting in its tabs; the bell counts the waiting ones due today
+
+- **Given** on 10.11. three #next todos and two waiting ones, one of them due today
+- **When** I open Daily
+- **Then** the tabs read Next 3, Waiting 2 with the bell 1, Inbox 0; no Done tab
+- **And** Next lists the #next todos, not the waiting ones
+- **When** I tap Waiting
+- **Then** it lists both waiting todos with their grey note
+
+Test: `__tests__/scenarios/calmerTabs.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `daily.md#count-tabs-and-the-bell`
+
+### A todo ticked on Next stays struck through until another tab; then it is under Done, and unticked there it is back
+
+- **Given** on 10.11. two #next todos
+- **When** I open Daily and tick "Order soil"
+- **Then** it is done in the file and still in the list, ticked; Next counts 1, Done 1
+- **When** I open Waiting and then Next again
+- **Then** "Order soil" is gone from Next
+- **When** I open Done
+- **Then** it lists "Order soil"
+- **When** I untick it there
+- **Then** it is open again and back under Next
+
+Test: `__tests__/scenarios/calmerTabs.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `daily.md#done`
+
 ### Add a meeting for next week from Daily
 
 - **Given** an empty PARA folder
@@ -476,7 +501,9 @@ Test: `__tests__/scenarios/rollback.test.tsx` · help: `files-and-folders.md`
 - **And** the todos are the Inbox's, Garden's project Garage's and Garden's, a due one with its grey note; the rest is counted, Website's overdue one as "1 due!"
 - **And** Someday, Maybe and done todos don't show
 - **When** I tap Show
-- **Then** Website's next todo and its Waiting For show too
+- **Then** Website's next todo shows too
+- **When** I tap the Waiting tab
+- **Then** Website's Waiting For shows there
 - **When** I tap Tomorrow
 - **Then** it lists "Supplier call"
 - **And** no error was logged
@@ -877,7 +904,7 @@ Test: `__tests__/scenarios/smoke/captureTodo.test.tsx` · help: `lasso.md#captur
 - **When** I add the meeting "Writing session #writing/novel" tomorrow 9-11 on Daily with F on
 - **Then** Inbox.txt has the line with #focusblock
 - **When** I open Tomorrow
-- **Then** the row shows the F mark and no #focusblock; the day counts it as focus, with the smoke space's own block
+- **Then** the row shows the F mark and no #focusblock
 - **When** I tap it
 - **Then** the card says "Focus · ahead" with "writing novel ›" and has no P or R
 
@@ -1182,6 +1209,16 @@ Test: `__tests__/scenarios/smoke/profiles.test.tsx` · help: `profiles-and-demo.
 
 Test: `__tests__/scenarios/calmerSelection.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `quick-add.md#the-card-one-tap-selects`
 
+### Current's Done tab counts the todos done in the last 14 days
+
+- **Given** on 10.11. a project with 3 todos done on 7.11., one done on 21.10. and one #next
+- **When** I open the project
+- **Then** the tabs show Next 1 and Done 3
+- **When** I tap Done 3
+- **Then** it lists the three, not "Old plan"
+
+Test: `__tests__/scenarios/calmerTabs.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `projects-and-areas.md#the-current-tab`
+
 ### The Current pages of the big data set show what was recorded before the performance work
 
 - **Given** the big data set: area "Team" with projects "Tender" and "Migration", area "Zen", project "Solo" and the Inbox
@@ -1213,14 +1250,14 @@ Test: `__tests__/scenarios/currentPagePerf.test.tsx` · design: `docs/dev/histor
 
 Test: `__tests__/scenarios/currentPagePerf.test.tsx` · design: `docs/dev/history/technical-design-perf-current-page.md` · help: `projects-and-areas.md#files-and-linked-files`
 
-### Hiding done todos on an Area page changes the Todos list and nothing else, and is kept
+### Switching the count tab on an Area page changes the Todos list and nothing else, and is kept
 
 - **Given** the big data set and Team's page open
-- **When** I tap "hide done" in the Todos header
-- **Then** the Todos list offers to show the done ones again, and neither Quick Add nor the left pane rendered
-- **And** after opening Zen and coming back, done todos are still hidden
+- **When** I tap the Done tab over the todos
+- **Then** the Todos list shows the done ones, and neither Quick Add nor the left pane rendered
+- **And** after opening Zen and coming back, the Done tab is still the one shown
 
-Test: `__tests__/scenarios/currentPagePerf.test.tsx` · design: `docs/dev/history/technical-design-perf-current-page.md` · help: `projects-and-areas.md#the-current-tab`
+Test: `__tests__/scenarios/currentPagePerf.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `projects-and-areas.md#the-current-tab`
 
 ### Focus flags, goal spans and #now survive a todo, a meeting and a status change
 
@@ -1239,7 +1276,7 @@ Test: `__tests__/scenarios/rollback.test.tsx` · help: `files-and-folders.md#edi
 
 - **Given** the smoke space on Wednesday 14.10.2026
 - **When** I open Garden from Areas
-- **Then** Todos list "Buy bulbs" and "Repair the fence #someday" (its own tag kept), and Meetings list "Neighbour chat"
+- **Then** the Next tab lists "Buy bulbs", Someday counts "Repair the fence", and Meetings list "Neighbour chat"
 - **And** Garden's folder is not listed
 - **When** I tap "◇ Agreements 1 ›"
 - **Then** the list shows "Water only in the morning"
@@ -2333,7 +2370,7 @@ Test: `__tests__/scenarios/fileSafety.test.tsx` · design: `docs/dev/history/tec
 
 - **Given** project "Website" was saved in a Windows editor (CRLF line endings)
 - **When** I open its page
-- **Then** both todos and the Scope show
+- **Then** both todos (under Next and Plan) and the Scope show
 - **And** adding a todo keeps both and writes the file with plain line endings
 
 Test: `__tests__/scenarios/interruptions.test.tsx` · design: `docs/dev/history/technical-design-quality-hardening.md` · help: `files-and-folders.md#editing-by-hand`

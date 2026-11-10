@@ -34,7 +34,7 @@ scenario('Quick Add a todo in a project', {feature: 'Quick Add', design: 'techni
 
 scenario('Edit a todo, then tap another one: the first edit is saved', {feature: 'Quick Add', design: 'technical-design-meeting-lists.md', help: 'quick-add.md#editing'}, () => {
   given('project "Website" has the todos "Write copy" and "Fix footer"', () => {
-    putFile(projectFile('Website'), dataFile('project', {Scope: [], Tasks: ['- [ ] Write copy #next', '- [ ] Fix footer'], Meetings: []}));
+    putFile(projectFile('Website'), dataFile('project', {Scope: [], Tasks: ['- [ ] Write copy #next', '- [ ] Fix footer #next'], Meetings: []}));
   });
   when('I open "Website", tap "Write copy" and Edit on its card, change it to "Write landing page copy" and tap "Fix footer"', async () => {
     await openApp();
@@ -46,10 +46,10 @@ scenario('Edit a todo, then tap another one: the first edit is saved', {feature:
     await tap('Fix footer');
   });
   then('project.txt has the changed todo, still #next, and "Fix footer" unchanged', () => {
-    expect(sectionLines(projectFile('Website'), 'Tasks')).toEqual(['- [ ] Write landing page copy #next', '- [ ] Fix footer']);
+    expect(sectionLines(projectFile('Website'), 'Tasks')).toEqual(['- [ ] Write landing page copy #next', '- [ ] Fix footer #next']);
   });
   then('"Fix footer" is now the selected one, shown as its card (technical-design-item-card.md §3)', () => {
-    expectShows(/^Todo · .+ · open$/);
+    expectShows(/^Todo · .+ · next$/);
     expectShows('More ›');
   });
 });

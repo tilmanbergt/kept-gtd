@@ -99,7 +99,7 @@ scenario('An Area page lists its folder only when the Files tab is opened', {fea
   });
 });
 
-scenario('Hiding done todos on an Area page changes the Todos list and nothing else, and is kept', {feature: 'Projects and Areas', design: 'technical-design-perf-current-page.md', help: 'projects-and-areas.md#the-current-tab'}, () => {
+scenario('Switching the count tab on an Area page changes the Todos list and nothing else, and is kept', {feature: 'Projects and Areas', design: 'technical-design-calmer-screens.md', help: 'projects-and-areas.md#the-current-tab'}, () => {
   given('the big data set and Team\'s page open', async () => {
     clock();
     for (const f of bigScopeFiles()) putFile(f.path, f.content);
@@ -107,27 +107,28 @@ scenario('Hiding done todos on an Area page changes the Todos list and nothing e
     await tapTab('Areas');
     await tap(/^Team/);
   });
-  when('I tap "hide done" in the Todos header', async () => {
+  when('I tap the Done tab over the todos', async () => {
     // After the page's first e-ink flush, which builds Quick Add's other tabs once.
     await act(async () => {
       await new Promise(resolve => setTimeout(resolve, 500));
     });
     await settle();
     resetRenderCounts();
-    await tap('hide done');
+    await tap(/^Done \d+$/);
   });
-  then('the Todos list offers to show the done ones again, and neither Quick Add nor the left pane rendered', () => {
-    expectShows(/^show \d+ done$/);
+  then('the Todos list shows the done ones, and neither Quick Add nor the left pane rendered', () => {
+    expect(texts()).toContain('☑');
     const counts = renderCounts();
     expect(counts.TodosSection).toBeGreaterThan(0);
     for (const name of ['QuickAddWidget', 'ItemDetail', 'FileBrowserPane', 'ThreadsTab', 'ItemScopePanel', 'ItemStatusPanel']) expect([name, counts[name] ?? 0]).toEqual([name, 0]);
   });
-  and('after opening Zen and coming back, done todos are still hidden', async () => {
+  and('after opening Zen and coming back, the Done tab is still the one shown', async () => {
     await tapTab('Areas');
     await tap(/^Zen/);
     await tapTab('Areas');
     await tap(/^Team/);
-    expectShows(/^show \d+ done$/);
+    expect(texts()).toContain('☑');
+    expect(texts()).not.toContain('☐');
   });
 });
 

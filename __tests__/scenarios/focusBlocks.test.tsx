@@ -32,11 +32,10 @@ scenario('Focus block from Quick Add: F on, the tag in the file, an F row and a 
     expect(sectionLines(INBOX_FILE, 'Meetings')).toContainEqual('- 2026-10-15 09:00-11:00 Writing session #writing/novel #focusblock');
   });
   when('I open Tomorrow', () => tap('Tomorrow'));
-  then('the row shows the F mark and no #focusblock; the day counts it as focus, with the smoke space\'s own block', () => {
-    expect(textsBetween(/^Thu 15\.10\./, 'Focus')).toContain('F');
+  then('the row shows the F mark and no #focusblock', () => {
+    expect(textsBetween('Tomorrow', '+ Todo')).toContain('F');
     expectShows(/^Writing session/);
     expectNotShows(/#focusblock/);
-    expectShows(/^Thu 15\.10\. · 1 meeting · 2 focus$/);
   });
   when('I tap it', () => tap('Writing session #writing/novel'));
   then('the card says "Focus · ahead" with "writing novel ›" and has no P or R', () => {

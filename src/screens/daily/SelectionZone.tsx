@@ -17,7 +17,7 @@ import {Destination} from '../../domain/destination';
 import {GtdParaSettings, ResolvedParaPaths} from '../../domain/settings';
 import {displayTaskText} from '../../domain/taskLabels';
 import {CachedItem} from '../../storage/dataCache';
-import {DailyAggregate, DailyItemRef} from '../../storage/dailyAggregate';
+import {DailyAggregate, DailyItemRef, DailyTaskEntry} from '../../storage/dailyAggregate';
 import {linkedFileStatus} from '../../storage/linkedFiles';
 import {ProjectFileState} from '../../storage/projectFile';
 import {common} from '../../ui/commonStyles';
@@ -49,6 +49,8 @@ interface Props {
   isMeetingDateVisible: (date: string) => boolean;
   openItem: (item: DailyItemRef) => void;
   onOpenOwner: (path: string) => void;
+  /** Ticks a todo done or open (DailyView: it stays struck through in its tab, §3.5). */
+  onTickTodo: (entry: DailyTaskEntry) => void;
   /** The list under the box while no meeting's context panel replaces it. */
   list: React.ReactNode;
   textColor: string;
@@ -68,6 +70,7 @@ export default function SelectionZone({
   isMeetingDateVisible,
   openItem,
   onOpenOwner,
+  onTickTodo,
   list,
   textColor,
   borderColor,
@@ -77,8 +80,11 @@ export default function SelectionZone({
   const {target: editTarget, mode: editMode} = useSelection(actions.edit.store);
   const {cancel: cancelEditTarget, flushEditRef} = actions.edit;
 
-  // The rows open in Quick Add, looked up in the unfiltered aggregate.
-  const editingTaskEntry = editTarget?.type === 'task' ? (aggregate?.tasks ?? []).find(e => taskKey(e) === editTarget.key) ?? null : null;
+  // The rows open in Quick Add, looked up in the unfiltered aggregate (the Done tab's todos included).
+  const editingTaskEntry =
+    editTarget?.type === 'task'
+      ? (aggregate?.tasks ?? []).find(e => taskKey(e) === editTarget.key) ?? (aggregate?.doneToday ?? []).find(e => taskKey(e) === editTarget.key) ?? null
+      : null;
   const editingMeetingEntry = editTarget?.type === 'meeting' ? (aggregate?.meetings ?? []).find(e => meetingKey(e) === editTarget.key) ?? null : null;
   // Quick-file needs the edited row's real location: this screen's fixedDestination is always the Inbox.
   const editingEntryItem = editingTaskEntry?.item ?? editingMeetingEntry?.item ?? null;
@@ -91,6 +97,9 @@ export default function SelectionZone({
     actions.todoCardOptions(editingTaskEntry, {
       onOpenOwner: () => {
         if (editingTaskEntry) openItem(editingTaskEntry.item);
+      },
+      onToggleDone: () => {
+        if (editingTaskEntry) onTickTodo(editingTaskEntry);
       },
     }),
   );

@@ -73,7 +73,7 @@ it runs on; it asks two questions of `ui/ScreenSize.tsx` and follows the rules b
   instead (`WeekGrid` rows, Month halves).
 - A button inside a fixed-height strip is sized from the strip (status slot buttons).
 - A simplification that helps a small screen is made on every device, not only on the small one
-  (no Given time line or Scope label on the project page, one-line marks card, "hide done" in the
+  (no Given time line or Scope label on the project page, one-line marks card, count tabs in the
   list header).
 
 **Short screens**
@@ -280,6 +280,9 @@ the exception: it grows with its multi-line text and adds rows below.
   the context panel as one `PagedSection` (header ~31, rows above, its footer "+ Quick Add to
   meeting" ~30) where the Next todos were, then no hidden line. 1227 − 174 − 31 − 30 ≈ 990 dp for
   rows: about 10 todo rows of 57 plus captions per page.
+- **Count tabs** (`ui/CountTabs.tsx`, Daily and the Current page's todos): one `MiniTabs` row,
+  about 40 dp (6 + 22 + 6 + underline 2 + margin 8), over the list; the list's own header line
+  stays for its page arrows, without text. The collapsed Quick Add box keeps its 174 dp.
 - **Week / Month, right column**: Quick Add (174) or the card, then either the back row (~30) with
   the context panel as above, or Given time: header ~31 + rows of 57 + captions ("Loops and
   counterparts", "Worked on …") and the hint line ("Nothing above 1 h this week") 28 each, Tend line
