@@ -32,7 +32,8 @@ or your project/area files are stored.
 
 ### Changed
 - Quick Add starts closed on Daily, Week, Month, a project's or area's page and the Review's Inbox
-  step: **+ Todo**, **+ Meeting** (and **+ Agreement**, **+ Note**) open the kind you need, with the
+  step: large **+ Todo**, **+ Meeting** (and **+ Agreement**, **+ Note**) buttons, on two rows where
+  the width ends (Nomad portrait), open the kind you need, with the
   cursor in its field; **✕** closes it and keeps what you typed; after **+ Add** it closes again.
   The box keeps its height, so nothing below moves.
 - The todo and meeting cards are quieter: where the item lives and its state on the first row, one

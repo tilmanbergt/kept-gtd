@@ -6,12 +6,15 @@
  * `onAddNote`. A tap opens that kind in the same box with the cursor in its
  * field. A kind TabsRow greys out (Meeting while `taskOnly`, Note without a
  * folder) is greyed here too. Below 800 dp Agreement is called "Agree".
+ *
+ * Large and inviting: the buttons are half again as high as R1 and wrap onto a
+ * second row where the width ends (Nomad portrait); the collapsed box has no
+ * other rows, so two rows of buttons fit its fixed height (QuickAddFrame).
  */
 import React from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
 import {useLayoutClass} from '../ScreenSize';
 import {FONT, RADII} from '../theme';
-import {QUICK_ADD_ROWS} from './QuickAddFrame';
 import {QuickAddType} from './types';
 
 interface Props {
@@ -52,21 +55,23 @@ export default function KindButtons({hasAgreement, hasNote, taskOnly, noteFolder
   );
 }
 
-/** The pill's height: it fits R1 (QUICK_ADD_ROWS.tabs) with room for its border, so nothing is cut. */
-export const KIND_BUTTON_HEIGHT = QUICK_ADD_ROWS.tabs - 4;
+/** A button's height, and the gap below and beside it: two rows fit the collapsed box (QUICK_ADD_HEIGHT). */
+export const KIND_BUTTON_HEIGHT = 40;
+export const KIND_BUTTON_GAP = 10;
 
 const styles = StyleSheet.create({
-  row: {flexDirection: 'row', alignItems: 'center', flexWrap: 'nowrap', overflow: 'hidden'},
+  row: {flex: 1, flexDirection: 'row', flexWrap: 'wrap', alignItems: 'flex-start'},
   // The look of ui/PillButton.tsx at R1's height: the text without font padding, centred.
   pill: {
     height: KIND_BUTTON_HEIGHT,
     borderWidth: 1,
     borderRadius: RADII.pillMd,
-    paddingHorizontal: 10,
-    marginRight: 8,
+    paddingHorizontal: 18,
+    marginRight: KIND_BUTTON_GAP,
+    marginBottom: KIND_BUTTON_GAP,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  text: {fontSize: FONT.small, fontWeight: '600', includeFontPadding: false},
+  text: {fontSize: FONT.medium, fontWeight: '700', includeFontPadding: false},
   disabled: {opacity: 0.35},
 });

@@ -48,8 +48,9 @@ interface Props {
   card?: React.ReactNode;
   /**
    * The collapsed box (docs/dev/history/technical-design-calmer-screens.md §3.2):
-   * R1 only (the kind buttons); R2-R4 stay mounted, hidden, so drafts survive,
-   * and the box keeps its height.
+   * R1 only (the kind buttons, which may wrap onto a second row - R1 has no
+   * fixed height then); R2-R4 stay mounted, hidden, so drafts survive, and the
+   * box keeps its height.
    */
   collapsed?: boolean;
   free?: boolean;
@@ -60,7 +61,7 @@ export default function QuickAddFrame({row1, row2, rows34, below, card, collapse
   return (
     <View style={[styles.card, !free && styles.fixed, {borderColor}]} testID="quick-add-frame">
       <View style={card ? styles.hidden : undefined} testID="quick-add-rows">
-        <View style={[styles.row1, free ? styles.row1Free : styles.row1Fixed]}>{row1}</View>
+        <View style={[styles.row1, free ? styles.row1Free : collapsed ? styles.row1Collapsed : styles.row1Fixed]}>{row1}</View>
         <View style={collapsed ? styles.hidden : undefined} testID="quick-add-rows-below">
           {row2}
           {rows34}
@@ -88,6 +89,9 @@ const styles = StyleSheet.create({
   },
   row1Fixed: {
     height: QUICK_ADD_ROWS.tabs,
+  },
+  row1Collapsed: {
+    alignItems: 'flex-start',
   },
   row1Free: {
     minHeight: FREE_TABS_HEIGHT,

@@ -25,7 +25,7 @@ jest.mock('../../src/ui/useAbbrevItems', () => ({
 
 import React from 'react';
 import {Pressable, StyleSheet, Text, TextInput, View, ViewStyle} from 'react-native';
-import {KIND_BUTTON_HEIGHT} from '../../src/ui/quickAdd/KindButtons';
+import {KIND_BUTTON_GAP, KIND_BUTTON_HEIGHT} from '../../src/ui/quickAdd/KindButtons';
 import TestRenderer, {act} from 'react-test-renderer';
 import QuickAddWidget, {editTargetFor, QuickAddEditTarget} from '../../src/ui/QuickAddWidget';
 import {QUICK_ADD_HEIGHT, QUICK_ADD_ROWS} from '../../src/ui/quickAdd/QuickAddFrame';
@@ -122,20 +122,22 @@ describe('Quick Add box height', () => {
     expect(QUICK_ADD_HEIGHT).toBe(174);
   });
 
-  it('the kind buttons fit R1 with their border, so nothing is cut', () => {
-    expect(KIND_BUTTON_HEIGHT).toBeLessThanOrEqual(QUICK_ADD_ROWS.tabs - 2);
+  it('two rows of kind buttons fit the collapsed box, so nothing is cut when they wrap', () => {
+    const inside = QUICK_ADD_HEIGHT - 2 * (1 + 10);
+    expect(2 * (KIND_BUTTON_HEIGHT + KIND_BUTTON_GAP)).toBeLessThanOrEqual(inside);
   });
 
   // docs/dev/history/technical-design-calmer-screens.md §6 scenario 1, §3.2.
   it('collapsed: the kind buttons in R1, the rest hidden, the box as high as ever; + Todo opens the rows, ✕ collapses', () => {
     const r = render({collapsible: true});
-    expect(heights(r)).toEqual({frame: QUICK_ADD_HEIGHT, rows: [QUICK_ADD_ROWS.tabs]});
+    // R1 has no fixed height while collapsed: the large kind buttons may wrap.
+    expect(heights(r)).toEqual({frame: QUICK_ADD_HEIGHT, rows: [undefined]});
     const labels = r.root.findAllByType(Text).map(t => String(t.props.children));
     expect(labels.filter(l => l.startsWith('+ '))).toEqual(['+ Todo', '+ Meeting', '+ Note']);
     pressText(r, '+ Todo');
     expect(heights(r)).toEqual({frame: QUICK_ADD_HEIGHT, rows: FIXED});
     pressText(r, '✕');
-    expect(heights(r)).toEqual({frame: QUICK_ADD_HEIGHT, rows: [QUICK_ADD_ROWS.tabs]});
+    expect(heights(r)).toEqual({frame: QUICK_ADD_HEIGHT, rows: [undefined]});
   });
 
   // Measured on the A5 X: a chip label (FONT.small, weight 600) draws about 21 dp high. A chip in
