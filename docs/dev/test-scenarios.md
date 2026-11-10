@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-255 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+256 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -599,6 +599,14 @@ Test: `__tests__/scenarios/smoke/daily.test.tsx` · help: `daily.md#what-appears
 Test: `__tests__/scenarios/smoke/daily.test.tsx` · help: `daily.md#schedule-and-cards`
 
 ## Engage
+
+### Engage on a loop's page: no section line, no "Loop since" line, and Today next is shown
+
+- **Given** Area Sport with loop marathon, page 5 is a loop todo's page, and a physio appointment at 11:00 today
+- **When** I open Engage on page 5
+- **Then** the owner is the loop, with Today next and without the section or "Loop since" line
+
+Test: `__tests__/scenarios/calmerEngage.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `engage.md#opening-engage`
 
 ### Engage before the meeting: Before is chosen, the strip offers prep and the last note, From Thread shows the last session
 
