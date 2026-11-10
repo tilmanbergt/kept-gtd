@@ -39,6 +39,9 @@ or your project/area files are stored.
   grey line (where it was agreed, its file, or "no note yet"), and the main buttons - Done, w/f,
   Someday, the note - with **More ›** for the rest (Next, Maybe, Edit, moving, linking a file,
   delete) on a second page in the same box.
+- An empty todo text or meeting title offers **Thread** and **Loop** (and **Paste** with text on the
+  clipboard): a tap lists the tags of your thread or loop setups, and one more tap writes
+  `#sparring/` for the writing help to finish.
 - A tap on a row shows its card faster: the list no longer redraws for it.
 - For contributors: `SECURITY.md` says how to report a vulnerability privately and what Kept
   touches; `docs/dev/claims.md` lists every promise Kept makes and how each is checked.

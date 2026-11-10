@@ -119,6 +119,7 @@ export function useTaskDraft(core: QuickAddCore, input: Input) {
   // The writing help (docs/dev/history/technical-design-writing-help.md §3.5): every typed or recognized change.
   const textHelp = useWritingHelp({
     field: 'text',
+    starterSetups: editing ? null : core.starterSetups,
     value: fields.text,
     write: writeText,
     selectionRef: lastSelectionRef,

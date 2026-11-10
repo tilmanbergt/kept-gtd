@@ -11,9 +11,12 @@
  * 6. a date field: the full date (+ warning) and the nudges, and the usual
  *    slot while the time is empty; a time field: the read time and length (+ warning), or the
  *    usual slot when empty;
- * 7. a text field: All · Copy · Cut · Paste.
+ * 7. an empty title field in create mode with `starters`: Thread · Loop ·
+ *    Paste (docs/dev/history/technical-design-calmer-screens.md §3.3); a tap on
+ *    Thread or Loop is the moment `starterList` (its setups' tags and ‹);
+ * 8. a text field: All · Copy · Cut · Paste.
  *
- * States 2-5 are a *moment*: the hook ends one on the next touch in the field,
+ * States 2-5 and the starter list are a *moment*: the hook ends one on the next touch in the field,
  * on the next focus, or on the next burst - never by a timer.
  */
 import {formatFullDate, formatLength, formatTime, formatTimeSpan} from '../dateFormat';
@@ -21,6 +24,7 @@ import {isValidIsoDate} from '../dateNudge';
 import {parseMeetingWhen} from '../meetingTime';
 import {KnownTag} from './knownTags';
 import {UsualSlot} from './meetingHints';
+import {StarterOption} from './starters';
 
 export type StripField = 'text' | 'date' | 'time';
 
@@ -41,7 +45,15 @@ export type StripMoment =
   | {kind: 'read'; label: string}
   | {kind: 'choice'; options: ChoiceOption[]}
   | {kind: 'complete'; options: KnownTag[]}
-  | {kind: 'feedback'; text: string};
+  | {kind: 'feedback'; text: string}
+  | {kind: 'starterList'; options: StarterOption[]};
+
+/** What an empty title field offers (state 7); null where it offers none (edit mode, other fields). */
+export interface StripStarters {
+  thread: boolean;
+  loop: boolean;
+  paste: boolean;
+}
 
 export type StripContent =
   | {kind: 'fixes'; fixes: PendingFix[]}
@@ -49,6 +61,7 @@ export type StripContent =
   | {kind: 'date'; label: string | null; warning: string | null; usual: string | null}
   | {kind: 'time'; label: string; warning: string | null}
   | {kind: 'usual'; usual: string}
+  | {kind: 'starters'; thread: boolean; loop: boolean; paste: boolean}
   | {kind: 'clipboard'}
   | {kind: 'none'};
 
@@ -69,6 +82,8 @@ export interface StripState {
    * since the date field starts with today's date).
    */
   usual?: UsualSlot | null;
+  /** An empty title field in create mode: the starters it may offer (state 7). */
+  starters?: StripStarters | null;
 }
 
 /** The most fixes the strip shows at once (§1.4). */
@@ -109,6 +124,8 @@ export function stripContent(state: StripState): StripContent {
     const label = timeLabel(value);
     return label ? {kind: 'time', label, warning: state.warning ?? null} : {kind: 'none'};
   }
+  const starters = state.starters;
+  if (empty && starters && (starters.thread || starters.loop || starters.paste)) return {kind: 'starters', ...starters};
   return {kind: 'clipboard'};
 }
 

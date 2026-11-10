@@ -50,6 +50,10 @@ Every project and area has a short [abbreviation](projects-and-areas.md#abbrevia
 
 Handwriting recognition makes small mistakes: a capital I for an l, an o for a 0, a space after a slash. Quick Add looks at what it just wrote - only then, never while you write - and the hovering strip over the tabs shows one thing at a time. It only suggests: a tag changes when you tap, and a date or time only when it can be read just one way, always shown with **Undo**. The strip goes back to **All**, **Copy**, **Cut** and **Paste** the next time you tap into the field.
 
+### Starting with a thread or loop
+
+While a new todo's text or a new meeting's title is still empty, the strip offers **Thread** and **Loop** - where you have a [Note setup](note-setups.md#what-a-setup-is) of that kind - and **Paste** when there is text on the clipboard. **Thread** lists the tags of your first three thread setups, for example `#sparring`; tap one and the field reads `#sparring/`, and the strip offers its [counterparts](threads.md) to finish the tag. **Loop** does the same for your [loops](loops.md). **‹** goes back. As soon as there is text in the field, the strip shows **All**, **Copy**, **Cut** and **Paste** again.
+
 ### Tag suggestions
 
 Each tag that recognition writes is compared with the tags you already use: in your todos and meetings, your [Note setups](note-setups.md#what-a-setup-is), [abbreviations](projects-and-areas.md#abbreviations), [counterparts](threads.md), [contexts](contexts.md) and recent tags. Capital letters never count as a difference: `#Sparring` is your `#sparring`.

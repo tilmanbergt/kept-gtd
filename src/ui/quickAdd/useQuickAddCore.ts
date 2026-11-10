@@ -12,9 +12,11 @@
 import {useCallback, useEffect, useState} from 'react';
 import {AbbrevFileMatch} from '../../domain/abbrev';
 import {Destination} from '../../domain/destination';
+import {NoteSetup} from '../../domain/noteSetups';
 import {getRecentTags, getRecentTagsSync, recordTagsUsed} from '../../storage/tagUsage';
 import {log} from '../../utils/log';
 import {useAbbrevItems} from '../useAbbrevItems';
+import {peekSettings} from '../../storage/settingsSnapshot';
 import {EditFields} from './editFields';
 import {QuickAddField, QuickAddType} from './types';
 
@@ -23,6 +25,8 @@ interface Input {
   /** The edited item's real location - see QuickAddWidget's `editingItemPath` prop. */
   editingItemPath?: string | null;
 }
+
+const NO_SETUPS: readonly NoteSetup[] = [];
 
 export function useQuickAddCore({fixedDestination, editingItemPath}: Input) {
   const [activeType, setActiveTypeState] = useState<QuickAddType>('task');
@@ -99,6 +103,11 @@ export function useQuickAddCore({fixedDestination, editingItemPath}: Input) {
   // §3 B2): it must re-render by itself when an abbreviation or status
   // changes - but only then (render-perf-ab §7). [] while no cache exists.
   const abbrevItems = useAbbrevItems();
+  // The Note setups an empty title's Thread and Loop starters come from
+  // (docs/dev/history/technical-design-calmer-screens.md §3.3); [] until the settings are known.
+  // Read, not subscribed: the strip shows on focus, which renders again anyway, and a settings
+  // save (hide done, a tab) must not re-render the memoized widget.
+  const starterSetups = peekSettings()?.noteSetups ?? NO_SETUPS;
   const recognizedAbbrevTags = new Set(
     abbrevItems
       .filter(item => item.abbrev !== null && (item.status === 'active' || item.status === 'on-hold'))
@@ -156,6 +165,7 @@ export function useQuickAddCore({fixedDestination, editingItemPath}: Input) {
     recentTags,
     recordTags,
     abbrevItems,
+    starterSetups,
     recognizedAbbrevTags,
     fixedExcludePath,
     abbrevExcludePath,

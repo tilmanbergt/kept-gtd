@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-231 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+234 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -2129,6 +2129,35 @@ Test: `__tests__/scenarios/writingHelpInput.test.tsx` · design: `docs/dev/histo
 - **Then** the todo is saved with #lena
 
 Test: `__tests__/scenarios/writingHelpLasso.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `lasso.md#capturing-right-away`
+
+### An empty meeting title offers Thread and Loop, and Paste while the clipboard has text
+
+- **Given** a Thread setup on #sparring and a Loop setup on #offsite
+- **When** I open + Meeting on Daily and put the cursor into the title
+- **Then** the strip shows Thread and Loop, no Paste
+- **When** there is text on the clipboard and the cursor comes into the title again
+- **Then** Paste is offered too
+
+Test: `__tests__/scenarios/writingHelpStarters.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `quick-add.md#starting-with-a-thread-or-loop`
+
+### Thread, then #sparring: the title reads #sparring/ and the strip offers its counterparts
+
+- **Given** a Thread setup on #sparring and the counterpart jordan in use
+- **When** I open + Meeting on Daily, put the cursor into the title and tap Thread
+- **Then** the strip lists #sparring and ‹
+- **When** I tap #sparring
+- **Then** the title reads "#sparring/"
+- **And** the strip offers the counterpart
+
+Test: `__tests__/scenarios/writingHelpStarters.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `quick-add.md#starting-with-a-thread-or-loop`
+
+### With text in the title, the strip shows All · Copy · Cut · Paste, not the starters
+
+- **Given** a Thread setup on #sparring
+- **When** I open + Meeting on Daily, write "Retro" and put the cursor into the title
+- **Then** the clipboard buttons show, not Thread or Loop
+
+Test: `__tests__/scenarios/writingHelpStarters.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `quick-add.md#starting-with-a-thread-or-loop`
 
 ### Handwriting writes #DaiIy: the strip suggests #daily
 

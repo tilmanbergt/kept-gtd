@@ -2,7 +2,8 @@
  * The writing help's strip over a Quick Add text or time field
  * (docs/dev/history/technical-design-writing-help.md §3.3, §3.4): renders
  * one `stripContent` - fixes, "read as … · Undo", a choice, completions,
- * the feedback line, a time with its length, the usual slot, or the
+ * the feedback line, a time with its length, the usual slot, the starters
+ * of an empty title (Thread · Loop · Paste, then a list of tags), or the
  * clipboard buttons - with the hovering-strip styles of ui/ClipboardStrip.tsx.
  *
  * Always mounted, hidden with `display: 'none'` while the field has no
@@ -77,6 +78,16 @@ export default function WritingStrip({visible, content, actions, clipboard, plac
       break;
     case 'usual':
       body = [button(content.usual, actions.usual)];
+      break;
+    case 'starters':
+      body = [
+        ...(content.thread ? [button('Thread', () => actions.starter('thread'))] : []),
+        ...(content.loop ? [button('Loop', () => actions.starter('loop'))] : []),
+        ...(content.paste && clipboard ? [button('Paste', () => clipboard.paste())] : []),
+      ];
+      break;
+    case 'starterList':
+      body = [button('‹', actions.back, 'back'), ...content.options.map(o => button(`#${o.tag}`, () => actions.insertStarter(o.insert), `starter:${o.tag}`))];
       break;
     case 'clipboard':
       body = clipboard ? CLIPBOARD.map(({label: text, action}) => button(text, () => {

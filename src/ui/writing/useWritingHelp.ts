@@ -22,6 +22,9 @@
  */
 import {MutableRefObject, RefObject, useEffect, useRef, useState} from 'react';
 import {TextInput} from 'react-native';
+import Clipboard from '@react-native-clipboard/clipboard';
+import {NoteSetup} from '../../domain/noteSetups';
+import {insertStarter, StarterKind, starterOptions, startersOffered} from '../../domain/writing/starters';
 import {Selection} from '../../domain/clipboardText';
 import {formatFullDate, formatTimeSpan} from '../../domain/dateFormat';
 import {tagSpans} from '../../domain/markdown';
@@ -69,6 +72,12 @@ export interface WritingHelpOptions {
   usual?: UsualSlot | null;
   /** Fills date, time and end from the usual slot. */
   onUsual?: (slot: UsualSlot) => void;
+  /**
+   * An empty title field in create mode: the Note setups its Thread and Loop
+   * starters come from (docs/dev/history/technical-design-calmer-screens.md §3.3);
+   * null or absent: no starters (edit mode, the other fields).
+   */
+  starterSetups?: readonly NoteSetup[] | null;
 }
 
 export interface WritingStripActions {
@@ -79,6 +88,18 @@ export interface WritingStripActions {
   choose: (value: string) => void;
   complete: (tag: string) => void;
   usual: () => void;
+  /** Thread or Loop on an empty field: their list. */
+  starter: (kind: StarterKind) => void;
+  /** A tag of the list: inserted at the cursor. */
+  insertStarter: (insert: string) => void;
+  /** ‹ on the list: back to the starters. */
+  back: () => void;
+}
+
+/** Whether the clipboard holds text (hasString where the module has it). */
+function clipboardHasText(): Promise<boolean> {
+  const module = Clipboard as unknown as {hasString?: () => Promise<boolean>; getString: () => Promise<string>};
+  return typeof module.hasString === 'function' ? module.hasString() : module.getString().then(text => text.length > 0);
 }
 
 const NO_RECENT: readonly string[] = [];
@@ -123,6 +144,9 @@ export function useWritingHelp(options: WritingHelpOptions) {
   const momentCursorRef = useRef<number | null>(null);
   const askedRef = useRef(false);
   const statusId = useRef(`writing.${++nextHelpInstance}`).current;
+  // Paste among the starters: read once per focus (§3.3), never polled.
+  const [clipText, setClipText] = useState(false);
+  const starterSetups = options.starterSetups ?? null;
   useStatus(statusId, hint ? {kind: 'info', text: hint, onDismiss: () => setHint(null)} : null);
 
   // The learned corrections are read when the field mounts, before the first burst.
@@ -242,6 +266,11 @@ export function useWritingHelp(options: WritingHelpOptions) {
   const onFocus = () => {
     if (moment) startMoment(null, null);
     if (showClipboard) setShowClipboard(false);
+    if (starterSetups) {
+      clipboardHasText()
+        .then(setClipText)
+        .catch(e => logWarn('writing: clipboard not readable', errorMessage(e)));
+    }
   };
 
   const actions: WritingStripActions = {
@@ -311,6 +340,30 @@ export function useWritingHelp(options: WritingHelpOptions) {
       log('writing: tap usual');
       options.onUsual(options.usual);
     },
+    starter: kind => {
+      const list = starterOptions(starterSetups ?? [], kind);
+      log(`writing: starters kind=${kind} n=${list.length}`);
+      startMoment({kind: 'starterList', options: list}, selectionRef.current?.end ?? null);
+      refocus();
+    },
+    insertStarter: insert => {
+      log('writing: tap starter');
+      const {text, cursor} = insertStarter(value, selectionRef.current?.end ?? null, insert);
+      write(text);
+      moveCursor(cursor);
+      // The tag's counterparts or loops follow, as after a recognized `type/`.
+      const unfinished = unfinishedTagAt(text, cursor);
+      const offered = unfinished ? completions(unfinished.token, currentKnownTagIndex(options.recentTags ?? NO_RECENT)) : [];
+      if (unfinished && offered.length > 0) {
+        completionRef.current = unfinished;
+        startMoment({kind: 'complete', options: offered}, cursor);
+      } else startMoment(null, null);
+      refocus();
+    },
+    back: () => {
+      startMoment(null, null);
+      refocus();
+    },
   };
 
   /**
@@ -365,7 +418,8 @@ export function useWritingHelp(options: WritingHelpOptions) {
     undoRef.current = null;
   };
 
-  const strip: StripContent = stripContent({field, value, fixes, moment, showClipboard, warning: options.warning, usual: options.usual});
+  const starters = starterSetups ? startersOffered(starterSetups, clipText) : null;
+  const strip: StripContent = stripContent({field, value, fixes, moment, showClipboard, warning: options.warning, usual: options.usual, starters});
   return {strip, actions, onChangeText, onSelectionChange, onFocus, confirmAdd, reset, checkSeed};
 }
 
