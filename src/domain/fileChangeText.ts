@@ -254,3 +254,11 @@ export function demoSpaceCreatedText(written: number, skipped: number, profileCr
 export function profileLoadedText(name: string): string {
   return `Loaded your profile "${name}". If you use Gmail or Google Calendar, enter the app password and calendar link again (Settings → Features).`;
 }
+
+/** After an Inbox item got its place (docs/dev/history/technical-design-calmer-screens.md §3.7): `Filed "Ask Lena" to Team offsite`. */
+export function inboxFiledText(title: string, placeName: string): string {
+  return `Filed "${title.length > 40 ? `${title.slice(0, 39).trimEnd()}…` : title}" to ${placeName}`;
+}
+
+/** After Undo of a filing: back in the Inbox. */
+export const INBOX_FILE_UNDONE_TEXT = 'Back in the Inbox';

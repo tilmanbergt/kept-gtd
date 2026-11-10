@@ -31,6 +31,8 @@ import {EntryActions} from '../../ui/useEntryActions';
 import {useStableCallback} from '../../ui/useStableCallback';
 import {usePerfRender} from '../../utils/perf';
 import {meetingKey, taskKey} from './dailyRows';
+import InboxCard from '../../ui/itemCard/InboxCard';
+import {inboxEntryOf, InboxListEntry, useInboxCard} from './useInboxCard';
 
 const FIXED_INBOX_DESTINATION: Destination = {type: 'inbox'};
 
@@ -52,6 +54,10 @@ interface Props {
   /** The Inbox tab's todos and meetings: the selection is found among them too. */
   extraTasks: readonly DailyTaskEntry[];
   extraMeetings: readonly DailyMeetingEntry[];
+  /** Daily shows its Inbox tab: an Inbox row's card is the Inbox card (§3.7). */
+  inboxTab: boolean;
+  /** The Inbox list's todos and meetings in order (the next one after filing). */
+  inboxOrder: readonly InboxListEntry[];
   /** Ticks a todo done or open (DailyView: it stays struck through in its tab, §3.5). */
   onTickTodo: (entry: DailyTaskEntry) => void;
   /** The list under the box while no meeting's context panel replaces it. */
@@ -76,6 +82,8 @@ export default function SelectionZone({
   onTickTodo,
   extraTasks,
   extraMeetings,
+  inboxTab,
+  inboxOrder,
   list,
   textColor,
   borderColor,
@@ -118,6 +126,21 @@ export default function SelectionZone({
       },
     }),
   );
+
+  // On the Inbox tab, an Inbox item's card is the Inbox card: File to first (§3.7).
+  const inboxEntry = inboxTab && editMode === 'card' ? inboxEntryOf(editingTaskEntry, editingMeetingEntry) : null;
+  const inboxCard = useInboxCard({
+    name: 'DailyView',
+    entry: inboxEntry,
+    items,
+    inboxPath,
+    order: inboxOrder,
+    // Set, not select: the next row often has the filed one's key (its index moved up), which select would read as a second tap.
+    select: row => inboxPath !== null && actions.edit.set({type: row.type, key: `${inboxPath}#${row.index}`}, 'card'),
+    close: cancelEditTarget,
+    todoCard,
+    meetingCard,
+  });
 
   // Daily is read-only for linked files: a filled clip opens it, nothing links one from here.
   const editingLinkedFile = (editingTaskEntry?.task ?? editingMeetingEntry?.meeting)?.linkedFile;
@@ -170,6 +193,7 @@ export default function SelectionZone({
         editTarget={editTargetFor(editTarget && `${editTarget.type}:${editTarget.key}`, {task: editingTaskForWidget, meeting: editingMeetingEntry?.meeting}, editMode)}
         meetingCard={meetingCard}
         todoCard={todoCard}
+        cardOverride={inboxCard ? <InboxCard card={inboxCard} textColor={textColor} borderColor={borderColor} /> : undefined}
         onSaveEditTask={editingTaskEntry ? stableSaveEditTask : undefined}
         onSaveEditMeeting={editingMeetingEntry ? stableSaveEditMeeting : undefined}
         flushEditRef={flushEditRef}

@@ -16,6 +16,12 @@ Todos marked Someday or Maybe never appear on Daily. Todos are grouped by projec
 
 Over the todos, count tabs show one list at a time: **Next**, **Waiting**, **Inbox** and, once you have finished something today, **Done** - each with its number, for example `Next 11` and `Waiting 5`. **Next** holds the todos marked Next or due; **Waiting** the ones you wait for; **Inbox** everything waiting in the Inbox: the [marks to process](lasso.md#processing-marks), the todos not yet filed (not Someday or Maybe) and its meetings, past ones too - all counted, none hidden by a context. A small bell with a number on **Waiting** or **Inbox** counts the todos there that are due today or earlier (an Inbox todo's grey note is the day you captured it, or its due date when that has come), for example `Waiting 5` with the bell and `1`. Kept starts on **Next**; the tab you choose stays while Kept is open.
 
+## Filing from the Inbox
+
+Tap a todo or meeting on the **Inbox** tab and its Inbox card takes [Quick Add](quick-add.md)'s place: "Inbox · captured 2.11." (a meeting: its date), its title, and **File to** with up to four places to put it - a project's or area's [abbreviation](projects-and-areas.md#abbreviations) such as `#TO`, or a short name. They are only suggestions, in this order: a place whose abbreviation you wrote as a tag, then the projects and areas whose open todos and meetings use the item's tags (`#lena` used in Team offsite suggests Team offsite), then the places you filed to lately. Only active projects and areas are offered.
+
+Tap a place and the item moves there at once - its note goes along, after the usual question. The [status line](index.md#the-status-line) says "Filed "Ask Lena" to Team offsite" with **Undo**, which brings it back to the Inbox, and the next Inbox item's card opens, so you can go through the Inbox one item at a time. When the Inbox is empty, the box closes. The grey row under the places has **Done**, **Edit** and **Delete**.
+
 ## Done
 
 Tick a todo and it stays in its list, struck through, so you can see what you just finished - until you open another tab or leave Daily. Then it is under **Done**, which lists everything finished today. Untick a todo there and it goes back to its list.

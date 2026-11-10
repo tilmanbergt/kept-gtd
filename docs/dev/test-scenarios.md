@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-240 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+242 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -321,6 +321,25 @@ Test: `__tests__/scenarios/contexts.test.tsx` · help: `contexts.md#setting-up-c
 - **Then** it lists the marks card, the four todos and the past meeting, not the Someday one
 
 Test: `__tests__/scenarios/calmerInbox.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `daily.md#count-tabs-and-the-bell`
+
+### An Inbox todo's card offers the place that uses its tag first
+
+- **Given** an Inbox todo "Ask Lena #lena", and #lena used in project Team offsite (#TO)
+- **When** I open Daily's Inbox tab and tap the todo
+- **Then** its card says Inbox and offers #TO first under File to
+
+Test: `__tests__/scenarios/calmerInbox.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `daily.md#filing-from-the-inbox`
+
+### Filing from the Inbox card: the todo moves, the status line says so with Undo, the next Inbox item opens
+
+- **Given** an Inbox with "Ask Lena #lena" and "Order soil", and project Team offsite (#TO) using #lena
+- **When** I open the card of "Ask Lena" and tap #TO
+- **Then** the todo is in Team offsite's file and not in the Inbox
+- **And** the status line says "Filed … to Team offsite" with Undo, and "Order soil"'s card is open
+- **When** I tap Undo
+- **Then** it is back in the Inbox
+
+Test: `__tests__/scenarios/calmerInbox.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `daily.md#filing-from-the-inbox`
 
 ### A Daily row keeps its words; the due date moves to a grey note on the right; no note icon without a note
 

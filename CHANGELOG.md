@@ -53,6 +53,9 @@ or your project/area files are stored.
   page; **Done** lists what you finished today (on a project's page: in the last 14 days).
 - Daily's **Inbox** tab lists everything in the Inbox: marks to process, todos and meetings, past
   ones too, all counted and never hidden by a context. The Inbox's todos no longer show under Next.
+- The Inbox card: tap an Inbox item and **File to** suggests up to four places - the abbreviation you
+  wrote as a tag, the projects and areas that use its tags, the places you filed to lately. A tap
+  files it, with **Undo** in the status line, and the next Inbox item opens.
 - Daily's schedule has no summary line any more; its one-line/two-line buttons sit next to Today
   and Tomorrow.
 - Week and Month: Given time is one line per owner; a tap shows its card with the details and

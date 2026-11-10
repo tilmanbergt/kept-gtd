@@ -1,6 +1,6 @@
 // docs/dev/history/technical-design-calmer-screens.md §6 scenarios 12-13: the Inbox on Daily (14, the context: contexts.test.tsx).
 import {expectNotShows, expectShows, labelled, openApp, tap, tapTab, textsBetween} from '../../test-helpers/scenario/app';
-import {dataFile, INBOX_FILE, projectFile, putFile} from '../../test-helpers/scenario/files';
+import {dataFile, INBOX_FILE, loggedErrors, projectFile, putFile, sectionLines} from '../../test-helpers/scenario/files';
 import {fixedClock} from '../../test-helpers/scenario/clock';
 import {and, given, scenario, then, when} from '../../test-helpers/scenario/scenario';
 
@@ -34,5 +34,52 @@ scenario('Daily counts the Inbox\'s marks, todos and meetings in its Inbox tab; 
     const list = textsBetween('Inbox 9');
     expect(list).toEqual(expect.arrayContaining(['4 marks to process', 'Call the plumber', 'Ask Lena #lena', 'Book the hall', 'Pay the invoice', 'due today', 'Chat with Sam']));
     expect(list).not.toContain('Learn Spanish #someday');
+  });
+});
+
+const offsite = () => {
+  putFile(projectFile('Team offsite'), dataFile('project', {Scope: [], Tasks: ['- [ ] Collect topics #lena'], Meetings: []}, ['abbrev: TO']));
+  putFile(projectFile('Garden renovation'), dataFile('project', {Scope: [], Tasks: [], Meetings: []}, ['abbrev: GR']));
+  putFile(INBOX_FILE, dataFile('inbox', {Tasks: ['- [ ] Ask Lena #lena', '- [ ] Order soil'], Meetings: []}));
+};
+const openInboxCard = async () => {
+  await openApp();
+  await tapTab('Daily');
+  await tap(/^Inbox \d+$/);
+  await tap('Ask Lena #lena');
+};
+
+scenario('An Inbox todo\'s card offers the place that uses its tag first', {feature: 'Daily', design: 'technical-design-calmer-screens.md', help: 'daily.md#filing-from-the-inbox'}, () => {
+  given('an Inbox todo "Ask Lena #lena", and #lena used in project Team offsite (#TO)', offsite);
+  when('I open Daily\'s Inbox tab and tap the todo', openInboxCard);
+  then('its card says Inbox and offers #TO first under File to', () => {
+    expectShows(/^Inbox/);
+    expectShows('File to');
+    expect(labelled('File to Team offsite')).not.toBeNull();
+    expect(textsBetween('File to').slice(0, 1)).toEqual(['#TO']);
+  });
+});
+
+scenario('Filing from the Inbox card: the todo moves, the status line says so with Undo, the next Inbox item opens', {feature: 'Daily', design: 'technical-design-calmer-screens.md', help: 'daily.md#filing-from-the-inbox'}, () => {
+  given('an Inbox with "Ask Lena #lena" and "Order soil", and project Team offsite (#TO) using #lena', offsite);
+  when('I open the card of "Ask Lena" and tap #TO', async () => {
+    await openInboxCard();
+    await tap('#TO');
+  });
+  then('the todo is in Team offsite\'s file and not in the Inbox', () => {
+    expect(sectionLines(projectFile('Team offsite'), 'Tasks')).toEqual(['- [ ] Collect topics #lena', expect.stringMatching(/^- \[ \] Ask Lena #lena/)]);
+    expect(sectionLines(INBOX_FILE, 'Tasks')).toEqual(['- [ ] Order soil']);
+  });
+  and('the status line says "Filed … to Team offsite" with Undo, and "Order soil"\'s card is open', () => {
+    expectShows('Filed "Ask Lena #lena" to Team offsite');
+    expectShows('Undo');
+    expect(textsBetween('File to').length).toBeGreaterThan(0);
+    expectShows('Order soil');
+  });
+  when('I tap Undo', () => tap('Undo'));
+  then('it is back in the Inbox', () => {
+    expect(sectionLines(INBOX_FILE, 'Tasks')).toEqual(['- [ ] Order soil', expect.stringMatching(/^- \[ \] Ask Lena #lena/)]);
+    expect(sectionLines(projectFile('Team offsite'), 'Tasks')).toEqual(['- [ ] Collect topics #lena']);
+    expect(loggedErrors()).toEqual([]);
   });
 });

@@ -43,3 +43,17 @@ export function inboxTodoMeta(task: Task, today: string): QuietMeta | null {
   const created = task.fields.created;
   return created ? {text: formatDate(created, today), strong: false} : due;
 }
+
+/** An Inbox row in list order: a todo's or a meeting's index in the Inbox file. */
+export interface InboxListEntry {
+  type: 'task' | 'meeting';
+  index: number;
+}
+
+/** The row to show after `filed` left the list: the next one, else the one before - its index as it is after the move. */
+export function nextInboxRow(order: readonly InboxListEntry[], filed: InboxListEntry): InboxListEntry | null {
+  const at = order.findIndex(r => r.type === filed.type && r.index === filed.index);
+  const next = at < 0 ? null : order[at + 1] ?? order[at - 1] ?? null;
+  if (!next) return null;
+  return next.type === filed.type && next.index > filed.index ? {type: next.type, index: next.index - 1} : next;
+}

@@ -151,6 +151,13 @@ export default function DailyView({onOpenItem, onOpenCalendarSettings}: Props): 
     const meetings = summary.meetings.map((meetingIndex): DailyMeetingEntry => ({item, meetingIndex, meeting: inbox.meetings[meetingIndex]}));
     return {summary, todos, meetings};
   }, [inbox, inboxPath, openMarks, todayDate, justDone.keys]);
+  const inboxOrder = useMemo(
+    () => [
+      ...inboxLists.todos.map(e => ({type: 'task' as const, index: e.taskIndex})),
+      ...inboxLists.meetings.map(e => ({type: 'meeting' as const, index: e.meetingIndex})),
+    ],
+    [inboxLists],
+  );
   const inboxRowsList = useMemo(() => inboxRows(openMarks, inboxLists.todos, inboxLists.meetings), [openMarks, inboxLists]);
   const countTabs: CountTabDef<DailyTab>[] = useMemo(
     () => [
@@ -351,6 +358,8 @@ export default function DailyView({onOpenItem, onOpenCalendarSettings}: Props): 
                 onTickTodo={tickTodo}
                 extraTasks={inboxLists.todos}
                 extraMeetings={inboxLists.meetings}
+                inboxTab={tab === 'inbox'}
+                inboxOrder={inboxOrder}
                 list={list}
                 textColor={textColor}
                 borderColor={borderColor}

@@ -150,6 +150,8 @@ interface Props extends AgreementHandlers {
   todoCard?: TodoCardData | null;
   /** A card that is not an item's (Week's and Month's owner card, ui/period/useOwnerCard.tsx): shown while there is no `editTarget`. */
   ownerCard?: React.ReactNode;
+  /** Shown instead of the item's own card while `editTarget` is in 'card' mode (the Inbox card, ui/itemCard/InboxCard.tsx). */
+  cardOverride?: React.ReactNode;
   /** The selected agreement's card (ui/itemCard/useAgreementCard.ts): shown while `editTarget` is an agreement in 'card' mode. */
   agreementCard?: AgreementCardData | null;
   /** Resolve `false` when the save failed (the screen showed its own error) - the widget then keeps the edit open. */
@@ -570,7 +572,7 @@ function QuickAddWidget(props: Props): React.JSX.Element {
     ) : undefined;
   const today = todayIso();
   // Nobody sees R2-R4 behind a card or in the collapsed box: their re-renders are skipped then.
-  const rowsHidden = collapsed || cardShown || (!editTarget && !!props.ownerCard);
+  const rowsHidden = collapsed || cardShown || (!editTarget && !!props.ownerCard) || (editTarget?.mode === 'card' && !!props.cardOverride);
 
   return (
     <QuickAddFrame
@@ -626,7 +628,7 @@ function QuickAddWidget(props: Props): React.JSX.Element {
         </FrozenWhileHidden>
       }
       card={
-        !editTarget && props.ownerCard ? props.ownerCard : !cardShown ? null : editTarget?.kind === 'agreement' && props.agreementCard ? (
+        !editTarget && props.ownerCard ? props.ownerCard : editTarget?.mode === 'card' && props.cardOverride ? props.cardOverride : !cardShown ? null : editTarget?.kind === 'agreement' && props.agreementCard ? (
           <AgreementCard card={props.agreementCard} textColor={textColor} borderColor={borderColor} />
         ) : editTarget?.kind === 'task' && todoCard ? (
           <TodoCard key={editTarget.key ?? ''} card={todoCard} textColor={textColor} borderColor={borderColor} />
