@@ -46,18 +46,26 @@ interface Props {
   below?: React.ReactNode;
   /** The item card (ui/itemCard/): shown in place of the rows, which stay mounted, hidden. */
   card?: React.ReactNode;
+  /**
+   * The collapsed box (docs/dev/history/technical-design-calmer-screens.md §3.2):
+   * R1 only (the kind buttons); R2-R4 stay mounted, hidden, so drafts survive,
+   * and the box keeps its height.
+   */
+  collapsed?: boolean;
   free?: boolean;
   borderColor: string;
 }
 
-export default function QuickAddFrame({row1, row2, rows34, below, card, free = false, borderColor}: Props): React.JSX.Element {
+export default function QuickAddFrame({row1, row2, rows34, below, card, collapsed = false, free = false, borderColor}: Props): React.JSX.Element {
   return (
     <View style={[styles.card, !free && styles.fixed, {borderColor}]} testID="quick-add-frame">
       <View style={card ? styles.hidden : undefined} testID="quick-add-rows">
         <View style={[styles.row1, free ? styles.row1Free : styles.row1Fixed]}>{row1}</View>
-        {row2}
-        {rows34}
-        {below}
+        <View style={collapsed ? styles.hidden : undefined} testID="quick-add-rows-below">
+          {row2}
+          {rows34}
+          {below}
+        </View>
       </View>
       {card}
     </View>

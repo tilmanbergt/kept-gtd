@@ -42,7 +42,7 @@ scenario('Daily: tapping a thread meeting shows its card and the context panel',
     await tap(/^1:1 Jordan/);
   });
   then('the card shows and the panel lists I owe, Waiting for and Agreed last time', () => {
-    expectShows('Meeting · today');
+    expectShows(/^Meeting · .+ · today$/);
     const panel = textsBetween('#sparring/jordan · Coaching', /^\+ Quick Add to meeting/);
     expect(panel).toEqual(expect.arrayContaining(['I owe', 'Waiting for', 'Agreed last time']));
     expect(panel.some(t => t.startsWith('◇ Feedback only in our 1:1s'))).toBe(true);
@@ -88,7 +88,7 @@ scenario('Quick Add to meeting before it starts: an agenda item with the thread 
     expect(sectionLines(areaFile('Coaching'), 'Tasks')).toContainEqual(expect.stringMatching(/^- \[ \] Bring the numbers #sparring\/jordan( \[created:: 2026-10-14\])?$/));
   });
   and('the card is back and the panel lists it', () => {
-    expectShows('Meeting · today');
+    expectShows(/^Meeting · .+ · today$/);
     expect(readTexts().some(t => t.startsWith('Bring the numbers'))).toBe(true);
     expect(loggedErrors()).toEqual([]);
   });
@@ -141,12 +141,12 @@ scenario('A todo in the panel opens its card and edit form; Save and ✕ return 
     await tap(/^Send the slides/);
   });
   then('the todo\'s card shows in Quick Add\'s place; the panel stays', () => {
-    expectShows('Todo · open');
+    expectShows(/^Todo · .+ · open$/);
     expectShows('I owe');
   });
   when('I close the todo\'s card', () => tapLabel('Close'));
   then('the meeting\'s card is back', () => {
-    expectShows('Meeting · today');
+    expectShows(/^Meeting · .+ · today$/);
     expectShows('I owe');
   });
   when('I tap "Send the slides" twice, change it to "Send the final slides" and save', async () => {
@@ -158,7 +158,7 @@ scenario('A todo in the panel opens its card and edit form; Save and ✕ return 
   });
   then('the file has the new text and the meeting\'s card is back', () => {
     expect(sectionLines(areaFile('Coaching'), 'Tasks')).toContainEqual(expect.stringMatching(/^- \[ \] Send the final slides \[meeting:: /));
-    expectShows('Meeting · today');
+    expectShows(/^Meeting · .+ · today$/);
     expect(loggedErrors()).toEqual([]);
   });
 });
@@ -174,7 +174,7 @@ scenario('✕ Close in the panel\'s header closes the meeting: Daily shows its n
     await tap('✕ Close');
   });
   then('the card and the panel are gone; Next todos shows', () => {
-    expectNotShows('Meeting · today');
+    expectNotShows(/^Meeting · .+ · today$/);
     expectNotShows('I owe');
     expectShows('Next todos');
   });
@@ -237,7 +237,7 @@ scenario('Week: a day header opens the day, a chip the card and panel, "‹ Back
   then('the day panel shows', () => expectShows(/^Thu 15\.10\. · 1 meeting$/));
   when('I tap the chip', () => tap(/^1:1 Jordan/));
   then('the card and the panel show, with the back row', () => {
-    expectShows('Meeting · ahead');
+    expectShows(/^Meeting · .+ · ahead$/);
     expectShows('‹ Back to Week 42');
     expectShows('Thu 15.10. · 1 meeting ›');
     expectShows('#sparring/jordan · Coaching');

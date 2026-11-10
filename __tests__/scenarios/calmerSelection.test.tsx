@@ -25,7 +25,7 @@ scenario('A tap on a Daily todo shows its card without re-rendering the list', {
   });
   then('its card shows in Quick Add\'s place', () => {
     expectShows(/^Buy seeds/);
-    expectShows('Edit');
+    expectShows('More ›');
   });
   and('neither the screen nor the todos list rendered again; only the rows whose mark changed did', () => {
     expect(renders.DailyView ?? 0).toBe(0);
@@ -51,7 +51,7 @@ scenario('A tap on a todo on the Current page shows its card without re-renderin
     renders = renderCounts();
   });
   then('its card shows, and neither the Todos nor the Meetings list rendered again', () => {
-    expectShows('Edit');
+    expectShows('More ›');
     expect(renders.TodosSection ?? 0).toBe(0);
     expect(renders.MeetingsSection ?? 0).toBe(0);
     expect(renders.TaskRow ?? 0).toBeLessThanOrEqual(1);

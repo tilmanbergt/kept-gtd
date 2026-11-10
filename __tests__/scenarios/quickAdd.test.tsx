@@ -49,8 +49,8 @@ scenario('Edit a todo, then tap another one: the first edit is saved', {feature:
     expect(sectionLines(projectFile('Website'), 'Tasks')).toEqual(['- [ ] Write landing page copy #next', '- [ ] Fix footer']);
   });
   then('"Fix footer" is now the selected one, shown as its card (technical-design-item-card.md §3)', () => {
-    expectShows('Todo · open');
-    expectShows('Edit');
+    expectShows(/^Todo · .+ · open$/);
+    expectShows('More ›');
   });
 });
 

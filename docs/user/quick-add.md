@@ -2,7 +2,9 @@
 
 Quick Add is the small form you find on [Daily](daily.md), [Week](week-and-month.md#week), [Month](week-and-month.md#month), [Inbox](quick-add.md#the-inbox), [Current](projects-and-areas.md#the-current-tab) and in the [Review](review.md). It adds and edits todos, meetings and notes. Where an item goes depends on the screen: on a project's Current tab it goes into that project, on Daily, Week and Month into the Inbox - unless you [file it right away](quick-add.md#filing-directly-with-an-abbreviation).
 
-The box has four rows and always keeps the same height, so the lists below it never move:
+On [Daily](daily.md), [Week](week-and-month.md#week), [Month](week-and-month.md#month), a project's or area's [Current](projects-and-areas.md#the-current-tab) tab and the Review's [Inbox step](review.md#the-steps) the box starts closed: one row of buttons, **+ Todo**, **+ Meeting** (and **+ Agreement**, **+ Note** where they are offered). A button opens that kind in the same box, with the cursor in its text field. **✕** at the end of the first row closes it again; what you had typed stays for the next time. After **+ Add** the box closes by itself, and the [status line](index.md#the-status-line) says where the item went.
+
+The box has four rows and always keeps the same height, open or closed, so the lists below it never move:
 
 - Row 1: the tabs [Todo](quick-add.md#adding-a-todo), [Meeting](quick-add.md#adding-a-meeting) (and [Agreement](quick-add.md#adding-an-agreement), [Note](quick-add.md#adding-a-note)) on the left, the main button on the right - **+ Add**, or **Cancel** and **Save** while you [edit](quick-add.md#editing).
 - Row 2: the text or title, and the date.
@@ -94,14 +96,16 @@ To empty the Inbox, tap each item and, on its [card](quick-add.md#the-card-one-t
 
 ## The card: one tap selects
 
-Tap a todo or a meeting in a list with Quick Add: the row gets a black bar and the item's *card* takes Quick Add's place, in the same box. Everything you can do with the item at once is on its card; nothing is saved until you tap a button there. **✕** closes the card, and Quick Add comes back with whatever you had started to type.
+Tap a todo or a meeting in a list with Quick Add: the row gets a black bar and the item's *card* takes Quick Add's place, in the same box. Everything you can do with the item at once is on its card; nothing is saved until you tap a button there. **✕** closes the card.
 
 The todo card shows:
 
-- First row: **Todo** and its state - due, overdue, waiting for someone, someday, done or deleted; the [meeting it was agreed in](threads.md#where-a-todo-was-agreed) (for example `↳ Sparring Jordan ›`, which opens that thread's overview); ✕ and [Edit](quick-add.md#editing).
-- Second row: the text and its [labels](daily.md#labels).
-- Third row: the box to tick it done; the [flow chips](tags.md#flow-tags-for-todos) **w/f**, **Maybe**, **Someday** and **Next** (tap one to set it, tap the filled one to clear it); the [note icon](quick-add.md#notes-and-files-on-a-todo-or-meeting).
-- Fourth row: where the todo lives (tap the name to open it; where a Files pane is there, the arrow next to it moves the todo to another project or area); its [linked file](quick-add.md#notes-and-files-on-a-todo-or-meeting) (tap the name to open it, ✕ removes the link), or **+** and the clip to link one where a Files pane is there; at the right the trash icon, which asks first and then removes the todo from your lists - it stays in the file, marked as cancelled.
+- First row: **Todo**, where it lives and its state - due, overdue, waiting for someone, someday, done or deleted (`Todo · Garden renovation · due 5.11.`), and ✕.
+- Second row: the text. A tap on it opens [Edit](quick-add.md#editing).
+- Third row: one grey line - the [meeting it was agreed in](threads.md#where-a-todo-was-agreed) (for example `↳ Sparring Jordan ›`, which opens that thread's overview), else its [linked file](quick-add.md#notes-and-files-on-a-todo-or-meeting) (tap to open), else "no note yet".
+- Fourth row: **Done** to tick it; **w/f** and **Someday** (tap to set the [flow state](tags.md#flow-tags-for-todos), tap the filled one to clear it); **+ Note** or **Note ›** for its [note](quick-add.md#notes-and-files-on-a-todo-or-meeting); **More ›**.
+
+**More ›** shows the rest in the same box, with **‹** to go back: **Next** and **Maybe**, **Edit**, where the todo lives (tap the name to open it); where a Files pane is there, the arrow that moves the todo to another project or area and **+** with the clip to link a file (a linked file shows its name; ✕ removes the link); the trash icon, which asks first and then removes the todo from your lists - it stays in the file, marked as cancelled.
 
 Moving an item that has a note asks first: its own note moves along into the new project's `Todos` or `Meetings` folder. A page in a shared note stays in that note, and the item keeps its link to that page.
 
@@ -109,7 +113,7 @@ The meeting card is described in [The meeting row and its card](meetings.md#the-
 
 ## Editing
 
-**Edit** on the card, a tap on the card's title, or a second tap on the selected row opens the item in Quick Add. Change what you need, then **Save** - or **Cancel** - at the top right; **Save** brings you back to the card. Only one item is edited at a time: tapping another row saves the open edit first. With an [abbreviation tag](quick-add.md#filing-directly-with-an-abbreviation) in the text, **Save** reads **Save to** followed by that project's name: it saves your changes and moves the item there in one step.
+**Edit** under the card's **More ›**, a tap on the card's title, or a second tap on the selected row opens the item in Quick Add. Change what you need, then **Save** - or **Cancel** - at the top right; **Save** brings you back to the card. Only one item is edited at a time: tapping another row saves the open edit first. With an [abbreviation tag](quick-add.md#filing-directly-with-an-abbreviation) in the text, **Save** reads **Save to** followed by that project's name: it saves your changes and moves the item there in one step.
 
 ## Notes and files on a todo or meeting
 

@@ -221,6 +221,7 @@ export default function MonthView({
             <View style={common.column}>
               <View style={styles.columnScroll}>
                 <QuickAddWidget
+        collapsible
                   thisFileLine
                   layoutKey="month"
                   {...slot.widget}

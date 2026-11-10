@@ -1,19 +1,24 @@
 /**
- * The todo card (docs/dev/history/technical-design-item-card.md K9): in
- * Quick Add's place after one tap on a todo, the same four rows as the box.
- *   R1 "Todo · <due / waiting / …>", "↳ <meeting> ›" when it was agreed in one, ✕, Edit
- *   R2 the title (a tap edits, like Edit) and its labels
- *   R3 done, the flow chips (w/f · Maybe · Someday · Next) and Now, the note
- *   R4 the area chip (name opens it, arrow refiles), the linked file or +clip, delete
+ * The todo card (docs/dev/history/technical-design-calmer-screens.md §3.4,
+ * docs/dev/history/technical-design-item-card.md K9): in Quick Add's place
+ * after one tap on a todo, in the same four rows.
+ *   R1 "Todo · <owner> · <due / flow>", ✕
+ *   R2 the title (a tap edits)
+ *   R3 one detail line: where it was agreed (opens the thread), the linked
+ *      file (opens it), or "no note yet"
+ *   R4 ✓ Done · w/f · Someday · Note › / + Note · More ›
+ * More › swaps R3-R4 for the rest - Next · Maybe · Edit · <owner> ›, then
+ * refile, the linked file or +clip, delete and ‹ - in the same box.
  * Every button acts at once; what shows is decided in domain/itemCard.ts.
  */
-import React from 'react';
+import React, {useState} from 'react';
 import {Text, View} from 'react-native';
-import FlowStateChips from '../FlowStateChips';
-import {NotebookIcon, TrashIcon} from '../icons';
-import {AreaChip, cardStyles, CardRow1, FileSlot, letter, SquareButton} from './parts';
-import {TodoCardData} from './useTodoCard';
+import {CardPage, TodoCardButton, todoCardPage} from '../../domain/itemCard';
+import {TrashIcon} from '../icons';
+import {RefileIcon} from './icons';
+import {cardStyles, CardRow1, DetailLine, FileSlot, SquareButton, TextButton} from './parts';
 import {useCardCommitTrace} from './useCardCommitTrace';
+import {TodoCardData} from './useTodoCard';
 
 interface Props {
   card: TodoCardData;
@@ -25,15 +30,62 @@ export default function TodoCard({card, textColor, borderColor}: Props): React.J
   useCardCommitTrace('todo');
   const {model} = card;
   const colors = {textColor, borderColor};
+  const [page, setPage] = useState<CardPage>('main');
+  const layout = todoCardPage(model, page);
+  const flow = model.flowState;
+
+  const button = (kind: TodoCardButton): React.ReactNode => {
+    switch (kind) {
+      case 'done':
+        return <TextButton key={kind} label="Done" text={model.done ? '✓ Done' : '☐ Done'} on={model.done} onPress={card.onToggleDone} {...colors} />;
+      case 'waiting':
+        return <TextButton key={kind} label="w/f" on={flow === 'waiting-for'} onPress={() => card.onFlow('waiting-for')} {...colors} />;
+      case 'someday':
+        return <TextButton key={kind} label="Someday" on={flow === 'someday'} onPress={() => card.onFlow('someday')} {...colors} />;
+      case 'next':
+        return <TextButton key={kind} label="Next" on={flow === 'next'} onPress={() => card.onFlow('next')} {...colors} />;
+      case 'maybe':
+        return <TextButton key={kind} label="Maybe" on={flow === 'maybe'} onPress={() => card.onFlow('maybe')} {...colors} />;
+      case 'note':
+        return <TextButton key={kind} label={model.note === 'open' ? 'Open note' : 'Create note'} text={model.note === 'open' ? 'Note ›' : '+ Note'} onPress={card.onNote} {...colors} />;
+      case 'more':
+        return <TextButton key={kind} label="More" text="More ›" onPress={() => setPage('more')} {...colors} />;
+      case 'back':
+        return <TextButton key={kind} label="Back" text="‹" onPress={() => setPage('main')} {...colors} />;
+      case 'edit':
+        return <TextButton key={kind} label="Edit" onPress={card.onEdit} {...colors} />;
+      case 'owner':
+        return <TextButton key={kind} label={`Open ${model.owner.name}`} text={card.onOpenOwner ? `${model.owner.name} ›` : model.owner.name} onPress={card.onOpenOwner} shrink {...colors} />;
+      case 'refile':
+        return (
+          <SquareButton key={kind} label="Refile" onPress={card.onRefile} {...colors}>
+            {color => <RefileIcon size={18} color={color} />}
+          </SquareButton>
+        );
+      case 'file':
+        return <FileSlot key={kind} file={model.file} onOpen={card.onOpenFile} onUnlink={card.onUnlink} onLink={card.onLink} {...colors} />;
+      case 'delete':
+        return (
+          <SquareButton key={kind} label="Delete" onPress={card.onDelete} {...colors}>
+            {color => <TrashIcon size={18} color={color} />}
+          </SquareButton>
+        );
+    }
+  };
+
+  const detail = model.detail;
+  const detailLine =
+    detail?.kind === 'origin' ? (
+      <DetailLine text={detail.label} onPress={card.onOpenOrigin} {...colors} />
+    ) : detail?.kind === 'file' ? (
+      <DetailLine text={detail.name} onPress={card.onOpenFile} {...colors} />
+    ) : detail?.kind === 'noNote' ? (
+      <DetailLine text="no note yet" {...colors} />
+    ) : null;
+
   return (
     <View>
-      <CardRow1
-        heading={model.heading}
-        link={model.origin ? {label: model.origin.label, onPress: card.onOpenOrigin} : null}
-        onClose={card.onClose}
-        onEdit={card.onEdit}
-        {...colors}
-      />
+      <CardRow1 heading={model.caption} onClose={card.onClose} {...colors} />
 
       <View style={[cardStyles.row, cardStyles.row2]}>
         <Text
@@ -44,33 +96,11 @@ export default function TodoCard({card, textColor, borderColor}: Props): React.J
           accessibilityHint="Edit">
           {model.title}
         </Text>
-        {model.labels.length > 0 ? (
-          <Text style={[cardStyles.small, {color: textColor}]} numberOfLines={1}>
-            {model.labels.join('  ')}
-          </Text>
-        ) : null}
       </View>
 
-      <View style={[cardStyles.row, cardStyles.row3]}>
-        <SquareButton label="Done" on={model.done} onPress={card.onToggleDone} {...colors}>
-          {letter(model.done ? '✓' : '☐')}
-        </SquareButton>
-        <FlowStateChips value={model.flowState} onChange={card.onFlow} compact textColor={textColor} borderColor={borderColor} />
-        <SquareButton label={model.note === 'open' ? 'Open note' : 'Create note'} onPress={card.onNote} {...colors}>
-          {color => <NotebookIcon size={20} color={color} plus={model.note === 'create'} />}
-        </SquareButton>
-      </View>
+      <View style={[cardStyles.row, cardStyles.row3]}>{layout.detail ? detailLine : layout.row3.map(button)}</View>
 
-      <View style={[cardStyles.row, cardStyles.row4]}>
-        <AreaChip name={model.owner.name} canRefile={model.owner.canRefile} onOpen={card.onOpenOwner} onRefile={card.onRefile} {...colors} />
-        <FileSlot file={model.file} onOpen={card.onOpenFile} onUnlink={card.onUnlink} onLink={card.onLink} {...colors} />
-        <View style={cardStyles.spacer} />
-        {model.canDelete ? (
-          <SquareButton label="Delete" onPress={card.onDelete} {...colors}>
-            {color => <TrashIcon size={18} color={color} />}
-          </SquareButton>
-        ) : null}
-      </View>
+      <View style={[cardStyles.row, cardStyles.row4]}>{layout.row4.map(button)}</View>
     </View>
   );
 }

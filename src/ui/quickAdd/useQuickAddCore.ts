@@ -34,6 +34,15 @@ export function useQuickAddCore({fixedDestination, editingItemPath}: Input) {
       return type;
     });
   }, []);
+  // A collapsible box (docs/dev/history/technical-design-calmer-screens.md §3.2):
+  // the kind opened from the kind buttons, or null while it shows the buttons.
+  const [open, setOpenState] = useState<QuickAddType | null>(null);
+  const setOpen = useCallback((type: QuickAddType | null) => {
+    setOpenState(current => {
+      if (current !== type) log(type ? `QuickAdd: open kind=${type}` : 'QuickAdd: collapse');
+      return type;
+    });
+  }, []);
   const [editFields, setEditFields] = useState<EditFields | null>(null);
   const [pending, setPending] = useState(false);
   // Validation/save error, plus which field it's about (drives the in-place
@@ -130,6 +139,8 @@ export function useQuickAddCore({fixedDestination, editingItemPath}: Input) {
   return {
     activeType,
     setActiveType,
+    open,
+    setOpen,
     editFields,
     setEditFields,
     displayType,

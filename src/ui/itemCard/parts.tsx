@@ -54,14 +54,50 @@ export function letter(text: string) {
   };
 }
 
-/** R1: the heading, an optional link next to it, then ✕ and Edit at the right. */
+/**
+ * A word button at the card's 32 dp height (✓ Done, w/f, Someday, More ›): outlined, or filled when
+ * `on`. `label` is what screen readers hear (and what scenarios tap); `text` is drawn, `label` when absent.
+ */
+export function TextButton(
+  props: {label: string; text?: string; on?: boolean; disabled?: boolean; onPress?: () => void; shrink?: boolean} & CardColors,
+) {
+  const {label, text, on = false, disabled = false, onPress, shrink = false, textColor, borderColor} = props;
+  return (
+    <Pressable
+      onPress={onPress}
+      disabled={disabled || !onPress}
+      hitSlop={4}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      accessibilityState={{disabled, selected: on}}
+      style={[styles.textButton, shrink && styles.shrink, {borderColor: on ? textColor : borderColor}, on && {backgroundColor: textColor}, disabled && styles.disabled]}>
+      <Text style={[styles.textButtonText, {color: on ? inverse(textColor) : textColor}]} numberOfLines={1}>
+        {text ?? label}
+      </Text>
+    </Pressable>
+  );
+}
+
+/** The compact card's R3 on its first page: one grey line - a link when it opens something. */
+export function DetailLine(props: {text: string; onPress?: () => void} & CardColors) {
+  const {text, onPress, textColor} = props;
+  return (
+    <Pressable onPress={onPress} disabled={!onPress} hitSlop={6} style={styles.detail}>
+      <Text style={[styles.detailText, {color: textColor}, !!onPress && styles.underline]} numberOfLines={1}>
+        {text}
+      </Text>
+    </Pressable>
+  );
+}
+
+/** R1: the heading, an optional link next to it, then ✕ and (where given) Edit at the right. */
 export function CardRow1(
-  props: {heading: string; link?: {label: string; onPress?: () => void} | null; onClose: () => void; onEdit: () => void} & CardColors,
+  props: {heading: string; link?: {label: string; onPress?: () => void} | null; onClose: () => void; onEdit?: () => void} & CardColors,
 ) {
   const {heading, link, onClose, onEdit, textColor} = props;
   return (
     <View style={[styles.row, styles.row1]}>
-      <Text style={[styles.heading, {color: textColor}]} numberOfLines={1}>
+      <Text style={[styles.heading, {color: textColor}]} numberOfLines={1} ellipsizeMode="middle">
         {heading}
       </Text>
       {link ? (
@@ -75,9 +111,11 @@ export function CardRow1(
       <Pressable onPress={onClose} hitSlop={8} accessibilityRole="button" accessibilityLabel="Close">
         <Text style={[quickAddButtons.textButton, {color: textColor}]}>✕</Text>
       </Pressable>
-      <Pressable style={quickAddButtons.primaryButton} onPress={onEdit} hitSlop={8}>
-        <Text style={quickAddButtons.primaryButtonText}>Edit</Text>
-      </Pressable>
+      {onEdit ? (
+        <Pressable style={quickAddButtons.primaryButton} onPress={onEdit} hitSlop={8}>
+          <Text style={quickAddButtons.primaryButtonText}>Edit</Text>
+        </Pressable>
+      ) : null}
     </View>
   );
 }
@@ -156,7 +194,13 @@ const styles = StyleSheet.create({
   row: {flexDirection: 'row', alignItems: 'center'},
   row1: {height: QUICK_ADD_ROWS.tabs, marginBottom: QUICK_ADD_ROWS.gap},
   spacer: {flex: 1},
-  heading: {fontSize: FONT.small, fontWeight: '700', flexShrink: 0},
+  heading: {fontSize: FONT.small, fontWeight: '700', flexShrink: 1},
+  textButton: {height: 32, borderWidth: 1, borderRadius: 4, paddingHorizontal: 10, alignItems: 'center', justifyContent: 'center', flexShrink: 0},
+  shrink: {flexShrink: 1},
+  textButtonText: {fontSize: FONT.small, fontWeight: '600'},
+  detail: {flexShrink: 1},
+  // Secondary, not a meaning: drawn lighter than the title in either theme.
+  detailText: {fontSize: FONT.small, opacity: 0.65},
   link: {marginLeft: 12, flexShrink: 1},
   linkText: {fontSize: FONT.small},
   underline: {textDecorationLine: 'underline'},

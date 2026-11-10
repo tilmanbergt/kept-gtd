@@ -40,7 +40,7 @@ scenario('Focus block from Quick Add: F on, the tag in the file, an F row and a 
   });
   when('I tap it', () => tap('Writing session #writing/novel'));
   then('the card says "Focus · ahead" with "writing novel ›" and has no P or R', () => {
-    expectShows('Focus · ahead');
+    expectShows(/^Focus · .+ · ahead$/);
     expectShows('writing novel ›');
     expect(readTexts()).not.toContain('P');
     expect(readTexts()).not.toContain('R');

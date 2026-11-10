@@ -160,9 +160,51 @@ export function describeScreen(): string {
 
 /** Taps the `nth` element showing exactly `label` (a button, a row, a tab). */
 export async function tap(label: string | RegExp, nth = 0): Promise<void> {
+  // A Quick Add tab on a collapsed box: the user opens that kind from its button.
+  if (typeof label === 'string' && QUICK_ADD_TABS.has(label) && screen.queryAllByText(label).length <= nth && shows(`+ ${label}`)) {
+    fireEvent.press(screen.queryAllByText(`+ ${label}`)[0]);
+    await settle();
+    return;
+  }
+  if (typeof label === 'string' && MORE_PAGE.has(label) && screen.queryAllByText(label).length <= nth) await openCardMore();
   const found = screen.queryAllByText(label);
   if (found.length <= nth) throw new Error(`nothing to tap with text ${String(label)}; the screen shows: ${describeScreen()}`);
   fireEvent.press(found[nth]);
+  await settle();
+}
+
+/** Quick Add's kind tabs; on a collapsed box (docs/dev/history/technical-design-calmer-screens.md §3.2) their buttons read `+ <tab>`. */
+const QUICK_ADD_TABS = new Set(['Todo', 'Meeting', 'Agreement', 'Agree', 'Note']);
+const QUICK_ADD_FIELD_KIND: Record<string, string> = {
+  'New meeting title': '+ Meeting',
+  'YYYY-MM-DD': '+ Meeting',
+  '15 · 15-16.30 · 2d': '+ Meeting',
+  'New agreement': '+ Agreement',
+  'New note': '+ Note',
+};
+
+/**
+ * A Quick Add field that isn't shown while its box is collapsed: taps the kind button that opens it
+ * first (`+ Todo` for the todo fields), as the user would. Does nothing when the field shows or no
+ * such button is on screen.
+ */
+async function openQuickAddFor(placeholder: string, nth: number): Promise<void> {
+  if (screen.queryAllByPlaceholderText(placeholder).length > nth) return;
+  const button = QUICK_ADD_FIELD_KIND[placeholder] ?? '+ Todo';
+  const found = screen.queryAllByText(button);
+  if (found.length === 0) return;
+  fireEvent.press(found[0]);
+  await settle();
+}
+
+/** What the item card shows on its second page (docs/dev/history/technical-design-calmer-screens.md §3.4). */
+const MORE_PAGE = new Set(['Edit', 'Refile', 'Link file', 'Unlink', 'Delete', 'New from this', 'Cancel meeting', 'Focus block', 'Next', 'Maybe', 'Open linked file']);
+
+/** The item card's More ›, when a card shows it: the user opens the second page for what is there. */
+async function openCardMore(): Promise<void> {
+  const more = screen.queryAllByLabelText('More');
+  if (more.length === 0) return;
+  fireEvent.press(more[0]);
   await settle();
 }
 
@@ -176,6 +218,7 @@ export async function tapTab(label: string): Promise<void> {
  * An overlay (thread overview) draws over the screen below it, so its fields come after that screen's.
  */
 export async function type(placeholder: string, text: string, nth = 0): Promise<void> {
+  await openQuickAddFor(placeholder, nth);
   const field = screen.queryAllByPlaceholderText(placeholder)[nth];
   if (!field) throw new Error(`no field "${placeholder}"; the screen shows: ${describeScreen()}`);
   fireEvent.changeText(field, text);
@@ -184,6 +227,7 @@ export async function type(placeholder: string, text: string, nth = 0): Promise<
 
 /** Puts the cursor into (`true`) or takes it out of (`false`) the `nth` field showing `placeholder`. */
 export async function focus(placeholder: string, focused = true, nth = 0): Promise<void> {
+  await openQuickAddFor(placeholder, nth);
   const field = screen.queryAllByPlaceholderText(placeholder)[nth];
   if (!field) throw new Error(`no field "${placeholder}"; the screen shows: ${describeScreen()}`);
   fireEvent(field, focused ? 'focus' : 'blur');
@@ -192,6 +236,7 @@ export async function focus(placeholder: string, focused = true, nth = 0): Promi
 
 /** Taps the `nth` icon-only button announcing `label` to screen readers (the item card's P, Reflect, Refile, ...). */
 export async function tapLabel(label: string, nth = 0): Promise<void> {
+  if (MORE_PAGE.has(label) && screen.queryAllByLabelText(label).length <= nth) await openCardMore();
   const found = screen.queryAllByLabelText(label);
   if (found.length <= nth) throw new Error(`no button labelled "${label}"; the screen shows: ${describeScreen()}`);
   fireEvent.press(found[nth]);

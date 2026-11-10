@@ -54,7 +54,7 @@
  * the screen's own `onCancelEdit` and turns the edit form's current values
  * into the Meeting create draft.
  */
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {onNextEinkFlush} from '../utils/einkFlush';
 import {Keyboard} from 'react-native';
 import {AbbrevFileMatch, resolveAbbrevFileTarget} from '../domain/abbrev';
@@ -82,6 +82,7 @@ import {NoteInputRow, NoteTagRows} from './quickAdd/NoteRows';
 import ProvenanceLine, {QuickAddAdds} from './quickAdd/ProvenanceLine';
 import QuickAddFrame from './quickAdd/QuickAddFrame';
 import TabsRow from './quickAdd/TabsRow';
+import KindButtons from './quickAdd/KindButtons';
 import {AttachmentCluster, TaskInputRow, TaskMetaRows} from './quickAdd/TaskRows';
 import {MeetingQuickAddFields, QuickAddEditTarget, QuickAddType, QuickFilePayload, sameEditTarget, truncateItemName} from './quickAdd/types';
 import {DraftPrefill, MeetingSeed, useDraftRequests} from './quickAdd/useDraftRequests';
@@ -234,6 +235,13 @@ interface Props extends AgreementHandlers {
   /** Shows the Todo tab whenever it changes to a new non-null value (the context panel's Quick Add, §10 C4). */
   showTodoKey?: string | null;
 
+  /**
+   * The box starts collapsed: R1 shows one button per kind (ui/quickAdd/KindButtons.tsx),
+   * a tap opens that kind with the cursor in its field, ✕ collapses it again
+   * (the draft is kept), and so does a successful add or the end of an edit
+   * (docs/dev/history/technical-design-calmer-screens.md §3.2). The box keeps its height.
+   */
+  collapsible?: boolean;
   /** Task input only; defaults to "New task" everywhere. */
   placeholder?: string;
   textColor: string;
@@ -250,13 +258,22 @@ function QuickAddWidget(props: Props): React.JSX.Element {
 
   const core = useQuickAddCore({fixedDestination, editingItemPath});
   const {displayType, isEditing, editFields, pending, setError, setPending} = core;
+  const collapsible = !!props.collapsible;
+  /** A collapsible box goes back to its kind buttons once an add succeeded (the message is in the status slot). */
+  const collapseAfter =
+    <A extends unknown[], R>(fn: (...args: A) => Promise<R>) =>
+    async (...args: A): Promise<R> => {
+      const result = await fn(...args);
+      if (collapsible) core.setOpen(null);
+      return result;
+    };
   const thisFile = useThisFileChoice(!!props.thisFileLine && !isEditing);
   const task = useTaskDraft(core, {
     fixedDestination,
     editingItemPath,
     editingLoop: editTarget?.kind === 'loop',
     loopsEnabled: true,
-    onAddTask: props.onAddTask,
+    onAddTask: collapseAfter(props.onAddTask),
     linkedFileForAdd: thisFile.linkedFile,
     onSaveEditTask: props.onSaveEditTask,
   });
@@ -265,13 +282,13 @@ function QuickAddWidget(props: Props): React.JSX.Element {
     initialDate: props.initialDate,
     initialMonthly: props.initialMonthly,
     isMeetingDateVisible: props.isMeetingDateVisible,
-    onAddMeeting: props.onAddMeeting,
+    onAddMeeting: collapseAfter(props.onAddMeeting),
     linkedFileForAdd: thisFile.linkedFile,
     onSaveEditMeeting: props.onSaveEditMeeting,
   });
-  const note = useNoteDraft(core, {onAddNote, noteFolderPath});
+  const note = useNoteDraft(core, {onAddNote: onAddNote && collapseAfter(onAddNote), noteFolderPath});
   const agreement = useAgreementDraft(core, {
-    onAddAgreement: props.onAddAgreement,
+    onAddAgreement: props.onAddAgreement && collapseAfter(props.onAddAgreement),
     onSaveEditAgreement: props.onSaveEditAgreement,
     onChangeAgreement: props.onChangeAgreement,
   });
@@ -289,9 +306,13 @@ function QuickAddWidget(props: Props): React.JSX.Element {
     text: (kind, addition) => {
       const appendTo = (current: string): string => (current.trim() ? `${current.replace(/\s+$/, '')} ${addition}` : addition);
       if (kind === 'meeting') {
-        if (!taskOnly) meeting.showDraft({...meeting.draft, title: normalizeTagSpacing(appendTo(meeting.draft.title))}, null);
+        if (!taskOnly) {
+          meeting.showDraft({...meeting.draft, title: normalizeTagSpacing(appendTo(meeting.draft.title))}, null);
+          if (collapsible) core.setOpen('meeting');
+        }
         return;
       }
+      if (collapsible) core.setOpen('task');
       task.setDraft(d => ({...d, text: normalizeTagSpacing(appendTo(d.text))}));
       task.lastSelectionRef.current = null;
       task.setJustAdded(null);
@@ -300,15 +321,50 @@ function QuickAddWidget(props: Props): React.JSX.Element {
       setError(null);
     },
     seed: fields => {
-      if (!taskOnly) meeting.showDraft({title: fields.title, date: fields.date, time: formatMeetingWhen(fields), monthly: false, focusBlock: fields.focusBlock === true}, null);
+      if (taskOnly) return;
+      meeting.showDraft({title: fields.title, date: fields.date, time: formatMeetingWhen(fields), monthly: false, focusBlock: fields.focusBlock === true}, null);
+      if (collapsible) core.setOpen('meeting');
     },
   });
 
+  // The end of an edit or card collapses the box (it opens again from the kind buttons), unless the
+  // edit ended into a create draft (New from this: `openAfterEditRef`).
+  const hasEditTarget = !!editTarget;
+  const hadEditTargetRef = useRef(hasEditTarget);
+  const openAfterEditRef = useRef<QuickAddType | null>(null);
+  useEffect(() => {
+    if (hadEditTargetRef.current && !hasEditTarget && collapsible) core.setOpen(openAfterEditRef.current);
+    if (!hasEditTarget) openAfterEditRef.current = null;
+    hadEditTargetRef.current = hasEditTarget;
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only when an edit target comes or goes
+  }, [hasEditTarget]);
+
   const showTodoKey = props.showTodoKey ?? null;
   useEffect(() => {
-    if (showTodoKey !== null && !isEditing) core.setActiveType('task');
+    if (showTodoKey !== null && !isEditing) {
+      core.setActiveType('task');
+      if (collapsible) core.setOpen('task');
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- only when the key changes
   }, [showTodoKey]);
+
+  // A kind button: that kind in the box, then the cursor in its field once the rows are shown.
+  const [focusRequest, setFocusRequest] = useState(0);
+  const openKind = (type: QuickAddType) => {
+    core.setActiveType(type);
+    core.setOpen(type);
+    setFocusRequest(n => n + 1);
+  };
+  useEffect(() => {
+    if (focusRequest === 0) return;
+    if (displayType === 'task') task.inputRef.current?.focus();
+    else if (displayType === 'meeting') meeting.inputRef.current?.focus();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- once per request
+  }, [focusRequest]);
+  const collapse = () => {
+    Keyboard.dismiss();
+    core.setOpen(null);
+  };
 
   // Note has no filing concept - never matched.
   const abbrevTarget = displayType === 'task' ? task.abbrevTarget : displayType === 'meeting' ? meeting.abbrevTarget : null;
@@ -370,6 +426,8 @@ function QuickAddWidget(props: Props): React.JSX.Element {
       {title: draftTitle, date: fields.date, time: fields.time, monthly: false, focusBlock: false},
       `Copied "${truncateItemName(displayTitle, 16)}" - adjust, then Add`,
     );
+    openAfterEditRef.current = 'meeting';
+    if (collapsible) core.setOpen('meeting');
     onCancelEdit();
   };
 
@@ -436,6 +494,7 @@ function QuickAddWidget(props: Props): React.JSX.Element {
   );
 
   const editKind = editFields?.kind ?? null;
+  const collapsed = collapsible && core.open === null && !isEditing && !editTarget;
   // The item card in the box's place: a meeting selected once, where the screen passes its card.
   const cardShown =
     editTarget?.mode === 'card' &&
@@ -510,16 +569,30 @@ function QuickAddWidget(props: Props): React.JSX.Element {
 
   return (
     <QuickAddFrame
+      collapsed={collapsed}
       row1={
-        <TabsRow
-          core={core}
-          taskOnly={taskOnly}
-          hasNoteTab={!!onAddNote}
-          hasAgreementTab={!!props.onAddAgreement || editKind === 'agreement'}
-          noteFolderPath={noteFolderPath}
-          actions={actions}
-          textColor={textColor}
-        />
+        collapsed ? (
+          <KindButtons
+            hasAgreement={!!props.onAddAgreement}
+            hasNote={!!onAddNote}
+            taskOnly={taskOnly}
+            noteFolderPath={noteFolderPath}
+            onOpen={openKind}
+            textColor={textColor}
+            borderColor={borderColor}
+          />
+        ) : (
+          <TabsRow
+            core={core}
+            taskOnly={taskOnly}
+            hasNoteTab={!!onAddNote}
+            hasAgreementTab={!!props.onAddAgreement || editKind === 'agreement'}
+            noteFolderPath={noteFolderPath}
+            actions={actions}
+            onCollapse={collapsible && !isEditing ? collapse : undefined}
+            textColor={textColor}
+          />
+        )
       }
       row2={
         <>
@@ -551,9 +624,10 @@ function QuickAddWidget(props: Props): React.JSX.Element {
         !cardShown ? null : editTarget?.kind === 'agreement' && props.agreementCard ? (
           <AgreementCard card={props.agreementCard} textColor={textColor} borderColor={borderColor} />
         ) : editTarget?.kind === 'task' && todoCard ? (
-          <TodoCard card={todoCard} textColor={textColor} borderColor={borderColor} />
+          <TodoCard key={editTarget.key ?? ''} card={todoCard} textColor={textColor} borderColor={borderColor} />
         ) : meetingCard ? (
           <MeetingCard
+            key={editTarget?.key ?? ''}
             card={meetingCard}
             onNewFromThis={() =>
               newFromThis({title: meetingCard.meeting.title, date: meetingCard.meeting.date, time: formatMeetingWhen(meetingCard.meeting)})

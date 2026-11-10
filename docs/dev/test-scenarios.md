@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-228 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+231 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -943,9 +943,9 @@ Test: `__tests__/scenarios/meetingReflection.test.tsx` · design: `docs/dev/hist
 - **When** I open Coaching without tapping a meeting
 - **Then** Quick Add shows, no card
 - **When** I tap the session in two days
-- **Then** its card offers P and +clip, but no reflection yet
+- **Then** its card offers P, but no reflection yet, and +clip under More
 - **When** I tap the session three days ago
-- **Then** the card switches to it: R, Reflect and +clip
+- **Then** the card switches to it, on its first page: R and Reflect; +clip under More
 
 Test: `__tests__/scenarios/meetingReflection.test.tsx` · design: `docs/dev/history/technical-design-item-card.md` · help: `meetings.md#the-meeting-row-and-its-card`
 
@@ -1233,6 +1233,43 @@ Test: `__tests__/scenarios/rollback.test.tsx` · help: `files-and-folders.md#edi
 Test: `__tests__/scenarios/smoke/areaPage.test.tsx` · help: `projects-and-areas.md#the-current-tab`
 
 ## Quick Add
+
+### Daily: Quick Add starts closed; + Todo opens it, ✕ closes it and keeps the text
+
+- **Given** project "Garden renovation" and an empty Inbox
+- **When** I open Daily
+- **Then** the box shows + Todo · + Meeting and no text field
+- **When** I tap + Todo and write "Buy seeds"
+- **Then** the Todo form shows with + Add
+- **When** I tap ✕ at the end of its first row
+- **Then** the buttons are back
+- **When** I tap + Todo again
+- **Then** the text is still there
+
+Test: `__tests__/scenarios/calmerQuickAdd.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `quick-add.md`
+
+### After + Add the box closes and the status line says where the todo went
+
+- **Given** project "Garden renovation" and an empty Inbox
+- **When** I open Daily, tap + Todo, write "Call Marco" and tap + Add
+- **Then** the todo is in the Inbox
+- **And** the box shows its buttons again, and the status line names the Inbox
+
+Test: `__tests__/scenarios/calmerQuickAdd.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `quick-add.md`
+
+### The todo card: More › shows the second page in the same box; ‹ returns
+
+- **Given** project "Garden renovation" with the todo "Order soil #next"
+- **When** I open the project and tap the todo
+- **Then** the card shows its caption and the main buttons
+- **When** I tap More ›
+- **Then** the second page offers Next, Maybe, Edit, the trash icon and ‹
+- **When** I tap Maybe there
+- **Then** the todo is Maybe, at once
+- **When** I tap ‹
+- **Then** the first page is back
+
+Test: `__tests__/scenarios/calmerQuickAdd.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `quick-add.md#the-card-one-tap-selects`
 
 ### Save to <Name>: an abbreviation tag typed while editing saves the meeting and moves it there
 
@@ -2210,7 +2247,7 @@ Test: `__tests__/scenarios/deviceLinks.test.tsx` · design: `docs/dev/history/te
 ### This file from a note: Quick Add starts off and links the note relative to Note; launch file unknown: nothing is offered
 
 - **Given** project "Garden renovation" has the todo "Order soil" and the note Ideas.note
-- **When** I open Kept from page 2 of Ideas.note and open the project
+- **When** I open Kept from page 2 of Ideas.note, open the project and tap + Todo
 - **Then** Quick Add shows the note, switched off
 - **When** I switch on "no page" and add the todo "Sketch the beds"
 - **Then** the todo links the note by its path inside Note, without a page

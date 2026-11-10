@@ -227,6 +227,7 @@ export default function WeekPlanner({
       <View style={common.column}>
         <View style={styles.fill}>
           <QuickAddWidget
+        collapsible
             thisFileLine
             layoutKey="week"
             {...slot.widget}

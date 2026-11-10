@@ -71,6 +71,7 @@ scenario('This file: link the PDF Kept was opened from, with its page, in the Fi
   });
   when('I close the card and add the todo "Read chapter 3" with Quick Add', async () => {
     await tapLabel('Close');
+    await tap('+ Todo');
     expect(labelled('p. 12')?.on).toBe(true);
     await type('New task', 'Read chapter 3');
     await tap('+ Add');
@@ -87,11 +88,12 @@ scenario('This file from a note: Quick Add starts off and links the note relativ
     gardenWithTodo();
     device().sdk.putNote(NOTE, [{}, {}]);
   });
-  when('I open Kept from page 2 of Ideas.note and open the project', async () => {
+  when('I open Kept from page 2 of Ideas.note, open the project and tap + Todo', async () => {
     device().sdk.currentPage = 1;
     await openApp({fromNote: NOTE});
     await tapTab('Projects');
     await tap(new RegExp(`^${GARDEN}`));
+    await tap('+ Todo');
   });
   then('Quick Add shows the note, switched off', () => {
     expectShows('Ideas.note');

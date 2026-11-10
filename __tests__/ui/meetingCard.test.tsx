@@ -88,11 +88,14 @@ const pressText = (r: TestRenderer.ReactTestRenderer, text: string) =>
 const texts = (r: TestRenderer.ReactTestRenderer) => r.root.findAllByType(Text).map(t => [t.props.children].flat().join(''));
 
 describe('MeetingCard', () => {
-  it('a meeting ahead: P, M, note, no Reflect, no clip; thread link, owner chip, New from this, Cancel', () => {
+  it('a meeting ahead: caption, thread line, P, note, M, More; More holds Edit, the owner, New from this, Cancel', () => {
     const r = render(ahead, card(ahead));
-    expect(texts(r)).toEqual(expect.arrayContaining(['Meeting · ahead', '#sparring/jordan ›', 'Sparring Jordan #sparring/jordan', 'P', 'M', 'Coaching', 'Edit', '✕']));
-    expect(labels(r)).toEqual(expect.arrayContaining(['Close', 'Prepped', 'Month highlight', 'Create note', 'New from this', 'Cancel meeting']));
+    expect(texts(r)).toEqual(expect.arrayContaining(['Meeting · Coaching · ahead', '#sparring/jordan ›', 'Sparring Jordan #sparring/jordan', 'P', 'M', '+ Note', 'More ›', '✕']));
+    expect(labels(r)).toEqual(expect.arrayContaining(['Close', 'Prepped', 'Month highlight', 'Create note', 'More']));
     expect(labels(r)).not.toContain('Reflect');
+    press(r, 'More');
+    expect(texts(r)).toEqual(expect.arrayContaining(['Edit', 'Coaching']));
+    expect(labels(r)).toEqual(expect.arrayContaining(['New from this', 'Cancel meeting', 'Back']));
     expect(labels(r)).not.toContain('Link file');
     expect(labels(r)).not.toContain('Refile');
   });
@@ -108,32 +111,36 @@ describe('MeetingCard', () => {
   it('a linked file shows its name with ✕; +clip and the refile arrow only where the screen can', () => {
     const linked = {...ahead, linkedFile: 'Resources/brief.pdf'};
     const r = render(linked, card(linked, {canLink: true, canRefile: true}, {onOpenFile: jest.fn(), onRefile: jest.fn(), onLink: jest.fn()}));
+    press(r, 'More');
     expect(texts(r)).toContain('brief.pdf');
     expect(labels(r)).toEqual(expect.arrayContaining(['Unlink', 'Open linked file', 'Refile']));
     const plain = render(ahead, card(ahead, {canLink: true}, {onLink: jest.fn()}));
+    press(plain, 'More');
     expect(labels(plain)).toContain('Link file');
   });
 
   it('a cancelled meeting has no Cancel meeting and no P/R', () => {
     const cancelled = {...ahead, cancelled: true};
     const r = render(cancelled, card(cancelled));
-    expect(texts(r)).toContain('Meeting · cancelled');
-    expect(labels(r)).not.toContain('Cancel meeting');
+    expect(texts(r)).toContain('Meeting · Coaching · cancelled');
     expect(labels(r)).not.toContain('Prepped');
+    press(r, 'More');
+    expect(labels(r)).not.toContain('Cancel meeting');
   });
 
   it('every button calls its handler', () => {
     const data = card(over, {canLink: false}, {onOpenOwner: jest.fn()});
     const r = render(over, data);
-    pressText(r, 'Edit');
+    pressText(r, '#sparring/jordan ›');
     press(r, 'Close');
     press(r, 'Reviewed');
     press(r, 'Month highlight');
     press(r, 'Create note');
     press(r, 'Reflect');
+    press(r, 'More');
+    press(r, 'Edit');
     press(r, 'Cancel meeting');
     press(r, 'Open Coaching');
-    pressText(r, '#sparring/jordan ›');
     for (const h of [data.onEdit, data.onClose, data.onCheckpoint, data.onMonthly, data.onNote, data.onReflect, data.onCancelMeeting, data.onOpenOwner, data.onOpenThread]) {
       expect(h).toHaveBeenCalledTimes(1);
     }
@@ -142,6 +149,7 @@ describe('MeetingCard', () => {
   it('New from this fills the Meeting draft from the meeting and closes the card', () => {
     const onCancelEdit = jest.fn();
     const r = render(ahead, card(ahead), onCancelEdit);
+    press(r, 'More');
     press(r, 'New from this');
     expect(onCancelEdit).toHaveBeenCalledTimes(1);
     const title = r.root.findAllByType(TextInput).find(i => i.props.placeholder === 'New meeting title')!;

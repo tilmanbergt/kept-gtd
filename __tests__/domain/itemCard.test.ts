@@ -1,5 +1,5 @@
 /** The item cards' models (docs/dev/history/technical-design-item-card.md K8, K9, §6). */
-import {meetingCardModel, MeetingCardInput, meetingPhase, originOfKey, todoCardModel, TodoCardInput} from '../../src/domain/itemCard';
+import {meetingCardModel, MeetingCardInput, meetingCardPage, meetingPhase, originOfKey, todoCardModel, TodoCardInput, todoCardPage} from '../../src/domain/itemCard';
 import {deriveMeetingFields} from '../../src/domain/markdown';
 import {createNoteSetup, NoteSetupConfig} from '../../src/domain/noteSetups';
 import {Meeting} from '../../src/domain/types';
@@ -124,5 +124,39 @@ describe('todoCardModel', () => {
     expect(todo('Order soil').file).toBeNull();
     expect(todo('Order soil').canDelete).toBe(true);
     expect(todo('Order soil', {cancelled: true}).canDelete).toBe(false);
+  });
+});
+
+// The compact card (docs/dev/history/technical-design-calmer-screens.md §3.4).
+describe('the compact card', () => {
+  const todo = (text: string, extra: Parameters<typeof task>[1] = {}, input: Partial<TodoCardInput> = {}) =>
+    todoCardModel({task: task(text, extra), today: '2026-10-21', ownerName: 'Garden renovation', canLink: false, canRefile: false, ...input});
+
+  it('todo: caption with the owner, and one detail line: agreed in, else the file, else no note yet', () => {
+    expect(todo('Order soil #next', {dueDate: '2026-10-24'}).caption).toBe('Todo · Garden renovation · due 24.10.');
+    const agreed = todo('Send the canvas', {fields: {...task('x').fields, meeting: '2026-10-14 Sparring Jordan sparring/jordan'}, linkedFile: 'a/plan.pdf'});
+    expect(agreed.detail).toEqual({kind: 'origin', label: '↳ Sparring Jordan ›', threadTag: 'sparring/jordan'});
+    expect(todo('Order soil', {linkedFile: 'a/plan.pdf'}).detail).toEqual({kind: 'file', name: 'plan.pdf'});
+    expect(todo('Order soil').detail).toEqual({kind: 'noNote'});
+    expect(todo('Order soil', {notePath: 'Note/x.note'}).detail).toBeNull();
+  });
+
+  it('todo pages: the main buttons, then More with what the screen can do', () => {
+    const t = todo('Order soil');
+    expect(todoCardPage(t, 'main')).toEqual({detail: true, row3: [], row4: ['done', 'waiting', 'someday', 'note', 'more']});
+    expect(todoCardPage(t, 'more')).toEqual({detail: false, row3: ['next', 'maybe', 'edit', 'owner'], row4: ['delete', 'back']});
+    expect(todoCardPage(todo('Order soil', {}, {canLink: true, canRefile: true}), 'more').row4).toEqual(['refile', 'file', 'delete', 'back']);
+    expect(todoCardPage(todo('Old', {cancelled: true}), 'more').row4).toEqual(['back']);
+  });
+
+  it('meeting: caption with the owner, the thread as detail line, and its two pages', () => {
+    const aheadModel = model(m('2026-10-23', 'Sparring #sparring/jordan'));
+    expect(aheadModel.caption).toBe('Meeting · Coaching · ahead');
+    expect(aheadModel.detail).toEqual({kind: 'thread', tag: 'sparring/jordan', label: '#sparring/jordan ›'});
+    expect(meetingCardPage(aheadModel, 'main').row4).toEqual(['checkpoint', 'note', 'monthly', 'more']);
+    expect(meetingCardPage(aheadModel, 'more')).toEqual({detail: false, row3: ['focus', 'edit', 'owner'], row4: ['newFromThis', 'cancel', 'back']});
+    const plain = model(m('2026-10-18', 'Retro'), {canRefile: true, canLink: true});
+    expect(plain.detail).toEqual({kind: 'noNote'});
+    expect(meetingCardPage(plain, 'more').row4).toEqual(['refile', 'file', 'newFromThis', 'cancel', 'back']);
   });
 });

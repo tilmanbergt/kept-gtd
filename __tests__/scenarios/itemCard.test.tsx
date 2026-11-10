@@ -84,8 +84,8 @@ scenario('In a thread overview, Quick Add adds the thread tag it shows in Row 4'
   });
   when('I add the todo "Book room" there', async () => {
     // The overview draws over the Area page: its Quick Add is the second one.
-    await type('New task', 'Book room', 1);
-    await tap('+ Add', 1);
+    await type('New task', 'Book room');
+    await tap('+ Add');
   });
   then('the area has the new todo with the thread tag', () => {
     expect(sectionLines(areaFile('Coaching'), 'Tasks')).toEqual([
@@ -109,14 +109,14 @@ scenario('Tap a meeting shows its card; ✕ brings back the half-typed todo', {f
     await tap(/^Team sync/);
   });
   then('the card names the meeting in Quick Add\'s place', () => {
-    expectShows('Meeting · ahead');
-    expectShows('Edit');
+    expectShows(/^Meeting · .+ · ahead$/);
+    expectShows('More ›');
     expectNotShows('+ Add');
   });
   when('I tap ✕ on the card', () => tapLabel('Close'));
   then('Quick Add is back with "Call Anna" still in the field', () => {
     expectShows('+ Add');
-    expectNotShows('Meeting · ahead');
+    expectNotShows(/^Meeting · .+ · ahead$/);
     expect(fieldValue('New task')).toBe('Call Anna');
   });
 });
@@ -137,7 +137,7 @@ scenario('A second tap edits; Save writes it and shows the card again', {feature
     expect(sectionLines(INBOX_FILE, 'Meetings')).toEqual([`- ${nextWeek} 10:00 Team sync and planning`]);
   });
   and('the card shows the meeting again, not the edit form', () => {
-    expectShows('Meeting · ahead');
+    expectShows(/^Meeting · .+ · ahead$/);
     expectShows('Team sync and planning');
     expectNotShows('Save');
   });
@@ -207,7 +207,7 @@ scenario('New from this and Cancel meeting from the card', {feature: 'Meetings',
   });
   then('the meeting is marked cancelled in Inbox.txt, and the card says so', () => {
     expect(sectionLines(INBOX_FILE, 'Meetings')).toEqual([`- [-] ${nextWeek} 15:00-16:00 Retro`]);
-    expectShows('Meeting · cancelled');
+    expectShows(/^Meeting · .+ · cancelled$/);
     expect(labelled('Cancel meeting')).toBeNull();
   });
 });
@@ -228,11 +228,11 @@ scenario('Switching to another meeting while editing saves first and shows the o
     expect(sectionLines(INBOX_FILE, 'Meetings')).toEqual([`- ${nextWeek} 10:00 Team sync moved`, `- ${nextWeek} 15:00 Retro`]);
   });
   and('"Retro" shows as card', () => {
-    expectShows('Meeting · ahead');
-    expectShows('Edit');
-    // The card's title follows its R1 (… ✕ Edit).
+    expectShows(/^Meeting · .+ · ahead$/);
+    expectShows('More ›');
+    // The card's title follows its R1 (caption, ✕).
     const shown = texts();
-    expect(shown[shown.indexOf('Edit') + 1]).toBe('Retro');
+    expect(shown[shown.findIndex(t => /^Meeting · .+ · ahead$/.test(t)) + 2]).toBe('Retro');
   });
 });
 
@@ -272,13 +272,13 @@ scenario('Todo card: a flow chip, done and delete act at once; a retired #now le
     await tap('Order soil');
   });
   then('its card shows it as Next, with no Now', () => {
-    expectShows('Todo · next');
+    expectShows(/^Todo · .+ · next$/);
     expect(labelled('Now')).toBeNull();
   });
   when('I tap Someday on the card', () => tap('Someday'));
   then('it is Someday, and #now went with Next', () => {
     expect(sectionLines(projectFile('Garden renovation'), 'Tasks')[0]).toBe('- [ ] Order soil #someday');
-    expectShows('Todo · someday');
+    expectShows(/^Todo · .+ · someday$/);
   });
   when('I tick it done on the card', () => tapLabel('Done'));
   then('it is done with today\'s completion date', () => {
@@ -293,7 +293,7 @@ scenario('Todo card: a flow chip, done and delete act at once; a retired #now le
   });
   then('it is marked cancelled, and Quick Add is back', () => {
     expect(sectionLines(projectFile('Garden renovation'), 'Tasks')[1]).toBe('- [-] Fix the fence');
-    expectShows('+ Add');
+    expectShows('+ Todo');
   });
 });
 

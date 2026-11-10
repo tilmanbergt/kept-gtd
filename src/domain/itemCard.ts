@@ -4,6 +4,12 @@
  * once, in the same four rows. Which slots appear and what they say is
  * decided here; ui/itemCard/MeetingCard.tsx and TodoCard.tsx only lay them
  * out. Pure.
+ *
+ * The compact card (docs/dev/history/technical-design-calmer-screens.md §3.4):
+ * R1 a caption (`Todo · Garden renovation · due 5.11.`) and ✕, R2 the title,
+ * R3 one detail line, R4 the main buttons and More ›. More › swaps R3-R4 for
+ * the rest, with ‹ back - two pages in the same box (`todoCardPage`,
+ * `meetingCardPage`).
  */
 import {formatDate, formatDayHeader} from './dateFormat';
 import {titleCaseSlug} from './flowState';
@@ -56,6 +62,30 @@ export interface MeetingCardModel {
   owner: {name: string; canRefile: boolean};
   /** R4: Cancel meeting, unless it already is. */
   canCancel: boolean;
+  /** The compact card's R1: "Meeting · Coaching · today". */
+  caption: string;
+  /** The compact card's R3: the thread, else the linked file, else "no note yet", else nothing. */
+  detail: CardDetail | null;
+}
+
+/** The compact card's one detail line (R3 of its first page). */
+export type CardDetail =
+  | {kind: 'origin'; label: string; threadTag: string | null}
+  | {kind: 'thread'; label: string; tag: string}
+  | {kind: 'file'; name: string}
+  | {kind: 'noNote'};
+
+/** The compact card's two pages: the main buttons, and More's rest. */
+export type CardPage = 'main' | 'more';
+
+export type TodoCardButton = 'done' | 'waiting' | 'someday' | 'note' | 'more' | 'next' | 'maybe' | 'edit' | 'owner' | 'refile' | 'file' | 'delete' | 'back';
+export type MeetingCardButton = 'checkpoint' | 'note' | 'reflect' | 'monthly' | 'more' | 'focus' | 'edit' | 'owner' | 'file' | 'refile' | 'newFromThis' | 'cancel' | 'back';
+
+export interface CardPageLayout<B> {
+  /** R3 shows the detail line (the first page) instead of buttons. */
+  detail: boolean;
+  row3: B[];
+  row4: B[];
 }
 
 export interface MeetingCardInput {
@@ -116,7 +146,35 @@ export function meetingCardModel(input: MeetingCardInput): MeetingCardModel {
         : null,
     owner: {name: input.ownerName, canRefile: input.canRefile},
     canCancel: phase !== 'cancelled',
+    caption: `${focusBlock ? 'Focus' : 'Meeting'} · ${input.ownerName} · ${PHASE_TEXT[phase]}`,
+    detail: thread
+      ? {kind: 'thread', tag: thread.tag, label: loopLink ? `${thread.type} ${thread.counterpart} ›` : `#${thread.tag} ›`}
+      : meeting.linkedFile
+        ? {kind: 'file', name: fileName(meeting.linkedFile)}
+        : !meeting.notePath && noteTarget === 'meeting'
+          ? {kind: 'noNote'}
+          : null,
   };
+}
+
+/** Which buttons the compact meeting card shows on `page`. */
+export function meetingCardPage(model: MeetingCardModel, page: CardPage, canNewFromThis = true): CardPageLayout<MeetingCardButton> {
+  if (page === 'main') {
+    const row4: MeetingCardButton[] = [];
+    if (model.checkpoint) row4.push('checkpoint');
+    if (model.note) row4.push('note');
+    if (model.reflection) row4.push('reflect');
+    row4.push('monthly', 'more');
+    return {detail: true, row3: [], row4};
+  }
+  const row3: MeetingCardButton[] = ['focus', 'edit', 'owner'];
+  const row4: MeetingCardButton[] = [];
+  if (model.owner.canRefile) row4.push('refile');
+  if (model.file) row4.push('file');
+  if (canNewFromThis) row4.push('newFromThis');
+  if (model.canCancel) row4.push('cancel');
+  row4.push('back');
+  return {detail: false, row3, row4};
 }
 
 export interface TodoCardModel {
@@ -135,6 +193,10 @@ export interface TodoCardModel {
   owner: {name: string; canRefile: boolean};
   file: {kind: 'linked'; path: string; name: string} | {kind: 'link'} | null;
   canDelete: boolean;
+  /** The compact card's R1: "Todo · Garden renovation · due 5.11.". */
+  caption: string;
+  /** The compact card's R3: where it was agreed, else the linked file, else "no note yet", else nothing. */
+  detail: CardDetail | null;
 }
 
 export interface TodoCardInput {
@@ -186,5 +248,24 @@ export function todoCardModel(input: TodoCardInput): TodoCardModel {
         ? {kind: 'link'}
         : null,
     canDelete: !task.cancelled,
+    caption: `Todo · ${input.ownerName} · ${todoStatus(task, today)}`,
+    detail: origin
+      ? {kind: 'origin', label: origin.threadTag ? `${origin.label} ›` : origin.label, threadTag: origin.threadTag}
+      : task.linkedFile
+        ? {kind: 'file', name: fileName(task.linkedFile)}
+        : !task.notePath
+          ? {kind: 'noNote'}
+          : null,
   };
+}
+
+/** Which buttons the compact todo card shows on `page`. */
+export function todoCardPage(model: TodoCardModel, page: CardPage): CardPageLayout<TodoCardButton> {
+  if (page === 'main') return {detail: true, row3: [], row4: ['done', 'waiting', 'someday', 'note', 'more']};
+  const row4: TodoCardButton[] = [];
+  if (model.owner.canRefile) row4.push('refile');
+  if (model.file) row4.push('file');
+  if (model.canDelete) row4.push('delete');
+  row4.push('back');
+  return {detail: false, row3: ['next', 'maybe', 'edit', 'owner'], row4};
 }

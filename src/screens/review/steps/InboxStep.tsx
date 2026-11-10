@@ -392,6 +392,7 @@ return (
           sits above both rather than nested in either, same placement rule
           as ProjectDataPanel.tsx/InboxScreen.tsx. */}
       <QuickAddWidget
+        collapsible
         fixedDestination={FIXED_INBOX_DESTINATION}
         onAddTask={onAddTask}
         onAddMeeting={handleAddInboxMeeting}

@@ -31,6 +31,15 @@ or your project/area files are stored.
   and a meeting before, during and after (Meetings).
 
 ### Changed
+- Quick Add starts closed on Daily, Week, Month, a project's or area's page and the Review's Inbox
+  step: **+ Todo**, **+ Meeting** (and **+ Agreement**, **+ Note**) open the kind you need, with the
+  cursor in its field; **✕** closes it and keeps what you typed; after **+ Add** it closes again.
+  The box keeps its height, so nothing below moves.
+- The todo and meeting cards are quieter: where the item lives and its state on the first row, one
+  grey line (where it was agreed, its file, or "no note yet"), and the main buttons - Done, w/f,
+  Someday, the note - with **More ›** for the rest (Next, Maybe, Edit, moving, linking a file,
+  delete) on a second page in the same box.
+- A tap on a row shows its card faster: the list no longer redraws for it.
 - For contributors: `SECURITY.md` says how to report a vulnerability privately and what Kept
   touches; `docs/dev/claims.md` lists every promise Kept makes and how each is checked.
 

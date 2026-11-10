@@ -144,6 +144,7 @@ export default function SelectionZone({
   return (
     <>
       <QuickAddWidget
+        collapsible
         thisFileLine
         layoutKey="daily"
         {...context.widget}

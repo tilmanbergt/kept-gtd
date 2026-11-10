@@ -45,6 +45,7 @@ interface Setup {
   provenance?: QuickAddAdds;
   meetingCard?: MeetingCardData | null;
   todoCard?: TodoCardData | null;
+  collapsible?: boolean;
 }
 
 /** Card data for `m` as useMeetingCard builds it, every handler a mock. */
@@ -57,7 +58,7 @@ function cardFor(m: Meeting, extra: Partial<Parameters<typeof meetingCardModel>[
   };
 }
 
-function render({editTarget = null, provenance, meetingCard, todoCard}: Setup = {}) {
+function render({editTarget = null, provenance, meetingCard, todoCard, collapsible}: Setup = {}) {
   let r!: TestRenderer.ReactTestRenderer;
   act(() => {
     r = TestRenderer.create(
@@ -78,6 +79,7 @@ function render({editTarget = null, provenance, meetingCard, todoCard}: Setup = 
           provenance={provenance}
           meetingCard={meetingCard}
           todoCard={todoCard}
+          collapsible={collapsible}
           textColor="#000"
           borderColor="#000"
           placeholderColor="#888"
@@ -96,7 +98,9 @@ function heights(r: TestRenderer.ReactTestRenderer): {frame: unknown; rows: unkn
   const box = frame(r);
   // The row Views directly under the frame, through the row components that render them.
   const rowViews = (node: TestRenderer.ReactTestInstance): TestRenderer.ReactTestInstance[] =>
-    node.children.flatMap(c => (typeof c === 'string' ? [] : c.type === View ? [c] : rowViews(c)));
+    node.children.flatMap(c =>
+      typeof c === 'string' ? [] : c.type === View && c.props.testID === 'quick-add-rows-below' ? (visible(c.props.style) ? rowViews(c) : []) : c.type === View ? [c] : rowViews(c),
+    );
   // The rows sit in one wrapper, hidden while the item card shows in their place.
   const wrapper = box.findAll(n => n.type === View && n.props.testID === 'quick-add-rows')[0];
   const container = visible(wrapper.props.style) ? wrapper : rowViews(box).filter(v => v !== wrapper)[0];
@@ -115,6 +119,18 @@ const pressText = (r: TestRenderer.ReactTestRenderer, label: string) =>
 describe('Quick Add box height', () => {
   it('is 174 dp: border, padding, four rows and three gaps', () => {
     expect(QUICK_ADD_HEIGHT).toBe(174);
+  });
+
+  // docs/dev/history/technical-design-calmer-screens.md §6 scenario 1, §3.2.
+  it('collapsed: the kind buttons in R1, the rest hidden, the box as high as ever; + Todo opens the rows, ✕ collapses', () => {
+    const r = render({collapsible: true});
+    expect(heights(r)).toEqual({frame: QUICK_ADD_HEIGHT, rows: [QUICK_ADD_ROWS.tabs]});
+    const labels = r.root.findAllByType(Text).map(t => String(t.props.children));
+    expect(labels.filter(l => l.startsWith('+ '))).toEqual(['+ Todo', '+ Meeting', '+ Note']);
+    pressText(r, '+ Todo');
+    expect(heights(r)).toEqual({frame: QUICK_ADD_HEIGHT, rows: FIXED});
+    pressText(r, '✕');
+    expect(heights(r)).toEqual({frame: QUICK_ADD_HEIGHT, rows: [QUICK_ADD_ROWS.tabs]});
   });
 
   // Measured on the A5 X: a chip label (FONT.small, weight 600) draws about 21 dp high. A chip in

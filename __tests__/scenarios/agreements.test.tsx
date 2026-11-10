@@ -42,14 +42,14 @@ scenario('Add an agreement from the thread overview with valid till end of year'
   given('area "Coaching" has a past sparring session with Jordan and no agreements', () => coaching([]));
   when('I open Jordan\'s thread overview, choose the Agreement tab and type "No calls after six"', async () => {
     await openJordanOverview();
-    await tap('Agreement', 1);
+    await tap('Agreement');
     await type('New agreement', 'No calls after six');
   });
   and('I tap "valid till" and choose "end of year", then + Add', async () => {
     await tap('valid till');
     await tap('end of year');
     expectShows(`till 31.12.`);
-    await tap('+ Add', 1);
+    await tap('+ Add');
   });
   then('the area file has the agreement with the thread tag, the meeting it was made in, today and the valid-till date', () => {
     expect(sectionLines(areaFile('Coaching'), 'Agreements')).toEqual([
@@ -78,7 +78,7 @@ scenario('Change an agreement: the old one is ended, the new one added; Cancel c
     await tap('◇ Feedback only in our 1:1s #sparring/jordan');
     await tap('Change');
     await type('New agreement', 'Feedback only in our 1:1s, except urgent #sparring/jordan');
-    await tap('+ Add', 1);
+    await tap('+ Add');
   });
   then('the old line is ended today and the new one is added after it, made in the meeting the overview shows', () => {
     expect(sectionLines(areaFile('Coaching'), 'Agreements')).toEqual([

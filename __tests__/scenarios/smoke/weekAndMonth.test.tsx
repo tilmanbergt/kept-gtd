@@ -46,7 +46,7 @@ scenario('Month shows the highlights and the time given this month', {feature: '
   given('the smoke space on Wednesday 14.10.2026', () => undefined);
   when('I open Month', () => openTab('Month'));
   then('the 28th shows "Garden fair"; no other day shows a meeting or the F of the focus block on the 15th, since none is a highlight (marked M)', () => {
-    const days = textsBetween(/^Th 01/, 'Todo');
+    const days = textsBetween(/^Th 01/, '+ Todo');
     expect(days.filter(t => !MONTH_LABEL.test(t))).toEqual(['Garden fair']);
     expect(days[days.indexOf('Garden fair') - 1]).toBe('We 28');
   });

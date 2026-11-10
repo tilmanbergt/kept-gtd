@@ -1,0 +1,89 @@
+// docs/dev/history/technical-design-calmer-screens.md §6 scenarios 1-3, 5: the collapsible Quick Add box
+// and the compact card's two pages.
+import {expectNotShows, expectShows, fieldValue, labelled, openApp, settle, tap, tapLabel, tapTab, type} from '../../test-helpers/scenario/app';
+import {dataFile, INBOX_FILE, loggedErrors, projectFile, putFile, sectionLines} from '../../test-helpers/scenario/files';
+import {and, given, scenario, then, when} from '../../test-helpers/scenario/scenario';
+
+const garden = () =>
+  putFile(projectFile('Garden renovation'), dataFile('project', {Scope: [], Tasks: ['- [ ] Order soil #next'], Meetings: []}, ['abbrev: GR']));
+
+scenario('Daily: Quick Add starts closed; + Todo opens it, ✕ closes it and keeps the text', {feature: 'Quick Add', design: 'technical-design-calmer-screens.md', help: 'quick-add.md'}, () => {
+  given('project "Garden renovation" and an empty Inbox', () => {
+    garden();
+    putFile(INBOX_FILE, dataFile('inbox', {Tasks: [], Meetings: []}));
+  });
+  when('I open Daily', async () => {
+    await openApp();
+    await tapTab('Daily');
+  });
+  then('the box shows + Todo · + Meeting and no text field', () => {
+    expectShows('+ Todo');
+    expectShows('+ Meeting');
+    expectNotShows('+ Add');
+  });
+  when('I tap + Todo and write "Buy seeds"', async () => {
+    await tap('+ Todo');
+    await type('New task', 'Buy seeds');
+  });
+  then('the Todo form shows with + Add', () => expectShows('+ Add'));
+  when('I tap ✕ at the end of its first row', () => tapLabel('Close Quick Add'));
+  then('the buttons are back', () => {
+    expectShows('+ Todo');
+    expectNotShows('+ Add');
+  });
+  when('I tap + Todo again', () => tap('+ Todo'));
+  then('the text is still there', () => expect(fieldValue('New task')).toBe('Buy seeds'));
+});
+
+scenario('After + Add the box closes and the status line says where the todo went', {feature: 'Quick Add', design: 'technical-design-calmer-screens.md', help: 'quick-add.md'}, () => {
+  given('project "Garden renovation" and an empty Inbox', () => {
+    garden();
+    putFile(INBOX_FILE, dataFile('inbox', {Tasks: [], Meetings: []}));
+  });
+  when('I open Daily, tap + Todo, write "Call Marco" and tap + Add', async () => {
+    await openApp();
+    await tapTab('Daily');
+    await tap('+ Todo');
+    await type('New task', 'Call Marco');
+    await tap('+ Add');
+    await settle(4);
+  });
+  then('the todo is in the Inbox', () => {
+    expect(sectionLines(INBOX_FILE, 'Tasks')).toEqual([expect.stringMatching(/^- \[ \] Call Marco/)]);
+  });
+  and('the box shows its buttons again, and the status line names the Inbox', () => {
+    expectShows('+ Todo');
+    expectNotShows('+ Add');
+    expectShows(/Added todo "Call Marco" to Inbox/);
+    expect(loggedErrors()).toEqual([]);
+  });
+});
+
+scenario('The todo card: More › shows the second page in the same box; ‹ returns', {feature: 'Quick Add', design: 'technical-design-calmer-screens.md', help: 'quick-add.md#the-card-one-tap-selects'}, () => {
+  given('project "Garden renovation" with the todo "Order soil #next"', garden);
+  when('I open the project and tap the todo', async () => {
+    await openApp();
+    await tapTab('Projects');
+    await tap(/^Garden renovation/);
+    await tap(/^Order soil/);
+  });
+  then('the card shows its caption and the main buttons', () => {
+    expectShows('Todo · Garden renovation · next');
+    expectShows('no note yet');
+    for (const label of ['Done', 'w/f', 'Someday', 'Create note', 'More']) expect(labelled(label)).not.toBeNull();
+    expect(labelled('Delete')).toBeNull();
+  });
+  when('I tap More ›', () => tapLabel('More'));
+  then('the second page offers Next, Maybe, Edit, the trash icon and ‹', () => {
+    for (const label of ['Next', 'Maybe', 'Edit', 'Delete', 'Back']) expect(labelled(label)).not.toBeNull();
+    expect(labelled('Next')?.on).toBe(true);
+    expectNotShows('no note yet');
+  });
+  when('I tap Maybe there', () => tapLabel('Maybe'));
+  then('the todo is Maybe, at once', () => expect(sectionLines(projectFile('Garden renovation'), 'Tasks')).toEqual(['- [ ] Order soil #maybe']));
+  when('I tap ‹', () => tapLabel('Back'));
+  then('the first page is back', () => {
+    expect(labelled('More')).not.toBeNull();
+    expectShows('Todo · Garden renovation · maybe');
+  });
+});

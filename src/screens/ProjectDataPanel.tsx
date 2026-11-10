@@ -773,6 +773,7 @@ export default function ProjectDataPanel({
         <CounterpartFilterPill leaf={counterpartFilter.leaf} onClear={onClearCounterpartFilter} textColor={textColor} borderColor={borderColor} />
       )}
       <QuickAddWidget
+        collapsible
         thisFileLine
         layoutKey="current"
         fixedDestination={widgetDestination}
