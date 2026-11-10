@@ -1,5 +1,5 @@
 import {device} from '../../test-helpers/fakeDevice/device';
-import {expectNotShows, expectShows, openApp, tap, tapTab, textsBetween} from '../../test-helpers/scenario/app';
+import {expectNotShows, expectShows, openApp, openItemSettings, tap, tapTab, textsBetween} from '../../test-helpers/scenario/app';
 import {fileText, dataFile, PATHS, projectFile, putFile, loggedErrors} from '../../test-helpers/scenario/files';
 import {and, given, scenario, then, when} from '../../test-helpers/scenario/scenario';
 
@@ -19,7 +19,8 @@ scenario('Close-out off: a Done project archives directly from its page', {featu
     await tapTab('Projects');
     await tap(/^Website/);
   });
-  then('its status panel offers Archive, not Close out', () => {
+  then('its ⚙ Settings offer Archive, not Close out', async () => {
+    await openItemSettings();
     expectShows('🗄 Archive…');
     expectNotShows('🗄 Close out…');
   });
@@ -81,5 +82,8 @@ scenario('Settings → Features shows the Experimental switches that moved from 
     await tapTab('Projects');
     await tap(/^Website/);
   });
-  then('its page offers Archive at once', () => expectShows('🗄 Archive…'));
+  then('its ⚙ Settings offer Archive at once', async () => {
+    await openItemSettings();
+    expectShows('🗄 Archive…');
+  });
 });

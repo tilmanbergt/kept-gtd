@@ -81,11 +81,13 @@ the thread overview otherwise.
   card `ui/itemCard/InboxCard.tsx` with File to, `screens/daily/FilePicker.tsx`,
   `screens/daily/NewProjectForm.tsx`), the same parts in Review's "Inbox to zero"; everything
   unfiltered.
-- **Current** — `screens/ItemDetail.tsx`: left pane `ui/ItemScopePanel.tsx` (the Scope, without a
-  label; the Given time line was removed in 0.24.0) on top, the Files pane (`ui/FileBrowserPane.tsx`) in the middle and
-  `ui/ItemStatusPanel.tsx` (status, close-out/archive, Assign to Area) at the bottom; right pane
-  `screens/ProjectDataPanel.tsx` with Quick Add, Todos and Meetings (the two lists in
-  `screens/projectData/`). The header shows the kind and the editable abbreviation pill. The Files
+- **Current** — `screens/ItemDetail.tsx`: left pane the Files pane (`ui/FileBrowserPane.tsx`);
+  right pane `screens/ProjectDataPanel.tsx` with Quick Add, Todos and Meetings (the two lists in
+  `screens/projectData/`). The header shows the kind, the abbreviation (read only) and **⚙ Settings**:
+  `screens/item/ItemSettings.tsx` in place of both panes, with the abbreviation editor
+  (`AbbrevEditor.tsx`), the Scope (`ui/ItemScopePanel.tsx`), `StatusBlock.tsx` (status,
+  close-out/archive, Assign to Area, with the Files pane while picking) and `ShowOnPage.tsx` (the
+  `show:` line, `domain/pageShow.ts`; counts from `storage/pageShowCounts.ts`). The Files
   pane's first tab, open when the page opens, is **Threads** (`screens/thread/ThreadsTab.tsx`,
   §2.6): the scope's counterparts
   (New with Tend / Not, Active with signals and their threads with "+ next", Inactive folded);

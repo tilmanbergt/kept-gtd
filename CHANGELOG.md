@@ -67,6 +67,12 @@ or your project/area files are stored.
 - Engage is quieter: no section line and no "Loop since" line; the current todo offers w/f,
   **Someday**, its note and **More ›** (Remove #next, the linked file).
 - A tap on a row shows its card faster: the list no longer redraws for it.
+- A project's or area's page keeps to the work: abbreviation, scope, status, Close out / Archive and
+  Assign to Area move to **⚙ Settings** in its header (**Close** returns). The header shows the
+  abbreviation without editing it.
+- **⚙ Settings → Show on this page**: Threads, Loops, Agreements, Schedule, Notebook (and Projects on
+  an area) each **Auto**, **Always** or **Never**, and where the left side opens. A hidden part with
+  something in it says so ("Never · 2 loops").
 - For contributors: `SECURITY.md` says how to report a vulnerability privately and what Kept
   touches; `docs/dev/claims.md` lists every promise Kept makes and how each is checked.
 

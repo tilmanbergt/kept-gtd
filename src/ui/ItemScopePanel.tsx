@@ -1,15 +1,11 @@
 /**
- * The Current tab's left pane, pinned to the very TOP of the column, above
- * Files: the Scope, without a label of its own ("+ Add a scope" says what it is). The Given
- * time line and the "Scope" label were removed in 0.24.0 to give the page room on every device
- * (docs/dev/history/technical-design-launch-ready.md L6c); given time stays on Week and Month.
- * ui/ItemStatusPanel.tsx (Status/Archive/Assign-to-Area) sits on the other
- * side of Files, so this is a separate component.
+ * The Scope editor on a Project's or Area's ⚙ Settings
+ * (screens/item/ItemSettings.tsx), under its "Scope" label.
  *
- * Same "extract, don't lift" independent-load pattern ui/ItemStatusPanel.tsx's
- * module doc comment documents: this component does its own small
- * `ensureItemCached` load rather than sharing state with ItemStatusPanel,
- * synchronized only through the shared cache + write-through.
+ * Same "extract, don't lift" independent-load pattern as
+ * screens/item/StatusBlock.tsx: its own small `ensureItemCached` load,
+ * synchronized with the other blocks only through the shared cache +
+ * write-through.
  *
  * Scope (docs/dev/history/technical-design-item-scope.md): a short free-text
  * description of what this Project/Area is about, tap-to-edit, never gated

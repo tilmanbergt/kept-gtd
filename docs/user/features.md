@@ -6,7 +6,7 @@
 
 On by default. When a project is done, [Close out…](close-out.md#where-to-start-it) walks you through a checklist, where its outcomes go and an archive PDF before the folder moves to the Archive.
 
-Off: a [Done](projects-and-areas.md#status) project shows **Archive…** on its page and **Archive** in the Weekly Review's step [Done awaiting review](review.md#the-steps), and moves to the Archive after one confirmation, without the checklist and the PDF. A close-out you started earlier stays in the project's file.
+Off: a [Done](projects-and-areas.md#status) project shows **Archive…** in its [⚙ Settings](projects-and-areas.md#settings) and **Archive** in the Weekly Review's step [Done awaiting review](review.md#the-steps), and moves to the Archive after one confirmation, without the checklist and the PDF. A close-out you started earlier stays in the project's file.
 
 ## Experimental
 

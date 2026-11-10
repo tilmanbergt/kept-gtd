@@ -1,5 +1,5 @@
 import {device} from '../../test-helpers/fakeDevice/device';
-import {expectShows, openApp, tap, tapTab} from '../../test-helpers/scenario/app';
+import {expectShows, openApp, openItemSettings, tap, tapTab} from '../../test-helpers/scenario/app';
 import {dataFile, fileText, PATHS, projectDir, projectFile, putFile} from '../../test-helpers/scenario/files';
 import {and, given, scenario, then, when} from '../../test-helpers/scenario/scenario';
 
@@ -15,6 +15,7 @@ scenario('Close out a finished project: PDF, archive folder and Archived status'
     await openApp();
     await tapTab('Projects');
     await tap(/^Website/);
+    await openItemSettings();
     await tap('🗄 Close out…');
     expectShows('Readiness · all clear');
     await tap('Next: Contents ›');

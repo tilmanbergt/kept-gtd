@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-248 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+251 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -1280,6 +1280,43 @@ Test: `__tests__/scenarios/smoke/profiles.test.tsx` · help: `profiles-and-demo.
 
 ## Projects and Areas
 
+### ⚙ Settings hold status, area, abbreviation and scope; the page keeps only working
+
+- **Given** project "Garden renovation" (#GR) and area "Home"
+- **When** I open its page
+- **Then** the page shows the abbreviation read only, and no status, scope or area controls
+- **When** I open ⚙ Settings
+- **Then** it shows the name, abbreviation, scope, status, Close out, Assign to Area and Show on this page
+- **When** I tap Assign to Area… and pick Home in the Files pane
+- **Then** the project file names the area and ⚙ shows it
+- **When** I tap Close
+- **Then** the page is back, with its todos
+
+Test: `__tests__/scenarios/calmerCurrent.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `projects-and-areas.md#settings`
+
+### Show on this page writes the show: line at once, and removes it when all is Auto again
+
+- **Given** project "Garden renovation" without a show: line
+- **When** I open ⚙ Settings and set Loops to Always
+- **Then** the project file has show: loops=always and Always is selected
+- **When** I set the left side to open on Files
+- **Then** the line carries both
+- **When** I set Loops back to Auto and the left side back to First with content
+- **Then** the show: line is gone from the file
+
+Test: `__tests__/scenarios/calmerCurrent.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `projects-and-areas.md#show-on-this-page`, `files-and-folders.md#inside-projecttxt`
+
+### A show: line written by hand is kept as written; a hidden part with content says so
+
+- **Given** a project file with "show: loops=nevr foo=bar threads=never" and one thread
+- **When** I open ⚙ Settings
+- **Then** the typo reads as Auto, and Threads says what Never hides
+- **When** I set the status to On Hold
+- **Then** the status changed and the show: line is kept as written
+- **And** the frontmatter is still one block
+
+Test: `__tests__/scenarios/calmerCurrent.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `files-and-folders.md#inside-projecttxt`, `projects-and-areas.md#show-on-this-page`
+
 ### A tap on a todo on the Current page shows its card without re-rendering the lists
 
 - **Given** project "Garden renovation" with three todos and a meeting
@@ -1345,7 +1382,7 @@ Test: `__tests__/scenarios/currentPagePerf.test.tsx` · design: `docs/dev/histor
 - **Then** only its checkbox and completion field changed; #now stays in the text
 - **When** I add the meeting "Kick-off" on 2026-10-20
 - **Then** the frontmatter and the goal spans are byte for byte as before
-- **When** I set it On Hold
+- **When** I set it On Hold on ⚙ Settings
 - **Then** the status line changed and the focus lines are still there, in place
 - **And** no error was logged
 
@@ -1690,7 +1727,7 @@ Test: `__tests__/scenarios/cleanBreak.test.tsx` · help: `settings.md`
 
 - **Given** Project close-out is switched off and project "Website" is Done
 - **When** I open Website on Current
-- **Then** its status panel offers Archive, not Close out
+- **Then** its ⚙ Settings offer Archive, not Close out
 - **When** I archive it and confirm
 - **Then** the folder is in the Archive and no close-out wizard opened
 
@@ -1715,7 +1752,7 @@ Test: `__tests__/scenarios/features.test.tsx` · help: `features.md#project-clos
 - **Then** it no longer shows the Experimental switches
 - **When** I switch Project close-out off on Features
 - **And** open the Done project Website
-- **Then** its page offers Archive at once
+- **Then** its ⚙ Settings offer Archive at once
 
 Test: `__tests__/scenarios/features.test.tsx` · help: `settings.md#features`
 
@@ -2467,7 +2504,7 @@ Test: `__tests__/scenarios/fileSafety.test.tsx` · design: `docs/dev/history/tec
 
 - **Given** project "Website" was saved in a Windows editor (CRLF line endings)
 - **When** I open its page
-- **Then** both todos (under Next and Plan) and the Scope show
+- **Then** both todos (under Next and Plan) and the Scope (on ⚙) show
 - **And** adding a todo keeps both and writes the file with plain line endings
 
 Test: `__tests__/scenarios/interruptions.test.tsx` · design: `docs/dev/history/technical-design-quality-hardening.md` · help: `files-and-folders.md#editing-by-hand`

@@ -1,5 +1,5 @@
 import {device} from '../../test-helpers/fakeDevice/device';
-import {closeApp, expectShows, openApp, openInbox, runIntegrityCheck, shows, tap, tapLabel, tapTab, type} from '../../test-helpers/scenario/app';
+import {closeApp, expectShows, openApp, openItemSettings, openInbox, runIntegrityCheck, shows, tap, tapLabel, tapTab, type} from '../../test-helpers/scenario/app';
 import {dataFile, INBOX_FILE, PATHS, projectDir, projectFile, putFile} from '../../test-helpers/scenario/files';
 import {and, freshDevice, given, scenario, then, when} from '../../test-helpers/scenario/scenario';
 
@@ -69,6 +69,7 @@ async function prepareCloseOut(): Promise<void> {
   await openApp();
   await tapTab('Projects');
   await tap(/^Website/);
+  await openItemSettings();
   await tap('🗄 Close out…');
   for (const label of ['Next: Contents ›', 'Next: Outcomes ›', 'Next: PDF ›', 'Create PDF', 'I checked the PDF - it looks right', 'Next: Archive ›']) await tap(label);
 }
@@ -86,6 +87,7 @@ scenario('A close-out stopped during "Archive now" can be finished, or is fully 
       await tapTab('Projects');
       if (shows(/^Website +#WEB/)) {
         await tap(/^Website +#WEB/);
+        await openItemSettings();
         await tap('🗄 Close out…');
         for (const label of ['Next: Contents ›', 'Next: Outcomes ›', 'Next: PDF ›', 'I checked the PDF - it looks right', 'Next: Archive ›']) if (shows(label)) await tap(label);
         await tap('Archive now');
@@ -108,9 +110,11 @@ scenario('A project file saved with Windows line endings shows its todos', {feat
     await tapTab('Projects');
     await tap(/^Website/);
   });
-  then('both todos (under Next and Plan) and the Scope show', async () => {
+  then('both todos (under Next and Plan) and the Scope (on ⚙) show', async () => {
     expectShows('Write copy');
+    await openItemSettings();
     expectShows('Relaunch');
+    await tap('Close');
     await tap(/^Plan \d+$/);
     expectShows('Fix footer');
   });

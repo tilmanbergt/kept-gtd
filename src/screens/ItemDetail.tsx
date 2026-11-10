@@ -22,49 +22,27 @@
  * `dataPanelLinkTarget` state.
  *
  * **Area-assignment arming** (technical-design-project-area-assignment.md
- * §4.1/§4.3) adds a second source of LinkTarget: ui/ItemStatusPanel.tsx's
- * "Assign to Area…" reports its own arming/cancel through
- * `onRequestAreaAssignment` into a *separate* `areaLinkTarget` state, rather
- * than sharing ProjectDataPanel's setter. They're merged as `linkTarget =
- * areaLinkTarget ?? dataPanelLinkTarget` (area-assignment wins whenever it's
- * active) before being threaded into FileBrowserPane. Two states instead of
- * one shared setter is a deliberate choice: ProjectDataPanel's own
- * onLinkTargetChange effect re-fires (with `null`) on any change to its
- * armTarget/editTarget/paths/etc. dependencies, including ones unrelated to
- * area-assignment - sharing one setter would risk that effect clobbering an
- * in-progress area-assignment arm out from under it. The accepted trade-off:
- * if a file-link edit/arm was already active in ProjectDataPanel when
- * area-assignment starts, canceling the area-assignment arm reveals
- * whatever ProjectDataPanel's own state still is (it was never told to
- * cancel) rather than restoring some prior "nothing armed" state - a rare
- * interaction, not worth building full bidirectional cancellation between
- * the two components for.
+ * §4.1/§4.3) adds a second source of LinkTarget: "Assign to Area…" on ⚙
+ * Settings (screens/item/StatusBlock.tsx) reports its arming/cancel through
+ * `onRequestAreaAssignment` into a *separate* `areaLinkTarget` state, and ⚙
+ * shows a Files pane with that target while it picks. Two states instead of
+ * one shared setter: ProjectDataPanel's own onLinkTargetChange effect
+ * re-fires (with `null`) on its own changes and would cancel the pick.
  *
  * `handleSetDefaultResourceFolder` (the Resources root's pin) is
  * deliberately NOT part of that edit/arm bubbling - it's its own small,
  * independent read-modify-write against this item's frontmatter (same
- * "extract, don't lift" / independent-load pattern ui/ItemStatusPanel.tsx
+ * "extract, don't lift" / independent-load pattern screens/item/StatusBlock.tsx
  * uses for Status+Archive), since pinning a subfolder has nothing to do
  * with which task/meeting is being edited.
  *
  * Right: ProjectDataPanel - the item's own Todos and Meetings, always
  * scoped to the project/area root.
- * Left pane, pinned to the very TOP: ui/ItemScopePanel.tsx - Scope and the
- * Given time line (docs/dev/history/technical-design-time-and-place.md §3.4).
- * It is its own component because it sits on the opposite side of Files from
- * Status/Archive.
  *
- * Left pane, pinned to the very bottom: ui/ItemStatusPanel.tsx - Status +
- * Archive + Assign to Area (docs/dev/history/technical-design-inbox-tab.md §4);
- * `onArchived` is sourced from there. `styles.filesArea` wraps the Files
- * title/error/FileBrowserPane in its own `flex: 1` box so this panel always
- * sits flush at the bottom of the left pane regardless of how few or many
- * files/folders are showing above it, rather than trailing wherever
- * FileBrowserPane's own (unpadded, page-length-dependent) content happens to
- * end. ui/ItemScopePanel.tsx above it, by contrast, is sized to its own
- * content (no `flex: 1`) - it's pinned to the top by document order alone,
- * not by absorbing leftover space the way `filesArea` does for the bottom
- * panel.
+ * **⚙ Settings** (screens/item/ItemSettings.tsx,
+ * docs/dev/history/technical-design-calmer-screens.md §3.8) replaces both
+ * panes while open: abbreviation, scope, status, Close out / Archive, Area and
+ * "Show on this page". The header shows the abbreviation read only.
  *
  * **File browser roots** (technical-design-project-area-assignment.md §4.4):
  * a Project always gets 'project'/'resources', plus a third 'area' root once
@@ -114,7 +92,6 @@ import {RetainedFocus} from '../storage/projectFile';
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
 import {ItemStatus} from '../domain/types';
-import {abbrevErrorMessage, ExistingAbbrev, validateAbbrev} from '../domain/abbrev';
 import EngageButton from '../ui/EngageButton';
 import HomeNotebookButton from '../ui/HomeNotebookButton';
 import {useHomeNotebooks} from '../ui/useHomeNotebooks';
@@ -122,18 +99,26 @@ import {useHomeNotebookActions} from '../ui/useHomeNotebookTap';
 import {useHomeNotebookRenameOffer} from '../ui/useHomeNotebookRenameOffer';
 import NotebookTab from './notebook/NotebookTab';
 import {ResolvedParaPaths, resolvePaths} from '../domain/settings';
-import {CachedItem, ensureItemCached, findCachedItem, frontMatterOf, getCachedData, updateItemFrontMatter} from '../storage/dataCache';
+import {
+  CachedItem,
+  ensureItemCached,
+  findCachedItem,
+  frontMatterOf,
+  updateItemFrontMatter,
+} from '../storage/dataCache';
 import {saveFrontMatter} from '../storage/projectFile';
 import {samePaths, useSettingsValue} from '../ui/useSettings';
 import {FolderEntry} from '../supernote/fileSystem';
 import {logError} from '../utils/log';
 import {useEinkRefreshOnLoad} from '../utils/screenRefresh';
-import ClipboardTextInput from '../ui/ClipboardTextInput';
 import {common} from '../ui/commonStyles';
 import {FONT, useThemeColors} from '../ui/theme';
-import FileBrowserPane, {FileBrowserExtraTab, FileBrowserRoot, LinkTarget} from '../ui/FileBrowserPane';
-import ItemScopePanel from '../ui/ItemScopePanel';
-import ItemStatusPanel from '../ui/ItemStatusPanel';
+import FileBrowserPane, {
+  FileBrowserExtraTab,
+  FileBrowserRoot,
+  LinkTarget,
+} from '../ui/FileBrowserPane';
+import ItemSettings from './item/ItemSettings';
 import ProjectDataPanel from './ProjectDataPanel';
 import ThreadsTab, {CounterpartSelection} from './thread/ThreadsTab';
 import ProjectsTab from './area/ProjectsTab';
@@ -141,29 +126,26 @@ import {useLoopLinkArm} from './area/useLoopLinkArm';
 import {Destination} from '../domain/destination';
 import {NextMeetingOffer} from '../storage/threadAggregate';
 import {MeetingSeed} from '../ui/quickAdd/useDraftRequests';
-import {useErrorStatus} from '../ui/status/StatusProvider';
-import MarkWrap from '../ui/status/StatusMark';
 import {usePerfRender} from '../utils/perf';
 import {useOnScreenShow} from '../ui/screenActivity';
 import {errorMessage} from '../utils/errorMessage';
 import KindBadge from '../ui/KindBadge';
 
-
 interface Props {
   kind: 'project' | 'area';
   name: string;
   path: string;
-  /** Called once ui/ItemStatusPanel.tsx's Archive action has actually moved this item's folder - App.tsx navigates away, since `path` then points at nothing under Projects/Areas. */
+  /** Called once ⚙ Settings' Archive action (screens/item/StatusBlock.tsx) has actually moved this item's folder - App.tsx navigates away, since `path` then points at nothing under Projects/Areas. */
   onArchived?: (kind: 'project' | 'area') => void;
   /** Threaded straight through to ProjectDataPanel's MeetingsSection (docs/dev/history/technical-design-google-calendar.md §9) - switches to Settings' Calendar sub-tab from the Google mini-tab's empty state. */
   onOpenCalendarSettings?: () => void;
   /** The Files pane's Browse (see the module doc comment's "browse" note) and an Area's Projects tab - opening a Project/Area there swaps the "Current" tab to that item, via the same App.tsx `openItem` the Projects/Areas tabs open one with. */
   onOpenItem?: (kind: 'project' | 'area', entry: FolderEntry) => void;
-  /** Projects: opens the close-out wizard from the status panel's "Close out…" (docs/dev/history/technical-design-project-close-out.md §6.2). */
+  /** Projects: opens the close-out wizard from ⚙ Settings' "Close out…" (docs/dev/history/technical-design-project-close-out.md §6.2). */
   onStartCloseOut?: (projectPath: string) => void;
 }
 
-/** Just the frontmatter fields handleSetDefaultResourceFolder needs to read-modify-write - see the module doc comment's "extract, don't lift" note. Mirrors ui/ItemStatusPanel.tsx's own StatusPanelState. `area` is read (never written) here - it's this screen's only source for the assigned-Area's own file-browser root (see the module doc comment's "File browser roots" note) and must be carried through unchanged on every save (saveFrontMatter/updateItemFrontMatter both default it to null when omitted). */
+/** Just the frontmatter fields handleSetDefaultResourceFolder needs to read-modify-write - see the module doc comment's "extract, don't lift" note. Mirrors screens/item/StatusBlock.tsx's own StatusPanelState. `area` is read (never written) here - it's this screen's only source for the assigned-Area's own file-browser root (see the module doc comment's "File browser roots" note) and must be carried through unchanged on every save (saveFrontMatter/updateItemFrontMatter both default it to null when omitted). */
 interface ResourceFolderState {
   rawContent: string;
   status: ItemStatus;
@@ -171,7 +153,7 @@ interface ResourceFolderState {
   frontMatterExtraLines: string[];
   defaultResourceFolder: string | null;
   area: string | null;
-  /** This item's short abbreviation (docs/dev/history/technical-design-project-area-abbreviations.md), or null - carried through unchanged on every write here, same reason `area`/`defaultResourceFolder` already are (see storage/projectFile.ts's saveFrontMatter doc comment), and the value the header's AbbrevPill below reads/edits directly. */
+  /** This item's short abbreviation (docs/dev/history/technical-design-project-area-abbreviations.md), or null - carried through unchanged on every write here, same reason `area`/`defaultResourceFolder` already are (see storage/projectFile.ts's saveFrontMatter doc comment), and the header shows it. */
   abbrev: string | null;
   /** "Show on this page" (domain/pageShow.ts) - carried through unchanged on every write here, like `abbrev`. */
   show: PageShow;
@@ -210,20 +192,28 @@ export default function ItemDetail({
   // The user's resolved folders (domain/settings.ts) - the 'resources' root's
   // rootPath below - from the settings snapshot (ui/useSettings.ts); a change of
   // another setting ("Hide done tasks") renders nothing here.
-  const paths: ResolvedParaPaths | null = useSettingsValue(resolvePaths, samePaths);
+  const paths: ResolvedParaPaths | null = useSettingsValue(
+    resolvePaths,
+    samePaths,
+  );
 
   // See the module doc comment's "handleSetDefaultResourceFolder" note.
   // A cached item is there in the first render (docs/dev/history/technical-design-perf-current-page.md §3.3);
   // the load below then keeps the same state, so it renders nothing again.
-  const [resourceFolderState, setResourceFolderState] = useState<ResourceFolderState | null>(() => {
-    const cached = findCachedItem(path);
-    return cached ? resourceFolderStateOf(cached) : null;
-  });
+  const [resourceFolderState, setResourceFolderState] =
+    useState<ResourceFolderState | null>(() => {
+      const cached = findCachedItem(path);
+      return cached ? resourceFolderStateOf(cached) : null;
+    });
   useEffect(() => {
     let cancelled = false;
     ensureItemCached(kind, name, path).then(item => {
       if (cancelled) return;
-      setResourceFolderState(prev => (prev && prev.rawContent === item.rawContent ? prev : resourceFolderStateOf(item)));
+      setResourceFolderState(prev =>
+        prev && prev.rawContent === item.rawContent
+          ? prev
+          : resourceFolderStateOf(item),
+      );
     });
     return () => {
       cancelled = true;
@@ -232,11 +222,18 @@ export default function ItemDetail({
 
   // Home notebook button in the header (docs/dev/history/technical-design-home-notebooks.md §3.3),
   // once the abbreviation is known ({abbr} in the notebook's name).
-  const homeItems = useMemo(() => [{path, name, abbrev: resourceFolderState?.abbrev ?? null}], [path, name, resourceFolderState?.abbrev]);
+  const homeItems = useMemo(
+    () => [{path, name, abbrev: resourceFolderState?.abbrev ?? null}],
+    [path, name, resourceFolderState?.abbrev],
+  );
   const homes = useHomeNotebooks(homeItems);
   const homeActions = useHomeNotebookActions('ItemDetail');
   const homeNotebook = resourceFolderState ? homes.of(homeItems[0]) : null;
-  useHomeNotebookRenameOffer('ItemDetail', path, !!resourceFolderState && homes.enabled);
+  useHomeNotebookRenameOffer(
+    'ItemDetail',
+    path,
+    !!resourceFolderState && homes.enabled,
+  );
 
   // Kept tab shown again (docs/dev/history/technical-design-keep-tabs-alive.md §5.3):
   // re-derive quietly if this item's file changed while hidden.
@@ -252,20 +249,34 @@ export default function ItemDetail({
   // has no loading flag of its own.
   useEinkRefreshOnLoad(resourceFolderState === null);
 
-  /** The Resources root's pin (ui/FileBrowserPane.tsx's onSetDefaultSubfolder) - writes the new pinned subfolder into this item's frontmatter, write-through into the shared cache, same as ui/ItemStatusPanel.tsx's changeStatus. */
+  /** The Resources root's pin (ui/FileBrowserPane.tsx's onSetDefaultSubfolder) - writes the new pinned subfolder into this item's frontmatter, write-through into the shared cache, same as screens/item/StatusBlock.tsx's changeStatus. */
   const handleSetDefaultResourceFolder = useCallback(
     async (subfolderRelativePath: string) => {
       if (!resourceFolderState) return;
       try {
         // Fresh from the cache, not this screen's own snapshot: another panel on this
-        // screen (ItemScopePanel/ItemStatusPanel) may have written the file since -
+        // screen (⚙ Settings) may have written the file since -
         // its rawContent/focus flags must not be overwritten with stale values.
         const current = findCachedItem(path) ?? resourceFolderState;
-        const fm = {...frontMatterOf(current), defaultResourceFolder: subfolderRelativePath};
-        const nextRaw = await saveFrontMatter(kind, path, current.rawContent, fm);
+        const fm = {
+          ...frontMatterOf(current),
+          defaultResourceFolder: subfolderRelativePath,
+        };
+        const nextRaw = await saveFrontMatter(
+          kind,
+          path,
+          current.rawContent,
+          fm,
+        );
         updateItemFrontMatter(path, nextRaw, fm);
         setResourceFolderState(prev =>
-          prev ? {...prev, rawContent: nextRaw, defaultResourceFolder: subfolderRelativePath} : prev,
+          prev
+            ? {
+                ...prev,
+                rawContent: nextRaw,
+                defaultResourceFolder: subfolderRelativePath,
+              }
+            : prev,
         );
       } catch (e) {
         const message = errorMessage(e);
@@ -276,46 +287,22 @@ export default function ItemDetail({
     [resourceFolderState, kind, path],
   );
 
-  /** Every OTHER Project/Area's abbreviation, from the already-warm cache - what AbbrevPill below validates a candidate against (domain/abbrev.ts's validateAbbrev, same uniqueness check storage/dataCache.ts's migrateMissingAbbrevs uses). A thunk rather than a value so AbbrevPill can snapshot it fresh each time editing starts, instead of a mount-time list going stale as other items change. */
-  const listOtherAbbrevs = useCallback((): ExistingAbbrev[] => {
-    const cache = getCachedData();
-    if (!cache) return [];
-    return cache.items
-      .filter(i => i.path !== path && i.abbrev !== null)
-      .map(i => ({value: i.abbrev as string, itemName: i.name}));
-  }, [path]);
-
-  /** Saves a new abbreviation - AbbrevPill's onSave, mirroring handleSetDefaultResourceFolder's own read-modify-write shape. Re-validates (defense in depth - AbbrevPill itself already disables Save while invalid) and throws a user-facing message on failure, which AbbrevPill's own save() catches and displays. */
-  const handleSaveAbbrev = useCallback(
-    async (text: string) => {
-      if (!resourceFolderState) return;
-      const trimmed = text.trim();
-      const validation = validateAbbrev(trimmed, listOtherAbbrevs());
-      if (!validation.valid) {
-        throw new Error(abbrevErrorMessage(validation));
-      }
-      // Fresh from the cache, not this screen's own snapshot: another panel on this
-      // screen (ItemScopePanel/ItemStatusPanel) may have written the file since -
-      // its rawContent/focus flags must not be overwritten with stale values.
-      const current = findCachedItem(path) ?? resourceFolderState;
-      const fm = {...frontMatterOf(current), abbrev: trimmed};
-      const nextRaw = await saveFrontMatter(kind, path, current.rawContent, fm);
-      updateItemFrontMatter(path, nextRaw, fm);
-      setResourceFolderState(prev => (prev ? {...prev, rawContent: nextRaw, abbrev: trimmed} : prev));
-    },
-    [resourceFolderState, kind, path, listOtherAbbrevs],
-  );
-
   // Reported up from ProjectDataPanel's Todos/Meetings (the one edit-or-arm
   // target for this whole screen, technical-design-linked-files.md §8), and
-  // separately from ui/ItemStatusPanel.tsx's "Assign to Area…" - merged
+  // separately from screens/item/StatusBlock.tsx's "Assign to Area…" - merged
   // below with area-assignment taking priority. See the module doc
   // comment's "Area-assignment arming" note for why these are two states
   // rather than one shared setter.
-  const [dataPanelLinkTarget, setDataPanelLinkTarget] = useState<LinkTarget | null>(null);
+  const [dataPanelLinkTarget, setDataPanelLinkTarget] =
+    useState<LinkTarget | null>(null);
   const [areaLinkTarget, setAreaLinkTarget] = useState<LinkTarget | null>(null);
-  const loopLink = useLoopLinkArm(path, paths, kind === 'project' ? resourceFolderState?.area ?? null : null);
-  const linkTarget = areaLinkTarget ?? loopLink.linkTarget ?? dataPanelLinkTarget;
+  const loopLink = useLoopLinkArm(
+    path,
+    paths,
+    kind === 'project' ? resourceFolderState?.area ?? null : null,
+  );
+  const linkTarget =
+    areaLinkTarget ?? loopLink.linkTarget ?? dataPanelLinkTarget;
 
   // Reported up from FileBrowserPane's own onActiveLocationChange (its doc
   // comment) - the Files pane's currently-displayed root/folder, for the
@@ -329,31 +316,72 @@ export default function ItemDetail({
   // It starts at the pane's first root, this item's own folder, so Quick Add has
   // its Note tab in the first render; the pane's report of the same place
   // changes nothing (docs/dev/history/technical-design-perf-current-page.md §3.3).
-  const [activeFilesLocation, setActiveFilesLocation] = useState<{rootKey: string; path: string} | null>(() => ({rootKey: 'project', path}));
+  const [activeFilesLocation, setActiveFilesLocation] = useState<{
+    rootKey: string;
+    path: string;
+  } | null>(() => ({rootKey: 'project', path}));
   const reportFilesLocation = useCallback(
     (rootKey: string, folderPath: string) =>
-      setActiveFilesLocation(prev => (prev?.rootKey === rootKey && prev.path === folderPath ? prev : {rootKey, path: folderPath})),
+      setActiveFilesLocation(prev =>
+        prev?.rootKey === rootKey && prev.path === folderPath
+          ? prev
+          : {rootKey, path: folderPath},
+      ),
     [],
   );
-  const noteFolderPath = activeFilesLocation?.rootKey === 'project' ? activeFilesLocation.path : null;
+  const noteFolderPath =
+    activeFilesLocation?.rootKey === 'project'
+      ? activeFilesLocation.path
+      : null;
 
   // The Area this Project supports, if any - null for Areas, and null for a
   // Project until resourceFolderState's own load lands (see the module doc
   // comment's "File browser roots" note).
-  const assignedArea = kind === 'project' ? resourceFolderState?.area ?? null : null;
+  const assignedArea =
+    kind === 'project' ? resourceFolderState?.area ?? null : null;
 
   // The Threads tab's counterpart filter and "+ next" seed (see the module doc comment).
-  const [counterpartFilter, setCounterpartFilter] = useState<CounterpartSelection | null>(null);
+  const [counterpartFilter, setCounterpartFilter] =
+    useState<CounterpartSelection | null>(null);
   const [meetingSeed, setMeetingSeed] = useState<MeetingSeed | null>(null);
-  const [seedDestination, setSeedDestination] = useState<Destination | null>(null);
+  const [seedDestination, setSeedDestination] = useState<Destination | null>(
+    null,
+  );
   useEffect(() => {
     setCounterpartFilter(null);
     setMeetingSeed(null);
     setSeedDestination(null);
   }, [path]);
+  // ⚙ Settings (screens/item/ItemSettings.tsx) in place of the two panes; leaving it ends an Area pick.
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  useEffect(() => {
+    setSettingsOpen(false);
+    setAreaLinkTarget(null);
+  }, [path]);
+  const openSettings = useCallback(() => setSettingsOpen(true), []);
+  const closeSettings = useCallback(() => {
+    setAreaLinkTarget(null);
+    setSettingsOpen(false);
+  }, []);
+  const syncFromSettings = useCallback((item: CachedItem) => {
+    setResourceFolderState(prev =>
+      prev && prev.rawContent === item.rawContent
+        ? prev
+        : resourceFolderStateOf(item),
+    );
+  }, []);
   const handleNextMeeting = useCallback((offer: NextMeetingOffer) => {
     setMeetingSeed({fields: offer.seed, nonce: Date.now()});
-    setSeedDestination(offer.item.kind === 'inbox' ? {type: 'inbox'} : {type: 'item', kind: offer.item.kind, name: offer.item.name, path: offer.item.path});
+    setSeedDestination(
+      offer.item.kind === 'inbox'
+        ? {type: 'inbox'}
+        : {
+            type: 'item',
+            kind: offer.item.kind,
+            name: offer.item.name,
+            path: offer.item.path,
+          },
+    );
   }, []);
   const clearSeed = useCallback(() => setSeedDestination(null), []);
 
@@ -361,21 +389,24 @@ export default function ItemDetail({
   // uses (technical-design-project-area-assignment.md §4.2,
   // docs/dev/history/technical-design-filing-unification.md §3.1) - shared here by Browse's own
   // `sources` below.
-  const activeOnly = (entry: FolderEntry) => findCachedItem(entry.path)?.status === 'active';
+  const activeOnly = (entry: FolderEntry) =>
+    findCachedItem(entry.path)?.status === 'active';
 
   // Refile-arming (storage/inboxFiling.ts's module doc comment):
   // ProjectDataPanel.tsx's own armTarget can arm for 'refile' as well as
   // 'link', both bubbled up through the same dataPanelLinkTarget/onPick
   // shape (its own onLinkTargetChange doc comment). `pickKind === 'folder'`
   // alone isn't enough to tell refile-arming apart from area-assignment's
-  // own folder pick (ui/ItemStatusPanel.tsx's "Assign to Area…", reported
+  // own folder pick (screens/item/StatusBlock.tsx's "Assign to Area…", reported
   // through the separate areaLinkTarget merged below) - both route
   // through Browse (`root: 'browse'`), so checking `dataPanelLinkTarget`
   // specifically (never populated by area-assignment's own, separate
   // areaLinkTarget state) is what actually tells them apart here.
   const isRefileArming =
-    dataPanelLinkTarget?.mode === 'arming' && dataPanelLinkTarget.pickKind === 'folder' && dataPanelLinkTarget.root === 'browse';
-  // Area-assignment-arming (ui/ItemStatusPanel.tsx's "Assign to Area…",
+    dataPanelLinkTarget?.mode === 'arming' &&
+    dataPanelLinkTarget.pickKind === 'folder' &&
+    dataPanelLinkTarget.root === 'browse';
+  // Area-assignment-arming (screens/item/StatusBlock.tsx's "Assign to Area…",
   // picked on Browse via `startAt: 'area'` - see ui/FileBrowserPane.tsx's
   // `startAt` doc comment). Same reasoning as isRefileArming above for
   // disabling every other root while it's active: a tap on e.g. Resources
@@ -407,7 +438,12 @@ export default function ItemDetail({
           {kind: 'area', path: paths.areas, label: 'Areas'},
         ],
         entryFilter: activeOnly,
-        onNavigateToItem: (entryKind, entryName, entryPath) => onOpenItem?.(entryKind, {name: entryName, path: entryPath, isFolder: true}),
+        onNavigateToItem: (entryKind, entryName, entryPath) =>
+          onOpenItem?.(entryKind, {
+            name: entryName,
+            path: entryPath,
+            isFolder: true,
+          }),
       }
     : null;
 
@@ -428,31 +464,57 @@ export default function ItemDetail({
   const fileBrowserRoots: FileBrowserRoot[] = paths
     ? kind === 'project'
       ? [
-          {key: 'project', label: 'Project Files', shortLabel: 'Project', rootPath: path, ...(browseRoot ? {alternate: browseRoot} : {})},
+          {
+            key: 'project',
+            label: 'Project Files',
+            shortLabel: 'Project',
+            rootPath: path,
+            ...(browseRoot ? {alternate: browseRoot} : {}),
+          },
           ...(assignedArea
-            ? [disableOthersWhileArming({key: 'area', label: 'Area Files', shortLabel: 'Area', rootPath: `${paths.areas}/${assignedArea}`})]
+            ? [
+                disableOthersWhileArming({
+                  key: 'area',
+                  label: 'Area Files',
+                  shortLabel: 'Area',
+                  rootPath: `${paths.areas}/${assignedArea}`,
+                }),
+              ]
             : []),
           disableOthersWhileArming({
             key: 'resources',
             label: 'Resources',
             rootPath: paths.resources,
-            defaultSubfolder: resourceFolderState?.defaultResourceFolder ?? null,
+            defaultSubfolder:
+              resourceFolderState?.defaultResourceFolder ?? null,
             onSetDefaultSubfolder: handleSetDefaultResourceFolder,
           }),
           deviceRoot,
         ]
       : [
-          disableOthersWhileArming({key: 'project', label: 'Area Files', shortLabel: 'Area', rootPath: path}),
+          disableOthersWhileArming({
+            key: 'project',
+            label: 'Area Files',
+            shortLabel: 'Area',
+            rootPath: path,
+          }),
           disableOthersWhileArming({
             key: 'resources',
             label: 'Resources',
             rootPath: paths.resources,
-            defaultSubfolder: resourceFolderState?.defaultResourceFolder ?? null,
+            defaultSubfolder:
+              resourceFolderState?.defaultResourceFolder ?? null,
             onSetDefaultSubfolder: handleSetDefaultResourceFolder,
           }),
           deviceRoot,
         ]
-    : [{key: 'project', label: kind === 'project' ? 'Project Files' : 'Area Files', rootPath: path}];
+    : [
+        {
+          key: 'project',
+          label: kind === 'project' ? 'Project Files' : 'Area Files',
+          rootPath: path,
+        },
+      ];
 
   // An Area's Projects' folders - the Projects tab's slot while arming (see the module doc comment).
   const projectFilesRoot: FileBrowserRoot | undefined =
@@ -512,13 +574,19 @@ export default function ItemDetail({
             key: 'notebook',
             label: 'Notebook',
             render: (viewportHeight: number | undefined) => (
-              <NotebookTab nb={homeNotebook} ownerKind={kind} actions={homeActions} viewportHeight={viewportHeight} textColor={textColor} borderColor={borderColor} />
+              <NotebookTab
+                nb={homeNotebook}
+                ownerKind={kind}
+                actions={homeActions}
+                viewportHeight={viewportHeight}
+                textColor={textColor}
+                borderColor={borderColor}
+              />
             ),
           },
         ]
       : []),
   ];
-
 
   return (
     <View style={common.container}>
@@ -526,206 +594,118 @@ export default function ItemDetail({
         <Text style={[styles.heading, {color: textColor}]} numberOfLines={1}>
           {name}
         </Text>
-        <KindBadge label={kind === 'project' ? 'Project' : 'Area'} textColor={textColor} />
-        {resourceFolderState && (
-          <AbbrevPill
-            abbrev={resourceFolderState.abbrev}
-            getExistingAbbrevs={listOtherAbbrevs}
-            onSave={handleSaveAbbrev}
+        <KindBadge
+          label={kind === 'project' ? 'Project' : 'Area'}
+          textColor={textColor}
+        />
+        {resourceFolderState?.abbrev ? (
+          <Text style={[styles.abbrevBadge, {color: textColor}]}>
+            #{resourceFolderState.abbrev}
+          </Text>
+        ) : null}
+        <View style={styles.engageButton}>
+          <HomeNotebookButton
+            nb={homeNotebook}
+            onPress={homeActions.tap}
+            variant="labeled"
             textColor={textColor}
             borderColor={borderColor}
-            placeholderColor={placeholderColor}
           />
-        )}
-        <View style={styles.engageButton}>
-          <HomeNotebookButton nb={homeNotebook} onPress={homeActions.tap} variant="labeled" textColor={textColor} borderColor={borderColor} />
-          <EngageButton owner={{kind: 'item', itemPath: path}} textColor={textColor} borderColor={borderColor} />
+          <EngageButton
+            owner={{kind: 'item', itemPath: path}}
+            textColor={textColor}
+            borderColor={borderColor}
+          />
+          {!settingsOpen && (
+            <Pressable
+              onPress={openSettings}
+              hitSlop={8}
+              style={[styles.settingsButton, {borderColor: textColor}]}>
+              <Text style={[styles.settingsButtonText, {color: textColor}]}>
+                ⚙ Settings
+              </Text>
+            </Pressable>
+          )}
         </View>
       </View>
 
-      <View style={styles.body}>
-        <View style={[styles.leftPane, {borderColor}]}>
-          <ItemScopePanel
-            kind={kind}
-            name={name}
-            path={path}
-            textColor={textColor}
-            borderColor={borderColor}
-            placeholderColor={placeholderColor}
-          />
-          <View style={[styles.divider, {backgroundColor: borderColor}]} />
-          <View style={styles.filesArea}>
-            {error && (
-              <Text style={[styles.error, {color: textColor}]}>⚠ {error}</Text>
-            )}
+      {settingsOpen ? (
+        <ItemSettings
+          kind={kind}
+          name={name}
+          path={path}
+          hasHomeNotebook={!!homeNotebook}
+          areaArming={isAreaAssignmentArming}
+          filesPane={
             <FileBrowserPane
               roots={fileBrowserRoots}
-              linkTarget={linkTarget}
+              linkTarget={areaLinkTarget}
               resetKey={path}
-              onActiveLocationChange={reportFilesLocation}
-              extraTabs={extraTabs}
               groupLabel="Files"
-              thisFileRows
               textColor={textColor}
               borderColor={borderColor}
             />
+          }
+          onRequestAreaAssignment={setAreaLinkTarget}
+          onOpenArea={
+            paths && onOpenItem
+              ? (areaName: string) =>
+                  onOpenItem('area', {
+                    name: areaName,
+                    path: `${paths.areas}/${areaName}`,
+                    isFolder: true,
+                  })
+              : undefined
+          }
+          onArchived={() => onArchived?.(kind)}
+          onStartCloseOut={onStartCloseOut}
+          onItemChanged={syncFromSettings}
+          onClose={closeSettings}
+          textColor={textColor}
+          borderColor={borderColor}
+          placeholderColor={placeholderColor}
+        />
+      ) : (
+        <View style={styles.body}>
+          <View style={[styles.leftPane, {borderColor}]}>
+            <View style={styles.filesArea}>
+              {error && (
+                <Text style={[styles.error, {color: textColor}]}>
+                  ⚠ {error}
+                </Text>
+              )}
+              <FileBrowserPane
+                roots={fileBrowserRoots}
+                linkTarget={linkTarget}
+                resetKey={path}
+                onActiveLocationChange={reportFilesLocation}
+                extraTabs={extraTabs}
+                groupLabel="Files"
+                thisFileRows
+                textColor={textColor}
+                borderColor={borderColor}
+              />
+            </View>
           </View>
-          <View style={[styles.divider, {backgroundColor: borderColor}]} />
-          <ItemStatusPanel
-            kind={kind}
-            name={name}
-            path={path}
-            onArchived={() => onArchived?.(kind)}
-            onStartCloseOut={onStartCloseOut}
-            onRequestAreaAssignment={setAreaLinkTarget}
-            onOpenArea={
-              paths && onOpenItem
-                ? (areaName: string) => onOpenItem?.('area', {name: areaName, path: `${paths?.areas}/${areaName}`, isFolder: true})
-                : undefined
-            }
-            textColor={textColor}
-            borderColor={borderColor}
-          />
-        </View>
 
-        <View style={styles.rightPane}>
-          <ProjectDataPanel
-            kind={kind}
-            name={name}
-            path={path}
-            onOpenCalendarSettings={onOpenCalendarSettings}
-            onLinkTargetChange={setDataPanelLinkTarget}
-            noteFolderPath={noteFolderPath}
-            counterpartFilter={counterpartFilter}
-            onClearCounterpartFilter={() => setCounterpartFilter(null)}
-            meetingSeed={meetingSeed}
-            seedDestination={seedDestination}
-            onSeedUsed={clearSeed}
-          />
+          <View style={styles.rightPane}>
+            <ProjectDataPanel
+              kind={kind}
+              name={name}
+              path={path}
+              onOpenCalendarSettings={onOpenCalendarSettings}
+              onLinkTargetChange={setDataPanelLinkTarget}
+              noteFolderPath={noteFolderPath}
+              counterpartFilter={counterpartFilter}
+              onClearCounterpartFilter={() => setCounterpartFilter(null)}
+              meetingSeed={meetingSeed}
+              seedDestination={seedDestination}
+              onSeedUsed={clearSeed}
+            />
+          </View>
         </View>
-      </View>
+      )}
     </View>
-  );
-}
-
-/**
- * Trailing `#tag` pill in the header (docs/dev/technical-design-project-area-
- * abbreviations.md) - always last, after the kind badge. Tap to edit inline,
- * mirroring ui/ItemScopePanel.tsx's ItemScopeRow tap-to-edit pattern (draft
- * state + Save/Cancel text buttons). Always rendered once
- * resourceFolderState has loaded - migrateMissingAbbrevs
- * (storage/dataCache.ts) guarantees every Project/Area already has a
- * non-null abbrev by the time this screen can show one, so there's no
- * "+ Add" empty state the way Scope/Goal have; a still-null value (should
- * not happen post-migration) just shows an empty "#" pill, itself tappable
- * to fill one in.
- *
- * Validates live against the same two rules the storage-side save enforces
- * (domain/abbrev.ts's validateAbbrev) - reserved flow-state word, or already
- * used by another Project/Area, case-insensitively. `getExistingAbbrevs` is
- * a thunk rather than a plain prop so the snapshot is taken fresh each time
- * editing starts (startEdit), rather than risking a mount-time list going
- * stale as other items change while this screen sits open.
- *
- * One conditional error line: no permanently-visible hint line, and no
- * separate dimmed reserved-word line. A single `common.error`-styled line
- * (undimmed - see ui/commonStyles.ts) appears only while the current draft
- * is actually invalid, covering the reserved-word and duplicate cases.
- */
-function AbbrevPill({
-  abbrev,
-  getExistingAbbrevs,
-  onSave,
-  textColor,
-  borderColor,
-  placeholderColor,
-}: {
-  abbrev: string | null;
-  getExistingAbbrevs: () => ExistingAbbrev[];
-  onSave: (text: string) => Promise<void>;
-  textColor: string;
-  borderColor: string;
-  placeholderColor: string;
-}): React.JSX.Element {
-  const [editing, setEditing] = useState(false);
-  const [draft, setDraft] = useState(abbrev ?? '');
-  const [existingAbbrevs, setExistingAbbrevs] = useState<ExistingAbbrev[]>([]);
-  const [saving, setSaving] = useState(false);
-  const [saveError, setSaveError] = useState<string | null>(null);
-
-  const startEdit = () => {
-    setSaveError(null);
-    setDraft(abbrev ?? '');
-    setExistingAbbrevs(getExistingAbbrevs());
-    setEditing(true);
-  };
-  const cancelEdit = () => {
-    setSaveError(null);
-    setDraft(abbrev ?? '');
-    setEditing(false);
-  };
-
-  const validation = validateAbbrev(draft, existingAbbrevs);
-  // Only reserved/duplicate ever show while editing an already-populated
-  // pill - 'empty' would require clearing a non-empty draft to nothing,
-  // which just disables Save below rather than showing text for it.
-  const liveError = !validation.valid ? abbrevErrorMessage(validation) : null;
-
-  const save = () => {
-    if (!validation.valid) return;
-    setSaveError(null);
-    setSaving(true);
-    onSave(draft)
-      .then(() => setEditing(false))
-      .catch(e => {
-        logError('AbbrevPill: save failed', errorMessage(e));
-        setSaveError(errorMessage(e));
-      })
-      .finally(() => setSaving(false));
-  };
-
-  // Validation (live) or save error -> central status slot, ⚠ on the field
-  // (docs/dev/history/technical-design-status-slot.md §7.4).
-  const shownError = editing ? liveError ?? saveError : null;
-  useErrorStatus('ItemDetail.abbrev', shownError, !liveError && saveError ? () => setSaveError(null) : undefined);
-
-  if (editing) {
-    return (
-      <View style={styles.abbrevEditWrap}>
-        <View style={styles.abbrevEditRow}>
-          <MarkWrap mark={shownError ? 'warning' : null} textColor={textColor}>
-          <View style={styles.abbrevInputBox}>
-            <ClipboardTextInput
-              value={draft}
-              onChangeText={setDraft}
-              onSubmitEditing={save}
-              placeholder="Abbrev"
-              placeholderColor={placeholderColor}
-              textColor={textColor}
-              borderColor={borderColor}
-              editable={!saving}
-            />
-          </View>
-          </MarkWrap>
-          <Pressable
-            onPress={save}
-            disabled={saving || !validation.valid}
-            hitSlop={8}
-            style={[styles.abbrevSaveButton, {borderColor}]}>
-            <Text style={[styles.abbrevSaveText, {color: textColor}]}>Save</Text>
-          </Pressable>
-          <Pressable onPress={cancelEdit} disabled={saving} hitSlop={8}>
-            <Text style={[styles.abbrevCancelText, {color: textColor}]}>Cancel</Text>
-          </Pressable>
-        </View>
-      </View>
-    );
-  }
-
-  return (
-    <Pressable onPress={startEdit} hitSlop={8} style={[styles.abbrevPill, {borderColor: textColor}]}>
-      <Text style={[styles.abbrevPillText, {color: textColor}]}>#{abbrev ?? ''}</Text>
-    </Pressable>
   );
 }
 
@@ -754,63 +734,32 @@ const styles = StyleSheet.create({
     paddingRight: 16,
     marginRight: 16,
   },
-  // Absorbs all the left pane's leftover vertical space so ItemStatusPanel,
-  // right after it in document order, always lands flush at the very bottom
-  // of the left pane - see the module doc comment's placement note.
+  // The Files pane takes the left pane's height.
   filesArea: {
     flex: 1,
   },
   rightPane: {
     flex: 1,
   },
-  divider: {
-    height: 1,
-    marginVertical: 16,
-  },
   error: {
     fontSize: FONT.small,
     marginBottom: 6,
   },
-  abbrevPill: {
+  abbrevBadge: {
+    fontSize: FONT.small,
+    fontWeight: '600',
+    marginLeft: 8,
+  },
+  settingsButton: {
     borderWidth: 1,
     borderRadius: 6,
     paddingVertical: 4,
-    paddingHorizontal: 8,
+    paddingHorizontal: 10,
     marginLeft: 8,
+    alignSelf: 'center',
   },
-  abbrevPillText: {
+  settingsButtonText: {
     fontSize: FONT.small,
     fontWeight: '600',
-  },
-  abbrevEditWrap: {
-    marginLeft: 8,
-  },
-  abbrevEditRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  // ClipboardTextInput's own inner wrap is `flex: 1` (styled for its usual
-  // full-width usage, e.g. ItemScopePanel.tsx's Scope row) - fine
-  // there, but meaningless inline in a row next to Save/Cancel with no
-  // width of its own to fill. This gives it one: short, since abbreviations
-  // are a handful of characters, not a sentence.
-  abbrevInputBox: {
-    width: 90,
-  },
-  abbrevSaveButton: {
-    borderWidth: 1,
-    borderRadius: 3,
-    paddingVertical: 3,
-    paddingHorizontal: 8,
-    marginLeft: 6,
-  },
-  abbrevSaveText: {
-    fontSize: FONT.small,
-  },
-  abbrevCancelText: {
-    fontSize: FONT.small,
-    opacity: 0.6,
-    marginLeft: 8,
-    paddingHorizontal: 4,
   },
 });

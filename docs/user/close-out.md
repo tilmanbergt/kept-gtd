@@ -4,10 +4,10 @@ When a project is finished, Kept GTD helps you end it cleanly: nothing left open
 
 ## Where to start it
 
-- On the project's [Current](projects-and-areas.md#the-current-tab) tab, tap **Close out…** in the [status section](projects-and-areas.md#status).
+- On the project's [Current](projects-and-areas.md#the-current-tab) tab, tap [⚙ Settings](projects-and-areas.md#settings), then **Close out…** in the status row.
 - In the Weekly Review, the step [Done awaiting review](review.md#the-steps) lists all projects marked Done. Each has **Close out…** and [Quick archive…](close-out.md#quick-archive).
 
-Close-out can be switched off in [Settings → Features](settings.md#features) ([Project close-out](features.md#project-close-out)); then a Done project offers **Archive…** on its page and **Archive** in the Weekly Review, and is archived directly after one confirmation.
+Close-out can be switched off in [Settings → Features](settings.md#features) ([Project close-out](features.md#project-close-out)); then a Done project offers **Archive…** in its [⚙ Settings](projects-and-areas.md#settings) and **Archive** in the Weekly Review, and is archived directly after one confirmation.
 
 You can leave the close-out at any time. Every decision is saved in the project's file (in a `## Close-out` section, see [Inside project.txt](files-and-folders.md#inside-projecttxt)), so next time it continues where you stopped.
 
@@ -36,6 +36,6 @@ A project without an area goes directly into `4 Archive/<year>/`. The PDF is mea
 
 ## Areas
 
-Areas have no close-out. **Archive…** on an area's [Current](projects-and-areas.md#the-current-tab) tab (or **Archive** in the [Review](review.md#the-steps)) first shows where the folder goes, then moves it to `4 Archive/<year>/`. Open [lasso marks](lasso.md#marking-for-later) of the area move to the [Inbox](daily.md#the-inbox) first. An area that still has active or on-hold [projects](projects-and-areas.md#projects-of-an-area) can't be archived.
+Areas have no close-out. **Archive…** in an area's [⚙ Settings](projects-and-areas.md#settings) (or **Archive** in the [Review](review.md#the-steps)) first shows where the folder goes, then moves it to `4 Archive/<year>/`. Open [lasso marks](lasso.md#marking-for-later) of the area move to the [Inbox](daily.md#the-inbox) first. An area that still has active or on-hold [projects](projects-and-areas.md#projects-of-an-area) can't be archived.
 
 If that area folder already exists in the Archive (for example because done projects of the area were archived before), the area's contents are added to it. The area's old folder is then empty; the confirmation names it and says it will be deleted, and the Supernote asks you once to allow deleting. If you say no, the empty folder simply stays and Kept tells you so.

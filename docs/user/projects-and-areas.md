@@ -14,12 +14,32 @@ You can also simply create a folder yourself - in the Supernote's file manager o
 
 Every row on the Projects and Areas tabs ends with the [notebook icon](projects-and-areas.md#the-notebook-icon) of its [home notebook](projects-and-areas.md#home-notebooks). Tapping a project or area opens it on the **Current** tab:
 
-- **Header**: name, kind and the [abbreviation](projects-and-areas.md#abbreviations) (tap to change it); [Notebook](projects-and-areas.md#the-notebook-icon) opens its home notebook, or creates it; [Engage ›](engage.md#opening-engage) opens [Engage](engage.md) for this project or area
-- **Scope**: one to three sentences about what this project or area is about, right under the name (**+ Add a scope** while there is none). Tap to edit.
-- [Status](projects-and-areas.md#status): Active, On Hold, Done (projects only) - and, in the same row, [Close out…](close-out.md#where-to-start-it) or [Archive…](close-out.md#areas)
+- **Header**: name, kind and the [abbreviation](projects-and-areas.md#abbreviations); [Notebook](projects-and-areas.md#the-notebook-icon) opens its home notebook, or creates it; [Engage ›](engage.md#opening-engage) opens [Engage](engage.md) for this project or area; [⚙ Settings](projects-and-areas.md#settings) holds what you set up once: abbreviation, scope, status, area and what the page shows
 - [Files pane](projects-and-areas.md#files-and-linked-files): up to four tabs. On a project: [Threads](projects-and-areas.md#threads) (open when the page opens), [Loops](loops.md#where-loops-show), [Notebook](projects-and-areas.md#the-notebook-tab) and **Files**. On an area: **Threads**, [Projects](projects-and-areas.md#projects-of-an-area) (its projects at a glance), **Notebook** and **Files**. **Notebook** shows the home notebook with its years and contents; it is there while the [Default](note-setups.md#the-default) note setup uses one notebook. Inside **Files** a second row picks the place: **Project**, **Area** (once one is assigned), **Resources** and [Device](files-and-folders.md#files-outside-note) on a project; **Area**, **Resources** and **Device** on an area. **Device** shows the Supernote's folders next to `Note`, such as `Document`. **Files** opens on the page's own folder.
 - **Todos** and **Meetings**, paged, with [Quick Add](quick-add.md) above them. The todos sit under count tabs by [flow state](tags.md#flow-tags-for-todos): **Next**, **Waiting**, **Plan** (no flow state: planned, not yet next), **Someday** (with Maybe) and **Done** (finished in the last 14 days), each with its number; a tab with nothing in it is left out, except **Next**. The page opens on **Next**, or on the first tab with todos while Next is empty and you haven't chosen a tab yet. A todo you tick stays in its tab, struck through, until you change the tab or leave the page ([Done](daily.md#done)). On a short screen (a turned device, a Nomad) Todos are the first tab of **Todos | Schedule | Google** instead of a list above the schedule. Tapping a todo or meeting shows its card in Quick Add's place ([The card](quick-add.md#the-card-one-tap-selects), [The meeting card](meetings.md#the-meeting-row-and-its-card))
 - **◇ Agreements 2 ›** at the end of the todos, when the project or area has agreements of its own (untagged, or with no thread or loop tag). Tap it to list them in the same column; **‹ Todos** goes back. Quick Add's [Agreement](quick-add.md#adding-an-agreement) tab adds one here, see [Agreements](agreements.md#where-agreements-show)
+
+## Settings
+
+**⚙ Settings** in the page's header takes the place of the page until you tap **Close**. On the left:
+
+- **Name**: to rename a project or area, rename its folder ([When you rename a project or area](projects-and-areas.md#when-you-rename-a-project-or-area)).
+- **Abbreviation**: tap it to change it ([Abbreviations](projects-and-areas.md#abbreviations)).
+- **Scope**: one to three sentences about what this project or area is about (**+ Add a scope** while there is none). Tap to edit.
+- [Status](projects-and-areas.md#status): Active, On Hold, Done (projects only) - and, in the same row, [Close out…](close-out.md#where-to-start-it) or [Archive…](close-out.md#areas).
+- On a project, [Assign to Area…](projects-and-areas.md#assigning-a-project-to-an-area) or **Area: name ✕**.
+
+On the right: [Show on this page](projects-and-areas.md#show-on-this-page).
+
+### Show on this page
+
+One row per part of the page - **Threads**, **Loops**, **Agreements**, **Schedule**, **Notebook** and, on an area, **Projects** - each **Auto**, **Always** or **Never**:
+
+- **Auto** (the default): shown when there is something - threads, active loops, active agreements, meetings, a home notebook, assigned projects.
+- **Always**: shown even when empty.
+- **Never**: hidden. When a hidden part has something, its row says so, for example **Never · 2 loops**, so nothing disappears silently.
+
+**Left side opens on** picks where the left side opens: **First with content**, **Notebook**, **Files** or **Threads**. Todos and Files always show. Each tap is saved at once in the project's or area's file as a `show:` line ([Inside project.txt](files-and-folders.md#inside-projecttxt)); with everything back on Auto the line is removed.
 
 ## Status
 
@@ -32,13 +52,13 @@ Putting an area on hold also puts its active projects on hold.
 
 ## Assigning a project to an area
 
-A project can support one area. Tap **Assign to Area…** in the status section, then tap the area in the [Files pane](projects-and-areas.md#files-and-linked-files) (**Files** opens with **Browse** in place of **Project**, showing the areas, while you pick). The area's [Projects](projects-and-areas.md#projects-of-an-area) tab then lists the project. The project's files then also offer the area's folder. An area with active or on-hold projects can't be [archived](close-out.md#areas).
+A project can support one area. Tap **Assign to Area…** in [⚙ Settings](projects-and-areas.md#settings), then tap the area in the [Files pane](projects-and-areas.md#files-and-linked-files) (**Files** opens with **Browse** in place of **Project**, showing the areas, while you pick). The area's [Projects](projects-and-areas.md#projects-of-an-area) tab then lists the project. The project's files then also offer the area's folder. An area with active or on-hold projects can't be [archived](close-out.md#areas).
 
 Once assigned, the button reads **Area: name ✕**. Tap the name to open the area; tap **✕** to remove the assignment. To move the project to another area, tap **✕** and then **Assign to Area…** again.
 
 ## Abbreviations
 
-Every project and area gets a short abbreviation, suggested from its name (for example `GR`). You can change it; it must be unique. The Projects and Areas tabs show it after each name (`Garden renovation #GR`). Use it as a tag to [file items directly](quick-add.md#filing-directly-with-an-abbreviation).
+Every project and area gets a short abbreviation, suggested from its name (for example `GR`). You can change it in [⚙ Settings](projects-and-areas.md#settings); it must be unique. The Projects and Areas tabs show it after each name (`Garden renovation #GR`). Use it as a tag to [file items directly](quick-add.md#filing-directly-with-an-abbreviation).
 
 ## Files and linked files
 

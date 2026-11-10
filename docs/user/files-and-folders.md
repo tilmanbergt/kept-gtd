@@ -52,7 +52,7 @@ Turn the back garden into a vegetable garden before winter.
 - 2026-10-15 09:00-11:00 Plan the beds #focusblock
 ```
 
-- In the header, an optional `show:` line holds what you chose under [Show on this page](projects-and-areas.md#the-current-tab), for example `show: loops=always schedule=never open=notebook`. Kept writes it only while something differs from the default and removes it when everything is back to Auto. A part it doesn't know, or a typo such as `loops=nevr`, stays as you wrote it (a typo counts as Auto).
+- In the header, an optional `show:` line holds what you chose under [Show on this page](projects-and-areas.md#show-on-this-page), for example `show: loops=always schedule=never open=notebook`. Kept writes it only while something differs from the default and removes it when everything is back to Auto. A part it doesn't know, or a typo such as `loops=nevr`, stays as you wrote it (a typo counts as Auto).
 - `- [ ]` is an open todo, `- [x]` a done one, `- [-]` a cancelled one.
 - A meeting line is date, then time (`10:00`, `10:00-11:00`) or length (`1d`, `2d`), then the title.
 - On screen, dates are shown as day and month (`4.10.`, with the year when it isn't this year) and times in 24 hours (`9:30`); in the files they stay `2026-10-04` and `09:30`.

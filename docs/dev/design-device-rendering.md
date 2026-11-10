@@ -222,8 +222,8 @@ See §3. Other single-line rows:
 |---|---|---|---|
 | `PagedSection` header line | `ui/PagedSection.tsx` | **~31** | `paddingVertical 4 × 2` + small line ~18 + border 1 + `marginBottom 4` (`SECTION_HEADER_ROW_PX` in `screens/ItemsList.tsx`). The arrow buttons (medium text + `paddingVertical 2 × 2` ≈ 26) are taller than the header text, so a header with arrows can be a few dp taller (estimate). Self-measuring lists absorb this. |
 | Mini-tab strip | `ui/MiniTabs.tsx` | **~45** | Tab `paddingVertical 6 × 2` + medium line ~22 + underline 2, + row border 1 + `marginBottom 8`. |
-| Status pill (Active/On Hold) | `ui/ItemStatusPanel.tsx` | **~36** | `paddingVertical 8 × 2` + small line ~18 + border 2 (plus `marginBottom 8` below). |
-| Archive / area pill | `ui/ItemStatusPanel.tsx` | **~36** | Same as the status pill. |
+| Status pill (Active/On Hold) | `screens/item/StatusBlock.tsx` | **~36** | `paddingVertical 8 × 2` + small line ~18 + border 2 (plus `marginBottom 8` below). |
+| Archive / area pill | `screens/item/StatusBlock.tsx` | **~36** | Same as the status pill. |
 | Flow/tag chip | `ui/FlowStateChips.tsx`, `ui/TagChips.tsx` | **~32** | `paddingVertical 6 × 2` + small line ~18 + border 2. Matches QuickAdd's row 3 `minHeight: 32`. |
 | Pill button | `ui/PillButton.tsx` | **~30** / **44** | Normal: `paddingVertical 5 × 2` + small line ~18 + border 2. Large: `minHeight 44`. |
 | Text input (`ClipboardTextInput`) | `ui/ClipboardTextInput.tsx` | **~33** | `paddingVertical 5 × 2` + medium line ~21 + border 2 (as budgeted in `screens/ItemsList.tsx`'s `CREATE_ROW_PX`). |

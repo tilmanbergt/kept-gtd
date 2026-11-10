@@ -100,3 +100,28 @@ export function visibleParts(show: PageShow, presence: ShowPresence): Record<Sho
   }
   return out;
 }
+
+/** How much each part has (the same sources as ShowPresence). */
+export type ShowCounts = Record<ShowPart, number>;
+
+export function presenceOf(counts: ShowCounts): ShowPresence {
+  const out = {} as ShowPresence;
+  for (const part of SHOW_PARTS) out[part] = counts[part] > 0;
+  return out;
+}
+
+const COUNT_NOUN: Record<ShowPart, [string, string]> = {
+  threads: ['thread', 'threads'],
+  loops: ['loop', 'loops'],
+  agreements: ['agreement', 'agreements'],
+  schedule: ['meeting', 'meetings'],
+  notebook: ['notebook', 'notebooks'],
+  projects: ['project', 'projects'],
+};
+
+/** "Never · 2 loops" for a part set to Never that has content, so nothing is hidden silently; null otherwise. */
+export function hiddenHint(show: PageShow, part: ShowPart, count: number): string | null {
+  if (showValue(show, part) !== 'never' || count <= 0) return null;
+  const [one, many] = COUNT_NOUN[part];
+  return `Never · ${count} ${count === 1 ? one : many}`;
+}

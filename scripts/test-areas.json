@@ -219,7 +219,8 @@
         "src/screens/item/**",
         "src/screens/projectData/**",
         "src/domain/pageShow.ts",
-        "src/ui/{ItemStatusPanel,ItemScopePanel,ItemContextBlock,ItemContextRows}.tsx",
+        "src/storage/pageShowCounts.ts",
+        "src/ui/{ItemScopePanel,ItemContextBlock,ItemContextRows}.tsx",
         "src/ui/{useStatusChoice,useStatusConfirm}.ts",
         "src/storage/{areaAssignment,statusControl,projectGlance}.ts"
       ]

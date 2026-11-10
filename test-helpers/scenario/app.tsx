@@ -214,6 +214,11 @@ export async function openInbox(): Promise<void> {
   await tap(/^Inbox \d+$/);
 }
 
+/** Opens ⚙ Settings of the Project or Area shown on Current (docs/dev/history/technical-design-calmer-screens.md §3.8). */
+export async function openItemSettings(): Promise<void> {
+  await tap('⚙ Settings');
+}
+
 /** Taps a tab in the tab bar (drawn first on screen; a tab may carry a badge, like "Review ●"). */
 export async function tapTab(label: string): Promise<void> {
   await tap(new RegExp(`^${label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`));

@@ -120,7 +120,7 @@ scenario('Switching the count tab on an Area page changes the Todos list and not
     expect(texts()).toContain('☑');
     const counts = renderCounts();
     expect(counts.TodosSection).toBeGreaterThan(0);
-    for (const name of ['QuickAddWidget', 'ItemDetail', 'FileBrowserPane', 'ThreadsTab', 'ItemScopePanel', 'ItemStatusPanel']) expect([name, counts[name] ?? 0]).toEqual([name, 0]);
+    for (const name of ['QuickAddWidget', 'ItemDetail', 'FileBrowserPane', 'ThreadsTab']) expect([name, counts[name] ?? 0]).toEqual([name, 0]);
   });
   and('after opening Zen and coming back, the Done tab is still the one shown', async () => {
     await tapTab('Areas');
@@ -141,4 +141,4 @@ scenario('Switching the count tab on an Area page changes the Todos list and not
  */
 const LIMITS = {quickAdd: 3, itemDetail: 1, projectDataPanel: 1, settingsReads: 0};
 /** Once per open since P3; FileBrowserPane and the Threads tab inside it since P6 (no hidden listing). */
-const ONCE = ['ItemStatusPanel', 'TodosSection', 'MeetingsSection', 'MarksCard', 'FileBrowserPane', 'ThreadsTab'];
+const ONCE = ['TodosSection', 'MeetingsSection', 'MarksCard', 'FileBrowserPane', 'ThreadsTab'];
