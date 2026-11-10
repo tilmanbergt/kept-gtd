@@ -109,6 +109,7 @@
  * remount this screen, which loads the item again; FileBrowserPane scans its
  * open folder itself whenever it (re)mounts or drills.
  */
+import {PageShow} from '../domain/pageShow';
 import {RetainedFocus} from '../storage/projectFile';
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
@@ -172,6 +173,8 @@ interface ResourceFolderState {
   area: string | null;
   /** This item's short abbreviation (docs/dev/history/technical-design-project-area-abbreviations.md), or null - carried through unchanged on every write here, same reason `area`/`defaultResourceFolder` already are (see storage/projectFile.ts's saveFrontMatter doc comment), and the value the header's AbbrevPill below reads/edits directly. */
   abbrev: string | null;
+  /** "Show on this page" (domain/pageShow.ts) - carried through unchanged on every write here, like `abbrev`. */
+  show: PageShow;
 }
 
 /** The frontmatter fields this screen keeps of `item` (all of them follow from its text, `rawContent`). */
@@ -184,6 +187,7 @@ function resourceFolderStateOf(item: CachedItem): ResourceFolderState {
     defaultResourceFolder: item.defaultResourceFolder,
     area: item.area,
     abbrev: item.abbrev,
+    show: item.show,
   };
 }
 

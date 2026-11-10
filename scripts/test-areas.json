@@ -210,13 +210,15 @@
       "name": "Projects and Areas, status and the Current page",
       "help": ["projects-and-areas.md"],
       "tests": [
-        "__tests__/**/*{currentPage,areaProjects,itemsList,itemDetail,projectGlance,frontMatterStatus}*",
+        "__tests__/**/*{currentPage,areaProjects,itemsList,itemDetail,projectGlance,frontMatterStatus,pageShow,calmerCurrent}*",
         "__tests__/scenarios/smoke/areaPage*"
       ],
       "sources": [
         "src/screens/{ItemsList,ItemDetail,ProjectDataPanel}.tsx",
         "src/screens/area/**",
+        "src/screens/item/**",
         "src/screens/projectData/**",
+        "src/domain/pageShow.ts",
         "src/ui/{ItemStatusPanel,ItemScopePanel,ItemContextBlock,ItemContextRows}.tsx",
         "src/ui/{useStatusChoice,useStatusConfirm}.ts",
         "src/storage/{areaAssignment,statusControl,projectGlance}.ts"

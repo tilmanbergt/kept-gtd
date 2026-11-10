@@ -77,6 +77,9 @@ or your project/area files are stored.
   it.
 
 ### Upgrade notes
+- Projects and areas can carry a `show:` line in their header (what you choose under Show on this
+  page). Kept writes it only when something differs from the default; older versions keep it
+  untouched.
 - **The Inbox now lives on Daily**: tap **Inbox** over Daily's todos. Every link that opened the Inbox
   tab opens it there. `Inbox.txt` stays where it is and as it is.
 - The project page's and the Inbox tab's "hide done" choices are no longer used. They stay in your

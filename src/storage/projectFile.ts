@@ -10,6 +10,7 @@
  * first: an edit made outside gtdpara since `rawContent` was read is kept
  * when it touched other parts, and stops the save when it touched the same.
  */
+import {PageShow} from '../domain/pageShow';
 import {
   DATA_FILE_HEADINGS,
   FrontMatterFields,
@@ -98,6 +99,8 @@ export interface ProjectFileState {
   area: string | null;
   /** This item's short abbreviation (docs/dev/history/technical-design-project-area-abbreviations.md), or null if never set - Projects/Areas only. */
   abbrev: string | null;
+  /** "Show on this page" (domain/pageShow.ts), from the `show:` line. */
+  show: PageShow;
   frontMatterExtraLines: string[];
 }
 
@@ -136,7 +139,7 @@ export function parseProjectFileContent(rawContent: string): ProjectFileState {
   const {loops, extraLines: loopsExtraLines} = parseLoopsSpan(rawContent);
   const {agreements, extraLines: agreementsExtraLines} = parseAgreementsSpan(rawContent);
   const frontMatter = parseFrontMatter(rawContent);
-  const {status, defaultResourceFolder, area, abbrev, extraLines: frontMatterExtraLines} = frontMatter;
+  const {status, defaultResourceFolder, area, abbrev, show, extraLines: frontMatterExtraLines} = frontMatter;
   return {
     rawContent,
     tasks,
@@ -157,6 +160,7 @@ export function parseProjectFileContent(rawContent: string): ProjectFileState {
     defaultResourceFolder,
     area,
     abbrev,
+    show,
     frontMatterExtraLines,
   };
 }

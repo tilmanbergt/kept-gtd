@@ -10,6 +10,7 @@
  * span, or the frontmatter block) - everything else passes through
  * unchanged.
  */
+import {DEFAULT_PAGE_SHOW, PageShow, parsePageShow, serializePageShow} from './pageShow';
 import {deriveFlowState, deriveWaitingOn, isContextTag} from './flowState';
 import {MARKS_HEADING, parseMarkLines, serializeMarkLines} from './marks';
 import {appendTaskFields, splitTrailingFields} from './taskLine';
@@ -504,6 +505,8 @@ export interface FrontMatterFields {
   area: string | null;
   /** From an `abbrev:` line (docs/dev/history/technical-design-project-area-abbreviations.md) - a short, user-editable, case-insensitive-unique tag for this Project/Area (e.g. "AT"), or null if never set. Casing is preserved exactly as saved - uniqueness/reserved-word checks (domain/abbrev.ts) are case-insensitive, but this parser doesn't normalize the stored value itself. */
   abbrev: string | null;
+  /** From a `show:` line (docs/dev/history/technical-design-calmer-screens.md §3.8, domain/pageShow.ts) - "Show on this page"; all defaults when absent. Written only while it differs from the default; its tokens kept as written. */
+  show: PageShow;
   /** Every other frontmatter line verbatim (kind, sortOrder, anything hand-added), in original order - preserved on save. Same reordering caveat as Task/Meeting extraLines: an unrecognized line survives, but always ends up before the lines this parser does recognize, regardless of where it originally sat. */
   extraLines: string[];
 }
@@ -518,6 +521,7 @@ const MONTHLY_FOCUS_LINE_RE = /^monthlyFocus:\s*(.*)$/;
 const DEFAULT_RESOURCE_FOLDER_LINE_RE = /^defaultResourceFolder:\s*(.*)$/;
 const AREA_LINE_RE = /^area:\s*(.*)$/;
 const ABBREV_LINE_RE = /^abbrev:\s*(.*)$/;
+const SHOW_LINE_RE = /^show:\s*(.*)$/;
 const KNOWN_STATUSES: ItemStatus[] = ['active', 'on-hold', 'done', 'archived'];
 
 /** Parses the frontmatter block's `status`/`dailyFocus`/`weeklyFocus`/`monthlyFocus`/`defaultResourceFolder`/`area`/`abbrev` fields - see storage/dataCache.ts's CachedItem for where these end up (flat fields, not nested under domain/types.ts's FrontMatter - see that type's doc comment). */
@@ -530,6 +534,7 @@ export function parseFrontMatter(content: string): FrontMatterFields {
   let defaultResourceFolder: string | null = null;
   let area: string | null = null;
   let abbrev: string | null = null;
+  let show: PageShow = DEFAULT_PAGE_SHOW;
   const extraLines: string[] = [];
   for (const line of lines) {
     const trimmed = line.trim();
@@ -572,9 +577,14 @@ export function parseFrontMatter(content: string): FrontMatterFields {
       abbrev = value.length > 0 ? value : null;
       continue;
     }
+    const showMatch = SHOW_LINE_RE.exec(trimmed);
+    if (showMatch) {
+      show = parsePageShow(showMatch[1]);
+      continue;
+    }
     extraLines.push(line);
   }
-  return {status, dailyFocus, weeklyFocus, monthlyFocus, defaultResourceFolder, area, abbrev, extraLines};
+  return {status, dailyFocus, weeklyFocus, monthlyFocus, defaultResourceFolder, area, abbrev, show, extraLines};
 }
 
 /**
@@ -585,7 +595,7 @@ export function parseFrontMatter(content: string): FrontMatterFields {
  * block. No-op (same as setFrontMatterSpan) if `content` has no well-formed
  * frontmatter block yet - callers should run `ensureSkeleton` first, same
  * as writeTasksIntoContent/writeMeetingsIntoContent do.
- * `defaultResourceFolder`/`area`/`abbrev` are omitted when null.
+ * `defaultResourceFolder`/`area`/`abbrev` are omitted when null, `show` while it is all defaults.
  */
 export function writeFrontMatterIntoContent(content: string, fm: FrontMatterFields): string {
   const lines = [...fm.extraLines, `status: ${fm.status}`];
@@ -595,6 +605,8 @@ export function writeFrontMatterIntoContent(content: string, fm: FrontMatterFiel
   if (fm.defaultResourceFolder) lines.push(`defaultResourceFolder: ${fm.defaultResourceFolder}`);
   if (fm.area) lines.push(`area: ${fm.area}`);
   if (fm.abbrev) lines.push(`abbrev: ${fm.abbrev}`);
+  const show = serializePageShow(fm.show);
+  if (show) lines.push(`show: ${show}`);
   return setFrontMatterSpan(content, lines);
 }
 
