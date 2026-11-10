@@ -96,7 +96,7 @@ scenario('Upgrade: 0.22 starts on a 0.21 space without writing a file or a setti
   });
   then('Daily shows every next todo - Garage\'s too - and "Write copy #now" as "Write copy #next"', async () => {
     await tapTab('Daily');
-    expect(textsBetween('Next todos')).toEqual(expect.arrayContaining(['Sort tools  #next', 'Write copy  #next', 'Draft homepage  #next']));
+    expect(textsBetween('Next todos')).toEqual(expect.arrayContaining(['Sort tools', 'Write copy', 'Draft homepage']));
   });
   and('no file changed', () => {
     expect(device().fs.tree(PATHS.projects)).toEqual(before);

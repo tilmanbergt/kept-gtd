@@ -12,6 +12,12 @@
  *   already names the flow state, so the label leaves it out. A waiting
  *   name still shows - the heading doesn't say who.
  *
+ * - 'quiet' (Daily, Current; docs/dev/history/technical-design-calmer-screens.md
+ *   §3.4): no labels in the title; the title keeps its words and free tags,
+ *   only `#next`/`#now`, the due field and the `#wf…` tag leave it, and
+ *   `quietMeta` says the one thing that matters on the right ("due 5.11.",
+ *   "w/f Marco").
+ *
  * `displayTaskText` removes exactly the tags a label (or the heading) already
  * shows from the title, so nothing appears twice. `task.text` itself is never
  * changed - this is display only.
@@ -21,7 +27,7 @@ import {setFlowStateTag, titleCaseSlug, withoutNow} from './flowState';
 import {setDueInLine} from './markdown';
 import {Task} from './types';
 
-export type TaskLabelContext = 'flat' | 'grouped';
+export type TaskLabelContext = 'flat' | 'grouped' | 'quiet';
 
 export type TaskLabelKind = 'next' | 'waiting' | 'due' | 'overdue';
 
@@ -43,6 +49,7 @@ function waitingLabel(task: Task): string {
 /** The labels for `task`, flow state first, then due date. */
 export function taskLabels(task: Task, context: TaskLabelContext, today: string): TaskLabel[] {
   const labels: TaskLabel[] = [];
+  if (context === 'quiet') return labels;
   if (context === 'flat') {
     if (task.flowState === 'next') labels.push({kind: 'next', text: '#next'});
     if (task.flowState === 'waiting-for') labels.push({kind: 'waiting', text: waitingLabel(task)});
@@ -69,6 +76,7 @@ export function taskLabels(task: Task, context: TaskLabelContext, today: string)
 export function isFlowStateConveyed(task: Task, context: TaskLabelContext): boolean {
   if (!task.flowState) return false;
   if (context === 'grouped') return true;
+  if (context === 'quiet') return task.flowState === 'next' || task.flowState === 'waiting-for';
   return task.flowState === 'next' || task.flowState === 'waiting-for';
 }
 
@@ -84,4 +92,24 @@ export function displayTaskText(task: Task, context: TaskLabelContext): string {
     : withoutDue;
   const nextConveyed = task.flowState === 'next' && isFlowStateConveyed(task, context);
   return nextConveyed ? withoutNow(withoutFlowState) : withoutFlowState;
+}
+
+/** A quiet row's note on the right (§3.4): `strong` for what is due today or overdue. */
+export interface QuietMeta {
+  text: string;
+  strong: boolean;
+}
+
+/** `due today` / `overdue 3.11.` (both strong) / `due 5.11.` / `w/f Marco` / `w/f` / null - the due date first. */
+export function quietMeta(task: Task, today: string): QuietMeta | null {
+  if (task.dueDate && !task.done) {
+    if (task.dueDate === today) return {text: 'due today', strong: true};
+    if (task.dueDate < today) return {text: `overdue ${formatDate(task.dueDate, today)}`, strong: true};
+    return {text: `due ${formatDate(task.dueDate, today)}`, strong: false};
+  }
+  if (task.flowState === 'waiting-for') {
+    const label = waitingLabel(task);
+    return {text: label.replace(/^#/, ''), strong: false};
+  }
+  return null;
 }

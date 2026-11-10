@@ -21,7 +21,8 @@
       "help": ["daily.md", "week-and-month.md"],
       "tests": [
         "__tests__/**/*{daily,month,period,planning,givenTime}*",
-        "__tests__/scenarios/smoke/weekAndMonth*"
+        "__tests__/scenarios/smoke/weekAndMonth*",
+        "__tests__/scenarios/calmer{Rows,Tabs,Daily,Inbox}*"
       ],
       "sources": [
         "src/screens/{DailyView,WeekView,WeekPlanner,MonthView,usePlanningScreen}.ts*",

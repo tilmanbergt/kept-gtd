@@ -42,6 +42,10 @@ or your project/area files are stored.
 - An empty todo text or meeting title offers **Thread** and **Loop** (and **Paste** with text on the
   clipboard): a tap lists the tags of your thread or loop setups, and one more tap writes
   `#sparring/` for the writing help to finish.
+- Quieter rows on Daily and a project's or area's page: a todo's title keeps your words and tags;
+  `#next`, the due date and the waiting-for tag move to one grey note on the right ("due 5.11.",
+  **due today**, "w/f Lena"). The notebook icon shows only where a note exists; creating a note and
+  linking a file happen on the card.
 - A tap on a row shows its card faster: the list no longer redraws for it.
 - For contributors: `SECURITY.md` says how to report a vulnerability privately and what Kept
   touches; `docs/dev/claims.md` lists every promise Kept makes and how each is checked.

@@ -180,6 +180,7 @@ function MeetingsSection({
                 highlight="mark"
                 tracking={trackingFor()}
                 note={{onOpen: () => handleNote(row.index), onCreate: () => handleNote(row.index)}}
+                noteOnlyWhenExists
                 file={{linkedFile: row.meeting.linkedFile, onOpen: onOpenLinkedFile}}
                 onPress={() => onSelect(row.index)}
                 state={armingIndex === row.index ? 'arming' : undefined}

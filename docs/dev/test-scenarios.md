@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-234 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+236 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -308,6 +308,23 @@ Test: `__tests__/scenarios/contexts.test.tsx` · help: `contexts.md#setting-up-c
 
 ## Daily
 
+### A Daily row keeps its words; the due date moves to a grey note on the right; no note icon without a note
+
+- **Given** on 3.11.2026, project "Garden renovation" with "Order soil #next" due 5.11. and "Collect topics #lena #next"
+- **When** I open Daily
+- **Then** the row reads "Order soil" with "due 5.11." after it, and no note icon
+- **And** "Collect topics" keeps its tag #lena
+
+Test: `__tests__/scenarios/calmerRows.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `daily.md#labels`
+
+### A todo with a note shows the notebook icon; one tap opens the note without a card
+
+- **Given** project "Garden renovation" with "Order soil #next" and its note
+- **When** I open Daily and tap the notebook icon on the row
+- **Then** the note opens, and no card shows
+
+Test: `__tests__/scenarios/calmerRows.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `quick-add.md#notes-and-files-on-a-todo-or-meeting`
+
 ### A tap on a Daily todo shows its card without re-rendering the list
 
 - **Given** project "Garden renovation" with three #next todos
@@ -456,7 +473,7 @@ Test: `__tests__/scenarios/rollback.test.tsx` · help: `files-and-folders.md`
 - **Given** the smoke space on Wednesday 14.10.2026 with the context Home (Area Garden) active
 - **When** I open Daily
 - **Then** the Today tab lists "Neighbour chat" and "Dentist"
-- **And** the todos are the Inbox's, Garden's project Garage's and Garden's, each with its label; the rest is counted, Website's overdue one as "1 due!"
+- **And** the todos are the Inbox's, Garden's project Garage's and Garden's, a due one with its grey note; the rest is counted, Website's overdue one as "1 due!"
 - **And** Someday, Maybe and done todos don't show
 - **When** I tap Show
 - **Then** Website's next todo and its Waiting For show too
@@ -1222,7 +1239,7 @@ Test: `__tests__/scenarios/rollback.test.tsx` · help: `files-and-folders.md#edi
 
 - **Given** the smoke space on Wednesday 14.10.2026
 - **When** I open Garden from Areas
-- **Then** Todos list "Buy bulbs" and "Repair the fence", and Meetings list "Neighbour chat"
+- **Then** Todos list "Buy bulbs" and "Repair the fence #someday" (its own tag kept), and Meetings list "Neighbour chat"
 - **And** Garden's folder is not listed
 - **When** I tap "◇ Agreements 1 ›"
 - **Then** the list shows "Water only in the morning"

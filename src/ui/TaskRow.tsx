@@ -149,6 +149,9 @@ function TaskRow({
   usePerfRender('TaskRow');
   const selected = useSelectedMode(selection?.store, selection?.key) !== null;
   const layout = taskRowLayout(task, columnWidthPx, context);
+  // A quiet row (docs/dev/history/technical-design-calmer-screens.md §3.4): the note on the
+  // right, the notebook icon only where a note exists, no create-note icon, no clip.
+  const quiet = context === 'quiet';
   return (
     <View style={styles.wrap}>
       <View
@@ -183,25 +186,44 @@ function TaskRow({
             </Text>
           </Pressable>
         </View>
-        {task.notePath ? (
-          <Pressable onPress={onOpenNote} hitSlop={8} style={styles.target}>
-            <Text style={[styles.noteAction, {color: textColor}]}>📓</Text>
-          </Pressable>
+        {quiet ? (
+          <>
+            {layout.meta ? (
+              <View style={styles.target}>
+                <Text style={[styles.meta, {color: textColor}, layout.meta.strong ? styles.metaStrong : styles.metaQuiet]} numberOfLines={1}>
+                  {layout.meta.text}
+                </Text>
+              </View>
+            ) : null}
+            {task.notePath ? (
+              <Pressable onPress={onOpenNote} hitSlop={8} style={styles.target} accessibilityRole="button" accessibilityLabel="Open note">
+                <Text style={[styles.noteAction, {color: textColor}]}>📓</Text>
+              </Pressable>
+            ) : null}
+          </>
         ) : (
-          <Pressable onPress={onCreateNote} hitSlop={8} style={styles.target}>
-            <Text style={[styles.noteAction, {color: textColor}]}>+📓</Text>
-          </Pressable>
+          <>
+            {task.notePath ? (
+              <Pressable onPress={onOpenNote} hitSlop={8} style={styles.target}>
+                <Text style={[styles.noteAction, {color: textColor}]}>📓</Text>
+              </Pressable>
+            ) : (
+              <Pressable onPress={onCreateNote} hitSlop={8} style={styles.target}>
+                <Text style={[styles.noteAction, {color: textColor}]}>+📓</Text>
+              </Pressable>
+            )}
+            {linkedFile ? (
+              <Pressable onPress={() => onOpenLinkedFile?.(linkedFile)} hitSlop={8} style={[styles.target, styles.clipAction]}>
+                <ClipIcon color={textColor} />
+              </Pressable>
+            ) : onArmLink ? (
+              <Pressable onPress={onArmLink} hitSlop={8} style={[styles.target, styles.clipAction]}>
+                <Text style={[styles.clipPlus, {color: textColor}]}>+</Text>
+                <ClipIcon color={textColor} />
+              </Pressable>
+            ) : null}
+          </>
         )}
-        {linkedFile ? (
-          <Pressable onPress={() => onOpenLinkedFile?.(linkedFile)} hitSlop={8} style={[styles.target, styles.clipAction]}>
-            <ClipIcon color={textColor} />
-          </Pressable>
-        ) : onArmLink ? (
-          <Pressable onPress={onArmLink} hitSlop={8} style={[styles.target, styles.clipAction]}>
-            <Text style={[styles.clipPlus, {color: textColor}]}>+</Text>
-            <ClipIcon color={textColor} />
-          </Pressable>
-        ) : null}
       </View>
     </View>
   );
@@ -304,6 +326,10 @@ const styles = StyleSheet.create({
     opacity: 0.5,
     textDecorationLine: 'line-through',
   },
+  meta: {fontSize: FONT.small, marginLeft: 8, includeFontPadding: false},
+  // Secondary, not a meaning: what is due today or overdue is bold instead.
+  metaQuiet: {opacity: 0.65},
+  metaStrong: {fontWeight: '700'},
   noteAction: {
     fontSize: FONT.small,
     marginLeft: 8,

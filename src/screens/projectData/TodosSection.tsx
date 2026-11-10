@@ -197,7 +197,7 @@ function TodosSection({
         headerAccessory={<DoneToggle doneCount={doneCount} hideDone={hideDone} onToggle={toggleHideDone} textColor={textColor} />}
         heightKey={[`current:Todos:${itemPath}`, 'current:Todos']}
         rows={flatRows}
-        rowHeight={row => (row.kind === 'header' ? SUBHEADING_ROW_PX : taskRowHeight(row.task, estimatorWidth(), 'grouped'))}
+        rowHeight={row => (row.kind === 'header' ? SUBHEADING_ROW_PX : taskRowHeight(row.task, estimatorWidth(), 'quiet'))}
         isCountableRow={row => row.kind === 'entry'}
         renderRow={row =>
           row.kind === 'header' ? (
@@ -218,9 +218,9 @@ function TodosSection({
               onOpenLinkedFile={onOpenLinkedFile}
               onArmLink={() => onArmLink(row.index)}
               ownerPath={itemPath}
-              context="grouped"
-              height={taskRowHeight(row.task, estimatorWidth(), 'grouped')}
-              numberOfLines={taskRowLines(row.task, estimatorWidth(), 'grouped')}
+              context="quiet"
+              height={taskRowHeight(row.task, estimatorWidth(), 'quiet')}
+              numberOfLines={taskRowLines(row.task, estimatorWidth(), 'quiet')}
               textColor={textColor}
               borderColor={borderColor}
             />

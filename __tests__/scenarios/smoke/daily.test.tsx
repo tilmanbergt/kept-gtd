@@ -35,11 +35,11 @@ scenario('Daily under a context shows today\'s meetings and the next todos it sh
     expect(textsBetween('Today', 'Todo')).toEqual(expect.arrayContaining(['Neighbour chat', 'Dentist']));
     expect(textsBetween('Today', 'Todo')).not.toContain('Supplier call');
   });
-  and('the todos are the Inbox\'s, Garden\'s project Garage\'s and Garden\'s, each with its label; the rest is counted, Website\'s overdue one as "1 due!"', () => {
+  and('the todos are the Inbox\'s, Garden\'s project Garage\'s and Garden\'s, a due one with its grey note; the rest is counted, Website\'s overdue one as "1 due!"', () => {
     expect(todoList()).toEqual([
-      'Inbox', 'Call the plumber  #next',
-      'Garage', 'Sort tools  #next',
-      'Garden', 'Buy bulbs  #next', 'Water the lawn  #due 14.10.',
+      'Inbox', 'Call the plumber',
+      'Garage', 'Sort tools',
+      'Garden', 'Buy bulbs', 'Water the lawn', 'due today',
       'Hidden by Home: 3 todos · 1 thread · 1 due! · ', 'Show',
     ]);
   });
@@ -71,7 +71,7 @@ scenario('Quick Add a todo from Daily', {feature: 'Quick Add', design: DESIGN, h
   then('Inbox.txt has it', () => {
     expect(sectionLines(INBOX_FILE, 'Tasks')).toContainEqual(expect.stringMatching(/^- \[ \] Check gutters #next/));
   });
-  and('Daily lists it in the Inbox group', () => expect(textsBetween('Inbox', 'Garage')).toContain('Check gutters  #next'));
+  and('Daily lists it in the Inbox group', () => expect(textsBetween('Inbox', 'Garage')).toContain('Check gutters'));
 });
 
 scenario('Tick a todo done on Daily', {feature: 'Daily', design: DESIGN, help: 'daily.md#schedule-and-cards'}, () => {

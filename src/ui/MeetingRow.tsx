@@ -89,6 +89,8 @@ export interface MeetingRowProps {
   highlight?: 'mark';
   tracking?: MeetingTrackingConfig;
   note?: {onOpen: () => void; onCreate: () => void};
+  /** The notebook icon only where the meeting has a note - none to create one (Daily, Current; docs/dev/history/technical-design-calmer-screens.md §3.4). */
+  noteOnlyWhenExists?: boolean;
   /** The clip, shown only when a file is linked; tapping it opens the file. */
   file?: {linkedFile: string; onOpen?: (linkedFile: string) => void};
   /** Tap on the title or the status icon: select for editing (most lists) or select (Review close-out). */
@@ -117,6 +119,7 @@ function MeetingRowV2({
   highlight,
   tracking,
   note,
+  noteOnlyWhenExists,
   file,
   onPress,
   state,
@@ -132,7 +135,7 @@ function MeetingRowV2({
   const trackingState = tracking ? resolveMeetingTracking(meeting, tracking.setups) : null;
   const highlighted = isHighlight(meeting);
   const focusBlock = isFocusBlock(meeting);
-  const noteShown = note && (!!meeting.notePath || !focusBlock || !tracking || focusBlockNoteTarget(meeting, tracking.setups.setups, false) === 'meeting');
+  const noteShown = note && (!!meeting.notePath || !noteOnlyWhenExists) && (!!meeting.notePath || !focusBlock || !tracking || focusBlockNoteTarget(meeting, tracking.setups.setups, false) === 'meeting');
   const done = state === 'done';
 
   // 2-line row without a source line (single-item lists): the title may use

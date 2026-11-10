@@ -16,7 +16,11 @@ With a [context](contexts.md#what-a-context-shows) active, Daily shows only the 
 
 ## Labels
 
-After a todo's title, short labels show what matters about it: `#next`, `#w/f Lena` (waiting for Lena), `#due 5.10.` (with `!` when overdue). If a title is too long, it is shortened with … so the labels always fit. The same labels appear on every tab; in a list grouped by Next, Waiting For and so on, the label the heading already says is left out. A `#now` from earlier versions counts as `#next` and shows as `#next`.
+On Daily and on a project's or area's page a todo row is quiet: its title keeps your words and your own tags (`Collect topics #lena`), and only `#next`, the due date and the waiting-for tag leave it. One grey note on the right says what matters: `due 5.11.`, **due today** or **overdue 3.11.** (both in bold), or `w/f Lena` while you wait for Lena. If a title is too long, it is shortened with … so the note always fits.
+
+A row shows the [notebook icon](projects-and-areas.md#the-notebook-icon) only when the todo or meeting has a note; one tap opens it. A new note and a linked file are made from the [card](quick-add.md#the-card-one-tap-selects).
+
+Other lists (the [Inbox](quick-add.md#the-inbox), the [Review](review.md), the [thread overview](threads.md#opening-the-overview)) show short labels after the title instead: `#next`, `#w/f Lena`, `#due 5.10.` (with `!` when overdue); in a list grouped by Next, Waiting For and so on, the label the heading already says is left out. A `#now` from earlier versions counts as `#next`.
 
 ## Schedule and cards
 
@@ -24,7 +28,7 @@ The left column is the schedule with the tabs **Today** and **Tomorrow** (and **
 
 Tap a meeting or focus block to see its [card](meetings.md#the-meeting-row-and-its-card) in [Quick Add](quick-add.md)'s place, and its [context panel](meetings.md#the-context-panel) in place of the todos: what you owe, what is next, what you are waiting for and what was agreed last time. **+ Quick Add to meeting** at the end of the panel adds a todo to it. Tap it again, [Edit](quick-add.md#editing) or the title on the card to change it. Daily has no [Files pane](projects-and-areas.md#files-and-linked-files), so linking a file happens on the project's page.
 
-Todos work the same way: a tap shows the todo's [card](quick-add.md#the-card-one-tap-selects), with done, the flow chips, its note and delete.
+Todos work the same way: a tap shows the todo's [card](quick-add.md#the-card-one-tap-selects), with done, w/f, Someday, its note and **More ›**.
 
 ## Tags in rows
 

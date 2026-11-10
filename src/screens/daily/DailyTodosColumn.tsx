@@ -32,7 +32,7 @@ interface Props {
 
 function DailyTodosColumn({rows, renderEntry, onOpenItem, failedItemNames, footer, textColor, borderColor}: Props): React.JSX.Element {
   usePerfRender('DailyTodosColumn');
-  const rowHeight = (row: FlatTaskRow) => (row.kind === 'header' ? GROUP_HEADER_ROW_PX : taskRowHeight(row.entry.task, estimatorWidth(), 'flat'));
+  const rowHeight = (row: FlatTaskRow) => (row.kind === 'header' ? GROUP_HEADER_ROW_PX : taskRowHeight(row.entry.task, estimatorWidth(), 'quiet'));
   const renderRow = (row: FlatTaskRow) => {
     if (row.kind === 'header') {
       // Natural height: clipping it to GROUP_HEADER_ROW_PX would cut the text; the list measures its real viewport.

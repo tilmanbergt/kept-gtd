@@ -22,9 +22,9 @@ scenario('The area page shows its todos, meetings and agreements, and its folder
     await tapTab('Areas');
     await tap(/^Garden/);
   });
-  then('Todos list "Buy bulbs" and "Repair the fence", and Meetings list "Neighbour chat"', () => {
+  then('Todos list "Buy bulbs" and "Repair the fence #someday" (its own tag kept), and Meetings list "Neighbour chat"', () => {
     const todos = textsBetween('Todos', '◇ Agreements 1 ›');
-    expect(todos).toEqual(expect.arrayContaining(['Buy bulbs', 'Repair the fence']));
+    expect(todos).toEqual(expect.arrayContaining(['Buy bulbs', 'Repair the fence #someday']));
     expect(textsBetween('◇ Agreements 1 ›')).toContain('Neighbour chat');
   });
   and('Garden\'s folder is not listed', () => {

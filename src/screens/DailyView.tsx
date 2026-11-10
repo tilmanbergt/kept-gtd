@@ -137,9 +137,9 @@ export default function DailyView({onOpenItem, onOpenInbox, onOpenCalendarSettin
         linkedFile={entry.task.linkedFile}
         onOpenLinkedFile={actions.openFile}
         ownerPath={entry.item.path}
-        context="flat"
+        context="quiet"
         height={heightPx}
-        numberOfLines={taskRowLines(entry.task, estimatorWidth(), 'flat')}
+        numberOfLines={taskRowLines(entry.task, estimatorWidth(), 'quiet')}
         textColor={textColor}
         borderColor={borderColor}
       />
@@ -160,6 +160,7 @@ export default function DailyView({onOpenItem, onOpenInbox, onOpenCalendarSettin
         highlight="mark"
         tracking={actions.tracking()}
         note={{onOpen: () => actions.meetingNote(entry), onCreate: () => actions.meetingNote(entry)}}
+        noteOnlyWhenExists
         file={{linkedFile: entry.meeting.linkedFile, onOpen: actions.openFile}}
         onPress={() => selectEditTarget({type: 'meeting', key})}
         dimmed={entry.contextState === 'dimmed'}
