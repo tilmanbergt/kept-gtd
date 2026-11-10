@@ -13,6 +13,7 @@ import FlowStateChips from '../FlowStateChips';
 import {NotebookIcon, TrashIcon} from '../icons';
 import {AreaChip, cardStyles, CardRow1, FileSlot, letter, SquareButton} from './parts';
 import {TodoCardData} from './useTodoCard';
+import {useCardCommitTrace} from './useCardCommitTrace';
 
 interface Props {
   card: TodoCardData;
@@ -21,6 +22,7 @@ interface Props {
 }
 
 export default function TodoCard({card, textColor, borderColor}: Props): React.JSX.Element {
+  useCardCommitTrace('todo');
   const {model} = card;
   const colors = {textColor, borderColor};
   return (

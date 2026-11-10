@@ -1191,7 +1191,8 @@ when asked for:
   (`domain/fileNameFix.ts`); "Fix file names (n)" renames after one confirm and rewrites the
   links (`storage/fileNameFix.ts`). Everything else is report-only.
 - **Performance tracing** (`utils/perf.ts`, switch `perfTracing`): one trace per tab tap,
-  navigation, reopen and cold start, ending after 1.5 s of quiet (15 s at most), written as JSONL
+  navigation, reopen, cold start and row tap (`tap`: from the first tap on a row to its card's
+  first commit, `card:commit`, logged as `tap card screen=… ms=…`), ending after 1.5 s of quiet (15 s at most), written as JSONL
   to `EXPORT/kept-gtd/debug/perf/` with data-volume stats (`storage/perfStats.ts`). Off costs one
   check per call. Analysis: `node scripts/perf-report.js`.
 - **Build and device** (`supernote/pluginRuntime.ts`, native `GtdParaRuntime`): build id,

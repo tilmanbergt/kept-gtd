@@ -227,7 +227,7 @@ export default function ProjectDataPanel({
     armFor,
     cancelArm: cancelArming,
     flushEditRef,
-  } = useEditTarget<EditTarget, ArmTarget>();
+  } = useEditTarget<EditTarget, ArmTarget>('Current');
   // QuickAddWidget's own add/edit/delete error surface (
   // docs/dev/history/technical-design-unified-quickadd.md §6/§10 step 2) - mirrors the
   // per-section `actionError`/`runAction` pattern TodosSection/

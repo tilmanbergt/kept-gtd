@@ -6,7 +6,8 @@
  *
  * Prints, per trace kind+label (e.g. "tab daily"): how many traces, median /
  * min / max of the total active time, median time per phase, render-pass
- * counts, rows drawn and console calls. With --timeline, also prints one full
+ * counts, rows drawn and console calls; for a row tap (`tap card <screen>`)
+ * the time from the tap to the card's first commit. With --timeline, also prints one full
  * event timeline per kind+label (the median trace).
  */
 const fs = require('fs');
@@ -54,6 +55,7 @@ function analyze(trace) {
   let lastCommit = null;
   let einkRequested = null;
   let einkFlush = null;
+  let cardCommit = null;
   // Frame gaps (tracer §13): split into "JS busy" (some JS event inside the
   // gap) and "native busy" (none - JS idle, frames still not produced).
   const jsEvents = events.filter(e => e.label !== 'frame:gap');
@@ -77,6 +79,8 @@ function analyze(trace) {
     } else if (e.label.startsWith('commit:')) {
       if (firstCommit == null) firstCommit = e.t;
       lastCommit = e.t;
+    } else if (e.label === 'card:commit') {
+      if (cardCommit == null) cardCommit = e.t;
     } else if (e.label === 'eink:requested') {
       einkRequested = e.t;
     } else if (e.label === 'eink:flush') {
@@ -89,6 +93,7 @@ function analyze(trace) {
     lastCommit,
     einkRequested,
     einkFlush,
+    cardCommit,
     gapJs,
     gapNative,
     maxGap,
@@ -102,7 +107,9 @@ const files = fs.readdirSync(dir).filter(f => f.endsWith('.jsonl'));
 const traces = files.map(f => readTrace(path.join(dir, f)));
 const groups = new Map();
 for (const t of traces) {
-  const key = `${t.header.kind} ${t.header.label}`;
+  // A row tap (`tap card`) is grouped by the screen it happened on.
+  const screen = t.header.kind === 'tap' && t.header.meta && t.header.meta.screen ? ` ${t.header.meta.screen}` : '';
+  const key = `${t.header.kind} ${t.header.label}${screen}`;
   if (!groups.has(key)) groups.set(key, []);
   groups.get(key).push(t);
 }
@@ -129,6 +136,8 @@ for (const [key, list] of [...groups.entries()].sort()) {
   const actives = col(r => r.active);
   console.log(`- total active: median ${fmt(median(actives))} ms (min ${fmt(Math.min(...actives))}, max ${fmt(Math.max(...actives))})`);
   console.log(`- first commit: median ${fmt(median(col(r => r.firstCommit)))} ms, last commit: median ${fmt(median(col(r => r.lastCommit)))} ms`);
+  const cards = col(r => r.cardCommit);
+  if (cards.length) console.log(`- tap → card commit: median ${fmt(median(cards))} ms (min ${fmt(Math.min(...cards))}, max ${fmt(Math.max(...cards))})`);
   console.log(`- e-ink requested: median ${fmt(median(col(r => r.einkRequested)))} ms, flushed: median ${fmt(median(col(r => r.einkFlush)))} ms`);
   console.log(`- frame gaps: JS busy median ${fmt(median(col(r => r.gapJs)))} ms, native busy (JS idle) median ${fmt(median(col(r => r.gapNative)))} ms, longest gap median ${fmt(median(col(r => r.maxGap)))} ms`);
 

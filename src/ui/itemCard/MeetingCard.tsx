@@ -15,6 +15,7 @@ import {NotebookIcon} from '../icons';
 import {CancelMeetingIcon, NewFromThisIcon, ReflectIcon} from './icons';
 import {AreaChip, cardStyles, CardRow1, FileSlot, letter, SquareButton} from './parts';
 import {MeetingCardData} from './useMeetingCard';
+import {useCardCommitTrace} from './useCardCommitTrace';
 
 interface Props {
   card: MeetingCardData;
@@ -25,6 +26,7 @@ interface Props {
 }
 
 export default function MeetingCard({card, onNewFromThis, textColor, borderColor}: Props): React.JSX.Element {
+  useCardCommitTrace('meeting');
   const {model, busy} = card;
   const colors = {textColor, borderColor};
   return (

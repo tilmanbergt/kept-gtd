@@ -12,6 +12,7 @@ import {Pressable, Text, View} from 'react-native';
 import {quickAddButtons} from '../quickAdd/ActionRow';
 import {cardStyles, CardRow1} from './parts';
 import {AgreementCardData} from './useAgreementCard';
+import {useCardCommitTrace} from './useCardCommitTrace';
 
 interface Props {
   card: AgreementCardData;
@@ -20,6 +21,7 @@ interface Props {
 }
 
 export default function AgreementCard({card, textColor, borderColor}: Props): React.JSX.Element {
+  useCardCommitTrace('agreement');
   const colors = {textColor, borderColor};
   const button = (label: string, onPress: () => void) => (
     <Pressable style={[quickAddButtons.ghostButton, {borderColor}]} onPress={onPress} hitSlop={6} accessibilityRole="button">

@@ -87,7 +87,7 @@ export function usePlanningScreen({logTag}: Options) {
     set: setEditingKey,
     flushEditRef,
     afterSave,
-  } = useEditTarget<string>();
+  } = useEditTarget<string>(logTag);
   // Both go to the central status slot (docs/dev/history/technical-design-status-slot.md §7.4),
   // not inline on the Week/Month screens.
   const widgetAction = useActionError('planning.widgetError', `${logTag}: widget action failed`);

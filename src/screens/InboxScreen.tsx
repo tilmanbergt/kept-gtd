@@ -220,7 +220,7 @@ export default function InboxScreen({
     armFor,
     cancelArm: cancelArming,
     flushEditRef,
-  } = useEditTarget<EditTarget, ArmTarget>();
+  } = useEditTarget<EditTarget, ArmTarget>('Inbox');
   const editingTaskIndex = editTarget?.type === 'task' ? editTarget.index : null;
   const editingMeetingIndex = editTarget?.type === 'meeting' ? editTarget.index : null;
   const armingTaskIndex = armTarget?.type === 'task' ? armTarget.index : null;

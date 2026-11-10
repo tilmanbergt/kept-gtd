@@ -26,6 +26,7 @@
  * and use `set` inside it (no second save).
  */
 import {useCallback, useRef, useState} from 'react';
+import {perfBegin} from '../utils/perf';
 import {useEditFlush} from './useEditFlush';
 
 export type EditMode = 'card' | 'edit' | 'add';
@@ -35,7 +36,12 @@ export const cardOrEdit = (mode: EditMode): 'card' | 'edit' => (mode === 'add' ?
 
 const sameTarget = (a: unknown, b: unknown): boolean => JSON.stringify(a) === JSON.stringify(b);
 
-export function useEditTarget<T, A = never>() {
+/**
+ * `perfScreen`: the screen's name in the perf trace `tap` that a newly selected
+ * row starts (docs/dev/history/technical-design-calmer-screens.md §3.1); the
+ * card's first commit ends the measured part (ui/itemCard/useCardCommitTrace.ts).
+ */
+export function useEditTarget<T, A = never>(perfScreen?: string) {
   const [selection, setSelection] = useState<{target: T | null; mode: EditMode}>({target: null, mode: 'edit'});
   const [arm, setArm] = useState<A | null>(null);
   const {flushEditRef, afterSave} = useEditFlush();
@@ -52,12 +58,13 @@ export function useEditTarget<T, A = never>() {
         if (current.mode === 'card') setSelection({target: current.target, mode: 'edit'});
         return;
       }
+      if (perfScreen) perfBegin('tap', 'card', {screen: perfScreen});
       afterSave(() => {
         setSelection({target: next, mode: 'card'});
         setArm(null);
       });
     },
-    [afterSave],
+    [afterSave, perfScreen],
   );
   const start = useCallback(
     (next: T) =>
