@@ -280,7 +280,7 @@ export default function DailyView({onOpenItem, onOpenCalendarSettings}: Props): 
         rows={inboxRowsList}
         renderTodo={renderInboxTodo}
         renderMeeting={renderInboxMeeting}
-        marksReturnTo="inbox"
+        marksReturnTo="daily"
         heightKey="daily:todos:inbox"
         textColor={textColor}
         borderColor={borderColor}

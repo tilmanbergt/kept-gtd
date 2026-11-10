@@ -202,8 +202,7 @@
         "src/ui/{QuickAddWidget,CollapsedQuickAdd,DestinationPicker,DateInput,ValidTillInput,FlowStateChips,InlineTextEditor,ClipboardStrip,ClipboardTextInput}.tsx",
         "src/ui/{useEntryMoveUi,useEditFlush}.ts",
         "src/domain/{quickAddCompose,itemCard,destination,dateNudge,clipboardText}.ts",
-        "src/storage/{destinationUsage,inboxFiling,inboxFolder,createItem,entryMove}.ts",
-        "src/screens/InboxScreen.tsx"
+        "src/storage/{destinationUsage,inboxFiling,inboxFolder,createItem,entryMove}.ts"
       ]
     },
     {

@@ -77,8 +77,10 @@ the thread overview otherwise.
   Project/Area" row creates the folder and its data file (`storage/createItem.ts`). Resources and
   Archive are neither listed nor scanned.
 - **Daily, Week, Month** — the planning screens (§2.7).
-- **Inbox** — `screens/InboxScreen.tsx`: Files pane on the left (Resources and Browse), Tasks
-  above Meetings on the right, everything unfiltered.
+- **Inbox** — no tab of its own: Daily's Inbox count tab (`screens/daily/InboxList.tsx`, the Inbox
+  card `ui/itemCard/InboxCard.tsx` with File to, `screens/daily/FilePicker.tsx`,
+  `screens/daily/NewProjectForm.tsx`), the same parts in Review's "Inbox to zero"; everything
+  unfiltered.
 - **Current** — `screens/ItemDetail.tsx`: left pane `ui/ItemScopePanel.tsx` (the Scope, without a
   label; the Given time line was removed in 0.24.0) on top, the Files pane (`ui/FileBrowserPane.tsx`) in the middle and
   `ui/ItemStatusPanel.tsx` (status, close-out/archive, Assign to Area) at the bottom; right pane

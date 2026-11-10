@@ -10,11 +10,17 @@ A todo appears on Daily when it is open and one of these is true:
 - it is [due](tags.md#due-dates) today, tomorrow or overdue
 - it is marked [Waiting for](tags.md#flow-tags-for-todos) and has no date, or its date is today or earlier
 
-Todos marked Someday or Maybe never appear on Daily. Todos are grouped by project or area. The [Inbox](quick-add.md#the-inbox)'s own todos are not among them: they are on the **Inbox** tab, until they have a place.
+Todos marked Someday or Maybe never appear on Daily. Todos are grouped by project or area. The [Inbox](daily.md#the-inbox)'s own todos are not among them: they are on the **Inbox** tab, until they have a place.
 
 ## Count tabs and the bell
 
 Over the todos, count tabs show one list at a time: **Next**, **Waiting**, **Inbox** and, once you have finished something today, **Done** - each with its number, for example `Next 11` and `Waiting 5`. **Next** holds the todos marked Next or due; **Waiting** the ones you wait for; **Inbox** everything waiting in the Inbox: the [marks to process](lasso.md#processing-marks), the todos not yet filed (not Someday or Maybe) and its meetings, past ones too - all counted, none hidden by a context. A small bell with a number on **Waiting** or **Inbox** counts the todos there that are due today or earlier (an Inbox todo's grey note is the day you captured it, or its due date when that has come), for example `Waiting 5` with the bell and `1`. Kept starts on **Next**; the tab you choose stays while Kept is open.
+
+## The Inbox
+
+Whatever you add without a project or area lands in the Inbox (`Inbox.txt` in its own folder): from Daily, Week and Month, from a [lasso capture](lasso.md#capturing-right-away) you don't file right away, and [marks](lasso.md#marking-for-later) from notes outside your projects and areas. Daily's **Inbox** tab shows all of it in one list: first "n marks to process" with **Process ›** while there are open marks, then the todos not yet filed, then the Inbox's meetings, past ones too. Someday and Maybe todos wait in the Review instead. Nothing here is hidden by a [context](contexts.md#what-a-context-shows), and its todos are not under **Next**.
+
+To empty the Inbox, tap each item and give it a place on its card (below), finish it, or delete it. The [Weekly Review](review.md) has a step [Inbox to zero](review.md#the-steps) with the same list and card.
 
 ## Filing from the Inbox
 
@@ -42,7 +48,7 @@ On Daily and on a project's or area's page a todo row is quiet: its title keeps 
 
 A row shows the [notebook icon](projects-and-areas.md#the-notebook-icon) only when the todo or meeting has a note; one tap opens it. A new note and a linked file are made from the [card](quick-add.md#the-card-one-tap-selects).
 
-Other lists (the [Inbox](quick-add.md#the-inbox), the [Review](review.md), the [thread overview](threads.md#opening-the-overview)) show short labels after the title instead: `#next`, `#w/f Lena`, `#due 5.10.` (with `!` when overdue); in a list grouped by Next, Waiting For and so on, the label the heading already says is left out. A `#now` from earlier versions counts as `#next`.
+Other lists (the [Inbox](daily.md#the-inbox), the [Review](review.md), the [thread overview](threads.md#opening-the-overview)) show short labels after the title instead: `#next`, `#w/f Lena`, `#due 5.10.` (with `!` when overdue); in a list grouped by Next, Waiting For and so on, the label the heading already says is left out. A `#now` from earlier versions counts as `#next`.
 
 ## Schedule and cards
 

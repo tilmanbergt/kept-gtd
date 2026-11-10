@@ -14,7 +14,6 @@ export const HELP_PAGE_FOR_TAB: Record<string, string> = {
   daily: 'daily',
   week: 'week-and-month',
   month: 'week-and-month',
-  inbox: 'quick-add',
   review: 'review',
   settings: 'settings',
   engage: 'engage',

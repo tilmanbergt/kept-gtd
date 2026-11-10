@@ -56,7 +56,7 @@ During and after the meeting, what you add in Engage's Quick Add records the mee
 ## Next here and Today next
 
 - **Next here**, under the header, names the owner's next meeting at any distance, for example "Next here: Thu 23.10. 10:00 Sparring Jordan ›". Tap it to open the meeting's note (or create it, after the [usual question](note-setups.md#before-a-note-is-created)); the panel closes. Without a meeting ahead the line is hidden, and so it is while it would name the meeting whose page you are on. For a loop it names the loop's next meeting; a new one is planned in the [loop overview](loops.md#the-loop-overview).
-- **Today next**, quiet above **Open Kept GTD**, names your next meeting today with a time, from all projects, areas and the [Inbox](quick-add.md#the-inbox), for example "Today next: 14:00 Plan the beds · in 40 min". How long until it starts shows only when it is less than three hours away. It is worked out when the panel opens or its data changes - there is no ticking clock. When it is the same meeting as Next here, it is left out and Next here says "· next today".
+- **Today next**, quiet above **Open Kept GTD**, names your next meeting today with a time, from all projects, areas and the [Inbox](daily.md#the-inbox), for example "Today next: 14:00 Plan the beds · in 40 min". How long until it starts shows only when it is less than three hours away. It is worked out when the panel opens or its data changes - there is no ticking clock. When it is the same meeting as Next here, it is left out and Next here says "· next today".
 
 ## Working on
 
@@ -106,7 +106,7 @@ With no open todo and no meeting ahead, Engage says **Nothing left in** the owne
 
 ## Choosing another owner
 
-Engage never moves on to another owner by itself. **Today's schedule ›** lists the owners of today's meetings and focus blocks that are not over yet, in time order: a line per loop, thread, Project or Area, with how many next actions it has or "pick next". The meetings of the [Inbox](quick-add.md#the-inbox) have no owner and no line. With nothing scheduled, it says **Nothing scheduled today.** Tap a line to work on that owner; **‹ Back** returns.
+Engage never moves on to another owner by itself. **Today's schedule ›** lists the owners of today's meetings and focus blocks that are not over yet, in time order: a line per loop, thread, Project or Area, with how many next actions it has or "pick next". The meetings of the [Inbox](daily.md#the-inbox) have no owner and no line. With nothing scheduled, it says **Nothing scheduled today.** Tap a line to work on that owner; **‹ Back** returns.
 
 ## Quick Add, marks and leaving
 

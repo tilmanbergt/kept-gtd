@@ -71,12 +71,16 @@ or your project/area files are stored.
   touches; `docs/dev/claims.md` lists every promise Kept makes and how each is checked.
 
 ### Removed
+- The **Inbox** tab: the Inbox lives on Daily's **Inbox** tab, and the Review's Inbox to zero step
+  works on the same list and card (no Files pane there any more).
 - The **hide done** / **show n done** switch on a project's or area's page: the Done tab replaces
   it.
 
 ### Upgrade notes
-- The project page's "hide done" choice is no longer used. It stays in your settings, so an older
-  version still finds it.
+- **The Inbox now lives on Daily**: tap **Inbox** over Daily's todos. Every link that opened the Inbox
+  tab opens it there. `Inbox.txt` stays where it is and as it is.
+- The project page's and the Inbox tab's "hide done" choices are no longer used. They stay in your
+  settings, so an older version still finds them.
 
 ## [0.25.1] — 2026-11-03
 

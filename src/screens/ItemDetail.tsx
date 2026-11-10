@@ -12,7 +12,7 @@
  * Resources folder, per domain/settings.ts's resolvePaths - the "attach an
  * existing file" flow's second, more common source). See FileBrowserPane's
  * own module doc comment for the roots/locating/arming/pin behavior it owns
- * (shared with screens/InboxScreen.tsx).
+ * (ui/FileBrowserPane.tsx).
  *
  * `linkTarget` (locating a linked file's row, or arming a "pick a file for
  * this task/meeting" selection) is owned by ProjectDataPanel - the right
@@ -410,7 +410,7 @@ export default function ItemDetail({
   // Every other root is disabled (greyed, non-tappable, but still shown -
   // ui/FileBrowserPane.tsx's `disabled` doc comment) while refile-arming OR
   // area-assignment-arming, since Browse is the only valid destination for
-  // either anywhere on this screen - same principle screens/InboxScreen.tsx
+  // either anywhere on this screen - same principle the Review steps
   // applies to its own Resources tab. The auto-switch-to-`root` effect
   // already built into ui/FileBrowserPane.tsx's `arming` handling (triggered
   // by `root: 'browse'`, both cases) moves the active tab to Browse the

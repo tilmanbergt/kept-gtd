@@ -1,5 +1,5 @@
 import {device} from '../../test-helpers/fakeDevice/device';
-import {closeApp, expectShows, openApp, runIntegrityCheck, shows, tap, tapLabel, tapTab, type} from '../../test-helpers/scenario/app';
+import {closeApp, expectShows, openApp, openInbox, runIntegrityCheck, shows, tap, tapLabel, tapTab, type} from '../../test-helpers/scenario/app';
 import {dataFile, INBOX_FILE, PATHS, projectDir, projectFile, putFile} from '../../test-helpers/scenario/files';
 import {and, freshDevice, given, scenario, then, when} from '../../test-helpers/scenario/scenario';
 
@@ -43,11 +43,10 @@ scenario('A refile with its note, stopped after any write, loses nothing and is 
       device().sdk.putNote(NOTE_IN_INBOX);
 
       await openApp();
-      await tapTab('Inbox');
+      await openInbox();
       await tap('Call Anna');
-      await tapLabel('Refile');
-      await tap('📁 Projects ›');
-      await tap(/Website/);
+      await tapLabel('More places');
+      await tapLabel('File to Website');
       await stopAfter(n, () => tap('Move'));
 
       const lines = annaLines();

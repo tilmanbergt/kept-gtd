@@ -1,4 +1,4 @@
-import {expectNotShows, expectShows, fieldValue, firstCheckboxOf, focus, openApp, tap, tapLabel, tapTab, type} from '../../test-helpers/scenario/app';
+import {expectNotShows, expectShows, fieldValue, firstCheckboxOf, focus, openApp, openInbox, tap, tapLabel, tapTab, type} from '../../test-helpers/scenario/app';
 import {dataFile, expectFileContains, INBOX_FILE, loggedErrors, projectFile, putFile, sectionLines} from '../../test-helpers/scenario/files';
 import {given, scenario, then, when} from '../../test-helpers/scenario/scenario';
 
@@ -61,7 +61,7 @@ scenario('An abbreviation tag files a todo into its project while editing', {fea
   });
   when('I edit the Inbox todo, add "#WEB" and tap "Save to Website"', async () => {
     await openApp();
-    await tapTab('Inbox');
+    await openInbox();
     await tap('Ask about hosting');
     await tap('Edit');
     await type('New task', 'Ask about hosting #WEB');

@@ -208,6 +208,12 @@ async function openCardMore(): Promise<void> {
   await settle();
 }
 
+/** Opens the Inbox: Daily, then its Inbox count tab (docs/dev/history/technical-design-calmer-screens.md §3.7). */
+export async function openInbox(): Promise<void> {
+  await tapTab('Daily');
+  await tap(/^Inbox \d+$/);
+}
+
 /** Taps a tab in the tab bar (drawn first on screen; a tab may carry a badge, like "Review ●"). */
 export async function tapTab(label: string): Promise<void> {
   await tap(new RegExp(`^${label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`));

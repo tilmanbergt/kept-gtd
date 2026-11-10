@@ -2,7 +2,7 @@
  * One task row - checkbox, tap-to-edit, labels after the title
  * (ui/TaskLabels.tsx, domain/taskLabels.ts), note-link (📓/+📓), a linked-file clip, and an optional "File" action.
  * The single task row shared by Daily's Open-tasks, ProjectDataPanel's Todos,
- * Review's Inbox-to-zero and the Inbox tab (docs/dev/history/technical-design-inbox-tab.md §1).
+ * Review's Inbox-to-zero and Daily's Inbox tab (docs/dev/history/technical-design-calmer-screens.md §3.7).
  *
  * Editing (docs/dev/history/technical-design-pagination-edit-reuse.md §5): this row
  * renders no edit form of its own. `isEditing` only highlights the row - the

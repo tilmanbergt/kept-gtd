@@ -191,7 +191,7 @@ it('marks: first mark selected and recognized, Save & next finishes it and moves
     {id: 'm-20261005-100100-002', createdAt: '2026-10-05 10:01', notePath: '/Note/x/A.note', page: 1, text: null},
   ];
   const onExit = jest.fn();
-  const r = render({source: 'marks', scope: {type: 'all'}, returnTo: 'inbox'}, onExit);
+  const r = render({source: 'marks', scope: {type: 'all'}, returnTo: 'daily'}, onExit);
   await flush();
   await flush();
   expect(texts(r)).toContain('Open marks · 2');
@@ -209,7 +209,7 @@ it('marks: text kept from an earlier open is used, not recognized again; the col
     {id: 'm-20261005-100000-001', createdAt: '2026-10-05 10:00', notePath: '/Note/x/A.note', page: 0, text: null},
   ];
   mockState.stored = {'m-20261005-100000-001': 'Stored text'};
-  const r = render({source: 'marks', scope: {type: 'all'}, returnTo: 'inbox'});
+  const r = render({source: 'marks', scope: {type: 'all'}, returnTo: 'daily'});
   await flush();
   await flush();
   expect(r.root.findAllByType(TextInput).map(i => i.props.value)).toContain('Stored text');

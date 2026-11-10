@@ -1,6 +1,6 @@
 # Meetings
 
-A meeting has a date, an optional time or length, and a title that can carry tags. Meetings live in the file of their project or area ([Inside project.txt](files-and-folders.md#inside-projecttxt)), or in the [Inbox](quick-add.md#the-inbox). Lists of meetings and [focus blocks](meetings.md#focus-blocks) are called *Schedule*.
+A meeting has a date, an optional time or length, and a title that can carry tags. Meetings live in the file of their project or area ([Inside project.txt](files-and-folders.md#inside-projecttxt)), or in the [Inbox](daily.md#the-inbox). Lists of meetings and [focus blocks](meetings.md#focus-blocks) are called *Schedule*.
 
 ![A meeting before, during and after. Before: P on the card or Mark prepped, Note from last meeting, the meeting's page. During: write on the page; Quick Add in Engage and lasso captures record the meeting; + Next sparring. After: Reflect opens the Reflection page, R or Mark reviewed, and what you agreed shows under I owe in the thread. Past meetings whose review is open come back in the Weekly Review step Meetings to close out.](images/diagrams/meeting-flow.png)
 
@@ -41,7 +41,7 @@ On Week the panel has a line on top, for example "‹ Back to Week 42 · Thu 15.
 
 A meeting row shows the time, the title (tap a tag in it as anywhere else), where the meeting lives, a small [prep/review mark](meetings.md#preparation-and-review), the [note icon](meetings.md#meeting-notes) and - only when a file is linked - the clip, which opens that file.
 
-Tap the title, or the small mark, to select the meeting: the row gets a black bar and the meeting's *card* takes Quick Add's place, in the same box. Tap the title on the card, or [Edit](quick-add.md#editing) under its **More ›** - or the row a second time - to change its title, date or time; **Save** brings you back to the card. **✕** closes the card. This works wherever a meeting list has Quick Add: Daily, the day panel of Week and Month, a project's or area's [Meetings](projects-and-areas.md#the-current-tab), the [Inbox](quick-add.md#the-inbox), the Review's [Inbox step](review.md#the-steps) and the [Ahead](threads.md#ahead) list of a thread or [loop overview](loops.md#the-loop-overview).
+Tap the title, or the small mark, to select the meeting: the row gets a black bar and the meeting's *card* takes Quick Add's place, in the same box. Tap the title on the card, or [Edit](quick-add.md#editing) under its **More ›** - or the row a second time - to change its title, date or time; **Save** brings you back to the card. **✕** closes the card. This works wherever a meeting list has Quick Add: Daily, the day panel of Week and Month, a project's or area's [Meetings](projects-and-areas.md#the-current-tab), the [Inbox](daily.md#the-inbox), the Review's [Inbox step](review.md#the-steps) and the [Ahead](threads.md#ahead) list of a thread or [loop overview](loops.md#the-loop-overview).
 
 The card shows:
 

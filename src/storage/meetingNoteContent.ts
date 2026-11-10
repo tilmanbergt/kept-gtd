@@ -341,7 +341,7 @@ export async function populatePage(
  * setups decide the layout).
  *
  * `inbox` is an explicit optional 4th param, defaulting to `null` - non-
- * Inbox screens call this with 3 args; InboxScreen.tsx/
+ * Inbox screens call this with 3 args; the Review's Inbox step/
  * ReviewScreen.tsx pass their own already-loaded Inbox.txt tasks as the 4th
  * arg. No-ops (does nothing, doesn't throw) when `meeting.notePath` is
  * empty - defensive, since every real call site only calls this once a note
@@ -434,7 +434,7 @@ function sinceLastInbox(): ThreadInboxInput | null {
  * call contract (`handleCreateNote` passes `options.isInitialPopulation:
  * true`; `handleOpenNote` leaves it `false`), called from the matching
  * handlers in ProjectDataPanel.tsx's TodosSection, DailyView.tsx,
- * ReviewScreen.tsx and InboxScreen.tsx.
+ * ReviewScreen.tsx and screens/DailyView.tsx.
  *
  * No Todo page layout (a blank Default page) means `populatePage` is never
  * called at all: the note stays blank - the same as for Meetings.
@@ -658,7 +658,7 @@ export async function ensureMeetingNote(
 
 /**
  * Open-or-create entry point for a Meeting's linked note - the one function
- * DailyView/ProjectDataPanel/WeekView-Month (usePlanningScreen)/InboxScreen/
+ * DailyView/ProjectDataPanel/WeekView-Month (usePlanningScreen)/
  * ReviewScreen's note-icon tap handlers call: `ensureMeetingNote`, then opens
  * the page.
  *

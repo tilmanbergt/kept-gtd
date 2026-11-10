@@ -168,7 +168,7 @@ gets a short section on the page that owns it.
 Link targets for the labels that recur (add a row when you link a new one):
 
 - tabs: Projects, Areas `projects-and-areas.md`; Current `projects-and-areas.md#the-current-tab`;
-  Daily `daily.md`; Week, Month `week-and-month.md#week`, `#month`; Inbox `quick-add.md#the-inbox`;
+  Daily `daily.md`; Week, Month `week-and-month.md#week`, `#month`; Inbox `daily.md#the-inbox`;
   Review `review.md`; Settings `settings.md`
 - Quick Add `quick-add.md`, its Todo / Meeting / Agreement / Note tabs `#adding-a-todo`,
   `#adding-a-meeting`, `#adding-an-agreement`, `#adding-a-note`; the card

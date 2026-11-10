@@ -1,6 +1,6 @@
 /**
  * The folder-stack file browser pane shared by screens/ItemDetail.tsx and
- * screens/InboxScreen.tsx (technical-design-linked-files.md §5).
+ * (technical-design-linked-files.md §5).
  *
  * Renders one or more `roots` (a MiniTabs row when there's more than one -
  * ItemDetail's "Project Files"/"Resources" tabs; a single unlabeled root for
@@ -299,7 +299,7 @@ interface Props {
    * screens/ItemDetail.tsx's "Note" quick-add tab (memory:
    * feature_standalone_note_quickadd.md) to know where a new standalone
    * note would land. Optional - omitted by every caller that doesn't need
-   * it (screens/InboxScreen.tsx).
+   * it.
    */
   onActiveLocationChange?: (rootKey: string, folderPath: string) => void;
   /**

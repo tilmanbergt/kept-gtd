@@ -1,7 +1,7 @@
 /**
  * The shared Google Calendar mini-view (docs/dev/technical-design-google-
  * calendar.md §8) - embedded identically as tab 2 of a MiniTabs switcher in
- * DailyView/ProjectDataPanel/InboxScreen/ReviewScreen's Week-ahead step, one
+ * DailyView/ProjectDataPanel/ReviewScreen's Week-ahead step, one
  * shared component rather than four bespoke UIs.
  *
  * The fetch always covers today..+30 days (storage/googleCalendarCache.ts);

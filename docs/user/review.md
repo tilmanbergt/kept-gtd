@@ -46,7 +46,7 @@ This step is about keeping your word in ongoing relationships: is the next meeti
 On the left:
 
 - **New** on top: [counterparts](threads.md#tending-counterparts) you use but haven't confirmed, with the area or project they belong to, and inactive ones that got a new meeting (`back in use`).
-- Then one block per area (with its projects) and per project without an area, its active counterparts that need tending, in alphabetical order: nothing planned in the next 14 days and no `#next` or I-owe todo. A counterpart with its next meeting set up or a next step on the list is in good hands and not listed. The [Inbox](quick-add.md#the-inbox) has none.
+- Then one block per area (with its projects) and per project without an area, its active counterparts that need tending, in alphabetical order: nothing planned in the next 14 days and no `#next` or I-owe todo. A counterpart with its next meeting set up or a next step on the list is in good hands and not listed. The [Inbox](daily.md#the-inbox) has none.
 
 Each row has two lines: the counterpart, then `last 30.9. · next 14.10.` and what is open (`w/f 18 d`); `nothing planned` when no meeting is set up for the next 14 days. One-off counterparts (only `#wf/name` or `#owe/name`) show `w/f only`, `owe only` or `w/f · owe only` instead of meeting dates.
 

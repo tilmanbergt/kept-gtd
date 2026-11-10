@@ -146,7 +146,7 @@ top-aligned, so if a prediction is too large the spare space sits at the bottom 
 | This-file row (Files pane, while linking) | `ui/fileBrowser/ThisFileRows.tsx` | **42 (fixed)** | `THIS_FILE_ROW_PX`, one line, above the list: two rows take 84 dp from the list box, which measures itself. |
 | Project/Area entry, Projects/Areas tabs | `screens/ItemsList.tsx` → `itemEntryHeight()` | **38** / **60** | Padding 8 × 2 + lines × 22, max 2 lines, `#ABBR` included in the estimate. |
 | Project/Area entry, Review lists | `ui/itemEntryRow.ts` → `itemEntryHeight()` | **34** / **56** | Padding 6 × 2 + lines × 22. |
-| Task group header (Project, Inbox) | `screens/ProjectDataPanel.tsx`, `screens/InboxScreen.tsx` | **30** | `SUBHEADING_ROW_PX`: `marginTop 10` + small line ~18 + `marginBottom 4`, rounded down. |
+| Task group header (Project) | `screens/ProjectDataPanel.tsx` | **30** | `SUBHEADING_ROW_PX`: `marginTop 10` + small line ~18 + `marginBottom 4`, rounded down. |
 | Task group header (Daily "Next todos") | `screens/DailyView.tsx` | **57** budgeted | `GROUP_HEADER_ROW_PX`. The header renders at its natural height (`common.subheading` + `marginTop 12` ≈ 42); the budget leaves room on purpose. |
 
 Pattern for a new row type: give it a height function (or one fixed height) that matches the

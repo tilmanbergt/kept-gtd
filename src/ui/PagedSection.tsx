@@ -24,7 +24,7 @@
  * the arrows' visibility condition; a single-page list shows neither.
  *
  * `N` only counts "real" rows, per `isCountableRow` below. Several callers
- * (screens/ProjectDataPanel.tsx's Todos/Meetings, screens/InboxScreen.tsx's
+ * (screens/ProjectDataPanel.tsx's Todos/Meetings, screens/daily/InboxList.tsx's
  * Tasks/Meetings, screens/DailyView.tsx's Open-tasks) flatten a grouped list
  * into one paginated `rows` sequence with `{kind: 'header'}` rows standing
  * in for each group's own label (docs/dev/history/technical-design-pagination-edit-reuse.md

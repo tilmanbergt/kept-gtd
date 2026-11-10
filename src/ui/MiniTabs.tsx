@@ -2,7 +2,7 @@
  * A small generic segmented switcher (docs/dev/technical-design-google-
  * calendar.md §8) - one shared primitive used two ways, uniform across the
  * app: 2-way (existing view | Google Calendar) in
- * every calendar-showing area (DailyView/ProjectDataPanel/InboxScreen/
+ * every calendar-showing area (DailyView/ProjectDataPanel/
  * ReviewScreen's Week-ahead step), and 3-way (Folders | Focus | Calendar) in
  * Settings.tsx. Deliberately just a row of labels with an active underline
  * - no icons, no counts - so it reads the same in every context it's used.

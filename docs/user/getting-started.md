@@ -15,7 +15,7 @@ To update later, install the newer file over the old one. Read the [Upgrade note
 Kept keeps everything in four folders inside your `Note` folder ([The folder layout](files-and-folders.md#the-folder-layout)):
 
 - `1 Projects`: one folder per project
-- `2 Areas`: one folder per area of responsibility, plus `0 Inbox` for the [Inbox](quick-add.md#the-inbox)
+- `2 Areas`: one folder per area of responsibility, plus `0 Inbox` for the [Inbox](daily.md#the-inbox)
 - `3 Resources`: reference material
 - `4 Archive`: finished projects
 
@@ -50,9 +50,9 @@ By default all notes of a project go into one notebook per year, its [home noteb
 
 ## Capture while you write
 
-While you write in any note, select handwriting with the [lasso](lasso.md) and tap [Capture Todo/Meeting](lasso.md#capturing-right-away): Kept recognizes it and opens Quick Add with the text. No time to sort? [Mark for later](lasso.md#marking-for-later) keeps the selection with one tap, and you [file it later](lasso.md#processing-marks) from the [Inbox](quick-add.md#the-inbox).
+While you write in any note, select handwriting with the [lasso](lasso.md) and tap [Capture Todo/Meeting](lasso.md#capturing-right-away): Kept recognizes it and opens Quick Add with the text. No time to sort? [Mark for later](lasso.md#marking-for-later) keeps the selection with one tap, and you [file it later](lasso.md#processing-marks) from the [Inbox](daily.md#the-inbox).
 
-Everything you add without a project lands in the [Inbox](quick-add.md#the-inbox).
+Everything you add without a project lands in the [Inbox](daily.md#the-inbox).
 
 ## Once a week
 

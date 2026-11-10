@@ -8,7 +8,7 @@
  * `context` says whether the list is grouped by flow state:
  * - 'flat' (Daily, Review's Inbox step): nothing else on screen says a todo is
  *   Next or Waiting For, so the label does.
- * - 'grouped' (Current's and the Inbox tab's Todos): the section heading
+ * - 'grouped' (grouped lists such as the overviews'): the section heading
  *   already names the flow state, so the label leaves it out. A waiting
  *   name still shows - the heading doesn't say who.
  *

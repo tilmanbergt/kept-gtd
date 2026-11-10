@@ -1,5 +1,6 @@
 // docs/dev/history/technical-design-calmer-screens.md §6 scenarios 12-13: the Inbox on Daily (14, the context: contexts.test.tsx).
-import {expectNotShows, expectShows, fieldValue, labelled, openApp, shows, tap, tapLabel, tapTab, textsBetween} from '../../test-helpers/scenario/app';
+import {todayIso} from '../../src/domain/meetingTime';
+import {expectNotShows, expectShows, fieldValue, labelled, openApp, readTexts, shows, tap, tapLabel, tapTab, textsBetween} from '../../test-helpers/scenario/app';
 import {areaFile, dataFile, fileText, INBOX_FILE, loggedErrors, projectFile, putFile, sectionLines} from '../../test-helpers/scenario/files';
 import {device} from '../../test-helpers/fakeDevice/device';
 import {fixedClock} from '../../test-helpers/scenario/clock';
@@ -197,5 +198,25 @@ scenario('Review\'s Inbox to zero shows the same list and card, and filing works
     expectShows(/^Filed "Ask Lena #lena" to Team offsite/);
     expectShows('File to');
     expect(loggedErrors()).toEqual([]);
+  });
+});
+
+scenario('There is no Inbox tab; a meeting\'s "Inbox" source opens Daily\'s Inbox tab', {feature: 'Daily', design: 'technical-design-calmer-screens.md', help: 'daily.md#the-inbox'}, () => {
+  given('an Inbox meeting today and a #next todo in a project', () => {
+    putFile(projectFile('Garden renovation'), dataFile('project', {Scope: [], Tasks: ['- [ ] Order soil #next'], Meetings: []}));
+    putFile(INBOX_FILE, dataFile('inbox', {Tasks: [], Meetings: [`- ${todayIso()} 23:00 Call with Sam`]}));
+  });
+  when('I open Daily', async () => {
+    await openApp();
+    await tapTab('Daily');
+  });
+  then('the tab bar has no Inbox, and Next lists the project todo', () => {
+    expect(readTexts().slice(0, 9)).not.toContain('Inbox');
+    expectShows('Order soil');
+  });
+  when('I tap the meeting\'s source "Inbox" in the schedule', () => tap('Inbox'));
+  then('the Inbox tab is open and lists the meeting', () => {
+    expectNotShows('Order soil');
+    expect(textsBetween('Inbox 1')).toContain('Call with Sam');
   });
 });

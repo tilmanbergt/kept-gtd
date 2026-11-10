@@ -28,7 +28,7 @@ Jordan's thread shows it under **I owe** and under the meeting of 30.9. in [Look
 
 ## Opening the overview
 
-Tap a nested tag in a todo or meeting, on any screen: [Daily](daily.md), [Week](week-and-month.md#week), [Month](week-and-month.md#month), [Inbox](quick-add.md#the-inbox), [Current](projects-and-areas.md#the-current-tab) or the [Review](review.md). A `#w/f Name` [label](daily.md#labels) and an `#owe/name` tag name a counterpart rather than a thread: they open [All name](threads.md#thread-or-all-of-the-counterpart), everything with that counterpart, without the switch. The overview opens over the screen; the tab bar stays.
+Tap a nested tag in a todo or meeting, on any screen: [Daily](daily.md), [Week](week-and-month.md#week), [Month](week-and-month.md#month), [Inbox](daily.md#the-inbox), [Current](projects-and-areas.md#the-current-tab) or the [Review](review.md). A `#w/f Name` [label](daily.md#labels) and an `#owe/name` tag name a counterpart rather than a thread: they open [All name](threads.md#thread-or-all-of-the-counterpart), everything with that counterpart, without the switch. The overview opens over the screen; the tab bar stays.
 
 - **‹ Daily** (the name of the tab underneath) closes it, and so does a tap on any tab. The screen behind is exactly as you left it.
 - The help and the overview replace each other.
@@ -36,7 +36,7 @@ Tap a nested tag in a todo or meeting, on any screen: [Daily](daily.md), [Week](
 
 ## The place it covers
 
-The overview belongs to the project or area of the row you tapped. It shows that area together with the [projects assigned to it](projects-and-areas.md#assigning-a-project-to-an-area); a project with an assigned area shows its whole area. A project without an area and the [Inbox](quick-add.md#the-inbox) each stand on their own. So `#sparring/jordan` in one area is a different thread from `#sparring/jordan` in another. A todo counts where it is filed: one agreed in a meeting but sent to the Inbox shows in the meeting's thread once you file it into that project or area. The header shows the tag and where you are, for example `#sparring/jordan in Coaching`. [Engage ›](engage.md#opening-engage) opens [Engage](engage.md) for the thread (not for `#wf/…` and `#owe/…`, which name a person rather than a thread).
+The overview belongs to the project or area of the row you tapped. It shows that area together with the [projects assigned to it](projects-and-areas.md#assigning-a-project-to-an-area); a project with an assigned area shows its whole area. A project without an area and the [Inbox](daily.md#the-inbox) each stand on their own. So `#sparring/jordan` in one area is a different thread from `#sparring/jordan` in another. A todo counts where it is filed: one agreed in a meeting but sent to the Inbox shows in the meeting's thread once you file it into that project or area. The header shows the tag and where you are, for example `#sparring/jordan in Coaching`. [Engage ›](engage.md#opening-engage) opens [Engage](engage.md) for the thread (not for `#wf/…` and `#owe/…`, which name a person rather than a thread).
 
 ## Thread or all of the counterpart
 

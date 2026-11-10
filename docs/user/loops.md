@@ -9,7 +9,7 @@ Threads you tend, loops you close: a [thread](threads.md) is an ongoing relation
 A loop is named by a [nested tag](tags.md#nested-tags), `#<kind>/<name>`, for example `#workshop/offsite` or `#race/marathon`. The kinds come from your [Note setups](note-setups.md#what-a-setup-is): a setup of the kind **Loop** on the tag `workshop` makes every `#workshop/<name>` a loop. Each kind has its own pages for the [loop note](loops.md#the-loop-note), see [The page layout](note-setups.md#the-page-layout).
 
 - Only the full tag counts: `#workshop/offsite`. A plain `#offsite` is just a tag.
-- A loop belongs to exactly one Area or Project: the one its line is in. The [Inbox](quick-add.md#the-inbox) never holds loops.
+- A loop belongs to exactly one Area or Project: the one its line is in. The [Inbox](daily.md#the-inbox) never holds loops.
 
 ## Starting a loop
 
@@ -19,7 +19,7 @@ Type only the loop's tag into [Quick Add](quick-add.md), for example `#workshop/
 - With `#someday` or `#maybe`, it stays a todo: a *loop idea*: a loop tag together with `#someday`. When you take someday or maybe off - in Quick Add or in the [Weekly Review](review.md#open-loops) - it becomes the loop.
 - A todo with words and a loop tag, like `Book the workshop room #workshop/offsite`, is a todo of that loop.
 - A todo you already have can become a loop: [edit](quick-add.md#editing) it and replace its text with the loop's tag. **Save** turns into **Make loop**; its due date becomes the main date, and its own note and linked file come along.
-- In the Inbox, a loop tag on its own stays a todo; it becomes the loop when you [file it](quick-add.md#the-inbox) into an Area or Project.
+- In the Inbox, a loop tag on its own stays a todo; it becomes the loop when you [file it](daily.md#the-inbox) into an Area or Project.
 - If the loop already exists, **+ Add** stays grey: type some words to add a todo of it.
 
 ## Where loops show

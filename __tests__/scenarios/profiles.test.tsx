@@ -1,5 +1,5 @@
 import {device} from '../../test-helpers/fakeDevice/device';
-import {expectNotShows, expectShows, labelled, openApp, tap, tapLabel, tapTab, type} from '../../test-helpers/scenario/app';
+import {expectNotShows, expectShows, labelled, openApp, openInbox, tap, tapLabel, tapTab, type} from '../../test-helpers/scenario/app';
 import {dataFile, INBOX_FILE, projectFile, putFile, sectionLines} from '../../test-helpers/scenario/files';
 import {and, given, scenario, then, when} from '../../test-helpers/scenario/scenario';
 
@@ -34,7 +34,7 @@ scenario('Try things in the demo space without touching the real files, then swi
     expectShows(/Plan the beds/);
   });
   when('I add the todo "Try the demo" in the Inbox', async () => {
-    await tapTab('Inbox');
+    await openInbox();
     await type('New task', 'Try the demo');
     await tap('+ Add');
   });
@@ -51,7 +51,7 @@ scenario('Try things in the demo space without touching the real files, then swi
     expect(labelled('Demo space')).toBeNull();
     await tapTab('Projects');
     expectShows(/^Website +#WEB/);
-    await tapTab('Inbox');
+    await openInbox();
     expectNotShows(/Try the demo/);
   });
   and('both profiles are saved as files in EXPORT/kept-gtd/profiles', () => {

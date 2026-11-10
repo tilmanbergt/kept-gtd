@@ -41,7 +41,12 @@ export interface GtdParaSettings {
    * it, and nothing reads it here.
    */
   hideDoneProjectTasks: boolean;
-  /** "Hide done tasks" on the Inbox tab, remembered across visits; defaults to false (shown). */
+  /**
+   * Retired: the Inbox tab's "Hide done tasks". The Inbox lives on Daily's Inbox
+   * tab, which lists open items only (docs/dev/history/technical-design-calmer-screens.md
+   * §3.7); the key stays stored and in DEFAULT_SETTINGS for older versions, and
+   * nothing reads it here.
+   */
   hideDoneInboxTasks: boolean;
   /**
    * The user's Google Calendar "secret address in iCal format" URL

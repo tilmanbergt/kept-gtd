@@ -12,7 +12,7 @@ Like a todo, an agreement belongs where its tags say:
 - *A loop*: tagged with the loop, for example `#workshop/offsite`. It shows in the [loop's overview](loops.md#the-loop-overview).
 - *A project or area*: no thread or loop tag. It shows on its [page](projects-and-areas.md#the-current-tab).
 
-It is written into the file that owns this place: for a thread the area's `area.txt` (or the project's `project.txt` when the project has no area), for a loop the file the loop lives in, for a project or area its own file. Agreements are never kept in the [Inbox](quick-add.md#the-inbox).
+It is written into the file that owns this place: for a thread the area's `area.txt` (or the project's `project.txt` when the project has no area), for a loop the file the loop lives in, for a project or area its own file. Agreements are never kept in the [Inbox](daily.md#the-inbox).
 
 ## Adding one
 

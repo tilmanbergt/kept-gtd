@@ -80,7 +80,7 @@ While a counterpart is filtered, its row offers [Set inactive](threads.md#tendin
 
 Every project and area has one obvious place to write: its *home notebook*. It is the notebook of the [Default](note-setups.md#the-default) note setup, made for that project or area - with the standard name `{name} {year}`, "Garden renovation 2026.note" in the project's own folder. One tap takes you there; then Kept gets out of the way.
 
-The home notebook exists only while the Default uses [One notebook](note-setups.md#what-a-setup-is) (Settings → Note setups → Default → Notes). With **Own note per item** there are no notebook icons, no Notebook tab and no ["Go to" line](projects-and-areas.md#engage-go-to-the-notebook). The [Inbox](quick-add.md#the-inbox) has no home notebook.
+The home notebook exists only while the Default uses [One notebook](note-setups.md#what-a-setup-is) (Settings → Note setups → Default → Notes). With **Own note per item** there are no notebook icons, no Notebook tab and no ["Go to" line](projects-and-areas.md#engage-go-to-the-notebook). The [Inbox](daily.md#the-inbox) has no home notebook.
 
 ### The notebook icon
 

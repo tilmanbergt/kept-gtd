@@ -1,6 +1,6 @@
 /**
  * Opens the marks screen from anywhere (docs/dev/history/technical-design-lasso-0.8.md
- * §3.10): App registers its handler once; the Inbox, Current, Review and
+ * §3.10): App registers its handler once; Daily, Current, Review and
  * close-out cards call `openMarks`. A module-level hand-off instead of a
  * prop through every screen, because the cards sit deep inside kept screens
  * (ItemDetail → ProjectDataPanel) whose elements App creates once.
@@ -8,7 +8,7 @@
 import {MarkScope} from '../domain/marks';
 import {logWarn} from '../utils/log';
 
-export type MarksReturnTo = 'inbox' | 'current' | 'review' | 'closeOut' | 'engage';
+export type MarksReturnTo = 'daily' | 'current' | 'review' | 'closeOut' | 'engage';
 
 type Handler = (scope: MarkScope, returnTo: MarksReturnTo) => void;
 

@@ -48,7 +48,7 @@ import {useLayoutClass} from './ScreenSize';
 import {COLORS, FONT, useThemeColors} from './theme';
 import {usePerfRender} from '../utils/perf';
 
-export type AppTab = 'projects' | 'areas' | 'daily' | 'week' | 'month' | 'inbox' | 'current' | 'review' | 'settings';
+export type AppTab = 'projects' | 'areas' | 'daily' | 'week' | 'month' | 'current' | 'review' | 'settings';
 
 const TABS: Array<{key: AppTab; label: string}> = [
   {key: 'projects', label: 'Projects'},
@@ -56,7 +56,6 @@ const TABS: Array<{key: AppTab; label: string}> = [
   {key: 'daily', label: 'Daily'},
   {key: 'week', label: 'Week'},
   {key: 'month', label: 'Month'},
-  {key: 'inbox', label: 'Inbox'},
   {key: 'current', label: 'Current'},
   {key: 'review', label: 'Review'},
   {key: 'settings', label: 'Settings'},

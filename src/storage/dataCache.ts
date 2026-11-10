@@ -374,7 +374,7 @@ export async function assignDefaultAbbrevIfMissing(item: CachedItem): Promise<vo
  * De-duped: App.tsx's `reorient` kicks off a background rebuild on every
  * plugin open/foreground, and most screens' own `load()` falls back to
  * `await rebuildCache(...)` when they find no cache yet (DailyView/
- * InboxScreen/ReviewScreen/CaptureScreen). A caller that arrives while a
+ * ReviewScreen/CaptureScreen). A caller that arrives while a
  * rebuild is already running gets that same in-flight promise back instead
  * of starting a second, redundant full-vault scan - same pattern as
  * storage/googleCalendarCache.ts's `refreshGoogleCalendar` /

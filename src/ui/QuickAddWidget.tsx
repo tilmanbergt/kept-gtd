@@ -188,7 +188,7 @@ interface Props extends AgreementHandlers {
    * resolveAbbrevFileTarget's self-exclude check - `null` when it's an Inbox
    * item (Inbox never carries an abbreviation, so it can never self-match
    * anyway). Omit this prop entirely on a screen where `fixedDestination`
-   * already always names whatever's being edited (Inbox tab, Current tab,
+   * already always names whatever's being edited (Current tab,
    * Review's Inbox-to-zero step - every one of those is either always
    * `{type: 'inbox'}` or always that Project/Area's own path): the exclude
    * check then derives it from `fixedDestination`. Daily is the one screen

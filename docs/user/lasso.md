@@ -12,7 +12,7 @@ The lasso toolbar has two Kept GTD buttons:
 1. Select handwriting (or a text box) with the lasso and tap **Capture Todo/Meeting**.
 2. The screen **New from Lasso** shows the selection as a picture and the recognized text below it. The text appears as soon as recognition is done, usually after a few seconds. If you start typing before that, your text is kept.
 3. Choose **Todo** or **Meeting**, correct the text, and pick [flow chips](tags.md#flow-tags-for-todos), tags and a [due date](tags.md#due-dates) as in [Quick Add](quick-add.md). The recognized text's tags are checked as soon as it appears: a tag close to one you use - `#Iena` for `#lena` - is suggested in the strip over the text when you tap into it ([Tag suggestions](quick-add.md#tag-suggestions)); nothing is changed without a tap.
-4. **File to** shows where the item goes: the project or area the note belongs to, otherwise the [Inbox](quick-add.md#the-inbox). The chips offer the Inbox, that place and the ones you saved to lately; **More…** shows all of them. Writing an [abbreviation](projects-and-areas.md#abbreviations) like `#GR` in the text files it there, too.
+4. **File to** shows where the item goes: the project or area the note belongs to, otherwise the [Inbox](daily.md#the-inbox). The chips offer the Inbox, that place and the ones you saved to lately; **More…** shows all of them. Writing an [abbreviation](projects-and-areas.md#abbreviations) like `#GR` in the text files it there, too.
 5. Save with one of the three buttons under the text.
 
 - **Save & next** saves and goes on: to the next [open mark](lasso.md#processing-marks), if there is one, otherwise to an empty form for another item.
@@ -41,13 +41,13 @@ A list with boxes, dashes, dots or numbers in front of the lines becomes one tod
 
 **Mark for later** keeps a picture and the handwriting of the selection, and puts a small bookmark icon into the note so you can see what is marked. Nothing is recognized yet, so the tap is quick.
 
-The mark is listed in the project or area the note belongs to; marks from other notes and PDFs go to the [Inbox](quick-add.md#the-inbox). How to work through them: [Processing marks](lasso.md#processing-marks).
+The mark is listed in the project or area the note belongs to; marks from other notes and PDFs go to the [Inbox](daily.md#the-inbox). How to work through them: [Processing marks](lasso.md#processing-marks).
 
 ## Processing marks
 
 Open marks show as a card **n marks to process** under Quick Add:
 
-- on the [Inbox](quick-add.md#the-inbox) tab: all marks,
+- on the [Inbox](daily.md#the-inbox) tab: all marks,
 - on the [Current](projects-and-areas.md#the-current-tab) tab: the marks of that project or area,
 - in the [Weekly Review](review.md) step [Inbox to zero](review.md#the-steps): all marks, and they count toward the step.
 
@@ -65,7 +65,7 @@ One mark creates items of one kind: several todos, one meeting or one agreement.
 
 ## Closing out and archiving
 
-The [close-out](close-out.md#the-five-steps) checklist warns about open marks of the project, with **Process ›** next to each. Open marks don't block [archiving](close-out.md#where-things-end-up): they move to the [Inbox](quick-add.md#the-inbox) and still find their note in the archive.
+The [close-out](close-out.md#the-five-steps) checklist warns about open marks of the project, with **Process ›** next to each. Open marks don't block [archiving](close-out.md#where-things-end-up): they move to the [Inbox](daily.md#the-inbox) and still find their note in the archive.
 
 ## Where marks are stored
 

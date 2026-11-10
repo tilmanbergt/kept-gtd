@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-247 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+248 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -377,6 +377,16 @@ Test: `__tests__/scenarios/calmerInbox.test.tsx` · design: `docs/dev/history/te
 - **Then** it lists the parked todo, under the Inbox
 
 Test: `__tests__/scenarios/calmerInbox.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `daily.md#more-places-new-project-someday`
+
+### There is no Inbox tab; a meeting's "Inbox" source opens Daily's Inbox tab
+
+- **Given** an Inbox meeting today and a #next todo in a project
+- **When** I open Daily
+- **Then** the tab bar has no Inbox, and Next lists the project todo
+- **When** I tap the meeting's source "Inbox" in the schedule
+- **Then** the Inbox tab is open and lists the meeting
+
+Test: `__tests__/scenarios/calmerInbox.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `daily.md#the-inbox`
 
 ### A Daily row keeps its words; the due date moves to a grey note on the right; no note icon without a note
 
@@ -884,20 +894,12 @@ Test: `__tests__/scenarios/helpLinksTallDiagram.test.tsx` · design: `docs/dev/h
 ### Refile a todo with its note from the Inbox to a project
 
 - **Given** Inbox.txt has the todo "Call Anna" with its note "Call Anna.note", and project "Website" exists
-- **When** I open the Inbox, tap "Call Anna", tap the refile arrow on its card, open Projects, tap "Website" and confirm Move
+- **When** I open Daily's Inbox, tap "Call Anna", tap More… on its card, tap "Website" and confirm Move
 - **Then** Website's project.txt has the todo with its note link, after "Write copy"
 - **Then** Inbox.txt no longer has it
 - **Then** the note moved into the project's folder, keywords and all
 
-Test: `__tests__/scenarios/inbox.test.tsx` · design: `docs/dev/history/technical-design-filing-unification.md` · help: `quick-add.md#the-inbox`
-
-### Refile a meeting from the card's area chip
-
-- **Given** the Inbox meeting "Kick-off" next week and project "Website"
-- **When** I tap the meeting, tap the refile arrow and pick Website in the Files pane
-- **Then** the meeting is in Website and no longer in the Inbox
-
-Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/technical-design-item-card.md` · help: `quick-add.md#the-card-one-tap-selects`
+Test: `__tests__/scenarios/inbox.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `daily.md#more-places-new-project-someday`
 
 ## Interruptions
 
@@ -997,13 +999,21 @@ Test: `__tests__/scenarios/focusBlocks.test.tsx` · help: `meetings.md#focus-blo
 
 Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/technical-design-item-card.md` · help: `meetings.md#the-meeting-row-and-its-card`
 
+### Refile a meeting from the card's area chip
+
+- **Given** project "Garden renovation" with the meeting "Kick-off" next week, and project "Website"
+- **When** I tap the meeting, tap the refile arrow and pick Website in the Files pane
+- **Then** the meeting is in Website and no longer in Garden renovation
+
+Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/technical-design-item-card.md` · help: `quick-add.md#the-card-one-tap-selects`
+
 ### New from this and Cancel meeting from the card
 
-- **Given** the Inbox meeting "Retro" next week
+- **Given** project Website's meeting "Retro" next week
 - **When** I tap the meeting and New from this on its card
 - **Then** Create · Meeting holds the title, date and time; the card is closed
 - **When** I tap the meeting again, Cancel meeting, and confirm
-- **Then** the meeting is marked cancelled in Inbox.txt, and the card says so
+- **Then** the meeting is marked cancelled in Website's file, and the card says so
 
 Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/technical-design-item-card.md` · help: `meetings.md#the-meeting-row-and-its-card`, `meetings.md#cancelling-and-repeating`
 
@@ -1407,8 +1417,8 @@ Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/techn
 ### After + Add with an abbreviation tag, the next todo starts with that tag
 
 - **Given** project "Website" (#WEB) and an empty Inbox
-- **When** I add "Call the designer #web" from the Inbox
-- **Then** the field starts the next todo with "#WEB ", and the button still files to Website
+- **When** I add "Call the designer #web" from Daily
+- **Then** the box closes; + Todo starts the next todo with "#WEB ", and the button still files to Website
 - **When** I tap + Add with nothing but the tag
 - **Then** nothing is added
 - **When** I write the next todo after the tag and add it
@@ -1429,26 +1439,26 @@ Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/techn
 
 ### Tap a meeting shows its card; ✕ brings back the half-typed todo
 
-- **Given** the Inbox meeting "Team sync" next week
-- **When** I start the todo "Call Anna" in the Inbox and tap the meeting
+- **Given** project Website's meeting "Team sync" next week
+- **When** I start the todo "Call Anna" on Website's page and tap the meeting
 - **Then** the card names the meeting in Quick Add's place
 - **When** I tap ✕ on the card
-- **Then** Quick Add is back with "Call Anna" still in the field
+- **Then** Quick Add is back, closed; + Todo shows "Call Anna" still in the field
 
 Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/technical-design-item-card.md` · help: `quick-add.md#the-card-one-tap-selects`
 
 ### A second tap edits; Save writes it and shows the card again
 
-- **Given** the Inbox meeting "Team sync" next week
+- **Given** project Website's meeting "Team sync" next week
 - **When** I tap the meeting, tap Edit, rename it and Save
-- **Then** Inbox.txt has the new title
+- **Then** Website's file has the new title
 - **And** the card shows the meeting again, not the edit form
 
 Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/technical-design-item-card.md` · help: `quick-add.md#editing`
 
 ### Switching to another meeting while editing saves first and shows the other's card
 
-- **Given** the Inbox meetings "Team sync" and "Retro" next week
+- **Given** project Website's meetings "Team sync" and "Retro" next week
 - **When** I edit "Team sync", rename it, and tap "Retro"
 - **Then** the rename is saved
 - **And** "Retro" shows as card
@@ -1714,7 +1724,7 @@ Test: `__tests__/scenarios/features.test.tsx` · help: `settings.md#features`
 - **Given** the stored settings are broken and the Inbox has a done todo
 - **When** I open Kept GTD
 - **Then** the status line says the settings could not be read
-- **And** a setting changed on the way (Inbox: hide done) leaves the stored settings as they were
+- **And** a setting changed on the way (Settings → Features: Project close-out) leaves the stored settings as they were
 - **And** "Start over" stores the defaults and the message goes away
 
 Test: `__tests__/scenarios/fileSafety.test.tsx` · design: `docs/dev/history/technical-design-quality-hardening.md` · help: `troubleshooting.md#common-situations`

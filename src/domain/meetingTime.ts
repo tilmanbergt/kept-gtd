@@ -138,7 +138,7 @@ export function formatMeetingWhen(w: Pick<Meeting, 'time' | 'endTime' | 'days'>)
  * app's list-display rule: today shows no date prefix (the time alone is
  * enough), any other day gets a short "day.month." prefix (e.g. "20.4.")
  * ahead of the time (domain/dateFormat.ts), so a meeting/event list spanning more than one day
- * (ProjectDataPanel's/InboxScreen's Meetings sections, ReviewScreen's
+ * (ProjectDataPanel's Meetings section, ReviewScreen's
  * Inbox-to-zero cards, ui/GoogleCalendarPanel.tsx's up-to-30-day window)
  * never shows a bare time with no indication of which day it's on. Used by
  * ui/MeetingRow.tsx and ui/GoogleCalendarPanel.tsx so every such list in the

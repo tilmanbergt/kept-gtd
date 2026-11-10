@@ -126,7 +126,7 @@ const MEETINGS_WEIGHT = 3;
 /** Which row (task or meeting, by index into ProjectDataPanel's own `state.tasks`/`state.meetings`) is being edited or armed - technical-design-linked-files.md §8's cross-cutting "one edit target" lift. Owned here rather than independently by TodosSection/MeetingsSection, so starting an edit/arm on either row type always cancels whichever of the other three states (the other type's edit, either type's arm) was active - there is exactly one edit *or* arm going on at a time, screen-wide. */
 type EditTarget = PanelEditTarget;
 
-/** The one arm target for this whole screen - extends EditTarget with which action armed it, mirroring screens/InboxScreen.tsx's own ArmTarget (docs/dev/history/technical-design-filing-unification.md §3.2). 'link' picks an existing file to attach; 'refile' (storage/inboxFiling.ts's module doc comment) picks a different Project/Area to move the item into - the Current tab's own entry point for filing. */
+/** The one arm target for this whole screen - extends EditTarget with which action armed it (docs/dev/history/technical-design-filing-unification.md §3.2). 'link' picks an existing file to attach; 'refile' (storage/inboxFiling.ts's module doc comment) picks a different Project/Area to move the item into - the Current tab's own entry point for filing. */
 type ArmTarget = {type: 'task' | 'meeting'; index: number; intent: 'link' | 'refile'};
 
 interface Props {
@@ -414,7 +414,7 @@ export default function ProjectDataPanel({
 
   /**
    * QuickAddWidget's onQuickFile in edit mode: "save, but file elsewhere"
-   * (see InboxScreen's handleQuickFileEdit). Throws instead of using
+   * (as Daily's Quick Add does). Throws instead of using
    * runWidgetAction, so the widget can show the failure inline; closes edit
    * mode only after the move succeeded. A tag naming this item itself never
    * resolves to a target (resolveAbbrevFileTarget's excludePath); the path
@@ -550,7 +550,7 @@ export default function ProjectDataPanel({
     });
   };
 
-  // `root: 'browse'` - see screens/InboxScreen.tsx's own linkTarget for the
+  // `root: 'browse'` - see ui/FileBrowserPane.tsx's linkTarget for the
   // full note. Both this and area-assignment's own pickKind:'folder' arm
   // (ui/ItemStatusPanel.tsx) set `root: 'browse'` (area-assignment adds `startAt: 'area'` to
   // land inside Areas directly) - ItemDetail.tsx's `isRefileArming`
