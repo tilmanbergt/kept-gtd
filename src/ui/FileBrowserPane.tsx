@@ -115,6 +115,12 @@
  * one that starts while an extra tab is shown switches to a root, and an
  * arm that ends goes back to the extra tab it started on.
  *
+ * `startKey` - the extra tab the pane opens on, or null for the roots (the
+ * Current page's open rule, docs/dev/history/technical-design-calmer-screens.md
+ * §3.8). While no tab has been tapped since the last `resetKey`, a changed
+ * `startKey` moves the pane there (the page's parts settle once the cache
+ * answers); after a tap it stays.
+ *
  * `groupLabel` (the Project/Area page's "Files",
  * docs/dev/history/technical-design-note-setups-finish.md §2) - all `roots`
  * share one top tab with that label, and a second, smaller MiniTabs row
@@ -313,6 +319,8 @@ interface Props {
   viewportHeight?: number;
   /** Tabs before the roots with their own content - see the module doc comment's `extraTabs` note. */
   extraTabs?: FileBrowserExtraTab[];
+  /** The extra tab to open on (null: the roots); without it, the first extra tab - see the module doc comment's `startKey` note. */
+  startKey?: string | null;
   /** All roots under one top tab with this label - see the module doc comment's `groupLabel` note. */
   groupLabel?: string;
   /**
@@ -343,6 +351,7 @@ export default function FileBrowserPane({
   onActiveLocationChange,
   viewportHeight,
   extraTabs = [],
+  startKey,
   groupLabel,
   thisFileRows = false,
   textColor,
@@ -360,7 +369,10 @@ export default function FileBrowserPane({
   const slotRoot = roots.find(r => r.key === activeRootKey) ?? roots[0];
   const [showAlternate, setShowAlternate] = useState(false);
   const activeRoot = showAlternate && slotRoot?.alternate ? slotRoot.alternate : slotRoot;
-  const [extraKey, setExtraKey] = useState<string | null>(extraTabs[0]?.key ?? null);
+  const openKey = startKey !== undefined ? startKey : extraTabs[0]?.key ?? null;
+  const [extraKey, setExtraKey] = useState<string | null>(openKey);
+  // Whether a tab was tapped since the last reset: then a changed `startKey` leaves the pane where it is.
+  const chosenRef = useRef(false);
   const activeExtra = extraTabs.find(t => t.key === extraKey) ?? null;
   // Set by the locating/arming effects when they build the stack themselves, so the reset below doesn't undo it.
   const builtForRef = useRef<string | null>(null);
@@ -424,13 +436,19 @@ export default function FileBrowserPane({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeRootIdentity, resetKey]);
 
-  // A new item opens on the first extra tab again (and a group on its first root).
-  const firstExtraKey = extraTabs[0]?.key ?? null;
+  // A new item opens on its start tab again (and a group on its first root).
   useEffect(() => {
-    setExtraKey(firstExtraKey);
+    chosenRef.current = false;
+    setExtraKey(openKey);
     if (groupLabel) setActiveRootKey(ownRoots[0]?.key);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resetKey]);
+  // The start tab follows `startKey` (what the page shows settles) until a tab is tapped or an arm runs.
+  useEffect(() => {
+    if (chosenRef.current || arming) return;
+    setExtraKey(openKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [openKey]);
 
   /** The slot showing `key`: a root itself, or the root whose `alternate` it is. */
   const findSlot = (key: string): {slot: FileBrowserRoot; root: FileBrowserRoot; alternate: boolean} | null => {
@@ -742,6 +760,7 @@ export default function FileBrowserPane({
             tabs={topTabs}
             activeKey={topActiveKey}
             onChange={key => {
+              chosenRef.current = true;
               if (extraTabs.some(t => t.key === key)) {
                 setExtraKey(key);
                 return;

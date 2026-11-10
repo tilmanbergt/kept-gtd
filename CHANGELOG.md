@@ -68,8 +68,12 @@ or your project/area files are stored.
   **Someday**, its note and **More ›** (Remove #next, the linked file).
 - A tap on a row shows its card faster: the list no longer redraws for it.
 - A project's or area's page keeps to the work: abbreviation, scope, status, Close out / Archive and
-  Assign to Area move to **⚙ Settings** in its header (**Close** returns). The header shows the
-  abbreviation without editing it.
+  Assign to Area move to **⚙ Settings**, next to **Notebook** and **Engage ›** under the Files pane
+  (**Close** returns). The header names the kind, a project's area (a tap opens it), the time this
+  week and the abbreviation; the scope shows under it only when there is one.
+- The left side of a project's or area's page shows only the tabs with something in them - Threads,
+  Loops (Projects on an area), Notebook - plus Files, and opens on the first of them; the Schedule
+  shows while there are meetings.
 - **⚙ Settings → Show on this page**: Threads, Loops, Agreements, Schedule, Notebook (and Projects on
   an area) each **Auto**, **Always** or **Never**, and where the left side opens. A hidden part with
   something in it says so ("Never · 2 loops").

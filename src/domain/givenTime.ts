@@ -280,3 +280,17 @@ export function hoursText(minutes: number): string {
   if (minutes === 0) return '–';
   return minutes < 60 ? `${minutes} min` : `${Math.round((minutes / 60) * 10) / 10} h`;
 }
+
+/** The time an item's own meetings and blocks take in `range` (not cancelled), as givenTimeOf counts it - the page header's "this week". */
+export function ownTimeIn(meetings: readonly Meeting[], range: {start: string; end: string}): Pick<GivenTimeRow, 'minutes' | 'allDayDays'> {
+  const out = {minutes: 0, allDayDays: 0};
+  const scanFrom = spanScanStart(range.start);
+  for (const meeting of meetings) {
+    if (meeting.cancelled || meeting.date < scanFrom || meeting.date > range.end) continue;
+    const days = coveredDaysIn(meeting, range.start, range.end).length;
+    if (days === 0) continue;
+    if (meeting.time) out.minutes += meetingMinutes(meeting);
+    else out.allDayDays += days;
+  }
+  return out;
+}

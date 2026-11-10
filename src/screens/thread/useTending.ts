@@ -57,6 +57,11 @@ const ruleTypesOf = (settings: GtdParaSettings) => threadTypesOf(settings.noteSe
 /** The types while the settings are not known yet (`ready` is false then). */
 const NO_SETTINGS_TYPES = threadTypesOf([]);
 
+/** The thread types of the Note setups (`wf`/`owe` until the settings are known); the same array while they stay the same by value. */
+export function useThreadRuleTypes(): string[] {
+  return useSettingsValue(ruleTypesOf, sameList) ?? NO_SETTINGS_TYPES;
+}
+
 export function useTendingData(): TendingData {
   const items = useCachedItems();
   const inboxState = useCachedInbox();

@@ -83,8 +83,11 @@ the thread overview otherwise.
   unfiltered.
 - **Current** — `screens/ItemDetail.tsx`: left pane the Files pane (`ui/FileBrowserPane.tsx`);
   right pane `screens/ProjectDataPanel.tsx` with Quick Add, Todos and Meetings (the two lists in
-  `screens/projectData/`). The header shows the kind, the abbreviation (read only) and **⚙ Settings**:
-  `screens/item/ItemSettings.tsx` in place of both panes, with the abbreviation editor
+  `screens/projectData/`). The header (`screens/item/ItemHeader.tsx`) shows the kind, a Project's
+  Area, the given time this week, the abbreviation (read only) and the scope when set; the left tabs
+  and the start tab follow the `show:` line (`domain/pageShow.ts` leftTabs/startTab, facts from
+  `screens/item/usePageFacts.ts`, which re-renders the page only when they change); under the Files
+  pane Notebook, Engage › and **⚙ Settings**: `screens/item/ItemSettings.tsx` in place of both panes, with the abbreviation editor
   (`AbbrevEditor.tsx`), the Scope (`ui/ItemScopePanel.tsx`), `StatusBlock.tsx` (status,
   close-out/archive, Assign to Area, with the Files pane while picking) and `ShowOnPage.tsx` (the
   `show:` line, `domain/pageShow.ts`; counts from `storage/pageShowCounts.ts`). The Files

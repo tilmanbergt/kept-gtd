@@ -144,9 +144,9 @@ async function openCoachingThreads() {
   await settle();
   await pressText(r, /^Coaching /);
   await settle();
-  // Threads comes first and is open, then Projects; the Projects' folders and Browse show only while arming.
+  // Threads comes first and is open; no Projects tab (no projects, no loops); Browse shows only while arming.
   const filesTabs = r.root.findAll(n => Array.isArray(n.props.tabs) && n.props.tabs.some((t: {label: string}) => t.label === 'Threads'))[0];
-  expect(filesTabs.props.tabs.map((t: {label: string}) => t.label)).toEqual(['Threads', 'Projects', 'Files']);
+  expect(filesTabs.props.tabs.map((t: {label: string}) => t.label)).toEqual(['Threads', 'Files']);
   expect(filesTabs.props.activeKey).toBe('threads');
   return r;
 }

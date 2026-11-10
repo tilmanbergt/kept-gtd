@@ -68,26 +68,34 @@
  * grey out every other root (never remove them) while either a refile or an
  * area-assignment is being picked.
  *
- * Three top tabs: **Threads**, **Loops** (Projects on an Area) and **Files**
- * (FileBrowserPane's `groupLabel`, docs/dev/history/technical-design-note-setups-finish.md
+ * Top tabs: **Threads**, **Loops** (Projects on an Area), **Notebook** and
+ * **Files** (FileBrowserPane's `groupLabel`, docs/dev/history/technical-design-note-setups-finish.md
  * §2): the roots share the Files tab, and a second row inside it picks
- * Project · Area (when assigned) · Resources, or Area · Resources.
+ * Project · Area (when assigned) · Resources, or Area · Resources. Which of
+ * the first three show, and which tab the page opens on, follow "Show on this
+ * page" (domain/pageShow.ts leftTabs/startTab, from screens/item/usePageFacts.ts):
+ * Auto shows a tab with something in it; Files always shows. The open tab is
+ * FileBrowserPane's `startKey`, which settles with the cache until a tab is
+ * tapped. An arm (link a file, refile, assign Area) switches to the matching
+ * file root and back to the tab it started on when it ends.
  *
- * The first tab, **Threads** (screens/thread/ThreadsTab.tsx, an `extraTabs`
- * entry of FileBrowserPane), is shown when the page opens. An arm (link a
- * file, refile, assign Area) switches to the matching file root and back to
- * Threads when it ends. On an Area the second tab is **Projects**
- * (screens/area/ProjectsTab.tsx): its assigned Projects with their signals; a
- * row opens the Project. Threads lists the counterparts of this item's scope. Tapping one sets `counterpartFilter`,
- * which ProjectDataPanel applies to its Todos and Meetings; "+ next" on a
- * thread row fills Quick Add's meeting draft (`meetingSeed`), to the item of
- * the thread's latest meeting. Both are view state only.
+ * **Threads** (screens/thread/ThreadsTab.tsx, an `extraTabs` entry of
+ * FileBrowserPane) lists the counterparts of this item's scope. Tapping one
+ * sets `counterpartFilter`, which ProjectDataPanel applies to its Todos and
+ * Meetings; "+ next" on a thread row fills Quick Add's meeting draft
+ * (`meetingSeed`), to the item of the thread's latest meeting. Both are view
+ * state only. On an Area **Projects** (screens/area/ProjectsTab.tsx) lists its
+ * assigned Projects with their signals; a row opens the Project.
+ *
+ * Header (screens/item/ItemHeader.tsx): name, kind, a Project's Area, the
+ * given time this week, the abbreviation, and the scope when set. Under the
+ * Files pane: Notebook, Engage ›, ⚙ Settings.
  *
  * Reloading: leaving the tab and "Reload all files" (Settings → Advanced)
  * remount this screen, which loads the item again; FileBrowserPane scans its
  * open folder itself whenever it (re)mounts or drills.
  */
-import {PageShow} from '../domain/pageShow';
+import {LeftTab, leftTabs, openRule, PageShow, presenceOf, showValue, startTab, visibleParts} from '../domain/pageShow';
 import {RetainedFocus} from '../storage/projectFile';
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
@@ -99,13 +107,7 @@ import {useHomeNotebookActions} from '../ui/useHomeNotebookTap';
 import {useHomeNotebookRenameOffer} from '../ui/useHomeNotebookRenameOffer';
 import NotebookTab from './notebook/NotebookTab';
 import {ResolvedParaPaths, resolvePaths} from '../domain/settings';
-import {
-  CachedItem,
-  ensureItemCached,
-  findCachedItem,
-  frontMatterOf,
-  updateItemFrontMatter,
-} from '../storage/dataCache';
+import {CachedItem, ensureItemCached, findCachedItem, frontMatterOf, updateItemFrontMatter} from '../storage/dataCache';
 import {saveFrontMatter} from '../storage/projectFile';
 import {samePaths, useSettingsValue} from '../ui/useSettings';
 import {FolderEntry} from '../supernote/fileSystem';
@@ -113,11 +115,7 @@ import {logError} from '../utils/log';
 import {useEinkRefreshOnLoad} from '../utils/screenRefresh';
 import {common} from '../ui/commonStyles';
 import {FONT, useThemeColors} from '../ui/theme';
-import FileBrowserPane, {
-  FileBrowserExtraTab,
-  FileBrowserRoot,
-  LinkTarget,
-} from '../ui/FileBrowserPane';
+import FileBrowserPane, {FileBrowserExtraTab, FileBrowserRoot, LinkTarget} from '../ui/FileBrowserPane';
 import ItemSettings from './item/ItemSettings';
 import ProjectDataPanel from './ProjectDataPanel';
 import ThreadsTab, {CounterpartSelection} from './thread/ThreadsTab';
@@ -129,7 +127,9 @@ import {MeetingSeed} from '../ui/quickAdd/useDraftRequests';
 import {usePerfRender} from '../utils/perf';
 import {useOnScreenShow} from '../ui/screenActivity';
 import {errorMessage} from '../utils/errorMessage';
-import KindBadge from '../ui/KindBadge';
+import ItemHeader from './item/ItemHeader';
+import {usePageFacts} from './item/usePageFacts';
+
 
 interface Props {
   kind: 'project' | 'area';
@@ -175,6 +175,10 @@ function resourceFolderStateOf(item: CachedItem): ResourceFolderState {
 
 import {useDeviceRoot} from '../ui/fileBrowser/useDeviceRoot';
 
+/** The Files pane's extra tab keys and the page's left tabs (domain/pageShow.ts LeftTab). */
+const TAB_OF_KEY: Record<string, LeftTab> = {threads: 'threads', projects: 'loops', notebook: 'notebook'};
+const KEY_OF_TAB: Record<Exclude<LeftTab, 'files'>, string> = {threads: 'threads', loops: 'projects', notebook: 'notebook'};
+
 export default function ItemDetail({
   kind,
   name,
@@ -192,28 +196,20 @@ export default function ItemDetail({
   // The user's resolved folders (domain/settings.ts) - the 'resources' root's
   // rootPath below - from the settings snapshot (ui/useSettings.ts); a change of
   // another setting ("Hide done tasks") renders nothing here.
-  const paths: ResolvedParaPaths | null = useSettingsValue(
-    resolvePaths,
-    samePaths,
-  );
+  const paths: ResolvedParaPaths | null = useSettingsValue(resolvePaths, samePaths);
 
   // See the module doc comment's "handleSetDefaultResourceFolder" note.
   // A cached item is there in the first render (docs/dev/history/technical-design-perf-current-page.md §3.3);
   // the load below then keeps the same state, so it renders nothing again.
-  const [resourceFolderState, setResourceFolderState] =
-    useState<ResourceFolderState | null>(() => {
-      const cached = findCachedItem(path);
-      return cached ? resourceFolderStateOf(cached) : null;
-    });
+  const [resourceFolderState, setResourceFolderState] = useState<ResourceFolderState | null>(() => {
+    const cached = findCachedItem(path);
+    return cached ? resourceFolderStateOf(cached) : null;
+  });
   useEffect(() => {
     let cancelled = false;
     ensureItemCached(kind, name, path).then(item => {
       if (cancelled) return;
-      setResourceFolderState(prev =>
-        prev && prev.rawContent === item.rawContent
-          ? prev
-          : resourceFolderStateOf(item),
-      );
+      setResourceFolderState(prev => (prev && prev.rawContent === item.rawContent ? prev : resourceFolderStateOf(item)));
     });
     return () => {
       cancelled = true;
@@ -222,18 +218,22 @@ export default function ItemDetail({
 
   // Home notebook button in the header (docs/dev/history/technical-design-home-notebooks.md §3.3),
   // once the abbreviation is known ({abbr} in the notebook's name).
-  const homeItems = useMemo(
-    () => [{path, name, abbrev: resourceFolderState?.abbrev ?? null}],
-    [path, name, resourceFolderState?.abbrev],
-  );
+  const homeItems = useMemo(() => [{path, name, abbrev: resourceFolderState?.abbrev ?? null}], [path, name, resourceFolderState?.abbrev]);
   const homes = useHomeNotebooks(homeItems);
   const homeActions = useHomeNotebookActions('ItemDetail');
   const homeNotebook = resourceFolderState ? homes.of(homeItems[0]) : null;
-  useHomeNotebookRenameOffer(
-    'ItemDetail',
-    path,
-    !!resourceFolderState && homes.enabled,
-  );
+  useHomeNotebookRenameOffer('ItemDetail', path, !!resourceFolderState && homes.enabled);
+
+  // What the page shows (docs/dev/history/technical-design-calmer-screens.md §3.8): the left tabs are
+  // the visible parts (Auto: the ones with something) and Files; the open rule picks the start tab.
+  const facts = usePageFacts(path, !!homeNotebook?.exists);
+  const pageLayout = useMemo(() => {
+    if (!facts) return null;
+    const presence = presenceOf(facts.counts);
+    const visible = visibleParts(facts.show, presence);
+    const tabs = leftTabs(kind, visible, !!homeNotebook);
+    return {visible, tabs, start: startTab(openRule(facts.show), tabs, kind, presence), agreements: showValue(facts.show, 'agreements')};
+  }, [facts, kind, homeNotebook]);
 
   // Kept tab shown again (docs/dev/history/technical-design-keep-tabs-alive.md §5.3):
   // re-derive quietly if this item's file changed while hidden.
@@ -258,25 +258,11 @@ export default function ItemDetail({
         // screen (⚙ Settings) may have written the file since -
         // its rawContent/focus flags must not be overwritten with stale values.
         const current = findCachedItem(path) ?? resourceFolderState;
-        const fm = {
-          ...frontMatterOf(current),
-          defaultResourceFolder: subfolderRelativePath,
-        };
-        const nextRaw = await saveFrontMatter(
-          kind,
-          path,
-          current.rawContent,
-          fm,
-        );
+        const fm = {...frontMatterOf(current), defaultResourceFolder: subfolderRelativePath};
+        const nextRaw = await saveFrontMatter(kind, path, current.rawContent, fm);
         updateItemFrontMatter(path, nextRaw, fm);
         setResourceFolderState(prev =>
-          prev
-            ? {
-                ...prev,
-                rawContent: nextRaw,
-                defaultResourceFolder: subfolderRelativePath,
-              }
-            : prev,
+          prev ? {...prev, rawContent: nextRaw, defaultResourceFolder: subfolderRelativePath} : prev,
         );
       } catch (e) {
         const message = errorMessage(e);
@@ -293,16 +279,10 @@ export default function ItemDetail({
   // below with area-assignment taking priority. See the module doc
   // comment's "Area-assignment arming" note for why these are two states
   // rather than one shared setter.
-  const [dataPanelLinkTarget, setDataPanelLinkTarget] =
-    useState<LinkTarget | null>(null);
+  const [dataPanelLinkTarget, setDataPanelLinkTarget] = useState<LinkTarget | null>(null);
   const [areaLinkTarget, setAreaLinkTarget] = useState<LinkTarget | null>(null);
-  const loopLink = useLoopLinkArm(
-    path,
-    paths,
-    kind === 'project' ? resourceFolderState?.area ?? null : null,
-  );
-  const linkTarget =
-    areaLinkTarget ?? loopLink.linkTarget ?? dataPanelLinkTarget;
+  const loopLink = useLoopLinkArm(path, paths, kind === 'project' ? resourceFolderState?.area ?? null : null);
+  const linkTarget = areaLinkTarget ?? loopLink.linkTarget ?? dataPanelLinkTarget;
 
   // Reported up from FileBrowserPane's own onActiveLocationChange (its doc
   // comment) - the Files pane's currently-displayed root/folder, for the
@@ -316,37 +296,23 @@ export default function ItemDetail({
   // It starts at the pane's first root, this item's own folder, so Quick Add has
   // its Note tab in the first render; the pane's report of the same place
   // changes nothing (docs/dev/history/technical-design-perf-current-page.md §3.3).
-  const [activeFilesLocation, setActiveFilesLocation] = useState<{
-    rootKey: string;
-    path: string;
-  } | null>(() => ({rootKey: 'project', path}));
+  const [activeFilesLocation, setActiveFilesLocation] = useState<{rootKey: string; path: string} | null>(() => ({rootKey: 'project', path}));
   const reportFilesLocation = useCallback(
     (rootKey: string, folderPath: string) =>
-      setActiveFilesLocation(prev =>
-        prev?.rootKey === rootKey && prev.path === folderPath
-          ? prev
-          : {rootKey, path: folderPath},
-      ),
+      setActiveFilesLocation(prev => (prev?.rootKey === rootKey && prev.path === folderPath ? prev : {rootKey, path: folderPath})),
     [],
   );
-  const noteFolderPath =
-    activeFilesLocation?.rootKey === 'project'
-      ? activeFilesLocation.path
-      : null;
+  const noteFolderPath = activeFilesLocation?.rootKey === 'project' ? activeFilesLocation.path : null;
 
   // The Area this Project supports, if any - null for Areas, and null for a
   // Project until resourceFolderState's own load lands (see the module doc
   // comment's "File browser roots" note).
-  const assignedArea =
-    kind === 'project' ? resourceFolderState?.area ?? null : null;
+  const assignedArea = kind === 'project' ? resourceFolderState?.area ?? null : null;
 
   // The Threads tab's counterpart filter and "+ next" seed (see the module doc comment).
-  const [counterpartFilter, setCounterpartFilter] =
-    useState<CounterpartSelection | null>(null);
+  const [counterpartFilter, setCounterpartFilter] = useState<CounterpartSelection | null>(null);
   const [meetingSeed, setMeetingSeed] = useState<MeetingSeed | null>(null);
-  const [seedDestination, setSeedDestination] = useState<Destination | null>(
-    null,
-  );
+  const [seedDestination, setSeedDestination] = useState<Destination | null>(null);
   useEffect(() => {
     setCounterpartFilter(null);
     setMeetingSeed(null);
@@ -364,24 +330,11 @@ export default function ItemDetail({
     setSettingsOpen(false);
   }, []);
   const syncFromSettings = useCallback((item: CachedItem) => {
-    setResourceFolderState(prev =>
-      prev && prev.rawContent === item.rawContent
-        ? prev
-        : resourceFolderStateOf(item),
-    );
+    setResourceFolderState(prev => (prev && prev.rawContent === item.rawContent ? prev : resourceFolderStateOf(item)));
   }, []);
   const handleNextMeeting = useCallback((offer: NextMeetingOffer) => {
     setMeetingSeed({fields: offer.seed, nonce: Date.now()});
-    setSeedDestination(
-      offer.item.kind === 'inbox'
-        ? {type: 'inbox'}
-        : {
-            type: 'item',
-            kind: offer.item.kind,
-            name: offer.item.name,
-            path: offer.item.path,
-          },
-    );
+    setSeedDestination(offer.item.kind === 'inbox' ? {type: 'inbox'} : {type: 'item', kind: offer.item.kind, name: offer.item.name, path: offer.item.path});
   }, []);
   const clearSeed = useCallback(() => setSeedDestination(null), []);
 
@@ -389,8 +342,7 @@ export default function ItemDetail({
   // uses (technical-design-project-area-assignment.md §4.2,
   // docs/dev/history/technical-design-filing-unification.md §3.1) - shared here by Browse's own
   // `sources` below.
-  const activeOnly = (entry: FolderEntry) =>
-    findCachedItem(entry.path)?.status === 'active';
+  const activeOnly = (entry: FolderEntry) => findCachedItem(entry.path)?.status === 'active';
 
   // Refile-arming (storage/inboxFiling.ts's module doc comment):
   // ProjectDataPanel.tsx's own armTarget can arm for 'refile' as well as
@@ -403,9 +355,7 @@ export default function ItemDetail({
   // specifically (never populated by area-assignment's own, separate
   // areaLinkTarget state) is what actually tells them apart here.
   const isRefileArming =
-    dataPanelLinkTarget?.mode === 'arming' &&
-    dataPanelLinkTarget.pickKind === 'folder' &&
-    dataPanelLinkTarget.root === 'browse';
+    dataPanelLinkTarget?.mode === 'arming' && dataPanelLinkTarget.pickKind === 'folder' && dataPanelLinkTarget.root === 'browse';
   // Area-assignment-arming (screens/item/StatusBlock.tsx's "Assign to Area…",
   // picked on Browse via `startAt: 'area'` - see ui/FileBrowserPane.tsx's
   // `startAt` doc comment). Same reasoning as isRefileArming above for
@@ -438,12 +388,7 @@ export default function ItemDetail({
           {kind: 'area', path: paths.areas, label: 'Areas'},
         ],
         entryFilter: activeOnly,
-        onNavigateToItem: (entryKind, entryName, entryPath) =>
-          onOpenItem?.(entryKind, {
-            name: entryName,
-            path: entryPath,
-            isFolder: true,
-          }),
+        onNavigateToItem: (entryKind, entryName, entryPath) => onOpenItem?.(entryKind, {name: entryName, path: entryPath, isFolder: true}),
       }
     : null;
 
@@ -464,57 +409,31 @@ export default function ItemDetail({
   const fileBrowserRoots: FileBrowserRoot[] = paths
     ? kind === 'project'
       ? [
-          {
-            key: 'project',
-            label: 'Project Files',
-            shortLabel: 'Project',
-            rootPath: path,
-            ...(browseRoot ? {alternate: browseRoot} : {}),
-          },
+          {key: 'project', label: 'Project Files', shortLabel: 'Project', rootPath: path, ...(browseRoot ? {alternate: browseRoot} : {})},
           ...(assignedArea
-            ? [
-                disableOthersWhileArming({
-                  key: 'area',
-                  label: 'Area Files',
-                  shortLabel: 'Area',
-                  rootPath: `${paths.areas}/${assignedArea}`,
-                }),
-              ]
+            ? [disableOthersWhileArming({key: 'area', label: 'Area Files', shortLabel: 'Area', rootPath: `${paths.areas}/${assignedArea}`})]
             : []),
           disableOthersWhileArming({
             key: 'resources',
             label: 'Resources',
             rootPath: paths.resources,
-            defaultSubfolder:
-              resourceFolderState?.defaultResourceFolder ?? null,
+            defaultSubfolder: resourceFolderState?.defaultResourceFolder ?? null,
             onSetDefaultSubfolder: handleSetDefaultResourceFolder,
           }),
           deviceRoot,
         ]
       : [
-          disableOthersWhileArming({
-            key: 'project',
-            label: 'Area Files',
-            shortLabel: 'Area',
-            rootPath: path,
-          }),
+          disableOthersWhileArming({key: 'project', label: 'Area Files', shortLabel: 'Area', rootPath: path}),
           disableOthersWhileArming({
             key: 'resources',
             label: 'Resources',
             rootPath: paths.resources,
-            defaultSubfolder:
-              resourceFolderState?.defaultResourceFolder ?? null,
+            defaultSubfolder: resourceFolderState?.defaultResourceFolder ?? null,
             onSetDefaultSubfolder: handleSetDefaultResourceFolder,
           }),
           deviceRoot,
         ]
-    : [
-        {
-          key: 'project',
-          label: kind === 'project' ? 'Project Files' : 'Area Files',
-          rootPath: path,
-        },
-      ];
+    : [{key: 'project', label: kind === 'project' ? 'Project Files' : 'Area Files', rootPath: path}];
 
   // An Area's Projects' folders - the Projects tab's slot while arming (see the module doc comment).
   const projectFilesRoot: FileBrowserRoot | undefined =
@@ -533,7 +452,7 @@ export default function ItemDetail({
         }
       : undefined;
 
-  const extraTabs: FileBrowserExtraTab[] = [
+  const allExtraTabs: FileBrowserExtraTab[] = [
     {
       key: 'threads',
       label: 'Threads',
@@ -574,89 +493,46 @@ export default function ItemDetail({
             key: 'notebook',
             label: 'Notebook',
             render: (viewportHeight: number | undefined) => (
-              <NotebookTab
-                nb={homeNotebook}
-                ownerKind={kind}
-                actions={homeActions}
-                viewportHeight={viewportHeight}
-                textColor={textColor}
-                borderColor={borderColor}
-              />
+              <NotebookTab nb={homeNotebook} ownerKind={kind} actions={homeActions} viewportHeight={viewportHeight} textColor={textColor} borderColor={borderColor} />
             ),
           },
         ]
       : []),
   ];
 
+
+  const shownTabs = pageLayout?.tabs ?? ['threads', 'loops', 'notebook', 'files'];
+  const extraTabs = allExtraTabs.filter(t => shownTabs.includes(TAB_OF_KEY[t.key]));
+  const startKey = pageLayout ? (pageLayout.start === 'files' ? null : KEY_OF_TAB[pageLayout.start]) : undefined;
+  const openAreaItem =
+    paths && onOpenItem ? (areaName: string) => onOpenItem('area', {name: areaName, path: `${paths.areas}/${areaName}`, isFolder: true}) : undefined;
+
   return (
     <View style={common.container}>
-      <View style={styles.headerRow}>
-        <Text style={[styles.heading, {color: textColor}]} numberOfLines={1}>
-          {name}
-        </Text>
-        <KindBadge
-          label={kind === 'project' ? 'Project' : 'Area'}
-          textColor={textColor}
-        />
-        {resourceFolderState?.abbrev ? (
-          <Text style={[styles.abbrevBadge, {color: textColor}]}>
-            #{resourceFolderState.abbrev}
-          </Text>
-        ) : null}
-        <View style={styles.engageButton}>
-          <HomeNotebookButton
-            nb={homeNotebook}
-            onPress={homeActions.tap}
-            variant="labeled"
-            textColor={textColor}
-            borderColor={borderColor}
-          />
-          <EngageButton
-            owner={{kind: 'item', itemPath: path}}
-            textColor={textColor}
-            borderColor={borderColor}
-          />
-          {!settingsOpen && (
-            <Pressable
-              onPress={openSettings}
-              hitSlop={8}
-              style={[styles.settingsButton, {borderColor: textColor}]}>
-              <Text style={[styles.settingsButtonText, {color: textColor}]}>
-                ⚙ Settings
-              </Text>
-            </Pressable>
-          )}
-        </View>
-      </View>
+      <ItemHeader
+        kind={kind}
+        name={name}
+        abbrev={resourceFolderState?.abbrev ?? null}
+        area={kind === 'project' ? facts?.area ?? null : null}
+        scope={facts?.scope ?? ''}
+        weekTime={facts?.weekTime ?? ''}
+        onOpenArea={openAreaItem}
+        onOpenSettings={openSettings}
+        textColor={textColor}
+      />
 
       {settingsOpen ? (
         <ItemSettings
           kind={kind}
           name={name}
           path={path}
-          hasHomeNotebook={!!homeNotebook}
+          hasHomeNotebook={!!homeNotebook?.exists}
           areaArming={isAreaAssignmentArming}
           filesPane={
-            <FileBrowserPane
-              roots={fileBrowserRoots}
-              linkTarget={areaLinkTarget}
-              resetKey={path}
-              groupLabel="Files"
-              textColor={textColor}
-              borderColor={borderColor}
-            />
+            <FileBrowserPane roots={fileBrowserRoots} linkTarget={areaLinkTarget} resetKey={path} groupLabel="Files" textColor={textColor} borderColor={borderColor} />
           }
           onRequestAreaAssignment={setAreaLinkTarget}
-          onOpenArea={
-            paths && onOpenItem
-              ? (areaName: string) =>
-                  onOpenItem('area', {
-                    name: areaName,
-                    path: `${paths.areas}/${areaName}`,
-                    isFolder: true,
-                  })
-              : undefined
-          }
+          onOpenArea={openAreaItem}
           onArchived={() => onArchived?.(kind)}
           onStartCloseOut={onStartCloseOut}
           onItemChanged={syncFromSettings}
@@ -666,63 +542,63 @@ export default function ItemDetail({
           placeholderColor={placeholderColor}
         />
       ) : (
-        <View style={styles.body}>
-          <View style={[styles.leftPane, {borderColor}]}>
-            <View style={styles.filesArea}>
-              {error && (
-                <Text style={[styles.error, {color: textColor}]}>
-                  ⚠ {error}
-                </Text>
-              )}
-              <FileBrowserPane
-                roots={fileBrowserRoots}
-                linkTarget={linkTarget}
-                resetKey={path}
-                onActiveLocationChange={reportFilesLocation}
-                extraTabs={extraTabs}
-                groupLabel="Files"
-                thisFileRows
-                textColor={textColor}
-                borderColor={borderColor}
-              />
-            </View>
-          </View>
-
-          <View style={styles.rightPane}>
-            <ProjectDataPanel
-              kind={kind}
-              name={name}
-              path={path}
-              onOpenCalendarSettings={onOpenCalendarSettings}
-              onLinkTargetChange={setDataPanelLinkTarget}
-              noteFolderPath={noteFolderPath}
-              counterpartFilter={counterpartFilter}
-              onClearCounterpartFilter={() => setCounterpartFilter(null)}
-              meetingSeed={meetingSeed}
-              seedDestination={seedDestination}
-              onSeedUsed={clearSeed}
+      <View style={styles.body}>
+        <View style={[styles.leftPane, {borderColor}]}>
+          <View style={styles.filesArea}>
+            {error && (
+              <Text style={[styles.error, {color: textColor}]}>⚠ {error}</Text>
+            )}
+            <FileBrowserPane
+              roots={fileBrowserRoots}
+              linkTarget={linkTarget}
+              resetKey={path}
+              onActiveLocationChange={reportFilesLocation}
+              extraTabs={extraTabs}
+              startKey={startKey}
+              groupLabel="Files"
+              thisFileRows
+              textColor={textColor}
+              borderColor={borderColor}
             />
           </View>
+          <View style={styles.bottomRow}>
+            <HomeNotebookButton nb={homeNotebook} onPress={homeActions.tap} variant="labeled" textColor={textColor} borderColor={borderColor} />
+            <EngageButton owner={{kind: 'item', itemPath: path}} textColor={textColor} borderColor={borderColor} />
+            <Pressable onPress={openSettings} hitSlop={8} style={[styles.settingsButton, {borderColor: textColor}]}>
+              <Text style={[styles.settingsButtonText, {color: textColor}]}>⚙ Settings</Text>
+            </Pressable>
+          </View>
         </View>
+
+        <View style={styles.rightPane}>
+          <ProjectDataPanel
+            kind={kind}
+            name={name}
+            path={path}
+            onOpenCalendarSettings={onOpenCalendarSettings}
+            onLinkTargetChange={setDataPanelLinkTarget}
+            noteFolderPath={noteFolderPath}
+            counterpartFilter={counterpartFilter}
+            onClearCounterpartFilter={() => setCounterpartFilter(null)}
+            meetingSeed={meetingSeed}
+            seedDestination={seedDestination}
+            onSeedUsed={clearSeed}
+            agreementsShow={pageLayout?.agreements ?? 'auto'}
+            scheduleShown={pageLayout?.visible.schedule ?? true}
+          />
+        </View>
+      </View>
       )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  engageButton: {
-    marginLeft: 'auto',
+  bottomRow: {
     flexDirection: 'row',
-  },
-  headerRow: {
-    flexDirection: 'row',
+    flexWrap: 'wrap',
     alignItems: 'center',
-    marginBottom: 8,
-  },
-  heading: {
-    fontSize: FONT.large,
-    fontWeight: '700',
-    flex: 1,
+    paddingTop: 8,
   },
   body: {
     flex: 1,
@@ -744,11 +620,6 @@ const styles = StyleSheet.create({
   error: {
     fontSize: FONT.small,
     marginBottom: 6,
-  },
-  abbrevBadge: {
-    fontSize: FONT.small,
-    fontWeight: '600',
-    marginLeft: 8,
   },
   settingsButton: {
     borderWidth: 1,

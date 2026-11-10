@@ -38,27 +38,11 @@ import React, {useCallback, useEffect, useState} from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
 import {ItemStatus} from '../../domain/types';
 import {resolvePaths} from '../../domain/settings';
-import {
-  assignedProjects,
-  assignProjectToArea,
-  unassignProject,
-} from '../../storage/areaAssignment';
-import {
-  archiveItem,
-  archiveLeavesEmptyFolder,
-  archiveTargetsFor,
-  describeAreaArchiveBlock,
-} from '../../storage/archive';
-import {
-  archiveDoneText,
-  emptyFolderConfirmNote,
-} from '../../domain/fileChangeText';
+import {assignedProjects, assignProjectToArea, unassignProject} from '../../storage/areaAssignment';
+import {archiveItem, archiveLeavesEmptyFolder, archiveTargetsFor, describeAreaArchiveBlock} from '../../storage/archive';
+import {archiveDoneText, emptyFolderConfirmNote} from '../../domain/fileChangeText';
 import {displayPath} from '../../supernote/devicePaths';
-import {
-  CachedItem,
-  ensureItemCached,
-  findCachedItem,
-} from '../../storage/dataCache';
+import {CachedItem, ensureItemCached, findCachedItem} from '../../storage/dataCache';
 import {useOnScreenShow} from '../../ui/screenActivity';
 import {loadSettings} from '../../storage/settingsStorage';
 import {SettableStatus, setItemStatus} from '../../storage/statusControl';
@@ -67,11 +51,7 @@ import {useEinkRefreshOnLoad} from '../../utils/screenRefresh';
 import {ARMING_TEXT, LinkTarget} from '../../ui/FileBrowserPane';
 import {common} from '../../ui/commonStyles';
 import {COLORS, FONT} from '../../ui/theme';
-import {
-  useErrorStatus,
-  useStatus,
-  useStatusApi,
-} from '../../ui/status/StatusProvider';
+import {useErrorStatus, useStatus, useStatusApi} from '../../ui/status/StatusProvider';
 import {usePerfRender} from '../../utils/perf';
 import {errorMessage} from '../../utils/errorMessage';
 
@@ -118,12 +98,7 @@ interface StatusPanelState {
  * Every write spreads the whole thing (docs/dev/history/technical-design-monthly-view.md
  * §2.1), so no field - focus flags included - can be clobbered by a stale copy.
  */
-function currentItem(
-  kind: 'project' | 'area',
-  name: string,
-  path: string,
-  snapshot: StatusPanelState,
-) {
+function currentItem(kind: 'project' | 'area', name: string, path: string, snapshot: StatusPanelState) {
   return {kind, name, path, ...(findCachedItem(path) ?? snapshot)};
 }
 
@@ -169,27 +144,14 @@ export default function StatusBlock({
   const [archiving, setArchiving] = useState(false);
   const statusApi = useStatusApi();
   const [archiveError, setArchiveError] = useState<string | null>(null);
-  useErrorStatus('ItemStatusPanel.archiveError', archiveError, () =>
-    setArchiveError(null),
-  );
+  useErrorStatus('ItemStatusPanel.archiveError', archiveError, () => setArchiveError(null));
   // "Can't archive yet" and the archive confirm are both shown in the
   // central status slot (D10).
   const [archiveBlock, setArchiveBlock] = useState<string | null>(null);
-  const [archiveConfirm, setArchiveConfirm] = useState<{
-    text: string;
-    detail: string;
-    run: () => void;
-  } | null>(null);
+  const [archiveConfirm, setArchiveConfirm] = useState<{text: string; detail: string; run: () => void} | null>(null);
   useStatus(
     'ItemStatusPanel.archiveBlock',
-    archiveBlock
-      ? {
-          kind: 'warning',
-          text: `Can't archive yet: ${archiveBlock}`,
-          detail: archiveBlock,
-          onDismiss: () => setArchiveBlock(null),
-        }
-      : null,
+    archiveBlock ? {kind: 'warning', text: `Can't archive yet: ${archiveBlock}`, detail: archiveBlock, onDismiss: () => setArchiveBlock(null)} : null,
   );
   useStatus(
     'ItemStatusPanel.archiveConfirm',
@@ -214,20 +176,15 @@ export default function StatusBlock({
       : null,
   );
   const [areaError, setAreaError] = useState<string | null>(null);
-  useErrorStatus('ItemStatusPanel.areaError', areaError, () =>
-    setAreaError(null),
-  );
+  useErrorStatus('ItemStatusPanel.areaError', areaError, () => setAreaError(null));
+
 
   const load = useCallback(async () => {
     setLoadError(null);
     try {
       const item = await ensureItemCached(kind, name, path);
       if (item.loadError) throw new Error(item.loadError);
-      setState(prev =>
-        prev && prev.rawContent === item.rawContent
-          ? prev
-          : statusPanelStateOf(item),
-      );
+      setState(prev => (prev && prev.rawContent === item.rawContent ? prev : statusPanelStateOf(item)));
     } catch (e) {
       const message = errorMessage(e);
       logError('StatusBlock: load failed', kind, path, message);
@@ -300,78 +257,40 @@ export default function StatusBlock({
     (async () => {
       try {
         const settings = await loadSettings();
-        const folderLabel =
-          kind === 'project' ? settings.projectsFolder : settings.areasFolder;
-        const cascaded =
-          kind === 'area'
-            ? assignedProjects(name).filter(p => p.status === 'done')
-            : [];
+        const folderLabel = kind === 'project' ? settings.projectsFolder : settings.areasFolder;
+        const cascaded = kind === 'area' ? assignedProjects(name).filter(p => p.status === 'done') : [];
         const cascadeNote =
           cascaded.length > 0
-            ? ` This also archives ${cascaded.length} completed project${
-                cascaded.length === 1 ? '' : 's'
-              } assigned to it: ${cascaded.map(p => `"${p.name}"`).join(', ')}.`
+            ? ` This also archives ${cascaded.length} completed project${cascaded.length === 1 ? '' : 's'} assigned to it: ${cascaded
+                .map(p => `"${p.name}"`)
+                .join(', ')}.`
             : '';
         const plural = cascaded.length > 0;
         // Exact year/area target (docs/dev/history/technical-design-project-close-out.md §5.1), shown relative to the base root.
         const base = resolvePaths(settings).base;
-        const target = archiveTargetsFor(
-          currentItem(kind, name, path, state),
-          settings,
-        );
-        const targetLabel = target.folder.startsWith(`${base}/`)
-          ? target.folder.slice(base.length + 1)
-          : target.folder;
+        const target = archiveTargetsFor(currentItem(kind, name, path, state), settings);
+        const targetLabel = target.folder.startsWith(`${base}/`) ? target.folder.slice(base.length + 1) : target.folder;
         // A merge into an existing folder leaves this folder empty: name it
         // here, so the confirmation is also the explicit OK for deleting it
         // (docs/dev/history/technical-design-inkhub-submission.md §3.4).
-        const leavesEmpty = await archiveLeavesEmptyFolder(
-          currentItem(kind, name, path, state),
-          settings,
-        );
-        const mergeNote = leavesEmpty
-          ? emptyFolderConfirmNote(
-              displayPath(path),
-              displayPath(target.folder),
-            )
-          : '';
+        const leavesEmpty = await archiveLeavesEmptyFolder(currentItem(kind, name, path, state), settings);
+        const mergeNote = leavesEmpty ? emptyFolderConfirmNote(displayPath(path), displayPath(target.folder)) : '';
         // Confirm in the central status slot (D10) - short question in the
         // slot, the full explanation behind a tap on the text (D12).
         setArchiveConfirm({
-          text: `Move "${name}" to ${targetLabel}?${
-            cascaded.length > 0
-              ? ` (+${cascaded.length} done project${
-                  cascaded.length === 1 ? '' : 's'
-                })`
-              : ''
-          }`,
+          text: `Move "${name}" to ${targetLabel}?${cascaded.length > 0 ? ` (+${cascaded.length} done project${cascaded.length === 1 ? '' : 's'})` : ''}`,
           detail: `This moves "${name}"'s folder out of ${folderLabel} and into ${targetLabel} on your device.${mergeNote}${cascadeNote} The plugin won't show ${
             plural ? 'either' : 'it'
-          } here again — to bring ${
-            plural ? 'them' : 'it'
-          } back, move the folder${
-            plural ? 's' : ''
-          } yourself in Supernote's file browser.`,
+          } here again — to bring ${plural ? 'them' : 'it'} back, move the folder${plural ? 's' : ''} yourself in Supernote's file browser.`,
           run: () => {
             setArchiving(true);
-            archiveItem(
-              currentItem(kind, name, path, state),
-              settings,
-              undefined,
-              {deleteEmptySource: leavesEmpty},
-            )
+            archiveItem(currentItem(kind, name, path, state), settings, undefined, {deleteEmptySource: leavesEmpty})
               .then(result => {
                 // Global: this panel unmounts once onArchived navigates away.
                 const id = 'ItemStatusPanel.archiveDone';
                 statusApi.show(id, {
                   kind: result.keptEmptyFolder ? 'info' : 'success',
-                  text: archiveDoneText(
-                    name,
-                    displayPath(result.path),
-                    result.keptEmptyFolder
-                      ? displayPath(result.keptEmptyFolder)
-                      : null,
-                  ),
+                  text: archiveDoneText(name, displayPath(result.path), result.keptEmptyFolder ? displayPath(result.keptEmptyFolder) : null),
                   scope: 'global',
                   onDismiss: () => statusApi.clear(id),
                 });
@@ -385,10 +304,7 @@ export default function StatusBlock({
           },
         });
       } catch (e) {
-        logError(
-          'StatusBlock: archive confirm setup failed',
-          errorMessage(e),
-        );
+        logError('StatusBlock: archive confirm setup failed', errorMessage(e));
         setArchiveError(errorMessage(e));
       }
     })();
@@ -404,11 +320,7 @@ export default function StatusBlock({
           currentItem(kind, name, path, state),
           areaName,
         );
-        setState(prev =>
-          prev
-            ? {...prev, rawContent: result.rawContent, area: result.area}
-            : prev,
-        );
+        setState(prev => (prev ? {...prev, rawContent: result.rawContent, area: result.area} : prev));
       } catch (e) {
         const message = errorMessage(e);
         logError('StatusBlock: assign area failed', message);
@@ -425,14 +337,8 @@ export default function StatusBlock({
     if (!state) return;
     setAreaError(null);
     try {
-      const result = await unassignProject(
-        currentItem(kind, name, path, state),
-      );
-      setState(prev =>
-        prev
-          ? {...prev, rawContent: result.rawContent, area: result.area}
-          : prev,
-      );
+      const result = await unassignProject(currentItem(kind, name, path, state));
+      setState(prev => (prev ? {...prev, rawContent: result.rawContent, area: result.area} : prev));
     } catch (e) {
       const message = errorMessage(e);
       logError('StatusBlock: unassign area failed', message);
@@ -474,19 +380,9 @@ export default function StatusBlock({
         onChange={changeStatus}
         trailing={
           kind === 'project' && onStartCloseOut ? (
-            <ArchiveAction
-              label="🗄 Close out…"
-              onPress={() => onStartCloseOut(path)}
-              pending={archiving}
-              textColor={textColor}
-            />
+            <ArchiveAction label="🗄 Close out…" onPress={() => onStartCloseOut(path)} pending={archiving} textColor={textColor} />
           ) : (
-            <ArchiveAction
-              label="🗄 Archive…"
-              onPress={handleArchivePress}
-              pending={archiving}
-              textColor={textColor}
-            />
+            <ArchiveAction label="🗄 Archive…" onPress={handleArchivePress} pending={archiving} textColor={textColor} />
           )
         }
         textColor={textColor}
@@ -543,9 +439,7 @@ function StatusSection({
 
   const [pending, setPending] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
-  useErrorStatus('ItemStatusPanel.actionError', actionError, () =>
-    setActionError(null),
-  );
+  useErrorStatus('ItemStatusPanel.actionError', actionError, () => setActionError(null));
 
   const handleSelect = (value: SettableStatus) => {
     if (value === status || pending) return;
@@ -576,11 +470,7 @@ function StatusSection({
               onPress={() => handleSelect(option.value)}
               disabled={pending}
               hitSlop={8}>
-              <Text
-                style={[
-                  styles.statusOptionText,
-                  {color: selected ? COLORS.accentText : textColor},
-                ]}>
+              <Text style={[styles.statusOptionText, {color: selected ? COLORS.accentText : textColor}]}>
                 {option.label}
               </Text>
             </Pressable>
@@ -604,14 +494,8 @@ function ArchiveAction({
   textColor: string;
 }): React.JSX.Element {
   return (
-    <Pressable
-      style={[styles.archiveButton, {borderColor: textColor}]}
-      onPress={onPress}
-      disabled={pending}
-      hitSlop={8}>
-      <Text style={[styles.archiveButtonText, {color: textColor}]}>
-        {label}
-      </Text>
+    <Pressable style={[styles.archiveButton, {borderColor: textColor}]} onPress={onPress} disabled={pending} hitSlop={8}>
+      <Text style={[styles.archiveButtonText, {color: textColor}]}>{label}</Text>
     </Pressable>
   );
 }
@@ -636,30 +520,17 @@ function AreaAssignmentAction({
 }): React.JSX.Element {
   if (!area) {
     return (
-      <Pressable
-        style={[styles.archiveButton, {borderColor: textColor}]}
-        onPress={onPressAssign}
-        hitSlop={8}>
-        <Text style={[styles.archiveButtonText, {color: textColor}]}>
-          Assign to Area…
-        </Text>
+      <Pressable style={[styles.archiveButton, {borderColor: textColor}]} onPress={onPressAssign} hitSlop={8}>
+        <Text style={[styles.archiveButtonText, {color: textColor}]}>Assign to Area…</Text>
       </Pressable>
     );
   }
   return (
     <View style={[styles.areaPill, {borderColor: textColor}]}>
-      <Pressable
-        onPress={onPressArea ? () => onPressArea(area) : undefined}
-        disabled={!onPressArea}
-        hitSlop={8}>
-        <Text style={[styles.archiveButtonText, {color: textColor}]}>
-          Area: {area}
-        </Text>
+      <Pressable onPress={onPressArea ? () => onPressArea(area) : undefined} disabled={!onPressArea} hitSlop={8}>
+        <Text style={[styles.archiveButtonText, {color: textColor}]}>Area: {area}</Text>
       </Pressable>
-      <Pressable
-        onPress={onPressUnassign}
-        hitSlop={8}
-        style={styles.areaPillClose}>
+      <Pressable onPress={onPressUnassign} hitSlop={8} style={styles.areaPillClose}>
         <Text style={[styles.areaPillCloseText, {color: textColor}]}>✕</Text>
       </Pressable>
     </View>

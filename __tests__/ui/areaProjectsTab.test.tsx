@@ -102,7 +102,7 @@ const pressText = async (r: TestRenderer.ReactTestRenderer, label: string | RegE
   await act(async () => node!.props.onPress());
 };
 const filesTabs = (r: TestRenderer.ReactTestRenderer) =>
-  r.root.findAll(n => Array.isArray(n.props.tabs) && n.props.tabs.some((t: {label: string}) => t.label === 'Threads'))[0];
+  r.root.findAll(n => Array.isArray(n.props.tabs) && n.props.tabs.some((t: {label: string}) => t.label === 'Files'))[0];
 const projectsList = (r: TestRenderer.ReactTestRenderer) => r.root.findAll(n => n.props.header === 'Projects' && Array.isArray(n.props.rows))[0];
 
 async function settle() {
@@ -124,8 +124,9 @@ describe('the Projects tab on an Area page', () => {
     await settle();
     await pressText(r, /^Home /);
     await settle();
-    expect(filesTabs(r).props.tabs.map((t: {label: string}) => t.label)).toEqual(['Threads', 'Projects', 'Files']);
-    expect(filesTabs(r).props.activeKey).toBe('threads');
+    // No threads: Projects (it has projects) and Files, opening on Projects.
+    expect(filesTabs(r).props.tabs.map((t: {label: string}) => t.label)).toEqual(['Projects', 'Files']);
+    expect(filesTabs(r).props.activeKey).toBe('projects');
     await act(async () => filesTabs(r).props.onChange('projects'));
     await settle();
     const list = projectsList(r);
@@ -142,7 +143,10 @@ describe('the Projects tab on an Area page', () => {
     await settle();
     expect(texts(r)).toContain('Garden');
     expect(r.root.findAll(n => n.props.accessibilityLabel === 'Project').length).toBeGreaterThan(0); // the kind badge
-    expect(filesTabs(r).props.tabs.map((t: {label: string}) => t.label)).toEqual(['Threads', 'Loops', 'Files']);
+    // Garden has no threads and no loops: Files is the only tab, so no top row; its places show at once.
+    expect(filesTabs(r)).toBeUndefined();
+    const places = r.root.findAll(n => Array.isArray(n.props.tabs) && n.props.tabs.some((t: {label: string}) => t.label === 'Resources'))[0];
+    expect(places.props.tabs.map((t: {label: string}) => t.label)).toEqual(['Project', 'Area', 'Resources', 'Device']);
     act(() => r.unmount());
   });
 });

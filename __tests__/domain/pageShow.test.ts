@@ -6,11 +6,13 @@ import {
 import {
   DEFAULT_PAGE_SHOW,
   hiddenHint,
+  leftTabs,
   openRule,
   parsePageShow,
   presenceOf,
   serializePageShow,
   showValue,
+  startTab,
   visibleParts,
   withOpenRule,
   withShowValue,
@@ -138,5 +140,57 @@ describe('hiddenHint and presenceOf', () => {
       notebook: false,
       projects: false,
     });
+  });
+});
+
+describe('leftTabs and startTab', () => {
+  const none = {
+    threads: 0,
+    loops: 0,
+    agreements: 0,
+    schedule: 0,
+    notebook: 0,
+    projects: 0,
+  };
+  it('shows the parts with content and Files; opens on the first with content', () => {
+    const presence = presenceOf({...none, notebook: 1});
+    const tabs = leftTabs(
+      'project',
+      visibleParts(DEFAULT_PAGE_SHOW, presence),
+      true,
+    );
+    expect(tabs).toEqual(['notebook', 'files']);
+    expect(startTab('first', tabs, 'project', presence)).toBe('notebook');
+  });
+  it('Always shows an empty part but does not open on it; Never hides one with content', () => {
+    const presence = presenceOf({...none, threads: 2});
+    const show = withShowValue(
+      withShowValue(DEFAULT_PAGE_SHOW, 'loops', 'always'),
+      'threads',
+      'never',
+    );
+    const tabs = leftTabs('project', visibleParts(show, presence), true);
+    expect(tabs).toEqual(['loops', 'files']);
+    expect(startTab('first', tabs, 'project', presence)).toBe('files');
+  });
+  it('the open rule wins when its tab shows, and falls back when it does not', () => {
+    const presence = presenceOf({...none, threads: 1, notebook: 1});
+    const tabs = leftTabs(
+      'area',
+      visibleParts(DEFAULT_PAGE_SHOW, presence),
+      true,
+    );
+    expect(tabs).toEqual(['threads', 'notebook', 'files']);
+    expect(startTab('notebook', tabs, 'area', presence)).toBe('notebook');
+    expect(startTab('files', tabs, 'area', presence)).toBe('files');
+    expect(startTab('notebook', ['threads', 'files'], 'area', presence)).toBe(
+      'threads',
+    );
+  });
+  it("an area's Projects tab shows for its projects or its loops; no notebook setup, no Notebook tab", () => {
+    const presence = presenceOf({...none, projects: 2, notebook: 1});
+    expect(
+      leftTabs('area', visibleParts(DEFAULT_PAGE_SHOW, presence), false),
+    ).toEqual(['loops', 'files']);
   });
 });

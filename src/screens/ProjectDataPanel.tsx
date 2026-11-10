@@ -112,6 +112,7 @@ import {MeetingSeed} from '../ui/quickAdd/useDraftRequests';
 import {CounterpartFilter, CounterpartFilterPill, useCounterpartPredicates} from './projectData/counterpartFilter';
 import TodosSection from './projectData/TodosSection';
 import AgreementsList, {AgreementsLink} from './projectData/AgreementsList';
+import {ShowValue} from '../domain/pageShow';
 import {PanelEditTarget, useProjectAgreements} from './projectData/useProjectAgreements';
 import MeetingsSection from './projectData/MeetingsSection';
 
@@ -153,6 +154,10 @@ interface Props {
   meetingSeed?: MeetingSeed | null;
   seedDestination?: Destination | null;
   onSeedUsed?: () => void;
+  /** "Show on this page" for Agreements (domain/pageShow.ts): Auto shows the link while there are some, Always also at 0, Never hides it. */
+  agreementsShow?: ShowValue;
+  /** Whether the Schedule shows (Auto: there are meetings); hidden, the Todos take the column. A short screen keeps its Todos | Schedule tabs. */
+  scheduleShown?: boolean;
 }
 
 /** Just the fields this screen actually reads/writes - CachedItem carries several more (kind/name/path/loadError/status/dailyFocus/weeklyFocus/frontMatterExtraLines/defaultResourceFolder) it doesn't need here - Status/Archive/Focus live in ui/ItemStatusPanel.tsx. */
@@ -178,6 +183,8 @@ export default function ProjectDataPanel({
   meetingSeed,
   seedDestination,
   onSeedUsed,
+  agreementsShow = 'auto',
+  scheduleShown = true,
 }: Props): React.JSX.Element {
   usePerfRender('ProjectDataPanel');
   const short = useShortScreen();
@@ -689,8 +696,11 @@ export default function ProjectDataPanel({
   const openAgreements = useCallback(() => setShowAgreements(true), []);
   const agreementsCount = agreements.refs.length;
   const agreementsFooter = useMemo(
-    () => <AgreementsLink count={agreementsCount} onOpen={openAgreements} textColor={textColor} />,
-    [agreementsCount, openAgreements, textColor],
+    () =>
+      agreementsShow === 'never' ? null : (
+        <AgreementsLink count={agreementsCount} always={agreementsShow === 'always'} onOpen={openAgreements} textColor={textColor} />
+      ),
+    [agreementsCount, agreementsShow, openAgreements, textColor],
   );
 
   if (loading) {
@@ -717,7 +727,7 @@ export default function ProjectDataPanel({
   // don't read the selection, each row reads its own (docs/dev/history/technical-design-calmer-screens.md §3.1.3).
   const todosContent = (
     <>
-      {showAgreements && agreements.refs.length > 0 ? (
+      {showAgreements && agreementsShow !== 'never' && (agreements.refs.length > 0 || agreementsShow === 'always') ? (
         <AgreementsList refs={agreements.refs} agreements={agreements.actions} onBack={closeAgreements} textColor={textColor} borderColor={borderColor} />
       ) : (
         <TodosSection
@@ -816,6 +826,8 @@ export default function ProjectDataPanel({
       <View style={styles.stackedColumn}>
         {short ? (
           meetingsSection({label: 'Todos', content: todosContent})
+        ) : !scheduleShown ? (
+          <View style={styles.stackedColumn}>{todosContent}</View>
         ) : (
           <>
             <View style={{flex: TODOS_WEIGHT}}>{todosContent}</View>

@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-251 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+255 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -1316,6 +1316,45 @@ Test: `__tests__/scenarios/calmerCurrent.test.tsx` · design: `docs/dev/history/
 - **And** the frontmatter is still one block
 
 Test: `__tests__/scenarios/calmerCurrent.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `files-and-folders.md#inside-projecttxt`, `projects-and-areas.md#show-on-this-page`
+
+### A project with nothing but todos and its home notebook: Notebook · Files, opening on Notebook, no Schedule
+
+- **Given** project "Garden renovation" with a todo, no threads, loops or meetings, and its home notebook
+- **When** I open its page
+- **Then** the left tabs are Notebook and Files, the Notebook shows, and there is no Threads, Loops or Schedule
+- **When** I set Loops to Always on ⚙ Settings and close it
+- **Then** the Loops tab shows, empty, and the page still opens on Notebook
+
+Test: `__tests__/scenarios/calmerCurrent.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `projects-and-areas.md#the-current-tab`, `projects-and-areas.md#show-on-this-page`
+
+### The left side opens where "Left side opens on" says
+
+- **Given** project "Garden renovation" with a thread and "show: open=files"
+- **When** I open its page
+- **Then** Threads is a tab, but Files shows: the project file is listed
+
+Test: `__tests__/scenarios/calmerCurrent.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `projects-and-areas.md#show-on-this-page`
+
+### The scope shows under the name only when set; a tap opens ⚙ Settings
+
+- **Given** project "Garden renovation" with the scope "A garden we can sit in" and project "Shed" without one
+- **When** I open Garden renovation
+- **Then** the scope shows under the name
+- **When** I tap the scope
+- **Then** ⚙ Settings opens
+- **When** I open Shed
+- **Then** no scope line and no "+ Add a scope" show on the page
+
+Test: `__tests__/scenarios/calmerCurrent.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `projects-and-areas.md#the-current-tab`, `projects-and-areas.md#settings`
+
+### The header names a project's area (a tap opens it) and its time this week
+
+- **Given** on Tue 10.11. project "Garden renovation" in area "Home" with a 90-minute meeting this week
+- **When** I open its page
+- **Then** the header shows the area and 1.5 h this week
+- **When** I tap the area
+
+Test: `__tests__/scenarios/calmerCurrent.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `projects-and-areas.md#the-current-tab`
 
 ### A tap on a todo on the Current page shows its card without re-rendering the lists
 

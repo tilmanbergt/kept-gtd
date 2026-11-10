@@ -27,6 +27,7 @@ import {usePerfRender} from '../../utils/perf';
 import AbbrevEditor from './AbbrevEditor';
 import ShowOnPage from './ShowOnPage';
 import StatusBlock from './StatusBlock';
+import {useThreadRuleTypes} from '../thread/useTending';
 
 interface Props {
   kind: 'project' | 'area';
@@ -67,6 +68,7 @@ export default function ItemSettings({
 }: Props): React.JSX.Element {
   usePerfRender('ItemSettings');
   const items = useCachedItems();
+  const ruleTypes = useThreadRuleTypes();
   const item = useMemo(
     () => items.find(i => i.path === path) ?? null,
     [items, path],
@@ -78,8 +80,8 @@ export default function ItemSettings({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rawContent]);
   const counts = useMemo(
-    () => (item ? pageShowCounts(item, hasHomeNotebook) : null),
-    [item, hasHomeNotebook],
+    () => (item ? pageShowCounts(item, items, ruleTypes, hasHomeNotebook) : null),
+    [item, items, ruleTypes, hasHomeNotebook],
   );
 
   return (

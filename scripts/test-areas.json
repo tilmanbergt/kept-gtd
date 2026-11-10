@@ -251,7 +251,7 @@
         "src/domain/{markdown,writeGuard,fileName,fileNameFix,fileChangeText,integrityCheck,taskLine,taskEdit,types,linkTargets}.ts",
         "src/supernote/{fileSystem,fileNative,devicePaths,hostCall,pluginPermissions}.ts",
         "src/ui/{FileBrowserPane,LoadErrorNotice}.tsx",
-        "src/ui/{fileBrowserGroup,useWriteConflicts,useCachedItems,useCachedInbox,useThisFile}.ts",
+        "src/ui/{fileBrowserGroup,useWriteConflicts,useCachedItems,useCacheSignature,useCachedInbox,useThisFile}.ts",
         "src/ui/fileBrowser/**"
       ]
     },

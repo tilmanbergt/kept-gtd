@@ -125,3 +125,31 @@ export function hiddenHint(show: PageShow, part: ShowPart, count: number): strin
   const [one, many] = COUNT_NOUN[part];
   return `Never · ${count} ${count === 1 ? one : many}`;
 }
+
+/** A tab of the page's left side; `loops` is "Loops" on a project and "Projects" (its projects and loops) on an area. Files always shows. */
+export type LeftTab = 'threads' | 'loops' | 'notebook' | 'files';
+
+/** Whether a left tab has something to show. */
+function tabHasContent(tab: LeftTab, kind: 'project' | 'area', presence: ShowPresence): boolean {
+  if (tab === 'threads') return presence.threads;
+  if (tab === 'loops') return kind === 'area' ? presence.projects || presence.loops : presence.loops;
+  if (tab === 'notebook') return presence.notebook;
+  return true;
+}
+
+/** The left tabs in order: the visible parts, then Files. The Notebook tab needs a home notebook setup (`notebookAvailable`). */
+export function leftTabs(kind: 'project' | 'area', visible: Record<ShowPart, boolean>, notebookAvailable: boolean): LeftTab[] {
+  const tabs: LeftTab[] = [];
+  if (visible.threads) tabs.push('threads');
+  if (kind === 'area' ? visible.projects || visible.loops : visible.loops) tabs.push('loops');
+  if (visible.notebook && notebookAvailable) tabs.push('notebook');
+  tabs.push('files');
+  return tabs;
+}
+
+/** The tab the left side opens on: the open rule's tab when it is shown, else the first shown tab with content, else Files. */
+export function startTab(rule: OpenRule, tabs: readonly LeftTab[], kind: 'project' | 'area', presence: ShowPresence): LeftTab {
+  if (rule === 'files') return 'files';
+  if ((rule === 'notebook' || rule === 'threads') && tabs.includes(rule)) return rule;
+  return tabs.find(t => t !== 'files' && tabHasContent(t, kind, presence)) ?? 'files';
+}

@@ -42,12 +42,13 @@ jest.mock('../../src/supernote/hostContext', () => ({
 }));
 jest.mock('../../src/supernote/fileSystem', () => {
   const files: Record<string, string> = {
-    '/storage/emulated/0/Note/2 Areas/Home/area.txt': '---\nkind: area\nstatus: active\n---\n\n## Tasks\n\n## Meetings\n',
+    '/storage/emulated/0/Note/2 Areas/Home/area.txt': '---\nkind: area\nstatus: active\nshow: threads=always\n---\n\n## Tasks\n\n## Meetings\n',
     '/storage/emulated/0/Note/1 Projects/Garden/project.txt': [
       '---',
       'kind: project',
       'status: active',
       'area: Home',
+      'show: threads=always loops=always',
       '---',
       '',
       '## Tasks',
@@ -58,7 +59,7 @@ jest.mock('../../src/supernote/fileSystem', () => {
       '',
     ].join('\n'),
     '/storage/emulated/0/Note/1 Projects/Boat/project.txt': '---\nkind: project\nstatus: on-hold\narea: Home\n---\n\n## Tasks\n\n## Meetings\n',
-    '/storage/emulated/0/Note/1 Projects/Allotment/project.txt': '---\nkind: project\nstatus: active\n---\n\n## Tasks\n\n## Meetings\n',
+    '/storage/emulated/0/Note/1 Projects/Allotment/project.txt': '---\nkind: project\nstatus: active\nshow: threads=always loops=always\n---\n\n## Tasks\n\n## Meetings\n',
     '/storage/emulated/0/Note/2 Areas/0 Inbox/Inbox.txt': '---\nkind: inbox\n---\n\n## Tasks\n\n## Meetings\n',
   };
   const folders: Record<string, string[]> = {
@@ -136,7 +137,8 @@ async function openPage(tab: 'Areas' | 'Projects', name: RegExp, nextPage = fals
 /** The top row's labels, then (after tapping Files) the places row's labels and its active place. */
 async function filesOf(r: TestRenderer.ReactTestRenderer): Promise<{top: string[]; places: string[]; active: string}> {
   const top = filesTabs(r);
-  expect(top.props.activeKey).toBe('threads');
+  // "Always" shows the empty Threads and Loops tabs; with nothing in them the page opens on Files.
+  expect(top.props.activeKey).not.toBe('threads');
   const files = top.props.tabs.find((t: {label: string}) => t.label === 'Files');
   await act(async () => top.props.onChange(files.key));
   await settle();
