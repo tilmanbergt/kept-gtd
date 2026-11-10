@@ -227,7 +227,7 @@ Ship the tender by end of quarter.
 
 | Section | Content | Parsed by |
 |---|---|---|
-| frontmatter | `status`, `defaultResourceFolder`, `area`, `abbrev`; the retired focus flags `dailyFocus`/`weeklyFocus`/`monthlyFocus` (read and written back only, §3); `kind`, `doneAt`, `archivedAt` and any hand-written key kept as extra lines | `parseFrontMatter` / `writeFrontMatterIntoContent` |
+| frontmatter | `status`, `defaultResourceFolder`, `area`, `abbrev`, the optional `show:` line ("Show on this page", `domain/pageShow.ts`: tokens kept as written, the line only while something differs from the default); the retired focus flags `dailyFocus`/`weeklyFocus`/`monthlyFocus` (read and written back only, §3); `kind`, `doneAt`, `archivedAt` and any hand-written key kept as extra lines | `parseFrontMatter` / `writeFrontMatterIntoContent` |
 | `## Scope` | free text, the whole span is the value | `parseScopeSpan` / `writeScopeIntoContent` |
 | `## Tasks` | one task per line | `parseTasksSpan` / `writeTasksIntoContent` |
 | `## Meetings` | one meeting per line | `parseMeetingsSpan` / `writeMeetingsIntoContent` |
@@ -334,7 +334,7 @@ relative to recognized lines does not.
 `storage/dataCache.ts` holds one module-level `DataCache {scannedAt, paths, items}` with one
 `CachedItem` per Project/Area folder: the raw file text plus every parsed span and frontmatter
 field as flat fields (`tasks`, `meetings`, `scope`, `marks`, `threads`, `loops`, `agreements`,
-`status`, `focusFlags` (write-only, §3), `area`, `abbrev`, `defaultResourceFolder`, their extra lines and an
+`status`, `focusFlags` (write-only, §3), `area`, `abbrev`, `show`, `defaultResourceFolder`, their extra lines and an
 optional `loadError`). It is disposable: a full rebuild always reproduces it from the files.
 
 **Shared Inbox.** `Inbox.txt` is not an item, but the cache keeps it next to them:
@@ -365,7 +365,10 @@ Screens read it through `ui/useCachedInbox.ts`; a write anywhere is seen everywh
    arrays, never changing a cached array or entry), so every mutation calls
    `notifyCacheChanged()`, which bumps a version and notifies `subscribeCache` listeners.
    `ui/useCachedItems.ts` turns that into a re-render and a new array identity per change (plain
-   `useState` + `useEffect`, paused while a kept tab is hidden).
+   `useState` + `useEffect`, paused while a kept tab is hidden). A component that shows only a few facts
+   from the cache subscribes selectively: `ui/useAbbrevItems.ts` (abbreviations) and
+   `ui/useCacheSignature.ts` (a string computed from the cache; a re-render only when it changes -
+   the Current page's tabs and header through `screens/item/usePageFacts.ts`).
 
 `ensureItemCached(kind, name, path)` loads one item on demand when it is not cached yet;
 `findCachedItem(path)` reads one. Cross-project views are pure, synchronous transforms over the
@@ -476,7 +479,8 @@ its own row. A meeting row is quiet: its own targets are the title's tags, the n
 clip of a linked file; the prep/review icon and the read-only M (2-line rows) sit inside its main
 tap target, which selects the meeting. A row's tap targets carry its vertical padding, so they
 span the row's full height (the row itself has none). Everything else acts on the selected item
-through its **item card** in Quick Add's place: `ui/useEditTarget.ts` holds the selection in mode `card`
+through its **item card** in Quick Add's place (the box starts closed: **+ Todo**, **+ Meeting**…
+open a kind, `ui/quickAdd/KindButtons.tsx`): `ui/useEditTarget.ts` holds the selection in mode `card`
 (first tap), `edit` (the card's Edit or a second tap; Save returns to `card`) or `add` (Quick Add
 for the selected meeting, from its context panel, §2.7); every screen
 with Quick Add builds the card with `ui/itemCard/useMeetingCard.ts` from its selection and its
@@ -1345,6 +1349,10 @@ place it happens.
   spreads into a new object and is saved. The Current page's components read settings through
   `ui/useSettings.ts` (the in-memory snapshot, §2.12); a screen that loads them itself gets the
   same object back while nothing changed, so setting it as state renders nothing.
+- **A tap selects without redrawing the list.** The selected row lives in `ui/selectionStore.ts`
+  (`useSyncExternalStore`): a row reads only its own state (`useSelectedMode`), so a tap re-renders
+  the two rows that change and the card, never the list; lists get stable props and are memoized
+  (docs/dev/history/technical-design-calmer-screens.md §3.1).
 - **File changes are visible.** Moves, overwrites and deletes are confirmed before and reported
   after (`domain/fileChangeText.ts`). A delete needs a confirmation naming it, then FILE:DELETE,
   then `deleteEmptyFolder`. Temporary files only in the private temp folder. Everything Kept

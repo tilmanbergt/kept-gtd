@@ -33,7 +33,7 @@ checklist steps (`DEVELOPMENT-POLICY §n`, `RELEASING §n`), separated by `; `.
 - Kind: promise
 - Stated: docs/user/files-and-folders.md; docs/user/philosophy.md; DEVELOPMENT-POLICY §3
 - Backing: tested
-- Evidence: __tests__/storage/dataFileWrite.test.ts; __tests__/storage/outsideEdits.test.ts; __tests__/scenarios/fileSafety.test.tsx; __tests__/scenarios/agreements.test.tsx
+- Evidence: __tests__/storage/dataFileWrite.test.ts; __tests__/storage/outsideEdits.test.ts; __tests__/scenarios/fileSafety.test.tsx; __tests__/scenarios/agreements.test.tsx; __tests__/scenarios/calmerCurrent.test.tsx
 - Re-checked: every push (CI)
 
 ### F4 When Kept and another app changed the same part of a file, you decide which wins

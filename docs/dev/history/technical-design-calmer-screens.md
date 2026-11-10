@@ -469,4 +469,71 @@ session. No beta pre-release. Steps inside a stage run `npm run check:affected -
 
 ## 10. As built
 
-(filled in during implementation)
+**Performance** (tap on a row → card committed, `[GtdPara] ItemCard: tap card` from the A1 trace, Manta):
+
+| | Daily | Current |
+|---|---|---|
+| Baseline (A1, before the refactor) | ~433 ms | ~512 ms |
+| After A2 (selection store) | ~305 ms | ~302 ms |
+| After the A7 fix (FrozenWhileHidden, device stop 1 re-check) | 77–87 ms | 84–111 ms |
+
+The first tap after opening a page takes 192 ms (Daily) / 278 ms (Current): the card mounts once. The
+target of 150 ms holds for every later tap.
+
+**Stage A**
+- A2: Current keeps ProjectDataPanel reading the selection (it owns the cards and Quick Add);
+  TodosSection and MeetingsSection are memoized with stable props and each row reads its own mark, so the
+  lists don't re-render on a tap (scenario 4). Daily as designed (`SelectionZone`).
+- A3: focus after a kind button for the Todo text and the Meeting title only (the Note and Agreement fields
+  have no ref).
+- A4: the loop starter inserts `#kind/` like the thread starter.
+- A6: MiniTabs' existing `trailing` slot holds the layout switch (no new `accessory` prop); `MiniTabDef`
+  gets `adornment` for the bell. The day panel's list keeps its header line for the page arrows, without
+  text.
+- A6: Current opens on the first tab with todos while Next is empty and no tab was chosen yet: a page with
+  only planned todos would otherwise open on an empty list.
+- A6: on narrow screens a tab that is not chosen shows its count only when the words would overflow.
+- A6: the list tabs reset when the app shell mounts (start, profile switch).
+- A7: `QuickAddWidget` gets `ownerCard`; `ui/period/useOwnerCard.tsx` is shared by Week and Month. Engage:
+  without the loop line, a loop's "Next here" names its next meeting; "+ Next <kind>" stays in the loop
+  overview. The "Section:" line went; its scenario assertions were dropped (the section logic stays covered
+  by the engage-section and page-section unit tests).
+- Device stop 1: taps took ~300 ms; the trace showed Quick Add's four hidden form rows re-rendering behind
+  the card → `ui/quickAdd/FrozenWhileHidden.tsx`. The kind buttons got their own 26 dp pill (`PillButton`
+  at ~34 dp was clipped in row 1).
+- O5: not attempted - the host offers a full e-ink refresh only (`utils/screenRefresh.ts`); the box
+  redraws in place.
+
+**Stage B**
+- B3 (O3): Review's Someday step did not read the Inbox; it now lists the Inbox's Someday / Maybe todos
+  last (the Inbox passed as a review item of kind `inbox`, read only in that step).
+- B4: Review's Inbox step has no Files pane any more: list left, card + picker / form right. Linking a
+  file from that step is not offered (link on Daily's card, or after filing). The hub count follows
+  `inboxSummary` (Someday / Maybe todos wait in the Someday step; past meetings count).
+- B5: Kept stores no last tab (it opens on Daily or Current), so scenario 24 has nothing to map;
+  `openInbox()` sets Daily's list tab to Inbox. `MarksReturnTo` `'inbox'` became `'daily'`.
+  `InboxScreen.tsx` and `DoneToggle.tsx` were deleted; `hideDoneInboxTasks` is retired like
+  `hideDoneProjectTasks` (still stored, no longer read).
+
+**Stage C**
+- C2: ⚙ returns with **Close**, not `Done`: Done is also a status button in the same view. The
+  abbreviation editor is its own file (`screens/item/AbbrevEditor.tsx`). While an Area is picked ⚙ shows
+  its own Files pane (same roots); ItemDetail's panes unmount while ⚙ is open. The "Never · n" counts come
+  from `storage/pageShowCounts.ts`.
+- C3 (a principle over the design): Auto for Threads counts what the Threads tab lists - the tracked, new
+  and inactive counterparts of the page's scope - not only the `## Threads` lines; otherwise a page with
+  New counterparts from tags would hide them. `pageScope` moved from ThreadsTab to
+  `storage/pageShowCounts.ts`.
+- C3: an Area's Projects tab carries its projects and its loops; it shows when either is visible.
+  Agreements: Never hides the "◇ Agreements n ›" link, Always shows it at 0 (opening the empty list).
+  Schedule hidden: the Todos take the column; the short layout (Todos | Schedule | Google) keeps its tabs
+  (§3.10).
+- C3: the start tab follows the settling facts (FileBrowserPane `startKey`) until a tab is tapped, like
+  the count tabs (A6). The Notebook tab's Auto means "the notebook exists"; the Notebook button under the
+  Files pane still creates it.
+- C3: the page's facts come through `ui/useCacheSignature.ts` (`screens/item/usePageFacts.ts`): ItemDetail
+  re-renders only when the counts, the `show:` value, the scope, the Area or the week's time change, not for
+  a todo edit.
+- C4: scenarios 1-23 and 25-31 are scenario tests with `help:` (`__tests__/scenarios/calmer*.test.tsx`;
+  30 in `givenTime` and the Week smoke test). Screenshots in `docs/user/images/` (Daily, Current, Review,
+  Week, Engage) need the device and are listed for Tilman.

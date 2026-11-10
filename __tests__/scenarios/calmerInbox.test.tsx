@@ -1,4 +1,4 @@
-// docs/dev/history/technical-design-calmer-screens.md §6 scenarios 12-13: the Inbox on Daily (14, the context: contexts.test.tsx).
+// docs/dev/history/technical-design-calmer-screens.md §6 scenarios 12-13 and 17-23: the Inbox on Daily and in the Review (14, the context: contexts.test.tsx; 24: no stored tab exists to map, see the design's As built).
 import {todayIso} from '../../src/domain/meetingTime';
 import {expectNotShows, expectShows, fieldValue, labelled, openApp, readTexts, shows, tap, tapLabel, tapTab, textsBetween} from '../../test-helpers/scenario/app';
 import {areaFile, dataFile, fileText, INBOX_FILE, loggedErrors, projectFile, putFile, sectionLines} from '../../test-helpers/scenario/files';
