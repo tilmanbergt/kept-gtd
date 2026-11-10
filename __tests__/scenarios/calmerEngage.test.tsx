@@ -12,7 +12,7 @@ beforeEach(() => {
 });
 afterEach(() => jest.useRealTimers());
 
-scenario('Engage on a loop\'s page: no section line, no "Loop since" line, and Today next is shown', {feature: 'Engage', design: 'technical-design-calmer-screens.md', help: 'engage.md#opening-engage'}, () => {
+scenario('Engage on a loop\'s page: no section line, no "Loop since" line, and Today next is shown', {feature: 'Engage', design: 'technical-design-calmer-screens.md', help: 'engage.md#next-here-and-today-next'}, () => {
   given('Area Sport with loop marathon, page 5 is a loop todo\'s page, and a physio appointment at 11:00 today', () => {
     sport();
     putFile(areaFile('Sport'), fileText(areaFile('Sport')).replace('## Meetings\n', '## Meetings\n- 2026-10-25 11:00-12:00 Physio\n'));

@@ -606,7 +606,7 @@ Test: `__tests__/scenarios/smoke/daily.test.tsx` · help: `daily.md#schedule-and
 - **When** I open Engage on page 5
 - **Then** the owner is the loop, with Today next and without the section or "Loop since" line
 
-Test: `__tests__/scenarios/calmerEngage.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `engage.md#opening-engage`
+Test: `__tests__/scenarios/calmerEngage.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `engage.md#next-here-and-today-next`
 
 ### Engage before the meeting: Before is chosen, the strip offers prep and the last note, From Thread shows the last session
 
