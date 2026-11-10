@@ -51,6 +51,19 @@ export interface AbbrevValidation {
  *   abbreviation - global scope across both kinds together, not scoped
  *   per-kind (an Area and a Project can't share one either).
  */
+/** The one line saying what is wrong with an abbreviation; '' when it is valid. */
+export function abbrevErrorMessage(validation: AbbrevValidation): string {
+  if (validation.valid || !validation.reason) return '';
+  switch (validation.reason.kind) {
+    case 'empty':
+      return 'Enter an abbreviation.';
+    case 'reserved':
+      return 'That matches a flow-state tag - pick something else.';
+    case 'duplicate':
+      return `Already used by "${validation.reason.usedBy}".`;
+  }
+}
+
 export function validateAbbrev(candidate: string, existingAbbrevs: ExistingAbbrev[]): AbbrevValidation {
   const trimmed = candidate.trim();
   if (trimmed.length === 0) return {valid: false, reason: {kind: 'empty'}};

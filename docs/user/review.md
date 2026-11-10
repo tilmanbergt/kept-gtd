@@ -73,7 +73,7 @@ Rows you decided on stay listed with a checkmark. The step only shows in the ove
 
 ## Someday / Maybe
 
-[Someday and Maybe](tags.md#flow-tags-for-todos) todos stay out of the way during the week: the [thread](threads.md#ahead) and [loop overviews](loops.md#the-loop-overview) and [Engage](engage.md#also-here) only count them. This step is where you look at them again. On the left they are grouped by project or area; tap one to see it on the right with `#next` (work on it soon), **To plan** (back into the plan, without Someday or Maybe), **Done** and **Cancel**.
+[Someday and Maybe](tags.md#flow-tags-for-todos) todos stay out of the way during the week: the [thread](threads.md#ahead) and [loop overviews](loops.md#the-loop-overview) and [Engage](engage.md#also-here) only count them. This step is where you look at them again. On the left they are grouped by project or area, the [Inbox](daily.md#more-places-new-project-someday)'s last; tap one to see it on the right with `#next` (work on it soon), **To plan** (back into the plan, without Someday or Maybe), **Done** and **Cancel**.
 
 Opened from an overview's **n someday ›** or from Engage's [Also here](engage.md#also-here), the step shows "Only #sparring/jordan · Show all" (the name of where you came from) and lists just those todos; **Show all** lists every one. Leaving the step ends the filter. The recap counts the todos made `#next`.
 

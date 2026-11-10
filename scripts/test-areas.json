@@ -32,7 +32,7 @@
         "src/storage/tagOwners.ts",
         "src/domain/inboxFileTo.ts",
         "src/ui/useInboxFiling.ts",
-        "src/domain/{period,weekDate,monthHighlight,givenTime,listTabs,inboxCount}.ts",
+        "src/domain/{period,weekDate,monthHighlight,givenTime,listTabs,inboxCount,projectFromItem}.ts",
         "src/ui/period/**",
         "src/ui/{KindBadge,CountTabs}.tsx",
         "src/ui/{listTabStore,useJustDone}.ts"

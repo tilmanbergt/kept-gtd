@@ -10,7 +10,7 @@
  * carries a filter (screens/review/reviewNav.ts): "Only <name> · Show all"
  * and only those todos. Leaving the step clears it.
  */
-import React, {useState} from 'react';
+import React, {useMemo, useState} from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
 import {formatDate} from '../../../domain/dateFormat';
 import {engageFlowText} from '../../../domain/engageOptions';
@@ -19,7 +19,7 @@ import {withTaskCancelled, withTaskDone, withTaskText} from '../../../domain/tas
 import {Task} from '../../../domain/types';
 import {setCachedInbox} from '../../../storage/dataCache';
 import {mutateEntryTasks} from '../../../storage/itemMutations';
-import {ReviewNextTaskEntry, ReviewSomedayEntry} from '../../../storage/reviewAggregate';
+import {ReviewItemRef, ReviewNextTaskEntry, ReviewSomedayEntry, somedayTasksFor} from '../../../storage/reviewAggregate';
 import ReviewMasterDetail from '../../../ui/ReviewMasterDetail';
 import {activeLineEstimator} from '../../../domain/textLineEstimator';
 import {FONT} from '../../../ui/theme';
@@ -36,6 +36,16 @@ import {estimatorWidth} from '../../../ui/ScreenSize';
 type SomedayRow =
   | {kind: 'header'; key: string; entry: ReviewSomedayEntry}
   | {kind: 'entry'; key: string; entry: ReviewSomedayEntry; taskEntry: ReviewNextTaskEntry};
+
+/**
+ * The Inbox as an entry of this step. ReviewItemRef names a Project or Area;
+ * the Inbox's kind is only read here (liveTask, the item link) and by
+ * mutateEntryTasks, which writes Inbox.txt for it.
+ */
+function inboxReviewRef(path: string): ReviewItemRef {
+  return {kind: 'inbox', name: 'Inbox', path} as unknown as ReviewItemRef;
+}
+const isInboxRef = (item: ReviewItemRef): boolean => (item.kind as string) === 'inbox';
 
 type SomedayAction = 'next' | 'plan' | 'done' | 'cancel';
 
@@ -78,14 +88,22 @@ function detailCaption(task: Task, today: string): string {
 
 export default function SomedayStep({data, stepEntryToken, onOpenItem, textColor, borderColor}: ReviewStepProps): React.JSX.Element {
   const {items, aggregate, inbox, inboxPath, refreshFromCache} = data;
-  const frozen = useFrozenStepList(aggregate?.somedayItems, stepEntryToken);
+  // The Inbox's Someday and Maybe todos too, last (docs/dev/history/technical-design-calmer-screens.md §9 O3):
+  // Someday / Maybe on the Inbox card parks a todo there.
+  const somedayItems = useMemo(() => {
+    if (!aggregate) return undefined;
+    const inboxTasks = inbox && inboxPath ? somedayTasksFor(inboxReviewRef(inboxPath), inbox.tasks) : [];
+    return inboxTasks.length > 0 ? [...aggregate.somedayItems, {item: inboxReviewRef(inboxPath!), tasks: inboxTasks}] : aggregate.somedayItems;
+  }, [aggregate, inbox, inboxPath]);
+  const frozen = useFrozenStepList(somedayItems, stepEntryToken);
   const filter = useReviewStepFilter('somedayMaybe');
   const action = useActionError('ReviewScreen.somedayError', 'SomedayStep: action failed');
   const [pending, setPending] = useState(false);
   const rows = rowsOf(frozen.list, filter);
 
   /** The todo as it is now (by index), else as it was frozen. */
-  const liveTask = (taskEntry: ReviewNextTaskEntry): Task => reviewCurrentItem(taskEntry.item, items).tasks[taskEntry.taskIndex] ?? taskEntry.task;
+  const liveTask = (taskEntry: ReviewNextTaskEntry): Task =>
+    (isInboxRef(taskEntry.item) ? inbox?.tasks[taskEntry.taskIndex] : reviewCurrentItem(taskEntry.item, items).tasks[taskEntry.taskIndex]) ?? taskEntry.task;
 
   const run = (taskEntry: ReviewNextTaskEntry, kind: SomedayAction) => {
     setPending(true);
@@ -133,7 +151,7 @@ export default function SomedayStep({data, stepEntryToken, onOpenItem, textColor
     const task = liveTask(row.taskEntry);
     return (
       <View>
-        <Pressable onPress={() => onOpenItem(row.entry.item)}>
+        <Pressable onPress={() => !isInboxRef(row.entry.item) && onOpenItem(row.entry.item)}>
           <Text style={[styles.cardTitle, {color: textColor}]}>{task.text}</Text>
         </Pressable>
         <Text style={[styles.detailCaption, {color: textColor}]}>

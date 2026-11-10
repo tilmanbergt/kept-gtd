@@ -22,6 +22,14 @@ Tap a todo or meeting on the **Inbox** tab and its Inbox card takes [Quick Add](
 
 Tap a place and the item moves there at once - its note goes along, after the usual question. The [status line](index.md#the-status-line) says "Filed "Ask Lena" to Team offsite" with **Undo**, which brings it back to the Inbox, and the next Inbox item's card opens, so you can go through the Inbox one item at a time. When the Inbox is empty, the box closes. The grey row under the places has **Done**, **Edit** and **Delete**.
 
+## More places, new project, Someday
+
+**More…** after the suggestions lists every active project and area in the place of the list, under **Projects** and **Areas**, each with its abbreviation (a project also with its area); the card stays above. Tap one to file the item there. **‹ Back to the card** returns.
+
+At the bottom, **Someday / Maybe** parks a todo: it gets `#someday` and stays in `Inbox.txt`, but leaves the Inbox list; the [Weekly Review](review.md)'s [Someday / Maybe](review.md#someday--maybe) step shows it. For Maybe, change the tag with **Edit**.
+
+**→ New project** on the card (or **+ New project from this item** under More…) makes a project from a todo. The form is filled in for you, nothing is created yet: the name is the todo's words without tags and without a leading "Idea:", the [abbreviation](projects-and-areas.md#abbreviations) is suggested from it (both can be changed), and you choose what happens to the todo - **First todo, #next** (the default), **First todo**, or **Was only the name: remove it**, which removes the todo from your lists like Delete. **Create project** makes the folder in `1 Projects` and the [status line](index.md#the-status-line) names it, with **Open ›**; then the next Inbox item opens. There is no Undo for a new folder: archive or remove a project you didn't want by hand.
+
 ## Done
 
 Tick a todo and it stays in its list, struck through, so you can see what you just finished - until you open another tab or leave Daily. Then it is under **Done**, which lists everything finished today. Untick a todo there and it goes back to its list.

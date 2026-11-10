@@ -56,6 +56,10 @@ or your project/area files are stored.
 - The Inbox card: tap an Inbox item and **File to** suggests up to four places - the abbreviation you
   wrote as a tag, the projects and areas that use its tags, the places you filed to lately. A tap
   files it, with **Undo** in the status line, and the next Inbox item opens.
+- On the Inbox card, **More…** lists every active project and area, **Someday / Maybe** parks a
+  todo (it stays in `Inbox.txt` and shows in the Review's Someday / Maybe step), and **→ New
+  project** makes a project from a todo: name and abbreviation prefilled, created only when you tap
+  **Create project**.
 - Daily's schedule has no summary line any more; its one-line/two-line buttons sit next to Today
   and Tomorrow.
 - Week and Month: Given time is one line per owner; a tap shows its card with the details and

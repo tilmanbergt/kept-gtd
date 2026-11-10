@@ -2,6 +2,7 @@
 import {inboxFileTo, isTopicTag} from '../../src/domain/inboxFileTo';
 import {FileToItem} from '../../src/domain/captureFileTo';
 import {InboxListEntry, nextInboxRow} from '../../src/domain/inboxCount';
+import {projectNameFromItem} from '../../src/domain/projectFromItem';
 
 const place = (name: string, abbrev: string | null, status: FileToItem['status'] = 'active'): FileToItem => ({kind: 'project', name, path: `/p/${name}`, abbrev, status});
 const GR = place('Garden renovation', 'GR');
@@ -35,5 +36,13 @@ describe('nextInboxRow', () => {
     expect(nextInboxRow(order, {type: 'task', index: 2})).toEqual({type: 'meeting', index: 0});
     expect(nextInboxRow(order, {type: 'meeting', index: 0})).toEqual({type: 'task', index: 2});
     expect(nextInboxRow([{type: 'task', index: 0}], {type: 'task', index: 0})).toBeNull();
+  });
+});
+
+describe('projectNameFromItem', () => {
+  it('drops the tags and a leading Idea: / Idee:', () => {
+    expect(projectNameFromItem('Idea: Herb spiral #garden')).toBe('Herb spiral');
+    expect(projectNameFromItem('Idee:Kräuterspirale #GR #next')).toBe('Kräuterspirale');
+    expect(projectNameFromItem('Fix the  gate')).toBe('Fix the gate');
   });
 });

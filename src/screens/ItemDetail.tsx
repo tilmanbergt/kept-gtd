@@ -113,7 +113,7 @@ import {RetainedFocus} from '../storage/projectFile';
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
 import {ItemStatus} from '../domain/types';
-import {AbbrevValidation, ExistingAbbrev, validateAbbrev} from '../domain/abbrev';
+import {abbrevErrorMessage, ExistingAbbrev, validateAbbrev} from '../domain/abbrev';
 import EngageButton from '../ui/EngageButton';
 import HomeNotebookButton from '../ui/HomeNotebookButton';
 import {useHomeNotebooks} from '../ui/useHomeNotebooks';
@@ -147,26 +147,6 @@ import {useOnScreenShow} from '../ui/screenActivity';
 import {errorMessage} from '../utils/errorMessage';
 import KindBadge from '../ui/KindBadge';
 
-/**
- * User-facing text for an invalid abbreviation candidate (domain/abbrev.ts's
- * validateAbbrev) - kept here rather than in domain/abbrev.ts since it's
- * display copy, not logic (domain/ stays pure per the repo's own
- * convention). Covers all three AbbrevInvalidReason kinds; only 'reserved'
- * and 'duplicate' are ever actually shown by AbbrevPill below (see that
- * component's doc comment) - 'empty' is included for completeness/
- * defense-in-depth (e.g. Save somehow reached with a blank draft).
- */
-function abbrevErrorMessage(validation: AbbrevValidation): string {
-  if (validation.valid || !validation.reason) return '';
-  switch (validation.reason.kind) {
-    case 'empty':
-      return 'Enter an abbreviation.';
-    case 'reserved':
-      return 'That matches a flow-state tag - pick something else.';
-    case 'duplicate':
-      return `Already used by "${validation.reason.usedBy}".`;
-  }
-}
 
 interface Props {
   kind: 'project' | 'area';

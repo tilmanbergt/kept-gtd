@@ -71,6 +71,8 @@ interface Props {
 export interface ClipboardTextInputHandle {
   /** Inserts `word` at the field's last cursor position (end of the text if it was never focused), with spaces as needed; the cursor ends up right after it. */
   insertAtCursor: (word: string) => void;
+  /** Puts the cursor into the field (the new-project form's name). */
+  focus: () => void;
 }
 
 export default function ClipboardTextInput({
@@ -109,6 +111,7 @@ export default function ClipboardTextInput({
       lastSelectionRef.current = selection;
       setSelectionOverride(selection);
     },
+    focus: () => inputRef.current?.focus(),
   }));
 
   return (

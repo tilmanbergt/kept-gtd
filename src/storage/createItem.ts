@@ -25,8 +25,8 @@ import {GtdParaSettings, resolvePaths} from '../domain/settings';
 import {ensureFileReadPermission} from '../supernote/pluginPermissions';
 import {ensureFolderExists, listFolderEntries, writeTextFile} from '../supernote/fileSystem';
 import {log} from '../utils/log';
-import {assignDefaultAbbrevIfMissing, CachedItem, ensureItemCached} from './dataCache';
-import {dataFilePath} from './projectFile';
+import {assignDefaultAbbrevIfMissing, CachedItem, ensureItemCached, frontMatterOf, updateItemFrontMatter} from './dataCache';
+import {dataFilePath, saveFrontMatter} from './projectFile';
 
 /**
  * Validates `name` and checks for a same-name folder (case-insensitive)
@@ -75,5 +75,25 @@ export async function createItem(
   const item = await ensureItemCached(kind, trimmed, path);
   await assignDefaultAbbrevIfMissing(item);
   log('createItem: done', kind, path);
+  return item;
+}
+
+/**
+ * A new project made from an Inbox todo (docs/dev/history/technical-design-calmer-screens.md
+ * §3.7): `createItem`, then the abbreviation chosen in the form when it
+ * differs from the default `createItem` gave it. The caller validated it
+ * (domain/abbrev.ts validateAbbrev).
+ */
+export async function createProjectWithAbbrev(name: string, abbrev: string, settings: GtdParaSettings): Promise<CachedItem> {
+  const item = await createItem('project', name, settings);
+  const wanted = abbrev.trim();
+  if (wanted && wanted !== item.abbrev) {
+    const fm = {...frontMatterOf(item), abbrev: wanted};
+    const rawContent = await saveFrontMatter('project', item.path, item.rawContent, fm);
+    updateItemFrontMatter(item.path, rawContent, fm);
+    item.rawContent = rawContent;
+    item.abbrev = wanted;
+  }
+  log('createItem: project from an Inbox todo');
   return item;
 }

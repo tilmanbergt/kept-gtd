@@ -262,3 +262,9 @@ export function inboxFiledText(title: string, placeName: string): string {
 
 /** After Undo of a filing: back in the Inbox. */
 export const INBOX_FILE_UNDONE_TEXT = 'Back in the Inbox';
+
+/** After a new project was made from an Inbox todo: its name, abbreviation and folder (the last two parts of its path). */
+export function newProjectText(name: string, abbrev: string | null, path: string): string {
+  const folder = path.split('/').filter(Boolean).slice(-2).join('/');
+  return `New project ${name}${abbrev ? ` #${abbrev}` : ''} in ${folder}`;
+}

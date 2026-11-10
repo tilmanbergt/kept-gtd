@@ -50,10 +50,15 @@ export interface InboxListEntry {
   index: number;
 }
 
-/** The row to show after `filed` left the list: the next one, else the one before - its index as it is after the move. */
-export function nextInboxRow(order: readonly InboxListEntry[], filed: InboxListEntry): InboxListEntry | null {
+/**
+ * The row to show after `filed` left the list: the next one, else the one
+ * before. `moved`: it left the file too (filed elsewhere), so the rows after
+ * it of its kind moved up one index; a todo parked as Someday or removed
+ * stays in the file at its place.
+ */
+export function nextInboxRow(order: readonly InboxListEntry[], filed: InboxListEntry, moved = true): InboxListEntry | null {
   const at = order.findIndex(r => r.type === filed.type && r.index === filed.index);
   const next = at < 0 ? null : order[at + 1] ?? order[at - 1] ?? null;
   if (!next) return null;
-  return next.type === filed.type && next.index > filed.index ? {type: next.type, index: next.index - 1} : next;
+  return moved && next.type === filed.type && next.index > filed.index ? {type: next.type, index: next.index - 1} : next;
 }

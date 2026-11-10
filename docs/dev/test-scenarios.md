@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-242 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+246 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -340,6 +340,43 @@ Test: `__tests__/scenarios/calmerInbox.test.tsx` · design: `docs/dev/history/te
 - **Then** it is back in the Inbox
 
 Test: `__tests__/scenarios/calmerInbox.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `daily.md#filing-from-the-inbox`
+
+### More… lists the projects and areas; a tap on one files the todo there
+
+- **Given** area Home and an Inbox todo "Fix the gate"
+- **When** I open its card, tap More…, then Areas and Home
+- **Then** the todo is in Home's file and no longer in the Inbox
+
+Test: `__tests__/scenarios/calmerInbox.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `daily.md#more-places-new-project-someday`
+
+### → New project: the name and abbreviation are prefilled; Create project makes the folder and files the todo with #next
+
+- **Given** an Inbox todo "Idea: Herb spiral #garden"
+- **When** I open its card and tap → New project
+- **Then** the form offers the name "Herb spiral" and the abbreviation HS; nothing is created yet
+- **When** I tap Create project
+- **Then** the project "Herb spiral" exists with HS, its file has the todo with #next, the Inbox no longer has it
+- **And** the status line names the new project with Open ›, and the next Inbox item's card is open
+
+Test: `__tests__/scenarios/calmerInbox.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `daily.md#more-places-new-project-someday`
+
+### → New project with "was only the name": the project is empty and the Inbox todo is cancelled
+
+- **Given** an Inbox todo "Idea: Herb spiral #garden"
+- **When** I open its card, tap → New project, choose "Was only the name: remove it" and Create project
+- **Then** the project exists without todos, and the Inbox todo is cancelled
+
+Test: `__tests__/scenarios/calmerInbox.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `daily.md#more-places-new-project-someday`
+
+### Someday / Maybe in the picker parks the todo: #someday, still in Inbox.txt, out of the Inbox list
+
+- **Given** an Inbox with "Idea: Herb spiral #garden" and "Fix the gate"
+- **When** I open the card of "Fix the gate", tap More… and Someday / Maybe
+- **Then** Inbox.txt still has it, with #someday, and the Inbox counts one
+- **When** I open the Review's Someday / Maybe step
+- **Then** it lists the parked todo, under the Inbox
+
+Test: `__tests__/scenarios/calmerInbox.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `daily.md#more-places-new-project-someday`
 
 ### A Daily row keeps its words; the due date moves to a grey note on the right; no note icon without a note
 

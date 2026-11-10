@@ -11,7 +11,9 @@ import {inboxFiledText, INBOX_FILE_UNDONE_TEXT} from '../domain/fileChangeText';
 import {meetingDisplayTitle} from '../domain/meetingTracking';
 import {displayTaskText} from '../domain/taskLabels';
 import {Meeting, Task} from '../domain/types';
-import {findCachedItem} from '../storage/dataCache';
+import {findCachedItem, getCachedInbox, setCachedInbox} from '../storage/dataCache';
+import {mutateEntryTasks} from '../storage/itemMutations';
+import {withTaskCancelled} from '../domain/taskEdit';
 import {recordDestinationUsed} from '../storage/destinationUsage';
 import {itemTarget, moveMeeting, moveTask} from '../storage/entryMove';
 import {errorMessage} from '../utils/errorMessage';
@@ -54,7 +56,7 @@ export function useInboxFiling(name: string, inboxPath: string | null) {
   );
 
   const file = useCallback(
-    async (entry: InboxEntry, place: FileToItem, via: FileVia): Promise<boolean> => {
+    async (entry: InboxEntry, place: FileToItem, via: FileVia, options: {quiet?: boolean} = {}): Promise<boolean> => {
       if (!inboxPath) return false;
       let moved: InboxEntry | null = null;
       await action.run(async () => {
@@ -72,6 +74,8 @@ export function useInboxFiling(name: string, inboxPath: string | null) {
       if (!done) return false;
       log(`inbox file to=${via}`);
       recordDestinationUsed(place.path).catch(e => logError(`${name}: recording the place failed`, errorMessage(e)));
+      // A new project says so itself (with Open ›).
+      if (options.quiet) return true;
       const title = done.kind === 'task' ? displayTaskText(done.task, 'flat') : meetingDisplayTitle(done.meeting);
       status.show(statusId, {
         kind: 'success',
@@ -85,5 +89,23 @@ export function useInboxFiling(name: string, inboxPath: string | null) {
     [action, inboxPath, moveUi, name, status, statusId, undo],
   );
 
-  return {file};
+  /** "Was only the name: remove it" (a new project from the todo): the todo cancelled, as Delete does; it stays in the file. */
+  const cancelTodo = useCallback(
+    async (index: number, task: Task): Promise<boolean> =>
+      inboxPath === null
+        ? false
+        : action.runSave(async () => {
+            const inbox = getCachedInbox();
+            const {nextInbox} = await mutateEntryTasks(
+              {item: {kind: 'inbox', path: inboxPath}, taskIndex: index, task},
+              tasks => tasks.map((t, i) => (i === index ? withTaskCancelled(t, true) : t)),
+              {inbox, inboxPath},
+            );
+            if (nextInbox) setCachedInbox(nextInbox);
+            log('inbox todo removed for a new project');
+          }),
+    [action, inboxPath],
+  );
+
+  return {file, cancelTodo, statusId};
 }
