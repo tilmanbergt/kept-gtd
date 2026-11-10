@@ -113,6 +113,25 @@ scenario('More… lists the projects and areas; a tap on one files the todo ther
   });
 });
 
+scenario('An Inbox meeting on Daily: More… opens the picker in place of its context panel, and a tap files it', {feature: 'Daily', design: 'technical-design-calmer-screens.md', help: 'daily.md#more-places-new-project-someday'}, () => {
+  given('area Home and an Inbox meeting "Gate repair" on 12.11.', () => {
+    clock();
+    putFile(areaFile('Home'), dataFile('area', {Scope: [], Tasks: [], Meetings: []}, ['abbrev: HO']));
+    putFile(INBOX_FILE, dataFile('inbox', {Tasks: [], Meetings: ['- 2026-11-12 10:00-11:00 Gate repair']}));
+  });
+  when('I open its card on Daily\'s Inbox tab, tap More…, then Areas and Home', async () => {
+    await openCardOf('Gate repair');
+    await tapLabel('More places');
+    await tap('Areas', 1);
+    await tapLabel('File to Home');
+  });
+  then('the meeting is in Home\'s file and no longer in the Inbox', () => {
+    expect(sectionLines(areaFile('Home'), 'Meetings')).toEqual([expect.stringMatching(/^- 2026-11-12 10:00-11:00 Gate repair/)]);
+    expect(sectionLines(INBOX_FILE, 'Meetings')).toEqual([]);
+    expect(loggedErrors()).toEqual([]);
+  });
+});
+
 scenario('→ New project: the name and abbreviation are prefilled; Create project makes the folder and files the todo with #next', {feature: 'Daily', design: 'technical-design-calmer-screens.md', help: 'daily.md#more-places-new-project-someday'}, () => {
   given('an Inbox todo "Idea: Herb spiral #garden"', herbs);
   when('I open its card and tap → New project', async () => {

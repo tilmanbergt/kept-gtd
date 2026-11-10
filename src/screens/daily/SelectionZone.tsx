@@ -220,22 +220,8 @@ export default function SelectionZone({
         {...context.todoOverride}
       />
       <View style={[common.divider, {backgroundColor: borderColor}]} />
-      {context.model && context.entry ? (
-        <MeetingContextPanel
-          model={context.model}
-          meeting={context.entry.meeting}
-          adding={context.adding}
-          onQuickAdd={actions.edit.add}
-          onBackToCard={actions.edit.toCard}
-          onClose={cancelEditTarget}
-          actions={context.todoActions}
-          selectedTodoKey={context.selectedTodoKey}
-          onSelectTodo={context.onSelectTodo}
-          onOpenItem={onOpenOwner}
-          textColor={textColor}
-          borderColor={borderColor}
-        />
-      ) : inboxCard && inboxPanel === 'picker' ? (
+      {/* More… and → New project win over the meeting's context panel: an Inbox meeting is filed there too. */}
+      {inboxCard && inboxPanel === 'picker' ? (
         <FilePicker
           places={places}
           onPick={inboxCard.fileTo}
@@ -254,6 +240,21 @@ export default function SelectionZone({
           textColor={textColor}
           borderColor={borderColor}
           placeholderColor={placeholderColor}
+        />
+      ) : context.model && context.entry ? (
+        <MeetingContextPanel
+          model={context.model}
+          meeting={context.entry.meeting}
+          adding={context.adding}
+          onQuickAdd={actions.edit.add}
+          onBackToCard={actions.edit.toCard}
+          onClose={cancelEditTarget}
+          actions={context.todoActions}
+          selectedTodoKey={context.selectedTodoKey}
+          onSelectTodo={context.onSelectTodo}
+          onOpenItem={onOpenOwner}
+          textColor={textColor}
+          borderColor={borderColor}
         />
       ) : (
         list

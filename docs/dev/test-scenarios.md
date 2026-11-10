@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-258 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+259 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -346,6 +346,14 @@ Test: `__tests__/scenarios/calmerInbox.test.tsx` · design: `docs/dev/history/te
 - **Given** area Home and an Inbox todo "Fix the gate"
 - **When** I open its card, tap More…, then Areas and Home
 - **Then** the todo is in Home's file and no longer in the Inbox
+
+Test: `__tests__/scenarios/calmerInbox.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `daily.md#more-places-new-project-someday`
+
+### An Inbox meeting on Daily: More… opens the picker in place of its context panel, and a tap files it
+
+- **Given** area Home and an Inbox meeting "Gate repair" on 12.11.
+- **When** I open its card on Daily's Inbox tab, tap More…, then Areas and Home
+- **Then** the meeting is in Home's file and no longer in the Inbox
 
 Test: `__tests__/scenarios/calmerInbox.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `daily.md#more-places-new-project-someday`
 

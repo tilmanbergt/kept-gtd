@@ -21,7 +21,8 @@ import {meetingDisplayTitle} from '../../domain/meetingTracking';
 import {displayTaskText} from '../../domain/taskLabels';
 import {Meeting, Task} from '../../domain/types';
 import {CachedItem} from '../../storage/dataCache';
-import {getRecentDestinationsSync} from '../../storage/destinationUsage';
+import {getRecentDestinations, getRecentDestinationsSync} from '../../storage/destinationUsage';
+import {useEffect, useState} from 'react';
 import {tagOwners} from '../../storage/tagOwners';
 import {InboxCardData} from '../../ui/itemCard/InboxCard';
 import {MeetingCardData} from '../../ui/itemCard/useMeetingCard';
@@ -75,6 +76,12 @@ export function useInboxCard(input: Input): InboxCardApi | null {
   const filing = useInboxFiling(input.name, input.inboxPath);
   const status = useStatusApi();
   const action = useActionError(`${input.name}.newProject`, `${input.name}: new project failed`);
+  // The recent places are read once here: without it they exist only after a capture read them.
+  const [recentLoaded, setRecentLoaded] = useState(getRecentDestinationsSync() !== null);
+  useEffect(() => {
+    if (recentLoaded) return;
+    getRecentDestinations().then(() => setRecentLoaded(true));
+  }, [recentLoaded]);
   const {entry} = input;
   if (!entry) return null;
   const today = todayIso();
