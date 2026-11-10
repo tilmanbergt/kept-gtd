@@ -43,6 +43,7 @@ import {ClipIcon, TrackingBoxIcon} from './icons';
 import {renderTaggableText} from './TaggableText';
 import {FONT} from './theme';
 import {perfCount, usePerfRender} from '../utils/perf';
+import {RowSelection, useSelectedMode} from './selectionStore';
 
 /**
  * What a screen supplies to switch a meeting list's prep/review icons on: the
@@ -93,6 +94,12 @@ export interface MeetingRowProps {
   /** Tap on the title or the status icon: select for editing (most lists) or select (Review close-out). */
   onPress?: () => void;
   state?: 'editing' | 'arming' | 'selected' | 'done';
+  /**
+   * The screen's selection store and this row's key (ui/selectionStore.ts): the
+   * row reads whether it is selected itself, so a tap re-renders only the rows
+   * whose mark changes. An explicit `state` wins.
+   */
+  selection?: RowSelection;
   /** Outside the active context (domain/contexts.ts): drawn faint, still tappable. */
   dimmed?: boolean;
   /** The item this meeting lives in (the Inbox folder for Inbox rows): owner of the overview its nested tags open. */
@@ -289,10 +296,14 @@ const v2 = StyleSheet.create({
   noteText: {fontSize: FONT.small, includeFontPadding: false},
 });
 
-/** The standard meeting row - see the module doc comment. */
-export default function MeetingRow(props: MeetingRowProps): React.JSX.Element {
+/** The standard meeting row - see the module doc comment. Memoized: a list re-render with the same props skips it. */
+function MeetingRow(props: MeetingRowProps): React.JSX.Element {
   perfCount('row:meeting');
   usePerfRender('MeetingRow');
-  return <MeetingRowV2 {...props} />;
+  const mode = useSelectedMode(props.selection?.store, props.selection?.key);
+  const state = props.state ?? (mode === null ? undefined : mode === 'edit' ? 'editing' : 'selected');
+  return <MeetingRowV2 {...props} state={state} />;
 }
+
+export default React.memo(MeetingRow);
 

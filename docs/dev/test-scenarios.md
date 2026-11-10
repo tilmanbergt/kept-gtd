@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-226 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+228 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -307,6 +307,15 @@ Test: `__tests__/scenarios/contexts.test.tsx` · help: `contexts.md#setting-up-c
 Test: `__tests__/scenarios/contexts.test.tsx` · help: `contexts.md#setting-up-contexts`
 
 ## Daily
+
+### A tap on a Daily todo shows its card without re-rendering the list
+
+- **Given** project "Garden renovation" with three #next todos
+- **When** I open Daily and tap the todo "Buy seeds"
+- **Then** its card shows in Quick Add's place
+- **And** neither the screen nor the todos list rendered again; only the rows whose mark changed did
+
+Test: `__tests__/scenarios/calmerSelection.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `quick-add.md#the-card-one-tap-selects`
 
 ### Add a meeting for next week from Daily
 
@@ -1147,6 +1156,14 @@ Test: `__tests__/scenarios/profiles.test.tsx` · design: `docs/dev/history/techn
 Test: `__tests__/scenarios/smoke/profiles.test.tsx` · help: `profiles-and-demo.md#the-demo-space`
 
 ## Projects and Areas
+
+### A tap on a todo on the Current page shows its card without re-rendering the lists
+
+- **Given** project "Garden renovation" with three todos and a meeting
+- **When** I open the project and tap the todo "Buy seeds"
+- **Then** its card shows, and neither the Todos nor the Meetings list rendered again
+
+Test: `__tests__/scenarios/calmerSelection.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `quick-add.md#the-card-one-tap-selects`
 
 ### The Current pages of the big data set show what was recorded before the performance work
 

@@ -4,13 +4,19 @@
  *
  * - Left: the day panel (ui/DayMeetingsPanel.tsx: Today | Tomorrow | Google),
  *   the whole column.
- * - Right (screens/daily/DailyTodosColumn.tsx): one Quick Add, always to the
- *   Inbox (docs/dev/history/technical-design-filing-unification.md §6), above
- *   the Next todos grouped by owner. A selected row's card takes Quick Add's
- *   place (ui/useEditTarget.ts: first tap card, second tap edit). A selected
- *   meeting or focus block shows its context panel (ui/meetingContext/) in the
- *   Next todos' place; "+ Quick Add to meeting" turns the card's slot into
- *   Quick Add for it (`add` mode) until the add or "‹ Back to the card".
+ * - Right: the Quick Add zone (screens/daily/SelectionZone.tsx): one Quick
+ *   Add, always to the Inbox (docs/dev/history/technical-design-filing-unification.md
+ *   §6), above the Next todos grouped by owner (screens/daily/DailyTodosColumn.tsx).
+ *   A selected row's card takes Quick Add's place (ui/useEditTarget.ts: first
+ *   tap card, second tap edit). A selected meeting or focus block shows its
+ *   context panel (ui/meetingContext/) in the Next todos' place; "+ Quick Add
+ *   to meeting" turns the card's slot into Quick Add for it (`add` mode) until
+ *   the add or "‹ Back to the card".
+ *
+ * This component does not read the selection
+ * (docs/dev/history/technical-design-calmer-screens.md §3.1.3): the zone and
+ * each row read the screen's selection store, so a tap re-renders neither
+ * this screen nor its lists.
  *
  * What shows is storage/dailyAggregate.ts's rule over the cache and the
  * Inbox (screens/daily/useDailyData.ts). Every write goes through
@@ -20,11 +26,9 @@
  * 0.24.0 (docs/dev/history/technical-design-launch-ready.md L6b): a meeting's todos show in its
  * context panel instead.
  */
-import React, {useEffect, useMemo, useState} from 'react';
-import {ActivityIndicator, Keyboard, StyleSheet, View} from 'react-native';
-import {AbbrevFileMatch} from '../domain/abbrev';
+import React, {useMemo, useState} from 'react';
+import {ActivityIndicator, StyleSheet, View} from 'react-native';
 import {Destination} from '../domain/destination';
-import {displayTaskText} from '../domain/taskLabels';
 import {
   buildDailyAggregate,
   dailyEntryDate,
@@ -34,7 +38,6 @@ import {
   DailyTaskEntry,
   groupDailyTasksByItem,
 } from '../storage/dailyAggregate';
-import {linkedFileStatus} from '../storage/linkedFiles';
 import {FolderEntry} from '../supernote/fileSystem';
 import {usePerfRender} from '../utils/perf';
 import GoogleCalendarPanel from '../ui/GoogleCalendarPanel';
@@ -42,22 +45,17 @@ import {useFeatures} from '../ui/featureStore';
 import MeetingRow, {MeetingRowLayout} from '../ui/MeetingRow';
 import DayMeetingsPanel from '../ui/DayMeetingsPanel';
 import {MiniTabDef} from '../ui/MiniTabs';
-import QuickAddWidget, {editTargetFor, MeetingQuickAddFields, QuickFilePayload} from '../ui/QuickAddWidget';
 import TaskRow, {taskRowLines} from '../ui/TaskRow';
 import {common} from '../ui/commonStyles';
 import LoadErrorNotice from '../ui/LoadErrorNotice';
 import {useThemeColors} from '../ui/theme';
 import {useStableCallback} from '../ui/useStableCallback';
 import {useEntryActions} from '../ui/useEntryActions';
-import {cardOrEdit} from '../ui/useEditTarget';
-import MeetingContextPanel from '../ui/meetingContext/MeetingContextPanel';
-import {useMeetingContextSlot} from '../ui/meetingContext/useMeetingContextSlot';
 import {tallyHidden} from '../domain/contexts';
 import HiddenLine from '../ui/context/HiddenLine';
 import {useContextMatcher} from '../ui/context/useContextMatcher';
-import {useMeetingCard} from '../ui/itemCard/useMeetingCard';
-import {useTodoCard} from '../ui/itemCard/useTodoCard';
 import DailyTodosColumn from './daily/DailyTodosColumn';
+import SelectionZone from './daily/SelectionZone';
 import {flattenTaskGroups, FlatTaskRow, meetingKey, taskKey} from './daily/dailyRows';
 import {useDailyData} from './daily/useDailyData';
 import {estimatorWidth} from '../ui/ScreenSize';
@@ -87,19 +85,22 @@ export default function DailyView({onOpenItem, onOpenInbox, onOpenCalendarSettin
   const {textColor, borderColor, placeholderColor} = useThemeColors();
   const data = useDailyData('DailyView');
   const {items, inbox, inboxPath, paths, settings, todayDate, tomorrowDate} = data;
-  const actions = useEntryActions('DailyView', {hiddenNotice: true});
-  const {target: editTarget, mode: editMode, select: selectEditTarget, cancel: cancelEditTarget, flushEditRef} = actions.edit;
-  const cardMode = cardOrEdit(editMode);
+  const actions = useEntryActions('DailyView', {hiddenNotice: true, readSelection: false});
+  const {select: selectEditTarget, store: selection} = actions.edit;
   const features = useFeatures();
   const [calendarTab, setCalendarTab] = useState<CalendarTab>('today');
 
-  const openItem = (item: DailyItemRef) => {
+  const openItem = useStableCallback((item: DailyItemRef) => {
     if (item.kind === 'inbox') {
       onOpenInbox?.();
       return;
     }
     onOpenItem(item.kind, {name: item.name, path: item.path, isFolder: true});
-  };
+  });
+  const openOwner = useStableCallback((path: string) => {
+    const owner = items.find(i => i.path === path);
+    if (owner) onOpenItem(owner.kind, {name: owner.name, path, isFolder: true});
+  });
 
   const inboxInput = inbox ? {tasks: inbox.tasks, meetings: inbox.meetings} : null;
   // The active context hides todos and dims meetings (docs/dev/history/technical-design-time-and-place.md §3.3).
@@ -117,57 +118,18 @@ export default function DailyView({onOpenItem, onOpenInbox, onOpenCalendarSettin
   // dailyEntryDate: a multi-day meeting is listed on each day it covers.
   const meetingsToday = displayAggregate.meetings.filter(entry => dailyEntryDate(entry) === todayDate);
   const meetingsTomorrow = displayAggregate.meetings.filter(entry => dailyEntryDate(entry) === tomorrowDate);
-  const taskRows = flattenTaskGroups(groupDailyTasksByItem(displayAggregate.tasks));
+  const taskRows = useMemo(() => flattenTaskGroups(groupDailyTasksByItem(displayAggregate.tasks)), [displayAggregate.tasks]);
+  const failedNamesKey = displayAggregate.failedItems.map(f => f.item.name).join('\n');
+  const failedItemNames = useMemo(() => (failedNamesKey ? failedNamesKey.split('\n') : []), [failedNamesKey]);
 
-  // The rows open in Quick Add, looked up in the unfiltered aggregate each render.
-  const editingTaskEntry = editTarget?.type === 'task' ? (aggregate?.tasks ?? []).find(e => taskKey(e) === editTarget.key) ?? null : null;
-  const editingMeetingEntry = editTarget?.type === 'meeting' ? (aggregate?.meetings ?? []).find(e => meetingKey(e) === editTarget.key) ?? null : null;
-  // Quick-file needs the edited row's real location: this screen's fixedDestination is always the Inbox.
-  const editingEntryItem = editingTaskEntry?.item ?? editingMeetingEntry?.item ?? null;
-  const editingItemPath = editingEntryItem && editingEntryItem.kind !== 'inbox' ? editingEntryItem.path : null;
-
-  // The selected meeting's context panel and its Quick Add (docs/dev/history/technical-design-time-and-place.md §3.2).
-  const context = useMeetingContextSlot(editingMeetingEntry, {items, inbox, inboxPath, settings}, editMode, actions, FIXED_INBOX_DESTINATION, actions.edit.toCard);
-
-  const todoCard = useTodoCard(
-    actions.todoCardOptions(editingTaskEntry, {
-      onOpenOwner: () => {
-        if (editingTaskEntry) openItem(editingTaskEntry.item);
-      },
-    }),
-  );
-  const meetingCard = useMeetingCard(
-    actions.cardOptions(editingMeetingEntry, {
-      onOpenOwner: () => {
-        if (editingMeetingEntry) openItem(editingMeetingEntry.item);
-      },
-    }),
-  );
-
-  // Daily is read-only for linked files: a filled clip opens it, nothing links one from here.
-  const editingLinkedFile = (editingTaskEntry?.task ?? editingMeetingEntry?.meeting)?.linkedFile;
-  const [linkedFileMissing, setLinkedFileMissing] = useState(false);
-  useEffect(() => {
-    if (!editingLinkedFile || !paths) {
-      setLinkedFileMissing(false);
-      return;
-    }
-    let cancelled = false;
-    linkedFileStatus(paths, editingLinkedFile).then(status => {
-      if (!cancelled) setLinkedFileMissing(status === 'missing');
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [editingLinkedFile, paths]);
-
-  const renderTaskEntry = (entry: DailyTaskEntry, heightPx: number) => {
+  const renderTaskEntry = useStableCallback((row: Extract<FlatTaskRow, {kind: 'entry'}>, heightPx: number) => {
+    const entry: DailyTaskEntry = row.entry;
     const key = taskKey(entry);
     return (
       <TaskRow
         key={key}
         task={entry.task}
-        isEditing={editTarget?.type === 'task' && editTarget.key === key}
+        selection={{store: selection, key: `task:${key}`}}
         onStartEdit={() => selectEditTarget({type: 'task', key})}
         onToggleDone={() => actions.toggleDone(entry)}
         onCreateNote={() => actions.taskNote(entry)}
@@ -182,7 +144,7 @@ export default function DailyView({onOpenItem, onOpenInbox, onOpenCalendarSettin
         borderColor={borderColor}
       />
     );
-  };
+  });
 
   // The standard meeting row (docs/dev/history/technical-design-meeting-lists.md §3): source, read-only M, tracking, note, linked file.
   const renderMeetingEntry = (entry: DailyMeetingEntry, layout: MeetingRowLayout) => {
@@ -201,7 +163,7 @@ export default function DailyView({onOpenItem, onOpenInbox, onOpenCalendarSettin
         file={{linkedFile: entry.meeting.linkedFile, onOpen: actions.openFile}}
         onPress={() => selectEditTarget({type: 'meeting', key})}
         dimmed={entry.contextState === 'dimmed'}
-        state={editTarget?.type === 'meeting' && editTarget.key === key ? (cardMode === 'card' ? 'selected' : 'editing') : undefined}
+        selection={{store: selection, key: `meeting:${key}`}}
         ownerPath={entry.item.path}
         textColor={textColor}
         borderColor={borderColor}
@@ -209,54 +171,24 @@ export default function DailyView({onOpenItem, onOpenInbox, onOpenCalendarSettin
     );
   };
 
-  /** Quick Add's "Save to <Name>" in edit mode: save, then move the row to the abbreviation's item. */
-  const handleQuickFileEdit = async (target: AbbrevFileMatch, payload: QuickFilePayload): Promise<void> => {
-    if (editingTaskEntry && payload.kind === 'task') await actions.quickFile({task: editingTaskEntry}, target, payload);
-    else if (editingMeetingEntry && payload.kind === 'meeting') await actions.quickFile({meeting: editingMeetingEntry}, target, payload);
-  };
-
-  // Stable props for the memoized QuickAddWidget (render-perf-ab §3 B2): called only from its handlers, never while it renders.
-
+  // Called only from Quick Add's handlers, never while it renders.
   const stableIsMeetingDateVisible = useStableCallback((date: string) =>
     calendarTab === 'today' ? date === todayDate : calendarTab === 'tomorrow' ? date === tomorrowDate : false,
   );
-  const stableSaveEditTask = useStableCallback((nextText: string, nextLinkedFile: string) =>
-    editingTaskEntry ? actions.commitTaskEdit(editingTaskEntry, nextText, nextLinkedFile) : Promise.resolve(false),
-  );
-  const stableSaveEditMeeting = useStableCallback((fields: MeetingQuickAddFields, nextLinkedFile: string) => {
-    Keyboard.dismiss();
-    return editingMeetingEntry ? actions.commitMeetingEdit(editingMeetingEntry, fields, nextLinkedFile) : Promise.resolve(false);
-  });
-  const stableCancelEdit = useStableCallback(cancelEditTarget);
-  const stableQuickFileEdit = useStableCallback(handleQuickFileEdit);
-  const editingTaskForWidget = useMemo(
-    () => (editingTaskEntry ? {...editingTaskEntry.task, text: displayTaskText(editingTaskEntry.task, 'flat')} : undefined),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [editingTaskEntry?.task, editingTaskEntry?.task.text],
-  );
 
-  const quickAdd = (
-    <QuickAddWidget
-      thisFileLine
-      layoutKey="daily"
-      {...context.widget}
-      initialDate={calendarTab === 'tomorrow' ? tomorrowDate : todayDate}
-      // Only the shown tab's day is in the list; anything else gets the widget's "where did it go" note.
-      isMeetingDateVisible={stableIsMeetingDateVisible}
-      editTarget={editTargetFor(editTarget && `${editTarget.type}:${editTarget.key}`, {task: editingTaskForWidget, meeting: editingMeetingEntry?.meeting}, editMode)}
-      meetingCard={meetingCard}
-      todoCard={todoCard}
-      onSaveEditTask={editingTaskEntry ? stableSaveEditTask : undefined}
-      onSaveEditMeeting={editingMeetingEntry ? stableSaveEditMeeting : undefined}
-      flushEditRef={flushEditRef}
-      onCancelEdit={stableCancelEdit}
-      onQuickFile={editTarget ? stableQuickFileEdit : undefined}
-      editingItemPath={editingItemPath}
-      linkedFileMissing={linkedFileMissing}
+  const footer = useMemo(
+    () => <HiddenLine text={hiddenText} onShow={contextFilter.show} textColor={textColor} />,
+    [hiddenText, contextFilter.show, textColor],
+  );
+  const list = (
+    <DailyTodosColumn
+      rows={taskRows}
+      renderEntry={renderTaskEntry}
+      onOpenItem={openItem}
+      failedItemNames={failedItemNames}
+      footer={footer}
       textColor={textColor}
       borderColor={borderColor}
-      placeholderColor={placeholderColor}
-      {...context.todoOverride}
     />
   );
 
@@ -298,36 +230,22 @@ export default function DailyView({onOpenItem, onOpenInbox, onOpenCalendarSettin
               </View>
             </View>
             <View style={common.column}>
-              <DailyTodosColumn
-                quickAdd={quickAdd}
-                panel={
-                  context.model && context.entry ? (
-                    <MeetingContextPanel
-                      model={context.model}
-                      meeting={context.entry.meeting}
-                      adding={context.adding}
-                      onQuickAdd={actions.edit.add}
-                      onBackToCard={actions.edit.toCard}
-                      onClose={cancelEditTarget}
-                      actions={context.todoActions}
-                      selectedTodoKey={context.selectedTodoKey}
-                      onSelectTodo={context.onSelectTodo}
-                      onOpenItem={path => {
-                        const owner = items.find(i => i.path === path);
-                        if (owner) onOpenItem(owner.kind, {name: owner.name, path, isFolder: true});
-                      }}
-                      textColor={textColor}
-                      borderColor={borderColor}
-                    />
-                  ) : undefined
-                }
-                rows={taskRows}
-                renderEntry={(row: Extract<FlatTaskRow, {kind: 'entry'}>, heightPx) => renderTaskEntry(row.entry, heightPx)}
-                onOpenItem={openItem}
-                failedItemNames={displayAggregate.failedItems.map(f => f.item.name)}
-                footer={context.model ? undefined : <HiddenLine text={hiddenText} onShow={contextFilter.show} textColor={textColor} />}
+              <SelectionZone
+                actions={actions}
+                aggregate={aggregate}
+                items={items}
+                inbox={inbox}
+                inboxPath={inboxPath}
+                paths={paths}
+                settings={settings}
+                initialDate={calendarTab === 'tomorrow' ? tomorrowDate : todayDate}
+                isMeetingDateVisible={stableIsMeetingDateVisible}
+                openItem={openItem}
+                onOpenOwner={openOwner}
+                list={list}
                 textColor={textColor}
                 borderColor={borderColor}
+                placeholderColor={placeholderColor}
               />
             </View>
           </View>

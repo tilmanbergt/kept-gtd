@@ -1,9 +1,13 @@
 /**
- * Daily's right column (docs/dev/history/technical-design-daily-slim.md §3.1):
- * Quick Add (or the selected item's card in its place) above the Next todos,
- * grouped by owner, and the line naming items that couldn't be read. The list
- * measures its own height; its height is remembered under `daily:todos`, so a
- * remount starts with the right page.
+ * Daily's todos list (docs/dev/history/technical-design-daily-slim.md §3.1):
+ * the Next todos, grouped by owner, and the line naming items that couldn't
+ * be read, under the Quick Add zone (screens/daily/SelectionZone.tsx). The
+ * list measures its own height; its height is remembered under `daily:todos`,
+ * so a remount starts with the right page.
+ *
+ * Memoized, with stable props from DailyView: it does not read the selection,
+ * so a tap on a row re-renders only that row
+ * (docs/dev/history/technical-design-calmer-screens.md §3.1.3).
  */
 import React from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
@@ -13,12 +17,9 @@ import PagedSection from '../../ui/PagedSection';
 import {taskRowHeight} from '../../ui/TaskRow';
 import {FlatTaskRow, GROUP_HEADER_ROW_PX} from './dailyRows';
 import {estimatorWidth} from '../../ui/ScreenSize';
+import {usePerfRender} from '../../utils/perf';
 
 interface Props {
-  /** Quick Add or the selected item's card. */
-  quickAdd: React.ReactNode;
-  /** A selected meeting's context panel, in the Next todos' place (docs/dev/history/technical-design-time-and-place.md §3.2). */
-  panel?: React.ReactNode;
   rows: FlatTaskRow[];
   renderEntry: (row: Extract<FlatTaskRow, {kind: 'entry'}>, heightPx: number) => React.ReactNode;
   onOpenItem: (item: DailyItemRef) => void;
@@ -29,7 +30,8 @@ interface Props {
   borderColor: string;
 }
 
-export default function DailyTodosColumn({quickAdd, panel, rows, renderEntry, onOpenItem, failedItemNames, footer, textColor, borderColor}: Props): React.JSX.Element {
+function DailyTodosColumn({rows, renderEntry, onOpenItem, failedItemNames, footer, textColor, borderColor}: Props): React.JSX.Element {
+  usePerfRender('DailyTodosColumn');
   const rowHeight = (row: FlatTaskRow) => (row.kind === 'header' ? GROUP_HEADER_ROW_PX : taskRowHeight(row.entry.task, estimatorWidth(), 'flat'));
   const renderRow = (row: FlatTaskRow) => {
     if (row.kind === 'header') {
@@ -46,9 +48,6 @@ export default function DailyTodosColumn({quickAdd, panel, rows, renderEntry, on
   };
   return (
     <View style={styles.column}>
-      {quickAdd}
-      <View style={[common.divider, {backgroundColor: borderColor}]} />
-      {panel ?? (
       <PagedSection
         header="Next todos"
         rows={rows}
@@ -60,7 +59,6 @@ export default function DailyTodosColumn({quickAdd, panel, rows, renderEntry, on
         textColor={textColor}
         borderColor={borderColor}
       />
-      )}
       {footer}
       {failedItemNames.length > 0 && (
         <Text style={[common.error, common.sectionSpacingSmall, {color: textColor}]}>
@@ -70,6 +68,8 @@ export default function DailyTodosColumn({quickAdd, panel, rows, renderEntry, on
     </View>
   );
 }
+
+export default React.memo(DailyTodosColumn);
 
 const styles = StyleSheet.create({
   column: {flex: 1},

@@ -24,12 +24,21 @@
  * Pass `flushEditRef` to <QuickAddWidget>; wrap any other handler that ends
  * or moves the selection (closing a panel, changing the day) in `afterSave`,
  * and use `set` inside it (no second save).
+ *
+ * The selection lives in a store per screen instance (ui/selectionStore.ts,
+ * docs/dev/history/technical-design-calmer-screens.md §3.1.2).
+ * `useEditTarget` reads it (`target`, `mode`), so the screen re-renders on a
+ * change; `useEditTargetStore` gives the same actions and the `store` without
+ * reading it, for a screen whose Quick Add zone and rows read it themselves
+ * (`useSelection`, `useSelectedMode`). Handlers that need the current target
+ * read `store.get()` at call time.
  */
-import {useCallback, useRef, useState} from 'react';
+import {useCallback, useState} from 'react';
 import {perfBegin} from '../utils/perf';
 import {useEditFlush} from './useEditFlush';
+import {createSelectionStore, EditMode, useSelection} from './selectionStore';
 
-export type EditMode = 'card' | 'edit' | 'add';
+export type {EditMode} from './selectionStore';
 
 /** The mode for a part that knows no `add` (only a meeting is ever added to): `add` shows as `card` there. */
 export const cardOrEdit = (mode: EditMode): 'card' | 'edit' => (mode === 'add' ? 'card' : mode);
@@ -37,21 +46,20 @@ export const cardOrEdit = (mode: EditMode): 'card' | 'edit' => (mode === 'add' ?
 const sameTarget = (a: unknown, b: unknown): boolean => JSON.stringify(a) === JSON.stringify(b);
 
 /**
+ * The actions and the store, without reading the selection.
  * `perfScreen`: the screen's name in the perf trace `tap` that a newly selected
  * row starts (docs/dev/history/technical-design-calmer-screens.md §3.1); the
  * card's first commit ends the measured part (ui/itemCard/useCardCommitTrace.ts).
  */
-export function useEditTarget<T, A = never>(perfScreen?: string) {
-  const [selection, setSelection] = useState<{target: T | null; mode: EditMode}>({target: null, mode: 'edit'});
+export function useEditTargetStore<T, A = never>(perfScreen?: string) {
+  const [store] = useState(() => createSelectionStore<T>());
   const [arm, setArm] = useState<A | null>(null);
   const {flushEditRef, afterSave} = useEditFlush();
-  // The selection as last rendered, for `select` deciding card vs edit at tap time.
-  const selectionRef = useRef(selection);
-  selectionRef.current = selection;
+  const setSelection = store.set;
 
   const select = useCallback(
     (next: T) => {
-      const current = selectionRef.current;
+      const current = store.get();
       if (current.target !== null && sameTarget(current.target, next)) {
         // The selected row again: the card opens its edit form; a tap on the
         // row being edited changes nothing (and saves nothing).
@@ -64,7 +72,7 @@ export function useEditTarget<T, A = never>(perfScreen?: string) {
         setArm(null);
       });
     },
-    [afterSave, perfScreen],
+    [afterSave, perfScreen, store, setSelection],
   );
   const start = useCallback(
     (next: T) =>
@@ -72,24 +80,23 @@ export function useEditTarget<T, A = never>(perfScreen?: string) {
         setSelection({target: next, mode: 'edit'});
         setArm(null);
       }),
-    [afterSave],
+    [afterSave, setSelection],
   );
-  const edit = useCallback(() => setSelection(s => (s.target === null ? s : {target: s.target, mode: 'edit'})), []);
-  const saved = useCallback(() => setSelection(s => (s.target === null ? s : {target: s.target, mode: 'card'})), []);
+  const edit = useCallback(() => setSelection(s => (s.target === null ? s : {target: s.target, mode: 'edit'})), [setSelection]);
+  const saved = useCallback(() => setSelection(s => (s.target === null ? s : {target: s.target, mode: 'card'})), [setSelection]);
   /** The selected meeting's Quick Add (`add`); `toCard` returns to its card. */
-  const add = useCallback(() => setSelection(s => (s.target === null ? s : {target: s.target, mode: 'add'})), []);
+  const add = useCallback(() => setSelection(s => (s.target === null ? s : {target: s.target, mode: 'add'})), [setSelection]);
   const toCard = saved;
   const cancel = useCallback(() => {
     setSelection({target: null, mode: 'edit'});
     setArm(null);
-  }, []);
+  }, [setSelection]);
   /** Sets the target without saving (inside `afterSave`); the mode stays unless given. */
-  const set = useCallback((next: T | null, mode?: EditMode) => setSelection(s => ({target: next, mode: mode ?? s.mode})), []);
+  const set = useCallback((next: T | null, mode?: EditMode) => setSelection(s => ({target: next, mode: mode ?? s.mode})), [setSelection]);
   const armFor = useCallback((next: A) => setArm(next), []);
   const cancelArm = useCallback(() => setArm(null), []);
   return {
-    target: selection.target,
-    mode: selection.mode,
+    store,
     arm,
     select,
     start,
@@ -104,4 +111,11 @@ export function useEditTarget<T, A = never>(perfScreen?: string) {
     afterSave,
     set,
   };
+}
+
+/** The actions with the selection read (`target`, `mode`): the screen re-renders when it changes. */
+export function useEditTarget<T, A = never>(perfScreen?: string) {
+  const actions = useEditTargetStore<T, A>(perfScreen);
+  const {target, mode} = useSelection(actions.store);
+  return {...actions, target, mode};
 }

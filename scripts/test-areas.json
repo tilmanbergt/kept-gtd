@@ -287,6 +287,8 @@
         "__tests__/fakeDevice/**",
         "__tests__/scenarios/smoke/appStarts*",
         "__tests__/scenarios/narrowScreen*",
+        "__tests__/scenarios/calmerSelection*",
+        "__tests__/ui/selectionStore*",
         "__tests__/domain/{dateFormat,screenLayout}.test.ts",
         "__tests__/ui/{measuredHeightMemo,useActionError,useEditTarget,rowTapTargets,taskRow*,itemEntryRow}*",
         "scripts/test-*.mjs"
@@ -296,7 +298,7 @@
         "src/screens/useAppOverlays.tsx",
         "src/ui/{PagedSection,PillButton,ProgressBar,MiniTabs,TabBar,TwoLineRow,KeepAliveTab,TaskRow,HighlightMark,ScreenSize,DoneToggle}.tsx",
         "src/ui/{icons.tsx,commonStyles.ts,theme.ts,listLayout.ts,pagination.ts,keepAliveStore.ts,screenActivity.ts,screenSimStore.ts}",
-        "src/ui/{useMeasuredHeight,useStableCallback,useActionError,useEditTarget,useEntryActions,taskRowLayout,itemEntryRow}.ts",
+        "src/ui/{useMeasuredHeight,useStableCallback,useActionError,useEditTarget,useEntryActions,taskRowLayout,itemEntryRow,selectionStore}.ts",
         "src/ui/status/**",
         "src/domain/{dateFormat,dateLabel,textLineEstimator,buttonIds,screenLayout}.ts",
         "src/utils/**",

@@ -31,6 +31,7 @@ import {log, logError} from '../../utils/log';
 import {errorMessage} from '../../utils/errorMessage';
 import {PaneColors, sectionStyles as styles, SUBHEADING_ROW_PX} from './panelLayout';
 import {estimatorWidth} from '../../ui/ScreenSize';
+import {SelectionReader} from '../../ui/selectionStore';
 
 /** One flattened Todos row - a flow-state group's header, or a task -
  * see the "Flattened into one paginated sequence" comment inside
@@ -39,11 +40,11 @@ type TodoFlatRow =
   | {kind: 'header'; rowKey: string; label: string}
   | {kind: 'entry'; rowKey: string; task: Task; index: number};
 
-export default function TodosSection({
+function TodosSection({
   itemPath,
   tasks,
   onSave,
-  editingIndex,
+  selection,
   armingIndex,
   onStartEdit,
   onArmLink,
@@ -61,8 +62,8 @@ export default function TodosSection({
   /** The item's `## Loops` lines: the todos of each active loop are listed first, under the loop. */
   loops?: readonly LoopLine[];
   onSave: (next: Task[]) => Promise<void>;
-  /** Lifted up into ProjectDataPanel (technical-design-linked-files.md §8) - see that component's EditTarget doc comment. Add/edit/delete itself lives in the single QuickAddWidget above both sections (docs/dev/history/technical-design-unified-quickadd.md §8) - this section only needs `editingIndex` to keep highlighting the row currently being edited. */
-  editingIndex: number | null;
+  /** The page's selection store (ui/selectionStore.ts): each row reads whether it is the selected one (key `task:<index>`), so a tap re-renders that row, not this list. Add/edit/delete lives in the single QuickAddWidget above both sections (docs/dev/history/technical-design-unified-quickadd.md §8). */
+  selection: SelectionReader;
   armingIndex: number | null;
   onStartEdit: (index: number) => void;
   onArmLink: (index: number) => void;
@@ -207,7 +208,7 @@ export default function TodosSection({
             <TaskRow
               key={row.rowKey}
               task={row.task}
-              isEditing={editingIndex === row.index}
+              selection={{store: selection, key: `task:${row.index}`}}
               isArming={armingIndex === row.index}
               onStartEdit={() => onStartEdit(row.index)}
               onToggleDone={() => handleToggleDone(row.index)}
@@ -233,3 +234,6 @@ export default function TodosSection({
     </View>
   );
 }
+
+/** Memoized: the page passes stable props, so selecting a row leaves the list as it is. */
+export default React.memo(TodosSection);

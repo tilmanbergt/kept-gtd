@@ -45,7 +45,8 @@ import {MeetingTrackingConfig, trackingSetups} from './MeetingRow';
 import {MeetingQuickAddFields, QuickFilePayload} from './QuickAddWidget';
 import {useActionError} from './useActionError';
 import {useCachedInbox} from './useCachedInbox';
-import {useEditTarget} from './useEditTarget';
+import {useEditTargetStore} from './useEditTarget';
+import {useSelection} from './selectionStore';
 import {useEngagePrompt} from './useEngagePrompt';
 import {useEntryMoveUi} from './useEntryMoveUi';
 import {useNoteCreateConfirm} from './useNoteCreateConfirm';
@@ -72,8 +73,12 @@ export const meetingEntryKey = (e: ThreadMeetingEntry) => `${e.item.path}#${e.me
  * `name`: the log prefix and status-slot id prefix of the screen using it.
  * `hiddenNotice`: a screen the active context filters (Daily) says when an add
  * lands outside it (ui/context/useHiddenAddNotice.ts).
+ * `readSelection: false`: the screen does not re-render on a new selection
+ * (docs/dev/history/technical-design-calmer-screens.md §3.1.3); `edit.target`
+ * then stays null and its Quick Add zone and rows read `edit.store`
+ * themselves (ui/selectionStore.ts).
  */
-export function useEntryActions(name = 'ThreadOverview', options: {hiddenNotice?: boolean} = {}) {
+export function useEntryActions(name = 'ThreadOverview', options: {hiddenNotice?: boolean; readSelection?: boolean} = {}) {
   const LOG = name;
   const inbox = useCachedInbox();
   const paths = getCachedData()?.paths ?? null;
@@ -81,7 +86,9 @@ export function useEntryActions(name = 'ThreadOverview', options: {hiddenNotice?
   const settings = useSettings();
   const confirmNoteCreate = useNoteCreateConfirm(`${LOG}.noteCreateConfirm`);
   const moveUi = useEntryMoveUi(LOG);
-  const edit = useEditTarget<EntryEditKey>(name);
+  const editActions = useEditTargetStore<EntryEditKey>(name);
+  const selection = useSelection(editActions.store, options.readSelection !== false);
+  const edit = {...editActions, target: selection.target, mode: selection.mode};
   const widgetAction = useActionError(`${LOG}.widgetError`, `${LOG}: widget action failed`);
   const rowAction = useActionError(`${LOG}.rowError`, `${LOG}: row action failed`);
   const engagePrompt = useEngagePrompt(LOG);

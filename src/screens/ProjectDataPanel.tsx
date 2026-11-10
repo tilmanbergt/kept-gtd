@@ -216,6 +216,7 @@ export default function ProjectDataPanel({
   // technical-design-linked-files.md §8's lifted "one edit target" - see
   // the EditTarget doc comment above.
   const {
+    store: selection,
     target: editTarget,
     mode: editMode,
     arm: armTarget,
@@ -681,6 +682,17 @@ export default function ProjectDataPanel({
     cancel: cancelEditTarget,
   });
 
+  const selectTask = useCallback((index: number) => selectEdit({type: 'task', index}), [selectEdit]);
+  const selectMeeting = useCallback((index: number) => selectEdit({type: 'meeting', index}), [selectEdit]);
+  const armTaskLink = useCallback((index: number) => armLinkTarget('task', index), [armLinkTarget]);
+  const closeAgreements = useCallback(() => setShowAgreements(false), []);
+  const openAgreements = useCallback(() => setShowAgreements(true), []);
+  const agreementsCount = agreements.refs.length;
+  const agreementsFooter = useMemo(
+    () => <AgreementsLink count={agreementsCount} onOpen={openAgreements} textColor={textColor} />,
+    [agreementsCount, openAgreements, textColor],
+  );
+
   if (loading) {
     return (
       <View style={styles.root}>
@@ -701,28 +713,29 @@ export default function ProjectDataPanel({
   }
 
   // The Todos (or the agreements list in their place), stacked above the schedule or, on a short
-  // screen, behind the schedule's first tab.
+  // screen, behind the schedule's first tab. The lists are memoized and get only stable props: they
+  // don't read the selection, each row reads its own (docs/dev/history/technical-design-calmer-screens.md §3.1.3).
   const todosContent = (
     <>
       {showAgreements && agreements.refs.length > 0 ? (
-            <AgreementsList refs={agreements.refs} agreements={agreements.actions} onBack={() => setShowAgreements(false)} textColor={textColor} borderColor={borderColor} />
-          ) : (
-          <TodosSection
-            itemPath={path}
-            tasks={state.tasks}
-            onSave={withTasks}
-            editingIndex={editTarget?.type === 'task' ? editTarget.index : null}
-            armingIndex={armTarget?.type === 'task' ? armTarget.index : null}
-            onStartEdit={index => selectEdit({type: 'task', index})}
-            onArmLink={index => armLinkTarget('task', index)}
-            onOpenLinkedFile={onOpenLinkedFile}
-            filter={predicates?.task}
-            loops={item?.loops}
-            textColor={textColor}
-            borderColor={borderColor}
-            footer={<AgreementsLink count={agreements.refs.length} onOpen={() => setShowAgreements(true)} textColor={textColor} />}
-          />
-          )}
+        <AgreementsList refs={agreements.refs} agreements={agreements.actions} onBack={closeAgreements} textColor={textColor} borderColor={borderColor} />
+      ) : (
+        <TodosSection
+          itemPath={path}
+          tasks={state.tasks}
+          onSave={withTasks}
+          selection={selection}
+          armingIndex={armTarget?.type === 'task' ? armTarget.index : null}
+          onStartEdit={selectTask}
+          onArmLink={armTaskLink}
+          onOpenLinkedFile={onOpenLinkedFile}
+          filter={predicates?.task}
+          loops={item?.loops}
+          textColor={textColor}
+          borderColor={borderColor}
+          footer={agreementsFooter}
+        />
+      )}
     </>
   );
 
@@ -735,10 +748,9 @@ export default function ProjectDataPanel({
       meetings={state.meetings}
       onSave={withMeetings}
       onOpenCalendarSettings={onOpenCalendarSettings}
-      editingIndex={editTarget?.type === 'meeting' ? editTarget.index : null}
-      editMode={cardOrEdit(editMode)}
+      selection={selection}
       armingIndex={armTarget?.type === 'meeting' ? armTarget.index : null}
-      onSelect={index => selectEdit({type: 'meeting', index})}
+      onSelect={selectMeeting}
       onOpenLinkedFile={onOpenLinkedFile}
       filter={predicates?.meeting}
       textColor={textColor}
