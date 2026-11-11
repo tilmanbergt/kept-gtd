@@ -9,6 +9,11 @@
  *   typed space or punctuation that ends a tag. Learned corrections and the
  *   one valid reading of a date or time are applied here, visibly ("read as
  *   …") and with Undo; everything else waits for a tap.
+ * - Completion (docs/dev/history/technical-design-quickadd-redesign.md §3.2
+ *   F2): whenever the cursor rests right after an unfinished tag - after a
+ *   typed character, a burst, or a touch that puts the cursor there - and
+ *   known tags complete it, the strip offers them (a flagged fix still comes
+ *   first, as everywhere in the strip).
  * - Unanswered flagged tags (`fixes`) stay until they are answered (→, Keep),
  *   or the tag has left the text. The other states are a *moment*:
  *   a touch in the field (a selection change that is not the change's own),
@@ -171,6 +176,22 @@ export function useWritingHelp(options: WritingHelpOptions) {
     if (input && !input.isFocused?.()) input.focus();
   };
 
+  /**
+   * Offers the completions of the unfinished tag right before `cursor` (F2); false - and nothing
+   * started - when there is none or no known tag completes it.
+   */
+  const offerCompletion = (text: string, cursor: number | null, at: 'rest' | 'burst'): boolean => {
+    if (field !== 'text' || cursor === null) return false;
+    const unfinished = unfinishedTagAt(text, cursor);
+    const offered = unfinished ? completions(unfinished.token, currentKnownTagIndex(options.recentTags ?? NO_RECENT)) : [];
+    if (!unfinished || offered.length === 0) return false;
+    if (moment?.kind !== 'complete') log(`writing: complete at=${at} n=${offered.length}`);
+    completionRef.current = unfinished;
+    setShowClipboard(false);
+    startMoment({kind: 'complete', options: offered}, cursor);
+    return true;
+  };
+
   /** The feedback line for `text` (§1.7), or null without a place. */
   const feedbackFor = (text: string, newTag: string | null): StripMoment | null => {
     const place = options.place?.(text);
@@ -182,8 +203,9 @@ export function useWritingHelp(options: WritingHelpOptions) {
     const burst = isBurst(span);
     const checked = burst && span ? [span] : tagsEndedBy(next, span);
     if (checked.length === 0) {
-      if (moment) startMoment(null, null);
       write(next);
+      // A typed character: the cursor rests after it.
+      if (!offerCompletion(next, span ? span.end : null, 'rest') && moment) startMoment(null, null);
       return;
     }
     const index = currentKnownTagIndex(options.recentTags ?? NO_RECENT);
@@ -210,14 +232,7 @@ export function useWritingHelp(options: WritingHelpOptions) {
       startMoment({kind: 'read', label: readAsLabel(learned.map(f => `#${f.suggestion}`).join(' '))}, cursor);
       return;
     }
-    const unfinished = burst ? unfinishedTagAt(text, cursor) : null;
-    const options3 = unfinished ? completions(unfinished.token, index) : [];
-    if (unfinished && options3.length > 0) {
-      completionRef.current = unfinished;
-      setShowClipboard(false);
-      startMoment({kind: 'complete', options: options3}, cursor);
-      return;
-    }
+    if (burst && offerCompletion(text, cursor, 'burst')) return;
     const fresh = found.find(f => f.kind === 'new');
     startMoment(merged.length === 0 && tagCount > 0 ? feedbackFor(text, fresh?.written ?? null) : null, cursor);
   };
@@ -254,12 +269,16 @@ export function useWritingHelp(options: WritingHelpOptions) {
     else changeDateTime(next, span);
   };
 
-  /** A touch in the field ends a moment; the change's own selection does not. */
+  /**
+   * A touch in the field ends a moment; the change's own selection does not. A cursor that comes
+   * to rest right after an unfinished tag offers its completions (F2).
+   */
   const onSelectionChange = (selection: Selection) => {
-    if (!moment || !selection) return;
-    const at = momentCursorRef.current;
-    if (selection.start === selection.end && selection.start === at) return;
-    startMoment(null, null);
+    if (!selection) return;
+    const collapsed = selection.start === selection.end;
+    if (moment && collapsed && selection.start === momentCursorRef.current) return;
+    if (collapsed && fixes.length === 0 && offerCompletion(value, selection.start, 'rest')) return;
+    if (moment) startMoment(null, null);
   };
 
   /** A new focus starts at rest (the strip was hidden while the field had none). */

@@ -199,6 +199,7 @@ export default function SelectionZone({
       <QuickAddWidget
         collapsible
         thisFileLine
+        prefillAbbrev
         layoutKey="daily"
         {...context.widget}
         initialDate={initialDate}

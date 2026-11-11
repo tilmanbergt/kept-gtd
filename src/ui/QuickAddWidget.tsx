@@ -202,6 +202,12 @@ interface Props extends AgreementHandlers {
    * the tag typed while editing named the item's own current Project/Area).
    */
   editingItemPath?: string | null;
+  /**
+   * After an add filed through an abbreviation tag, the next draft starts with that tag
+   * (docs/dev/history/technical-design-quickadd-redesign.md §3.5 F3). Only Daily passes it;
+   * elsewhere the screen's own place is already where the next item goes.
+   */
+  prefillAbbrev?: boolean;
   linkedFileMissing?: boolean;
 
   /**
@@ -261,7 +267,7 @@ function QuickAddWidget(props: Props): React.JSX.Element {
   const {textColor, borderColor, placeholderColor} = props;
   const colors = {textColor, borderColor, placeholderColor};
 
-  const core = useQuickAddCore({fixedDestination, editingItemPath});
+  const core = useQuickAddCore({fixedDestination, editingItemPath, prefillAbbrev: !!props.prefillAbbrev});
   const {displayType, isEditing, editFields, pending, setError, setPending} = core;
   const collapsible = !!props.collapsible;
   /** A collapsible box goes back to its kind buttons once an add succeeded (the message is in the status slot). */

@@ -88,6 +88,12 @@ or your project/area files are stored.
 - For contributors: `SECURITY.md` says how to report a vulnerability privately and what Kept
   touches; `docs/dev/claims.md` lists every promise Kept makes and how each is checked.
 
+### Fixed
+- Tag completion shows whenever the cursor rests right after an unfinished tag: while you type it
+  letter by letter, after handwriting, or when you put the cursor there.
+- After **+ Add to …** with an abbreviation tag, only Daily starts the next item with that tag;
+  other screens start it empty.
+
 ### Removed
 - The **Inbox** tab: the Inbox lives on Daily's **Inbox** tab, and the Review's Inbox to zero step
   works on the same list and card (no Files pane there any more).

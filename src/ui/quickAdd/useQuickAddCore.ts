@@ -24,11 +24,13 @@ interface Input {
   fixedDestination: Destination;
   /** The edited item's real location - see QuickAddWidget's `editingItemPath` prop. */
   editingItemPath?: string | null;
+  /** Whether a new draft starts with the abbreviation tag of the last add (Daily only, F3). */
+  prefillAbbrev?: boolean;
 }
 
 const NO_SETUPS: readonly NoteSetup[] = [];
 
-export function useQuickAddCore({fixedDestination, editingItemPath}: Input) {
+export function useQuickAddCore({fixedDestination, editingItemPath, prefillAbbrev = false}: Input) {
   const [activeType, setActiveTypeState] = useState<QuickAddType>('task');
   // Every tab change is logged: a row going from hidden to shown is part of
   // the title-field diagnosis (ui/quickAdd/layoutLog.ts).
@@ -130,9 +132,11 @@ export function useQuickAddCore({fixedDestination, editingItemPath}: Input) {
    * tag again, as the Project/Area spells it, so a run of items for one
    * place needs it typed once. Tag first with a space after it - a tap into
    * the field puts the cursor at the end, where the next words then go.
+   * Only where the screen asks for it (`prefillAbbrev`, Daily:
+   * docs/dev/history/technical-design-quickadd-redesign.md §3.5 F3); elsewhere ''.
    */
   const abbrevPrefill = (target: AbbrevFileMatch | null): string => {
-    if (!target) return '';
+    if (!target || !prefillAbbrev) return '';
     const item = abbrevItems.find(i => i.path === target.path);
     return `#${item?.abbrev ?? target.tag} `;
   };

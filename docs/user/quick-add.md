@@ -44,7 +44,7 @@ On a project's or area's [Current](projects-and-areas.md#the-current-tab) tab, t
 
 ## Filing directly with an abbreviation
 
-Every project and area has a short [abbreviation](projects-and-areas.md#abbreviations), for example `GR` for "Garden renovation". Write `#GR` in the text and the button changes to **+ Add to Garden renovation**: the item is created right there instead of in the Inbox, and the tag is removed from the text. The next item then starts with `#GR ` already in the field, so a run of items for one project needs the tag once; delete it to add the next item where the screen adds.
+Every project and area has a short [abbreviation](projects-and-areas.md#abbreviations), for example `GR` for "Garden renovation". Write `#GR` in the text and the button changes to **+ Add to Garden renovation**: the item is created right there instead of in the Inbox, and the tag is removed from the text. On [Daily](daily.md) the next item then starts with `#GR ` already in the field, so a run of items for one project needs the tag once; delete it to add the next item to the Inbox. Other screens start the next item empty.
 
 ## Writing help
 

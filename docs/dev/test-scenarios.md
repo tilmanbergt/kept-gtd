@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-262 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+266 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -1677,6 +1677,22 @@ Test: `__tests__/scenarios/quickAdd.test.tsx` · design: `docs/dev/history/techn
 
 Test: `__tests__/scenarios/quickAdd.test.tsx` · design: `docs/dev/history/technical-design-item-card.md` · help: `quick-add.md#adding-a-todo`
 
+### On Daily the next todo starts with the abbreviation tag just used
+
+- **Given** projects "Garden renovation" (#GR) and "Website" (#WEB)
+- **When** on Daily I add "Order soil #GR" and open + Todo again
+- **Then** the todo is in Garden renovation and the new draft reads "#GR "
+
+Test: `__tests__/scenarios/quickAddPrefill.test.tsx` · design: `docs/dev/history/technical-design-quickadd-redesign.md` · help: `quick-add.md#filing-directly-with-an-abbreviation`
+
+### On a project's page the next todo starts empty after an add to another place
+
+- **Given** projects "Garden renovation" (#GR) and "Website" (#WEB)
+- **When** on Garden renovation's page I add "Call the designer #WEB" and open + Todo again
+- **Then** the todo is in Website and the new draft is empty
+
+Test: `__tests__/scenarios/quickAddPrefill.test.tsx` · design: `docs/dev/history/technical-design-quickadd-redesign.md` · help: `quick-add.md#filing-directly-with-an-abbreviation`
+
 ### Quick Add a todo from Daily (smoke)
 
 - **Given** the smoke space and Daily open
@@ -2535,6 +2551,24 @@ Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/histor
 - **Then** the title reads "x #daily " with the cursor at its end
 
 Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `tags.md#learned-corrections`
+
+### A tag typed letter by letter is completed while the cursor rests after it
+
+- **When** with #daily known I type "Call #dai" one letter at a time
+- **Then** the strip offers #daily
+- **When** I tap #daily
+- **Then** the tag is finished and followed by a space
+
+Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/history/technical-design-quickadd-redesign.md` · help: `quick-add.md#completing-a-tag`
+
+### Putting the cursor right after an unfinished tag offers its completion
+
+- **When** with #daily known the title reads "Call #dai about notes" and I touch right after "#dai"
+- **Then** the strip offers #daily
+- **When** I tap #daily
+- **Then** only that tag is finished
+
+Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/history/technical-design-quickadd-redesign.md` · help: `quick-add.md#completing-a-tag`
 
 ## Your files
 

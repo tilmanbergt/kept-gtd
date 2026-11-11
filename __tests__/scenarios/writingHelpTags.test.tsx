@@ -1,9 +1,9 @@
 // docs/dev/history/technical-design-writing-help.md §6, scenarios 1-10: tags in Quick Add.
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {screen} from '@testing-library/react-native';
+import {fireEvent, screen} from '@testing-library/react-native';
 import {NoteSetup, seedNoteSetupDefaults} from '../../src/domain/noteSetups';
 import {GtdParaSettings} from '../../src/domain/settings';
-import {expectNotShows, expectShows, fieldValue, focus, openApp, tap, tapTab, type} from '../../test-helpers/scenario/app';
+import {expectNotShows, expectShows, fieldValue, focus, openApp, settle, tap, tapTab, type} from '../../test-helpers/scenario/app';
 import {dataFile, projectFile, putFile, sectionLines} from '../../test-helpers/scenario/files';
 import {given, scenario, then, when} from '../../test-helpers/scenario/scenario';
 
@@ -196,5 +196,35 @@ scenario('A learned correction ended by a typed space keeps the cursor after the
   then('the title reads "x #daily " with the cursor at its end', () => {
     expect(fieldValue(TITLE)).toBe('x #daily ');
     expect(screen.getByPlaceholderText(TITLE).props.selection).toEqual({start: 9, end: 9});
+  });
+});
+
+scenario('A tag typed letter by letter is completed while the cursor rests after it', {feature: 'Writing help', design: 'technical-design-quickadd-redesign.md', help: 'quick-add.md#completing-a-tag'}, () => {
+  when('with #daily known I type "Call #dai" one letter at a time', async () => {
+    await openMeetingTab(['- 2026-10-01 10:00 Standup #daily']);
+    const text = 'Call #dai';
+    for (let i = 1; i <= text.length; i++) await type(TITLE, text.slice(0, i));
+  });
+  then('the strip offers #daily', () => {
+    expectShows('#daily');
+  });
+  when('I tap #daily', () => tap('#daily'));
+  then('the tag is finished and followed by a space', () => {
+    expect(fieldValue(TITLE)).toBe('Call #daily ');
+  });
+});
+
+scenario('Putting the cursor right after an unfinished tag offers its completion', {feature: 'Writing help', design: 'technical-design-quickadd-redesign.md', help: 'quick-add.md#completing-a-tag'}, () => {
+  when('with #daily known the title reads "Call #dai about notes" and I touch right after "#dai"', async () => {
+    await openMeetingTab(['- 2026-10-01 10:00 Standup #daily']);
+    await type(TITLE, 'Call #dai about notes');
+    const field = screen.getByPlaceholderText(TITLE);
+    fireEvent(field, 'selectionChange', {nativeEvent: {selection: {start: 9, end: 9}}});
+    await settle(2);
+  });
+  then('the strip offers #daily', () => expectShows('#daily'));
+  when('I tap #daily', () => tap('#daily'));
+  then('only that tag is finished', () => {
+    expect(fieldValue(TITLE)).toBe('Call #daily about notes');
   });
 });
