@@ -223,13 +223,31 @@ export default function CaptureScreen({request, onOpenItem, onOpenDaily, onExit}
   );
   const selectedMark = ordered.find(m => m.mark.id === selectedKey) ?? null;
   const recognition = useRecognitionQueue(ordered, selectedMark ? selectedMark.mark.id : null);
+  // The list as last rendered: Save & next picks the next mark from it after the reload (F8).
+  const orderedRef = useRef(ordered);
+  orderedRef.current = ordered;
 
-  // Marks source: start with the first mark; when the selected one is gone, the next.
+  // Marks source: start with the first mark; when the selected one is gone, the next. The selected
+  // key is a dependency too: a key that names no mark (any more) falls back to the first one
+  // instead of leaving nothing selected
+  // (docs/dev/history/technical-design-quickadd-redesign.md §3.8 F8).
   useEffect(() => {
     if (!loaded || fromLasso || advancingRef.current) {return;}
-    if (!selectedMark && ordered.length > 0) {selectMark(ordered[0]);}
+    if (!selectedMark && ordered.length > 0) {
+      if (selectedKey) {log(`CaptureScreen: capture next resolved=false n=${ordered.length}`);}
+      selectMark(ordered[0]);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loaded, ordered.length, selectedMark]);
+  }, [loaded, ordered.length, selectedMark, selectedKey]);
+
+  // The new selection is redrawn after React committed it, not before (F8): a refresh requested
+  // while selecting can flush the old frame.
+  useEffect(() => {
+    if (!loaded || !selectedKey) {return;}
+    if (selectedKey !== LASSO_KEY) {log(`CaptureScreen: capture next shown to=${selectedKey} selected=${!!selectedMark}`);}
+    requestEinkRefresh();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedKey]);
 
   const lassoPage = loaded?.lasso?.page ?? null;
   const marksOnThisPage =
@@ -242,7 +260,6 @@ export default function CaptureScreen({request, onOpenItem, onOpenDaily, onExit}
     setSelectedKey(open.mark.id);
     setDestination(open.owner);
     setDiscardAsk(null);
-    requestEinkRefresh();
   }
   const handleSelect = (key: string) => {
     Keyboard.dismiss();
@@ -374,13 +391,18 @@ export default function CaptureScreen({request, onOpenItem, onOpenDaily, onExit}
     else {onExit();}
   };
 
-  /** The mark after `id` in list order (null at the end). */
-  const markAfter = (id: string): OpenMark | null => {
-    const i = ordered.findIndex(m => m.mark.id === id);
-    return i >= 0 && i + 1 < ordered.length ? ordered[i + 1] : null;
-  };
-  const afterMarkGone = (next: OpenMark | null) => {
+  /** Where `id` stands in the list (-1 when it isn't in it). */
+  const markIndex = (id: string): number => ordered.findIndex(m => m.mark.id === id);
+  /**
+   * After a mark was saved or discarded: the mark that followed it, picked by position from the
+   * list as it is now (after the reload), not from the list before it (F8); at the end the lasso
+   * or the way back.
+   */
+  const afterMarkGone = (goneId: string, index: number) => {
     advancingRef.current = false;
+    const rest = orderedRef.current.filter(m => m.mark.id !== goneId);
+    const next = index >= 0 && index < rest.length ? rest[index] : null;
+    log(`CaptureScreen: capture next from=${goneId} to=${next ? next.mark.id : 'none'} left=${rest.length}`);
     if (next) {selectMark(next);}
     else if (fromLasso) {handleSelect(LASSO_KEY);}
     else {onExit();}
@@ -394,7 +416,7 @@ export default function CaptureScreen({request, onOpenItem, onOpenDaily, onExit}
     origin.added();
     if (selectedMark) {
       const open = selectedMark;
-      const next = markAfter(open.mark.id);
+      const index = markIndex(open.mark.id);
       advancingRef.current = true;
       try {
         setBusy(true);
@@ -410,7 +432,7 @@ export default function CaptureScreen({request, onOpenItem, onOpenDaily, onExit}
       advancingRef.current = false;
       if (mode === 'view') {return openDestination(savedTo);}
       if (mode === 'close') {return close();}
-      return afterMarkGone(next);
+      return afterMarkGone(open.mark.id, index);
     }
     // The lasso: it goes once the first item is saved.
     if (lassoSaved === 0) {
@@ -445,7 +467,7 @@ export default function CaptureScreen({request, onOpenItem, onOpenDaily, onExit}
   };
   const runDiscard = async (open: OpenMark) => {
     setDiscardAsk(null);
-    const next = markAfter(open.mark.id);
+    const index = markIndex(open.mark.id);
     advancingRef.current = true;
     try {
       setBusy(true);
@@ -462,7 +484,7 @@ export default function CaptureScreen({request, onOpenItem, onOpenDaily, onExit}
     } finally {
       setBusy(false);
     }
-    afterMarkGone(next);
+    afterMarkGone(open.mark.id, index);
   };
   const discardLabel = discardAsk
     ? (recognition.get(discardAsk.mark.id)?.text ?? '').replace(/\s+/g, ' ').trim().slice(0, 40) || `p${discardAsk.mark.page + 1}`

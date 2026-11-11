@@ -224,6 +224,15 @@ export default function PagedSection<T>({
     resetKey,
     effectiveViewportHeight > 0 ? jumpTo : null,
   );
+  // F9 diagnostic (docs/dev/history/technical-design-quickadd-redesign.md §3.8): what a measured
+  // list's page holds against its viewport. The label is the key's kind only, never an item path.
+  const listLabel = (typeof heightKey === 'string' ? heightKey : heightKey?.[0] ?? '').split(':').slice(0, 2).join(':');
+  useEffect(() => {
+    if (!selfMeasuring || !listLabel || effectiveViewportHeight <= 0) return;
+    const est = paged.pageItems.reduce((sum, row) => sum + rowHeight(row), 0);
+    log(`PagedSection: page fill list=${listLabel} rows=${paged.pageItems.length} est=${Math.round(est)} viewport=${Math.round(effectiveViewportHeight)}`);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [listLabel, paged.startIndex, paged.pageItems.length, effectiveViewportHeight]);
   useEffect(() => {
     onFirstRowChange?.(paged.startIndex);
     // eslint-disable-next-line react-hooks/exhaustive-deps

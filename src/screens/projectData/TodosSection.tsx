@@ -11,7 +11,7 @@
  */
 import React, {useState} from 'react';
 import {usePerfRender} from '../../utils/perf';
-import {Keyboard, Text, View} from 'react-native';
+import {Keyboard, LayoutChangeEvent, StyleSheet, Text, View} from 'react-native';
 import {Task} from '../../domain/types';
 import {formatDate} from '../../domain/dateFormat';
 import {groupTodosByLoop} from '../../domain/loops';
@@ -181,9 +181,13 @@ function TodosSection({
         isCountableRow={row => row.kind === 'entry'}
         renderRow={row =>
           row.kind === 'header' ? (
-            <Text key={row.rowKey} style={[styles.subheading, {color: textColor}]}>
-              {row.label}
-            </Text>
+            // Exactly the height the pages are counted with, so the last row of a page is never cut
+            // off at the Agreements line (docs/dev/history/technical-design-quickadd-redesign.md §3.8 F9).
+            <View key={row.rowKey} style={headerRow.box} onLayout={logHeaderHeight}>
+              <Text style={[styles.subheading, headerRow.text, {color: textColor}]} numberOfLines={1}>
+                {row.label}
+              </Text>
+            </View>
           ) : (
             <TaskRow
               key={row.rowKey}
@@ -217,3 +221,17 @@ function TodosSection({
 
 /** Memoized: the page passes stable props, so selecting a row leaves the list as it is. */
 export default React.memo(TodosSection);
+
+let headerHeightLogged = false;
+/** F9 diagnostic: a group heading drawn at another height than the pages count with, logged once. */
+function logHeaderHeight(e: LayoutChangeEvent): void {
+  const real = Math.round(e.nativeEvent.layout.height);
+  if (headerHeightLogged || real === SUBHEADING_ROW_PX) return;
+  headerHeightLogged = true;
+  log(`TodosSection: current todos header real=${real} est=${SUBHEADING_ROW_PX}`);
+}
+
+const headerRow = StyleSheet.create({
+  box: {height: SUBHEADING_ROW_PX, justifyContent: 'flex-end', overflow: 'hidden'},
+  text: {marginTop: 0},
+});

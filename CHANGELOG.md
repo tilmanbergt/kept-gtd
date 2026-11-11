@@ -93,6 +93,9 @@ or your project/area files are stored.
   letter by letter, after handwriting, or when you put the cursor there.
 - After **+ Add to …** with an abbreviation tag, only Daily starts the next item with that tag;
   other screens start it empty.
+- Processing marks: **Save & next** selects the next mark again, also when the list was reloaded
+  in between.
+- A project's or area's page: the last todo of a page is no longer cut off at the Agreements line.
 
 ### Removed
 - The **Inbox** tab: the Inbox lives on Daily's **Inbox** tab, and the Review's Inbox to zero step
