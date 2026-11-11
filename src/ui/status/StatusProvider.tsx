@@ -11,11 +11,30 @@
  * themselves. A message is re-published only when its visible content
  * changes; its callbacks always call the publisher's latest closures (via
  * a ref), so passing fresh inline functions every render is fine.
+ *
+ * Success and info go by themselves
+ * (docs/dev/history/technical-design-quickadd-redesign.md §3.8 F7): a new one
+ * replaces the others, and each disappears silently after `STATUS_TIMED_MS`
+ * (8 s; 16 s with actions such as Undo), calling its `onDismiss` so the owner
+ * clears its state. Errors, warnings, confirms and modals stay until
+ * answered. App-wide notices (`scope: 'global'` info: What's new, an update,
+ * a download) wait for their answer too.
  */
 import React, {createContext, useCallback, useContext, useEffect, useMemo, useRef, useState} from 'react';
-import {STATUS_PRIORITY, StatusMessage} from './types';
+import {STATUS_PRIORITY, STATUS_TIMED_MS, STATUS_TIMED_WITH_ACTIONS_MS, StatusMessage} from './types';
 import {useScreenActivity} from '../screenActivity';
-import {logWarn} from '../../utils/log';
+import {log, logWarn} from '../../utils/log';
+
+/** Success and info go by themselves, except app-wide notices that wait for an answer. */
+export function isTimedStatus(msg: StatusMessage): boolean {
+  if (msg.kind === 'success') return true;
+  return msg.kind === 'info' && msg.scope !== 'global';
+}
+
+/** How long a timed message stays: 16 s with actions (Undo), else 8 s. */
+export function statusLifetimeMs(msg: StatusMessage): number {
+  return (msg.actions?.length ?? 0) > 0 ? STATUS_TIMED_WITH_ACTIONS_MS : STATUS_TIMED_MS;
+}
 
 export interface StatusEntry {
   id: string;
@@ -35,35 +54,85 @@ const ListContext = createContext<StatusEntry[]>([]);
 export function StatusProvider({children}: {children: React.ReactNode}): React.JSX.Element {
   const [entries, setEntries] = useState<Map<string, StatusEntry>>(() => new Map());
   const seqRef = useRef(0);
+  // Mirrors `entries` for the timers and replacements, which call owners' onDismiss outside a state update.
+  const entriesRef = useRef<Map<string, StatusEntry>>(new Map());
+  const timersRef = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
 
-  const show = useCallback((id: string, msg: StatusMessage) => {
-    // Every error the user sees is in the log, so a debug bundle shows it too (DEVELOPMENT-POLICY §5).
-    if (msg.kind === 'error') logWarn('Status: error shown', id, msg.text);
-    seqRef.current += 1;
-    const seq = seqRef.current;
-    setEntries(prev => {
-      const next = new Map(prev);
-      next.set(id, {id, msg, seq});
-      return next;
-    });
+  const stopTimer = useCallback((id: string) => {
+    const timer = timersRef.current.get(id);
+    if (timer !== undefined) clearTimeout(timer);
+    timersRef.current.delete(id);
   }, []);
 
-  const clear = useCallback((id: string) => {
-    setEntries(prev => {
-      if (!prev.has(id)) return prev;
-      const next = new Map(prev);
-      next.delete(id);
-      return next;
-    });
+  const remove = useCallback(
+    (ids: string[]) => {
+      if (ids.length === 0) return;
+      for (const id of ids) stopTimer(id);
+      const next = new Map(entriesRef.current);
+      for (const id of ids) next.delete(id);
+      entriesRef.current = next;
+      setEntries(next);
+    },
+    [stopTimer],
+  );
+
+  const show = useCallback(
+    (id: string, msg: StatusMessage) => {
+      // Every error the user sees is in the log, so a debug bundle shows it too (DEVELOPMENT-POLICY §5).
+      if (msg.kind === 'error') logWarn('Status: error shown', id, msg.text);
+      seqRef.current += 1;
+      const seq = seqRef.current;
+      const timed = isTimedStatus(msg);
+      // The newest success or info replaces the others; their owners clear their state.
+      const replaced = timed ? [...entriesRef.current.values()].filter(e => e.id !== id && isTimedStatus(e.msg)) : [];
+      stopTimer(id);
+      const next = new Map(entriesRef.current);
+      for (const e of replaced) {
+        stopTimer(e.id);
+        next.delete(e.id);
+      }
+      next.set(id, {id, msg, seq});
+      entriesRef.current = next;
+      setEntries(next);
+      for (const e of replaced) e.msg.onDismiss?.();
+      if (timed) {
+        const timer = setTimeout(() => {
+          timersRef.current.delete(id);
+          const entry = entriesRef.current.get(id);
+          if (!entry || entry.seq !== seq) return;
+          log(`Status: status expire kind=${entry.msg.kind}`);
+          remove([id]);
+          entry.msg.onDismiss?.();
+        }, statusLifetimeMs(msg));
+        // Under Node (tests) a pending expiry must not keep the process alive; React Native's timers have no unref.
+        (timer as unknown as {unref?: () => void}).unref?.();
+        timersRef.current.set(id, timer);
+      }
+    },
+    [remove, stopTimer],
+  );
+
+  const clear = useCallback(
+    (id: string) => {
+      if (entriesRef.current.has(id)) remove([id]);
+      else stopTimer(id);
+    },
+    [remove, stopTimer],
+  );
+
+  useEffect(() => {
+    const timers = timersRef.current;
+    return () => {
+      for (const timer of timers.values()) clearTimeout(timer);
+      timers.clear();
+    };
   }, []);
 
   const api = useMemo(() => ({show, clear}), [show, clear]);
 
   const list = useMemo(
     () =>
-      [...entries.values()].sort(
-        (a, b) => STATUS_PRIORITY[a.msg.kind] - STATUS_PRIORITY[b.msg.kind] || b.seq - a.seq,
-      ),
+      [...entries.values()].sort((a, b) => STATUS_PRIORITY[a.msg.kind] - STATUS_PRIORITY[b.msg.kind] || b.seq - a.seq),
     [entries],
   );
 
@@ -77,6 +146,16 @@ export function StatusProvider({children}: {children: React.ReactNode}): React.J
 /** The sorted message list (most important first). For the slot only. */
 export function useStatusList(): StatusEntry[] {
   return useContext(ListContext);
+}
+
+/**
+ * True while the slot shows something that must be answered or read first: a confirm, a modal
+ * or an error (docs/dev/history/technical-design-quickadd-redesign.md §3.8 D3). Quick Add's
+ * strips hide meanwhile.
+ */
+export function useStatusBlocking(): boolean {
+  const list = useContext(ListContext);
+  return list.some(e => e.msg.kind === 'confirm' || e.msg.kind === 'modal' || e.msg.kind === 'error');
 }
 
 /** Imperative escape hatch for one-shot or global messages (e.g. background failures, D13). No-op outside a provider. */

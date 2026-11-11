@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-260 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+262 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -455,6 +455,25 @@ Test: `__tests__/scenarios/calmerTabs.test.tsx` · design: `docs/dev/history/tec
 - **Then** the status line says where it went, since Daily doesn't show next week
 
 Test: `__tests__/scenarios/daily.test.tsx` · design: `docs/dev/history/technical-design-cache-subscription-and-shared-add-path.md` · help: `quick-add.md#adding-a-meeting`
+
+### Daily shows no page row for a short Next list, and a page row under a long one
+
+- **Given** on 10.11. four #next todos in Garden renovation
+- **When** I open Daily
+- **Then** the four todos show and no page row
+
+Test: `__tests__/scenarios/dailyPagedNav.test.tsx` · design: `docs/dev/history/technical-design-quickadd-redesign.md` · help: `daily.md#count-tabs-and-the-bell`
+
+### A long Next list on Daily pages with the row under it
+
+- **Given** on 10.11. eighty #next todos in Garden renovation
+- **When** I open Daily
+- **Then** the page row reads 1 of several pages and the last todo is not on the first page
+- **When** I tap the next page arrow
+- **And** the row reads page 2
+- **Then** the first todo is no longer shown
+
+Test: `__tests__/scenarios/dailyPagedNav.test.tsx` · design: `docs/dev/history/technical-design-quickadd-redesign.md` · help: `daily.md#count-tabs-and-the-bell`
 
 ### Daily: a todo's card, then its edit, saved into its own file
 
@@ -1363,14 +1382,14 @@ Test: `__tests__/scenarios/calmerCurrent.test.tsx` · design: `docs/dev/history/
 
 Test: `__tests__/scenarios/calmerCurrent.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `projects-and-areas.md#the-current-tab`, `projects-and-areas.md#settings`
 
-### The header names a project's area (a tap opens it) and its time this week
+### The header names a project's area (a tap opens it), without its time this week
 
 - **Given** on Tue 10.11. project "Garden renovation" in area "Home" with a 90-minute meeting this week
 - **When** I open its page
-- **Then** the header shows the area and 1.5 h this week
+- **Then** the header shows the area and no time this week (F5)
 - **When** I tap the area
 
-Test: `__tests__/scenarios/calmerCurrent.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `projects-and-areas.md#the-current-tab`
+Test: `__tests__/scenarios/calmerCurrent.test.tsx` · design: `docs/dev/history/technical-design-quickadd-redesign.md` · help: `projects-and-areas.md#the-current-tab`
 
 ### On an area, Projects and Loops are hidden each on their own inside its Projects tab
 

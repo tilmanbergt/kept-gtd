@@ -180,3 +180,26 @@ export function usePagedByHeight<T>(
 
   return {page: clampedPage, startIndex: start, pageItems, canPrev, canNext, goPrev, goNext};
 }
+
+/**
+ * How many pages `rows` take in a box of `viewportHeight`, with the same greedy fill as
+ * `usePagedByHeight` (at least one row per page). Walks every row, so only lists that show
+ * a page count use it (ui/PagedSection.tsx's nav row).
+ */
+export function pageCount<T>(rows: readonly T[], rowHeight: (row: T) => number, viewportHeight: number): number {
+  if (rows.length === 0) return 1;
+  let pages = 1;
+  let used = 0;
+  let count = 0;
+  for (const row of rows) {
+    const h = rowHeight(row);
+    if (count > 0 && used + h > viewportHeight) {
+      pages += 1;
+      used = 0;
+      count = 0;
+    }
+    used += h;
+    count += 1;
+  }
+  return pages;
+}

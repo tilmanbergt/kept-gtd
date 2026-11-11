@@ -16,6 +16,8 @@ Todos marked Someday or Maybe never appear on Daily. Todos are grouped by projec
 
 Over the todos, count tabs show one list at a time: **Next**, **Waiting**, **Inbox** and, once you have finished something today, **Done** - each with its number, for example `Next 11` and `Waiting 5`. **Next** holds the todos marked Next or due; **Waiting** the ones you wait for; **Inbox** everything waiting in the Inbox: the [marks to process](lasso.md#processing-marks), the todos not yet filed (not Someday or Maybe) and its meetings, past ones too - all counted, none hidden by a context. A small bell with a number on **Waiting** or **Inbox** counts the todos there that are due today or earlier (an Inbox todo's grey note is the day you captured it, or its due date when that has come), for example `Waiting 5` with the bell and `1`. Kept starts on **Next**; the tab you choose stays while Kept is open.
 
+The todos start right under the tabs. When a list is longer than one page, a row under it shows the page and its arrows, for example `‹ 1 / 2 ›`; a list that fits on one page has no such row.
+
 ## The Inbox
 
 Whatever you add without a project or area lands in the Inbox (`Inbox.txt` in its own folder): from Daily, Week and Month, from a [lasso capture](lasso.md#capturing-right-away) you don't file right away, and [marks](lasso.md#marking-for-later) from notes outside your projects and areas. Daily's **Inbox** tab shows all of it in one list: first "n marks to process" with **Process ›** while there are open marks, then the todos not yet filed, then the Inbox's meetings, past ones too. Someday and Maybe todos wait in the Review instead. Nothing here is hidden by a [context](contexts.md#what-a-context-shows), and its todos are not under **Next**.

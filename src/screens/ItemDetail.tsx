@@ -88,7 +88,7 @@
  * assigned Projects with their signals; a row opens the Project.
  *
  * Header (screens/item/ItemHeader.tsx): name, kind, a Project's Area, the
- * given time this week, the abbreviation, and the scope when set. Under the
+ * abbreviation, and the scope when set. Under the
  * Files pane: Notebook, Engage ›, ⚙ Settings.
  *
  * Reloading: leaving the tab and "Reload all files" (Settings → Advanced)
@@ -517,7 +517,6 @@ export default function ItemDetail({
         abbrev={resourceFolderState?.abbrev ?? null}
         area={kind === 'project' ? facts?.area ?? null : null}
         scope={facts?.scope ?? ''}
-        weekTime={facts?.weekTime ?? ''}
         onOpenArea={openAreaItem}
         onOpenSettings={openSettings}
         textColor={textColor}

@@ -70,14 +70,21 @@ or your project/area files are stored.
 - A tap on a row shows its card faster: the list no longer redraws for it.
 - A project's or area's page keeps to the work: abbreviation, scope, status, Close out / Archive and
   Assign to Area move to **⚙ Settings**, next to **Notebook** and **Engage ›** under the Files pane
-  (**Close** returns). The header names the kind, a project's area (a tap opens it), the time this
-  week and the abbreviation; the scope shows under it only when there is one.
+  (**Close** returns). The header names the kind, a project's area (a tap opens it) and the
+  abbreviation; the scope shows under it only when there is one. The time given this week stays on
+  Week, Month and the owner card.
 - The left side of a project's or area's page shows only the tabs with something in them - Threads,
   Loops (Projects on an area), Notebook - plus Files, and opens on the first of them; the Schedule
   shows while there are meetings.
 - **⚙ Settings → Show on this page**: Threads, Loops, Agreements, Schedule, Notebook (and Projects on
   an area) each **Auto**, **Always** or **Never**, and where the left side opens. A hidden part with
   something in it says so ("Never · 2 loops").
+- Messages in the status line go by themselves: what was saved after 8 seconds, a message with
+  **Undo** after 16 seconds, and a new one replaces the one before. Questions, errors and warnings
+  stay until you answer them.
+- Lists without a heading (Daily's todos, the Inbox, a page's todos, Engage's tabs) start right
+  under their tabs. A row with the page and its arrows (`‹ 1 / 2 ›`) shows under a list only when it
+  has more than one page.
 - For contributors: `SECURITY.md` says how to report a vulnerability privately and what Kept
   touches; `docs/dev/claims.md` lists every promise Kept makes and how each is checked.
 

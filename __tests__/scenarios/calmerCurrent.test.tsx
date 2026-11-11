@@ -1,6 +1,6 @@
 // docs/dev/history/technical-design-calmer-screens.md §6 scenarios 25-29 (stage C): the Current page's
 // header and left tabs, ⚙ Settings of a Project or Area, "Show on this page" and the `show:` line.
-import {expectNotShows, expectShows, labelled, openApp, openItemSettings, tap, tapLabel, tapTab} from '../../test-helpers/scenario/app';
+import {expectNotShows, expectShows, labelled, texts, openApp, openItemSettings, tap, tapLabel, tapTab} from '../../test-helpers/scenario/app';
 import {areaFile, dataFile, fileText, loggedErrors, projectFile, putFile} from '../../test-helpers/scenario/files';
 import {and, given, scenario, then, when} from '../../test-helpers/scenario/scenario';
 import {fixedClock} from '../../test-helpers/scenario/clock';
@@ -161,16 +161,16 @@ scenario('The scope shows under the name only when set; a tap opens ⚙ Settings
   });
 });
 
-scenario('The header names a project\'s area (a tap opens it) and its time this week', {feature: 'Projects and Areas', design: 'technical-design-calmer-screens.md', help: 'projects-and-areas.md#the-current-tab'}, () => {
+scenario('The header names a project\'s area (a tap opens it), without its time this week', {feature: 'Projects and Areas', design: 'technical-design-quickadd-redesign.md', help: 'projects-and-areas.md#the-current-tab'}, () => {
   given('on Tue 10.11. project "Garden renovation" in area "Home" with a 90-minute meeting this week', () => {
     clock();
     putFile(areaFile('Home'), dataFile('area', {Scope: [], Tasks: [], Meetings: []}, ['abbrev: HOME']));
     putFile(projectFile('Garden renovation'), dataFile('project', {Scope: [], Tasks: ['- [ ] Order soil #next'], Meetings: ['- 2026-11-12 10:00-11:30 Site visit']}, ['abbrev: GR', 'area: Home']));
   });
   when('I open its page', () => openGarden());
-  then('the header shows the area and 1.5 h this week', () => {
+  then('the header shows the area and no time this week (F5)', () => {
     expectShows('· Home ›');
-    expectShows('1.5 h this week');
+    expect(texts().some(t => t.includes('this week'))).toBe(false);
   });
   when('I tap the area', () => tap('· Home ›'));
   then("the area's page opens", () => expectShows('#HOME'));

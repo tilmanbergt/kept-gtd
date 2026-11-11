@@ -21,6 +21,7 @@ The strip under the tab bar is the status line. Every message of Kept shows ther
 
 - A question has its buttons on the right, for example **Create** or **Use mine**. Nothing happens until you tap one; ✕ cancels.
 - ✕ also clears a message once you have read it.
+- What was saved or done goes by itself after a few seconds (with **Undo**, a little longer), or when the next one comes: a new message of this kind replaces the old one. Questions, errors and warnings stay until you answer or clear them.
 - A message too long for the line ends with …; tap it to read it in full.
 - When several messages wait, ‹ and › with "1/3" page through them. The most important one comes first: questions before errors, errors before the rest.
 

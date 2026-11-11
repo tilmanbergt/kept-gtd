@@ -1,7 +1,8 @@
 /**
  * The header of a Project's or Area's page (docs/dev/history/technical-design-calmer-screens.md
- * §3.8): the name, its kind, a Project's Area (a tap opens it), the given time
- * this week and the abbreviation, read only. Under it the scope, only when
+ * §3.8): the name, its kind, a Project's Area (a tap opens it) and the
+ * abbreviation, read only. The given time stays on Week, Month and the owner
+ * card (docs/dev/history/technical-design-quickadd-redesign.md §3.8 F5). Under it the scope, only when
  * there is one; a tap on it opens ⚙ Settings, where it is edited.
  */
 import React from 'react';
@@ -15,14 +16,12 @@ interface Props {
   abbrev: string | null;
   area: string | null;
   scope: string;
-  /** "3 h"; '' shows nothing. */
-  weekTime: string;
   onOpenArea?: (areaName: string) => void;
   onOpenSettings: () => void;
   textColor: string;
 }
 
-function ItemHeader({kind, name, abbrev, area, scope, weekTime, onOpenArea, onOpenSettings, textColor}: Props): React.JSX.Element {
+function ItemHeader({kind, name, abbrev, area, scope, onOpenArea, onOpenSettings, textColor}: Props): React.JSX.Element {
   const scopeText = scope.trim();
   return (
     <View style={styles.root}>
@@ -39,7 +38,6 @@ function ItemHeader({kind, name, abbrev, area, scope, weekTime, onOpenArea, onOp
           </Pressable>
         ) : null}
         <View style={styles.spacer} />
-        {weekTime ? <Text style={[styles.time, {color: textColor}]}>{weekTime} this week</Text> : null}
         {abbrev ? <Text style={[styles.abbrev, {color: textColor}]}>#{abbrev}</Text> : null}
       </View>
       {scopeText ? (
@@ -61,7 +59,6 @@ const styles = StyleSheet.create({
   name: {fontSize: FONT.large, fontWeight: '700', flexShrink: 1},
   area: {fontSize: FONT.small, fontWeight: '600', marginLeft: 6},
   spacer: {flex: 1},
-  time: {fontSize: FONT.small, opacity: 0.7, marginLeft: 8},
   abbrev: {fontSize: FONT.small, fontWeight: '600', marginLeft: 8},
   scope: {fontSize: FONT.small, opacity: 0.8, marginTop: 4},
 });
