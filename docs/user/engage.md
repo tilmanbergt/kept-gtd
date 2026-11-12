@@ -48,7 +48,7 @@ A meeting that ends early, or runs late: tap the moment you are in. Engage keeps
 Under the line, a row of buttons shows what fits the moment - at most three, and no row at all when nothing is needed:
 
 - **Before**: **Mark prepped** (when the meeting's Note setup [tracks prep](meetings.md#preparation-and-review) and it isn't ticked yet) and **Note from last meeting ›** (opens the note of the previous meeting with this owner).
-- **During**: **+ Next sparring** (the thread's type, or the loop's kind) when no meeting of the thread or loop is planned after this one. It opens Quick Add's Meeting tab with the next meeting copied from this one, see [+ Next sparring](threads.md#-next-sparring).
+- **During**: **+ Next sparring** (the thread's type, or the loop's kind) when no meeting of the thread or loop is planned after this one. It opens Quick Add's meeting form with the next meeting copied from this one, see [+ Next sparring](threads.md#-next-sparring).
 - **After**: **Reflect ›** (**Reflection ›** once it exists; not on the Reflection page itself) opens the meeting's [Reflection page](meetings.md#reflection-page) and closes the panel, **Mark reviewed** (when the setup tracks review), and **+ Next sparring** as above.
 
 During and after the meeting, what you add in Engage's Quick Add records the meeting (see [Quick Add, marks and leaving](engage.md#quick-add-marks-and-leaving)).

@@ -247,19 +247,30 @@ field. The minimum height alone doesn't fix it: the parent decides how much room
 
 `ui/QuickAddWidget.tsx`'s box (Project panel, Inbox, Daily, Week, Month, Review, thread and
 loop overviews) is the largest recurring block outside lists. It has one fixed height in every
-state (`ui/quickAdd/QuickAddFrame.tsx`, `QUICK_ADD_HEIGHT`); budget it as one block:
+state (`ui/quickAdd/QuickAddFrame.tsx`, `QUICK_ADD_HEIGHT`); budget it as one block.
 
-| Row | height (dp) | Holds |
+The form (`ui/quickAdd/form/`):
+
+| Slot | height (dp) | Holds |
 |---|---|---|
-| Row 1 | 30 | Todo / Meeting / Agreement / Note tabs; + Add, Cancel · Save, or the card's heading with ✕ · Edit |
-| Row 2 | 36 | Main text input and date (or valid till) |
-| Row 3 | 34 | Flow chips or time, tag chips |
-| Row 4 | 34 | More tag chips, the provenance line and/or the This-file line (`ui/quickAdd/ThisFileLine.tsx`: clip, file name, two chips of ~31), or (a loop's own edit only) the edit commands |
+| Field (rows 1-2) | 30 + 6 + 36 = 72 | One two-line text field (medium 17, line 22); positioning context of every strip |
+| Row 3 | 34 | Todo: 📅 (32 square, or the due field) · w/f (and "Waiting on", 170); meeting: date (140, 120 narrow), time (190, 150 below 800 dp), the warning sign, F; agreement: valid till; note: its folder |
+| Row 4 | 34 | 📎 square or the linked file's chip · grey origin line · ✕ · the main button, all 32 high; the main button and ✕ never shrink, the origin line and the file name do |
 
-Box total = `border 1 + padding 10 + 30 + 6 + 36 + 6 + 34 + 6 + 34 + padding 10 + border 1` =
-**174 dp**, whatever it shows - create, edit, or an item card (`ui/itemCard/`) in the same rows. Chips in rows 3 and 4 use 4 dp vertical padding: their label draws
-about 21 dp high on the device, so a chip is about 31 dp. The capture screen's panel (`ui/quickAdd/CaptureQuickAdd.tsx`) is
-the exception: it grows with its multi-line text and adds rows below.
+Box total = `border 1 + padding 10 + 72 + 6 + 34 + 6 + 34 + padding 10 + border 1` = **174 dp**.
+Folded, the kind buttons take the box (two rows of them fit); an item card (`ui/itemCard/`) uses the
+four rows 30 · 36 · 34 · 34 with the same gaps.
+
+Strips (`ui/quickAdd/form/stripStyles.ts`), painted after the field without a zIndex, at most one at a
+time and none while the status slot shows a confirm, a modal or an error:
+
+- the text strip: absolute, full width, `bottom: '100%'` of the field plus the box's padding and
+  border - above the box (Daily: over the status slot; Current: over the name line);
+- the date, time and valid-till strips: absolute, full width, `bottom: 0`, 36 high - over the field's
+  second line, so its first line stays readable.
+
+The capture screen's panel (`ui/quickAdd/CaptureQuickAdd.tsx`) is the exception: it grows with its
+multi-line text and adds rows below; its strips hover above their fields.
 
 ### 5.5 Section headings and labels
 

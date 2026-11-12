@@ -37,7 +37,7 @@ scenario('A hand-edited project file keeps everything Kept GTD does not own when
     await openApp();
     await tapTab('Projects');
     await tap(/^Website/);
-    await type('New task', 'Call the designer');
+    await type('New todo', 'Call the designer');
     await tap('+ Add');
   });
   then('the new todo is in the Tasks section', () => {
@@ -59,7 +59,7 @@ scenario('An outside edit to another part of the file is kept when Kept GTD save
   });
   when('its Scope is changed in Obsidian, and I then add a todo in Kept GTD', async () => {
     device().fs.editExternally(projectFile('Website'), t => t.replace('Old scope', 'Scope from Obsidian'));
-    await type('New task', 'Call the designer');
+    await type('New todo', 'Call the designer');
     await tap('+ Add');
   });
   then('project.txt has both: the new Scope and the new todo, and nobody was asked', () => {
@@ -78,7 +78,7 @@ scenario('When Kept GTD and another app changed the same list, the user decides 
   });
   when('its todo is changed in Obsidian, and I then add a todo in Kept GTD', async () => {
     device().fs.editExternally(projectFile('Website'), t => t.replace('- [ ] Write copy', '- [ ] Write copy, edited in Obsidian'));
-    await type('New task', 'Call the designer');
+    await type('New todo', 'Call the designer');
     await tap('+ Add');
   });
   then('Kept GTD asks which version wins and has written nothing yet', () => {
@@ -89,7 +89,7 @@ scenario('When Kept GTD and another app changed the same list, the user decides 
     await tap('Use the file');
     expect(sectionLines(projectFile('Website'), 'Tasks')).toEqual(['- [ ] Write copy, edited in Obsidian']);
     expectShows(/Not saved: "Website" keeps the version changed outside Kept GTD\./);
-    expect(fieldValue('New task')).toBe('Call the designer');
+    expect(fieldValue('New todo')).toBe('Call the designer');
   });
   and('after another change in Obsidian, + Add asks again, and "Use mine" saves the list as Kept GTD shows it, with the new todo', async () => {
     device().fs.editExternally(projectFile('Website'), t => t.replace('edited in Obsidian', 'edited twice'));

@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-266 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+273 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -540,7 +540,7 @@ Test: `__tests__/scenarios/meetingContext.test.tsx` · help: `meetings.md#the-co
 
 - **Given** the thread meeting "1:1 Jordan" today at 15:00, and Quick Add left on its Meeting tab
 - **When** I switch Quick Add to Meeting, tap the meeting and + Quick Add to meeting
-- **Then** the Todo tab shows, its button reads "+ Add to Coaching" and the text is empty
+- **Then** the todo form shows, its button reads "+ Add to Coaching" and the text is empty
 
 Test: `__tests__/scenarios/meetingContext.test.tsx` · help: `meetings.md#the-context-panel`
 
@@ -1616,14 +1616,14 @@ Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/techn
 
 Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/technical-design-item-card.md` · help: `quick-add.md#the-card-one-tap-selects`
 
-### On a Nomad-sized screen, Quick Add with four tabs keeps its + Add and calls Agreement "Agree"
+### On a Nomad-sized screen, Quick Add's form keeps its + Add and its grey line on one row
 
 - **Given** area "Coaching" has a past sparring session with Jordan, and Kept is drawn at Nomad portrait size
 - **When** I open Coaching: on a short screen its Todos are the first tab of Todos | Schedule; there I open Jordan's thread overview
-- **Then** its Quick Add shows the short tab name and the main button
-- **And** back at full size the tab is called Agreement again
+- **Then** its Quick Add form keeps the main button and the ✕ of the grey line
+- **And** back at full size the form shows the same
 
-Test: `__tests__/scenarios/narrowScreen.test.tsx` · design: `docs/dev/history/technical-design-launch-ready.md` · help: `quick-add.md#adding-an-agreement`
+Test: `__tests__/scenarios/narrowScreen.test.tsx` · design: `docs/dev/history/technical-design-quickadd-redesign.md` · help: `quick-add.md#adding-an-agreement`
 
 ### Quick Add a todo in a project
 
@@ -1665,17 +1665,103 @@ Test: `__tests__/scenarios/quickAdd.test.tsx` · design: `docs/dev/history/techn
 
 - **Given** project "Website"
 - **When** I open "Website" and put the cursor into the todo field
-- **Then** All/Copy/Cut/Paste hovers over the tabs
+- **Then** the strip hovers above the box with its suggestions
 - **When** I tap its ✕
 - **Then** it is gone while the field still has the cursor
 - **When** the field loses the cursor and gets it back
 - **Then** the strip is back
-- **When** I hide it again and tap the Meeting tab
+- **When** I hide it again and open a meeting
 - **Then** the meeting form shows
 - **When** I open the due date and put the cursor into it
 - **Then** the date strip hovers there with its own ✕, which puts it away
 
 Test: `__tests__/scenarios/quickAdd.test.tsx` · design: `docs/dev/history/technical-design-item-card.md` · help: `quick-add.md#adding-a-todo`
+
+### + Todo on Daily opens the form: the field, 📅 and w/f, then ✕ and + Add
+
+- **Given** on Wed 11.11. project "Garden renovation" (#GR)
+- **When** I open Daily and tap + Todo
+- **Then** the form shows the todo field, 📅, w/f, ✕ and + Add, and no kind tabs or flow chips
+- **When** I write "Order soil #GR"
+- **Then** the main button reads + Add to Garden renovation
+- **When** a newline comes with the next words
+- **Then** the field holds one line with a space
+
+Test: `__tests__/scenarios/quickAddForm.test.tsx` · design: `docs/dev/history/technical-design-quickadd-redesign.md` · help: `quick-add.md#adding-a-todo`
+
+### 📅 opens the due date in its place; its strip lies over the field's second line
+
+- **Given** on Wed 11.11. project "Garden renovation"
+- **When** on its page I open + Todo, write "Order soil", tap 📅 and handwrite "13.11"
+- **Then** the strip reads "read as Fri 13 Nov 2026" with Undo, and the text is still there
+
+Test: `__tests__/scenarios/quickAddForm.test.tsx` · design: `docs/dev/history/technical-design-quickadd-redesign.md` · help: `quick-add.md#dates-and-times`
+
+### w/f opens "Waiting on" and closes it again, clearing the name
+
+- **Given** on Wed 11.11. project "Garden renovation"
+- **When** I open + Todo, tap w/f and write "Lena"
+- **Then** "Waiting on" holds Lena
+- **When** I tap w/f again
+- **Then** the field is gone
+- **When** I tap w/f once more and + Add
+- **Then** the todo is saved waiting for nobody named
+
+Test: `__tests__/scenarios/quickAddForm.test.tsx` · design: `docs/dev/history/technical-design-quickadd-redesign.md` · help: `quick-add.md#adding-a-todo`
+
+### An empty todo field offers suggestions above the box; a selection shows the clipboard
+
+- **Given** on Wed 11.11. project "Garden renovation"
+- **When** I open + Todo and put the cursor into the empty field
+- **Then** the strip offers #next and #someday and the clipboard square
+- **When** I write "Order soil" and select "soil"
+- **Then** the strip shows All · Copy · Cut · Paste
+- **When** the selection ends
+- **Then** the suggestions return
+- **When** I tap #someday and + Add
+- **Then** the todo is saved as a Someday todo
+
+Test: `__tests__/scenarios/quickAddForm.test.tsx` · design: `docs/dev/history/technical-design-quickadd-redesign.md` · help: `quick-add.md#the-strips`
+
+### The time strip sets the length and moves the meeting in half hours
+
+- **Given** on Wed 11.11. project "Garden renovation"
+- **When** I open + Meeting and write 15:00 into the time
+- **Then** the strip shows 15:00 · 1 h · ‹ 30′ · 30′ › · 1 d
+- **When** I tap 1 h
+- **Then** the field reads 15:00-16:00
+- **When** I tap +30′ and then 30′ ›
+- **Then** the field reads 15:30-17:00
+- **When** I write 15:00-15:30
+- **Then** −30′ is greyed
+- **When** I write 2d
+- **Then** the strip shows 2 days · −1 d · +1 d
+- **When** I tap −1 d
+- **Then** it reads 1 day and −1 d is greyed
+- **And** + Add saves the one-day meeting
+
+Test: `__tests__/scenarios/quickAddForm.test.tsx` · design: `docs/dev/history/technical-design-quickadd-redesign.md` · help: `quick-add.md#dates-and-times`
+
+### An empty time field of a thread's meeting opens on its usual slot
+
+- **Given** on Wed 11.11. the last meetings of #sparring/jordan on Thursdays 15:00-16:30
+- **When** I write "Sparring #sparring/jordan" and put the cursor into the empty time field
+- **Then** the strip shows the usual slot (no ± square: an empty field has nothing to adjust)
+- **When** I tap it
+- **Then** date and time are filled
+
+Test: `__tests__/scenarios/quickAddForm.test.tsx` · design: `docs/dev/history/technical-design-quickadd-redesign.md` · help: `quick-add.md#warnings-and-the-usual-time`
+
+### While the status line shows an error, no strip shows
+
+- **Given** on Wed 11.11. project "Garden renovation"
+- **When** I add a meeting with a time that can't be read
+- **And** I put the cursor into the title
+- **Then** an error shows and no strip
+- **When** I clear the error with its ✕ and tap into the title again
+- **Then** the strip is back
+
+Test: `__tests__/scenarios/quickAddForm.test.tsx` · design: `docs/dev/history/technical-design-quickadd-redesign.md` · help: `quick-add.md#the-strips`
 
 ### On Daily the next todo starts with the abbreviation tag just used
 
@@ -1696,7 +1782,7 @@ Test: `__tests__/scenarios/quickAddPrefill.test.tsx` · design: `docs/dev/histor
 ### Quick Add a todo from Daily (smoke)
 
 - **Given** the smoke space and Daily open
-- **When** I type "Check gutters", tap the Next chip and + Add
+- **When** I type "Check gutters", tap #next on the strip and + Add
 - **Then** Inbox.txt has it
 - **When** I open the Inbox tab
 - **Then** it lists it, not Next
@@ -2381,14 +2467,14 @@ Test: `__tests__/scenarios/writingHelpDates.test.tsx` · design: `docs/dev/histo
 
 - **Given** the meeting "Jour Fixe" today 15:00-16:00
 - **When** I enter 15:30-16:30 for a new meeting today
-- **Then** the time strip says "overlaps Jour Fixe 15:00"
+- **Then** the time strip leads with "⚠ Jour Fixe 15:00", and row 3 shows the warning sign
 
 Test: `__tests__/scenarios/writingHelpDates.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `quick-add.md#warnings-and-the-usual-time`
 
 ### A new meeting in the past is marked
 
 - **When** I date a new meeting yesterday
-- **Then** the date strip says "past"
+- **Then** the date strip says "⚠ past"
 
 Test: `__tests__/scenarios/writingHelpDates.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `quick-add.md#warnings-and-the-usual-time`
 
@@ -2396,11 +2482,11 @@ Test: `__tests__/scenarios/writingHelpDates.test.tsx` · design: `docs/dev/histo
 
 - **Given** the last meetings of #101/mieke: three on Tuesdays 14:00-14:45, two at other times
 - **When** I write "1:1 #101/mieke" and tap into the date field
-- **Then** the strip offers "Tue 10 Nov 14:00 · 45 min"
+- **Then** the date strip offers its ⚡ Suggest view with "usual Tue → 10 Nov"
 - **When** I tap it
 - **Then** date, time and end are filled
 
-Test: `__tests__/scenarios/writingHelpDates.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `quick-add.md#warnings-and-the-usual-time`
+Test: `__tests__/scenarios/writingHelpDates.test.tsx` · design: `docs/dev/history/technical-design-quickadd-redesign.md` · help: `quick-add.md#warnings-and-the-usual-time`
 
 ### A tag used once next to a known one is reported, listed and fixed on its line
 
@@ -2455,13 +2541,13 @@ Test: `__tests__/scenarios/writingHelpStarters.test.tsx` · design: `docs/dev/hi
 
 Test: `__tests__/scenarios/writingHelpStarters.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `quick-add.md#starting-with-a-thread-or-loop`
 
-### With text in the title, the strip shows All · Copy · Cut · Paste, not the starters
+### With text in the title, the strip offers no starters; its square switches to All · Copy · Cut · Paste
 
 - **Given** a Thread setup on #sparring
 - **When** I open + Meeting on Daily, write "Retro" and put the cursor into the title
-- **Then** the clipboard buttons show, not Thread or Loop
+- **Then** no Thread or Loop; the square shows the clipboard buttons
 
-Test: `__tests__/scenarios/writingHelpStarters.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `quick-add.md#starting-with-a-thread-or-loop`
+Test: `__tests__/scenarios/writingHelpStarters.test.tsx` · design: `docs/dev/history/technical-design-quickadd-redesign.md` · help: `quick-add.md#starting-with-a-thread-or-loop`
 
 ### Handwriting writes #DaiIy: the strip suggests #daily
 
@@ -2590,22 +2676,22 @@ Test: `__tests__/scenarios/deviceLinks.test.tsx` · design: `docs/dev/history/te
 - **Then** the Files pane shows both This-file rows on top
 - **When** I tap "This file · p. 12"
 - **Then** the todo links the PDF at page 12
-- **When** I close the card and add the todo "Read chapter 3" with Quick Add
-- **Then** the new todo links the page too: the line is on by default for a document
+- **When** I close the card, open + Todo, tap 📎 This file on the strip and add the todo "Read chapter 3"
+- **Then** the new todo links the page too: for a document This file links its page
 
 Test: `__tests__/scenarios/deviceLinks.test.tsx` · design: `docs/dev/history/technical-design-easy-start.md` · help: `quick-add.md#the-file-you-opened-kept-from`, `files-and-folders.md#files-outside-note`
 
-### This file from a note: Quick Add starts off and links the note relative to Note; launch file unknown: nothing is offered
+### This file from a note: Quick Add offers it and links the note relative to Note; launch file unknown: nothing is offered
 
 - **Given** project "Garden renovation" has the todo "Order soil" and the note Ideas.note
 - **When** I open Kept from page 2 of Ideas.note, open the project and tap + Todo
-- **Then** Quick Add shows the note, switched off
-- **When** I switch on "no page" and add the todo "Sketch the beds"
+- **Then** the strip offers the note, nothing is linked yet
+- **When** I tap 📎 This file and add the todo "Sketch the beds"
 - **Then** the todo links the note by its path inside Note, without a page
 - **When** I reopen Kept and the host gives no launch file, open the project and tap +clip on "Order soil"
 - **Then** neither Quick Add nor the Files pane offers This file
 
-Test: `__tests__/scenarios/deviceLinks.test.tsx` · design: `docs/dev/history/technical-design-easy-start.md` · help: `quick-add.md#the-file-you-opened-kept-from`
+Test: `__tests__/scenarios/deviceLinks.test.tsx` · design: `docs/dev/history/technical-design-quickadd-redesign.md` · help: `quick-add.md#the-file-you-opened-kept-from`
 
 ### A hand-edited project file keeps everything Kept GTD does not own when a todo is added
 

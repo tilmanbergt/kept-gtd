@@ -12,7 +12,7 @@ import {describeAddedDate} from '../../domain/dateLabel';
 import {Destination, destinationLabel} from '../../domain/destination';
 import {extractContextTags, insertTagAtPosition, removeTagFromText} from '../../domain/markdown';
 import {meetingDisplayTitle} from '../../domain/meetingTracking';
-import {validateMeetingFields} from '../../domain/meetingTime';
+import {todayIso, validateMeetingFields} from '../../domain/meetingTime';
 import {setFocusBlock} from '../../domain/focusBlock';
 import {setHighlight} from '../../domain/monthHighlight';
 import {errorMessage} from '../../utils/errorMessage';
@@ -21,7 +21,9 @@ import {clipboardActions} from '../ClipboardStrip';
 import {draftNotePlace} from '../writing/notePlace';
 import {draftMeetingHints, NO_MEETING_HINTS} from '../writing/draftMeetingHints';
 import {useWritingHelp} from '../writing/useWritingHelp';
-import {UsualSlot} from '../../domain/writing/meetingHints';
+import {oneLine} from '../../domain/writing/insertion';
+import {SuggestOption} from '../../domain/writing/stripContent';
+import {nextUsualDate, UsualSlot} from '../../domain/writing/meetingHints';
 import {MeetingEditFields} from './editFields';
 import {abbrevDestination, makeMeetingDraft, MeetingDraft, MeetingQuickAddFields, truncateItemName} from './types';
 import {QuickAddCore} from './useQuickAddCore';
@@ -37,7 +39,12 @@ interface Input {
   linkedFileForAdd?: () => string | undefined;
   onSaveEditMeeting?: (fields: MeetingQuickAddFields, nextLinkedFile: string) => Promise<void | boolean>;
   /** Called on every user change of the title (the capture panel's "typed since the seed"). */
-  onUserEdit?: () => void;
+  onUserEdit?: () => void;  /**
+   * Quick Add's form (docs/dev/history/technical-design-quickadd-redesign.md §3.1, §3.2): the
+   * title stays one line (a newline becomes a space), and the text strip's Suggest view.
+   * Absent in the capture panel.
+   */
+  form?: {suggest: (text: string) => SuggestOption[]; onThisFile?: () => void};
 }
 
 const ignoreSelection = () => {};
@@ -116,6 +123,8 @@ export function useMeetingDraft(core: QuickAddCore, input: Input) {
     setSelectionOverride,
     inputRef,
     recentTags: core.recentTags,
+    suggest: input.form?.suggest,
+    onThisFile: input.form?.onThisFile,
     place: text =>
       draftNotePlace({
         text,
@@ -126,7 +135,7 @@ export function useMeetingDraft(core: QuickAddCore, input: Input) {
         date: fields.date,
       }),
   });
-  const setTitle = titleHelp.onChangeText;
+  const setTitle = (raw: string) => titleHelp.onChangeText(input.form ? oneLine(raw) : raw);
   /** Puts a date into the draft as it is (the nudge buttons, the writing help). */
   const writeDate = (d: string) => {
     update({date: d});
@@ -137,9 +146,17 @@ export function useMeetingDraft(core: QuickAddCore, input: Input) {
     clearJustAdded();
   };
   // The date and time strips' hints, worked out only while one of them shows (§3.6).
-  const hints = dateFocused || timeFocused ? draftMeetingHints(fields, editing) : NO_MEETING_HINTS;
+  // In the form row 3 shows the warning sign while the meeting is open, so they are worked out then too.
+  const formOpen = !!input.form && core.displayType === 'meeting' && (core.open === 'meeting' || editing);
+  const hints = dateFocused || timeFocused || formOpen ? draftMeetingHints(fields, editing) : NO_MEETING_HINTS;
   const applyUsual = (slot: UsualSlot) => {
     update({date: slot.date, time: slot.endTime ? `${slot.time}-${slot.endTime}` : slot.time});
+    clearJustAdded();
+  };
+  /** The date strip's usual weekday: that date, and the usual time while the time field is empty (§3.2). */
+  const applyUsualDate = (slot: UsualSlot) => {
+    const date = nextUsualDate(slot, todayIso());
+    update(fields.time.trim() ? {date} : {date, time: slot.endTime ? `${slot.time}-${slot.endTime}` : slot.time});
     clearJustAdded();
   };
   // The date and time fields keep no selection of their own; the help only reads what recognition wrote.
@@ -332,6 +349,10 @@ export function useMeetingDraft(core: QuickAddCore, input: Input) {
     clipboard,
     showDraft,
     compose,
+    hints,
+    writeTime,
+    applyUsual,
+    applyUsualDate,
     addedText,
     submitCreate,
     submitEdit,

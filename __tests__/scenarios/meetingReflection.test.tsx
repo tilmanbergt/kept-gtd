@@ -171,10 +171,10 @@ scenario('Edit and save from the card, then tick reviewed on it: the title chang
     await tap('Edit');
   });
   then('the title field shows the title without #prepped', () => {
-    expect(fieldValue('New meeting title')).toBe('Sparring Jordan #sparring/jordan');
+    expect(fieldValue('New meeting')).toBe('Sparring Jordan #sparring/jordan');
   });
   when('I change the title and tap Save', async () => {
-    await type('New meeting title', 'Sparring Jordan roles #sparring/jordan');
+    await type('New meeting', 'Sparring Jordan roles #sparring/jordan');
     await tap('Save');
   });
   then('the card shows the meeting again', () => {

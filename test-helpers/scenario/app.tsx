@@ -160,10 +160,10 @@ export function describeScreen(): string {
 
 /** Taps the `nth` element showing exactly `label` (a button, a row, a tab). */
 export async function tap(label: string | RegExp, nth = 0): Promise<void> {
-  // A Quick Add tab on a collapsed box: the user opens that kind from its button.
-  if (typeof label === 'string' && QUICK_ADD_TABS.has(label) && screen.queryAllByText(label).length <= nth && shows(`+ ${label}`)) {
-    fireEvent.press(screen.queryAllByText(`+ ${label}`)[0]);
-    await settle();
+  // A Quick Add kind: the user opens it from its button, closing the open form first
+  // (the form has no kind tabs, docs/dev/history/technical-design-quickadd-redesign.md §3.1).
+  if (typeof label === 'string' && QUICK_ADD_TABS.has(label) && screen.queryAllByText(label).length <= nth) {
+    await openQuickAddKind(`+ ${label}`);
     return;
   }
   if (typeof label === 'string' && MORE_PAGE.has(label) && screen.queryAllByText(label).length <= nth) await openCardMore();
@@ -173,15 +173,32 @@ export async function tap(label: string | RegExp, nth = 0): Promise<void> {
   await settle();
 }
 
-/** Quick Add's kind tabs; on a collapsed box (docs/dev/history/technical-design-calmer-screens.md §3.2) their buttons read `+ <tab>`. */
+/** Quick Add's kinds; the collapsed box (docs/dev/history/technical-design-calmer-screens.md §3.2) opens one from its `+ <kind>` button. */
 const QUICK_ADD_TABS = new Set(['Todo', 'Meeting', 'Agreement', 'Agree', 'Note']);
 const QUICK_ADD_FIELD_KIND: Record<string, string> = {
-  'New meeting title': '+ Meeting',
+  'New meeting': '+ Meeting',
   'YYYY-MM-DD': '+ Meeting',
   '15 · 15-16.30 · 2d': '+ Meeting',
   'New agreement': '+ Agreement',
   'New note': '+ Note',
 };
+
+/**
+ * Opens a Quick Add kind from its button; an open form is closed with its ✕ first. The last box
+ * on screen is the one in front: an overlay (thread overview) comes after the screen below it.
+ */
+async function openQuickAddKind(button: string): Promise<void> {
+  const close = screen.queryAllByLabelText('Close Quick Add');
+  const buttons = screen.queryAllByText(button);
+  if (close.length > 0 && (buttons.length === 0 || close.length >= buttons.length)) {
+    fireEvent.press(close[close.length - 1]);
+    await settle();
+  }
+  const found = screen.queryAllByText(button);
+  if (found.length === 0) return;
+  fireEvent.press(found[found.length - 1]);
+  await settle();
+}
 
 /**
  * A Quick Add field that isn't shown while its box is collapsed: taps the kind button that opens it
@@ -190,11 +207,7 @@ const QUICK_ADD_FIELD_KIND: Record<string, string> = {
  */
 async function openQuickAddFor(placeholder: string, nth: number): Promise<void> {
   if (screen.queryAllByPlaceholderText(placeholder).length > nth) return;
-  const button = QUICK_ADD_FIELD_KIND[placeholder] ?? '+ Todo';
-  const found = screen.queryAllByText(button);
-  if (found.length === 0) return;
-  fireEvent.press(found[0]);
-  await settle();
+  await openQuickAddKind(QUICK_ADD_FIELD_KIND[placeholder] ?? '+ Todo');
 }
 
 /** What the item card shows on its second page (docs/dev/history/technical-design-calmer-screens.md §3.4). */

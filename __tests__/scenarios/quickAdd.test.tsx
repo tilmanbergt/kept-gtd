@@ -13,7 +13,7 @@ scenario('Quick Add a todo in a project', {feature: 'Quick Add', design: 'techni
     await openApp();
     await tapTab('Projects');
     await tap(/^Website/);
-    await type('New task', 'Call the designer');
+    await type('New todo', 'Call the designer');
     await tap('+ Add');
   });
   then('project.txt lists both todos', () => {
@@ -42,7 +42,7 @@ scenario('Edit a todo, then tap another one: the first edit is saved', {feature:
     await tap(/^Website/);
     await tap('Write copy');
     await tap('Edit');
-    await type('New task', 'Write landing page copy');
+    await type('New todo', 'Write landing page copy');
     await tap('Fix footer');
   });
   then('project.txt has the changed todo, still #next, and "Fix footer" unchanged', () => {
@@ -64,7 +64,7 @@ scenario('An abbreviation tag files a todo into its project while editing', {fea
     await openInbox();
     await tap('Ask about hosting');
     await tap('Edit');
-    await type('New task', 'Ask about hosting #WEB');
+    await type('New todo', 'Ask about hosting #WEB');
     await tap(/^Save to Website/);
   });
   then('the todo is in Website\'s project.txt, without the #WEB tag', () => {
@@ -98,30 +98,30 @@ scenario('The ✕ puts a hovering strip away until the field gains focus again',
     await openApp();
     await tapTab('Projects');
     await tap(/^Website/);
-    await focus('New task');
+    await focus('New todo');
   });
-  then('All/Copy/Cut/Paste hovers over the tabs', () => {
-    expectShows('Paste');
+  then('the strip hovers above the box with its suggestions', () => {
+    expectShows('#next');
   });
   when('I tap its ✕', async () => {
     await tapLabel('Hide');
   });
   then('it is gone while the field still has the cursor', () => {
-    expectNotShows('Paste');
+    expectNotShows('#next');
   });
   when('the field loses the cursor and gets it back', async () => {
-    await focus('New task', false);
-    await focus('New task');
+    await focus('New todo', false);
+    await focus('New todo');
   });
   then('the strip is back', () => {
-    expectShows('Paste');
+    expectShows('#next');
   });
-  when('I hide it again and tap the Meeting tab', async () => {
+  when('I hide it again and open a meeting', async () => {
     await tapLabel('Hide');
     await tap('Meeting');
   });
   then('the meeting form shows', () => {
-    expect(fieldValue('New meeting title')).toBe('');
+    expect(fieldValue('New meeting')).toBe('');
   });
   when('I open the due date and put the cursor into it', async () => {
     await tap('Todo');

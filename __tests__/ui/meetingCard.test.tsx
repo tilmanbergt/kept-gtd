@@ -163,12 +163,12 @@ describe('MeetingCard', () => {
     press(r, 'More');
     press(r, 'New from this');
     expect(onCancelEdit).toHaveBeenCalledTimes(1);
-    const title = r.root.findAllByType(TextInput).find(i => i.props.placeholder === 'New meeting title')!;
+    const title = r.root.findAllByType(TextInput).find(i => i.props.placeholder === 'New meeting')!;
     expect(title.props.value).toBe('Sparring Jordan #sparring/jordan');
   });
 
   it('the create rows stay mounted behind the card, so a half-typed draft survives', () => {
     const r = render(ahead, card(ahead));
-    expect(r.root.findAllByType(TextInput).some(i => i.props.placeholder === 'New task')).toBe(true);
+    expect(r.root.findAllByType(TextInput).some(i => i.props.placeholder === 'New todo')).toBe(true);
   });
 });

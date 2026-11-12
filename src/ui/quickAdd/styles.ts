@@ -45,6 +45,10 @@ export const rowStyles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: QUICK_ADD_ROWS.gap,
   },
+  /** Quick Add's form: a row 3 that starts on the left (one field). */
+  row3Start: {
+    justifyContent: 'flex-start',
+  },
   /** R4, the last row: no gap below. */
   row4: {
     height: QUICK_ADD_ROWS.extra,

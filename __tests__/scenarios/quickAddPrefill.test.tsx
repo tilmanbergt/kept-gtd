@@ -4,7 +4,7 @@ import {fieldValue, openApp, tap, tapTab, type} from '../../test-helpers/scenari
 import {dataFile, INBOX_FILE, projectFile, putFile, sectionLines} from '../../test-helpers/scenario/files';
 import {given, scenario, then, when} from '../../test-helpers/scenario/scenario';
 
-const FIELD = 'New task';
+const FIELD = 'New todo';
 
 function twoProjects(): void {
   putFile(projectFile('Garden renovation'), dataFile('project', {Scope: [], Tasks: [], Meetings: []}, ['abbrev: GR']));

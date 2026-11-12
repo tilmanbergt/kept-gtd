@@ -31,7 +31,7 @@ Tap a meeting or focus block on [Daily](daily.md#schedule-and-cards), [Week](wee
 
 Tick a todo there, open its note or its file. Tap a todo to see its [card](quick-add.md#the-card-one-tap-selects) in Quick Add's place, tap it again (or [Edit](quick-add.md#editing), or its title on the card) to change it; its ✕ and **Save** bring the meeting's card back.
 
-**+ Quick Add to meeting** (**+ Quick Add to block**) opens Quick Add for it, on the Todo tab; the button says where the todo goes, for example **+ Add to Coaching** - no [abbreviation](quick-add.md#filing-directly-with-an-abbreviation) to type. Before the meeting the todo gets the thread's or loop's tag; during and after it also [records the meeting](quick-add.md#the-grey-line-where-a-todo-comes-from), as in [Engage](engage.md#on-a-meetings-page-before-during-after). **‹ Back to the card** returns.
+**+ Quick Add to meeting** (**+ Quick Add to block**) opens Quick Add for it, on a todo; the button says where the todo goes, for example **+ Add to Coaching** - no [abbreviation](quick-add.md#filing-directly-with-an-abbreviation) to type. Before the meeting the todo gets the thread's or loop's tag; during and after it also [records the meeting](quick-add.md#the-grey-line-where-a-todo-comes-from), as in [Engage](engage.md#on-a-meetings-page-before-during-after). **‹ Back to the card** returns.
 
 **✕ Close** next to **Overview ›** closes the meeting, like the card's ✕: Daily shows its next todos again, Week and Month their [Given time](week-and-month.md#given-time).
 

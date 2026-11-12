@@ -6,6 +6,11 @@
  * of an empty title (Thread · Loop · Paste, then a list of tags), or the
  * clipboard buttons - with the hovering-strip styles of ui/ClipboardStrip.tsx.
  *
+ * In Quick Add's form (`placement="above-box"`,
+ * docs/dev/history/technical-design-quickadd-redesign.md §3.2) the strip
+ * spans the box above it, and its resting view is ⚡ Suggest or Clipboard,
+ * switched by the square before ✕.
+ *
  * Always mounted, hidden with `display: 'none'` while the field has no
  * focus: blur fires on touch-down, and a strip torn out of the tree then
  * would lose the tap on its button (same mechanics as ClipboardStrip). Every
@@ -14,9 +19,12 @@
 import React from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
 import {StripContent} from '../../domain/writing/stripContent';
+import {suggestLabel} from '../../domain/writing/suggestOptions';
+import {stripStyles} from '../quickAdd/form/stripStyles';
 import {ClipboardActions, StripHideButton, StripPlacement, useStripHide} from '../ClipboardStrip';
 import {common} from '../commonStyles';
 import {WritingStripActions} from './useWritingHelp';
+import {useUnblocked} from '../quickAdd/form/StripHost';
 
 interface Props {
   visible: boolean;
@@ -24,7 +32,9 @@ interface Props {
   actions: WritingStripActions;
   /** The clipboard buttons, for a text field's resting state and Edit ›. */
   clipboard?: ClipboardActions;
-  placement?: StripPlacement;
+  placement?: StripPlacement | 'above-box';
+  /** The form's text strip: the square that switches Suggest ⇄ Clipboard. */
+  switchable?: boolean;
   textColor: string;
   borderColor: string;
 }
@@ -36,8 +46,9 @@ const CLIPBOARD: Array<{label: string; action: keyof ClipboardActions}> = [
   {label: 'Paste', action: 'paste'},
 ];
 
-export default function WritingStrip({visible, content, actions, clipboard, placement = 'above-right', textColor, borderColor}: Props): React.JSX.Element {
-  const {shown, hide} = useStripHide(visible);
+export default function WritingStrip({visible, content, actions, clipboard, placement = 'above-right', switchable = false, textColor, borderColor}: Props): React.JSX.Element {
+  // A confirm, modal or error in the status slot hides the strip (D3).
+  const {shown, hide} = useStripHide(useUnblocked(visible));
   const button = (label: string, onPress: () => void, key = label, extra?: string) => (
     <Pressable key={key} style={[common.floatingStripButton, {borderColor}]} onPress={onPress} hitSlop={6}>
       <Text style={[common.floatingStripButtonText, {color: textColor}]}>
@@ -86,6 +97,16 @@ export default function WritingStrip({visible, content, actions, clipboard, plac
         ...(content.paste && clipboard ? [button('Paste', () => clipboard.paste())] : []),
       ];
       break;
+    case 'suggest':
+      body = [
+        ...(content.thread ? [button('Thread', () => actions.starter('thread'))] : []),
+        ...(content.loop ? [button('Loop', () => actions.starter('loop'))] : []),
+        ...(content.paste && clipboard ? [button('Paste', () => clipboard.paste())] : []),
+        ...content.options.map(o =>
+          button(suggestLabel(o), () => actions.suggest(o), o.kind === 'tag' ? `suggest:${o.tag}` : 'suggest:thisFile', o.kind === 'tag' ? o.name : undefined),
+        ),
+      ];
+      break;
     case 'starterList':
       body = [button('‹', actions.back, 'back'), ...content.options.map(o => button(`#${o.tag}`, () => actions.insertStarter(o.insert), `starter:${o.tag}`))];
       break;
@@ -99,7 +120,29 @@ export default function WritingStrip({visible, content, actions, clipboard, plac
       body = [];
       break;
   }
-  const empty = body.length === 0;
+  // The square switches the resting views; it shows on them only, never over a fix or a moment.
+  const resting = content.kind === 'suggest' || content.kind === 'clipboard';
+  const square =
+    switchable && resting ? (
+      <Pressable
+        key="view"
+        style={[common.floatingStripButton, {borderColor}]}
+        onPress={actions.toggleView}
+        hitSlop={6}
+        accessibilityLabel={content.kind === 'suggest' ? 'Clipboard' : 'Suggest'}>
+        <Text style={[common.floatingStripButtonText, {color: textColor}]}>{content.kind === 'suggest' ? '⧉' : '⚡'}</Text>
+      </Pressable>
+    ) : null;
+  const empty = body.length === 0 && !square;
+  if (placement === 'above-box') {
+    return (
+      <View style={[stripStyles.aboveBox, {borderColor}, (!shown || empty) && styles.hidden]}>
+        <View style={stripStyles.body}>{body}</View>
+        {square}
+        <StripHideButton onPress={hide} textColor={textColor} />
+      </View>
+    );
+  }
   return (
     <View style={[common.floatingStrip, placement === 'above-left' && common.floatingStripLeft, {borderColor}, (!shown || empty) && styles.hidden]}>
       {body}

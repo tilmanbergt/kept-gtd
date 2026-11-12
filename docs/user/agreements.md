@@ -19,7 +19,7 @@ It is written into the file that owns this place: for a thread the area's `area.
 [Quick Add](quick-add.md#adding-an-agreement) has a tab **Agreement** wherever it knows who the agreement is with: in a [thread](threads.md#adding-from-the-overview) or loop overview, on a project's or area's page, and in [Engage](engage.md).
 
 1. Choose **Agreement** and write the words. Tags work as for todos.
-2. Optionally tap **valid till**. A strip hovers over the tabs: **none**, **+1 m**, **+3 m**, **end of year**, and **…** to type another day. **✕** puts it away.
+2. Optionally tap **valid till** in the third row. A strip shows over the second line of the text: **none**, **+1 m**, **+3 m**, **end of year**, and **…** to type another day. **✕** puts it away.
 3. Tap **+ Add**. The [status line](index.md#the-status-line) says where it went, for example "Agreement added to Coaching".
 
 With the [lasso](lasso.md#capturing-an-agreement), or when you [process a mark](lasso.md#processing-marks), choose **Agreement** in the capture panel.

@@ -460,4 +460,46 @@ same step as the behaviour.
 
 ## 10. As built
 
-(filled in during implementation)
+Stop 1 (fixes and strip logic):
+
+- **F7:** app-wide info notices (`scope: 'global'`: What's new, update available, downloading) are
+  neither timed nor replaced: their `onDismiss` acknowledges or postpones them, and expiring them
+  silently would answer for the user. Every other success and info is timed and replaced.
+  Timers `unref()` under Node so a pending expiry never keeps a test worker alive.
+- **F6:** the page count (`‹ 1 / 2 ›`) walks every row (`ui/pagination.ts` `pageCount`), only for
+  header-less lists. An arrow that can't act leaves its place empty, so the count doesn't move.
+- **F2:** a flagged fix still takes precedence over the completion offered for the same tag after a
+  burst (the fix offers the same tag); the completion at rest starts on typed characters and on a
+  touch that puts the cursor after an unfinished tag.
+- **F8:** root cause not reproducible off-device; fixed the two gaps the code shows (the effect that
+  could not re-run when a selected key did not resolve; the next mark taken from the list before the
+  reload; the refresh before the commit) and kept the `capture next …` logs.
+- **F9:** the quiet-row estimate already took the grey note's width into account and the viewport
+  already clipped; the gap found is the group heading drawn taller than counted (30 dp). Fixed by
+  drawing it in a 30 dp box; `page fill …` and `current todos header …` logs kept.
+- **whenSteps:** the step labels of the date strip stay today's ASCII `-1 · Today · +1 · +7`.
+
+Stop 2 (the form):
+
+- **Every box folds:** with no kind tabs, a box that was never collapsible (thread and loop overviews,
+  Review steps, Engage) would have no way to another kind. Every box's ✕ now folds to the kind
+  buttons; a `collapsible` box starts folded and folds after an add, the others start on Todo.
+- **Typed flow tags:** `composeTaskText` rewrote flow tags from the (now absent) chips and so dropped
+  a typed `#next` / `#someday`. The form composes with `keepTypedFlow`: with no flow state chosen the
+  text keeps them; `loopItselfOfLine` treats a written `#someday` / `#maybe` as a loop idea.
+- **📎 This file:** moved into stop 2 with the form (row 4 has no room for the old line); it starts
+  off for documents too (principle: nothing chosen for you). `ThisFileLine.tsx` and `NoteRows.tsx`
+  are deleted; the old rows (`TaskRows`, `MeetingRows`, `AgreementRows`) remain for the capture
+  panel only.
+- **Due date:** once opened, the due field stays a field (no `📅 Thu 13.11.` label): the field must
+  stay mounted to keep its focus and strip.
+- **Note row 3:** shows the folder below the Note root in grey; no setup name (a standalone note has
+  no Note setup) and no tap (the Files pane already chooses the folder).
+- **When strip views:** the switch square shows only when the other view has content, so an empty
+  time field with a usual slot shows the slot without ± (scenario 13 adjusted).
+- **Capture panel:** its time field gets the new time strip (hovering above the field); its date
+  fields keep `DateNudgeStrip`, whose buttons are the date strip's Adjust view.
+- **D3:** each strip reads `useStatusBlocking` itself, so a status change re-renders the strips and
+  not the memoized widget (the Current page's render budget).
+- **Suggest width:** the field's measured width is kept in a ref (and for the session), not state,
+  for the same render budget.

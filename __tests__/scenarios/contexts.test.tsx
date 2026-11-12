@@ -130,7 +130,7 @@ scenario('Quick Add says when the entry lands outside the context', {feature: 'C
   when('I add "Prepare offer #AT" on Daily', async () => {
     await openApp({settings: {...SETTINGS, activeContextId: 'c2'}});
     await tapTab('Daily');
-    await type('New task', 'Prepare the slides #AT');
+    await type('New todo', 'Prepare the slides #AT');
     await tap(/^\+ Add to Team/);
   });
   then('it is in Team\'s file, and the status line says "Saved to Team · hidden by Home"', () => {

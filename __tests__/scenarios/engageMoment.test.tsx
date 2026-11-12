@@ -95,7 +95,7 @@ scenario('During the meeting: a todo and an agreement carry the meeting and the 
     await tap('+ Quick Add');
     expectShows(/^↳ from Sparring Jordan/);
     expectShows('#sparring/jordan');
-    await type('New task', 'Book follow-up with HR');
+    await type('New todo', 'Book follow-up with HR');
     await tap('+ Add');
   });
   then('the todo records the meeting and has the thread tag', () => {
@@ -206,7 +206,7 @@ scenario('+ Next sparring only when no session follows today\'s', {feature: 'Eng
   then('the strip offers + Next sparring', () => expectShows('+ Next sparring'));
   when('I tap it', () => tap('+ Next sparring'));
   then('Quick Add\'s Meeting tab holds the next session, ten days on', () => {
-    expect(fieldValue('New meeting title')).toBe('Sparring Jordan #sparring/jordan');
+    expect(fieldValue('New meeting')).toBe('Sparring Jordan #sparring/jordan');
     expect(fieldValue('YYYY-MM-DD')).toBe('2026-11-03');
   });
 });

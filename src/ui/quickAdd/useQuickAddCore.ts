@@ -26,11 +26,13 @@ interface Input {
   editingItemPath?: string | null;
   /** Whether a new draft starts with the abbreviation tag of the last add (Daily only, F3). */
   prefillAbbrev?: boolean;
+  /** The kind open when the box mounts; null: the kind buttons. */
+  startOpen?: QuickAddType | null;
 }
 
 const NO_SETUPS: readonly NoteSetup[] = [];
 
-export function useQuickAddCore({fixedDestination, editingItemPath, prefillAbbrev = false}: Input) {
+export function useQuickAddCore({fixedDestination, editingItemPath, prefillAbbrev = false, startOpen = null}: Input) {
   const [activeType, setActiveTypeState] = useState<QuickAddType>('task');
   // Every tab change is logged: a row going from hidden to shown is part of
   // the title-field diagnosis (ui/quickAdd/layoutLog.ts).
@@ -42,7 +44,7 @@ export function useQuickAddCore({fixedDestination, editingItemPath, prefillAbbre
   }, []);
   // A collapsible box (docs/dev/history/technical-design-calmer-screens.md §3.2):
   // the kind opened from the kind buttons, or null while it shows the buttons.
-  const [open, setOpenState] = useState<QuickAddType | null>(null);
+  const [open, setOpenState] = useState<QuickAddType | null>(startOpen);
   const setOpen = useCallback((type: QuickAddType | null) => {
     setOpenState(current => {
       if (current !== type) log(type ? `QuickAdd: open kind=${type}` : 'QuickAdd: collapse');

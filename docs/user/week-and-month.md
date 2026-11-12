@@ -39,4 +39,4 @@ Type the time into the meeting's time field in one of these forms:
 - `15-16.30`: start and end
 - `1d`, `2d`, `3d`: all day, for one or more days
 
-An empty time field means one whole day. Meetings over several days appear on every day they cover.
+An empty time field means one whole day. Meetings over several days appear on every day they cover. In Quick Add the time field's strip sets the length and moves the meeting in half-hour steps, see [Dates and times](quick-add.md#dates-and-times).

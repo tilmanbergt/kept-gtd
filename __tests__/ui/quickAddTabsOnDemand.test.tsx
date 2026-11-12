@@ -55,18 +55,18 @@ const fields = (r: TestRenderer.ReactTestRenderer) => r.root.findAllByType(TextI
 
 it('builds the Todo rows first and every tab after the e-ink flush', () => {
   const {r} = mount();
-  expect(fields(r)).toContain('New task');
-  expect(fields(r)).not.toContain('New meeting title');
+  expect(fields(r)).toContain('New todo');
+  expect(fields(r)).not.toContain('New meeting');
   expect(fields(r)).not.toContain('New note');
   act(() => runAfterEinkFlush());
-  expect(fields(r)).toEqual(expect.arrayContaining(['New task', 'New meeting title', 'New note']));
+  expect(fields(r)).toEqual(expect.arrayContaining(['New todo', 'New meeting', 'New note']));
   act(() => r.unmount());
 });
 
 it('builds a meeting edit\'s rows at once, before any flush', () => {
   const {r, setTarget} = mount();
   setTarget(editTargetFor('meeting:0', {meeting: meeting('2026-10-26', 'Sync')}));
-  const title = r.root.findAllByType(TextInput).find(i => i.props.placeholder === 'New meeting title');
+  const title = r.root.findAllByType(TextInput).find(i => i.props.placeholder === 'New meeting');
   expect(title?.props.value).toBe('Sync');
   act(() => r.unmount());
 });

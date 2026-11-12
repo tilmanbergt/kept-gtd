@@ -61,7 +61,7 @@ scenario('Focus flags, goal spans and #now survive a todo, a meeting and a statu
   });
   when('I add the meeting "Kick-off" on 2026-10-20', async () => {
     await tap('Meeting');
-    await type('New meeting title', 'Kick-off');
+    await type('New meeting', 'Kick-off');
     await type('YYYY-MM-DD', '2026-10-20');
     await tap('+ Add');
   });

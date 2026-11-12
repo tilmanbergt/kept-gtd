@@ -29,6 +29,8 @@ import {errorMessage} from '../../utils/errorMessage';
 import {clipboardActions} from '../ClipboardStrip';
 import {draftNotePlace} from '../writing/notePlace';
 import {useWritingHelp} from '../writing/useWritingHelp';
+import {oneLine} from '../../domain/writing/insertion';
+import {SuggestOption} from '../../domain/writing/stripContent';
 import {DateInputHandle} from '../DateInput';
 import {TaskEditFields} from './editFields';
 import {abbrevDestination, makeTaskDraft, TaskDraft, truncateItemName} from './types';
@@ -47,7 +49,12 @@ interface Input {
   linkedFileForAdd?: () => string | undefined;
   onSaveEditTask?: (nextText: string, nextLinkedFile: string) => Promise<void | boolean>;
   /** Called on every user change of the text (the capture panel's "typed since the seed"). */
-  onUserEdit?: () => void;
+  onUserEdit?: () => void;  /**
+   * Quick Add's form (docs/dev/history/technical-design-quickadd-redesign.md §3.1, §3.2): the
+   * title stays one line (a newline becomes a space), and the text strip's Suggest view.
+   * Absent in the capture panel.
+   */
+  form?: {suggest: (text: string) => SuggestOption[]; onThisFile?: () => void};
 }
 
 const ignoreSelection = () => {};
@@ -86,7 +93,7 @@ export function useTaskDraft(core: QuickAddCore, input: Input) {
   // A todo that is only a loop tag starts the loop (ui/quickAdd/useLoopMode.ts).
   const loopMode = useLoopMode({
     active: core.displayType === 'task' && input.loopsEnabled,
-    fields,
+    fields: input.form ? {...fields, keepTypedFlow: true} : fields,
     editing,
     editingLoop: input.editingLoop && editing,
     fixedDestination: input.fixedDestination,
@@ -126,6 +133,8 @@ export function useTaskDraft(core: QuickAddCore, input: Input) {
     setSelectionOverride,
     inputRef,
     recentTags: core.recentTags,
+    suggest: input.form?.suggest,
+    onThisFile: input.form?.onThisFile,
     place: text =>
       draftNotePlace({
         text,
@@ -135,7 +144,7 @@ export function useTaskDraft(core: QuickAddCore, input: Input) {
         pageKind: 'todo',
       }),
   });
-  const setText = textHelp.onChangeText;
+  const setText = (raw: string) => textHelp.onChangeText(input.form ? oneLine(raw) : raw);
   /** Puts a due date into the draft as it is (the nudge buttons, ✕, the writing help). */
   const writeDueDate = (d: string) => {
     update({dueDate: d});
@@ -162,6 +171,23 @@ export function useTaskDraft(core: QuickAddCore, input: Input) {
   };
   const setWaitingOn = (w: string) => {
     update({waitingOnText: normalizeTagSpacing(w)});
+    clearJustAdded();
+  };
+  // The form's w/f (docs/dev/history/technical-design-quickadd-redesign.md §3.3): on opens
+  // "Waiting on" with the cursor in it; off closes it and clears the name.
+  const waitingInputRef = useRef<TextInput>(null);
+  const [waitingFocusRequested, setWaitingFocusRequested] = useState(false);
+  useEffect(() => {
+    if (!waitingFocusRequested) return;
+    waitingInputRef.current?.focus();
+    setWaitingFocusRequested(false);
+  }, [waitingFocusRequested]);
+  const toggleWaiting = () => {
+    if (fields.flowState === 'waiting-for') update({flowState: null, waitingOnText: ''});
+    else {
+      update({flowState: 'waiting-for'});
+      setWaitingFocusRequested(true);
+    }
     clearJustAdded();
   };
   const clearLinkedFile = () => updateEditField({linkedFile: ''});
@@ -199,7 +225,7 @@ export function useTaskDraft(core: QuickAddCore, input: Input) {
     if (!textHelp.confirmAdd()) return;
     // Flow-state, due and - for abbreviation quick-file - removing the
     // matched #tag, which did its job picking the destination.
-    const finalText = composeTaskText(draft, abbrevTarget ? abbrevTarget.tag : null);
+    const finalText = composeTaskText({...draft, keepTypedFlow: !!input.form}, abbrevTarget ? abbrevTarget.tag : null);
     if (loopMode.kind === 'exists') return;
     const startsLoop = loopMode.kind === 'add';
     const destination = abbrevTarget ? abbrevDestination(abbrevTarget) : input.fixedDestination;
@@ -233,7 +259,7 @@ export function useTaskDraft(core: QuickAddCore, input: Input) {
       setError('A todo needs some text.', 'text');
       return Promise.resolve(false);
     }
-    const finalText = composeTaskText(editFields.fields);
+    const finalText = composeTaskText({...editFields.fields, keepTypedFlow: !!input.form});
     setError(null);
     setPending(true);
     return (input.onSaveEditTask ?? (() => Promise.resolve()))(finalText, editFields.fields.linkedFile)
@@ -253,11 +279,13 @@ export function useTaskDraft(core: QuickAddCore, input: Input) {
   /** Edit-mode quick-file: Save's composition plus the matched tag stripped. */
   const quickFilePayload = (target: AbbrevFileMatch) => {
     if (editFields?.kind !== 'task' || !editFields.fields.text.trim()) return null;
-    const text = composeTaskText(editFields.fields, target.tag);
+    const text = composeTaskText({...editFields.fields, keepTypedFlow: !!input.form}, target.tag);
     return {payload: {kind: 'task' as const, text, linkedFile: editFields.fields.linkedFile}, tags: extractContextTags(text)};
   };
 
   return {
+    waitingInputRef,
+    toggleWaiting,
     draft,
     setDraft,
     fields,

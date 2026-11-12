@@ -16,7 +16,7 @@ scenario('Save to <Name>: an abbreviation tag typed while editing saves the meet
     await tapTab('Daily');
     await tap(/^Site visit/);
     await tap(/^Site visit/);
-    await type('New meeting title', 'Site visit with Tom #GR');
+    await type('New meeting', 'Site visit with Tom #GR');
   });
   then('the main button offers "Save to Garden renovat…" instead of Save', () => {
     expectShows(/^Save to Garden renovat/);
@@ -38,12 +38,12 @@ scenario('After + Add with an abbreviation tag, the next todo starts with that t
   when('I add "Call the designer #web" from Daily', async () => {
     await openApp();
     await openInbox();
-    await type('New task', 'Call the designer #web');
+    await type('New todo', 'Call the designer #web');
     await tap(/^\+ Add to Website/);
   });
   then('the box closes; + Todo starts the next todo with "#WEB ", and the button still files to Website', async () => {
     await tap('+ Todo');
-    expect(fieldValue('New task')).toBe('#WEB ');
+    expect(fieldValue('New todo')).toBe('#WEB ');
     expectShows(/^\+ Add to Website/);
   });
   when('I tap + Add with nothing but the tag', () => tap(/^\+ Add to Website/));
@@ -51,7 +51,7 @@ scenario('After + Add with an abbreviation tag, the next todo starts with that t
     expect(sectionLines(projectFile('Website'), 'Tasks')).toHaveLength(1);
   });
   when('I write the next todo after the tag and add it', async () => {
-    await type('New task', '#WEB Order photos');
+    await type('New todo', '#WEB Order photos');
     await tap(/^\+ Add to Website/);
   });
   then('both todos are in Website without the tag, none in the Inbox', () => {
@@ -63,13 +63,13 @@ scenario('After + Add with an abbreviation tag, the next todo starts with that t
     expectShows(/Added todo "Order photos" to Website/);
   });
   when('I delete the tag from the field and add a todo', async () => {
-    await type('New task', 'Water the plants');
+    await type('New todo', 'Water the plants');
     await tap('+ Add');
   });
   then('it goes to the Inbox, and the next draft starts empty', async () => {
     expect(sectionLines(INBOX_FILE, 'Tasks')).toEqual([expect.stringMatching(/^- \[ \] Water the plants( \[created:: [\d-]+\])?$/)]);
     await tap('+ Todo');
-    expect(fieldValue('New task')).toBe('');
+    expect(fieldValue('New todo')).toBe('');
   });
 });
 
@@ -86,7 +86,7 @@ scenario('In a thread overview, Quick Add adds the thread tag it shows in Row 4'
   });
   when('I add the todo "Book room" there', async () => {
     // The overview draws over the Area page: its Quick Add is the second one.
-    await type('New task', 'Book room');
+    await type('New todo', 'Book room');
     await tap('+ Add');
   });
   then('the area has the new todo with the thread tag', () => {
@@ -108,7 +108,7 @@ scenario('Tap a meeting shows its card; ✕ brings back the half-typed todo', {f
     await openApp();
     await tapTab('Projects');
     await tap(/^Website/);
-    await type('New task', 'Call Anna');
+    await type('New todo', 'Call Anna');
     await tap(/^Team sync/);
   });
   then('the card names the meeting in Quick Add\'s place', () => {
@@ -121,7 +121,7 @@ scenario('Tap a meeting shows its card; ✕ brings back the half-typed todo', {f
     expectShows('+ Todo');
     expectNotShows(/^Meeting · .+ · ahead$/);
     await tap('+ Todo');
-    expect(fieldValue('New task')).toBe('Call Anna');
+    expect(fieldValue('New todo')).toBe('Call Anna');
   });
 });
 
@@ -135,7 +135,7 @@ scenario('A second tap edits; Save writes it and shows the card again', {feature
     await tap(/^Website/);
     await tap(/^Team sync/);
     await tap('Edit');
-    await type('New meeting title', 'Team sync and planning');
+    await type('New meeting', 'Team sync and planning');
     await tap('Save');
   });
   then('Website\'s file has the new title', () => {
@@ -202,7 +202,7 @@ scenario('New from this and Cancel meeting from the card', {feature: 'Meetings',
     await tapLabel('New from this');
   });
   then('Create · Meeting holds the title, date and time; the card is closed', () => {
-    expect(fieldValue('New meeting title')).toBe('Retro');
+    expect(fieldValue('New meeting')).toBe('Retro');
     expect(fieldValue('15 · 15-16.30 · 2d')).toBe('15:00-16:00');
     expectShows('+ Add');
   });
@@ -229,7 +229,7 @@ scenario('Switching to another meeting while editing saves first and shows the o
     await tap(/^Website/);
     await tap(/^Team sync/);
     await tap('Edit');
-    await type('New meeting title', 'Team sync moved');
+    await type('New meeting', 'Team sync moved');
     await tap(/^Retro/);
   });
   then('the rename is saved', () => {

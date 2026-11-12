@@ -1,6 +1,6 @@
 import {forgetDeviceRoots} from '../../src/storage/deviceRoots';
 import {device} from '../../test-helpers/fakeDevice/device';
-import {expectNotShows, expectShows, labelled, openApp, reopenApp, shows, tap, tapLabel, tapTab, type} from '../../test-helpers/scenario/app';
+import {expectNotShows, expectShows, focus, openApp, reopenApp, shows, tap, tapLabel, tapTab, type} from '../../test-helpers/scenario/app';
 import {dataFile, projectDir, projectFile, putFile, sectionLines} from '../../test-helpers/scenario/files';
 import {and, given, scenario, then, when} from '../../test-helpers/scenario/scenario';
 
@@ -69,19 +69,21 @@ scenario('This file: link the PDF Kept was opened from, with its page, in the Fi
   then('the todo links the PDF at page 12', () => {
     expect(sectionLines(projectFile(GARDEN), 'Tasks')[0]).toBe(`- [ ] Order soil +[[${BOOK}#page=12]]`);
   });
-  when('I close the card and add the todo "Read chapter 3" with Quick Add', async () => {
+  when('I close the card, open + Todo, tap 📎 This file on the strip and add the todo "Read chapter 3"', async () => {
     await tapLabel('Close');
     await tap('+ Todo');
-    expect(labelled('p. 12')?.on).toBe(true);
-    await type('New task', 'Read chapter 3');
+    await focus('New todo');
+    await tap('📎 This file');
+    expectShows('Book.pdf');
+    await type('New todo', 'Read chapter 3');
     await tap('+ Add');
   });
-  then('the new todo links the page too: the line is on by default for a document', () => {
+  then('the new todo links the page too: for a document This file links its page', () => {
     expect(sectionLines(projectFile(GARDEN), 'Tasks')[1]).toMatch(new RegExp(`^- \\[ \\] Read chapter 3 \\+\\[\\[${BOOK.replace(/\//g, '\\/')}#page=12\\]\\]`));
   });
 });
 
-scenario('This file from a note: Quick Add starts off and links the note relative to Note; launch file unknown: nothing is offered', {feature: 'Your files', design: 'technical-design-easy-start.md', help: 'quick-add.md#the-file-you-opened-kept-from'}, () => {
+scenario('This file from a note: Quick Add offers it and links the note relative to Note; launch file unknown: nothing is offered', {feature: 'Your files', design: 'technical-design-quickadd-redesign.md', help: 'quick-add.md#the-file-you-opened-kept-from'}, () => {
   const NOTE = `${projectDir(GARDEN)}/Ideas.note`;
   given('project "Garden renovation" has the todo "Order soil" and the note Ideas.note', () => {
     forgetDeviceRoots();
@@ -95,14 +97,14 @@ scenario('This file from a note: Quick Add starts off and links the note relativ
     await tap(new RegExp(`^${GARDEN}`));
     await tap('+ Todo');
   });
-  then('Quick Add shows the note, switched off', () => {
-    expectShows('Ideas.note');
-    expect(labelled('p. 2')?.on).toBe(false);
-    expect(labelled('no page')?.on).toBe(false);
+  then('the strip offers the note, nothing is linked yet', async () => {
+    await focus('New todo');
+    expectShows('📎 This file');
+    expectNotShows('Ideas.note');
   });
-  when('I switch on "no page" and add the todo "Sketch the beds"', async () => {
-    await tap('no page');
-    await type('New task', 'Sketch the beds');
+  when('I tap 📎 This file and add the todo "Sketch the beds"', async () => {
+    await tap('📎 This file');
+    await type('New todo', 'Sketch the beds');
     await tap('+ Add');
   });
   then('the todo links the note by its path inside Note, without a page', () => {

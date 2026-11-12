@@ -35,7 +35,7 @@ scenario('Try things in the demo space without touching the real files, then swi
   });
   when('I add the todo "Try the demo" in the Inbox', async () => {
     await openInbox();
-    await type('New task', 'Try the demo');
+    await type('New todo', 'Try the demo');
     await tap('+ Add');
   });
   then('it is in the demo space\'s Inbox.txt, and my real Inbox.txt is untouched', () => {

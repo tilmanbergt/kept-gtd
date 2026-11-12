@@ -73,7 +73,7 @@ interface Props {
 }
 
 function CaptureQuickAdd(props: Props): React.JSX.Element {
-  const {fixedDestination, placeholder = 'New task', textColor, borderColor, placeholderColor, provenance} = props;
+  const {fixedDestination, placeholder = 'New todo', textColor, borderColor, placeholderColor, provenance} = props;
   const colors = {textColor, borderColor, placeholderColor};
   const core = useQuickAddCore({fixedDestination});
   const touchedRef = useRef(false);
@@ -142,7 +142,7 @@ function CaptureQuickAdd(props: Props): React.JSX.Element {
           <Text style={[quickAddButtons.ghostButtonText, {color: textColor}]}>✂ Split at cursor</Text>
         </Pressable>
         <View style={quickAddButtons.centerSpacer} />
-        <TaskDueControl task={task} ownStrip {...colors} />
+        <TaskDueControl task={task} {...colors} />
       </View>
     ) : null;
 
@@ -199,16 +199,16 @@ function CaptureQuickAdd(props: Props): React.JSX.Element {
       row1={<TabsRow core={core} taskOnly={false} hasNoteTab={false} hasAgreementTab={choices.length > 0} noteFolderPath={null} textColor={textColor} />}
       row2={
         <>
-          <TaskInputRow core={core} task={task} placeholder={placeholder} capture={{splitBlock: capture.splitRows ? <SplitRows capture={capture} {...colors} /> : null}} {...colors} />
+          <TaskInputRow core={core} task={task} placeholder={placeholder} splitBlock={capture.splitRows ? <SplitRows capture={capture} {...colors} /> : null} {...colors} />
           {optionsRow}
-          <MeetingInputRow core={core} meeting={meeting} capture {...colors} />
+          <MeetingInputRow core={core} meeting={meeting} {...colors} />
           <AgreementInputRow core={core} agreement={agreement} today={todayIso()} {...colors} />
         </>
       }
       rows34={
         <>
-          <TaskMetaRows core={core} task={task} capture {...colors} />
-          <MeetingMetaRows core={core} meeting={meeting} capture {...colors} />
+          <TaskMetaRows core={core} task={task} {...colors} />
+          <MeetingMetaRows core={core} meeting={meeting} {...colors} />
           {provenance && provenance.length > 0 && (core.displayType === 'task' || isAgreement) ? (
             <View style={styles.provenance}>
               <ProvenanceLine parts={provenance} textColor={textColor} />

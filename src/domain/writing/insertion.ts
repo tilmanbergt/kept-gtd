@@ -41,3 +41,13 @@ export function tagsEndedBy(next: string, span: TextSpan | null): TextSpan[] {
   const ended = tagSpans(next).find(t => t.end === span.start);
   return ended ? [{start: ended.start, end: ended.end}] : [];
 }
+
+/**
+ * A todo or meeting title is one line of its file
+ * (docs/dev/history/technical-design-quickadd-redesign.md §3.1): a newline from the
+ * keyboard, a recognition burst or a paste becomes a space, and the spaces around it
+ * collapse into that one.
+ */
+export function oneLine(text: string): string {
+  return /[\r\n]/.test(text) ? text.replace(/[ \t]*[\r\n]+[ \t]*/g, ' ') : text;
+}

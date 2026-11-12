@@ -119,7 +119,7 @@ scenario('A project file saved with Windows line endings shows its todos', {feat
     expectShows('Fix footer');
   });
   and('adding a todo keeps both and writes the file with plain line endings', async () => {
-    await type('New task', 'Call the designer');
+    await type('New todo', 'Call the designer');
     await tap('+ Add');
     const text = device().fs.get(projectFile('Website')) ?? '';
     expect(text).not.toContain('\r');

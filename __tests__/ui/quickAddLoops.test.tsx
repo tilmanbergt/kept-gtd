@@ -32,7 +32,6 @@ import React from 'react';
 import {Pressable, Text, TextInput} from 'react-native';
 import TestRenderer, {act} from 'react-test-renderer';
 import QuickAddWidget from '../../src/ui/QuickAddWidget';
-import FlowStateChips from '../../src/ui/FlowStateChips';
 import {Destination} from '../../src/domain/destination';
 import {StatusProvider} from '../../src/ui/status/StatusProvider';
 import {newLoopLine} from '../../src/domain/loopsSection';
@@ -84,7 +83,7 @@ describe('Quick Add and loops', () => {
     const r = render(AREA);
     type(r, '#workshop/idea');
     expect(buttonLabels(r)).toContain('+ Add loop');
-    act(() => r.root.findByType(FlowStateChips).props.onChange('someday'));
+    type(r, '#workshop/idea #someday');
     expect(buttonLabels(r)).not.toContain('+ Add loop');
     const inbox = render({type: 'inbox'});
     type(inbox, '#workshop/teamoffsite');

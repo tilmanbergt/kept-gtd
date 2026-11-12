@@ -24,7 +24,7 @@ scenario('Daily: Quick Add starts closed; + Todo opens it, ✕ closes it and kee
   });
   when('I tap + Todo and write "Buy seeds"', async () => {
     await tap('+ Todo');
-    await type('New task', 'Buy seeds');
+    await type('New todo', 'Buy seeds');
   });
   then('the Todo form shows with + Add', () => expectShows('+ Add'));
   when('I tap ✕ at the end of its first row', () => tapLabel('Close Quick Add'));
@@ -33,7 +33,7 @@ scenario('Daily: Quick Add starts closed; + Todo opens it, ✕ closes it and kee
     expectNotShows('+ Add');
   });
   when('I tap + Todo again', () => tap('+ Todo'));
-  then('the text is still there', () => expect(fieldValue('New task')).toBe('Buy seeds'));
+  then('the text is still there', () => expect(fieldValue('New todo')).toBe('Buy seeds'));
 });
 
 scenario('With the field still empty and in focus, ✕ closes the box on touch-down, the strip\'s ✕ hides the strip', {feature: 'Quick Add', design: 'technical-design-calmer-screens.md', help: 'quick-add.md'}, () => {
@@ -45,7 +45,7 @@ scenario('With the field still empty and in focus, ✕ closes the box on touch-d
     await openApp();
     await tapTab('Daily');
     await tap('+ Meeting');
-    await focus('New meeting title');
+    await focus('New meeting');
     fireEvent(screen.getAllByLabelText('Hide')[0], 'pressIn');
     await settle();
   });
@@ -70,7 +70,7 @@ scenario('After + Add the box closes and the status line says where the todo wen
     await openApp();
     await tapTab('Daily');
     await tap('+ Todo');
-    await type('New task', 'Call Marco');
+    await type('New todo', 'Call Marco');
     await tap('+ Add');
     await settle(4);
   });

@@ -11,7 +11,7 @@ The lasso toolbar has two Kept GTD buttons:
 
 1. Select handwriting (or a text box) with the lasso and tap **Capture Todo/Meeting**.
 2. The screen **New from Lasso** shows the selection as a picture and the recognized text below it. The text appears as soon as recognition is done, usually after a few seconds. If you start typing before that, your text is kept.
-3. Choose **Todo** or **Meeting**, correct the text, and pick [flow chips](tags.md#flow-tags-for-todos), tags and a [due date](tags.md#due-dates) as in [Quick Add](quick-add.md). The recognized text's tags are checked as soon as it appears: a tag close to one you use - `#Iena` for `#lena` - is suggested in the strip over the text when you tap into it ([Tag suggestions](quick-add.md#tag-suggestions)); nothing is changed without a tap.
+3. Choose **Todo** or **Meeting**, correct the text, and pick [flow chips](tags.md#flow-tags-for-todos), tags and a [due date](tags.md#due-dates) as in [Quick Add](quick-add.md). The recognized text's tags are checked as soon as it appears: a tag close to one you use - `#Iena` for `#lena` - is suggested in the strip over the text when you tap into it ([Tag suggestions](quick-add.md#tag-suggestions)); nothing is changed without a tap. A meeting's time field has the same strip as in Quick Add, with the length and half-hour steps ([Dates and times](quick-add.md#dates-and-times)).
 4. **File to** shows where the item goes: the project or area the note belongs to, otherwise the [Inbox](daily.md#the-inbox). The chips offer the Inbox, that place and the ones you saved to lately; **More…** shows all of them. Writing an [abbreviation](projects-and-areas.md#abbreviations) like `#GR` in the text files it there, too.
 5. Save with one of the three buttons under the text.
 

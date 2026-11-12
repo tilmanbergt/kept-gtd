@@ -14,7 +14,10 @@
  * 7. an empty title field in create mode with `starters`: Thread · Loop ·
  *    Paste (docs/dev/history/technical-design-calmer-screens.md §3.3); a tap on
  *    Thread or Loop is the moment `starterList` (its setups' tags and ‹);
- * 8. a text field: All · Copy · Cut · Paste.
+ * 8. a text field: All · Copy · Cut · Paste - or, in Quick Add's form
+ *    (docs/dev/history/technical-design-quickadd-redesign.md §3.2), its resting
+ *    view: `suggest` (📎 This file, the starters on an empty field, #next /
+ *    #someday, recent tags, abbreviations) unless the view is `clipboard`.
  *
  * States 2-5 and the starter list are a *moment*: the hook ends one on the next touch in the field,
  * on the next focus, or on the next burst - never by a timer.
@@ -55,8 +58,15 @@ export interface StripStarters {
   paste: boolean;
 }
 
+/** One button of the Suggest view. */
+export type SuggestOption = {kind: 'thisFile'} | {kind: 'tag'; tag: string; name?: string};
+
+/** The resting view of Quick Add's text strip. */
+export type StripView = 'suggest' | 'clipboard';
+
 export type StripContent =
   | {kind: 'fixes'; fixes: PendingFix[]}
+  | {kind: 'suggest'; thread: boolean; loop: boolean; paste: boolean; options: SuggestOption[]}
   | StripMoment
   | {kind: 'date'; label: string | null; warning: string | null; usual: string | null}
   | {kind: 'time'; label: string; warning: string | null}
@@ -84,6 +94,12 @@ export interface StripState {
   usual?: UsualSlot | null;
   /** An empty title field in create mode: the starters it may offer (state 7). */
   starters?: StripStarters | null;
+  /**
+   * Quick Add's form: the Suggest view's options (already fitted to the strip's width), and
+   * which resting view shows. Absent elsewhere: the starters or the clipboard as before.
+   */
+  suggest?: readonly SuggestOption[] | null;
+  view?: StripView;
 }
 
 /** The most fixes the strip shows at once (§1.4). */
@@ -125,6 +141,11 @@ export function stripContent(state: StripState): StripContent {
     return label ? {kind: 'time', label, warning: state.warning ?? null} : {kind: 'none'};
   }
   const starters = state.starters;
+  const offered = empty && starters ? starters : {thread: false, loop: false, paste: false};
+  if (state.suggest) {
+    if (state.view === 'clipboard') return {kind: 'clipboard'};
+    return {kind: 'suggest', ...offered, options: [...state.suggest]};
+  }
   if (empty && starters && (starters.thread || starters.loop || starters.paste)) return {kind: 'starters', ...starters};
   return {kind: 'clipboard'};
 }

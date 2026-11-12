@@ -22,7 +22,7 @@ scenario('Focus block from Quick Add: F on, the tag in the file, an F row and a 
     await openApp({settings: {noteSetups: [writingLoops]}});
     await tapTab('Daily');
     await tap('Meeting');
-    await type('New meeting title', 'Writing session #writing/novel');
+    await type('New meeting', 'Writing session #writing/novel');
     await type('YYYY-MM-DD', '2026-10-15');
     await type('15 · 15-16.30 · 2d', '9-11');
     await tap('F');

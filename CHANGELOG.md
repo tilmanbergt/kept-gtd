@@ -31,6 +31,23 @@ or your project/area files are stored.
   and a meeting before, during and after (Meetings).
 
 ### Changed
+- Quick Add is one form for writing: the text, title or words in one field over two lines (still
+  one line in the file), below it 📅 and **w/f** for a todo, date, time and **F** for a meeting,
+  valid till for an agreement, and in the last row the clip, the grey line, **✕** and **+ Add**.
+  The kind tabs, the flow chips, the tag chips and **M** left the box: the kind comes from the
+  **+ Todo** / **+ Meeting** buttons (**✕** shows them on every screen), `#next` and `#someday` are
+  offered on the strip, and Next, Maybe, **M** and delete are on the item's card. The box keeps its
+  height.
+- The strip above Quick Add offers ⚡ suggestions - `#next`, `#someday`, recent tags, abbreviations,
+  and **📎 This file** when you opened Kept from a file - or **All · Copy · Cut · Paste**, which
+  shows by itself while text is selected. The file Kept was opened from is no longer linked unless
+  you tap **📎 This file**.
+- The date and time strips lie over the text field's second line: a meeting's time strip sets the
+  length (**1 h**, **−30′**, **+30′**), moves it (**‹ 30′**, **30′ ›**) or makes it a whole day
+  (**1 d**); a button that can't act is greyed. A warning ("⚠ past", "⚠ Team sync 15:00") shows on
+  the strip, a warning sign in the row. The usual slot of a thread or loop is behind ⚡. The lasso
+  capture's time field has the same strip.
+- While the status line shows an error or a question, Quick Add's strips stay hidden.
 - Quick Add starts closed on Daily, Week, Month, a project's or area's page and the Review's Inbox
   step: large **+ Todo**, **+ Meeting** (and **+ Agreement**, **+ Note**) buttons, on two rows where
   the width ends (Nomad portrait), open the kind you need, with the

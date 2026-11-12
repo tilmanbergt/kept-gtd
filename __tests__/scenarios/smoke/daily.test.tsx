@@ -1,4 +1,4 @@
-import {expectNotShows, expectShows, openApp, readTexts, tap, tapTab, textsBetween, type} from '../../../test-helpers/scenario/app';
+import {expectNotShows, expectShows, focus, openApp, readTexts, tap, tapTab, textsBetween, type} from '../../../test-helpers/scenario/app';
 import {areaFile, INBOX_FILE, loggedErrors, sectionLines} from '../../../test-helpers/scenario/files';
 import {and, given, scenario, then, when} from '../../../test-helpers/scenario/scenario';
 import {putSmokeSpace, smokeClock, smokeSettings} from '../../../test-helpers/scenario/smokeSpace';
@@ -61,9 +61,10 @@ scenario('Daily under a context shows today\'s meetings and the next todos it sh
 
 scenario('Quick Add a todo from Daily', {feature: 'Quick Add', design: DESIGN, help: 'quick-add.md#adding-a-todo'}, () => {
   given('the smoke space and Daily open', openDaily);
-  when('I type "Check gutters", tap the Next chip and + Add', async () => {
-    await type('New task', 'Check gutters');
-    await tap('Next');
+  when('I type "Check gutters", tap #next on the strip and + Add', async () => {
+    await focus('New todo');
+    await type('New todo', 'Check gutters');
+    await tap('#next');
     await tap('+ Add');
   });
   then('Inbox.txt has it', () => {

@@ -107,37 +107,37 @@ describe('Quick Add edit session', () => {
     const {r, setTarget} = render(jest.fn(async () => undefined));
     const t = task('Call Tom');
     setTarget(editTargetFor('task:1', {task: t}));
-    expect(field(r, 'New task').props.value).toBe('Call Tom');
-    type(r, 'New task', 'Call Tom today');
+    expect(field(r, 'New todo').props.value).toBe('Call Tom');
+    type(r, 'New todo', 'Call Tom today');
     setTarget(editTargetFor('task:1', {task: {...t}}));
-    expect(field(r, 'New task').props.value).toBe('Call Tom today');
+    expect(field(r, 'New todo').props.value).toBe('Call Tom today');
     setTarget(editTargetFor('task:2', {task: task('Book room')}));
-    expect(field(r, 'New task').props.value).toBe('Book room');
+    expect(field(r, 'New todo').props.value).toBe('Book room');
   });
 
   it('keeps the create draft through an edit detour', () => {
     const {r, setTarget} = render(jest.fn(async () => undefined));
-    type(r, 'New task', 'half typed');
+    type(r, 'New todo', 'half typed');
     setTarget(editTargetFor('task:1', {task: task('Call Tom')}));
-    expect(field(r, 'New task').props.value).toBe('Call Tom');
+    expect(field(r, 'New todo').props.value).toBe('Call Tom');
     setTarget(null);
-    expect(field(r, 'New task').props.value).toBe('half typed');
+    expect(field(r, 'New todo').props.value).toBe('half typed');
   });
 
   it('focuses the field on a fresh edit only, not on a switch', () => {
     const {r, setTarget, focused} = render(jest.fn(async () => undefined));
     // Every tab's rows exist once the page is on screen (docs/dev/history/technical-design-perf-current-page.md §3.4).
     act(() => runAfterEinkFlush());
-    for (const placeholder of ['New task', 'New meeting title']) {
+    for (const placeholder of ['New todo', 'New meeting']) {
       field(r, placeholder).instance.focus = () => focused.push(placeholder);
     }
     setTarget(editTargetFor('meeting:1', {meeting: meeting('Sync')}));
-    expect(focused).toEqual(['New meeting title']);
+    expect(focused).toEqual(['New meeting']);
     setTarget(editTargetFor('task:1', {task: task('Call Tom')}));
-    expect(focused).toEqual(['New meeting title']);
+    expect(focused).toEqual(['New meeting']);
     setTarget(null);
     setTarget(editTargetFor('task:1', {task: task('Call Tom')}));
-    expect(focused).toEqual(['New meeting title', 'New task']);
+    expect(focused).toEqual(['New meeting', 'New todo']);
   });
 
   it('flush saves only a changed edit and reports a failed save', async () => {
@@ -150,7 +150,7 @@ describe('Quick Add edit session', () => {
     });
     expect(ok).toBe(true);
     expect(onSave).not.toHaveBeenCalled();
-    type(r, 'New task', 'Call Tom today');
+    type(r, 'New todo', 'Call Tom today');
     onSave.mockResolvedValueOnce(false);
     await act(async () => {
       ok = await flushEditRef.current!();
@@ -163,7 +163,7 @@ describe('Quick Add edit session', () => {
     const onSaveMeeting = jest.fn(async () => undefined);
     const {r, setTarget, flushEditRef} = render(jest.fn(async () => undefined), onSaveMeeting);
     setTarget(editTargetFor('meeting:1', {meeting: meeting('Sync')}));
-    type(r, 'New meeting title', 'Sync #team');
+    type(r, 'New meeting', 'Sync #team');
     await act(async () => r.unmount());
     expect(onSaveMeeting).toHaveBeenCalledWith(
       {title: 'Sync #team', date: '2026-10-22', time: '10:00', endTime: '', days: 1},

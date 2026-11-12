@@ -30,6 +30,7 @@ import {TextInput} from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import {NoteSetup} from '../../domain/noteSetups';
 import {insertStarter, StarterKind, starterOptions, startersOffered} from '../../domain/writing/starters';
+import {StripView, SuggestOption} from '../../domain/writing/stripContent';
 import {Selection} from '../../domain/clipboardText';
 import {formatFullDate, formatTimeSpan} from '../../domain/dateFormat';
 import {tagSpans} from '../../domain/markdown';
@@ -83,6 +84,14 @@ export interface WritingHelpOptions {
    * null or absent: no starters (edit mode, the other fields).
    */
   starterSetups?: readonly NoteSetup[] | null;
+  /**
+   * Quick Add's form (docs/dev/history/technical-design-quickadd-redesign.md §3.2): the
+   * Suggest view's options for the text as it is, fitted to the strip. Absent: no
+   * Suggest view (the note title, the agreement words, the capture panel).
+   */
+  suggest?: (text: string) => SuggestOption[];
+  /** 📎 This file in the Suggest view: links the file Kept was opened from. */
+  onThisFile?: () => void;
 }
 
 export interface WritingStripActions {
@@ -99,6 +108,10 @@ export interface WritingStripActions {
   insertStarter: (insert: string) => void;
   /** ‹ on the list: back to the starters. */
   back: () => void;
+  /** A Suggest option: a tag inserted at the cursor, or This file linked. */
+  suggest: (option: SuggestOption) => void;
+  /** The square before ✕: Suggest ⇄ Clipboard. */
+  toggleView: () => void;
 }
 
 /** Whether the clipboard holds text (hasString where the module has it). */
@@ -140,6 +153,13 @@ export function useWritingHelp(options: WritingHelpOptions) {
   const [moment, setMoment] = useState<StripMoment | null>(null);
   const [pending, setPending] = useState<PendingFix[]>([]);
   const [showClipboard, setShowClipboard] = useState(false);
+  // The form's resting view: Suggest, Clipboard while text is selected or after the square.
+  const [view, setViewState] = useState<StripView>('suggest');
+  const setView = (next: StripView) => {
+    if (next === view) return;
+    log(`writing: strip view=${next} field=${field}`);
+    setViewState(next);
+  };
   const [hint, setHint] = useState<string | null>(null);
   const keptRef = useRef(new Set<string>());
   const undoRef = useRef<{text: string; forget: string[]} | null>(null);
@@ -276,6 +296,8 @@ export function useWritingHelp(options: WritingHelpOptions) {
   const onSelectionChange = (selection: Selection) => {
     if (!selection) return;
     const collapsed = selection.start === selection.end;
+    // A selection shows the clipboard view; when it ends, the suggestions come back.
+    if (options.suggest) setView(collapsed ? 'suggest' : 'clipboard');
     if (moment && collapsed && selection.start === momentCursorRef.current) return;
     if (collapsed && fixes.length === 0 && offerCompletion(value, selection.start, 'rest')) return;
     if (moment) startMoment(null, null);
@@ -383,6 +405,24 @@ export function useWritingHelp(options: WritingHelpOptions) {
       startMoment(null, null);
       refocus();
     },
+    suggest: option => {
+      if (option.kind === 'thisFile') {
+        log('writing: tap suggest kind=thisFile');
+        options.onThisFile?.();
+        refocus();
+        return;
+      }
+      log('writing: tap suggest kind=tag');
+      const {text, cursor} = insertStarter(value, selectionRef.current?.end ?? null, `#${option.tag} `);
+      write(text);
+      moveCursor(cursor);
+      startMoment(null, null);
+      refocus();
+    },
+    toggleView: () => {
+      setView(view === 'suggest' ? 'clipboard' : 'suggest');
+      refocus();
+    },
   };
 
   /**
@@ -426,6 +466,9 @@ export function useWritingHelp(options: WritingHelpOptions) {
     if (found.length > 0) log(`writing: capture checked tags=${tagSpans(text).length} fix=${fixesFound.length}`);
   };
 
+  /** The box opened again: the strip starts on Suggest. */
+  const resetView = () => setViewState('suggest');
+
   /** After a save: a new draft starts without fixes, kept tags or hint. */
   const reset = () => {
     setPending([]);
@@ -438,8 +481,9 @@ export function useWritingHelp(options: WritingHelpOptions) {
   };
 
   const starters = starterSetups ? startersOffered(starterSetups, clipText) : null;
-  const strip: StripContent = stripContent({field, value, fixes, moment, showClipboard, warning: options.warning, usual: options.usual, starters});
-  return {strip, actions, onChangeText, onSelectionChange, onFocus, confirmAdd, reset, checkSeed};
+  const suggest = options.suggest ? options.suggest(value) : null;
+  const strip: StripContent = stripContent({field, value, fixes, moment, showClipboard, warning: options.warning, usual: options.usual, starters, suggest, view});
+  return {strip, view, actions, onChangeText, onSelectionChange, onFocus, confirmAdd, reset, resetView, checkSeed};
 }
 
 export type WritingHelp = ReturnType<typeof useWritingHelp>;

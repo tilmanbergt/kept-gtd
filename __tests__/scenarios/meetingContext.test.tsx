@@ -81,7 +81,7 @@ scenario('Quick Add to meeting before it starts: an agenda item with the thread 
     await openDaily();
     await tap(/^1:1 Jordan/);
     await tap('+ Quick Add to meeting');
-    await type('New task', 'Bring the numbers');
+    await type('New todo', 'Bring the numbers');
     await tap('+ Add to Coaching');
   });
   then('the todo carries the thread tag and no meeting field', () => {
@@ -103,7 +103,7 @@ scenario('Quick Add to meeting during it: the meeting is recorded', {feature: 'D
     await openDaily();
     await tap(/^1:1 Jordan/);
     await tap('+ Quick Add to meeting');
-    await type('New task', 'Send the contract');
+    await type('New todo', 'Send the contract');
     await tap('+ Add to Coaching');
   });
   then('the todo has the thread tag and [meeting:: …] of this meeting', () => {
@@ -123,9 +123,9 @@ scenario('Quick Add to meeting opens the Todo tab and names where it adds, witho
     await tap(/^1:1 Jordan/);
     await tap('+ Quick Add to meeting');
   });
-  then('the Todo tab shows, its button reads "+ Add to Coaching" and the text is empty', () => {
+  then('the todo form shows, its button reads "+ Add to Coaching" and the text is empty', () => {
     expectShows('+ Add to Coaching');
-    expectShows('Next');
+    expectShows('w/f');
     expect(readTexts()).not.toContain('#COA');
   });
 });
@@ -153,7 +153,7 @@ scenario('A todo in the panel opens its card and edit form; Save and ✕ return 
     await tap(/^Send the slides/);
     // The card's title comes first now; the panel's row is the second.
     await tap(/^Send the slides/, 1);
-    await type('New task', 'Send the final slides');
+    await type('New todo', 'Send the final slides');
     await tap('Save');
   });
   then('the file has the new text and the meeting\'s card is back', () => {

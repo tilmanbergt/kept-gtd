@@ -12,7 +12,7 @@ const past = isoDateOffset(-10);
 
 afterEach(() => jest.useRealTimers());
 
-scenario('On a Nomad-sized screen, Quick Add with four tabs keeps its + Add and calls Agreement "Agree"', {feature: 'Quick Add', design: 'technical-design-launch-ready.md', help: 'quick-add.md#adding-an-agreement'}, () => {
+scenario('On a Nomad-sized screen, Quick Add\'s form keeps its + Add and its grey line on one row', {feature: 'Quick Add', design: 'technical-design-quickadd-redesign.md', help: 'quick-add.md#adding-an-agreement'}, () => {
   given('area "Coaching" has a past sparring session with Jordan, and Kept is drawn at Nomad portrait size', () => {
     putFile(
       areaFile('Coaching'),
@@ -28,17 +28,17 @@ scenario('On a Nomad-sized screen, Quick Add with four tabs keeps its + Add and 
     await tap('Schedule');
     await tap('#sparring/jordan');
   });
-  then('its Quick Add shows the short tab name and the main button', () => {
-    expectShows('Agree');
+  then('its Quick Add form keeps the main button and the ✕ of the grey line', () => {
     expectShows('+ Add');
+    expectShows(/^↳ from Sparring Jordan · /);
   });
-  and('back at full size the tab is called Agreement again', async () => {
+  and('back at full size the form shows the same', async () => {
     await act(async () => setScreenSimulation(null));
     await settle();
     await tapTab('Areas');
     await tap(/^Coaching/);
     await tap('#sparring/jordan');
-    expectShows('Agreement');
+    expectShows('+ Add');
   });
 });
 

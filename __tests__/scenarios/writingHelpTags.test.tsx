@@ -7,7 +7,7 @@ import {expectNotShows, expectShows, fieldValue, focus, openApp, settle, tap, ta
 import {dataFile, projectFile, putFile, sectionLines} from '../../test-helpers/scenario/files';
 import {given, scenario, then, when} from '../../test-helpers/scenario/scenario';
 
-const TITLE = 'New meeting title';
+const TITLE = 'New meeting';
 
 function setup(id: string, name: string, tag: string, notebook: string): NoteSetup {
   return {id, name, kind: 'thread', tags: [tag], enabled: true, notebook: {name: notebook, folder: 'Meetings'}, pages: {}, tracking: {trackPrep: false, trackReview: false}};
