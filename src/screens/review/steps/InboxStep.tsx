@@ -11,7 +11,7 @@ import React, {useEffect, useMemo, useState} from 'react';
 import {Text, View} from 'react-native';
 import {AbbrevFileMatch} from '../../../domain/abbrev';
 import {Destination, destinationLabel} from '../../../domain/destination';
-import {inboxSummary, InboxListEntry, isOpenInboxTodo} from '../../../domain/inboxCount';
+import {inboxSummary, InboxListEntry, inboxTickKey, isOpenInboxTodo} from '../../../domain/inboxCount';
 import {todayIso} from '../../../domain/meetingTime';
 import {displayTaskText} from '../../../domain/taskLabels';
 import {withTaskCancelled, withTaskDone} from '../../../domain/taskEdit';
@@ -115,13 +115,14 @@ export default function InboxStep({data, onOpenItem, onAddTask, textColor, borde
   };
 
   // The Inbox as one list, file order; a todo ticked here stays (struck) until the step is left.
-  const [ticked, setTicked] = useState<ReadonlySet<number>>(new Set());
+  // By inboxTickKey: filing an earlier item moves the later ones up a place.
+  const [ticked, setTicked] = useState<ReadonlySet<string>>(new Set());
   const lists = useMemo(() => {
     if (!inbox || !inboxPath) return {todos: [] as DailyTaskEntry[], meetings: [] as DailyMeetingEntry[]};
     const item = inboxItemRef(inboxPath);
     const summary = inboxSummary(inbox.tasks, inbox.meetings, openMarks, todayIso());
     return {
-      todos: inbox.tasks.map((task, taskIndex): DailyTaskEntry => ({item, taskIndex, task})).filter(e => isOpenInboxTodo(e.task) || ticked.has(e.taskIndex)),
+      todos: inbox.tasks.map((task, taskIndex): DailyTaskEntry => ({item, taskIndex, task})).filter(e => isOpenInboxTodo(e.task) || ticked.has(inboxTickKey(e.task))),
       meetings: summary.meetings.map((meetingIndex): DailyMeetingEntry => ({item, meetingIndex, meeting: inbox.meetings[meetingIndex]})),
     };
   }, [inbox, inboxPath, openMarks, ticked]);
@@ -143,7 +144,8 @@ export default function InboxStep({data, onOpenItem, onAddTask, textColor, borde
     },
     onToggleDone: () => {
       if (todoIndex === null) return;
-      setTicked(prev => new Set([...prev, todoIndex]));
+      const task = inbox?.tasks[todoIndex];
+      if (task) setTicked(prev => new Set([...prev, inboxTickKey(task)]));
       toggleDone(todoIndex);
     },
     onNote: () => todoIndex !== null && taskNote(todoIndex),
@@ -257,7 +259,7 @@ export default function InboxStep({data, onOpenItem, onAddTask, textColor, borde
       selection={{store: selection, key: `task:${e.taskIndex}`}}
       onStartEdit={() => edit.select({type: 'task', index: e.taskIndex})}
       onToggleDone={() => {
-        if (!e.task.done) setTicked(prev => new Set([...prev, e.taskIndex]));
+        if (!e.task.done) setTicked(prev => new Set([...prev, inboxTickKey(e.task)]));
         toggleDone(e.taskIndex);
       }}
       onCreateNote={() => taskNote(e.taskIndex)}

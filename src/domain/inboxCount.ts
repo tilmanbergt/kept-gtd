@@ -62,3 +62,11 @@ export function nextInboxRow(order: readonly InboxListEntry[], filed: InboxListE
   if (!next) return null;
   return moved && next.type === filed.type && next.index > filed.index ? {type: next.type, index: next.index - 1} : next;
 }
+
+/**
+ * A todo ticked on the Inbox list, kept (struck) until the list is left: named by its text and
+ * creation date, not its place - filing an earlier item moves every later one up a place.
+ */
+export function inboxTickKey(task: Pick<Task, 'text' | 'fields'>): string {
+  return `${task.text}\u0000${task.fields.created ?? ''}`;
+}

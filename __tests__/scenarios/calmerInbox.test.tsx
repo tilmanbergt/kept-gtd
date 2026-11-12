@@ -113,6 +113,27 @@ scenario('More… lists the projects and areas; a tap on one files the todo ther
   });
 });
 
+scenario('A todo ticked on the Inbox tab stays, struck, when an earlier Inbox item is filed', {feature: 'Daily', design: 'technical-design-calmer-screens.md', help: 'daily.md#done'}, () => {
+  given('area Home and the Inbox todos "Idea: Herb spiral #garden" and "Fix the gate"', herbs);
+  when('I tick "Fix the gate" on Daily\'s Inbox tab, then file "Idea: Herb spiral" to Home', async () => {
+    await openApp();
+    await tapTab('Daily');
+    await tap(/^Inbox \d+$/);
+    await tap('☐', 1);
+    await tap(/^Idea: Herb spiral/);
+    await tapLabel('More places');
+    await tap('Areas', 1);
+    await tapLabel('File to Home');
+  });
+  then('"Fix the gate" is still in the list, ticked; the filed one is gone', () => {
+    expect(sectionLines(INBOX_FILE, 'Tasks')).toEqual([expect.stringMatching(/^- \[x\] Fix the gate/)]);
+    expectShows('Fix the gate');
+    expectShows('☑');
+    expectNotShows(/^Idea: Herb spiral/);
+    expect(loggedErrors()).toEqual([]);
+  });
+});
+
 scenario('An Inbox meeting on Daily: More… opens the picker in place of its context panel, and a tap files it', {feature: 'Daily', design: 'technical-design-calmer-screens.md', help: 'daily.md#more-places-new-project-someday'}, () => {
   given('area Home and an Inbox meeting "Gate repair" on 12.11.', () => {
     clock();

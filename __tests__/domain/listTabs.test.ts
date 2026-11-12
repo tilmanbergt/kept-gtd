@@ -66,3 +66,13 @@ describe('inboxSummary', () => {
     expect(inboxTodoMeta(task('a', {dueDate: '2026-11-20', fields: {...task('x').fields, created: null}}), TODAY)).toEqual({text: 'due 20.11.', strong: false});
   });
 });
+
+describe('inboxTickKey', () => {
+  it('names a todo by its text and creation date, so it survives an earlier one moving out', () => {
+    const {inboxTickKey} = jest.requireActual('../../src/domain/inboxCount');
+    const a = {text: 'Fix the gate', fields: {created: '2026-11-09'}};
+    expect(inboxTickKey(a)).toBe(inboxTickKey({...a, fields: {...a.fields}}));
+    expect(inboxTickKey(a)).not.toBe(inboxTickKey({text: 'Fix the gate', fields: {created: '2026-11-10'}}));
+    expect(inboxTickKey({text: 'Call Lena', fields: {}})).not.toBe(inboxTickKey(a));
+  });
+});

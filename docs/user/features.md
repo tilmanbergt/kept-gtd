@@ -30,7 +30,7 @@ Kept reads your calendar through its private address in iCal format. It only rea
 2. Switch on **Google Calendar** under Experimental.
 3. Paste the address under **Google Calendar** on the right of [Settings → Features](settings.md#google-calendar-and-gmail) and tap its **Save**.
 
-A **Google** tab then appears in [Daily](daily.md#schedule-and-cards), [Week](week-and-month.md#week), [Month](week-and-month.md#month), [Inbox](daily.md#the-inbox), a project's [Current](projects-and-areas.md#the-current-tab) tab and the Review's [Week ahead](review.md#the-steps) step. Tap **Load Google Calendar**. You can copy an event into a Kept meeting with one tap; copied events get a check mark, and **Hide existing** hides them. Events copied on the Month tab become [monthly highlights](week-and-month.md#month).
+A **Google** tab then appears in [Daily](daily.md#schedule-and-cards), [Week](week-and-month.md#week), [Month](week-and-month.md#month), a project's [Current](projects-and-areas.md#the-current-tab) tab and the Review's [Week ahead](review.md#the-steps) step. Tap **Load Google Calendar**. You can copy an event into a Kept meeting with one tap; copied events get a check mark, and **Hide existing** hides them. Events copied on the Month tab become [monthly highlights](week-and-month.md#month).
 
 Keep the secret address private - anyone who has it can read your calendar. You can reset it in Google Calendar.
 

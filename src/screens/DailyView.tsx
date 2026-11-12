@@ -39,7 +39,7 @@ import {
   groupDailyTasksByItem,
   inboxItemRef,
 } from '../storage/dailyAggregate';
-import {inboxSummary, isOpenInboxTodo} from '../domain/inboxCount';
+import {inboxSummary, inboxTickKey, isOpenInboxTodo} from '../domain/inboxCount';
 import {useOpenMarks} from '../ui/useOpenMarks';
 import InboxList, {ALL_MARKS, inboxRows} from './daily/InboxList';
 import {FolderEntry} from '../supernote/fileSystem';
@@ -104,7 +104,8 @@ export default function DailyView({onOpenItem, onOpenCalendarSettings}: Props): 
   const [tab, setTab] = useListTab<DailyTab>('daily', 'next');
   const justDone = useJustDone<string>(tab);
   const tickTodo = useStableCallback((entry: DailyTaskEntry) => {
-    if (!entry.task.done) justDone.add(taskKey(entry));
+    // An Inbox todo by what it is (its place moves when an earlier one is filed), the others by their place.
+    if (!entry.task.done) justDone.add(entry.item.kind === 'inbox' ? inboxTickKey(entry.task) : taskKey(entry));
     actions.toggleDone(entry);
   });
 
@@ -150,7 +151,7 @@ export default function DailyView({onOpenItem, onOpenCalendarSettings}: Props): 
     const item = inboxItemRef(inboxPath);
     const todos = inbox.tasks
       .map((task, taskIndex): DailyTaskEntry => ({item, taskIndex, task}))
-      .filter(e => isOpenInboxTodo(e.task) || justDone.keys.has(taskKey(e)));
+      .filter(e => isOpenInboxTodo(e.task) || justDone.keys.has(inboxTickKey(e.task)));
     const meetings = summary.meetings.map((meetingIndex): DailyMeetingEntry => ({item, meetingIndex, meeting: inbox.meetings[meetingIndex]}));
     return {summary, todos, meetings};
   }, [inbox, inboxPath, openMarks, todayDate, justDone.keys]);

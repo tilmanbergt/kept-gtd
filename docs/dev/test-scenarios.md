@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-281 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+282 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -358,6 +358,14 @@ Test: `__tests__/scenarios/calmerInbox.test.tsx` · design: `docs/dev/history/te
 - **Then** the todo is in Home's file and no longer in the Inbox
 
 Test: `__tests__/scenarios/calmerInbox.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `daily.md#more-places-new-project-someday`
+
+### A todo ticked on the Inbox tab stays, struck, when an earlier Inbox item is filed
+
+- **Given** area Home and the Inbox todos "Idea: Herb spiral #garden" and "Fix the gate"
+- **When** I tick "Fix the gate" on Daily's Inbox tab, then file "Idea: Herb spiral" to Home
+- **Then** "Fix the gate" is still in the list, ticked; the filed one is gone
+
+Test: `__tests__/scenarios/calmerInbox.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `daily.md#done`
 
 ### An Inbox meeting on Daily: More… opens the picker in place of its context panel, and a tap files it
 
