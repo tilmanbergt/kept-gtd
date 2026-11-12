@@ -36,11 +36,11 @@ Open a project and add todos with [Quick Add](quick-add.md), the small form abov
 - Waiting for someone? The [w/f](tags.md#flow-tags-for-todos) chip, or a tag like `#wf/marco` for "waiting for Marco".
 - Not now? [Someday](tags.md#flow-tags-for-todos) or [Maybe](tags.md#flow-tags-for-todos) parks it out of the way until the [weekly review](review.md#someday--maybe) brings it back.
 
-Tap a todo to open its [card](quick-add.md#the-card-one-tap-selects): done, the flow chips, its note and delete. The tags are plain words in your files, see [Tags](tags.md).
+Tap a todo to open its [card](quick-add.md#the-card-one-tap-selects): done, Next, w/f, Someday and Maybe, its note and delete. The tags are plain words in your files, see [Tags](tags.md).
 
 ## Meetings
 
-Switch Quick Add to its [Meeting](quick-add.md#adding-a-meeting) tab: a title, a date and a time, for example "Plan the beds", today, `14-15.30` (more forms in [Meeting length](week-and-month.md#meeting-length)). [Daily](daily.md#schedule-and-cards) shows today's and tomorrow's meetings next to your todos. [Week](week-and-month.md#week) and [Month](week-and-month.md#month) give the longer view. Time you keep for yourself is a [focus block](meetings.md#focus-blocks). See [Meetings](meetings.md).
+Open a [meeting](quick-add.md#adding-a-meeting) in Quick Add with its + Meeting button: a title, a date and a time, for example "Plan the beds", today, `14-15.30` (more forms in [Meeting length](week-and-month.md#meeting-length)). [Daily](daily.md#schedule-and-cards) shows today's and tomorrow's meetings next to your todos. [Week](week-and-month.md#week) and [Month](week-and-month.md#month) give the longer view. Time you keep for yourself is a [focus block](meetings.md#focus-blocks). See [Meetings](meetings.md).
 
 ## Notes
 
