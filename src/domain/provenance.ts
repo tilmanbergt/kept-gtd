@@ -1,6 +1,7 @@
 /**
  * Provenance: the meeting a todo was agreed in
- * (docs/dev/history/technical-design-tending-threads.md §3.4). Pure.
+ * (docs/dev/history/technical-design-tending-threads.md §3.4), or - when no
+ * meeting is - the note it was written in (`source`, see `applySource`). Pure.
  *
  * Written as the trailing field `[meeting:: <key>]`; the key is the meeting's
  * shared-page keyword `<date> <display title>` (domain/sharedNotePages.ts's
@@ -77,7 +78,64 @@ export function meetingKey(meeting: Pick<Meeting, 'date' | 'title'>): string {
  */
 export function applyProvenance(composedLine: string, key: string): string {
   const {text, fields} = parseTaskInput(composedLine);
-  return appendTaskFields(text, {...fields, meeting: key});
+  // One origin per item (docs/dev/history/technical-design-quickadd-redesign.md §3.7): the meeting replaces a source.
+  return appendTaskFields(text, {...fields, meeting: key, source: null});
+}
+
+/**
+ * The other origin (docs/dev/history/technical-design-quickadd-redesign.md §3.7, B5): the note a
+ * todo was written in or captured from, when no meeting is its origin. Written as the trailing
+ * field `[source:: <path>]`, the note's path below the Note root without its extension, with the
+ * same characters left out as a meeting key (`#`, `[`, `]`). A line never carries both: each of
+ * `applyProvenance` and `applySource` clears the other.
+ */
+export function sourceKey(absolutePath: string, noteRoot: string): string | null {
+  const root = `${noteRoot.replace(/\/+$/, '')}/`;
+  if (!absolutePath.startsWith(root)) return null;
+  const relative = absolutePath.slice(root.length).replace(/#page=\d+$/, '').replace(/\.[^./]+$/, '');
+  const key = normalizeMeetingKey(relative);
+  return key || null;
+}
+
+/** A composed line with `[source:: key]` set and no `[meeting::]`. */
+export function applySource(composedLine: string, key: string): string {
+  const {text, fields} = parseTaskInput(composedLine);
+  return appendTaskFields(text, {...fields, source: key, meeting: null});
+}
+
+/** The note's name of a source key, for Quick Add's grey line and an unresolved source: `Ideas`. */
+export function sourceName(key: string): string {
+  return key.slice(key.lastIndexOf('/') + 1);
+}
+
+/** Quick Add's grey line for a source: `↳ from Ideas`. */
+export function sourceLabel(key: string): string {
+  return `↳ from ${sourceName(key)}`;
+}
+
+/** A todo whose note could be a source: its note's path relative to its item folder. */
+export interface SourceCandidate<E> {
+  itemPath: string;
+  notePath: string;
+  entry: E;
+}
+
+/**
+ * What a source key names (§3.7): the todo whose own note it is (shown with the todo's title),
+ * else the note itself by name - `known: false` when no such note is in the candidates either,
+ * shown without ›.
+ */
+export function resolveSource<E>(
+  key: string,
+  candidates: ReadonlyArray<SourceCandidate<E>>,
+  noteRoot: string,
+): {kind: 'todo'; entry: E} | {kind: 'file'; name: string} {
+  for (const c of candidates) {
+    if (!c.notePath) continue;
+    const abs = c.notePath.startsWith('/') ? c.notePath : `${c.itemPath.replace(/\/+$/, '')}/${c.notePath}`;
+    if (sourceKey(abs, noteRoot) === key) return {kind: 'todo', entry: c.entry};
+  }
+  return {kind: 'file', name: sourceName(key)};
 }
 
 /** The meeting's title without tags, for the provenance line ("Retro alpha"). */

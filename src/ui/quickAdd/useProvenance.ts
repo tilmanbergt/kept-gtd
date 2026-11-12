@@ -10,9 +10,9 @@
  */
 import {useState} from 'react';
 import {todayIso} from '../../domain/meetingTime';
-import {applyProvenance, meetingKey, provenanceLabel} from '../../domain/provenance';
+import {applyProvenance, applySource, meetingKey, provenanceLabel, sourceLabel} from '../../domain/provenance';
 import {Meeting} from '../../domain/types';
-import {QuickAddAdds} from './ProvenanceLine';
+import {QuickAddAdds, QuickAddPart} from './ProvenanceLine';
 
 type ProvenanceMeeting = Pick<Meeting, 'date' | 'title' | 'tags'>;
 
@@ -38,5 +38,25 @@ export function useProvenance(meeting: ProvenanceMeeting | null): ProvenanceStat
     key: active ? key : null,
     apply: line => (active && key ? applyProvenance(line, key) : line),
     added: () => setDroppedKey(null),
+  };
+}
+
+/** The note origin of a new todo (`[source::]`, docs/dev/history/technical-design-quickadd-redesign.md §3.7). */
+export interface SourceState {
+  /** Quick Add's grey line part (`↳ from Ideas`, ✕ drops it for this todo), or null. */
+  part: QuickAddPart | null;
+  apply: (composedLine: string) => string;
+  /** After a todo was added: the next one gets the source again. */
+  added: () => void;
+}
+
+/** The note a todo is written in, as its source - `key` from domain/provenance.ts's `sourceKey`, null for none. */
+export function useSource(key: string | null): SourceState {
+  const [dropped, setDropped] = useState<string | null>(null);
+  const active = key !== null && key !== dropped;
+  return {
+    part: active && key ? {key: 'source', label: sourceLabel(key), onClear: () => setDropped(key)} : null,
+    apply: line => (active && key ? applySource(line, key) : line),
+    added: () => setDropped(null),
   };
 }

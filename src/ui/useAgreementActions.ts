@@ -97,13 +97,14 @@ export function useAgreementActions(input: Input): AgreementActions {
   const {name, edit, refs, targetPath} = input;
   const current = edit.current;
   const selected = current ? refs.find(r => agreementRefKey(r) === current.key) ?? null : null;
-  const changing = !!current?.change;
+  // One way to change an agreement (docs/dev/history/technical-design-quickadd-redesign.md §3.6):
+  // an edit of it - a tap on its words, a second tap on its row - is its Change form.
+  const changing = !!current?.change || (!!current && edit.mode === 'edit');
   const end = useEndAgreement(name);
 
   const card = useAgreementCard({
     name,
     selection: selected && !changing ? {ref: selected, itemName: itemName(selected.itemPath)} : null,
-    onEdit: edit.edit,
     onChange: () => selected && edit.startChange(agreementRefKey(selected)),
     onClose: edit.cancel,
     onOpenItem: input.onOpenItem && selected ? () => input.onOpenItem?.(selected.itemPath) : undefined,

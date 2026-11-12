@@ -85,7 +85,7 @@ scenario('After + Add the box closes and the status line says where the todo wen
   });
 });
 
-scenario('The todo card: More › shows the second page in the same box; ‹ returns', {feature: 'Quick Add', design: 'technical-design-calmer-screens.md', help: 'quick-add.md#the-card-one-tap-selects'}, () => {
+scenario('The todo card shows everything on one page: the flow states, Done, its note and delete', {feature: 'Quick Add', design: 'technical-design-quickadd-redesign.md', help: 'quick-add.md#the-card-one-tap-selects'}, () => {
   given('project "Garden renovation" with the todo "Order soil #next"', garden);
   when('I open the project and tap the todo', async () => {
     await openApp();
@@ -93,23 +93,17 @@ scenario('The todo card: More › shows the second page in the same box; ‹ ret
     await tap(/^Garden renovation/);
     await tap(/^Order soil/);
   });
-  then('the card shows its caption and the main buttons', () => {
+  then('the card shows its caption, Next · w/f · Someday · Maybe, Done, the note and delete - no More', () => {
     expectShows('Todo · Garden renovation · next');
-    expectShows('no note yet');
-    for (const label of ['Done', 'w/f', 'Someday', 'Create note', 'More']) expect(labelled(label)).not.toBeNull();
-    expect(labelled('Delete')).toBeNull();
-  });
-  when('I tap More ›', () => tapLabel('More'));
-  then('the second page offers Next, Maybe, Edit, the trash icon and ‹', () => {
-    for (const label of ['Next', 'Maybe', 'Edit', 'Delete', 'Back']) expect(labelled(label)).not.toBeNull();
+    for (const label of ['Next', 'w/f', 'Someday', 'Maybe', 'Done', 'Create note', 'Delete']) expect(labelled(label)).not.toBeNull();
     expect(labelled('Next')?.on).toBe(true);
-    expectNotShows('no note yet');
+    expect(labelled('More')).toBeNull();
   });
-  when('I tap Maybe there', () => tapLabel('Maybe'));
+  when('I tap Maybe', () => tapLabel('Maybe'));
   then('the todo is Maybe, at once', () => expect(sectionLines(projectFile('Garden renovation'), 'Tasks')).toEqual(['- [ ] Order soil #maybe']));
-  when('I tap ‹', () => tapLabel('Back'));
-  then('the first page is back', () => {
-    expect(labelled('More')).not.toBeNull();
-    expectShows('Todo · Garden renovation · maybe');
+  when('I tap the filled Maybe', () => tapLabel('Maybe'));
+  then('the flow state is cleared', () => {
+    expect(sectionLines(projectFile('Garden renovation'), 'Tasks')).toEqual(['- [ ] Order soil']);
+    expectShows('Todo · Garden renovation · open');
   });
 });

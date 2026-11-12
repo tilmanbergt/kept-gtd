@@ -174,7 +174,7 @@ beforeEach(() => {
   mockState.finishRemoves = false;
 });
 
-it('lasso without marks: no column, bullets split, saves with a page link and closes', async () => {
+it('lasso without marks: no column, bullets split, saves without linking the page, with the note as source, and closes', async () => {
   const r = render({source: 'lasso'});
   await flush();
   expect(texts(r)).not.toContain('Lasso & marks');
@@ -184,7 +184,8 @@ it('lasso without marks: no column, bullets split, saves with a page link and cl
   expect(mockAdded.map(a => a.text)).toEqual(['book room', 'agenda to Tom']);
   // The source page is the item's linked file (checkpoint B), not its working note.
   expect(mockAdded[0].notePath).toBe('');
-  expect(mockAdded[0].linkedFile).toBe('/Note/2 Areas/0 Inbox/Todos/Test.note#page=2');
+  // One origin per item (docs/dev/history/technical-design-quickadd-redesign.md §3.7): no page link.
+  expect(mockAdded[0].linkedFile).toBe('');
   expect(mockCalls).toEqual(expect.arrayContaining(['lassoState:2', 'closePluginView']));
 });
 
@@ -202,7 +203,7 @@ it('marks: first mark selected and recognized, Save & next finishes it and moves
   await press(r, 'Save & next');
   expect(mockAdded.map(a => a.text)).toEqual(['Room for offsite?']);
   expect(mockAdded[0].notePath).toBe('');
-  expect(mockAdded[0].linkedFile).toBe('/Note/x/A.note#page=1');
+  expect(mockAdded[0].linkedFile).toBe('');
   expect(mockCalls).toContain('finish:m-20261005-100000-001:done');
   expect(texts(r).join(' ')).toContain('A.note · p2');
 });

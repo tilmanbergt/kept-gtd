@@ -1,5 +1,5 @@
 /** The item cards' models (docs/dev/history/technical-design-item-card.md K8, K9, §6). */
-import {meetingCardModel, MeetingCardInput, meetingCardPage, meetingPhase, originOfKey, todoCardModel, TodoCardInput, todoCardPage} from '../../src/domain/itemCard';
+import {meetingCardModel, MeetingCardInput, meetingCardLayout, meetingPhase, originOfKey, todoCardModel, TodoCardInput, todoCardLayout} from '../../src/domain/itemCard';
 import {deriveMeetingFields} from '../../src/domain/markdown';
 import {createNoteSetup, NoteSetupConfig} from '../../src/domain/noteSetups';
 import {Meeting} from '../../src/domain/types';
@@ -143,20 +143,30 @@ describe('the compact card', () => {
 
   it('todo pages: the main buttons, then More with what the screen can do', () => {
     const t = todo('Order soil');
-    expect(todoCardPage(t, 'main')).toEqual({detail: true, row3: [], row4: ['done', 'waiting', 'someday', 'note', 'more']});
-    expect(todoCardPage(t, 'more')).toEqual({detail: false, row3: ['next', 'maybe', 'edit', 'owner'], row4: ['delete', 'back']});
-    expect(todoCardPage(todo('Order soil', {}, {canLink: true, canRefile: true}), 'more').row4).toEqual(['refile', 'file', 'delete', 'back']);
-    expect(todoCardPage(todo('Old', {cancelled: true}), 'more').row4).toEqual(['back']);
+    // docs/dev/history/technical-design-quickadd-redesign.md §3.6: one page, no More ›.
+    expect(todoCardLayout(t)).toEqual({row3: ['next', 'waiting', 'someday', 'maybe'], row4: ['done', 'note', 'delete']});
+    expect(todoCardLayout(todo('Order soil', {}, {canLink: true, canRefile: true})).row4).toEqual(['done', 'note', 'file', 'refile', 'delete']);
+    expect(todoCardLayout(todo('Old', {cancelled: true})).row4).toEqual(['done', 'note']);
+    expect(t.status).toBe(t.caption.split(' · ').slice(2).join(' · '));
   });
 
   it('meeting: caption with the owner, the thread as detail line, and its two pages', () => {
     const aheadModel = model(m('2026-10-23', 'Sparring #sparring/jordan'));
     expect(aheadModel.caption).toBe('Meeting · Coaching · ahead');
     expect(aheadModel.detail).toEqual({kind: 'thread', tag: 'sparring/jordan', label: '#sparring/jordan ›'});
-    expect(meetingCardPage(aheadModel, 'main').row4).toEqual(['checkpoint', 'note', 'monthly', 'more']);
-    expect(meetingCardPage(aheadModel, 'more')).toEqual({detail: false, row3: ['focus', 'edit', 'owner'], row4: ['newFromThis', 'cancel', 'back']});
+    expect(meetingCardLayout(aheadModel)).toEqual({row3: ['checkpoint', 'monthly', 'focus'], row4: ['note', 'newFromThis', 'cancel']});
+    expect(aheadModel.kind).toBe('Meeting');
+    expect(aheadModel.status).toBe('ahead');
     const plain = model(m('2026-10-18', 'Retro'), {canRefile: true, canLink: true});
     expect(plain.detail).toEqual({kind: 'noNote'});
-    expect(meetingCardPage(plain, 'more').row4).toEqual(['refile', 'file', 'newFromThis', 'cancel', 'back']);
+    // Over: no Cancel meeting; Reflect in R3.
+    expect(meetingCardLayout(plain).row4).toEqual(['note', 'file', 'refile', 'newFromThis']);
+  });
+
+  it('meeting: Cancel meeting only before it starts', () => {
+    expect(model(m('2026-10-21', 'Later today', {time: '15:00', endTime: '16:00'})).canCancel).toBe(true);
+    expect(model(m('2026-10-21', 'This morning', {time: '09:00', endTime: '09:30'})).canCancel).toBe(false);
+    expect(model(m('2026-10-23', 'Ahead')).canCancel).toBe(true);
+    expect(model({...m('2026-10-23', 'Ahead'), cancelled: true}).canCancel).toBe(false);
   });
 });

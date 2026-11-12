@@ -68,7 +68,7 @@ scenario('Change an agreement: the old one is ended, the new one added; Cancel c
   when('I open Jordan\'s thread overview, tap the agreement and Change on its card, then Cancel', async () => {
     await openJordanOverview();
     await tap('◇ Feedback only in our 1:1s #sparring/jordan');
-    expectShows(/^Agreement · since/);
+    expectShows(/^Agreement · Coaching( ›)? · since/);
     await tap('Change');
     expectShows(/^↳ replaces 'Feedback only in our 1:1s'/);
     await tap('Cancel');
@@ -259,5 +259,26 @@ scenario('Review step "Agreements": keep one past its date for three more months
     expect(sectionLines(areaFile('Coaching'), 'Agreements')[1]).toBe(`- Feedback only in our 1:1s #sparring/jordan [created:: ${past}] [ended:: ${today}]`);
     expectShows('✓ Fridays are quiet');
     expectShows('✓ Feedback only in our 1:1s #sparring/jordan');
+  });
+});
+
+scenario('A tap on an agreement\'s words opens its Change form; there is no Edit', {feature: 'Agreements', design: 'technical-design-quickadd-redesign.md', help: 'agreements.md#changing-and-ending'}, () => {
+  const line = `- Feedback only in our 1:1s #sparring/jordan [created:: ${past}] [valid:: ${year}-12-31]`;
+  given('area "Coaching" has the agreement "Feedback only in our 1:1s" with Jordan', () => coaching([line]));
+  when('I open Jordan\'s thread overview, tap the agreement and then its words on the card', async () => {
+    await openJordanOverview();
+    await tap('◇ Feedback only in our 1:1s #sparring/jordan');
+    expectNotShows('Edit');
+    await tap('Feedback only in our 1:1s');
+  });
+  then('the Change form shows with "↳ replaces …"', () => expectShows(/^↳ replaces 'Feedback only in our 1:1s'/));
+  when('I fix a typo and tap + Add', async () => {
+    await type('New agreement', 'Feedback only in our 1:1 meetings #sparring/jordan');
+    await tap('+ Add');
+  });
+  then('a new version is added and the old one ended', () => {
+    const lines = sectionLines(areaFile('Coaching'), 'Agreements');
+    expect(lines[0]).toBe(`${line} [ended:: ${today}]`);
+    expect(lines[1]).toMatch(/^- Feedback only in our 1:1 meetings #sparring\/jordan/);
   });
 });

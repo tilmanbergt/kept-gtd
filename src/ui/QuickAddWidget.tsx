@@ -81,6 +81,10 @@ import {useQuickAddCore} from './quickAdd/useQuickAddCore';
 import {useQuickAddStatus} from './quickAdd/useQuickAddStatus';
 import {useTaskDraft} from './quickAdd/useTaskDraft';
 import {useThisFileChoice} from './quickAdd/useThisFileChoice';
+import {useSource} from './quickAdd/useProvenance';
+import {sourceKey} from '../domain/provenance';
+import {resolvePaths} from '../domain/settings';
+import {peekSettings} from '../storage/settingsSnapshot';
 
 export type {CaptureSaveMode, CaptureSeed, MeetingQuickAddFields, QuickAddEditTarget, QuickFilePayload} from './quickAdd/types';
 export {editTargetFor} from './quickAdd/types';
@@ -268,6 +272,17 @@ function QuickAddWidget(props: Props): React.JSX.Element {
       return result;
     };
   const thisFile = useThisFileChoice(!!props.thisFileLine && !isEditing);
+  // Opened from a note, a new todo records it as its origin (`[source::]`, §3.7) - unless the screen
+  // already names a meeting as its origin (the grey line's provenance part).
+  const screenMeeting = !!provenance?.some(part => part.key === 'provenance');
+  const launchNote = thisFile.targets?.kind === 'note' && !screenMeeting ? thisFile.targets.path : null;
+  const launchSettings = launchNote ? peekSettings() : null;
+  const source = useSource(launchNote && launchSettings ? sourceKey(launchNote, resolvePaths(launchSettings).base) : null);
+  const addTaskWithSource = (text: string, destination: Destination, linkedFile?: string) =>
+    props.onAddTask(source.apply(text), destination, linkedFile).then(result => {
+      source.added();
+      return result;
+    });
   // The text strip's Suggest view (docs/dev/history/technical-design-quickadd-redesign.md §3.2), fitted to the box.
   const [formWidth, setFormWidth] = useFormWidth();
   const suggestContext = {
@@ -280,7 +295,7 @@ function QuickAddWidget(props: Props): React.JSX.Element {
     editingItemPath,
     editingLoop: editTarget?.kind === 'loop',
     loopsEnabled: true,
-    onAddTask: collapseAfter(props.onAddTask),
+    onAddTask: collapseAfter(addTaskWithSource),
     linkedFileForAdd: thisFile.linkedFile,
     form: {suggest: makeSuggest('task', suggestContext, formWidth), onThisFile: thisFile.offer},
     onSaveEditTask: props.onSaveEditTask,
@@ -440,6 +455,25 @@ function QuickAddWidget(props: Props): React.JSX.Element {
     onCancelEdit();
   };
 
+  /**
+   * `+ Todo` / `+ Meeting` on a card (docs/dev/history/technical-design-quickadd-redesign.md
+   * §3.5): the card closes and the form of that kind opens for the same place. On Daily
+   * (`prefillAbbrev`) the draft starts with the card owner's abbreviation tag; elsewhere the
+   * screen's own place already is that place.
+   */
+  const newFromCard = (kind: 'task' | 'meeting') => {
+    if (!onCancelEdit) return;
+    const owner = props.prefillAbbrev && editingItemPath ? core.abbrevItems.find(i => i.path === editingItemPath) : undefined;
+    const prefill = owner?.abbrev && (owner.status === 'active' || owner.status === 'on-hold') ? `#${owner.abbrev} ` : '';
+    log(`QuickAddWidget: card new kind=${kind} prefill=${prefill ? 'abbrev' : 'none'}`);
+    if (kind === 'task') task.setDraft(d => ({...d, text: prefill || d.text}));
+    else meeting.setDraft(d => ({...d, title: prefill || d.title}));
+    core.setActiveType(kind);
+    openAfterEditRef.current = kind;
+    setFocusRequest(n => n + 1);
+    onCancelEdit();
+  };
+
   const buttonMark = useQuickAddStatus(core, task, meeting, note, agreement);
 
   const loopMode = task.loopMode;
@@ -525,13 +559,16 @@ function QuickAddWidget(props: Props): React.JSX.Element {
       />
     ) : null;
   // The grey origin line while creating (what the screen adds, B5); "↳ replaces …" while changing an agreement.
-  const provenanceLine = provenance && provenance.length > 0 && !isEditing ? <ProvenanceLine parts={provenance} textColor={textColor} /> : undefined;
+  const originParts = [...(provenance ?? []), ...(source.part ? [source.part] : [])];
+  const provenanceLine = originParts.length > 0 && !isEditing ? <ProvenanceLine parts={originParts} textColor={textColor} /> : undefined;
+  // A meeting records no source (meeting lines have no trailing fields): its line shows only what the screen adds.
+  const meetingOriginLine = provenance && provenance.length > 0 && !isEditing ? <ProvenanceLine parts={provenance} textColor={textColor} /> : undefined;
   const replaces = editTarget?.kind === 'agreementChange' ? editTarget.replaces.agreement : null;
   const agreementOrigin =
     replaces && agreement.changing ? (
       <ProvenanceLine parts={[{key: 'replaces', label: replacesLabel(replaces), onClear: () => onCancelEdit?.()}]} textColor={textColor} />
     ) : (
-      provenanceLine
+      meetingOriginLine
     );
   const today = todayIso();
   // Nobody sees the form behind a card or in the collapsed box: its re-renders are skipped then.
@@ -546,7 +583,7 @@ function QuickAddWidget(props: Props): React.JSX.Element {
     rowsHidden,
     main: actions,
     onCollapse: collapse,
-    origin: {task: loopCommands ?? provenanceLine, meeting: provenanceLine, agreement: agreementOrigin},
+    origin: {task: loopCommands ?? provenanceLine, meeting: meetingOriginLine, agreement: agreementOrigin},
     createFile: {linkedFile: thisFile.label, onClear: () => thisFile.setMode('off')},
     linkedFileMissing,
     noteFolder: noteFolderLabel(noteFolderPath),
@@ -587,7 +624,7 @@ function QuickAddWidget(props: Props): React.JSX.Element {
         !editTarget && props.ownerCard ? props.ownerCard : editTarget?.mode === 'card' && props.cardOverride ? props.cardOverride : !cardShown ? null : editTarget?.kind === 'agreement' && props.agreementCard ? (
           <AgreementCard card={props.agreementCard} textColor={textColor} borderColor={borderColor} />
         ) : editTarget?.kind === 'task' && todoCard ? (
-          <TodoCard key={editTarget.key ?? ''} card={todoCard} textColor={textColor} borderColor={borderColor} />
+          <TodoCard key={editTarget.key ?? ''} card={todoCard} onNewTodo={onCancelEdit ? () => newFromCard('task') : undefined} textColor={textColor} borderColor={borderColor} />
         ) : meetingCard ? (
           <MeetingCard
             key={editTarget?.key ?? ''}
@@ -595,6 +632,7 @@ function QuickAddWidget(props: Props): React.JSX.Element {
             onNewFromThis={() =>
               newFromThis({title: meetingCard.meeting.title, date: meetingCard.meeting.date, time: formatMeetingWhen(meetingCard.meeting)})
             }
+            onNewMeeting={onCancelEdit && !taskOnly ? () => newFromCard('meeting') : undefined}
             textColor={textColor}
             borderColor={borderColor}
           />

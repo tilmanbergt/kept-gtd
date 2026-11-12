@@ -53,10 +53,21 @@ or your project/area files are stored.
   the width ends (Nomad portrait), open the kind you need, with the
   cursor in its field; **✕** closes it and keeps what you typed; after **+ Add** it closes again.
   The box keeps its height, so nothing below moves.
-- The todo and meeting cards are quieter: where the item lives and its state on the first row, one
-  grey line (where it was agreed, its file, or "no note yet"), and the main buttons - Done, w/f,
-  Someday, the note - with **More ›** for the rest (Next, Maybe, Edit, moving, linking a file,
-  delete) on a second page in the same box.
+- The todo, meeting and agreement cards show everything on one page, no **More ›**: the kind, where
+  it lives (a tap opens it) and its state on the first row; the todo's **Next · w/f · Someday ·
+  Maybe** (tap the filled one to clear it), the meeting's **P/R · M · F · Reflect**; Done, the note,
+  the clip, moving and delete - and **Cancel meeting**, asking once, before a meeting starts. Delete
+  and Cancel meeting are only on the card. A tap on the title edits.
+- After **+ Add** on Daily or a project's or area's page, the box shows the new item's card; its
+  **+ Todo** / **+ Meeting** starts the next one for the same place (on Daily with the place's
+  abbreviation tag).
+- An agreement has one way to change: a tap on its words, or **Change**, writes a new version and
+  ends the old one. The agreement card has no Edit.
+- Daily links a file to a todo or meeting from its card: the clip opens a file picker in place of the
+  todos.
+- One origin per todo: the meeting it was agreed in, or else the note it was written in or captured
+  from, written as `[source:: …]` and shown on the card as `↳ <note> ›` (or the todo whose note it
+  is). Lasso capture no longer links the page you captured from (**Link to this page** is gone).
 - An empty todo text or meeting title offers **Thread** and **Loop** (and **Paste** with text on the
   clipboard): a tap lists the tags of your thread or loop setups, and one more tap writes
   `#sparring/` for the writing help to finish.
@@ -121,6 +132,9 @@ or your project/area files are stored.
   it.
 
 ### Upgrade notes
+- Todos can carry a `[source:: …]` field at the end of their line (the note they were written in);
+  older versions keep it untouched. Meeting lines don't get one. Items that link the page they were
+  captured from keep that link.
 - Projects and areas can carry a `show:` line in their header (what you choose under Show on this
   page). Kept writes it only when something differs from the default; older versions keep it
   untouched.

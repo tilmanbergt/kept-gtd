@@ -1,21 +1,17 @@
 /**
- * The meeting card (docs/dev/history/technical-design-calmer-screens.md §3.4,
- * docs/dev/history/technical-design-item-card.md K8): in Quick Add's place
- * after one tap on a meeting, in the same four rows at the same heights
- * (ui/quickAdd/QuickAddFrame.tsx), so nothing below moves.
- *   R1 "Meeting · <owner> · <phase>", ✕
- *   R2 title (a tap edits) and when
- *   R3 one detail line: the thread (opens its overview), the linked file, or
- *      "no note yet"
- *   R4 P/R, the note, Reflect (once over), M, More ›
- * More › swaps R3-R4 for the rest - F · Edit · <owner> ›, then refile, the
- * linked file or +clip, New from this, Cancel meeting and ‹ - in the same box.
- * A focus block has no P/R and no Reflect; its note may be the home notebook.
+ * The meeting card (docs/dev/history/technical-design-quickadd-redesign.md
+ * §3.6, C1): in Quick Add's place after one tap on a meeting, one page in the
+ * same four rows.
+ *   R1 Meeting · <owner ›> · <phase>, + Meeting, ✕
+ *   R2 the title (a tap edits) and its time
+ *   R3 P / R · M · F · Reflect (once over), the thread on the right
+ *   R4 Note › / + Note · 📎 · ↪ refile · + Next (New from this) · ⊘ Cancel
+ *      meeting (before it starts; asks once in the status slot)
  * Every button acts at once; what shows is decided in domain/itemCard.ts.
  */
-import React, {useState} from 'react';
+import React from 'react';
 import {Text, View} from 'react-native';
-import {CardPage, MeetingCardButton, meetingCardPage} from '../../domain/itemCard';
+import {MeetingCardButton, meetingCardLayout} from '../../domain/itemCard';
 import {CancelMeetingIcon, NewFromThisIcon, ReflectIcon, RefileIcon} from './icons';
 import {cardStyles, CardRow1, DetailLine, FileSlot, letter, SquareButton, TextButton} from './parts';
 import {useCardCommitTrace} from './useCardCommitTrace';
@@ -26,17 +22,18 @@ interface Props {
   card: MeetingCardData;
   /** Fills the Meeting create draft from this meeting and closes the card (QuickAddWidget). */
   onNewFromThis: () => void;
+  /** `+ Meeting`: the next meeting for the same place (QuickAddWidget). */
+  onNewMeeting?: () => void;
   textColor: string;
   borderColor: string;
 }
 
-export default function MeetingCard({card, onNewFromThis, textColor, borderColor}: Props): React.JSX.Element {
+export default function MeetingCard({card, onNewFromThis, onNewMeeting, textColor, borderColor}: Props): React.JSX.Element {
   usePerfRender('MeetingCard');
   useCardCommitTrace('meeting');
   const {model, busy} = card;
   const colors = {textColor, borderColor};
-  const [page, setPage] = useState<CardPage>('main');
-  const layout = meetingCardPage(model, page);
+  const layout = meetingCardLayout(model);
 
   const button = (kind: MeetingCardButton): React.ReactNode => {
     switch (kind) {
@@ -74,20 +71,12 @@ export default function MeetingCard({card, onNewFromThis, textColor, borderColor
             {letter('M')}
           </SquareButton>
         );
-      case 'more':
-        return <TextButton key={kind} label="More" text="More ›" onPress={() => setPage('more')} {...colors} />;
-      case 'back':
-        return <TextButton key={kind} label="Back" text="‹" onPress={() => setPage('main')} {...colors} />;
       case 'focus':
         return card.onFocusBlock ? (
           <SquareButton key={kind} label="Focus block" on={model.focusBlock} onPress={card.onFocusBlock} {...colors}>
             {letter('F')}
           </SquareButton>
         ) : null;
-      case 'edit':
-        return <TextButton key={kind} label="Edit" onPress={card.onEdit} {...colors} />;
-      case 'owner':
-        return <TextButton key={kind} label={`Open ${model.owner.name}`} text={card.onOpenOwner ? `${model.owner.name} ›` : model.owner.name} onPress={card.onOpenOwner} shrink {...colors} />;
       case 'refile':
         return (
           <SquareButton key={kind} label="Refile" onPress={card.onRefile} {...colors}>
@@ -111,19 +100,18 @@ export default function MeetingCard({card, onNewFromThis, textColor, borderColor
     }
   };
 
-  const detail = model.detail;
-  const detailLine =
-    detail?.kind === 'thread' ? (
-      <DetailLine text={detail.label} onPress={card.onOpenThread} {...colors} />
-    ) : detail?.kind === 'file' ? (
-      <DetailLine text={detail.name} onPress={card.onOpenFile} {...colors} />
-    ) : detail?.kind === 'noNote' ? (
-      <DetailLine text="no note yet" {...colors} />
-    ) : null;
+  const thread = model.thread ? <DetailLine text={model.thread.label} onPress={card.onOpenThread} {...colors} /> : null;
 
   return (
     <View>
-      <CardRow1 heading={model.caption} onClose={card.onClose} {...colors} />
+      <CardRow1
+        heading={model.kind}
+        link={{label: card.onOpenOwner ? `${model.owner.name} ›` : model.owner.name, onPress: card.onOpenOwner}}
+        status={`· ${model.status}`}
+        next={onNewMeeting ? {label: '+ Meeting', onPress: onNewMeeting} : null}
+        onClose={card.onClose}
+        {...colors}
+      />
 
       <View style={[cardStyles.row, cardStyles.row2]}>
         <Text
@@ -140,7 +128,11 @@ export default function MeetingCard({card, onNewFromThis, textColor, borderColor
         </Text>
       </View>
 
-      <View style={[cardStyles.row, cardStyles.row3]}>{layout.detail ? detailLine : layout.row3.map(button)}</View>
+      <View style={[cardStyles.row, cardStyles.row3]}>
+        {layout.row3.map(button)}
+        <View style={cardStyles.spacer} />
+        {thread}
+      </View>
 
       <View style={[cardStyles.row, cardStyles.row4]}>{layout.row4.map(button)}</View>
     </View>

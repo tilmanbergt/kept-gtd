@@ -1,5 +1,5 @@
 import {isoDateOffset} from '../../src/domain/meetingTime';
-import {expectNotShows, expectShows, fieldValue, labelled, openApp, openInbox, tap, tapLabel, tapTab, texts, type} from '../../test-helpers/scenario/app';
+import {expectNotShows, expectShows, fieldValue, labelled, openApp, openInbox, readTexts, tap, tapLabel, tapTab, type} from '../../test-helpers/scenario/app';
 import {areaDir, areaFile, dataFile, INBOX_FILE, loggedErrors, projectFile, putFile, sectionLines} from '../../test-helpers/scenario/files';
 import {and, given, scenario, then, when} from '../../test-helpers/scenario/scenario';
 import {sparringSettings} from '../../test-helpers/scenario/setups';
@@ -113,7 +113,7 @@ scenario('Tap a meeting shows its card; ✕ brings back the half-typed todo', {f
   });
   then('the card names the meeting in Quick Add\'s place', () => {
     expectShows(/^Meeting · .+ · ahead$/);
-    expectShows('More ›');
+    expect(labelled('Close')).not.toBeNull();
     expectNotShows('+ Add');
   });
   when('I tap ✕ on the card', () => tapLabel('Close'));
@@ -237,10 +237,11 @@ scenario('Switching to another meeting while editing saves first and shows the o
   });
   and('"Retro" shows as card', () => {
     expectShows(/^Meeting · .+ · ahead$/);
-    expectShows('More ›');
-    // The card's title follows its R1 (caption, ✕).
-    const shown = texts();
-    expect(shown[shown.findIndex(t => /^Meeting · .+ · ahead$/.test(t)) + 2]).toBe('Retro');
+    expect(labelled('Close')).not.toBeNull();
+    // The card's title follows its R1 (caption, + Meeting, ✕).
+    const shown = readTexts();
+    const at = shown.findIndex(t => /^Meeting · .+ · ahead$/.test(t));
+    expect(shown.slice(at, at + 8)).toContain('Retro');
   });
 });
 

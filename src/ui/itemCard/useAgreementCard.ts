@@ -23,7 +23,6 @@ export interface AgreementCardOptions {
   /** A stable per-screen name for logs and the status slot. */
   name: string;
   selection: {ref: AgreementRef; itemName: string} | null;
-  onEdit: () => void;
   onChange: () => void;
   onClose: () => void;
   /** Opens the Project or Area it lives in; absent: a plain label. */
@@ -33,6 +32,10 @@ export interface AgreementCardOptions {
 export interface AgreementCardData {
   ref: AgreementRef;
   heading: string;
+  /** R1's state after the owner: "since 14.10.". */
+  status: string;
+  /** The owner's name. */
+  itemName: string;
   /** "↳ Sparring Jordan ›" with what it opens, or null. */
   madeIn: {label: string; onPress?: () => void} | null;
   title: string;
@@ -41,7 +44,6 @@ export interface AgreementCardData {
   active: boolean;
   itemLabel: string;
   onOpenItem?: () => void;
-  onEdit: () => void;
   onChange: () => void;
   onEnd: () => void;
   onClose: () => void;
@@ -78,6 +80,8 @@ export function useAgreementCard(options: AgreementCardOptions): AgreementCardDa
   return {
     ref,
     heading: agreementCardHeading(a, today),
+    status: agreementCardHeading(a, today).replace(/^Agreement · /, ''),
+    itemName: selection.itemName,
     madeIn: origin
       ? {label: threadTag ? `${origin.label} ›` : origin.label, onPress: threadTag ? () => openOverview({tag: threadTag, ownerPath: ref.itemPath}) : undefined}
       : null,
@@ -87,7 +91,6 @@ export function useAgreementCard(options: AgreementCardOptions): AgreementCardDa
     active: isActiveAgreement(a),
     itemLabel: options.onOpenItem ? `in ${selection.itemName} ›` : `in ${selection.itemName}`,
     onOpenItem: options.onOpenItem,
-    onEdit: options.onEdit,
     onChange: options.onChange,
     onEnd: () => {
       end(ref).then(ended => ended && options.onClose());

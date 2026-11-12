@@ -141,21 +141,19 @@ scenario('The card follows the selected meeting', {feature: 'Meetings', design: 
     expectNotShows(/^Meeting · /);
   });
   when('I tap the session in two days', () => tap(/^Next sparring Jordan/));
-  then('its card offers P, but no reflection yet, and +clip under More', async () => {
+  then('its card offers P, but no reflection yet, and +clip', async () => {
     expectShows(/^Meeting · .+ · ahead$/);
     expect(labelled('Prepped')).toEqual({on: false, disabled: false});
     expect(labelled('Reflect')).toBeNull();
     expect(labelled('Reviewed')).toBeNull();
-    await tapLabel('More');
     expect(labelled('Link file')).not.toBeNull();
   });
   when('I tap the session three days ago', () => tap(/^Sparring Jordan/));
-  then('the card switches to it, on its first page: R and Reflect; +clip under More', async () => {
+  then('the card switches to it: R and Reflect; +clip', async () => {
     expectShows(/^Meeting · .+ · over$/);
     expect(labelled('Reviewed')).not.toBeNull();
     expect(labelled('Reflect')).not.toBeNull();
     expect(labelled('Prepped')).toBeNull();
-    await tapLabel('More');
     expect(labelled('Link file')).not.toBeNull();
   });
 });
@@ -191,7 +189,7 @@ scenario('Edit and save from the card, then tick reviewed on it: the title chang
   });
 });
 
-scenario('Daily: tomorrow\'s tracked meeting offers Prepped, and Daily has no Link file', {feature: 'Daily', design: 'technical-design-item-card.md', help: 'meetings.md#preparation-and-review'}, () => {
+scenario('Daily: tomorrow\'s tracked meeting offers Prepped and the clip that opens the file picker', {feature: 'Daily', design: 'technical-design-quickadd-redesign.md', help: 'meetings.md#preparation-and-review'}, () => {
   given('area "Coaching" has a sparring session tomorrow', () => {
     coaching([`- ${isoDateOffset(1)} 10:00-11:00 Sparring Jordan #sparring/jordan`]);
   });
@@ -201,9 +199,9 @@ scenario('Daily: tomorrow\'s tracked meeting offers Prepped, and Daily has no Li
     await tap('Tomorrow');
     await tap(/^Sparring Jordan/);
   });
-  then('its card offers P, no +clip and no Reflect', () => {
+  then('its card offers P and +clip, no Reflect', () => {
     expect(labelled('Prepped')).toEqual({on: false, disabled: false});
-    expect(labelled('Link file')).toBeNull();
+    expect(labelled('Link file')).not.toBeNull();
     expect(labelled('Reflect')).toBeNull();
   });
 });

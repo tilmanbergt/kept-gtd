@@ -26,7 +26,7 @@
  * 0.24.0 (docs/dev/history/technical-design-launch-ready.md L6b): a meeting's todos show in its
  * context panel instead.
  */
-import React, {useMemo, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {ActivityIndicator, StyleSheet, View} from 'react-native';
 import {Destination} from '../domain/destination';
 import {
@@ -54,7 +54,8 @@ import {common} from '../ui/commonStyles';
 import LoadErrorNotice from '../ui/LoadErrorNotice';
 import {useThemeColors} from '../ui/theme';
 import {useStableCallback} from '../ui/useStableCallback';
-import {useEntryActions} from '../ui/useEntryActions';
+import {AddedEntry, useEntryActions} from '../ui/useEntryActions';
+import {log} from '../utils/log';
 import {tallyHidden} from '../domain/contexts';
 import HiddenLine from '../ui/context/HiddenLine';
 import {useContextMatcher} from '../ui/context/useContextMatcher';
@@ -91,7 +92,10 @@ export default function DailyView({onOpenItem, onOpenCalendarSettings}: Props): 
   const {textColor, borderColor, placeholderColor} = useThemeColors();
   const data = useDailyData('DailyView');
   const {items, inbox, inboxPath, paths, settings, todayDate, tomorrowDate} = data;
-  const actions = useEntryActions('DailyView', {hiddenNotice: true, readSelection: false});
+  // After + Add the box shows the new item's card when Daily lists it, else it folds and the
+  // status line says where it went (docs/dev/history/technical-design-quickadd-redesign.md §3.5, O1).
+  const [pendingAdd, setPendingAdd] = useState<AddedEntry | null>(null);
+  const actions = useEntryActions('DailyView', {hiddenNotice: true, readSelection: false, onAdded: setPendingAdd});
   const {select: selectEditTarget, store: selection} = actions.edit;
   const features = useFeatures();
   const [calendarTab, setCalendarTab] = useState<CalendarTab>('today');
@@ -158,6 +162,47 @@ export default function DailyView({onOpenItem, onOpenCalendarSettings}: Props): 
     [inboxLists],
   );
   const inboxRowsList = useMemo(() => inboxRows(openMarks, inboxLists.todos, inboxLists.meetings), [openMarks, inboxLists]);
+  // The item just added (docs/dev/history/technical-design-quickadd-redesign.md §3.5): filed to a
+  // project or area, its card shows even when Daily doesn't list it (it joins the extra entries the
+  // selection resolves); added to the Inbox, the box folds and the status line says so, as the Inbox
+  // card is for filing.
+  const [added, setAdded] = useState<{task: DailyTaskEntry | null; meeting: DailyMeetingEntry | null}>({task: null, meeting: null});
+  useEffect(() => {
+    if (!pendingAdd) return;
+    // Added to a selected meeting (its context panel's Quick Add): the meeting's card stays.
+    if ((selection.get().target as {type?: string} | null)?.type === 'meeting') {
+      setPendingAdd(null);
+      return;
+    }
+    let key: string | null = null;
+    const ref = (item: (typeof items)[number]) => ({kind: item.kind, name: item.name, path: item.path, abbrev: item.abbrev});
+    if (pendingAdd.kind === 'task') {
+      for (const item of items) {
+        const taskIndex = item.tasks.map((t, i) => (!t.done && t.text === pendingAdd.text ? i : -1)).filter(i => i >= 0).pop();
+        if (taskIndex === undefined) continue;
+        const entry: DailyTaskEntry = {item: ref(item), taskIndex, task: item.tasks[taskIndex]};
+        key = taskKey(entry);
+        setAdded(prev => ({...prev, task: entry}));
+        selectEditTarget({type: 'task', key});
+        break;
+      }
+    } else {
+      for (const item of items) {
+        const meetingIndex = item.meetings.map((m, i) => (m.title === pendingAdd.title && m.date === pendingAdd.date ? i : -1)).filter(i => i >= 0).pop();
+        if (meetingIndex === undefined) continue;
+        const entry: DailyMeetingEntry = {item: ref(item), meetingIndex, meeting: item.meetings[meetingIndex]};
+        key = meetingKey(entry);
+        setAdded(prev => ({...prev, meeting: entry}));
+        selectEditTarget({type: 'meeting', key});
+        break;
+      }
+    }
+    log(`DailyView: quickadd added kind=${pendingAdd.kind === 'task' ? 'todo' : 'meeting'} card=${key ? 'shown' : 'elsewhere'}`);
+    setPendingAdd(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- once per add, on the items as written
+  }, [pendingAdd]);
+  const extraTasks = useMemo(() => (added.task ? [...inboxLists.todos, added.task] : inboxLists.todos), [inboxLists.todos, added.task]);
+  const extraMeetings = useMemo(() => (added.meeting ? [...inboxLists.meetings, added.meeting] : inboxLists.meetings), [inboxLists.meetings, added.meeting]);
   const countTabs: CountTabDef<DailyTab>[] = useMemo(
     () => [
       {key: 'next', label: 'Next', count: split.counts.next, fixed: true},
@@ -358,8 +403,8 @@ export default function DailyView({onOpenItem, onOpenCalendarSettings}: Props): 
                 openItem={openItem}
                 onOpenOwner={openOwner}
                 onTickTodo={tickTodo}
-                extraTasks={inboxLists.todos}
-                extraMeetings={inboxLists.meetings}
+                extraTasks={extraTasks}
+                extraMeetings={extraMeetings}
                 inboxTab={shownTab === 'inbox'}
                 inboxOrder={inboxOrder}
                 list={list}

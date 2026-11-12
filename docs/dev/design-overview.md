@@ -250,12 +250,12 @@ it did not mean to touch. `domain/lifecycleDates.ts` reads and writes `doneAt`/`
 line stays in the file and is hidden. The grammar of a task line:
 
 ```
-- [x] <text with #tags> → [[note]] +[[file]] [meeting:: …] [created:: …] [due:: …] [completion:: …]
+- [x] <text with #tags> → [[note]] +[[file]] [meeting:: …] [created:: …] [due:: …] [completion:: …] [source:: …]
 ```
 
 `Task = {text, done, cancelled, tags, dueDate, flowState, waitingOn, now, notePath, linkedFile,
 fields}`. `text` holds the typed text with its tags and never a field. `fields` (`TaskFields =
-{due, created, completion, meeting, extra}`) are the trailing fields (`domain/taskLine.ts`).
+{due, created, completion, meeting, source, extra}`) are the trailing fields (`domain/taskLine.ts`).
 `tags`, `flowState`, `waitingOn` and `now` are derived from `text`; `dueDate` is `fields.due`, or
 an older `#due:` tag in `text` when there is no due field. A new todo gets `created` (today);
 checking it done writes `completion` (today), unchecking removes it; created and completion dates
@@ -264,7 +264,11 @@ agreed in: `<date> <display title>` (`domain/provenance.ts`'s `meetingKey`, the 
 keyword without `#`, `[` and `]`: Obsidian would read a `#tag` in a field as a tag of the todo), written only where Quick Add shows it first (§2.4) and resolved at read
 time (exact key in the todo's scope, then anywhere, then a meeting on the key's date whose thread
 tags appear in the key). Provenance never adds tags: where a todo was agreed and where it is to be
-acted on are separate facts (§2.6). Only
+acted on are separate facts (§2.6). When no meeting is its origin, `source` names the note the todo
+was written in or captured from: its path below the Note root without extension
+(`domain/provenance.ts`'s `sourceKey`, same characters left out); `applyProvenance` and
+`applySource` each clear the other, so a line has one origin. The card resolves it at read time:
+the todo whose own note it is, else the note's name (`resolveSource`). Only
 `domain/taskEdit.ts` builds or changes a Task (`newTask`, `withTaskText`, `withTaskDue`,
 `withTaskDone`, `withTaskCancelled`, `applyTaskInput`), so the derived fields always match `text`
 and `fields`; `deriveTaskFields` is used only inside `domain/`.
@@ -397,26 +401,31 @@ Calendar and Gmail have their own caches (§2.11). Detail:
 
 ### 2.4 Quick Add and editing
 
-**One widget.** `ui/QuickAddWidget.tsx` is every screen's single add-and-edit surface. Mini-tabs
-Todo | Meeting (plus Note where the screen passes `onAddNote`) on row 1; text and date on row 2
-(dates are `ui/DateInput.tsx` with a -1 / Today / +1 / +7 strip, arithmetic in
-`domain/dateNudge.ts`); flow chips or time/length, then tag chips on row 3; more tag chips or the
-provenance line on row 4. The main button sits at row 1's right: "+ Add" in create mode, which
-adds to the screen's `fixedDestination`, and Cancel · Save in edit mode. The edit form holds
-fields only; commands that act at once live on the item card (§2.4 Rows) - only a loop's own edit
-(the loop overview, no card) keeps delete and unlink in row 4. The text and date fields' hovering
-strips (Select All/Copy/Cut/Paste, `ui/ClipboardStrip.tsx`; the date strip) end in a ✕ that hides
-them until a field gains focus again (`useStripHide`). The widget is long-lived per screen (no `key`
-remounts): the todo and meeting drafts survive tab flips and edits elsewhere. A screen names the
-item being edited with one `editTarget` prop (`editTargetFor(key, {task, meeting, loop})`). The
-widget is a composition in `ui/quickAdd/`: the box with its row slots (`QuickAddFrame.tsx`), one
-hook per draft (`useTaskDraft`, `useMeetingDraft`, `useNoteDraft`) over the shared state of
-`useQuickAddCore`, the edit session (`useEditSession`: loading, focus, save-then-switch) and the
-row components. A tab's rows are built once the tab is shown (active, or by an edit), and every
-tab's right after the next e-ink flush (`utils/einkFlush.ts`), so a screen's first render builds
-one tab and a later switch finds its rows ready; built rows stay, hidden. The lasso-capture panel is its own shell over the same parts
-(`ui/quickAdd/CaptureQuickAdd.tsx`, §2.10). The Note tab creates a standalone `.note` in the Files
-pane's current folder (`storage/standaloneNotes.ts`), its `#tags` becoming page keywords.
+**One widget.** `ui/QuickAddWidget.tsx` is every screen's single add-and-edit surface: a box of
+fixed height holding a form (`ui/quickAdd/form/`, `docs/dev/history/technical-design-quickadd-redesign.md`):
+one two-line field (a title stays one line of its file), row 3 per kind (todo 📅 and w/f; meeting
+date, time, warning sign, F; agreement valid till; note its folder) and row 4 (the clip, the grey
+origin line, ✕, the main button: "+ Add" adds to the screen's `fixedDestination`, Cancel · Save in
+edit mode). The kind comes from the kind buttons (`KindButtons.tsx`) the box folds to with ✕. The
+strips (`form/StripHost.tsx`, `WhenStrip.tsx`, `ui/writing/WritingStrip.tsx`): the text strip
+above the box with ⚡ Suggest and Clipboard views, the date / time / valid-till strips over the
+field's second line with ± Adjust (`domain/writing/whenSteps.ts`) and ⚡ Suggest views; at most one
+shows, none while the status slot holds a confirm, modal or error (`useStatusBlocking`); each ends
+in ✕ (`useStripHide`). The edit form holds fields only; commands that act at once live on the item
+card (§2.4 Rows) - only a loop's own edit (the loop overview, no card) keeps Refile in row 4. The
+widget is long-lived per screen (no `key` remounts): the drafts survive kind switches and edits
+elsewhere. A screen names the item being edited with one `editTarget` prop (`editTargetFor(key,
+{task, meeting, loop})`). The widget is a composition in `ui/quickAdd/`: the box
+(`QuickAddFrame.tsx`, its `form` layout), one hook per draft (`useTaskDraft`, `useMeetingDraft`,
+`useNoteDraft`, `useAgreementDraft`) over the shared state of `useQuickAddCore`, the edit session
+(`useEditSession`) and the form slots (`form/useFormSlots.tsx`). A kind's slots are built once it
+is shown, and every kind's right after the next e-ink flush (`utils/einkFlush.ts`); built slots
+stay, hidden. The lasso-capture panel is its own shell over the same drafts
+(`ui/quickAdd/CaptureQuickAdd.tsx`, §2.10). The note form creates a standalone `.note` in the Files
+pane's current folder (`storage/standaloneNotes.ts`), its `#tags` becoming page keywords. After
++ Add, Daily and the Current page select the new item, so its card shows (`onAdded` in
+`ui/useEntryActions.ts`, the Current page's add handlers); its `+ Todo` / `+ Meeting` opens the next
+draft for the same place (on Daily with the place's abbreviation tag, `prefillAbbrev`).
 
 **Tags in the widget.** The text strip's ⚡ Suggest view (`domain/writing/suggestOptions.ts`)
 offers recently used tags (`storage/tagUsage.ts`, per profile) and the abbreviations of places used
@@ -430,12 +439,14 @@ the `isMeetingDateVisible` prop).
 `meetingSeed` replaces the meeting draft ("+ Next <type>", `domain/nextMeeting.ts`'s
 `nextMeetingSeed`; it waits until an open edit has closed); both act once per nonce
 (`useDraftRequests.ts`). `provenance` (`QuickAddAdds`, at most two parts) shows one grey line
-in row 4 in create mode on the Todo tab (`ProvenanceLine.tsx`, each part with its own ✕
+in row 4 in create mode for a todo (`ProvenanceLine.tsx`, each part with its own ✕
 that drops it for one todo). The widget only shows it; the screen writes it: `useProvenance.ts`
 applies `domain/provenance.ts`'s `applyProvenance` to the composed line (`[meeting:: <key>]` set,
 the text left as typed) before `buildTask` - Review's "Meetings to close out", the thread
 overview and capture from a meeting's note page use it - and `usePresetTag.ts` adds a tag
-(`domain/loopEdit.ts`'s `withOwnerTag`, never twice), the thread overview's thread tag.
+(`domain/loopEdit.ts`'s `withOwnerTag`, never twice), the thread overview's thread tag. When
+Kept was opened from a note and the screen names no meeting, the widget itself adds the note as
+the todo's `source` (`useSource`, a part with its own ✕).
 
 **One edit and one arm per screen.** `ui/useEditTarget.ts` holds a screen's edit target (the
 row open in the widget) and, where the screen has a Files pane, its arm (a row waiting for a
@@ -617,9 +628,11 @@ folder for auto-locate. Gmail email notes and attachments become linked files un
 outside the base folder is stored with its absolute path (`toLinkedFile`), and every arm's pick goes
 through `pickedPath`. While a file is linked, the **This-file** rows (`ui/fileBrowser/ThisFileRows.tsx`)
 offer the note or document Kept was opened from (`ui/useThisFile.ts`, pure targets in
-`domain/linkTargets.ts`), with or without its page; Quick Add's This-file line
-(`ui/quickAdd/ThisFileLine.tsx`, prop `thisFileLine`) hands the same choice to the screen's add handler
-as its third argument, `linkedFile`. Detail: `docs/dev/history/technical-design-linked-files.md`,
+`domain/linkTargets.ts`), with or without its page; Quick Add's text strip offers the same file as
+`📎 This file` (`ui/quickAdd/useThisFileChoice.ts`, prop `thisFileLine`; off until tapped, a
+document with its page, a note without), handed to the screen's add handler as its third argument,
+`linkedFile`. Daily, without a Files pane, links from a card through `screens/daily/LinkPicker.tsx`
+in the list's place. Detail: `docs/dev/history/technical-design-linked-files.md`,
 `docs/dev/history/technical-design-easy-start.md` §6.
 
 **Note setups.** `domain/noteSetups.ts` defines `NoteSetup`s (stored in `settings.noteSetups`,
@@ -1026,10 +1039,11 @@ scope and where to return). Left: `ui/capture/MarksColumn.tsx` (open marks group
 hidden when empty). Right: the picture, then `ui/quickAdd/CaptureQuickAdd.tsx`: split rows
 (✂ Split at cursor, `domain/captureText.ts`), a "File to" short list
 (`domain/captureFileTo.ts` plus recent destinations from `storage/destinationUsage.ts`), and Save
-buttons. "Link to this page" stores `<note>#page=N` as the item's `linkedFile`. When the source
+buttons. The page is not linked to the item; its origin is recorded instead: when the source
 page is a meeting's (`storage/threadProvenance.ts`'s `meetingForNotePage`: its own note, a page
 link, or its page in a shared note - one `getKeyWords` call for that page; the meetings-only
-view of the page → entry lookup in §2.6), a saved todo gets that meeting as provenance (§2.4).
+view of the page → entry lookup in §2.6), a saved todo gets that meeting as provenance (§2.4),
+else the note as its `source` (§2.3).
 With an owner on the page, the panel's third kind is Agreement (one item, no split): "For" chips
 (`ui/capture/agreementFor.ts` - the page meeting's thread or loop, then the note's item; More…
 any Project/Area) decide the file and tag; it is written through `storage/agreements.ts`.

@@ -119,7 +119,7 @@ export interface Task {
 
 /**
  * The trailing Dataview inline fields of a task line
- * (`... → [[note]] +[[file]] [meeting:: …] [created:: …] [due:: …] [completion:: …]`,
+ * (`... → [[note]] +[[file]] [meeting:: …] [created:: …] [due:: …] [completion:: …] [source:: …]`,
  * docs/dev/history/technical-design-tending-threads.md §3.1.1). Written in
  * that order, then `extra`. Known keys hold their value as found (a
  * YYYY-MM-DD date when gtdpara wrote it).
@@ -133,6 +133,12 @@ export interface TaskFields {
   completion: string | null;
   /** The meeting the todo was agreed in (`<date> <title>`), read and kept as found. */
   meeting: string | null;
+  /**
+   * The note the todo was written in or captured from, as its path below the Note root without
+   * extension (`1 Projects/Garden renovation/Ideas`), when no meeting is its origin
+   * (docs/dev/history/technical-design-quickadd-redesign.md §3.7). Never together with `meeting`.
+   */
+  source: string | null;
   /** Unknown `[key:: value]` tokens, verbatim, in file order (fields added in Obsidian survive). */
   extra: string[];
 }

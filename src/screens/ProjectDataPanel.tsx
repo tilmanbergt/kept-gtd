@@ -485,19 +485,28 @@ export default function ProjectDataPanel({
       // Abbreviation quick-file recognized a different Project/Area's
       // #tag while composing here - create it straight there.
       await addTaskToDestination(newTask, destination, {inbox: null, inboxPath: null});
+      log('Current: quickadd added kind=todo card=elsewhere');
       return;
     }
     if (!state) return;
+    const index = state.tasks.length;
     await withTasks([...state.tasks, newTask]);
+    // After + Add the box shows the new todo's card (docs/dev/history/technical-design-quickadd-redesign.md §3.5, B4).
+    log('Current: quickadd added kind=todo card=shown');
+    selectEdit({type: 'task', index});
   };
 
   const handleAddMeeting = async (fields: MeetingQuickAddFields, destination: Destination, linkedFile?: string): Promise<void> => {
     const newMeeting: Meeting = buildMeeting(fields, {linkedFile});
     if (destination.type === 'item' && destination.path !== path) {
       await addMeetingToDestination(newMeeting, destination, {inbox: null, inboxPath: null});
+      log('Current: quickadd added kind=meeting card=elsewhere');
     } else {
       if (!state) return;
+      const index = state.meetings.length;
       await withMeetings([...state.meetings, newMeeting]);
+      log('Current: quickadd added kind=meeting card=shown');
+      selectEdit({type: 'meeting', index});
     }
     onSeedUsed?.();
   };

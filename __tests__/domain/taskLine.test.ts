@@ -32,7 +32,7 @@ describe('task line fields', () => {
     expect(t.text).toBe('Call #wf/anna');
     expect(t.notePath).toBe('n.note');
     expect(t.linkedFile).toBe('f.pdf');
-    expect(t.fields).toEqual({meeting: '2026-10-01 Retro', created: '2026-10-01', due: '2026-10-09', completion: null, extra: []});
+    expect(t.fields).toEqual({meeting: '2026-10-01 Retro', source: null, created: '2026-10-01', due: '2026-10-09', completion: null, extra: []});
     expect(t.dueDate).toBe('2026-10-09');
     expect(t.flowState).toBe('waiting-for');
     expect(t.waitingOn).toBe('anna');
@@ -76,7 +76,7 @@ describe('task line fields', () => {
   });
 
   it('serializes nothing for empty fields', () => {
-    expect(serializeTaskFields({due: null, created: null, completion: null, meeting: null, extra: []})).toBe('');
+    expect(serializeTaskFields({due: null, created: null, completion: null, meeting: null, source: null, extra: []})).toBe('');
   });
 
   it('leaves meeting lines alone', () => {

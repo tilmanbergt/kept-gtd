@@ -19,9 +19,9 @@ The lasso toolbar has two Kept GTD buttons:
 - **Save & view** saves and opens the project or area.
 - **Save & close** saves and closes Kept.
 
-**Link to this page** (on by default) gives the new item a link to the page you captured from: its clip opens the note at that page. The item's own [note icon](quick-add.md#notes-and-files-on-a-todo-or-meeting) still creates its own note.
+A todo you capture records one origin: the meeting of the page, or else the note itself. The page is not linked to the item; the item's own [note icon](quick-add.md#notes-and-files-on-a-todo-or-meeting) creates its own note, and the clip on its card links a file when you want one.
 
-When the page belongs to a meeting - the meeting's own note, a page linked to it, its page or its [Reflection page](meetings.md#reflection-page) in a shared note, or a page you wrote after one of those - a todo you save records that meeting at the end of its line; no tag is added. Your own heading, or a todo's page, ends the meeting's pages; a cancelled meeting records nothing (see [Which owner a page belongs to](engage.md#which-owner-a-page-belongs-to)). The [grey line](quick-add.md#the-grey-line-where-a-todo-comes-from) in Quick Add shows it first; ✕ drops it. See [Where a todo was agreed](threads.md#where-a-todo-was-agreed).
+When the page belongs to a meeting - the meeting's own note, a page linked to it, its page or its [Reflection page](meetings.md#reflection-page) in a shared note, or a page you wrote after one of those - a todo you save records that meeting at the end of its line; no tag is added. Your own heading, or a todo's page, ends the meeting's pages; a cancelled meeting records nothing (see [Which owner a page belongs to](engage.md#which-owner-a-page-belongs-to)). The [grey line](quick-add.md#the-grey-line-where-a-todo-comes-from) in Quick Add shows it first; ✕ drops it. See [Where a todo was agreed](threads.md#where-a-todo-was-agreed). On any other page of a note, the todo records the note as its source, written as `[source:: 2 Areas/Sport/Sport 2026]` at the end of its line: the grey line reads `↳ from Sport 2026`, ✕ drops it, and the todo's card shows `↳ Sport 2026 ›`, which opens the note.
 
 The lasso selection is removed once something is saved. [Mark for later](lasso.md#marking-for-later) on this screen turns the selection into a mark instead.
 
@@ -51,7 +51,7 @@ Open marks show as a card **n marks to process** under Quick Add:
 - on the [Current](projects-and-areas.md#the-current-tab) tab: the marks of that project or area,
 - in the [Weekly Review](review.md) step [Inbox to zero](review.md#the-steps): all marks, and they count toward the step.
 
-**Process ›** opens the marks screen. The left column lists the marks by note, each with its picture, page, date and time, and whether it has been recognized yet; under the list are **Link to source page**, **Open page**, **Discard…** and **Close**. Recognition starts when you open the screen and runs ahead for the next marks; each mark is recognized only once.
+**Process ›** opens the marks screen. The left column lists the marks by note, each with its picture, page, date and time, and whether it has been recognized yet; under the list are **Open page**, **Discard…** and **Close**. Recognition starts when you open the screen and runs ahead for the next marks; each mark is recognized only once.
 
 - Work through them with **Save & next**: the mark is done and the next one is selected. After the last one the screen closes.
 - **Open page** opens the note at the marked page.

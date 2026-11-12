@@ -78,7 +78,13 @@ export const meetingEntryKey = (e: ThreadMeetingEntry) => `${e.item.path}#${e.me
  * then stays null and its Quick Add zone and rows read `edit.store`
  * themselves (ui/selectionStore.ts).
  */
-export function useEntryActions(name = 'ThreadOverview', options: {hiddenNotice?: boolean; readSelection?: boolean} = {}) {
+/** What was just added, for a screen that shows its card (Daily). */
+export type AddedEntry = {kind: 'task'; text: string} | {kind: 'meeting'; title: string; date: string};
+
+export function useEntryActions(
+  name = 'ThreadOverview',
+  options: {hiddenNotice?: boolean; readSelection?: boolean; onAdded?: (added: AddedEntry) => void} = {},
+) {
   const LOG = name;
   const inbox = useCachedInbox();
   const paths = getCachedData()?.paths ?? null;
@@ -122,6 +128,7 @@ export function useEntryActions(name = 'ThreadOverview', options: {hiddenNotice?
     if (nextInbox) setCachedInbox(nextInbox);
     log(`${LOG}: added task`, destinationLabel(destination));
     if (options.hiddenNotice) hiddenNotice(destination, {kind: 'task', tags: task.tags});
+    options.onAdded?.({kind: 'task', text: task.text});
   };
   const addMeeting = async (fields: MeetingQuickAddFields, destination: Destination, linkedFile?: string): Promise<void> => {
     const meeting = buildMeeting(fields, {linkedFile});
@@ -129,6 +136,7 @@ export function useEntryActions(name = 'ThreadOverview', options: {hiddenNotice?
     if (nextInbox) setCachedInbox(nextInbox);
     log(`${LOG}: added meeting`, destinationLabel(destination));
     if (options.hiddenNotice) hiddenNotice(destination, {kind: 'meeting', tags: meeting.tags});
+    options.onAdded?.({kind: 'meeting', title: meeting.title, date: meeting.date});
   };
 
   const toggleDone = (entry: ThreadTaskEntry) =>

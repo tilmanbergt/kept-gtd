@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-273 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+281 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -80,6 +80,16 @@ Test: `__tests__/scenarios/agreements.test.tsx` · design: `docs/dev/history/tec
 - **Then** it is ended today, and both rows carry a checkmark
 
 Test: `__tests__/scenarios/agreements.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md` · help: `review.md#agreements`, `agreements.md#reviewing-and-closing-out`
+
+### A tap on an agreement's words opens its Change form; there is no Edit
+
+- **Given** area "Coaching" has the agreement "Feedback only in our 1:1s" with Jordan
+- **When** I open Jordan's thread overview, tap the agreement and then its words on the card
+- **Then** the Change form shows with "↳ replaces …"
+- **When** I fix a typo and tap + Add
+- **Then** a new version is added and the old one ended
+
+Test: `__tests__/scenarios/agreements.test.tsx` · design: `docs/dev/history/technical-design-quickadd-redesign.md` · help: `agreements.md#changing-and-ending`
 
 ## Close-out
 
@@ -456,6 +466,16 @@ Test: `__tests__/scenarios/calmerTabs.test.tsx` · design: `docs/dev/history/tec
 
 Test: `__tests__/scenarios/daily.test.tsx` · design: `docs/dev/history/technical-design-cache-subscription-and-shared-add-path.md` · help: `quick-add.md#adding-a-meeting`
 
+### A todo card on Daily links a file through the picker in the list's place
+
+- **Given** on 11.11. the #next todo "Order soil" in Garden renovation and plan.pdf in Resources
+- **When** I open Daily, tap the todo and the clip on its card
+- **Then** the picker replaces the list, with its way back
+- **When** I open Resources and tap plan.pdf
+- **Then** the todo links it and its card shows the name
+
+Test: `__tests__/scenarios/dailyLinkPicker.test.tsx` · design: `docs/dev/history/technical-design-quickadd-redesign.md` · help: `daily.md#linking-a-file-from-daily`
+
 ### Daily shows no page row for a short Next list, and a page row under a long one
 
 - **Given** on 10.11. four #next todos in Garden renovation
@@ -582,13 +602,13 @@ Test: `__tests__/scenarios/meetingContext.test.tsx` · help: `meetings.md#the-co
 
 Test: `__tests__/scenarios/meetingContext.test.tsx` · help: `quick-add.md#editing`
 
-### Daily: tomorrow's tracked meeting offers Prepped, and Daily has no Link file
+### Daily: tomorrow's tracked meeting offers Prepped and the clip that opens the file picker
 
 - **Given** area "Coaching" has a sparring session tomorrow
 - **When** I open Daily, switch to Tomorrow and tap the session
-- **Then** its card offers P, no +clip and no Reflect
+- **Then** its card offers P and +clip, no Reflect
 
-Test: `__tests__/scenarios/meetingReflection.test.tsx` · design: `docs/dev/history/technical-design-item-card.md` · help: `meetings.md#preparation-and-review`
+Test: `__tests__/scenarios/meetingReflection.test.tsx` · design: `docs/dev/history/technical-design-quickadd-redesign.md` · help: `meetings.md#preparation-and-review`
 
 ### Upgrade: 0.22 starts on a 0.21 space without writing a file or a setting
 
@@ -962,6 +982,32 @@ Test: `__tests__/scenarios/interruptions.test.tsx` · design: `docs/dev/history/
 
 Test: `__tests__/scenarios/agreements.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md` · help: `lasso.md#capturing-an-agreement`
 
+### A todo captured on a meeting's page records the meeting, no source and no linked page
+
+- **Given** page 4 follows meeting "Coach call" and has a mark "Ask coach about intervals"
+- **When** I process the mark and save it as a todo
+- **Then** the line has [meeting::], no [source::] and no linked file
+
+Test: `__tests__/scenarios/captureOrigin.test.tsx` · help: `lasso.md#capturing-right-away`
+
+### A todo captured on a plain page records the note as its source, no linked page
+
+- **Given** page 2 of Sport 2026.note belongs to no meeting and has a mark "Stretch after runs"
+- **When** I process the mark
+- **Then** the panel shows "↳ from Sport 2026"
+- **When** I save it as a todo
+- **Then** the line has [source:: 2 Areas/Sport/Sport 2026] and no linked file
+
+Test: `__tests__/scenarios/captureOrigin.test.tsx` · help: `lasso.md#capturing-right-away`
+
+### The origin line's ✕ saves the todo without an origin
+
+- **Given** page 2 of Sport 2026.note has a mark "Stretch after runs"
+- **When** I process the mark, drop the origin with its ✕ and save
+- **Then** the line has neither [source::] nor [meeting::]
+
+Test: `__tests__/scenarios/captureOrigin.test.tsx` · help: `quick-add.md#the-grey-line-where-a-todo-comes-from`
+
 ### An agreement from a mark on a thread notebook's follow-up page: for the thread, with the sparring
 
 - **Given** Jordan's sparring notebook has the sparring's page and a follow-up page with a mark "Feedback only in our 1:1s"
@@ -976,7 +1022,7 @@ Test: `__tests__/scenarios/pageSection.test.tsx` · help: `lasso.md#capturing-an
 
 - **Given** page 8 follows the heading "Training plan" and has a mark "Book track time"
 - **When** I process the mark
-- **Then** no "↳ from" line shows
+- **Then** no meeting shows in the grey line, only the note itself
 - **When** I save it as a todo
 - **Then** no meeting is recorded
 
@@ -986,7 +1032,7 @@ Test: `__tests__/scenarios/pageSection.test.tsx` · help: `lasso.md#capturing-ri
 
 - **Given** the meeting "Coach call" of page 3 is cancelled; page 4 has a mark "Ask coach about intervals"
 - **When** I process the mark
-- **Then** no "↳ from" line shows
+- **Then** no meeting shows in the grey line, only the note itself
 - **When** I save it as a todo
 - **Then** no meeting is recorded
 
@@ -1101,9 +1147,9 @@ Test: `__tests__/scenarios/meetingReflection.test.tsx` · design: `docs/dev/hist
 - **When** I open Coaching without tapping a meeting
 - **Then** Quick Add shows, no card
 - **When** I tap the session in two days
-- **Then** its card offers P, but no reflection yet, and +clip under More
+- **Then** its card offers P, but no reflection yet, and +clip
 - **When** I tap the session three days ago
-- **Then** the card switches to it, on its first page: R and Reflect; +clip under More
+- **Then** the card switches to it: R and Reflect; +clip
 
 Test: `__tests__/scenarios/meetingReflection.test.tsx` · design: `docs/dev/history/technical-design-item-card.md` · help: `meetings.md#the-meeting-row-and-its-card`
 
@@ -1527,19 +1573,17 @@ Test: `__tests__/scenarios/calmerQuickAdd.test.tsx` · design: `docs/dev/history
 
 Test: `__tests__/scenarios/calmerQuickAdd.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `quick-add.md`
 
-### The todo card: More › shows the second page in the same box; ‹ returns
+### The todo card shows everything on one page: the flow states, Done, its note and delete
 
 - **Given** project "Garden renovation" with the todo "Order soil #next"
 - **When** I open the project and tap the todo
-- **Then** the card shows its caption and the main buttons
-- **When** I tap More ›
-- **Then** the second page offers Next, Maybe, Edit, the trash icon and ‹
-- **When** I tap Maybe there
+- **Then** the card shows its caption, Next · w/f · Someday · Maybe, Done, the note and delete - no More
+- **When** I tap Maybe
 - **Then** the todo is Maybe, at once
-- **When** I tap ‹
-- **Then** the first page is back
+- **When** I tap the filled Maybe
+- **Then** the flow state is cleared
 
-Test: `__tests__/scenarios/calmerQuickAdd.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `quick-add.md#the-card-one-tap-selects`
+Test: `__tests__/scenarios/calmerQuickAdd.test.tsx` · design: `docs/dev/history/technical-design-quickadd-redesign.md` · help: `quick-add.md#the-card-one-tap-selects`
 
 ### Save to <Name>: an abbreviation tag typed while editing saves the meeting and moves it there
 
@@ -1676,6 +1720,36 @@ Test: `__tests__/scenarios/quickAdd.test.tsx` · design: `docs/dev/history/techn
 - **Then** the date strip hovers there with its own ✕, which puts it away
 
 Test: `__tests__/scenarios/quickAdd.test.tsx` · design: `docs/dev/history/technical-design-item-card.md` · help: `quick-add.md#adding-a-todo`
+
+### On Daily, + Add to a project shows the new todo's card; its + Todo starts the next with the tag
+
+- **Given** on 11.11. project "Garden renovation" (#GR)
+- **When** on Daily I add "Order soil #GR"
+- **Then** the box shows its card: Todo · Garden renovation › · open, with + Todo, all on one page
+- **When** I tap + Todo on the card
+- **Then** the new draft starts with "#GR "
+
+Test: `__tests__/scenarios/quickAddCards.test.tsx` · design: `docs/dev/history/technical-design-quickadd-redesign.md` · help: `quick-add.md#the-card-one-tap-selects`
+
+### On a project's page, + Add shows the new todo's card; its + Todo starts empty
+
+- **Given** on 11.11. project "Garden renovation"
+- **When** on its page I add "Order soil"
+- **Then** the card shows
+- **When** I tap + Todo on the card
+- **Then** the new draft is empty
+
+Test: `__tests__/scenarios/quickAddCards.test.tsx` · design: `docs/dev/history/technical-design-quickadd-redesign.md` · help: `quick-add.md#the-card-one-tap-selects`
+
+### Opened from a todo's note, a new todo records that note; its card names the todo it came from
+
+- **Given** the todo "Order soil" in Garden renovation has its own note
+- **When** I open Kept from that note, open the project and + Todo
+- **Then** the grey line names the note
+- **When** I add "Compare soil prices"
+- **Then** the line records the note as its source, and the card names the todo it came from
+
+Test: `__tests__/scenarios/quickAddCards.test.tsx` · design: `docs/dev/history/technical-design-quickadd-redesign.md` · help: `quick-add.md#the-grey-line-where-a-todo-comes-from`
 
 ### + Todo on Daily opens the form: the field, 📅 and w/f, then ✕ and + Add
 

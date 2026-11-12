@@ -166,7 +166,15 @@ export async function tap(label: string | RegExp, nth = 0): Promise<void> {
     await openQuickAddKind(`+ ${label}`);
     return;
   }
-  if (typeof label === 'string' && MORE_PAGE.has(label) && screen.queryAllByText(label).length <= nth) await openCardMore();
+  // The card has no Edit button: a tap on its title edits (docs/dev/history/technical-design-quickadd-redesign.md §3.6).
+  if (label === 'Edit' && screen.queryAllByText(label).length <= nth) {
+    const title = screen.queryAllByAccessibilityHint('Edit');
+    if (title.length > 0) {
+      fireEvent.press(title[title.length - 1]);
+      await settle();
+      return;
+    }
+  }
   const found = screen.queryAllByText(label);
   if (found.length <= nth) throw new Error(`nothing to tap with text ${String(label)}; the screen shows: ${describeScreen()}`);
   fireEvent.press(found[nth]);
@@ -210,17 +218,6 @@ async function openQuickAddFor(placeholder: string, nth: number): Promise<void> 
   await openQuickAddKind(QUICK_ADD_FIELD_KIND[placeholder] ?? '+ Todo');
 }
 
-/** What the item card shows on its second page (docs/dev/history/technical-design-calmer-screens.md §3.4). */
-const MORE_PAGE = new Set(['Edit', 'Refile', 'Link file', 'Unlink', 'Delete', 'New from this', 'Cancel meeting', 'Focus block', 'Next', 'Maybe', 'Open linked file']);
-
-/** The item card's More ›, when a card shows it: the user opens the second page for what is there. */
-async function openCardMore(): Promise<void> {
-  const more = screen.queryAllByLabelText('More');
-  if (more.length === 0) return;
-  fireEvent.press(more[0]);
-  await settle();
-}
-
 /** Opens the Inbox: Daily, then its Inbox count tab (docs/dev/history/technical-design-calmer-screens.md §3.7). */
 export async function openInbox(): Promise<void> {
   await tapTab('Daily');
@@ -260,7 +257,6 @@ export async function focus(placeholder: string, focused = true, nth = 0): Promi
 
 /** Taps the `nth` icon-only button announcing `label` to screen readers (the item card's P, Reflect, Refile, ...). */
 export async function tapLabel(label: string, nth = 0): Promise<void> {
-  if (MORE_PAGE.has(label) && screen.queryAllByLabelText(label).length <= nth) await openCardMore();
   const found = screen.queryAllByLabelText(label);
   if (found.length <= nth) throw new Error(`no button labelled "${label}"; the screen shows: ${describeScreen()}`);
   fireEvent.press(found[nth]);

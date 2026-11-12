@@ -68,32 +68,32 @@ const press = (r: TestRenderer.ReactTestRenderer, label: string) =>
   act(() => r.root.findAll(n => n.props.accessibilityLabel === label && typeof n.props.onPress === 'function')[0].props.onPress());
 const pressText = (r: TestRenderer.ReactTestRenderer, text: string) =>
   act(() => r.root.findAll(n => typeof n.props.onPress === 'function' && n.findAllByType(Text).some(t => t.props.children === text))[0].props.onPress());
-const texts = (r: TestRenderer.ReactTestRenderer) => r.root.findAllByType(Text).map(t => [t.props.children].flat().join(''));
+/** A text with its nested spans (the card's R1 is one line with the owner as a span). */
+const flat = (n: TestRenderer.ReactTestInstance): string => n.children.map(c => (typeof c === 'string' ? c : flat(c))).join('');
+const texts = (r: TestRenderer.ReactTestRenderer) => r.root.findAllByType(Text).map(flat);
+
+const pressSpan = (r: TestRenderer.ReactTestRenderer, text: string) =>
+  act(() => r.root.findAll(n => n.type === Text && typeof n.props.onPress === 'function' && n.props.children === text)[0].props.onPress());
 
 describe('TodoCard', () => {
-  it('a Next todo with a due date: caption, title, the main buttons; More › holds the rest', () => {
+  // docs/dev/history/technical-design-quickadd-redesign.md §3.6: one page, no More ›.
+  it('a Next todo with a due date: caption, title, the flow states, Done, the note, delete - all on one page', () => {
     const t = task('Order soil #next', {dueDate: '2026-10-24'});
     const r = render(t, card(t));
-    expect(texts(r)).toEqual(expect.arrayContaining(['Todo · Garden renovation · due 24.10.', 'Order soil', 'no note yet', '☐ Done', 'w/f', 'Someday', '+ Note', 'More ›']));
-    expect(labels(r)).toEqual(expect.arrayContaining(['Close', 'Done', 'w/f', 'Someday', 'Create note', 'More']));
-    expect(labels(r)).not.toContain('Delete');
+    expect(texts(r)).toEqual(expect.arrayContaining(['Todo · Garden renovation · due 24.10.', 'Order soil', '☐ Done', 'Next', 'w/f', 'Someday', 'Maybe', '+ Note']));
+    expect(labels(r)).toEqual(expect.arrayContaining(['Close', 'Done', 'Next', 'w/f', 'Someday', 'Maybe', 'Create note', 'Delete']));
+    expect(labels(r)).not.toContain('More');
     expect(labels(r)).not.toContain('Now');
-    press(r, 'More');
-    expect(labels(r)).toEqual(expect.arrayContaining(['Next', 'Maybe', 'Edit', 'Delete', 'Back']));
     expect(labels(r)).not.toContain('Link file');
     expect(labels(r)).not.toContain('Refile');
-    press(r, 'Back');
-    expect(labels(r)).toContain('More');
   });
 
   it('no delete once deleted; +clip and refile where the screen can', () => {
     const someday = task('Learn Spanish #someday');
     const r = render(someday, card(someday, {canLink: true, canRefile: true}, {onLink: jest.fn(), onRefile: jest.fn()}));
-    press(r, 'More');
     expect(labels(r)).toEqual(expect.arrayContaining(['Link file', 'Refile']));
     const deleted = task('Old idea', {cancelled: true});
     const r2 = render(deleted, card(deleted));
-    press(r2, 'More');
     expect(labels(r2)).not.toContain('Delete');
   });
 
@@ -114,11 +114,10 @@ describe('TodoCard', () => {
     press(r, 'Done');
     press(r, 'Create note');
     press(r, 'Someday');
-    press(r, 'More');
-    press(r, 'Edit');
+    act(() => r.root.findAll(n => n.props.accessibilityHint === 'Edit' && typeof n.props.onPress === 'function')[0].props.onPress());
     press(r, 'Delete');
     press(r, 'Unlink');
-    press(r, 'Open Garden renovation');
+    pressSpan(r, 'Garden renovation ›');
     press(r, 'Maybe');
     for (const h of [data.onEdit, data.onClose, data.onToggleDone, data.onNote, data.onDelete, data.onUnlink, data.onOpenFile, data.onOpenOwner]) {
       expect(h).toHaveBeenCalledTimes(1);

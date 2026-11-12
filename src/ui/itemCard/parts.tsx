@@ -90,24 +90,58 @@ export function DetailLine(props: {text: string; onPress?: () => void} & CardCol
   );
 }
 
-/** R1: the heading, an optional link next to it, then ✕ and (where given) Edit at the right. */
+/**
+ * R1: the heading, an optional link next to it (the owner, opening it) and the state after it,
+ * then the card's own new-item button (`+ Todo`, `+ Meeting`), ✕ and (where given) Edit at the
+ * right. The heading and the link shorten first; the buttons keep their room.
+ */
 export function CardRow1(
-  props: {heading: string; link?: {label: string; onPress?: () => void} | null; onClose: () => void; onEdit?: () => void} & CardColors,
+  props: {
+    heading: string;
+    link?: {label: string; onPress?: () => void} | null;
+    /** After the link: `· due 5.11.`. */
+    status?: string;
+    /** `+ Todo` / `+ Meeting`: the next item for the same place. */
+    next?: {label: string; onPress: () => void} | null;
+    onClose: () => void;
+    onEdit?: () => void;
+  } & CardColors,
 ) {
-  const {heading, link, onClose, onEdit, textColor} = props;
+  const {heading, link, status, next, onClose, onEdit, textColor, borderColor} = props;
   return (
     <View style={[styles.row, styles.row1]}>
-      <Text style={[styles.heading, {color: textColor}]} numberOfLines={1} ellipsizeMode="middle">
-        {heading}
-      </Text>
-      {link ? (
-        <Pressable onPress={link.onPress} disabled={!link.onPress} hitSlop={6} style={styles.link}>
-          <Text style={[styles.linkText, {color: textColor}, !!link.onPress && styles.underline]} numberOfLines={1}>
-            {link.label}
+      {status !== undefined ? (
+        // One line that shortens as a whole; the owner is a nested span that opens it.
+        <Text style={[styles.heading, {color: textColor}]} numberOfLines={1}>
+          {heading}
+          {link ? ' · ' : ''}
+          {link ? (
+            <Text style={[styles.linkInline, !!link.onPress && styles.underline]} onPress={link.onPress} accessibilityRole="link">
+              {link.label}
+            </Text>
+          ) : null}
+          {status ? <Text style={styles.statusInline}>{` ${status}`}</Text> : null}
+        </Text>
+      ) : (
+        <>
+          <Text style={[styles.heading, {color: textColor}]} numberOfLines={1} ellipsizeMode="middle">
+            {heading}
           </Text>
+          {link ? (
+            <Pressable onPress={link.onPress} disabled={!link.onPress} hitSlop={6} style={styles.link} accessibilityRole="link">
+              <Text style={[styles.linkText, {color: textColor}, !!link.onPress && styles.underline]} numberOfLines={1}>
+                {link.label}
+              </Text>
+            </Pressable>
+          ) : null}
+        </>
+      )}
+      <View style={styles.spacer} />
+      {next ? (
+        <Pressable onPress={next.onPress} hitSlop={6} style={[styles.next, {borderColor}]} accessibilityRole="button" accessibilityLabel={next.label}>
+          <Text style={[styles.nextText, {color: textColor}]}>{next.label}</Text>
         </Pressable>
       ) : null}
-      <View style={styles.spacer} />
       <Pressable onPress={onClose} hitSlop={8} accessibilityRole="button" accessibilityLabel="Close">
         <Text style={[quickAddButtons.textButton, {color: textColor}]}>✕</Text>
       </Pressable>
@@ -203,6 +237,10 @@ const styles = StyleSheet.create({
   detailText: {fontSize: FONT.small, opacity: 0.65},
   link: {marginLeft: 12, flexShrink: 1},
   linkText: {fontSize: FONT.small},
+  linkInline: {fontWeight: '400'},
+  statusInline: {fontWeight: '400'},
+  next: {height: 32, borderWidth: 1, borderRadius: 4, paddingHorizontal: 8, justifyContent: 'center', marginRight: 10, flexShrink: 0},
+  nextText: {fontSize: FONT.small, fontWeight: '600'},
   underline: {textDecorationLine: 'underline'},
   square: {width: 32, height: 32, borderWidth: 1, borderRadius: 4, alignItems: 'center', justifyContent: 'center'},
   disabled: {opacity: 0.35},

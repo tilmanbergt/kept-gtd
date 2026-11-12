@@ -5,11 +5,11 @@
  * decided here; ui/itemCard/MeetingCard.tsx and TodoCard.tsx only lay them
  * out. Pure.
  *
- * The compact card (docs/dev/history/technical-design-calmer-screens.md §3.4):
- * R1 a caption (`Todo · Garden renovation · due 5.11.`) and ✕, R2 the title,
- * R3 one detail line, R4 the main buttons and More ›. More › swaps R3-R4 for
- * the rest, with ‹ back - two pages in the same box (`todoCardPage`,
- * `meetingCardPage`).
+ * One page for acting on the item (docs/dev/history/technical-design-quickadd-redesign.md
+ * §3.6, C1): R1 the kind, its owner (a link) and its state, R2 the title, R3
+ * the states and the origin on the right, R4 the actions - everything visible
+ * at once, no More ›. Delete and Cancel meeting live only here (C2).
+ * `todoCardLayout` and `meetingCardLayout` say which buttons show.
  */
 import {formatDate, formatDayHeader} from './dateFormat';
 import {titleCaseSlug} from './flowState';
@@ -17,7 +17,7 @@ import {formatMeetingWhen, todayIso} from './meetingTime';
 import {MeetingTrackingKind, meetingDisplayTitle, resolveMeetingTracking} from './meetingTracking';
 import {isFocusBlock} from './focusBlock';
 import {loopKindsOf} from './loops';
-import {meetingAutoUpdateCutoffMs} from './meetingTime';
+import {meetingAutoUpdateCutoffMs, meetingStartMs} from './meetingTime';
 import {isHighlight} from './monthHighlight';
 import {focusBlockNoteTarget, NoteSetupConfig} from './noteSetups';
 import {reflectionOffered} from './reflection';
@@ -60,10 +60,13 @@ export interface MeetingCardModel {
   file: {kind: 'linked'; path: string; name: string} | {kind: 'link'} | null;
   /** R4: the area chip - the owner's name, and whether its arrow can refile. */
   owner: {name: string; canRefile: boolean};
-  /** R4: Cancel meeting, unless it already is. */
+  /** R4: Cancel meeting - only before it starts. */
   canCancel: boolean;
   /** The compact card's R1: "Meeting · Coaching · today". */
   caption: string;
+  /** R1 in parts: "Meeting" or "Focus", and the state after the owner ("today"). */
+  kind: string;
+  status: string;
   /** The compact card's R3: the thread, else the linked file, else "no note yet", else nothing. */
   detail: CardDetail | null;
 }
@@ -75,15 +78,11 @@ export type CardDetail =
   | {kind: 'file'; name: string}
   | {kind: 'noNote'};
 
-/** The compact card's two pages: the main buttons, and More's rest. */
-export type CardPage = 'main' | 'more';
+export type TodoCardButton = 'done' | 'waiting' | 'someday' | 'note' | 'next' | 'maybe' | 'refile' | 'file' | 'delete';
+export type MeetingCardButton = 'checkpoint' | 'note' | 'reflect' | 'monthly' | 'focus' | 'file' | 'refile' | 'newFromThis' | 'cancel';
 
-export type TodoCardButton = 'done' | 'waiting' | 'someday' | 'note' | 'more' | 'next' | 'maybe' | 'edit' | 'owner' | 'refile' | 'file' | 'delete' | 'back';
-export type MeetingCardButton = 'checkpoint' | 'note' | 'reflect' | 'monthly' | 'more' | 'focus' | 'edit' | 'owner' | 'file' | 'refile' | 'newFromThis' | 'cancel' | 'back';
-
-export interface CardPageLayout<B> {
-  /** R3 shows the detail line (the first page) instead of buttons. */
-  detail: boolean;
+/** One card page: R3's buttons (the origin or thread sits on its right) and R4's. */
+export interface CardLayout<B> {
   row3: B[];
   row4: B[];
 }
@@ -145,8 +144,10 @@ export function meetingCardModel(input: MeetingCardInput): MeetingCardModel {
         ? {kind: 'link'}
         : null,
     owner: {name: input.ownerName, canRefile: input.canRefile},
-    canCancel: phase !== 'cancelled',
+    canCancel: (phase === 'before' || phase === 'today') && nowMs < meetingStartMs(meeting),
     caption: `${focusBlock ? 'Focus' : 'Meeting'} · ${input.ownerName} · ${PHASE_TEXT[phase]}`,
+    kind: focusBlock ? 'Focus' : 'Meeting',
+    status: PHASE_TEXT[phase],
     detail: thread
       ? {kind: 'thread', tag: thread.tag, label: loopLink ? `${thread.type} ${thread.counterpart} ›` : `#${thread.tag} ›`}
       : meeting.linkedFile
@@ -157,24 +158,19 @@ export function meetingCardModel(input: MeetingCardInput): MeetingCardModel {
   };
 }
 
-/** Which buttons the compact meeting card shows on `page`. */
-export function meetingCardPage(model: MeetingCardModel, page: CardPage, canNewFromThis = true): CardPageLayout<MeetingCardButton> {
-  if (page === 'main') {
-    const row4: MeetingCardButton[] = [];
-    if (model.checkpoint) row4.push('checkpoint');
-    if (model.note) row4.push('note');
-    if (model.reflection) row4.push('reflect');
-    row4.push('monthly', 'more');
-    return {detail: true, row3: [], row4};
-  }
-  const row3: MeetingCardButton[] = ['focus', 'edit', 'owner'];
+/** Which buttons the meeting card shows (§3.6): R3 P/R · M · F · Reflect, R4 Note · 📎 · ↪ · + Next · ⊘. */
+export function meetingCardLayout(model: MeetingCardModel, canNewFromThis = true): CardLayout<MeetingCardButton> {
+  const row3: MeetingCardButton[] = [];
+  if (model.checkpoint) row3.push('checkpoint');
+  row3.push('monthly', 'focus');
+  if (model.reflection) row3.push('reflect');
   const row4: MeetingCardButton[] = [];
-  if (model.owner.canRefile) row4.push('refile');
+  if (model.note) row4.push('note');
   if (model.file) row4.push('file');
+  if (model.owner.canRefile) row4.push('refile');
   if (canNewFromThis) row4.push('newFromThis');
   if (model.canCancel) row4.push('cancel');
-  row4.push('back');
-  return {detail: false, row3, row4};
+  return {row3, row4};
 }
 
 export interface TodoCardModel {
@@ -195,6 +191,8 @@ export interface TodoCardModel {
   canDelete: boolean;
   /** The compact card's R1: "Todo · Garden renovation · due 5.11.". */
   caption: string;
+  /** R1's state after the owner: "due 5.11.", "open". */
+  status: string;
   /** The compact card's R3: where it was agreed, else the linked file, else "no note yet", else nothing. */
   detail: CardDetail | null;
 }
@@ -205,6 +203,11 @@ export interface TodoCardInput {
   ownerName: string;
   canLink: boolean;
   canRefile: boolean;
+  /**
+   * The todo's `[source::]` as the screen resolved it (§3.7): the todo whose note it is, or the
+   * note's name; `open` when a tap can open the note.
+   */
+  source?: {label: string; open: boolean} | null;
 }
 
 /** What R1 says after "Todo · ": done or deleted first, then the due date, then the flow state. */
@@ -232,10 +235,13 @@ export function originOfKey(key: string): {label: string; threadTag: string | nu
 
 export function todoCardModel(input: TodoCardInput): TodoCardModel {
   const {task, today} = input;
-  const origin = task.fields.meeting ? originOfKey(task.fields.meeting) : null;
+  const meetingOrigin = task.fields.meeting ? originOfKey(task.fields.meeting) : null;
+  // One origin per todo (docs/dev/history/technical-design-quickadd-redesign.md §3.7): the meeting, else the source note.
+  const origin = meetingOrigin ?? (input.source ? {label: `↳ ${input.source.label}`, threadTag: null} : null);
+  const originOpens = meetingOrigin ? !!meetingOrigin.threadTag : !!input.source?.open;
   return {
     heading: `Todo · ${todoStatus(task, today)}`,
-    origin: origin ? {label: origin.threadTag ? `${origin.label} ›` : origin.label, threadTag: origin.threadTag} : null,
+    origin: origin ? {label: originOpens ? `${origin.label} ›` : origin.label, threadTag: origin.threadTag} : null,
     title: displayTaskText(task, 'flat'),
     labels: taskLabels(task, 'flat', today).map(label => label.text),
     done: task.done,
@@ -249,8 +255,9 @@ export function todoCardModel(input: TodoCardInput): TodoCardModel {
         : null,
     canDelete: !task.cancelled,
     caption: `Todo · ${input.ownerName} · ${todoStatus(task, today)}`,
+    status: todoStatus(task, today),
     detail: origin
-      ? {kind: 'origin', label: origin.threadTag ? `${origin.label} ›` : origin.label, threadTag: origin.threadTag}
+      ? {kind: 'origin', label: originOpens ? `${origin.label} ›` : origin.label, threadTag: origin.threadTag}
       : task.linkedFile
         ? {kind: 'file', name: fileName(task.linkedFile)}
         : !task.notePath
@@ -259,13 +266,11 @@ export function todoCardModel(input: TodoCardInput): TodoCardModel {
   };
 }
 
-/** Which buttons the compact todo card shows on `page`. */
-export function todoCardPage(model: TodoCardModel, page: CardPage): CardPageLayout<TodoCardButton> {
-  if (page === 'main') return {detail: true, row3: [], row4: ['done', 'waiting', 'someday', 'note', 'more']};
-  const row4: TodoCardButton[] = [];
-  if (model.owner.canRefile) row4.push('refile');
+/** Which buttons the todo card shows (§3.6): R3 Next · w/f · Someday · Maybe, R4 Done · Note · 📎 · ↪ · 🗑. */
+export function todoCardLayout(model: TodoCardModel): CardLayout<TodoCardButton> {
+  const row4: TodoCardButton[] = ['done', 'note'];
   if (model.file) row4.push('file');
+  if (model.owner.canRefile) row4.push('refile');
   if (model.canDelete) row4.push('delete');
-  row4.push('back');
-  return {detail: false, row3: ['next', 'maybe', 'edit', 'owner'], row4};
+  return {row3: ['next', 'waiting', 'someday', 'maybe'], row4};
 }

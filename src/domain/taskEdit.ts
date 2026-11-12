@@ -69,7 +69,7 @@ export function parseTaskInput(lineText: string): {text: string; fields: TaskFie
  * `task` with a Quick Add edit applied: the text and the due date come from
  * the composed line (Quick Add always composes the due date, so a missing
  * `[due:: …]` clears it); any other field present in the line replaces the
- * stored one, everything else (`created`, `meeting`, `completion`, unknown
+ * stored one, everything else (`created`, `meeting`, `source`, `completion`, unknown
  * fields) is kept.
  */
 export function applyTaskInput(task: Task, composedText: string): Task {
@@ -77,6 +77,7 @@ export function applyTaskInput(task: Task, composedText: string): Task {
   const stored = task.fields;
   return withTextAndFields(task, text, {
     meeting: fields.meeting ?? stored.meeting,
+    source: fields.source ?? stored.source,
     created: fields.created ?? stored.created,
     due: fields.due,
     completion: fields.completion ?? stored.completion,

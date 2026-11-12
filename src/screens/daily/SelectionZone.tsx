@@ -11,6 +11,9 @@
  * changes.
  */
 import React, {useEffect, useMemo, useState} from 'react';
+import LinkPicker from './LinkPicker';
+import {log} from '../../utils/log';
+import {toLinkedFile} from '../../storage/linkedFiles';
 import {Keyboard, View} from 'react-native';
 import {AbbrevFileMatch} from '../../domain/abbrev';
 import {Destination} from '../../domain/destination';
@@ -111,8 +114,32 @@ export default function SelectionZone({
   // The selected meeting's context panel and its Quick Add (docs/dev/history/technical-design-time-and-place.md §3.2).
   const context = useMeetingContextSlot(editingMeetingEntry, {items, inbox, inboxPath, settings}, editMode, actions, FIXED_INBOX_DESTINATION, actions.edit.toCard);
 
+  // 📎 on a card: the file picker in the list's place (F1, screens/daily/LinkPicker.tsx); another selection ends it.
+  const [linking, setLinking] = useState(false);
+  const linkKey = editTarget ? `${editTarget.type}:${editTarget.key}` : null;
+  useEffect(() => setLinking(false), [linkKey]);
+  const startLinking = () => {
+    log('DailyView: card link from=daily');
+    setLinking(true);
+  };
+  const pickLink = (absolutePath: string) => {
+    if (!paths) return;
+    const linkedFile = toLinkedFile(paths, absolutePath);
+    setLinking(false);
+    if (editingTaskEntry) {
+      const entry = editingTaskEntry;
+      actions.rowRun(async () => {
+        await actions.saveTasks(entry, tasks => tasks.map((t, i) => (i === entry.taskIndex ? {...t, linkedFile} : t)));
+      });
+    } else if (editingMeetingEntry) {
+      const entry = editingMeetingEntry;
+      actions.rowRun(() => actions.saveMeetings(entry, meetings => meetings.map((m, i) => (i === entry.meetingIndex ? {...m, linkedFile} : m))));
+    }
+  };
+
   const todoCard = useTodoCard(
     actions.todoCardOptions(editingTaskEntry, {
+      onArmLink: paths ? startLinking : undefined,
       onOpenOwner: () => {
         if (editingTaskEntry) openItem(editingTaskEntry.item);
       },
@@ -123,6 +150,7 @@ export default function SelectionZone({
   );
   const meetingCard = useMeetingCard(
     actions.cardOptions(editingMeetingEntry, {
+      onArmLink: paths ? startLinking : undefined,
       onOpenOwner: () => {
         if (editingMeetingEntry) openItem(editingMeetingEntry.item);
       },
@@ -221,8 +249,10 @@ export default function SelectionZone({
         {...context.todoOverride}
       />
       <View style={[common.divider, {backgroundColor: borderColor}]} />
-      {/* More… and → New project win over the meeting's context panel: an Inbox meeting is filed there too. */}
-      {inboxCard && inboxPanel === 'picker' ? (
+      {/* The link picker, More… and → New project win over the meeting's context panel: an Inbox meeting is filed there too. */}
+      {linking && paths && (editingTaskEntry || editingMeetingEntry) ? (
+        <LinkPicker paths={paths} onPick={pickLink} onBack={() => setLinking(false)} textColor={textColor} borderColor={borderColor} />
+      ) : inboxCard && inboxPanel === 'picker' ? (
         <FilePicker
           places={places}
           onPick={inboxCard.fileTo}

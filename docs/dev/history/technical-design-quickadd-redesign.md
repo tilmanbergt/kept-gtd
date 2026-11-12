@@ -503,3 +503,26 @@ Stop 2 (the form):
   not the memoized widget (the Current page's render budget).
 - **Suggest width:** the field's measured width is kept in a ref (and for the session), not state,
   for the same render budget.
+
+Stop 3 (cards and origin):
+
+- **Agreement 🗑:** not built. There is no agreement delete today, and removing an agreement's line
+  from the user's file would need its own design for file safety; **End** marks it ended.
+- **Card after + Add:** on Daily and the Current page (the screens of B4's scenarios). Daily shows
+  the card of an item filed to a project or area even when Daily doesn't list it (it joins the
+  entries the selection resolves); an item added to the Inbox folds the box with the status line,
+  as the Inbox card is for filing. Week, Month, the overviews and Review fold with the status line
+  as before (O1).
+- **Card R1:** the kind, the owner (a tappable span) and the state are one text line that shortens as
+  a whole; `+ Todo` / `+ Meeting` and ✕ keep their room.
+- **Agreement edit mode:** the edit target of an agreement in edit mode is its Change form
+  (`ui/useAgreementActions.ts`); `useAgreementDraft`'s edit code stays for that path's Save only.
+- **`source::`:** written for todos only. Meeting lines have no trailing fields in the file format,
+  so a captured or added meeting records no source (and no linked page). The Upgrade note says so.
+- **Card origin:** `↳ <todo> ›` and `↳ <note> ›` both open the note (base-relative `<key>.note`);
+  opening the other todo's card across screens is left for later. A plain note can't be checked
+  synchronously, so its origin always shows ›; a moved or renamed note reports in the status line
+  when tapped.
+- **F1 on other screens:** Week, Month, overviews and Review pass no link arming (O2), so their
+  cards show no link square; Daily's `LinkPicker` covers Projects, Areas, Resources and the Inbox
+  folder, plus the This-file rows.

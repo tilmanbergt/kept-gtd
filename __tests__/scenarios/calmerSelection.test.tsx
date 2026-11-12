@@ -2,7 +2,7 @@
 // without re-rendering the list (render counts per component, test-helpers/renderCounts.ts).
 jest.mock('../../src/utils/perf', () => require('../../test-helpers/renderCounts').perfWithRenderCounts());
 
-import {expectShows, openApp, settle, tap, tapTab} from '../../test-helpers/scenario/app';
+import {expectShows, labelled, openApp, settle, tap, tapTab} from '../../test-helpers/scenario/app';
 import {dataFile, INBOX_FILE, loggedErrors, projectFile, putFile} from '../../test-helpers/scenario/files';
 import {and, given, scenario, then, when} from '../../test-helpers/scenario/scenario';
 import {renderCounts, resetRenderCounts} from '../../test-helpers/renderCounts';
@@ -25,7 +25,7 @@ scenario('A tap on a Daily todo shows its card without re-rendering the list', {
   });
   then('its card shows in Quick Add\'s place', () => {
     expectShows(/^Buy seeds/);
-    expectShows('More ›');
+    expect(labelled('Close')).not.toBeNull();
   });
   and('neither the screen, the todos list nor Quick Add\'s hidden rows rendered again; only the rows whose mark changed did', () => {
     expect(renders.DailyView ?? 0).toBe(0);
@@ -53,7 +53,7 @@ scenario('A tap on a todo on the Current page shows its card without re-renderin
     renders = renderCounts();
   });
   then('its card shows, and neither the Todos nor the Meetings list rendered again', () => {
-    expectShows('More ›');
+    expect(labelled('Close')).not.toBeNull();
     expect(renders.TodosSection ?? 0).toBe(0);
     expect(renders.MeetingsSection ?? 0).toBe(0);
     for (const rows of ['QuickAddRows:task', 'QuickAddRows:meeting', 'QuickAddRows:note', 'QuickAddRows:agreement']) expect([rows, renders[rows] ?? 0]).toEqual([rows, 0]);

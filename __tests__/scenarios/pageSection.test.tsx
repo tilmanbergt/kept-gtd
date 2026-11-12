@@ -193,7 +193,7 @@ scenario('An agreement from a mark on a thread notebook\'s follow-up page: for t
 scenario('Your own heading stops the provenance', {feature: 'Lasso', design: DESIGN, help: 'lasso.md#capturing-right-away'}, () => {
   given('page 8 follows the heading "Training plan" and has a mark "Book track time"', () => sport({marks: [sportMark(8, 'Book track time')]}));
   when('I process the mark', processSportMarks);
-  then('no "↳ from" line shows', () => expectNotShows(/^↳ from/));
+  then('no meeting shows in the grey line, only the note itself', () => expectShows(/^↳ from Sport 2026$/));
   when('I save it as a todo', () => tap(/^Save & close/));
   then('no meeting is recorded', () => {
     const line = sectionLines(areaFile('Sport'), 'Tasks').find(l => l.includes('Book track time'));
@@ -205,7 +205,7 @@ scenario('Your own heading stops the provenance', {feature: 'Lasso', design: DES
 scenario('A cancelled meeting\'s follow-up page records no meeting', {feature: 'Lasso', design: DESIGN, help: 'lasso.md#capturing-right-away'}, () => {
   given('the meeting "Coach call" of page 3 is cancelled; page 4 has a mark "Ask coach about intervals"', () => sport({coach: 'cancelled', marks: [sportMark(4, 'Ask coach about intervals')]}));
   when('I process the mark', processSportMarks);
-  then('no "↳ from" line shows', () => expectNotShows(/^↳ from/));
+  then('no meeting shows in the grey line, only the note itself', () => expectShows(/^↳ from Sport 2026$/));
   when('I save it as a todo', () => tap(/^Save & close/));
   then('no meeting is recorded', () => {
     const line = sectionLines(areaFile('Sport'), 'Tasks').find(l => l.includes('Ask coach about intervals'));

@@ -96,17 +96,18 @@ const press = (r: TestRenderer.ReactTestRenderer, label: string) =>
   act(() => r.root.findAll(n => n.props.accessibilityLabel === label && typeof n.props.onPress === 'function')[0].props.onPress());
 const pressText = (r: TestRenderer.ReactTestRenderer, text: string) =>
   act(() => r.root.findAll(n => typeof n.props.onPress === 'function' && n.findAllByType(Text).some(t => t.props.children === text))[0].props.onPress());
-const texts = (r: TestRenderer.ReactTestRenderer) => r.root.findAllByType(Text).map(t => [t.props.children].flat().join(''));
+/** A text with its nested spans (the card's R1 is one line with the owner as a span). */
+const flat = (n: TestRenderer.ReactTestInstance): string => n.children.map(c => (typeof c === 'string' ? c : flat(c))).join('');
+const texts = (r: TestRenderer.ReactTestRenderer) => r.root.findAllByType(Text).map(flat);
 
 describe('MeetingCard', () => {
-  it('a meeting ahead: caption, thread line, P, note, M, More; More holds Edit, the owner, New from this, Cancel', () => {
+  // docs/dev/history/technical-design-quickadd-redesign.md §3.6: one page, no More ›.
+  it('a meeting ahead: caption, thread, P, M, F, the note, New from this and Cancel meeting on one page', () => {
     const r = render(ahead, card(ahead));
-    expect(texts(r)).toEqual(expect.arrayContaining(['Meeting · Coaching · ahead', '#sparring/jordan ›', 'Sparring Jordan #sparring/jordan', 'P', 'M', '+ Note', 'More ›', '✕']));
-    expect(labels(r)).toEqual(expect.arrayContaining(['Close', 'Prepped', 'Month highlight', 'Create note', 'More']));
+    expect(texts(r)).toEqual(expect.arrayContaining(['Meeting · Coaching · ahead', '#sparring/jordan ›', 'Sparring Jordan #sparring/jordan', 'P', 'M', '+ Note', '✕']));
+    expect(labels(r)).toEqual(expect.arrayContaining(['Close', 'Prepped', 'Month highlight', 'Create note', 'New from this', 'Cancel meeting']));
+    expect(labels(r)).not.toContain('More');
     expect(labels(r)).not.toContain('Reflect');
-    press(r, 'More');
-    expect(texts(r)).toEqual(expect.arrayContaining(['Edit', 'Coaching']));
-    expect(labels(r)).toEqual(expect.arrayContaining(['New from this', 'Cancel meeting', 'Back']));
     expect(labels(r)).not.toContain('Link file');
     expect(labels(r)).not.toContain('Refile');
   });
@@ -122,11 +123,9 @@ describe('MeetingCard', () => {
   it('a linked file shows its name with ✕; +clip and the refile arrow only where the screen can', () => {
     const linked = {...ahead, linkedFile: 'Resources/brief.pdf'};
     const r = render(linked, card(linked, {canLink: true, canRefile: true}, {onOpenFile: jest.fn(), onRefile: jest.fn(), onLink: jest.fn()}));
-    press(r, 'More');
     expect(texts(r)).toContain('brief.pdf');
     expect(labels(r)).toEqual(expect.arrayContaining(['Unlink', 'Open linked file', 'Refile']));
     const plain = render(ahead, card(ahead, {canLink: true}, {onLink: jest.fn()}));
-    press(plain, 'More');
     expect(labels(plain)).toContain('Link file');
   });
 
@@ -135,8 +134,14 @@ describe('MeetingCard', () => {
     const r = render(cancelled, card(cancelled));
     expect(texts(r)).toContain('Meeting · Coaching · cancelled');
     expect(labels(r)).not.toContain('Prepped');
-    press(r, 'More');
     expect(labels(r)).not.toContain('Cancel meeting');
+  });
+
+  it('Cancel meeting is there before it starts and calls its handler', () => {
+    const data = card(ahead);
+    const r = render(ahead, data);
+    press(r, 'Cancel meeting');
+    expect(data.onCancelMeeting).toHaveBeenCalledTimes(1);
   });
 
   it('every button calls its handler', () => {
@@ -148,11 +153,9 @@ describe('MeetingCard', () => {
     press(r, 'Month highlight');
     press(r, 'Create note');
     press(r, 'Reflect');
-    press(r, 'More');
-    press(r, 'Edit');
-    press(r, 'Cancel meeting');
-    press(r, 'Open Coaching');
-    for (const h of [data.onEdit, data.onClose, data.onCheckpoint, data.onMonthly, data.onNote, data.onReflect, data.onCancelMeeting, data.onOpenOwner, data.onOpenThread]) {
+    act(() => r.root.findAll(n => n.props.accessibilityHint === 'Edit' && typeof n.props.onPress === 'function')[0].props.onPress());
+    act(() => r.root.findAll(n => n.type === Text && typeof n.props.onPress === 'function' && n.props.children === 'Coaching ›')[0].props.onPress());
+    for (const h of [data.onEdit, data.onClose, data.onCheckpoint, data.onMonthly, data.onNote, data.onReflect, data.onOpenOwner, data.onOpenThread]) {
       expect(h).toHaveBeenCalledTimes(1);
     }
   });
@@ -160,7 +163,6 @@ describe('MeetingCard', () => {
   it('New from this fills the Meeting draft from the meeting and closes the card', () => {
     const onCancelEdit = jest.fn();
     const r = render(ahead, card(ahead), onCancelEdit);
-    press(r, 'More');
     press(r, 'New from this');
     expect(onCancelEdit).toHaveBeenCalledTimes(1);
     const title = r.root.findAllByType(TextInput).find(i => i.props.placeholder === 'New meeting')!;

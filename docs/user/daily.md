@@ -56,9 +56,13 @@ Other lists (the [Inbox](daily.md#the-inbox), the [Review](review.md), the [thre
 
 The left column is the schedule with the tabs **Today** and **Tomorrow** (and **Google** when the [Google Calendar](features.md#google-calendar) integration is on): [meetings](meetings.md) and [focus blocks](meetings.md#focus-blocks). The two small buttons at the right of the tabs switch between one-line and two-line rows.
 
-Tap a meeting or focus block to see its [card](meetings.md#the-meeting-row-and-its-card) in [Quick Add](quick-add.md)'s place, and its [context panel](meetings.md#the-context-panel) in place of the todos: what you owe, what is next, what you are waiting for and what was agreed last time. **+ Quick Add to meeting** at the end of the panel adds a todo to it. Tap it again, [Edit](quick-add.md#editing) or the title on the card to change it. Daily has no [Files pane](projects-and-areas.md#files-and-linked-files), so linking a file happens on the project's page.
+Tap a meeting or focus block to see its [card](meetings.md#the-meeting-row-and-its-card) in [Quick Add](quick-add.md)'s place, and its [context panel](meetings.md#the-context-panel) in place of the todos: what you owe, what is next, what you are waiting for and what was agreed last time. **+ Quick Add to meeting** at the end of the panel adds a todo to it. Tap it again, or the title on the card, to [edit](quick-add.md#editing) it.
 
-Todos work the same way: a tap shows the todo's [card](quick-add.md#the-card-one-tap-selects), with done, w/f, Someday, its note and **More ›**.
+Todos work the same way: a tap shows the todo's [card](quick-add.md#the-card-one-tap-selects), with Next, w/f, Someday, Maybe, done, its note, the clip and delete.
+
+## Linking a file from Daily
+
+Daily has no [Files pane](projects-and-areas.md#files-and-linked-files). The clip on a todo's or meeting's card (**+** with the clip) opens a file picker in place of the todos instead: **Projects**, **Areas**, **Resources** and **Inbox**, and on top the file you opened Kept from, when there is one ([Files outside Note](files-and-folders.md#files-outside-note)). Tap a folder to open it and a file to link it; the card then shows the file's name. **‹ Back to the card** links nothing. On Week, Month, the thread and loop overviews and in the Review, a linked file shows and opens, but linking one happens on Daily or the project's page.
 
 ## Tags in rows
 

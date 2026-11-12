@@ -42,6 +42,8 @@ Tap **+ Meeting**, write the title, set the date (it starts at today) and the ti
 
 Where a todo is agreed in a meeting - in a [thread overview](threads.md#opening-the-overview), in the Review step [Meetings to close out](review.md#the-steps), or when you [capture](lasso.md#capturing-right-away) from a meeting's note page - Quick Add shows one grey line in its last row, for example `↳ from Sparring Jordan · Wed 30.9.`. The new todo then records that meeting at the end of its line; its tags stay as you type them. In a thread overview the line also names the thread's tag, which new todos get (for example `#sparring/jordan ✕`). Each part has its own ✕: tap it to add this one todo without it. See [Where a todo was agreed](threads.md#where-a-todo-was-agreed).
 
+When no meeting is the todo's origin but you opened Kept from a note - or [capture](lasso.md#capturing-right-away) from one - the grey line names that note, for example `↳ from Ideas`, and the new todo records it at the end of its line as `[source:: 1 Projects/Garden renovation/Ideas]`. A todo has at most one origin, never both. Its card shows it as `↳ Ideas ›`, which opens the note; when the note is a todo's own note, the card names that todo instead, for example `↳ Order soil ›`. A note you move or rename later is still named, but may no longer open.
+
 ## Adding an agreement
 
 Where Quick Add knows [who an agreement is with](agreements.md#who-an-agreement-belongs-to) - a thread or loop overview, a project's or area's page - it offers **+ Agreement**: the words with their tags, and in row 3 [valid till](agreements.md#adding-one), whose strip offers **none**, **+1 m**, **+3 m**, **end of year** and **…** for another day. See [Agreements](agreements.md).
@@ -109,16 +111,14 @@ When you tap **+ Add** while a tag suggestion is still open, Kept saves nothing 
 
 ## The card: one tap selects
 
-Tap a todo or a meeting in a list with Quick Add: the row gets a black bar and the item's *card* takes Quick Add's place, in the same box. Everything you can do with the item at once is on its card; nothing is saved until you tap a button there. **✕** closes the card.
+Tap a todo or a meeting in a list with Quick Add: the row gets a black bar and the item's *card* takes Quick Add's place, in the same box. Everything you can do with the item is on its card, on one page; nothing is saved until you tap a button there. **✕** closes the card. After **+ Add** the box shows the new item's card where the screen lists it ([Daily](daily.md) and a project's or area's page); otherwise the [status line](index.md#the-status-line) says where it went.
 
 The todo card shows:
 
-- First row: **Todo**, where it lives and its state - due, overdue, waiting for someone, someday, done or deleted (`Todo · Garden renovation · due 5.11.`), and ✕.
+- First row: **Todo**, where it lives (tap the name to open it) and its state - due, overdue, waiting for someone, someday, done or deleted (`Todo · Garden renovation › · due 5.11.`), then **+ Todo** and ✕. **+ Todo** opens a new todo for the same place; on [Daily](daily.md) it starts with that place's [abbreviation](quick-add.md#filing-directly-with-an-abbreviation).
 - Second row: the text. A tap on it opens [Edit](quick-add.md#editing).
-- Third row: one grey line - the [meeting it was agreed in](threads.md#where-a-todo-was-agreed) (for example `↳ Sparring Jordan ›`, which opens that thread's overview), else its [linked file](quick-add.md#notes-and-files-on-a-todo-or-meeting) (tap to open), else "no note yet".
-- Fourth row: **Done** to tick it; **w/f** and **Someday** (tap to set the [flow state](tags.md#flow-tags-for-todos), tap the filled one to clear it); **+ Note** or **Note ›** for its [note](quick-add.md#notes-and-files-on-a-todo-or-meeting); **More ›**.
-
-**More ›** shows the rest in the same box, with **‹** to go back: **Next** and **Maybe**, **Edit**, where the todo lives (tap the name to open it); where a Files pane is there, the arrow that moves the todo to another project or area and **+** with the clip to link a file (a linked file shows its name; ✕ removes the link); the trash icon, which asks first and then removes the todo from your lists - it stays in the file, marked as cancelled.
+- Third row: **Next**, **w/f**, **Someday** and **Maybe** - tap to set the [flow state](tags.md#flow-tags-for-todos), tap the filled one to clear it. On the right the [meeting it was agreed in](threads.md#where-a-todo-was-agreed) (for example `↳ Sparring Jordan ›`, which opens that thread's overview).
+- Fourth row: **Done** to tick it; **+ Note** or **Note ›** for its [note](quick-add.md#notes-and-files-on-a-todo-or-meeting); the clip - a linked file's name (tap to open, ✕ removes the link), or **+** with the clip to link one; where a Files pane is there, the arrow that moves the todo to another project or area; the trash icon, which asks first and then removes the todo from your lists - it stays in the file, marked as cancelled.
 
 Moving an item that has a note asks first: its own note moves along into the new project's `Todos` or `Meetings` folder. A page in a shared note stays in that note, and the item keeps its link to that page.
 
@@ -126,14 +126,14 @@ The meeting card is described in [The meeting row and its card](meetings.md#the-
 
 ## Editing
 
-**Edit** under the card's **More ›**, a tap on the card's title, or a second tap on the selected row opens the item in Quick Add. Change what you need, then **Save** - or **Cancel** - at the bottom right; **Save** brings you back to the card. Only one item is edited at a time: tapping another row saves the open edit first. With an [abbreviation tag](quick-add.md#filing-directly-with-an-abbreviation) in the text, **Save** reads **Save to** followed by that project's name: it saves your changes and moves the item there in one step.
+A tap on the card's title, or a second tap on the selected row, opens the item in Quick Add. Change what you need, then **Save** - or **Cancel** - at the bottom right; **Save** brings you back to the card. Only one item is edited at a time: tapping another row saves the open edit first. With an [abbreviation tag](quick-add.md#filing-directly-with-an-abbreviation) in the text, **Save** reads **Save to** followed by that project's name: it saves your changes and moves the item there in one step.
 
 ## Notes and files on a todo or meeting
 
 Every todo and meeting can have its own handwritten note - one of Kept's most useful features. One tap creates it, already filled in: title, date and time, related open todos, a background from your templates. Next time the same tap opens it again.
 
 - **+ Note** on the card (on the rows of the overviews also the note icon, + with a notebook) creates a note for the todo or meeting and opens it, after you confirm what will be created in the [status line](index.md#the-status-line); **Note ›** on the card, or the [notebook icon](projects-and-areas.md#the-notebook-icon) on the row, opens it later. How the note looks and where it goes is set by [Note setups](note-setups.md); by default it is a page in the project's or area's [home notebook](projects-and-areas.md#home-notebooks).
-- The clip icon links an existing file (for example a PDF from Resources, or one from `Document` on the Files pane's **Device** tab, see [Files outside Note](files-and-folders.md#files-outside-note)). Select the todo or meeting and tap **+** and the clip under its card's **More ›** then tap the file in the [Files pane](projects-and-areas.md#files-and-linked-files). A filled clip opens the linked file. To remove a link, tap ✕ next to the file's name on the card.
+- The clip icon links an existing file (for example a PDF from Resources, or one from `Document` on the Files pane's **Device** tab, see [Files outside Note](files-and-folders.md#files-outside-note)). Select the todo or meeting and tap **+** and the clip on its card, then tap the file in the [Files pane](projects-and-areas.md#files-and-linked-files) (on Daily in the file picker that takes the list's place, see [Linking a file from Daily](daily.md#linking-a-file-from-daily)). A filled clip opens the linked file. To remove a link, tap ✕ next to the file's name on the card.
 
 ## The file you opened Kept from
 
