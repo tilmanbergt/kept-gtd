@@ -63,9 +63,7 @@ export function useTaskDraft(core: QuickAddCore, input: Input) {
   const {editFields, setEditFields, setError, setPending} = core;
   const [draft, setDraft] = useState<TaskDraft>(makeTaskDraft);
   const [justAdded, setJustAdded] = useState<string | null>(null);
-  // Lifted out of TagChips because for Todo the page also decides whether
-  // FlowStateChips shows at all (see TagChips.tsx's doc comment) - reset to
-  // 0 wherever the create/edit target changes.
+  // The capture panel's tag page - reset to 0 wherever the create/edit target changes.
   const [tagPage, setTagPage] = useState(0);
   const [selectionOverride, setSelectionOverride] = useState<Selection>(null);
   // Whether the text field has focus - shows the Select All/Copy/Cut/Paste strip.

@@ -418,9 +418,9 @@ one tab and a later switch finds its rows ready; built rows stay, hidden. The la
 (`ui/quickAdd/CaptureQuickAdd.tsx`, §2.10). The Note tab creates a standalone `.note` in the Files
 pane's current folder (`storage/standaloneNotes.ts`), its `#tags` becoming page keywords.
 
-**Tags in the widget.** `ui/TagChips.tsx` shows recently used tags (`storage/tagUsage.ts`,
-per profile) as a paged, controlled chip row; a tag naming an Active/On Hold item's abbreviation
-shows uppercase. Typing a recognized abbreviation tag turns "+ Add" into "+ Add to `<Name>`" and
+**Tags in the widget.** The text strip's ⚡ Suggest view (`domain/writing/suggestOptions.ts`)
+offers recently used tags (`storage/tagUsage.ts`, per profile) and the abbreviations of places used
+lately; a tap writes the tag at the cursor. Typing a recognized abbreviation tag turns "+ Add" into "+ Add to `<Name>`" and
 Save into "Save to `<Name>`", which saves and moves in one step (§2.5); after "+ Add to", the next
 draft starts with that tag again. When a just-added meeting is not visible on the current
 screen, the status message says where it went (`domain/dateLabel.ts`'s `describeAddedDate`, via

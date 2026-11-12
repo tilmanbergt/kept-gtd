@@ -84,7 +84,7 @@ export const rowStyles = StyleSheet.create({
   tabTextDisabled: {
     opacity: 0.35,
   },
-  /** Groups the lead control (flow chips / time field) with the tag chips on the row's left. Never clips: only the tag chips' own row does (ui/TagChips.tsx). */
+  /** Groups the lead control (flow chips) on the capture panel's row 3. */
   row3ChipsGroup: {
     flexDirection: 'row',
     alignItems: 'center',

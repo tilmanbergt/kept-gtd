@@ -160,11 +160,10 @@ export function deriveMeetingFields(title: string): {tags: string[]} {
 /**
  * Every context tag in `text` - lowercased, deduped, first-appearance order,
  * reserved flow-state/due/`#now` words excluded via `isContextTag`
- * (technical-design-context-tags.md §4/§8). Shared by ui/TagChips.tsx (which
- * tags in the current draft/edit text get pinned to the front, shown
- * selected) and ui/QuickAddWidget.tsx (which tags to hand
- * storage/tagUsage.ts's `recordTagsUsed` after a successful add/edit save) -
- * one derivation, not reimplemented per UI file.
+ * (technical-design-context-tags.md §4/§8). Used by Quick Add to hand
+ * storage/tagUsage.ts's `recordTagsUsed` the tags of a successful add/edit
+ * save, and by the capture panel's tag grid - one derivation, not
+ * reimplemented per UI file.
  */
 export function extractContextTags(text: string): string[] {
   const seen = new Set<string>();

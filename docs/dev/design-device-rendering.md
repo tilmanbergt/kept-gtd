@@ -224,7 +224,7 @@ See §3. Other single-line rows:
 | Mini-tab strip | `ui/MiniTabs.tsx` | **~45** | Tab `paddingVertical 6 × 2` + medium line ~22 + underline 2, + row border 1 + `marginBottom 8`. |
 | Status pill (Active/On Hold) | `screens/item/StatusBlock.tsx` | **~36** | `paddingVertical 8 × 2` + small line ~18 + border 2 (plus `marginBottom 8` below). |
 | Archive / area pill | `screens/item/StatusBlock.tsx` | **~36** | Same as the status pill. |
-| Flow/tag chip | `ui/FlowStateChips.tsx`, `ui/TagChips.tsx` | **~32** | `paddingVertical 6 × 2` + small line ~18 + border 2. Matches QuickAdd's row 3 `minHeight: 32`. |
+| Flow/tag chip | `ui/FlowStateChips.tsx`, `ui/TagChipGrid.tsx` | **~32** | `paddingVertical 6 × 2` + small line ~18 + border 2. Matches QuickAdd's row 3 `minHeight: 32`. |
 | Pill button | `ui/PillButton.tsx` | **~30** / **44** | Normal: `paddingVertical 5 × 2` + small line ~18 + border 2. Large: `minHeight 44`. |
 | Text input (`ClipboardTextInput`) | `ui/ClipboardTextInput.tsx` | **~33** | `paddingVertical 5 × 2` + medium line ~21 + border 2 (as budgeted in `screens/ItemsList.tsx`'s `CREATE_ROW_PX`). |
 
