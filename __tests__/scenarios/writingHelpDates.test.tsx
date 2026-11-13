@@ -1,12 +1,12 @@
 // docs/dev/history/technical-design-writing-help.md §6, scenarios 11-18: dates, times and meeting hints in Quick Add.
-import {expectNotShows, expectShows, fieldValue, focus, openApp, tap, tapTab, textsBetween, type} from '../../test-helpers/scenario/app';
+import {expectNotShows, expectShows, fieldValue, focus, labelled, openApp, tap, tapLabel, tapTab, textsBetween, type} from '../../test-helpers/scenario/app';
 import {fixedClock} from '../../test-helpers/scenario/clock';
 import {dataFile, projectFile, putFile} from '../../test-helpers/scenario/files';
 import {given, scenario, then, when} from '../../test-helpers/scenario/scenario';
 
 const DATE = 'YYYY-MM-DD';
 const TIME = '15 · 15-16.30 · 2d';
-const TITLE = 'New meeting title';
+const TITLE = 'New meeting';
 
 // Monday 9 November 2026, 10:00.
 const clock = () => fixedClock(new Date(2026, 10, 9, 10, 0));
@@ -93,7 +93,7 @@ scenario('An hour from 1 to 6 offers the afternoon first', {feature: 'Writing he
   });
   then('it is 8:00 without a choice - already past at 10:00 today', () => {
     expectNotShows('Did you mean');
-    expectShows('8:00 · past');
+    expectShows('⚠ past');
   });
 });
 
@@ -116,8 +116,9 @@ scenario('An overlap with another meeting that day is named', {feature: 'Writing
     await focus(TIME);
     await type(TIME, '15:30-16:30');
   });
-  then('the time strip says "overlaps Jour Fixe 15:00"', () => {
-    expectShows('15:30 – 16:30 · 1 h · overlaps Jour Fixe 15:00');
+  then('the time strip leads with "⚠ Jour Fixe 15:00", and row 3 shows the warning sign', () => {
+    expectShows('⚠ Jour Fixe 15:00');
+    expect(labelled('Warning')).not.toBeNull();
   });
 });
 
@@ -127,12 +128,12 @@ scenario('A new meeting in the past is marked', {feature: 'Writing help', design
     await focus(DATE);
     await type(DATE, '2026-11-08');
   });
-  then('the date strip says "past"', () => {
-    expectShows('Sun 8 Nov 2026 · past');
+  then('the date strip says "⚠ past"', () => {
+    expectShows('⚠ past');
   });
 });
 
-scenario('The usual slot of a thread fills date, time and end in one tap', {feature: 'Writing help', design: 'technical-design-writing-help.md', help: 'quick-add.md#warnings-and-the-usual-time'}, () => {
+scenario('The usual slot of a thread fills date, time and end in one tap', {feature: 'Writing help', design: 'technical-design-quickadd-redesign.md', help: 'quick-add.md#warnings-and-the-usual-time'}, () => {
   given('the last meetings of #101/mieke: three on Tuesdays 14:00-14:45, two at other times', () => undefined);
   when('I write "1:1 #101/mieke" and tap into the date field', async () => {
     await openMeetingTab([
@@ -145,11 +146,12 @@ scenario('The usual slot of a thread fills date, time and end in one tap', {feat
     await type(TITLE, '1:1 #101/mieke');
     await focus(DATE);
   });
-  then('the strip offers "Tue 10 Nov 14:00 · 45 min"', () => {
-    expectShows('Tue 10 Nov 14:00 · 45 min');
+  then('the date strip offers its ⚡ Suggest view with "usual Tue → 10 Nov"', async () => {
+    await tapLabel('Suggest');
+    expectShows('usual Tue → 10 Nov');
   });
   when('I tap it', async () => {
-    await tap('Tue 10 Nov 14:00 · 45 min');
+    await tap('usual Tue → 10 Nov');
   });
   then('date, time and end are filled', () => {
     expect(fieldValue(DATE)).toBe('2026-11-10');

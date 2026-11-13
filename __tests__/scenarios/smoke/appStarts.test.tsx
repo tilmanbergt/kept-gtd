@@ -10,7 +10,7 @@ afterEach(() => jest.useRealTimers());
 
 /** Each main tab and the text that tells it is there. */
 const TABS: Array<[string, string | RegExp]> = [
-  ['Daily', 'Next todos'],
+  ['Daily', /^Next \d+$/],
   ['Week', 'Week 42 · 26'],
   ['Month', 'Oct 26'],
   ['Projects', '+ Create Project'],

@@ -8,6 +8,7 @@
  */
 import React from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
+import {log} from '../../utils/log';
 import {TrashIcon} from '../icons';
 import MarkWrap from '../status/StatusMark';
 import {COLORS, FONT} from '../theme';
@@ -29,7 +30,8 @@ interface CreateProps {
 /** R1, create: [M] + Add. */
 export function CreateActions({label, onPress, disabled, mark, monthlyToggle, textColor}: CreateProps): React.JSX.Element {
   return (
-    <View style={quickAddButtons.actionsRight}>
+    // Touch-down on the wrapper is logged even while the button is disabled (quickadd-redesign §11 G4).
+    <View style={quickAddButtons.actionsRight} onTouchStart={() => log(`QuickAdd: touch main editing=false disabled=${disabled}`)}>
       {monthlyToggle}
       <MarkWrap mark={mark} textColor={textColor}>
         <Pressable
@@ -48,7 +50,6 @@ export function CreateActions({label, onPress, disabled, mark, monthlyToggle, te
 
 interface EditProps {
   pending: boolean;
-  onCancel?: () => void;
   /** "Save", "Save loop", "Make loop" or "Save to <Name>". */
   saveLabel: string;
   onSave: () => void;
@@ -57,13 +58,11 @@ interface EditProps {
   textColor: string;
 }
 
-/** R1, edit: Cancel · Save. */
-export function EditActions({pending, onCancel, saveLabel, onSave, errorOnSave, textColor}: EditProps): React.JSX.Element {
+/** The main button while editing: Save (✕ beside it drops the changes, quickadd-redesign §11 G5). */
+export function EditActions({pending, saveLabel, onSave, errorOnSave, textColor}: EditProps): React.JSX.Element {
   return (
-    <View style={quickAddButtons.actionsRight}>
-      <Pressable onPress={onCancel} hitSlop={8}>
-        <Text style={[quickAddButtons.textButton, {color: textColor}]}>Cancel</Text>
-      </Pressable>
+    // Touch-down on the wrapper is logged even while Save is disabled (quickadd-redesign §11 G4).
+    <View style={quickAddButtons.actionsRight} onTouchStart={() => log(`QuickAdd: touch main editing=true pending=${pending}`)}>
       <MarkWrap mark={errorOnSave ? 'warning' : null} textColor={textColor}>
         <Pressable style={quickAddButtons.primaryButton} onPress={onSave} disabled={pending} hitSlop={8}>
           <Text style={quickAddButtons.primaryButtonText} numberOfLines={1}>

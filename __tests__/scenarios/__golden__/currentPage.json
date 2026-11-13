@@ -6,7 +6,6 @@
    "Daily",
    "Week",
    "Month",
-   "Inbox",
    "Current",
    " ●",
    "Settings",
@@ -16,12 +15,8 @@
    "Team",
    "A",
    "#AT",
-   "Notebook",
-   "Engage ›",
-   "+ Add a scope",
    "Threads",
    "Projects",
-   "Notebook",
    "Files",
    "Threads",
    "New",
@@ -126,162 +121,42 @@
    "Filter",
    "last 28.7. · next 23.11. · 3 owe",
    "1 inactive ▸",
-   "Status",
-   "Active",
-   "On Hold",
-   "🗄 Archive…",
-   "Todo",
-   "Meeting",
-   "Agreement",
-   "Note",
-   "+ Add",
-   "📅",
-   "w/f",
-   "Maybe",
-   "Someday",
-   "Next",
-   "Todos",
-   "hide done",
-   "+11",
-   "›",
-   "Waiting For",
+   "Notebook",
+   "Engage ›",
+   "⚙ Settings",
+   "+ Todo",
+   "+ Meeting",
+   "+ Agreement",
+   "+ Note",
+   "Next 0",
+   "Waiting 8",
+   "Plan 27",
+   "Someday 2",
+   "Done 1",
    "☐",
    "Send the hiring plan 9",
-   "+📓",
-   "+",
+   "w/f",
    "☐",
-   "#w/f Eva",
-   "+📓",
-   "+",
+   "Prepare the risks 12",
+   "w/f Eva",
    "☐",
-   "#w/f Anna",
-   "+📓",
-   "+",
+   "Book the contract 13",
+   "w/f Anna",
    "☐",
    "Order the risks 21",
-   "+📓",
-   "+",
-   "☑",
-   "#w/f Anna",
-   "+📓",
-   "+",
+   "w/f",
    "☐",
-   "#w/f Sam",
-   "+📓",
-   "+",
+   "Book the budget 46",
+   "w/f Sam",
    "☐",
-   "#w/f Anna",
-   "+📓",
-   "+",
+   "Book the contract 77",
+   "w/f Anna",
    "☐",
-   "#w/f Olga",
-   "+📓",
-   "+",
+   "Answer from olga",
+   "w/f Olga",
    "☐",
-   "#w/f Paul",
-   "+📓",
-   "+",
-   "Plan",
-   "☐",
-   "Check the contract 4",
-   "+📓",
-   "+",
-   "☐",
-   "Clarify the contract 5",
-   "+📓",
-   "+",
-   "☐",
-   "#owe/eva",
-   "+📓",
-   "+",
-   "☐",
-   "#owe/carla",
-   "+📓",
-   "+",
-   "☐",
-   "Follow up on the contract 14",
-   "+📓",
-   "+",
-   "☑",
-   "Clarify the minutes 20 #ulf",
-   "+📓",
-   "+",
-   "☐",
-   "Draft the minutes 25",
-   "+📓",
-   "+",
-   "☑",
-   "Book the minutes 28",
-   "+📓",
-   "+",
-   "☐",
-   "#101/it",
-   "+📓",
-   "+",
-   "☐",
-   "#owe/carla",
-   "+📓",
-   "+",
-   "☐",
-   "Clarify the contract 35",
-   "+📓",
-   "+",
-   "☐",
-   "Follow up on the roadmap 36",
-   "+📓",
-   "+",
-   "☑",
-   "Draft the offer 37",
-   "+📓",
-   "+",
-   "☐",
-   "Book the minutes 40",
-   "+📓",
-   "+",
-   "☐",
-   "Send the minutes 42",
-   "+📓",
-   "+",
-   "☑",
-   "Clarify the budget 43",
-   "+📓",
-   "+",
-   "☐",
-   "Follow up on the slides 44",
-   "+📓",
-   "+",
-   "☐",
-   "Clarify the hiring plan 48",
-   "+📓",
-   "+",
-   "☐",
-   "#101/carla",
-   "+📓",
-   "+",
-   "☑",
-   "Prepare the contract 54 #anna",
-   "+📓",
-   "+",
-   "☐",
-   "Review the budget 55",
-   "+📓",
-   "+",
-   "☐",
-   "Follow up on the contract 59 #anna",
-   "+📓",
-   "+",
-   "☐",
-   "#retro/anna",
-   "+📓",
-   "+",
-   "☐",
-   "#owe/anna",
-   "+📓",
-   "+",
-   "☐",
-   "Prepare the roadmap 67",
-   "+📓",
-   "+",
+   "Answer from paul",
+   "w/f Paul",
    "Schedule",
    "Schedule",
    "+37",
@@ -289,221 +164,94 @@
    "Upcoming",
    "29.10. 9:00",
    "#101/dirk",
-   "+📓",
    "29.10. 9:00",
    "#workshop/offsite",
-   "+📓",
    "3.11. 13:00",
    "#sparring/jordan",
-   "+📓",
    "3.11. 16:00",
    "#101/hans",
-   "+📓",
    "3.11. 16:00",
    "#101/eva",
-   "+📓",
    "4.11. 10:00",
    "#101/vera",
-   "+📓",
    "5.11. 9:00",
    "#sparring/jordan",
-   "+📓",
    "6.11. 11:00",
    "#retro/alpha",
-   "+📓",
    "6.11. 11:00",
    "#retro/gamma",
-   "+📓",
    "6.11. 12:00",
    "#101/greta",
-   "+📓",
    "9.11. 9:00",
    "#101/frank",
-   "+📓",
    "15.11. 16:00",
    "#jf/board",
-   "+📓",
    "18.11. 11:00",
    "#retro/alpha",
-   "+📓",
    "19.11. 12:00",
    "#retro/beta",
-   "+📓",
    "25.11. 13:00",
    "#101/ulf",
-   "+📓",
    "26.11. 11:00",
    "#101/anna",
-   "+📓",
    "27.11. 15:00",
    "#retro/gamma/2026",
-   "+📓",
    "28.11. 10:00",
    "#retro/gamma/2026",
-   "+📓",
    "7.12. 9:00",
    "#retro/beta",
-   "+📓",
    "7.12. 15:00",
    "#101/anna",
-   "+📓",
    "Past",
    "24.10. 16:00",
    "#retro/anna",
-   "+📓",
    "22.10. 12:00",
    "#101/greta",
-   "+📓",
    "22.10. 10:00",
    "#101/jonas",
-   "+📓",
    "21.10. 14:00",
    "#101/dirk",
-   "+📓",
    "20.10. 12:00",
    "#101/eva",
-   "+📓",
    "19.10. 16:00",
    "#101/anna",
-   "+📓",
    "19.10. 12:00",
    "#sparring/jordan",
-   "+📓",
    "17.10. 15:00",
    "#retro/gamma",
-   "+📓",
    "15.10. 11:00",
    "#retro/beta/2026",
-   "+📓",
    "15.10. 11:00",
    "#101/bert",
-   "+📓",
    "14.10. 13:00",
    "#sparring/sam",
-   "+📓",
    "13.10. 16:00",
    "#101/anna",
-   "+📓",
    "11.10. 11:00",
    "#101/frank",
-   "+📓",
    "8.10. 11:00",
    "#101/eva",
-   "+📓",
    "6.10. 12:00",
    "Lunch with the department",
-   "+📓",
    "6.10. 8:00",
    "#101/dirk",
-   "+📓",
    "5.10. 8:00",
    "#101/frank",
-   "+📓",
    "30.9. 15:00",
-   "#101/bert",
-   "+📓"
+   "#101/bert"
   ],
   "lists": [
    {
-    "header": "Mon 26.10. · 0 meetings",
+    "header": "",
     "rows": []
    },
    {
-    "header": "Mon 26.10. · 0 meetings",
+    "header": "",
     "rows": []
    },
    {
-    "header": "Next todos",
-    "rows": [
-     {
-      "kind": "header"
-     },
-     {
-      "kind": "entry",
-      "task": "Inbox only #wf/ivan"
-     },
-     {
-      "kind": "header"
-     },
-     {
-      "kind": "entry",
-      "task": "Review the offer 11 #wf/ines"
-     },
-     {
-      "kind": "entry",
-      "task": "Order the risks 26 #wf/jonas"
-     },
-     {
-      "kind": "entry",
-      "task": "Deal with stan #wf/stan #owe/stan"
-     },
-     {
-      "kind": "header"
-     },
-     {
-      "kind": "entry",
-      "task": "Prepare the risks 47 #wf"
-     },
-     {
-      "kind": "entry",
-      "task": "Follow up on the minutes 56 #wf/frank"
-     },
-     {
-      "kind": "entry",
-      "task": "Book the risks 68 #wf/jonas"
-     },
-     {
-      "kind": "entry",
-      "task": "Book the slides 76 #wf/ines"
-     },
-     {
-      "kind": "entry",
-      "task": "Send the contract 80 #wf/board"
-     },
-     {
-      "kind": "entry",
-      "task": "Book the budget 82 #wf/frank"
-     },
-     {
-      "kind": "entry",
-      "task": "Bert: hand over the files #wf"
-     },
-     {
-      "kind": "header"
-     },
-     {
-      "kind": "entry",
-      "task": "Send the hiring plan 9 #wf"
-     },
-     {
-      "kind": "entry",
-      "task": "Prepare the risks 12 #wf/eva"
-     },
-     {
-      "kind": "entry",
-      "task": "Book the contract 13 #wf/anna"
-     },
-     {
-      "kind": "entry",
-      "task": "Order the risks 21 #wf"
-     },
-     {
-      "kind": "entry",
-      "task": "Book the budget 46 #wf/sam"
-     },
-     {
-      "kind": "entry",
-      "task": "Book the contract 77 #wf/anna"
-     },
-     {
-      "kind": "entry",
-      "task": "Answer from olga #wf/olga"
-     },
-     {
-      "kind": "entry",
-      "task": "Answer from paul #wf/paul"
-     }
-    ]
+    "header": "",
+    "rows": []
    },
    {
     "header": "Threads",
@@ -651,13 +399,8 @@
     ]
    },
    {
-    "header": "Todos",
+    "header": "",
     "rows": [
-     {
-      "kind": "header",
-      "rowKey": "header-waiting-for",
-      "label": "Waiting For"
-     },
      {
       "kind": "entry",
       "rowKey": "task-6",
@@ -684,12 +427,6 @@
      },
      {
       "kind": "entry",
-      "rowKey": "task-18",
-      "index": 18,
-      "task": "x Send the risks 34 #wf/anna"
-     },
-     {
-      "kind": "entry",
       "rowKey": "task-26",
       "index": 26,
       "task": "Book the budget 46 #wf/sam"
@@ -711,232 +448,6 @@
       "rowKey": "task-41",
       "index": 41,
       "task": "Answer from paul #wf/paul"
-     },
-     {
-      "kind": "header",
-      "rowKey": "header-other",
-      "label": "Plan"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-1",
-      "index": 1,
-      "task": "Check the contract 4"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-2",
-      "index": 2,
-      "task": "Clarify the contract 5"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-3",
-      "index": 3,
-      "task": "Draft the risks 6 #owe/eva"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-4",
-      "index": 4,
-      "task": "Follow up on the contract 7 #owe/carla"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-9",
-      "index": 9,
-      "task": "Follow up on the contract 14"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-11",
-      "index": 11,
-      "task": "x Clarify the minutes 20 #ulf"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-13",
-      "index": 13,
-      "task": "Draft the minutes 25"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-15",
-      "index": 15,
-      "task": "x Book the minutes 28"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-16",
-      "index": 16,
-      "task": "Send the minutes 30 #101/it"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-17",
-      "index": 17,
-      "task": "Order the offer 31 #owe/carla"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-19",
-      "index": 19,
-      "task": "Clarify the contract 35"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-20",
-      "index": 20,
-      "task": "Follow up on the roadmap 36"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-21",
-      "index": 21,
-      "task": "x Draft the offer 37"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-22",
-      "index": 22,
-      "task": "Book the minutes 40"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-23",
-      "index": 23,
-      "task": "Send the minutes 42"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-24",
-      "index": 24,
-      "task": "x Clarify the budget 43"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-25",
-      "index": 25,
-      "task": "Follow up on the slides 44"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-27",
-      "index": 27,
-      "task": "Clarify the hiring plan 48"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-28",
-      "index": 28,
-      "task": "Send the minutes 52 #101/carla"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-29",
-      "index": 29,
-      "task": "x Prepare the contract 54 #anna"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-30",
-      "index": 30,
-      "task": "Review the budget 55"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-31",
-      "index": 31,
-      "task": "Follow up on the contract 59 #anna"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-33",
-      "index": 33,
-      "task": "Book the hiring plan 65 #retro/anna"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-34",
-      "index": 34,
-      "task": "Follow up on the risks 66 #owe/anna"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-35",
-      "index": 35,
-      "task": "Prepare the roadmap 67"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-36",
-      "index": 36,
-      "task": "x Draft the risks 71"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-37",
-      "index": 37,
-      "task": "Follow up on the offer 73"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-38",
-      "index": 38,
-      "task": "Review the roadmap 75 #bert"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-42",
-      "index": 42,
-      "task": "Offsite notes out #owe/board"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-43",
-      "index": 43,
-      "task": "Zen planning follow-up"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-44",
-      "index": 44,
-      "task": "Greta: send the reference letter"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-45",
-      "index": 45,
-      "task": "Carla: the cancelled one still counts"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-46",
-      "index": 46,
-      "task": "Dirk: renamed and cancelled"
-     },
-     {
-      "kind": "header",
-      "rowKey": "header-someday",
-      "label": "Someday"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-0",
-      "index": 0,
-      "task": "Order the contract 2 #someday #retro/alpha"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-5",
-      "index": 5,
-      "task": "Order the contract 8 #someday #retro/alpha"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-14",
-      "index": 14,
-      "task": "x Draft the budget 27 #someday #retro/beta"
      }
     ]
    },
@@ -1806,7 +1317,6 @@
    "Daily",
    "Week",
    "Month",
-   "Inbox",
    "Current",
    " ●",
    "Settings",
@@ -1816,12 +1326,8 @@
    "Team",
    "A",
    "#AT",
-   "Notebook",
-   "Engage ›",
-   "+ Add a scope",
    "Threads",
    "Projects",
-   "Notebook",
    "Files",
    "Threads",
    "New",
@@ -1926,159 +1432,41 @@
    "Filter",
    "last 28.7. · next 23.11. · 3 owe",
    "1 inactive ▸",
-   "Status",
-   "Active",
-   "On Hold",
-   "🗄 Archive…",
-   "Todo",
-   "Meeting",
-   "Agreement",
-   "Note",
-   "M",
+   "Notebook",
+   "Engage ›",
+   "⚙ Settings",
    "F",
+   "✕",
    "+ Add",
-   "Todos",
-   "hide done",
-   "+11",
-   "›",
-   "Waiting For",
+   "Next 0",
+   "Waiting 8",
+   "Plan 27",
+   "Someday 2",
+   "Done 1",
    "☐",
    "Send the hiring plan 9",
-   "+📓",
-   "+",
+   "w/f",
    "☐",
-   "#w/f Eva",
-   "+📓",
-   "+",
+   "Prepare the risks 12",
+   "w/f Eva",
    "☐",
-   "#w/f Anna",
-   "+📓",
-   "+",
+   "Book the contract 13",
+   "w/f Anna",
    "☐",
    "Order the risks 21",
-   "+📓",
-   "+",
-   "☑",
-   "#w/f Anna",
-   "+📓",
-   "+",
+   "w/f",
    "☐",
-   "#w/f Sam",
-   "+📓",
-   "+",
+   "Book the budget 46",
+   "w/f Sam",
    "☐",
-   "#w/f Anna",
-   "+📓",
-   "+",
+   "Book the contract 77",
+   "w/f Anna",
    "☐",
-   "#w/f Olga",
-   "+📓",
-   "+",
+   "Answer from olga",
+   "w/f Olga",
    "☐",
-   "#w/f Paul",
-   "+📓",
-   "+",
-   "Plan",
-   "☐",
-   "Check the contract 4",
-   "+📓",
-   "+",
-   "☐",
-   "Clarify the contract 5",
-   "+📓",
-   "+",
-   "☐",
-   "#owe/eva",
-   "+📓",
-   "+",
-   "☐",
-   "#owe/carla",
-   "+📓",
-   "+",
-   "☐",
-   "Follow up on the contract 14",
-   "+📓",
-   "+",
-   "☑",
-   "Clarify the minutes 20 #ulf",
-   "+📓",
-   "+",
-   "☐",
-   "Draft the minutes 25",
-   "+📓",
-   "+",
-   "☑",
-   "Book the minutes 28",
-   "+📓",
-   "+",
-   "☐",
-   "#101/it",
-   "+📓",
-   "+",
-   "☐",
-   "#owe/carla",
-   "+📓",
-   "+",
-   "☐",
-   "Clarify the contract 35",
-   "+📓",
-   "+",
-   "☐",
-   "Follow up on the roadmap 36",
-   "+📓",
-   "+",
-   "☑",
-   "Draft the offer 37",
-   "+📓",
-   "+",
-   "☐",
-   "Book the minutes 40",
-   "+📓",
-   "+",
-   "☐",
-   "Send the minutes 42",
-   "+📓",
-   "+",
-   "☑",
-   "Clarify the budget 43",
-   "+📓",
-   "+",
-   "☐",
-   "Follow up on the slides 44",
-   "+📓",
-   "+",
-   "☐",
-   "Clarify the hiring plan 48",
-   "+📓",
-   "+",
-   "☐",
-   "#101/carla",
-   "+📓",
-   "+",
-   "☑",
-   "Prepare the contract 54 #anna",
-   "+📓",
-   "+",
-   "☐",
-   "Review the budget 55",
-   "+📓",
-   "+",
-   "☐",
-   "Follow up on the contract 59 #anna",
-   "+📓",
-   "+",
-   "☐",
-   "#retro/anna",
-   "+📓",
-   "+",
-   "☐",
-   "#owe/anna",
-   "+📓",
-   "+",
-   "☐",
-   "Prepare the roadmap 67",
-   "+📓",
-   "+",
+   "Answer from paul",
+   "w/f Paul",
    "Schedule",
    "Schedule",
    "+37",
@@ -2086,221 +1474,94 @@
    "Upcoming",
    "29.10. 9:00",
    "#101/dirk",
-   "+📓",
    "29.10. 9:00",
    "#workshop/offsite",
-   "+📓",
    "3.11. 13:00",
    "#sparring/jordan",
-   "+📓",
    "3.11. 16:00",
    "#101/hans",
-   "+📓",
    "3.11. 16:00",
    "#101/eva",
-   "+📓",
    "4.11. 10:00",
    "#101/vera",
-   "+📓",
    "5.11. 9:00",
    "#sparring/jordan",
-   "+📓",
    "6.11. 11:00",
    "#retro/alpha",
-   "+📓",
    "6.11. 11:00",
    "#retro/gamma",
-   "+📓",
    "6.11. 12:00",
    "#101/greta",
-   "+📓",
    "9.11. 9:00",
    "#101/frank",
-   "+📓",
    "15.11. 16:00",
    "#jf/board",
-   "+📓",
    "18.11. 11:00",
    "#retro/alpha",
-   "+📓",
    "19.11. 12:00",
    "#retro/beta",
-   "+📓",
    "25.11. 13:00",
    "#101/ulf",
-   "+📓",
    "26.11. 11:00",
    "#101/anna",
-   "+📓",
    "27.11. 15:00",
    "#retro/gamma/2026",
-   "+📓",
    "28.11. 10:00",
    "#retro/gamma/2026",
-   "+📓",
    "7.12. 9:00",
    "#retro/beta",
-   "+📓",
    "7.12. 15:00",
    "#101/anna",
-   "+📓",
    "Past",
    "24.10. 16:00",
    "#retro/anna",
-   "+📓",
    "22.10. 12:00",
    "#101/greta",
-   "+📓",
    "22.10. 10:00",
    "#101/jonas",
-   "+📓",
    "21.10. 14:00",
    "#101/dirk",
-   "+📓",
    "20.10. 12:00",
    "#101/eva",
-   "+📓",
    "19.10. 16:00",
    "#101/anna",
-   "+📓",
    "19.10. 12:00",
    "#sparring/jordan",
-   "+📓",
    "17.10. 15:00",
    "#retro/gamma",
-   "+📓",
    "15.10. 11:00",
    "#retro/beta/2026",
-   "+📓",
    "15.10. 11:00",
    "#101/bert",
-   "+📓",
    "14.10. 13:00",
    "#sparring/sam",
-   "+📓",
    "13.10. 16:00",
    "#101/anna",
-   "+📓",
    "11.10. 11:00",
    "#101/frank",
-   "+📓",
    "8.10. 11:00",
    "#101/eva",
-   "+📓",
    "6.10. 12:00",
    "Lunch with the department",
-   "+📓",
    "6.10. 8:00",
    "#101/dirk",
-   "+📓",
    "5.10. 8:00",
    "#101/frank",
-   "+📓",
    "30.9. 15:00",
-   "#101/bert",
-   "+📓"
+   "#101/bert"
   ],
   "lists": [
    {
-    "header": "Mon 26.10. · 0 meetings",
+    "header": "",
     "rows": []
    },
    {
-    "header": "Mon 26.10. · 0 meetings",
+    "header": "",
     "rows": []
    },
    {
-    "header": "Next todos",
-    "rows": [
-     {
-      "kind": "header"
-     },
-     {
-      "kind": "entry",
-      "task": "Inbox only #wf/ivan"
-     },
-     {
-      "kind": "header"
-     },
-     {
-      "kind": "entry",
-      "task": "Review the offer 11 #wf/ines"
-     },
-     {
-      "kind": "entry",
-      "task": "Order the risks 26 #wf/jonas"
-     },
-     {
-      "kind": "entry",
-      "task": "Deal with stan #wf/stan #owe/stan"
-     },
-     {
-      "kind": "header"
-     },
-     {
-      "kind": "entry",
-      "task": "Prepare the risks 47 #wf"
-     },
-     {
-      "kind": "entry",
-      "task": "Follow up on the minutes 56 #wf/frank"
-     },
-     {
-      "kind": "entry",
-      "task": "Book the risks 68 #wf/jonas"
-     },
-     {
-      "kind": "entry",
-      "task": "Book the slides 76 #wf/ines"
-     },
-     {
-      "kind": "entry",
-      "task": "Send the contract 80 #wf/board"
-     },
-     {
-      "kind": "entry",
-      "task": "Book the budget 82 #wf/frank"
-     },
-     {
-      "kind": "entry",
-      "task": "Bert: hand over the files #wf"
-     },
-     {
-      "kind": "header"
-     },
-     {
-      "kind": "entry",
-      "task": "Send the hiring plan 9 #wf"
-     },
-     {
-      "kind": "entry",
-      "task": "Prepare the risks 12 #wf/eva"
-     },
-     {
-      "kind": "entry",
-      "task": "Book the contract 13 #wf/anna"
-     },
-     {
-      "kind": "entry",
-      "task": "Order the risks 21 #wf"
-     },
-     {
-      "kind": "entry",
-      "task": "Book the budget 46 #wf/sam"
-     },
-     {
-      "kind": "entry",
-      "task": "Book the contract 77 #wf/anna"
-     },
-     {
-      "kind": "entry",
-      "task": "Answer from olga #wf/olga"
-     },
-     {
-      "kind": "entry",
-      "task": "Answer from paul #wf/paul"
-     }
-    ]
+    "header": "",
+    "rows": []
    },
    {
     "header": "Threads",
@@ -2448,13 +1709,8 @@
     ]
    },
    {
-    "header": "Todos",
+    "header": "",
     "rows": [
-     {
-      "kind": "header",
-      "rowKey": "header-waiting-for",
-      "label": "Waiting For"
-     },
      {
       "kind": "entry",
       "rowKey": "task-6",
@@ -2481,12 +1737,6 @@
      },
      {
       "kind": "entry",
-      "rowKey": "task-18",
-      "index": 18,
-      "task": "x Send the risks 34 #wf/anna"
-     },
-     {
-      "kind": "entry",
       "rowKey": "task-26",
       "index": 26,
       "task": "Book the budget 46 #wf/sam"
@@ -2508,232 +1758,6 @@
       "rowKey": "task-41",
       "index": 41,
       "task": "Answer from paul #wf/paul"
-     },
-     {
-      "kind": "header",
-      "rowKey": "header-other",
-      "label": "Plan"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-1",
-      "index": 1,
-      "task": "Check the contract 4"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-2",
-      "index": 2,
-      "task": "Clarify the contract 5"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-3",
-      "index": 3,
-      "task": "Draft the risks 6 #owe/eva"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-4",
-      "index": 4,
-      "task": "Follow up on the contract 7 #owe/carla"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-9",
-      "index": 9,
-      "task": "Follow up on the contract 14"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-11",
-      "index": 11,
-      "task": "x Clarify the minutes 20 #ulf"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-13",
-      "index": 13,
-      "task": "Draft the minutes 25"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-15",
-      "index": 15,
-      "task": "x Book the minutes 28"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-16",
-      "index": 16,
-      "task": "Send the minutes 30 #101/it"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-17",
-      "index": 17,
-      "task": "Order the offer 31 #owe/carla"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-19",
-      "index": 19,
-      "task": "Clarify the contract 35"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-20",
-      "index": 20,
-      "task": "Follow up on the roadmap 36"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-21",
-      "index": 21,
-      "task": "x Draft the offer 37"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-22",
-      "index": 22,
-      "task": "Book the minutes 40"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-23",
-      "index": 23,
-      "task": "Send the minutes 42"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-24",
-      "index": 24,
-      "task": "x Clarify the budget 43"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-25",
-      "index": 25,
-      "task": "Follow up on the slides 44"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-27",
-      "index": 27,
-      "task": "Clarify the hiring plan 48"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-28",
-      "index": 28,
-      "task": "Send the minutes 52 #101/carla"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-29",
-      "index": 29,
-      "task": "x Prepare the contract 54 #anna"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-30",
-      "index": 30,
-      "task": "Review the budget 55"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-31",
-      "index": 31,
-      "task": "Follow up on the contract 59 #anna"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-33",
-      "index": 33,
-      "task": "Book the hiring plan 65 #retro/anna"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-34",
-      "index": 34,
-      "task": "Follow up on the risks 66 #owe/anna"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-35",
-      "index": 35,
-      "task": "Prepare the roadmap 67"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-36",
-      "index": 36,
-      "task": "x Draft the risks 71"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-37",
-      "index": 37,
-      "task": "Follow up on the offer 73"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-38",
-      "index": 38,
-      "task": "Review the roadmap 75 #bert"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-42",
-      "index": 42,
-      "task": "Offsite notes out #owe/board"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-43",
-      "index": 43,
-      "task": "Zen planning follow-up"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-44",
-      "index": 44,
-      "task": "Greta: send the reference letter"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-45",
-      "index": 45,
-      "task": "Carla: the cancelled one still counts"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-46",
-      "index": 46,
-      "task": "Dirk: renamed and cancelled"
-     },
-     {
-      "kind": "header",
-      "rowKey": "header-someday",
-      "label": "Someday"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-0",
-      "index": 0,
-      "task": "Order the contract 2 #someday #retro/alpha"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-5",
-      "index": 5,
-      "task": "Order the contract 8 #someday #retro/alpha"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-14",
-      "index": 14,
-      "task": "x Draft the budget 27 #someday #retro/beta"
      }
     ]
    },
@@ -3603,7 +2627,6 @@
    "Daily",
    "Week",
    "Month",
-   "Inbox",
    "Current",
    " ●",
    "Settings",
@@ -3613,12 +2636,8 @@
    "Team",
    "A",
    "#AT",
-   "Notebook",
-   "Engage ›",
-   "+ Add a scope",
    "Threads",
    "Projects",
-   "Notebook",
    "Files",
    "Threads",
    "New",
@@ -3723,158 +2742,41 @@
    "Filter",
    "last 28.7. · next 23.11. · 3 owe",
    "1 inactive ▸",
-   "Status",
-   "Active",
-   "On Hold",
-   "🗄 Archive…",
-   "Todo",
-   "Meeting",
-   "Agreement",
-   "Note",
-   "+ Add",
+   "Notebook",
+   "Engage ›",
+   "⚙ Settings",
    "valid till",
-   "Todos",
-   "hide done",
-   "+11",
-   "›",
-   "Waiting For",
+   "✕",
+   "+ Add",
+   "Next 0",
+   "Waiting 8",
+   "Plan 27",
+   "Someday 2",
+   "Done 1",
    "☐",
    "Send the hiring plan 9",
-   "+📓",
-   "+",
+   "w/f",
    "☐",
-   "#w/f Eva",
-   "+📓",
-   "+",
+   "Prepare the risks 12",
+   "w/f Eva",
    "☐",
-   "#w/f Anna",
-   "+📓",
-   "+",
+   "Book the contract 13",
+   "w/f Anna",
    "☐",
    "Order the risks 21",
-   "+📓",
-   "+",
-   "☑",
-   "#w/f Anna",
-   "+📓",
-   "+",
+   "w/f",
    "☐",
-   "#w/f Sam",
-   "+📓",
-   "+",
+   "Book the budget 46",
+   "w/f Sam",
    "☐",
-   "#w/f Anna",
-   "+📓",
-   "+",
+   "Book the contract 77",
+   "w/f Anna",
    "☐",
-   "#w/f Olga",
-   "+📓",
-   "+",
+   "Answer from olga",
+   "w/f Olga",
    "☐",
-   "#w/f Paul",
-   "+📓",
-   "+",
-   "Plan",
-   "☐",
-   "Check the contract 4",
-   "+📓",
-   "+",
-   "☐",
-   "Clarify the contract 5",
-   "+📓",
-   "+",
-   "☐",
-   "#owe/eva",
-   "+📓",
-   "+",
-   "☐",
-   "#owe/carla",
-   "+📓",
-   "+",
-   "☐",
-   "Follow up on the contract 14",
-   "+📓",
-   "+",
-   "☑",
-   "Clarify the minutes 20 #ulf",
-   "+📓",
-   "+",
-   "☐",
-   "Draft the minutes 25",
-   "+📓",
-   "+",
-   "☑",
-   "Book the minutes 28",
-   "+📓",
-   "+",
-   "☐",
-   "#101/it",
-   "+📓",
-   "+",
-   "☐",
-   "#owe/carla",
-   "+📓",
-   "+",
-   "☐",
-   "Clarify the contract 35",
-   "+📓",
-   "+",
-   "☐",
-   "Follow up on the roadmap 36",
-   "+📓",
-   "+",
-   "☑",
-   "Draft the offer 37",
-   "+📓",
-   "+",
-   "☐",
-   "Book the minutes 40",
-   "+📓",
-   "+",
-   "☐",
-   "Send the minutes 42",
-   "+📓",
-   "+",
-   "☑",
-   "Clarify the budget 43",
-   "+📓",
-   "+",
-   "☐",
-   "Follow up on the slides 44",
-   "+📓",
-   "+",
-   "☐",
-   "Clarify the hiring plan 48",
-   "+📓",
-   "+",
-   "☐",
-   "#101/carla",
-   "+📓",
-   "+",
-   "☑",
-   "Prepare the contract 54 #anna",
-   "+📓",
-   "+",
-   "☐",
-   "Review the budget 55",
-   "+📓",
-   "+",
-   "☐",
-   "Follow up on the contract 59 #anna",
-   "+📓",
-   "+",
-   "☐",
-   "#retro/anna",
-   "+📓",
-   "+",
-   "☐",
-   "#owe/anna",
-   "+📓",
-   "+",
-   "☐",
-   "Prepare the roadmap 67",
-   "+📓",
-   "+",
+   "Answer from paul",
+   "w/f Paul",
    "Schedule",
    "Schedule",
    "+37",
@@ -3882,221 +2784,94 @@
    "Upcoming",
    "29.10. 9:00",
    "#101/dirk",
-   "+📓",
    "29.10. 9:00",
    "#workshop/offsite",
-   "+📓",
    "3.11. 13:00",
    "#sparring/jordan",
-   "+📓",
    "3.11. 16:00",
    "#101/hans",
-   "+📓",
    "3.11. 16:00",
    "#101/eva",
-   "+📓",
    "4.11. 10:00",
    "#101/vera",
-   "+📓",
    "5.11. 9:00",
    "#sparring/jordan",
-   "+📓",
    "6.11. 11:00",
    "#retro/alpha",
-   "+📓",
    "6.11. 11:00",
    "#retro/gamma",
-   "+📓",
    "6.11. 12:00",
    "#101/greta",
-   "+📓",
    "9.11. 9:00",
    "#101/frank",
-   "+📓",
    "15.11. 16:00",
    "#jf/board",
-   "+📓",
    "18.11. 11:00",
    "#retro/alpha",
-   "+📓",
    "19.11. 12:00",
    "#retro/beta",
-   "+📓",
    "25.11. 13:00",
    "#101/ulf",
-   "+📓",
    "26.11. 11:00",
    "#101/anna",
-   "+📓",
    "27.11. 15:00",
    "#retro/gamma/2026",
-   "+📓",
    "28.11. 10:00",
    "#retro/gamma/2026",
-   "+📓",
    "7.12. 9:00",
    "#retro/beta",
-   "+📓",
    "7.12. 15:00",
    "#101/anna",
-   "+📓",
    "Past",
    "24.10. 16:00",
    "#retro/anna",
-   "+📓",
    "22.10. 12:00",
    "#101/greta",
-   "+📓",
    "22.10. 10:00",
    "#101/jonas",
-   "+📓",
    "21.10. 14:00",
    "#101/dirk",
-   "+📓",
    "20.10. 12:00",
    "#101/eva",
-   "+📓",
    "19.10. 16:00",
    "#101/anna",
-   "+📓",
    "19.10. 12:00",
    "#sparring/jordan",
-   "+📓",
    "17.10. 15:00",
    "#retro/gamma",
-   "+📓",
    "15.10. 11:00",
    "#retro/beta/2026",
-   "+📓",
    "15.10. 11:00",
    "#101/bert",
-   "+📓",
    "14.10. 13:00",
    "#sparring/sam",
-   "+📓",
    "13.10. 16:00",
    "#101/anna",
-   "+📓",
    "11.10. 11:00",
    "#101/frank",
-   "+📓",
    "8.10. 11:00",
    "#101/eva",
-   "+📓",
    "6.10. 12:00",
    "Lunch with the department",
-   "+📓",
    "6.10. 8:00",
    "#101/dirk",
-   "+📓",
    "5.10. 8:00",
    "#101/frank",
-   "+📓",
    "30.9. 15:00",
-   "#101/bert",
-   "+📓"
+   "#101/bert"
   ],
   "lists": [
    {
-    "header": "Mon 26.10. · 0 meetings",
+    "header": "",
     "rows": []
    },
    {
-    "header": "Mon 26.10. · 0 meetings",
+    "header": "",
     "rows": []
    },
    {
-    "header": "Next todos",
-    "rows": [
-     {
-      "kind": "header"
-     },
-     {
-      "kind": "entry",
-      "task": "Inbox only #wf/ivan"
-     },
-     {
-      "kind": "header"
-     },
-     {
-      "kind": "entry",
-      "task": "Review the offer 11 #wf/ines"
-     },
-     {
-      "kind": "entry",
-      "task": "Order the risks 26 #wf/jonas"
-     },
-     {
-      "kind": "entry",
-      "task": "Deal with stan #wf/stan #owe/stan"
-     },
-     {
-      "kind": "header"
-     },
-     {
-      "kind": "entry",
-      "task": "Prepare the risks 47 #wf"
-     },
-     {
-      "kind": "entry",
-      "task": "Follow up on the minutes 56 #wf/frank"
-     },
-     {
-      "kind": "entry",
-      "task": "Book the risks 68 #wf/jonas"
-     },
-     {
-      "kind": "entry",
-      "task": "Book the slides 76 #wf/ines"
-     },
-     {
-      "kind": "entry",
-      "task": "Send the contract 80 #wf/board"
-     },
-     {
-      "kind": "entry",
-      "task": "Book the budget 82 #wf/frank"
-     },
-     {
-      "kind": "entry",
-      "task": "Bert: hand over the files #wf"
-     },
-     {
-      "kind": "header"
-     },
-     {
-      "kind": "entry",
-      "task": "Send the hiring plan 9 #wf"
-     },
-     {
-      "kind": "entry",
-      "task": "Prepare the risks 12 #wf/eva"
-     },
-     {
-      "kind": "entry",
-      "task": "Book the contract 13 #wf/anna"
-     },
-     {
-      "kind": "entry",
-      "task": "Order the risks 21 #wf"
-     },
-     {
-      "kind": "entry",
-      "task": "Book the budget 46 #wf/sam"
-     },
-     {
-      "kind": "entry",
-      "task": "Book the contract 77 #wf/anna"
-     },
-     {
-      "kind": "entry",
-      "task": "Answer from olga #wf/olga"
-     },
-     {
-      "kind": "entry",
-      "task": "Answer from paul #wf/paul"
-     }
-    ]
+    "header": "",
+    "rows": []
    },
    {
     "header": "Threads",
@@ -4244,13 +3019,8 @@
     ]
    },
    {
-    "header": "Todos",
+    "header": "",
     "rows": [
-     {
-      "kind": "header",
-      "rowKey": "header-waiting-for",
-      "label": "Waiting For"
-     },
      {
       "kind": "entry",
       "rowKey": "task-6",
@@ -4277,12 +3047,6 @@
      },
      {
       "kind": "entry",
-      "rowKey": "task-18",
-      "index": 18,
-      "task": "x Send the risks 34 #wf/anna"
-     },
-     {
-      "kind": "entry",
       "rowKey": "task-26",
       "index": 26,
       "task": "Book the budget 46 #wf/sam"
@@ -4304,232 +3068,6 @@
       "rowKey": "task-41",
       "index": 41,
       "task": "Answer from paul #wf/paul"
-     },
-     {
-      "kind": "header",
-      "rowKey": "header-other",
-      "label": "Plan"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-1",
-      "index": 1,
-      "task": "Check the contract 4"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-2",
-      "index": 2,
-      "task": "Clarify the contract 5"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-3",
-      "index": 3,
-      "task": "Draft the risks 6 #owe/eva"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-4",
-      "index": 4,
-      "task": "Follow up on the contract 7 #owe/carla"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-9",
-      "index": 9,
-      "task": "Follow up on the contract 14"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-11",
-      "index": 11,
-      "task": "x Clarify the minutes 20 #ulf"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-13",
-      "index": 13,
-      "task": "Draft the minutes 25"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-15",
-      "index": 15,
-      "task": "x Book the minutes 28"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-16",
-      "index": 16,
-      "task": "Send the minutes 30 #101/it"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-17",
-      "index": 17,
-      "task": "Order the offer 31 #owe/carla"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-19",
-      "index": 19,
-      "task": "Clarify the contract 35"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-20",
-      "index": 20,
-      "task": "Follow up on the roadmap 36"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-21",
-      "index": 21,
-      "task": "x Draft the offer 37"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-22",
-      "index": 22,
-      "task": "Book the minutes 40"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-23",
-      "index": 23,
-      "task": "Send the minutes 42"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-24",
-      "index": 24,
-      "task": "x Clarify the budget 43"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-25",
-      "index": 25,
-      "task": "Follow up on the slides 44"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-27",
-      "index": 27,
-      "task": "Clarify the hiring plan 48"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-28",
-      "index": 28,
-      "task": "Send the minutes 52 #101/carla"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-29",
-      "index": 29,
-      "task": "x Prepare the contract 54 #anna"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-30",
-      "index": 30,
-      "task": "Review the budget 55"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-31",
-      "index": 31,
-      "task": "Follow up on the contract 59 #anna"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-33",
-      "index": 33,
-      "task": "Book the hiring plan 65 #retro/anna"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-34",
-      "index": 34,
-      "task": "Follow up on the risks 66 #owe/anna"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-35",
-      "index": 35,
-      "task": "Prepare the roadmap 67"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-36",
-      "index": 36,
-      "task": "x Draft the risks 71"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-37",
-      "index": 37,
-      "task": "Follow up on the offer 73"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-38",
-      "index": 38,
-      "task": "Review the roadmap 75 #bert"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-42",
-      "index": 42,
-      "task": "Offsite notes out #owe/board"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-43",
-      "index": 43,
-      "task": "Zen planning follow-up"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-44",
-      "index": 44,
-      "task": "Greta: send the reference letter"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-45",
-      "index": 45,
-      "task": "Carla: the cancelled one still counts"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-46",
-      "index": 46,
-      "task": "Dirk: renamed and cancelled"
-     },
-     {
-      "kind": "header",
-      "rowKey": "header-someday",
-      "label": "Someday"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-0",
-      "index": 0,
-      "task": "Order the contract 2 #someday #retro/alpha"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-5",
-      "index": 5,
-      "task": "Order the contract 8 #someday #retro/alpha"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-14",
-      "index": 14,
-      "task": "x Draft the budget 27 #someday #retro/beta"
      }
     ]
    },
@@ -5399,7 +3937,6 @@
    "Daily",
    "Week",
    "Month",
-   "Inbox",
    "Current",
    " ●",
    "Settings",
@@ -5409,12 +3946,8 @@
    "Team",
    "A",
    "#AT",
-   "Notebook",
-   "Engage ›",
-   "+ Add a scope",
    "Threads",
    "Projects",
-   "Notebook",
    "Files",
    "Threads",
    "New",
@@ -5519,157 +4052,41 @@
    "Filter",
    "last 28.7. · next 23.11. · 3 owe",
    "1 inactive ▸",
-   "Status",
-   "Active",
-   "On Hold",
-   "🗄 Archive…",
-   "Todo",
-   "Meeting",
-   "Agreement",
-   "Note",
-   "+ Add",
-   "Todos",
-   "hide done",
-   "+11",
-   "›",
-   "Waiting For",
+   "Notebook",
+   "Engage ›",
+   "⚙ Settings",
+   "2 Areas/Team",
+   "✕",
+   "+ Create",
+   "Next 0",
+   "Waiting 8",
+   "Plan 27",
+   "Someday 2",
+   "Done 1",
    "☐",
    "Send the hiring plan 9",
-   "+📓",
-   "+",
+   "w/f",
    "☐",
-   "#w/f Eva",
-   "+📓",
-   "+",
+   "Prepare the risks 12",
+   "w/f Eva",
    "☐",
-   "#w/f Anna",
-   "+📓",
-   "+",
+   "Book the contract 13",
+   "w/f Anna",
    "☐",
    "Order the risks 21",
-   "+📓",
-   "+",
-   "☑",
-   "#w/f Anna",
-   "+📓",
-   "+",
+   "w/f",
    "☐",
-   "#w/f Sam",
-   "+📓",
-   "+",
+   "Book the budget 46",
+   "w/f Sam",
    "☐",
-   "#w/f Anna",
-   "+📓",
-   "+",
+   "Book the contract 77",
+   "w/f Anna",
    "☐",
-   "#w/f Olga",
-   "+📓",
-   "+",
+   "Answer from olga",
+   "w/f Olga",
    "☐",
-   "#w/f Paul",
-   "+📓",
-   "+",
-   "Plan",
-   "☐",
-   "Check the contract 4",
-   "+📓",
-   "+",
-   "☐",
-   "Clarify the contract 5",
-   "+📓",
-   "+",
-   "☐",
-   "#owe/eva",
-   "+📓",
-   "+",
-   "☐",
-   "#owe/carla",
-   "+📓",
-   "+",
-   "☐",
-   "Follow up on the contract 14",
-   "+📓",
-   "+",
-   "☑",
-   "Clarify the minutes 20 #ulf",
-   "+📓",
-   "+",
-   "☐",
-   "Draft the minutes 25",
-   "+📓",
-   "+",
-   "☑",
-   "Book the minutes 28",
-   "+📓",
-   "+",
-   "☐",
-   "#101/it",
-   "+📓",
-   "+",
-   "☐",
-   "#owe/carla",
-   "+📓",
-   "+",
-   "☐",
-   "Clarify the contract 35",
-   "+📓",
-   "+",
-   "☐",
-   "Follow up on the roadmap 36",
-   "+📓",
-   "+",
-   "☑",
-   "Draft the offer 37",
-   "+📓",
-   "+",
-   "☐",
-   "Book the minutes 40",
-   "+📓",
-   "+",
-   "☐",
-   "Send the minutes 42",
-   "+📓",
-   "+",
-   "☑",
-   "Clarify the budget 43",
-   "+📓",
-   "+",
-   "☐",
-   "Follow up on the slides 44",
-   "+📓",
-   "+",
-   "☐",
-   "Clarify the hiring plan 48",
-   "+📓",
-   "+",
-   "☐",
-   "#101/carla",
-   "+📓",
-   "+",
-   "☑",
-   "Prepare the contract 54 #anna",
-   "+📓",
-   "+",
-   "☐",
-   "Review the budget 55",
-   "+📓",
-   "+",
-   "☐",
-   "Follow up on the contract 59 #anna",
-   "+📓",
-   "+",
-   "☐",
-   "#retro/anna",
-   "+📓",
-   "+",
-   "☐",
-   "#owe/anna",
-   "+📓",
-   "+",
-   "☐",
-   "Prepare the roadmap 67",
-   "+📓",
-   "+",
+   "Answer from paul",
+   "w/f Paul",
    "Schedule",
    "Schedule",
    "+37",
@@ -5677,221 +4094,94 @@
    "Upcoming",
    "29.10. 9:00",
    "#101/dirk",
-   "+📓",
    "29.10. 9:00",
    "#workshop/offsite",
-   "+📓",
    "3.11. 13:00",
    "#sparring/jordan",
-   "+📓",
    "3.11. 16:00",
    "#101/hans",
-   "+📓",
    "3.11. 16:00",
    "#101/eva",
-   "+📓",
    "4.11. 10:00",
    "#101/vera",
-   "+📓",
    "5.11. 9:00",
    "#sparring/jordan",
-   "+📓",
    "6.11. 11:00",
    "#retro/alpha",
-   "+📓",
    "6.11. 11:00",
    "#retro/gamma",
-   "+📓",
    "6.11. 12:00",
    "#101/greta",
-   "+📓",
    "9.11. 9:00",
    "#101/frank",
-   "+📓",
    "15.11. 16:00",
    "#jf/board",
-   "+📓",
    "18.11. 11:00",
    "#retro/alpha",
-   "+📓",
    "19.11. 12:00",
    "#retro/beta",
-   "+📓",
    "25.11. 13:00",
    "#101/ulf",
-   "+📓",
    "26.11. 11:00",
    "#101/anna",
-   "+📓",
    "27.11. 15:00",
    "#retro/gamma/2026",
-   "+📓",
    "28.11. 10:00",
    "#retro/gamma/2026",
-   "+📓",
    "7.12. 9:00",
    "#retro/beta",
-   "+📓",
    "7.12. 15:00",
    "#101/anna",
-   "+📓",
    "Past",
    "24.10. 16:00",
    "#retro/anna",
-   "+📓",
    "22.10. 12:00",
    "#101/greta",
-   "+📓",
    "22.10. 10:00",
    "#101/jonas",
-   "+📓",
    "21.10. 14:00",
    "#101/dirk",
-   "+📓",
    "20.10. 12:00",
    "#101/eva",
-   "+📓",
    "19.10. 16:00",
    "#101/anna",
-   "+📓",
    "19.10. 12:00",
    "#sparring/jordan",
-   "+📓",
    "17.10. 15:00",
    "#retro/gamma",
-   "+📓",
    "15.10. 11:00",
    "#retro/beta/2026",
-   "+📓",
    "15.10. 11:00",
    "#101/bert",
-   "+📓",
    "14.10. 13:00",
    "#sparring/sam",
-   "+📓",
    "13.10. 16:00",
    "#101/anna",
-   "+📓",
    "11.10. 11:00",
    "#101/frank",
-   "+📓",
    "8.10. 11:00",
    "#101/eva",
-   "+📓",
    "6.10. 12:00",
    "Lunch with the department",
-   "+📓",
    "6.10. 8:00",
    "#101/dirk",
-   "+📓",
    "5.10. 8:00",
    "#101/frank",
-   "+📓",
    "30.9. 15:00",
-   "#101/bert",
-   "+📓"
+   "#101/bert"
   ],
   "lists": [
    {
-    "header": "Mon 26.10. · 0 meetings",
+    "header": "",
     "rows": []
    },
    {
-    "header": "Mon 26.10. · 0 meetings",
+    "header": "",
     "rows": []
    },
    {
-    "header": "Next todos",
-    "rows": [
-     {
-      "kind": "header"
-     },
-     {
-      "kind": "entry",
-      "task": "Inbox only #wf/ivan"
-     },
-     {
-      "kind": "header"
-     },
-     {
-      "kind": "entry",
-      "task": "Review the offer 11 #wf/ines"
-     },
-     {
-      "kind": "entry",
-      "task": "Order the risks 26 #wf/jonas"
-     },
-     {
-      "kind": "entry",
-      "task": "Deal with stan #wf/stan #owe/stan"
-     },
-     {
-      "kind": "header"
-     },
-     {
-      "kind": "entry",
-      "task": "Prepare the risks 47 #wf"
-     },
-     {
-      "kind": "entry",
-      "task": "Follow up on the minutes 56 #wf/frank"
-     },
-     {
-      "kind": "entry",
-      "task": "Book the risks 68 #wf/jonas"
-     },
-     {
-      "kind": "entry",
-      "task": "Book the slides 76 #wf/ines"
-     },
-     {
-      "kind": "entry",
-      "task": "Send the contract 80 #wf/board"
-     },
-     {
-      "kind": "entry",
-      "task": "Book the budget 82 #wf/frank"
-     },
-     {
-      "kind": "entry",
-      "task": "Bert: hand over the files #wf"
-     },
-     {
-      "kind": "header"
-     },
-     {
-      "kind": "entry",
-      "task": "Send the hiring plan 9 #wf"
-     },
-     {
-      "kind": "entry",
-      "task": "Prepare the risks 12 #wf/eva"
-     },
-     {
-      "kind": "entry",
-      "task": "Book the contract 13 #wf/anna"
-     },
-     {
-      "kind": "entry",
-      "task": "Order the risks 21 #wf"
-     },
-     {
-      "kind": "entry",
-      "task": "Book the budget 46 #wf/sam"
-     },
-     {
-      "kind": "entry",
-      "task": "Book the contract 77 #wf/anna"
-     },
-     {
-      "kind": "entry",
-      "task": "Answer from olga #wf/olga"
-     },
-     {
-      "kind": "entry",
-      "task": "Answer from paul #wf/paul"
-     }
-    ]
+    "header": "",
+    "rows": []
    },
    {
     "header": "Threads",
@@ -6039,13 +4329,8 @@
     ]
    },
    {
-    "header": "Todos",
+    "header": "",
     "rows": [
-     {
-      "kind": "header",
-      "rowKey": "header-waiting-for",
-      "label": "Waiting For"
-     },
      {
       "kind": "entry",
       "rowKey": "task-6",
@@ -6072,12 +4357,6 @@
      },
      {
       "kind": "entry",
-      "rowKey": "task-18",
-      "index": 18,
-      "task": "x Send the risks 34 #wf/anna"
-     },
-     {
-      "kind": "entry",
       "rowKey": "task-26",
       "index": 26,
       "task": "Book the budget 46 #wf/sam"
@@ -6099,232 +4378,6 @@
       "rowKey": "task-41",
       "index": 41,
       "task": "Answer from paul #wf/paul"
-     },
-     {
-      "kind": "header",
-      "rowKey": "header-other",
-      "label": "Plan"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-1",
-      "index": 1,
-      "task": "Check the contract 4"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-2",
-      "index": 2,
-      "task": "Clarify the contract 5"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-3",
-      "index": 3,
-      "task": "Draft the risks 6 #owe/eva"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-4",
-      "index": 4,
-      "task": "Follow up on the contract 7 #owe/carla"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-9",
-      "index": 9,
-      "task": "Follow up on the contract 14"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-11",
-      "index": 11,
-      "task": "x Clarify the minutes 20 #ulf"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-13",
-      "index": 13,
-      "task": "Draft the minutes 25"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-15",
-      "index": 15,
-      "task": "x Book the minutes 28"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-16",
-      "index": 16,
-      "task": "Send the minutes 30 #101/it"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-17",
-      "index": 17,
-      "task": "Order the offer 31 #owe/carla"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-19",
-      "index": 19,
-      "task": "Clarify the contract 35"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-20",
-      "index": 20,
-      "task": "Follow up on the roadmap 36"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-21",
-      "index": 21,
-      "task": "x Draft the offer 37"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-22",
-      "index": 22,
-      "task": "Book the minutes 40"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-23",
-      "index": 23,
-      "task": "Send the minutes 42"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-24",
-      "index": 24,
-      "task": "x Clarify the budget 43"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-25",
-      "index": 25,
-      "task": "Follow up on the slides 44"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-27",
-      "index": 27,
-      "task": "Clarify the hiring plan 48"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-28",
-      "index": 28,
-      "task": "Send the minutes 52 #101/carla"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-29",
-      "index": 29,
-      "task": "x Prepare the contract 54 #anna"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-30",
-      "index": 30,
-      "task": "Review the budget 55"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-31",
-      "index": 31,
-      "task": "Follow up on the contract 59 #anna"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-33",
-      "index": 33,
-      "task": "Book the hiring plan 65 #retro/anna"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-34",
-      "index": 34,
-      "task": "Follow up on the risks 66 #owe/anna"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-35",
-      "index": 35,
-      "task": "Prepare the roadmap 67"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-36",
-      "index": 36,
-      "task": "x Draft the risks 71"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-37",
-      "index": 37,
-      "task": "Follow up on the offer 73"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-38",
-      "index": 38,
-      "task": "Review the roadmap 75 #bert"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-42",
-      "index": 42,
-      "task": "Offsite notes out #owe/board"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-43",
-      "index": 43,
-      "task": "Zen planning follow-up"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-44",
-      "index": 44,
-      "task": "Greta: send the reference letter"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-45",
-      "index": 45,
-      "task": "Carla: the cancelled one still counts"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-46",
-      "index": 46,
-      "task": "Dirk: renamed and cancelled"
-     },
-     {
-      "kind": "header",
-      "rowKey": "header-someday",
-      "label": "Someday"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-0",
-      "index": 0,
-      "task": "Order the contract 2 #someday #retro/alpha"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-5",
-      "index": 5,
-      "task": "Order the contract 8 #someday #retro/alpha"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-14",
-      "index": 14,
-      "task": "x Draft the budget 27 #someday #retro/beta"
      }
     ]
    },
@@ -7194,7 +5247,6 @@
    "Daily",
    "Week",
    "Month",
-   "Inbox",
    "Current",
    " ●",
    "Settings",
@@ -7204,12 +5256,8 @@
    "Team",
    "A",
    "#AT",
-   "Notebook",
-   "Engage ›",
-   "+ Add a scope",
    "Threads",
    "Projects",
-   "Notebook",
    "Files",
    "Threads",
    "New",
@@ -7314,162 +5362,41 @@
    "Filter",
    "last 28.7. · next 23.11. · 3 owe",
    "1 inactive ▸",
-   "Status",
-   "Active",
-   "On Hold",
-   "🗄 Archive…",
-   "Todo",
-   "Meeting",
-   "Agreement",
-   "Note",
-   "+ Add",
-   "📅",
+   "Notebook",
+   "Engage ›",
+   "⚙ Settings",
    "w/f",
-   "Maybe",
-   "Someday",
-   "Next",
-   "Todos",
-   "hide done",
-   "+11",
-   "›",
-   "Waiting For",
+   "✕",
+   "+ Add",
+   "Next 0",
+   "Waiting 8",
+   "Plan 27",
+   "Someday 2",
+   "Done 1",
    "☐",
    "Send the hiring plan 9",
-   "+📓",
-   "+",
+   "w/f",
    "☐",
-   "#w/f Eva",
-   "+📓",
-   "+",
+   "Prepare the risks 12",
+   "w/f Eva",
    "☐",
-   "#w/f Anna",
-   "+📓",
-   "+",
+   "Book the contract 13",
+   "w/f Anna",
    "☐",
    "Order the risks 21",
-   "+📓",
-   "+",
-   "☑",
-   "#w/f Anna",
-   "+📓",
-   "+",
+   "w/f",
    "☐",
-   "#w/f Sam",
-   "+📓",
-   "+",
+   "Book the budget 46",
+   "w/f Sam",
    "☐",
-   "#w/f Anna",
-   "+📓",
-   "+",
+   "Book the contract 77",
+   "w/f Anna",
    "☐",
-   "#w/f Olga",
-   "+📓",
-   "+",
+   "Answer from olga",
+   "w/f Olga",
    "☐",
-   "#w/f Paul",
-   "+📓",
-   "+",
-   "Plan",
-   "☐",
-   "Check the contract 4",
-   "+📓",
-   "+",
-   "☐",
-   "Clarify the contract 5",
-   "+📓",
-   "+",
-   "☐",
-   "#owe/eva",
-   "+📓",
-   "+",
-   "☐",
-   "#owe/carla",
-   "+📓",
-   "+",
-   "☐",
-   "Follow up on the contract 14",
-   "+📓",
-   "+",
-   "☑",
-   "Clarify the minutes 20 #ulf",
-   "+📓",
-   "+",
-   "☐",
-   "Draft the minutes 25",
-   "+📓",
-   "+",
-   "☑",
-   "Book the minutes 28",
-   "+📓",
-   "+",
-   "☐",
-   "#101/it",
-   "+📓",
-   "+",
-   "☐",
-   "#owe/carla",
-   "+📓",
-   "+",
-   "☐",
-   "Clarify the contract 35",
-   "+📓",
-   "+",
-   "☐",
-   "Follow up on the roadmap 36",
-   "+📓",
-   "+",
-   "☑",
-   "Draft the offer 37",
-   "+📓",
-   "+",
-   "☐",
-   "Book the minutes 40",
-   "+📓",
-   "+",
-   "☐",
-   "Send the minutes 42",
-   "+📓",
-   "+",
-   "☑",
-   "Clarify the budget 43",
-   "+📓",
-   "+",
-   "☐",
-   "Follow up on the slides 44",
-   "+📓",
-   "+",
-   "☐",
-   "Clarify the hiring plan 48",
-   "+📓",
-   "+",
-   "☐",
-   "#101/carla",
-   "+📓",
-   "+",
-   "☑",
-   "Prepare the contract 54 #anna",
-   "+📓",
-   "+",
-   "☐",
-   "Review the budget 55",
-   "+📓",
-   "+",
-   "☐",
-   "Follow up on the contract 59 #anna",
-   "+📓",
-   "+",
-   "☐",
-   "#retro/anna",
-   "+📓",
-   "+",
-   "☐",
-   "#owe/anna",
-   "+📓",
-   "+",
-   "☐",
-   "Prepare the roadmap 67",
-   "+📓",
-   "+",
+   "Answer from paul",
+   "w/f Paul",
    "Schedule",
    "Schedule",
    "+37",
@@ -7477,221 +5404,94 @@
    "Upcoming",
    "29.10. 9:00",
    "#101/dirk",
-   "+📓",
    "29.10. 9:00",
    "#workshop/offsite",
-   "+📓",
    "3.11. 13:00",
    "#sparring/jordan",
-   "+📓",
    "3.11. 16:00",
    "#101/hans",
-   "+📓",
    "3.11. 16:00",
    "#101/eva",
-   "+📓",
    "4.11. 10:00",
    "#101/vera",
-   "+📓",
    "5.11. 9:00",
    "#sparring/jordan",
-   "+📓",
    "6.11. 11:00",
    "#retro/alpha",
-   "+📓",
    "6.11. 11:00",
    "#retro/gamma",
-   "+📓",
    "6.11. 12:00",
    "#101/greta",
-   "+📓",
    "9.11. 9:00",
    "#101/frank",
-   "+📓",
    "15.11. 16:00",
    "#jf/board",
-   "+📓",
    "18.11. 11:00",
    "#retro/alpha",
-   "+📓",
    "19.11. 12:00",
    "#retro/beta",
-   "+📓",
    "25.11. 13:00",
    "#101/ulf",
-   "+📓",
    "26.11. 11:00",
    "#101/anna",
-   "+📓",
    "27.11. 15:00",
    "#retro/gamma/2026",
-   "+📓",
    "28.11. 10:00",
    "#retro/gamma/2026",
-   "+📓",
    "7.12. 9:00",
    "#retro/beta",
-   "+📓",
    "7.12. 15:00",
    "#101/anna",
-   "+📓",
    "Past",
    "24.10. 16:00",
    "#retro/anna",
-   "+📓",
    "22.10. 12:00",
    "#101/greta",
-   "+📓",
    "22.10. 10:00",
    "#101/jonas",
-   "+📓",
    "21.10. 14:00",
    "#101/dirk",
-   "+📓",
    "20.10. 12:00",
    "#101/eva",
-   "+📓",
    "19.10. 16:00",
    "#101/anna",
-   "+📓",
    "19.10. 12:00",
    "#sparring/jordan",
-   "+📓",
    "17.10. 15:00",
    "#retro/gamma",
-   "+📓",
    "15.10. 11:00",
    "#retro/beta/2026",
-   "+📓",
    "15.10. 11:00",
    "#101/bert",
-   "+📓",
    "14.10. 13:00",
    "#sparring/sam",
-   "+📓",
    "13.10. 16:00",
    "#101/anna",
-   "+📓",
    "11.10. 11:00",
    "#101/frank",
-   "+📓",
    "8.10. 11:00",
    "#101/eva",
-   "+📓",
    "6.10. 12:00",
    "Lunch with the department",
-   "+📓",
    "6.10. 8:00",
    "#101/dirk",
-   "+📓",
    "5.10. 8:00",
    "#101/frank",
-   "+📓",
    "30.9. 15:00",
-   "#101/bert",
-   "+📓"
+   "#101/bert"
   ],
   "lists": [
    {
-    "header": "Mon 26.10. · 0 meetings",
+    "header": "",
     "rows": []
    },
    {
-    "header": "Mon 26.10. · 0 meetings",
+    "header": "",
     "rows": []
    },
    {
-    "header": "Next todos",
-    "rows": [
-     {
-      "kind": "header"
-     },
-     {
-      "kind": "entry",
-      "task": "Inbox only #wf/ivan"
-     },
-     {
-      "kind": "header"
-     },
-     {
-      "kind": "entry",
-      "task": "Review the offer 11 #wf/ines"
-     },
-     {
-      "kind": "entry",
-      "task": "Order the risks 26 #wf/jonas"
-     },
-     {
-      "kind": "entry",
-      "task": "Deal with stan #wf/stan #owe/stan"
-     },
-     {
-      "kind": "header"
-     },
-     {
-      "kind": "entry",
-      "task": "Prepare the risks 47 #wf"
-     },
-     {
-      "kind": "entry",
-      "task": "Follow up on the minutes 56 #wf/frank"
-     },
-     {
-      "kind": "entry",
-      "task": "Book the risks 68 #wf/jonas"
-     },
-     {
-      "kind": "entry",
-      "task": "Book the slides 76 #wf/ines"
-     },
-     {
-      "kind": "entry",
-      "task": "Send the contract 80 #wf/board"
-     },
-     {
-      "kind": "entry",
-      "task": "Book the budget 82 #wf/frank"
-     },
-     {
-      "kind": "entry",
-      "task": "Bert: hand over the files #wf"
-     },
-     {
-      "kind": "header"
-     },
-     {
-      "kind": "entry",
-      "task": "Send the hiring plan 9 #wf"
-     },
-     {
-      "kind": "entry",
-      "task": "Prepare the risks 12 #wf/eva"
-     },
-     {
-      "kind": "entry",
-      "task": "Book the contract 13 #wf/anna"
-     },
-     {
-      "kind": "entry",
-      "task": "Order the risks 21 #wf"
-     },
-     {
-      "kind": "entry",
-      "task": "Book the budget 46 #wf/sam"
-     },
-     {
-      "kind": "entry",
-      "task": "Book the contract 77 #wf/anna"
-     },
-     {
-      "kind": "entry",
-      "task": "Answer from olga #wf/olga"
-     },
-     {
-      "kind": "entry",
-      "task": "Answer from paul #wf/paul"
-     }
-    ]
+    "header": "",
+    "rows": []
    },
    {
     "header": "Threads",
@@ -7839,13 +5639,8 @@
     ]
    },
    {
-    "header": "Todos",
+    "header": "",
     "rows": [
-     {
-      "kind": "header",
-      "rowKey": "header-waiting-for",
-      "label": "Waiting For"
-     },
      {
       "kind": "entry",
       "rowKey": "task-6",
@@ -7872,12 +5667,6 @@
      },
      {
       "kind": "entry",
-      "rowKey": "task-18",
-      "index": 18,
-      "task": "x Send the risks 34 #wf/anna"
-     },
-     {
-      "kind": "entry",
       "rowKey": "task-26",
       "index": 26,
       "task": "Book the budget 46 #wf/sam"
@@ -7899,232 +5688,6 @@
       "rowKey": "task-41",
       "index": 41,
       "task": "Answer from paul #wf/paul"
-     },
-     {
-      "kind": "header",
-      "rowKey": "header-other",
-      "label": "Plan"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-1",
-      "index": 1,
-      "task": "Check the contract 4"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-2",
-      "index": 2,
-      "task": "Clarify the contract 5"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-3",
-      "index": 3,
-      "task": "Draft the risks 6 #owe/eva"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-4",
-      "index": 4,
-      "task": "Follow up on the contract 7 #owe/carla"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-9",
-      "index": 9,
-      "task": "Follow up on the contract 14"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-11",
-      "index": 11,
-      "task": "x Clarify the minutes 20 #ulf"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-13",
-      "index": 13,
-      "task": "Draft the minutes 25"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-15",
-      "index": 15,
-      "task": "x Book the minutes 28"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-16",
-      "index": 16,
-      "task": "Send the minutes 30 #101/it"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-17",
-      "index": 17,
-      "task": "Order the offer 31 #owe/carla"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-19",
-      "index": 19,
-      "task": "Clarify the contract 35"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-20",
-      "index": 20,
-      "task": "Follow up on the roadmap 36"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-21",
-      "index": 21,
-      "task": "x Draft the offer 37"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-22",
-      "index": 22,
-      "task": "Book the minutes 40"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-23",
-      "index": 23,
-      "task": "Send the minutes 42"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-24",
-      "index": 24,
-      "task": "x Clarify the budget 43"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-25",
-      "index": 25,
-      "task": "Follow up on the slides 44"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-27",
-      "index": 27,
-      "task": "Clarify the hiring plan 48"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-28",
-      "index": 28,
-      "task": "Send the minutes 52 #101/carla"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-29",
-      "index": 29,
-      "task": "x Prepare the contract 54 #anna"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-30",
-      "index": 30,
-      "task": "Review the budget 55"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-31",
-      "index": 31,
-      "task": "Follow up on the contract 59 #anna"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-33",
-      "index": 33,
-      "task": "Book the hiring plan 65 #retro/anna"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-34",
-      "index": 34,
-      "task": "Follow up on the risks 66 #owe/anna"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-35",
-      "index": 35,
-      "task": "Prepare the roadmap 67"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-36",
-      "index": 36,
-      "task": "x Draft the risks 71"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-37",
-      "index": 37,
-      "task": "Follow up on the offer 73"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-38",
-      "index": 38,
-      "task": "Review the roadmap 75 #bert"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-42",
-      "index": 42,
-      "task": "Offsite notes out #owe/board"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-43",
-      "index": 43,
-      "task": "Zen planning follow-up"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-44",
-      "index": 44,
-      "task": "Greta: send the reference letter"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-45",
-      "index": 45,
-      "task": "Carla: the cancelled one still counts"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-46",
-      "index": 46,
-      "task": "Dirk: renamed and cancelled"
-     },
-     {
-      "kind": "header",
-      "rowKey": "header-someday",
-      "label": "Someday"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-0",
-      "index": 0,
-      "task": "Order the contract 2 #someday #retro/alpha"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-5",
-      "index": 5,
-      "task": "Order the contract 8 #someday #retro/alpha"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-14",
-      "index": 14,
-      "task": "x Draft the budget 27 #someday #retro/beta"
      }
     ]
    },
@@ -8994,7 +6557,6 @@
    "Daily",
    "Week",
    "Month",
-   "Inbox",
    "Current",
    " ●",
    "Settings",
@@ -9004,12 +6566,7 @@
    "Zen",
    "A",
    "#ZE",
-   "Notebook",
-   "Engage ›",
-   "+ Add a scope",
    "Threads",
-   "Projects",
-   "Notebook",
    "Files",
    "Threads",
    "New",
@@ -9023,151 +6580,46 @@
    "morning",
    "Filter",
    "last 12.10. · next 2.11. · 1 owe",
-   "Status",
-   "Active",
-   "On Hold",
-   "🗄 Archive…",
-   "Todo",
-   "Meeting",
-   "Agreement",
-   "Note",
-   "+ Add",
-   "📅",
-   "w/f",
-   "Maybe",
-   "Someday",
-   "Next",
-   "Todos",
-   "Plan",
+   "Notebook",
+   "Engage ›",
+   "⚙ Settings",
+   "+ Todo",
+   "+ Meeting",
+   "+ Agreement",
+   "+ Note",
+   "Next 0",
+   "Plan 2",
    "☐",
    "#sangha/morning",
-   "+📓",
-   "+",
    "☐",
    "Offsite in Zen too",
-   "+📓",
-   "+",
    "Schedule",
    "Schedule",
    "Upcoming",
    "2.11. 7:00",
    "#sangha/morning",
-   "+📓",
    "Past",
    "23.10. 18:00",
    "#101/anna",
-   "+📓",
    "12.10. 7:00",
    "#sangha/morning",
-   "+📓",
    "18.9. 9:00",
    "#jf/board",
-   "+📓",
    "16.9. 10:00",
-   "#jf/board",
-   "+📓"
+   "#jf/board"
   ],
   "lists": [
    {
-    "header": "Mon 26.10. · 0 meetings",
+    "header": "",
     "rows": []
    },
    {
-    "header": "Mon 26.10. · 0 meetings",
+    "header": "",
     "rows": []
    },
    {
-    "header": "Next todos",
-    "rows": [
-     {
-      "kind": "header"
-     },
-     {
-      "kind": "entry",
-      "task": "Inbox only #wf/ivan"
-     },
-     {
-      "kind": "header"
-     },
-     {
-      "kind": "entry",
-      "task": "Review the offer 11 #wf/ines"
-     },
-     {
-      "kind": "entry",
-      "task": "Order the risks 26 #wf/jonas"
-     },
-     {
-      "kind": "entry",
-      "task": "Deal with stan #wf/stan #owe/stan"
-     },
-     {
-      "kind": "header"
-     },
-     {
-      "kind": "entry",
-      "task": "Prepare the risks 47 #wf"
-     },
-     {
-      "kind": "entry",
-      "task": "Follow up on the minutes 56 #wf/frank"
-     },
-     {
-      "kind": "entry",
-      "task": "Book the risks 68 #wf/jonas"
-     },
-     {
-      "kind": "entry",
-      "task": "Book the slides 76 #wf/ines"
-     },
-     {
-      "kind": "entry",
-      "task": "Send the contract 80 #wf/board"
-     },
-     {
-      "kind": "entry",
-      "task": "Book the budget 82 #wf/frank"
-     },
-     {
-      "kind": "entry",
-      "task": "Bert: hand over the files #wf"
-     },
-     {
-      "kind": "header"
-     },
-     {
-      "kind": "entry",
-      "task": "Send the hiring plan 9 #wf"
-     },
-     {
-      "kind": "entry",
-      "task": "Prepare the risks 12 #wf/eva"
-     },
-     {
-      "kind": "entry",
-      "task": "Book the contract 13 #wf/anna"
-     },
-     {
-      "kind": "entry",
-      "task": "Order the risks 21 #wf"
-     },
-     {
-      "kind": "entry",
-      "task": "Book the budget 46 #wf/sam"
-     },
-     {
-      "kind": "entry",
-      "task": "Book the contract 77 #wf/anna"
-     },
-     {
-      "kind": "entry",
-      "task": "Answer from olga #wf/olga"
-     },
-     {
-      "kind": "entry",
-      "task": "Answer from paul #wf/paul"
-     }
-    ]
+    "header": "",
+    "rows": []
    },
    {
     "header": "Threads",
@@ -9200,13 +6652,8 @@
     ]
    },
    {
-    "header": "Todos",
+    "header": "",
     "rows": [
-     {
-      "kind": "header",
-      "rowKey": "header-other",
-      "label": "Plan"
-     },
      {
       "kind": "entry",
       "rowKey": "task-0",
@@ -9387,7 +6834,6 @@
    "Daily",
    "Week",
    "Month",
-   "Inbox",
    "Current",
    " ●",
    "Settings",
@@ -9396,13 +6842,9 @@
    "✕",
    "Tender",
    "P",
+   "· Team ›",
    "#TD",
-   "Notebook",
-   "Engage ›",
-   "+ Add a scope",
    "Threads",
-   "Loops",
-   "Notebook",
    "Files",
    "Threads · Team",
    "New",
@@ -9478,315 +6920,101 @@
    "works",
    "Filter",
    "last 28.7. · next 23.11. · 3 owe",
-   "Status",
-   "Active",
-   "On Hold",
-   "Done",
-   "🗄 Close out…",
-   "Area: Team",
-   "✕",
-   "Todo",
-   "Meeting",
-   "Agreement",
-   "Note",
-   "+ Add",
-   "📅",
-   "w/f",
-   "Maybe",
-   "Someday",
-   "Next",
-   "Todos",
-   "hide done",
-   "Waiting For",
+   "Notebook",
+   "Engage ›",
+   "⚙ Settings",
+   "+ Todo",
+   "+ Meeting",
+   "+ Agreement",
+   "+ Note",
+   "Next 0",
+   "Waiting 7",
+   "Plan 15",
+   "Someday 1",
    "☐",
    "Prepare the risks 47",
-   "+📓",
-   "+",
+   "w/f",
    "☐",
-   "#w/f Frank",
-   "+📓",
-   "+",
+   "Follow up on the minutes 56",
+   "w/f Frank",
    "☐",
-   "#w/f Jonas",
-   "+📓",
-   "+",
+   "Book the risks 68",
+   "w/f Jonas",
    "☐",
-   "#w/f Ines",
-   "+📓",
-   "+",
+   "Book the slides 76",
+   "w/f Ines",
    "☐",
-   "#w/f Board",
-   "+📓",
-   "+",
+   "Send the contract 80",
+   "w/f Board",
    "☐",
-   "#w/f Frank",
-   "+📓",
-   "+",
+   "Book the budget 82",
+   "w/f Frank",
    "☐",
    "Bert: hand over the files",
-   "+📓",
-   "+",
-   "Plan",
-   "☐",
-   "Clarify the risks 1",
-   "+📓",
-   "+",
-   "☐",
-   "#101/eva",
-   "+📓",
-   "+",
-   "☐",
-   "#owe/works",
-   "+📓",
-   "+",
-   "☐",
-   "#owe/works",
-   "+📓",
-   "+",
-   "☑",
-   "Review the contract 23",
-   "+📓",
-   "+",
-   "☐",
-   "Draft the risks 24",
-   "+📓",
-   "+",
-   "☐",
-   "Prepare the slides 29",
-   "+📓",
-   "+",
-   "☐",
-   "#retro/beta",
-   "+📓",
-   "+",
-   "☐",
-   "#101/gamma",
-   "+📓",
-   "+",
-   "☐",
-   "Review the roadmap 45",
-   "+📓",
-   "+",
-   "☑",
-   "#owe/anna",
-   "+📓",
-   "+",
-   "☐",
-   "#101/bert",
-   "+📓",
-   "+",
-   "☑",
-   "#owe/ines",
-   "+📓",
-   "+",
-   "☑",
-   "Send the risks 81",
-   "+📓",
-   "+",
-   "☐",
-   "Order the minutes 84 #bert",
-   "+📓",
-   "+",
-   "☐",
-   "#owe/quinn",
-   "+📓",
-   "+",
-   "☐",
-   "#owe/rosa",
-   "+📓",
-   "+",
-   "☐",
-   "Eva: goals draft",
-   "+📓",
-   "+",
-   "☐",
-   "Frank: the moved meeting",
-   "+📓",
-   "+",
-   "Someday",
-   "☐",
-   "#retro/beta",
-   "+📓",
-   "+",
-   "☑",
-   "#retro/beta",
-   "+📓",
-   "+",
+   "w/f",
    "Schedule",
    "Schedule",
    "Upcoming",
    "30.10. 10:00",
    "#sparring/jordan",
-   "+📓",
    "15.11. 10:00",
    "#retro/alpha/2026",
-   "+📓",
    "16.11. 12:00",
    "#retro/beta/2026",
-   "+📓",
    "23.11. 11:00",
    "#jf/works",
-   "+📓",
    "2.12. 8:00",
    "#101/anna",
-   "+📓",
    "6.12. 9:00",
    "#101/eva",
-   "+📓",
    "6.12. 11:00",
    "#101/bert",
-   "+📓",
    "9.12. 13:00",
    "#retro/alpha/2026",
-   "+📓",
    "Past",
    "24.10. 14:00",
    "#jf/it",
-   "+📓",
    "21.10. 14:00",
    "Tender kick-off",
-   "+📓",
    "12.10. 16:00",
    "#101/carla",
-   "+📓",
    "10.10. 15:00",
    "#101/carla",
-   "+📓",
    "19.9. 11:00",
    "#retro/beta",
-   "+📓",
    "13.9. 8:00",
    "#jf/board",
-   "+📓",
    "11.9. 12:00",
    "#101/hans",
-   "+📓",
    "8.9. 13:00",
    "#101/jonas",
-   "+📓",
    "16.8. 14:00",
    "#101/ulf",
-   "+📓",
    "12.8. 8:00",
    "#101/anna",
-   "+📓",
    "27.7. 9:00",
    "#retro/gamma/2026",
-   "+📓",
    "24.7. 8:00",
    "#jf/works",
-   "+📓",
    "7.7. 11:00",
    "#jf/works",
-   "+📓",
    "7.6. 16:00",
    "#sparring/jordan",
-   "+📓",
    "6.6. 8:00",
-   "#retro/beta/2026",
-   "+📓"
+   "#retro/beta/2026"
   ],
   "lists": [
    {
-    "header": "Mon 26.10. · 0 meetings",
+    "header": "",
     "rows": []
    },
    {
-    "header": "Mon 26.10. · 0 meetings",
+    "header": "",
     "rows": []
    },
    {
-    "header": "Next todos",
-    "rows": [
-     {
-      "kind": "header"
-     },
-     {
-      "kind": "entry",
-      "task": "Inbox only #wf/ivan"
-     },
-     {
-      "kind": "header"
-     },
-     {
-      "kind": "entry",
-      "task": "Review the offer 11 #wf/ines"
-     },
-     {
-      "kind": "entry",
-      "task": "Order the risks 26 #wf/jonas"
-     },
-     {
-      "kind": "entry",
-      "task": "Deal with stan #wf/stan #owe/stan"
-     },
-     {
-      "kind": "header"
-     },
-     {
-      "kind": "entry",
-      "task": "Prepare the risks 47 #wf"
-     },
-     {
-      "kind": "entry",
-      "task": "Follow up on the minutes 56 #wf/frank"
-     },
-     {
-      "kind": "entry",
-      "task": "Book the risks 68 #wf/jonas"
-     },
-     {
-      "kind": "entry",
-      "task": "Book the slides 76 #wf/ines"
-     },
-     {
-      "kind": "entry",
-      "task": "Send the contract 80 #wf/board"
-     },
-     {
-      "kind": "entry",
-      "task": "Book the budget 82 #wf/frank"
-     },
-     {
-      "kind": "entry",
-      "task": "Bert: hand over the files #wf"
-     },
-     {
-      "kind": "header"
-     },
-     {
-      "kind": "entry",
-      "task": "Send the hiring plan 9 #wf"
-     },
-     {
-      "kind": "entry",
-      "task": "Prepare the risks 12 #wf/eva"
-     },
-     {
-      "kind": "entry",
-      "task": "Book the contract 13 #wf/anna"
-     },
-     {
-      "kind": "entry",
-      "task": "Order the risks 21 #wf"
-     },
-     {
-      "kind": "entry",
-      "task": "Book the budget 46 #wf/sam"
-     },
-     {
-      "kind": "entry",
-      "task": "Book the contract 77 #wf/anna"
-     },
-     {
-      "kind": "entry",
-      "task": "Answer from olga #wf/olga"
-     },
-     {
-      "kind": "entry",
-      "task": "Answer from paul #wf/paul"
-     }
-    ]
+    "header": "",
+    "rows": []
    },
    {
     "header": "Threads · Team",
@@ -9894,13 +7122,8 @@
     ]
    },
    {
-    "header": "Todos",
+    "header": "",
     "rows": [
-     {
-      "kind": "header",
-      "rowKey": "header-waiting-for",
-      "label": "Waiting For"
-     },
      {
       "kind": "entry",
       "rowKey": "task-12",
@@ -9942,142 +7165,6 @@
       "rowKey": "task-29",
       "index": 29,
       "task": "Bert: hand over the files #wf"
-     },
-     {
-      "kind": "header",
-      "rowKey": "header-other",
-      "label": "Plan"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-0",
-      "index": 0,
-      "task": "Clarify the risks 1"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-1",
-      "index": 1,
-      "task": "Draft the offer 3 #101/eva"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-2",
-      "index": 2,
-      "task": "Book the risks 15 #owe/works"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-4",
-      "index": 4,
-      "task": "Review the roadmap 22 #owe/works"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-5",
-      "index": 5,
-      "task": "x Review the contract 23"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-6",
-      "index": 6,
-      "task": "Draft the risks 24"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-7",
-      "index": 7,
-      "task": "Prepare the slides 29"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-9",
-      "index": 9,
-      "task": "Book the risks 33 #retro/beta"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-10",
-      "index": 10,
-      "task": "Review the contract 38 #101/gamma"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-11",
-      "index": 11,
-      "task": "Review the roadmap 45"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-15",
-      "index": 15,
-      "task": "x Review the roadmap 53 #owe/anna"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-18",
-      "index": 18,
-      "task": "Review the budget 74 #101/bert"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-20",
-      "index": 20,
-      "task": "x Check the hiring plan 78 #owe/ines"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-23",
-      "index": 23,
-      "task": "x Send the risks 81"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-25",
-      "index": 25,
-      "task": "Order the minutes 84 #bert"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-26",
-      "index": 26,
-      "task": "Promise to quinn #owe/quinn"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-27",
-      "index": 27,
-      "task": "Promise to rosa #owe/rosa"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-28",
-      "index": 28,
-      "task": "Eva: goals draft"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-30",
-      "index": 30,
-      "task": "Frank: the moved meeting"
-     },
-     {
-      "kind": "header",
-      "rowKey": "header-someday",
-      "label": "Someday"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-3",
-      "index": 3,
-      "task": "Check the contract 16 #someday #retro/beta"
-     },
-     {
-      "kind": "entry",
-      "rowKey": "task-21",
-      "index": 21,
-      "task": "x Order the budget 79 #someday #retro/beta"
      }
     ]
    },
@@ -10427,7 +7514,6 @@
    "Daily",
    "Week",
    "Month",
-   "Inbox",
    "Current",
    " ●",
    "Settings",
@@ -10437,152 +7523,45 @@
    "Solo",
    "P",
    "#SO",
-   "Notebook",
-   "Engage ›",
-   "+ Add a scope",
    "Threads",
-   "Loops",
-   "Notebook",
    "Files",
    "Threads",
    "New",
    "omega",
    "Tend",
    "Not",
-   "Status",
-   "Active",
-   "On Hold",
-   "Done",
-   "🗄 Close out…",
-   "Assign to Area…",
-   "Todo",
-   "Meeting",
-   "Agreement",
-   "Note",
-   "+ Add",
-   "📅",
-   "w/f",
-   "Maybe",
-   "Someday",
-   "Next",
-   "Todos",
-   "Plan",
+   "Notebook",
+   "Engage ›",
+   "⚙ Settings",
+   "+ Todo",
+   "+ Meeting",
+   "+ Agreement",
+   "+ Note",
+   "Next 0",
+   "Plan 1",
    "☐",
    "#retro/omega",
-   "+📓",
-   "+",
    "Schedule",
    "Schedule",
    "Upcoming",
    "31.10. 16:00",
    "#retro/omega",
-   "+📓",
    "Past",
    "17.10. 16:00",
-   "#retro/omega",
-   "+📓"
+   "#retro/omega"
   ],
   "lists": [
    {
-    "header": "Mon 26.10. · 0 meetings",
+    "header": "",
     "rows": []
    },
    {
-    "header": "Mon 26.10. · 0 meetings",
+    "header": "",
     "rows": []
    },
    {
-    "header": "Next todos",
-    "rows": [
-     {
-      "kind": "header"
-     },
-     {
-      "kind": "entry",
-      "task": "Inbox only #wf/ivan"
-     },
-     {
-      "kind": "header"
-     },
-     {
-      "kind": "entry",
-      "task": "Review the offer 11 #wf/ines"
-     },
-     {
-      "kind": "entry",
-      "task": "Order the risks 26 #wf/jonas"
-     },
-     {
-      "kind": "entry",
-      "task": "Deal with stan #wf/stan #owe/stan"
-     },
-     {
-      "kind": "header"
-     },
-     {
-      "kind": "entry",
-      "task": "Prepare the risks 47 #wf"
-     },
-     {
-      "kind": "entry",
-      "task": "Follow up on the minutes 56 #wf/frank"
-     },
-     {
-      "kind": "entry",
-      "task": "Book the risks 68 #wf/jonas"
-     },
-     {
-      "kind": "entry",
-      "task": "Book the slides 76 #wf/ines"
-     },
-     {
-      "kind": "entry",
-      "task": "Send the contract 80 #wf/board"
-     },
-     {
-      "kind": "entry",
-      "task": "Book the budget 82 #wf/frank"
-     },
-     {
-      "kind": "entry",
-      "task": "Bert: hand over the files #wf"
-     },
-     {
-      "kind": "header"
-     },
-     {
-      "kind": "entry",
-      "task": "Send the hiring plan 9 #wf"
-     },
-     {
-      "kind": "entry",
-      "task": "Prepare the risks 12 #wf/eva"
-     },
-     {
-      "kind": "entry",
-      "task": "Book the contract 13 #wf/anna"
-     },
-     {
-      "kind": "entry",
-      "task": "Order the risks 21 #wf"
-     },
-     {
-      "kind": "entry",
-      "task": "Book the budget 46 #wf/sam"
-     },
-     {
-      "kind": "entry",
-      "task": "Book the contract 77 #wf/anna"
-     },
-     {
-      "kind": "entry",
-      "task": "Answer from olga #wf/olga"
-     },
-     {
-      "kind": "entry",
-      "task": "Answer from paul #wf/paul"
-     }
-    ]
+    "header": "",
+    "rows": []
    },
    {
     "header": "Threads",
@@ -10600,13 +7579,8 @@
     ]
    },
    {
-    "header": "Todos",
+    "header": "",
     "rows": [
-     {
-      "kind": "header",
-      "rowKey": "header-other",
-      "label": "Plan"
-     },
      {
       "kind": "entry",
       "rowKey": "task-0",

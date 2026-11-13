@@ -1,4 +1,4 @@
-import {expectNotShows, expectShows, fieldValue, firstCheckboxOf, focus, openApp, tap, tapLabel, tapTab, type} from '../../test-helpers/scenario/app';
+import {cardHeading, expectNotShows, expectShows, fieldValue, firstCheckboxOf, focus, labelled, openApp, openInbox, tap, tapLabel, tapTab, type} from '../../test-helpers/scenario/app';
 import {dataFile, expectFileContains, INBOX_FILE, loggedErrors, projectFile, putFile, sectionLines} from '../../test-helpers/scenario/files';
 import {given, scenario, then, when} from '../../test-helpers/scenario/scenario';
 
@@ -13,7 +13,7 @@ scenario('Quick Add a todo in a project', {feature: 'Quick Add', design: 'techni
     await openApp();
     await tapTab('Projects');
     await tap(/^Website/);
-    await type('New task', 'Call the designer');
+    await type('New todo', 'Call the designer');
     await tap('+ Add');
   });
   then('project.txt lists both todos', () => {
@@ -34,7 +34,7 @@ scenario('Quick Add a todo in a project', {feature: 'Quick Add', design: 'techni
 
 scenario('Edit a todo, then tap another one: the first edit is saved', {feature: 'Quick Add', design: 'technical-design-meeting-lists.md', help: 'quick-add.md#editing'}, () => {
   given('project "Website" has the todos "Write copy" and "Fix footer"', () => {
-    putFile(projectFile('Website'), dataFile('project', {Scope: [], Tasks: ['- [ ] Write copy #next', '- [ ] Fix footer'], Meetings: []}));
+    putFile(projectFile('Website'), dataFile('project', {Scope: [], Tasks: ['- [ ] Write copy #next', '- [ ] Fix footer #next'], Meetings: []}));
   });
   when('I open "Website", tap "Write copy" and Edit on its card, change it to "Write landing page copy" and tap "Fix footer"', async () => {
     await openApp();
@@ -42,15 +42,15 @@ scenario('Edit a todo, then tap another one: the first edit is saved', {feature:
     await tap(/^Website/);
     await tap('Write copy');
     await tap('Edit');
-    await type('New task', 'Write landing page copy');
+    await type('New todo', 'Write landing page copy');
     await tap('Fix footer');
   });
   then('project.txt has the changed todo, still #next, and "Fix footer" unchanged', () => {
-    expect(sectionLines(projectFile('Website'), 'Tasks')).toEqual(['- [ ] Write landing page copy #next', '- [ ] Fix footer']);
+    expect(sectionLines(projectFile('Website'), 'Tasks')).toEqual(['- [ ] Write landing page copy #next', '- [ ] Fix footer #next']);
   });
   then('"Fix footer" is now the selected one, shown as its card (technical-design-item-card.md §3)', () => {
-    expectShows('Todo · open');
-    expectShows('Edit');
+    expect(cardHeading()).toMatch(/^Todo · .+ · next$/);
+    expect(labelled('Close')).not.toBeNull();
   });
 });
 
@@ -61,10 +61,10 @@ scenario('An abbreviation tag files a todo into its project while editing', {fea
   });
   when('I edit the Inbox todo, add "#WEB" and tap "Save to Website"', async () => {
     await openApp();
-    await tapTab('Inbox');
+    await openInbox();
     await tap('Ask about hosting');
     await tap('Edit');
-    await type('New task', 'Ask about hosting #WEB');
+    await type('New todo', 'Ask about hosting #WEB');
     await tap(/^Save to Website/);
   });
   then('the todo is in Website\'s project.txt, without the #WEB tag', () => {
@@ -98,34 +98,34 @@ scenario('The ✕ puts a hovering strip away until the field gains focus again',
     await openApp();
     await tapTab('Projects');
     await tap(/^Website/);
-    await focus('New task');
+    await focus('New todo');
   });
-  then('All/Copy/Cut/Paste hovers over the tabs', () => {
-    expectShows('Paste');
+  then('the strip hovers above the box with its suggestions', () => {
+    expectShows('#next');
   });
   when('I tap its ✕', async () => {
     await tapLabel('Hide');
   });
   then('it is gone while the field still has the cursor', () => {
-    expectNotShows('Paste');
+    expectNotShows('#next');
   });
   when('the field loses the cursor and gets it back', async () => {
-    await focus('New task', false);
-    await focus('New task');
+    await focus('New todo', false);
+    await focus('New todo');
   });
   then('the strip is back', () => {
-    expectShows('Paste');
+    expectShows('#next');
   });
-  when('I hide it again and tap the Meeting tab', async () => {
+  when('I hide it again and open a meeting', async () => {
     await tapLabel('Hide');
     await tap('Meeting');
   });
   then('the meeting form shows', () => {
-    expect(fieldValue('New meeting title')).toBe('');
+    expect(fieldValue('New meeting')).toBe('');
   });
   when('I open the due date and put the cursor into it', async () => {
     await tap('Todo');
-    await tap('📅');
+    await tapLabel('Due date');
     await focus('Due YYYY-MM-DD');
   });
   then('the date strip hovers there with its own ✕, which puts it away', async () => {

@@ -3,7 +3,7 @@ import {expectNotShows, expectShows, openApp, tap, tapTab, texts} from '../../te
 import {areaDir, areaFile, dataFile, putFile, sectionLines} from '../../test-helpers/scenario/files';
 import {given, scenario, then, when} from '../../test-helpers/scenario/scenario';
 import {device} from '../../test-helpers/fakeDevice/device';
-import {engageOn, processSportMarks, sectionLine, settings, sport, SPORT, sportClock, sportMark} from '../../test-helpers/scenario/sportArea';
+import {engageOn, processSportMarks, settings, sport, SPORT, sportClock, sportMark} from '../../test-helpers/scenario/sportArea';
 
 // docs/dev/history/technical-design-engage-page-owner.md §6, on Area Sport (test-helpers/scenario/sportArea.ts).
 // Pages below are 1-based as in the design; the fake device counts from 0.
@@ -18,51 +18,46 @@ afterEach(() => jest.useRealTimers());
 scenario('Engage on the Home page of a home notebook that is also a loop\'s note: the Area, not the loop', {feature: 'Engage', design: DESIGN, help: 'engage.md#which-owner-a-page-belongs-to'}, () => {
   given('Sport 2026.note is Area Sport\'s home notebook and the note of loop marathon; page 1 is its Home page', () => sport());
   when('I open Engage on page 1', () => engageOn(1));
-  then('the owner is Area Sport and the line reads "Section: Sport"', () => {
+  then('the owner is Area Sport', () => {
     expectShows('AREA');
     expectShows('Sport');
     expectNotShows('Loop');
-    expect(sectionLine()).toEqual(['Section: Sport']);
   });
 });
 
 scenario('Engage on a free page after the Home page: the Area, from p. 1', {feature: 'Engage', design: DESIGN, help: 'engage.md#which-owner-a-page-belongs-to'}, () => {
   given('page 2 has no title and no keyword', () => sport());
   when('I open Engage on page 2', () => engageOn(2));
-  then('the owner is Area Sport and the line reads "Section: Sport · from p. 1"', () => {
+  then('the owner is Area Sport', () => {
     expectShows('AREA');
-    expect(sectionLine()).toEqual(['Section: Sport · from p. 1']);
   });
 });
 
 scenario('Engage on a loop todo\'s follow-up page: the loop, with that todo current', {feature: 'Engage', design: DESIGN, help: 'engage.md#which-owner-a-page-belongs-to'}, () => {
   given('page 5 is the page of the open todo "Plan long runs #loop/marathon", page 6 a follow-up', () => sport());
   when('I open Engage on page 6', () => engageOn(6));
-  then('the owner is Loop marathon, the todo is current, and the line names it from p. 5', () => {
+  then('the owner is Loop marathon and the todo is current', () => {
     expectShows('LOOP');
     expectShows('  · Sport');
     expectShows('Working on');
     expectShows(/^Plan long runs/);
-    expect(sectionLine()).toEqual(['Section: Plan long runs loop/marathon · from p. 5']);
   });
 });
 
 scenario('Your own heading starts a section of the notebook owner', {feature: 'Engage', design: DESIGN, help: 'engage.md#which-owner-a-page-belongs-to'}, () => {
   given('page 7 has my typed heading "Training plan"', () => sport());
   when('I open Engage on page 8', () => engageOn(8));
-  then('the owner is Area Sport and the line reads "Section: Training plan · from p. 7"', () => {
+  then('the owner is Area Sport', () => {
     expectShows('AREA');
     expectNotShows('Working on');
-    expect(sectionLine()).toEqual(['Section: Training plan · from p. 7']);
   });
 });
 
 scenario('A handwritten heading starts a section too', {feature: 'Engage', design: DESIGN, help: 'engage.md#which-owner-a-page-belongs-to'}, () => {
   given('page 9 has a handwritten title', () => sport());
   when('I open Engage on page 9', () => engageOn(9));
-  then('the owner is Area Sport and the line reads "Section: Handwritten section"', () => {
+  then('the owner is Area Sport', () => {
     expectShows('AREA');
-    expect(sectionLine()).toEqual(['Section: Handwritten section']);
   });
 });
 
@@ -72,17 +67,15 @@ scenario('A todo\'s keyword without a title still starts its section', {feature:
   then('"Buy shoes" is current and the section is p. 10', () => {
     expectShows('Working on');
     expectShows(/^Buy shoes/);
-    expect(sectionLine()).toEqual(['Section: Buy shoes · from p. 10']);
   });
 });
 
 scenario('A cancelled todo\'s page still starts a section, but nothing becomes current', {feature: 'Engage', design: DESIGN, help: 'engage.md#which-owner-a-page-belongs-to'}, () => {
   given('the todo "Buy shoes" of page 10 is cancelled', () => sport({shoes: 'cancelled'}));
   when('I open Engage on page 11', () => engageOn(11));
-  then('the owner is Area Sport, no todo is current, and the line still reads "Section: Buy shoes · from p. 10"', () => {
+  then('the owner is Area Sport and no todo is current', () => {
     expectShows('AREA');
     expectNotShows('Working on');
-    expect(sectionLine()).toEqual(['Section: Buy shoes · from p. 10']);
   });
 });
 
@@ -92,7 +85,6 @@ scenario('A closed loop\'s todo page goes back to the Area', {feature: 'Engage',
   then('the owner is Area Sport', () => {
     expectShows('AREA');
     expectNotShows('Loop');
-    expect(sectionLine()).toEqual(['Section: Plan long runs loop/marathon · from p. 5']);
   });
 });
 
@@ -103,10 +95,9 @@ scenario('A pure loop note: a free page after the loop page belongs to the loop'
     device().sdk.putNote(LOOP_NOTE, [{keywords: ['loop loop/marathon']}, {}]);
   });
   when('I open Engage on page 2 of the loop note', () => engageOn(2, LOOP_NOTE, ''));
-  then('the owner is the loop and the line names the loop page', () => {
+  then('the owner is the loop', () => {
     expectShows('LOOP');
     expectShows('  · Sport');
-    expect(sectionLine()).toEqual(['Section: loop marathon · from p. 1']);
   });
 });
 
@@ -126,7 +117,6 @@ scenario('A thread notebook\'s follow-up page: the thread and its sparring', {fe
     expectShows('THREAD');
     expectShows('  · Coaching');
     expectShows('Sparring Jordan · Sat 24.10. 10:00–11:00');
-    expect(sectionLine()).toEqual(['Section: Sparring Jordan sparring/jordan · 24.10. · from p. 1']);
   });
 });
 
@@ -141,7 +131,6 @@ scenario('A todo\'s own note: as before, no section line', {feature: 'Engage', d
   then('the todo is current and no section line shows', () => {
     expectShows('Working on');
     expectShows(/^Stretch daily/);
-    expect(sectionLine()).toEqual([]);
   });
 });
 
@@ -153,7 +142,6 @@ scenario('The page index can\'t be read: the single-page lookup, and the panel o
   when('I open Engage on the meeting page 3', () => engageOn(3));
   then('it falls back to the page\'s own keyword: the meeting\'s moment line, no section line, "index not read" logged', () => {
     expectShows('Coach call · Sat 24.10. 10:00–11:00');
-    expect(sectionLine()).toEqual([]);
     expect(device().logs.some(l => l.text.startsWith('pageSection: index not read'))).toBe(true);
   });
   when('I tap Close', () => tap('Close'));
@@ -205,7 +193,7 @@ scenario('An agreement from a mark on a thread notebook\'s follow-up page: for t
 scenario('Your own heading stops the provenance', {feature: 'Lasso', design: DESIGN, help: 'lasso.md#capturing-right-away'}, () => {
   given('page 8 follows the heading "Training plan" and has a mark "Book track time"', () => sport({marks: [sportMark(8, 'Book track time')]}));
   when('I process the mark', processSportMarks);
-  then('no "↳ from" line shows', () => expectNotShows(/^↳ from/));
+  then('no meeting shows in the grey line, only the note itself', () => expectShows(/^↳ from Sport 2026$/));
   when('I save it as a todo', () => tap(/^Save & close/));
   then('no meeting is recorded', () => {
     const line = sectionLines(areaFile('Sport'), 'Tasks').find(l => l.includes('Book track time'));
@@ -217,7 +205,7 @@ scenario('Your own heading stops the provenance', {feature: 'Lasso', design: DES
 scenario('A cancelled meeting\'s follow-up page records no meeting', {feature: 'Lasso', design: DESIGN, help: 'lasso.md#capturing-right-away'}, () => {
   given('the meeting "Coach call" of page 3 is cancelled; page 4 has a mark "Ask coach about intervals"', () => sport({coach: 'cancelled', marks: [sportMark(4, 'Ask coach about intervals')]}));
   when('I process the mark', processSportMarks);
-  then('no "↳ from" line shows', () => expectNotShows(/^↳ from/));
+  then('no meeting shows in the grey line, only the note itself', () => expectShows(/^↳ from Sport 2026$/));
   when('I save it as a todo', () => tap(/^Save & close/));
   then('no meeting is recorded', () => {
     const line = sectionLines(areaFile('Sport'), 'Tasks').find(l => l.includes('Ask coach about intervals'));

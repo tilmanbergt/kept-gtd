@@ -73,7 +73,7 @@ it runs on; it asks two questions of `ui/ScreenSize.tsx` and follows the rules b
   instead (`WeekGrid` rows, Month halves).
 - A button inside a fixed-height strip is sized from the strip (status slot buttons).
 - A simplification that helps a small screen is made on every device, not only on the small one
-  (no Given time line or Scope label on the project page, one-line marks card, "hide done" in the
+  (no Given time line or Scope label on the project page, one-line marks card, count tabs in the
   list header).
 
 **Short screens**
@@ -146,7 +146,7 @@ top-aligned, so if a prediction is too large the spare space sits at the bottom 
 | This-file row (Files pane, while linking) | `ui/fileBrowser/ThisFileRows.tsx` | **42 (fixed)** | `THIS_FILE_ROW_PX`, one line, above the list: two rows take 84 dp from the list box, which measures itself. |
 | Project/Area entry, Projects/Areas tabs | `screens/ItemsList.tsx` → `itemEntryHeight()` | **38** / **60** | Padding 8 × 2 + lines × 22, max 2 lines, `#ABBR` included in the estimate. |
 | Project/Area entry, Review lists | `ui/itemEntryRow.ts` → `itemEntryHeight()` | **34** / **56** | Padding 6 × 2 + lines × 22. |
-| Task group header (Project, Inbox) | `screens/ProjectDataPanel.tsx`, `screens/InboxScreen.tsx` | **30** | `SUBHEADING_ROW_PX`: `marginTop 10` + small line ~18 + `marginBottom 4`, rounded down. |
+| Task group header (Project) | `screens/ProjectDataPanel.tsx` | **30** | `SUBHEADING_ROW_PX`: `marginTop 10` + small line ~18 + `marginBottom 4`, rounded down. |
 | Task group header (Daily "Next todos") | `screens/DailyView.tsx` | **57** budgeted | `GROUP_HEADER_ROW_PX`. The header renders at its natural height (`common.subheading` + `marginTop 12` ≈ 42); the budget leaves room on purpose. |
 
 Pattern for a new row type: give it a height function (or one fixed height) that matches the
@@ -210,7 +210,7 @@ See §3. Other single-line rows:
 
 | Row | File | Height (dp) | Composition |
 |---|---|---|---|
-| Given time row | `ui/period/GivenTimePanel.tsx` | **57** | `GIVEN_TIME_ROW_PX`: name and time 22 + grey line 18 + `paddingVertical 7 × 2` + border 1, like a 2-line meeting row; its captions ("Loops and counterparts", "Worked on …") and hint lines 28. |
+| Given time row | `ui/period/GivenTimePanel.tsx` | **37** | `GIVEN_TIME_ROW_PX`: name and time 22 + `paddingVertical 7 × 2` + border 1, like a 1-line meeting row (the grey line is on the owner card); its captions ("Loops and counterparts", "Worked on …") and hint lines 28. |
 | Context panel rows | `ui/meetingContext/MeetingContextPanel.tsx` | **task row** / **57** / **28** | todos as `TaskRow` (§3), an agreement 57 (`AGREEMENT_ROW_HEIGHT`), a caption ("I owe", "Agreed last time") 28. |
 | Hidden line | `ui/context/HiddenLine.tsx` | **~30** | `paddingVertical 6 × 2` + small line ~18; shown only while a context hides something. |
 | Tend line | `ui/period/GivenTimePanel.tsx` | **~30** | `paddingVertical 6 × 2` + small line ~18; only when something is quiet. |
@@ -222,9 +222,9 @@ See §3. Other single-line rows:
 |---|---|---|---|
 | `PagedSection` header line | `ui/PagedSection.tsx` | **~31** | `paddingVertical 4 × 2` + small line ~18 + border 1 + `marginBottom 4` (`SECTION_HEADER_ROW_PX` in `screens/ItemsList.tsx`). The arrow buttons (medium text + `paddingVertical 2 × 2` ≈ 26) are taller than the header text, so a header with arrows can be a few dp taller (estimate). Self-measuring lists absorb this. |
 | Mini-tab strip | `ui/MiniTabs.tsx` | **~45** | Tab `paddingVertical 6 × 2` + medium line ~22 + underline 2, + row border 1 + `marginBottom 8`. |
-| Status pill (Active/On Hold) | `ui/ItemStatusPanel.tsx` | **~36** | `paddingVertical 8 × 2` + small line ~18 + border 2 (plus `marginBottom 8` below). |
-| Archive / area pill | `ui/ItemStatusPanel.tsx` | **~36** | Same as the status pill. |
-| Flow/tag chip | `ui/FlowStateChips.tsx`, `ui/TagChips.tsx` | **~32** | `paddingVertical 6 × 2` + small line ~18 + border 2. Matches QuickAdd's row 3 `minHeight: 32`. |
+| Status pill (Active/On Hold) | `screens/item/StatusBlock.tsx` | **~36** | `paddingVertical 8 × 2` + small line ~18 + border 2 (plus `marginBottom 8` below). |
+| Archive / area pill | `screens/item/StatusBlock.tsx` | **~36** | Same as the status pill. |
+| Flow/tag chip | `ui/FlowStateChips.tsx`, `ui/TagChipGrid.tsx` | **~32** | `paddingVertical 6 × 2` + small line ~18 + border 2. Matches QuickAdd's row 3 `minHeight: 32`. |
 | Pill button | `ui/PillButton.tsx` | **~30** / **44** | Normal: `paddingVertical 5 × 2` + small line ~18 + border 2. Large: `minHeight 44`. |
 | Text input (`ClipboardTextInput`) | `ui/ClipboardTextInput.tsx` | **~33** | `paddingVertical 5 × 2` + medium line ~21 + border 2 (as budgeted in `screens/ItemsList.tsx`'s `CREATE_ROW_PX`). |
 
@@ -247,19 +247,30 @@ field. The minimum height alone doesn't fix it: the parent decides how much room
 
 `ui/QuickAddWidget.tsx`'s box (Project panel, Inbox, Daily, Week, Month, Review, thread and
 loop overviews) is the largest recurring block outside lists. It has one fixed height in every
-state (`ui/quickAdd/QuickAddFrame.tsx`, `QUICK_ADD_HEIGHT`); budget it as one block:
+state (`ui/quickAdd/QuickAddFrame.tsx`, `QUICK_ADD_HEIGHT`); budget it as one block.
 
-| Row | height (dp) | Holds |
+The form (`ui/quickAdd/form/`):
+
+| Slot | height (dp) | Holds |
 |---|---|---|
-| Row 1 | 30 | Todo / Meeting / Agreement / Note tabs; + Add, Cancel · Save, or the card's heading with ✕ · Edit |
-| Row 2 | 36 | Main text input and date (or valid till) |
-| Row 3 | 34 | Flow chips or time, tag chips |
-| Row 4 | 34 | More tag chips, the provenance line and/or the This-file line (`ui/quickAdd/ThisFileLine.tsx`: clip, file name, two chips of ~31), or (a loop's own edit only) the edit commands |
+| Field (rows 1-2) | 30 + 6 + 36 = 72 | One two-line text field (medium 17, line 22); positioning context of every strip |
+| Row 3 | 34 | Todo: 📅 (32 square, or the due field) · w/f (and "Waiting on", 170); meeting: date (140, 120 narrow), time (190, 150 below 800 dp), the warning sign, F; agreement: valid till; note: its folder |
+| Row 4 | 34 | 📎 square or the linked file's chip · grey origin line · ✕ · the main button, all 32 high; the main button and ✕ never shrink, the origin line and the file name do |
 
-Box total = `border 1 + padding 10 + 30 + 6 + 36 + 6 + 34 + 6 + 34 + padding 10 + border 1` =
-**174 dp**, whatever it shows - create, edit, or an item card (`ui/itemCard/`) in the same rows. Chips in rows 3 and 4 use 4 dp vertical padding: their label draws
-about 21 dp high on the device, so a chip is about 31 dp. The capture screen's panel (`ui/quickAdd/CaptureQuickAdd.tsx`) is
-the exception: it grows with its multi-line text and adds rows below.
+Box total = `border 1 + padding 10 + 72 + 6 + 34 + 6 + 34 + padding 10 + border 1` = **174 dp**.
+Folded, the kind buttons take the box (two rows of them fit); an item card (`ui/itemCard/`) uses the
+four rows 30 · 36 · 34 · 34 with the same gaps.
+
+Strips (`ui/quickAdd/form/stripStyles.ts`), painted after the field without a zIndex, at most one at a
+time and none while the status slot shows a confirm, a modal or an error:
+
+- the text strip: absolute, full width, `bottom: '100%'` of the field plus the box's padding and
+  border - above the box (Daily: over the status slot; Current: over the name line);
+- the date, time and valid-till strips: absolute, full width, `bottom: 0`, 36 high - over the field's
+  second line, so its first line stays readable.
+
+The capture screen's panel (`ui/quickAdd/CaptureQuickAdd.tsx`) is the exception: it grows with its
+multi-line text and adds rows below; its strips hover above their fields.
 
 ### 5.5 Section headings and labels
 
@@ -280,10 +291,13 @@ the exception: it grows with its multi-line text and adds rows below.
   the context panel as one `PagedSection` (header ~31, rows above, its footer "+ Quick Add to
   meeting" ~30) where the Next todos were, then no hidden line. 1227 − 174 − 31 − 30 ≈ 990 dp for
   rows: about 10 todo rows of 57 plus captions per page.
+- **Count tabs** (`ui/CountTabs.tsx`, Daily and the Current page's todos): one `MiniTabs` row,
+  about 40 dp (6 + 22 + 6 + underline 2 + margin 8), over the list; the list's own header line
+  stays for its page arrows, without text. The collapsed Quick Add box keeps its 174 dp.
 - **Week / Month, right column**: Quick Add (174) or the card, then either the back row (~30) with
-  the context panel as above, or Given time: header ~31 + rows of 57 + captions ("Loops and
+  the context panel as above, or Given time: header ~31 + rows of 37 + captions ("Loops and
   counterparts", "Worked on …") and the hint line ("Nothing above 1 h this week") 28 each, Tend line
-  ~30, hidden line ~30. 1227 − 174 − 31 − 60 ≈ 960 dp: about 16 owner rows per page.
+  ~30, hidden line ~30. 1227 − 174 − 31 − 60 ≈ 960 dp: about 25 owner rows per page.
 - **Settings → Contexts**: the list on the left like Note setups (`SETUP_ROW_HEIGHT` rows), the editor
   on the right: name input ~33, three chip grids (Areas, Projects, tags; chips ~32, wrapping), the
   "outside meetings" switch, the two Given time threshold rows (MiniTabs, ~40 each) and the preview

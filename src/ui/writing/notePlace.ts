@@ -11,7 +11,7 @@ import {Destination} from '../../domain/destination';
 import {extractContextTags} from '../../domain/markdown';
 import {todayIso} from '../../domain/meetingTime';
 import {CachedItem} from '../../storage/dataCache';
-import {notePlaceOf} from '../../storage/noteTargets';
+import {NotePlace, notePlaceOf} from '../../storage/noteTargets';
 import {peekSettings} from '../../storage/settingsSnapshot';
 import {abbrevDestination} from '../quickAdd/types';
 
@@ -25,8 +25,8 @@ export interface DraftPlaceInput {
   date?: string;
 }
 
-/** `{setupName, file}` of the best note place for the draft, or null without settings. */
-export function draftNotePlace(input: DraftPlaceInput): {setupName: string | null; file: string} | null {
+/** The best note place for the draft (setup and its tag, or the home notebook, and the file), or null without settings. */
+export function draftNotePlace(input: DraftPlaceInput): NotePlace | null {
   const settings = peekSettings();
   if (!settings) return null;
   const target = resolveAbbrevFileTarget(input.text, input.abbrevItems, input.excludePath);

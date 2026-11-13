@@ -43,6 +43,7 @@
  * Resources/Archive stay unscanned - they're hidden from Home (a deliberate
  * decision).
  */
+import {DEFAULT_PAGE_SHOW, PageShow} from '../domain/pageShow';
 import {ExistingAbbrev, generateDefaultAbbrev} from '../domain/abbrev';
 import {GtdParaSettings, ResolvedParaPaths, resolvePaths} from '../domain/settings';
 import {FrontMatterFields} from '../domain/markdown';
@@ -91,6 +92,8 @@ export interface CachedItem {
   area: string | null;
   /** This item's short abbreviation (docs/dev/history/technical-design-project-area-abbreviations.md), or null - filled in for every item by the one-time migration `doRebuildCache` runs below, so in practice this is only null for an item not yet seen by a rebuild, or one whose migration write failed and will retry on the next rebuild. */
   abbrev: string | null;
+  /** "Show on this page" (domain/pageShow.ts), from the `show:` line. */
+  show: PageShow;
   frontMatterExtraLines: string[];
   /** Set when this item's own file failed to load during the last rebuild - the item still shows (the folder itself was found fine) but with empty tasks/meetings until a rebuild succeeds. */
   loadError?: string;
@@ -276,6 +279,7 @@ async function loadOneItem(kind: 'project' | 'area', name: string, path: string)
       defaultResourceFolder: null,
       area: null,
       abbrev: null,
+      show: DEFAULT_PAGE_SHOW,
       frontMatterExtraLines: [],
       loadError: message,
     };
@@ -374,7 +378,7 @@ export async function assignDefaultAbbrevIfMissing(item: CachedItem): Promise<vo
  * De-duped: App.tsx's `reorient` kicks off a background rebuild on every
  * plugin open/foreground, and most screens' own `load()` falls back to
  * `await rebuildCache(...)` when they find no cache yet (DailyView/
- * InboxScreen/ReviewScreen/CaptureScreen). A caller that arrives while a
+ * ReviewScreen/CaptureScreen). A caller that arrives while a
  * rebuild is already running gets that same in-flight promise back instead
  * of starting a second, redundant full-vault scan - same pattern as
  * storage/googleCalendarCache.ts's `refreshGoogleCalendar` /
@@ -793,6 +797,7 @@ export type FrontMatterSource = Pick<
   | 'defaultResourceFolder'
   | 'area'
   | 'abbrev'
+  | 'show'
   | 'frontMatterExtraLines'
 >;
 
@@ -810,6 +815,7 @@ export function frontMatterOf(item: FrontMatterSource): FrontMatterFields {
     defaultResourceFolder: item.defaultResourceFolder,
     area: item.area,
     abbrev: item.abbrev,
+    show: item.show,
     extraLines: item.frontMatterExtraLines,
   };
 }
@@ -825,6 +831,7 @@ export function updateItemFrontMatter(path: string, rawContent: string, fm: Fron
   item.defaultResourceFolder = fm.defaultResourceFolder;
   item.area = fm.area;
   item.abbrev = fm.abbrev;
+  item.show = fm.show;
   item.loadError = undefined;
   reparseIfMerged(item);
   notifyCacheChanged();

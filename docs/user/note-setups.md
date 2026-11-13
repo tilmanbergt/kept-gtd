@@ -17,7 +17,7 @@ You find them in [Settings → Note setups](settings.md#note-setups).
 - **Tracking**: **Prepare before** and **Review after** for the setup's meetings, see [Preparation and review](meetings.md#preparation-and-review).
 - **Pages**: a **Meeting page**, a **Todo page** and a [Reflection page](meetings.md#reflection-page) (the page you write your reflection on after a meeting), and for a Loop setup a **First page** (the loop's own page at the start of its loop note). How they look: [The page layout](note-setups.md#the-page-layout).
 
-Items no setup covers use the [Default](note-setups.md#the-default), pinned at the top of the list: its pages, its tracking and where its notes go. [Inbox](quick-add.md#the-inbox) items always get a note of their own.
+Items no setup covers use the [Default](note-setups.md#the-default), pinned at the top of the list: its pages, its tracking and where its notes go. [Inbox](daily.md#the-inbox) items always get a note of their own.
 
 ## The list
 

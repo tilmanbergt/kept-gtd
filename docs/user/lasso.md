@@ -11,17 +11,17 @@ The lasso toolbar has two Kept GTD buttons:
 
 1. Select handwriting (or a text box) with the lasso and tap **Capture Todo/Meeting**.
 2. The screen **New from Lasso** shows the selection as a picture and the recognized text below it. The text appears as soon as recognition is done, usually after a few seconds. If you start typing before that, your text is kept.
-3. Choose **Todo** or **Meeting**, correct the text, and pick [flow chips](tags.md#flow-tags-for-todos), tags and a [due date](tags.md#due-dates) as in [Quick Add](quick-add.md). The recognized text's tags are checked as soon as it appears: a tag close to one you use - `#Iena` for `#lena` - is suggested in the strip over the text when you tap into it ([Tag suggestions](quick-add.md#tag-suggestions)); nothing is changed without a tap.
-4. **File to** shows where the item goes: the project or area the note belongs to, otherwise the [Inbox](quick-add.md#the-inbox). The chips offer the Inbox, that place and the ones you saved to lately; **More…** shows all of them. Writing an [abbreviation](projects-and-areas.md#abbreviations) like `#GR` in the text files it there, too.
+3. Choose **Todo** or **Meeting**, correct the text, and pick a [flow state](tags.md#flow-tags-for-todos), tags and a [due date](tags.md#due-dates) - the capture panel keeps its own chips. The recognized text's tags are checked as soon as it appears: a tag close to one you use - `#Iena` for `#lena` - is suggested in the strip over the text when you tap into it ([Tag suggestions](quick-add.md#tag-suggestions)); nothing is changed without a tap. A meeting's time field has the same strip as in Quick Add, with the length and half-hour steps ([Dates and times](quick-add.md#dates-and-times)).
+4. **File to** shows where the item goes: the project or area the note belongs to, otherwise the [Inbox](daily.md#the-inbox). The chips offer the Inbox, that place and the ones you saved to lately; **More…** shows all of them. Writing an [abbreviation](projects-and-areas.md#abbreviations) like `#GR` in the text files it there, too.
 5. Save with one of the three buttons under the text.
 
 - **Save & next** saves and goes on: to the next [open mark](lasso.md#processing-marks), if there is one, otherwise to an empty form for another item.
 - **Save & view** saves and opens the project or area.
 - **Save & close** saves and closes Kept.
 
-**Link to this page** (on by default) gives the new item a link to the page you captured from: its clip opens the note at that page. The item's own [note icon](quick-add.md#notes-and-files-on-a-todo-or-meeting) still creates its own note.
+A todo you capture records one origin: the meeting of the page, or else the note itself. The page is not linked to the item; the item's own [note icon](quick-add.md#notes-and-files-on-a-todo-or-meeting) creates its own note, and the clip on its card links a file when you want one.
 
-When the page belongs to a meeting - the meeting's own note, a page linked to it, its page or its [Reflection page](meetings.md#reflection-page) in a shared note, or a page you wrote after one of those - a todo you save records that meeting at the end of its line; no tag is added. Your own heading, or a todo's page, ends the meeting's pages; a cancelled meeting records nothing (see [Which owner a page belongs to](engage.md#which-owner-a-page-belongs-to)). The [grey line](quick-add.md#the-grey-line-where-a-todo-comes-from) in Quick Add shows it first; ✕ drops it. See [Where a todo was agreed](threads.md#where-a-todo-was-agreed).
+When the page belongs to a meeting - the meeting's own note, a page linked to it, its page or its [Reflection page](meetings.md#reflection-page) in a shared note, or a page you wrote after one of those - a todo you save records that meeting at the end of its line; no tag is added. Your own heading, or a todo's page, ends the meeting's pages; a cancelled meeting records nothing (see [Which owner a page belongs to](engage.md#which-owner-a-page-belongs-to)). The [grey line](quick-add.md#the-grey-line-where-a-todo-comes-from) in Quick Add shows it first; ✕ drops it. See [Where a todo was agreed](threads.md#where-a-todo-was-agreed). On any other page of a note, the todo records the note as its source, written as `[source:: 2 Areas/Sport/Sport 2026]` at the end of its line: the grey line reads `↳ from Sport 2026`, ✕ drops it, and the todo's card shows `↳ Sport 2026 ›`, which opens the note.
 
 The lasso selection is removed once something is saved. [Mark for later](lasso.md#marking-for-later) on this screen turns the selection into a mark instead.
 
@@ -41,17 +41,17 @@ A list with boxes, dashes, dots or numbers in front of the lines becomes one tod
 
 **Mark for later** keeps a picture and the handwriting of the selection, and puts a small bookmark icon into the note so you can see what is marked. Nothing is recognized yet, so the tap is quick.
 
-The mark is listed in the project or area the note belongs to; marks from other notes and PDFs go to the [Inbox](quick-add.md#the-inbox). How to work through them: [Processing marks](lasso.md#processing-marks).
+The mark is listed in the project or area the note belongs to; marks from other notes and PDFs go to the [Inbox](daily.md#the-inbox). How to work through them: [Processing marks](lasso.md#processing-marks).
 
 ## Processing marks
 
 Open marks show as a card **n marks to process** under Quick Add:
 
-- on the [Inbox](quick-add.md#the-inbox) tab: all marks,
+- on the [Inbox](daily.md#the-inbox) tab: all marks,
 - on the [Current](projects-and-areas.md#the-current-tab) tab: the marks of that project or area,
 - in the [Weekly Review](review.md) step [Inbox to zero](review.md#the-steps): all marks, and they count toward the step.
 
-**Process ›** opens the marks screen. The left column lists the marks by note, each with its picture, page, date and time, and whether it has been recognized yet; under the list are **Link to source page**, **Open page**, **Discard…** and **Close**. Recognition starts when you open the screen and runs ahead for the next marks; each mark is recognized only once.
+**Process ›** opens the marks screen. The left column lists the marks by note, each with its picture, page, date and time, and whether it has been recognized yet; under the list are **Open page**, **Discard…** and **Close**. Recognition starts when you open the screen and runs ahead for the next marks; each mark is recognized only once.
 
 - Work through them with **Save & next**: the mark is done and the next one is selected. After the last one the screen closes.
 - **Open page** opens the note at the marked page.
@@ -65,7 +65,7 @@ One mark creates items of one kind: several todos, one meeting or one agreement.
 
 ## Closing out and archiving
 
-The [close-out](close-out.md#the-five-steps) checklist warns about open marks of the project, with **Process ›** next to each. Open marks don't block [archiving](close-out.md#where-things-end-up): they move to the [Inbox](quick-add.md#the-inbox) and still find their note in the archive.
+The [close-out](close-out.md#the-five-steps) checklist warns about open marks of the project, with **Process ›** next to each. Open marks don't block [archiving](close-out.md#where-things-end-up): they move to the [Inbox](daily.md#the-inbox) and still find their note in the archive.
 
 ## Where marks are stored
 

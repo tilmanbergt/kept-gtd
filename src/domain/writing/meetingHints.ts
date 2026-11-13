@@ -104,3 +104,20 @@ export function isPastNew(date: string, time: string, now: Date): boolean {
   if (date > today || !time) return false;
   return meetingStartMs({date, time}) < now.getTime();
 }
+
+/**
+ * The next date on the usual slot's weekday, today included
+ * (docs/dev/history/technical-design-quickadd-redesign.md §3.2): what the date strip's
+ * Suggest view offers, `usual Thu → 20 Nov`. The slot's own date when it is not before
+ * `today` (usualSlot already skips today once its start has passed).
+ */
+export function nextUsualDate(usual: Pick<UsualSlot, 'date'>, today: string): string {
+  if (usual.date >= today) return usual.date;
+  const weekday = weekdayOf(usual.date);
+  let date = today;
+  for (let i = 0; i < 7; i++) {
+    date = addDaysToIso(today, i);
+    if (weekdayOf(date) === weekday) break;
+  }
+  return date;
+}

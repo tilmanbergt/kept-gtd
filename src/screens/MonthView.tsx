@@ -40,6 +40,7 @@ import {useMeetingContextSlot} from '../ui/meetingContext/useMeetingContextSlot'
 import {monthTitle, periodOf, shiftPeriod, shortMonthTitle} from '../domain/period';
 import PeriodNav from '../ui/PeriodNav';
 import GivenTimePanel from '../ui/period/GivenTimePanel';
+import {useOwnerCard} from '../ui/period/useOwnerCard';
 import {requestReviewStep} from './review/reviewNav';
 import {buildMonthlyAggregate, meetingsOnDay} from '../storage/monthlyAggregate';
 import {WeeklyMeetingEntry} from '../storage/weeklyAggregate';
@@ -143,6 +144,8 @@ export default function MonthView({
     const owner = items.find(i => i.path === path);
     if (owner) onOpenItem(owner.kind, {name: owner.name, path, isFolder: true});
   };
+  // A Given time line's card in Quick Add's box (docs/dev/history/technical-design-calmer-screens.md §3.9).
+  const ownerCard = useOwnerCard({screen: 'Month', onOpenItem: openItemAt, cancelEdit: planning.cancelEditTarget, editing: editingKey != null, textColor, borderColor});
 
   const dayTabs: DayTabDef<DayTab>[] = [
     {key: 'meetings', label: `${SCHEDULE_LABEL} (${dayRows.length})`},
@@ -221,6 +224,8 @@ export default function MonthView({
             <View style={common.column}>
               <View style={styles.columnScroll}>
                 <QuickAddWidget
+                  collapsible
+                  ownerCard={ownerCard.card}
                   thisFileLine
                   layoutKey="month"
                   {...slot.widget}
@@ -282,11 +287,7 @@ export default function MonthView({
                     renderRow={(entry, layout) => (
                       <MeetingRow
                         key={dayEntryKey(entry)}
-                        {...planning.dayRowProps(entry, layout, {
-                          onOpenSource: openSource,
-                          textColor,
-                          borderColor,
-                        })}
+                        {...planning.dayRowProps(entry, layout, {textColor, borderColor})}
                       />
                     )}
                     emptyHint="No meetings on this day. Add one above - it starts with M on."
@@ -319,6 +320,8 @@ export default function MonthView({
                     settings={settings}
                     filter={planning.contextFilter}
                     onOpenItem={openItemAt}
+                    onSelectOwner={ownerCard.select}
+                    selectedKey={ownerCard.selectedKey}
                     onTend={() => requestReviewStep('tendingThreads', null, planning.contextFilter.matcher.context !== null)}
                     textColor={textColor}
                     borderColor={borderColor}

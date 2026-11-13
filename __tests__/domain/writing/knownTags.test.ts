@@ -106,11 +106,15 @@ describe('performance (design §7)', () => {
       build = Math.min(build, performance.now() - t0);
     }
     const text = `stand-up #DaiIy with #${used[1].tag}x and #type3/persn9 #${used[4].tag.toUpperCase()}`;
+    // The best of five batches of 50, for the same reason.
     const runs = 50;
     checkTags(text, null, index, new Set(), new Map());
-    const t1 = performance.now();
-    for (let i = 0; i < runs; i++) checkTags(text, {start: 0, end: text.length}, index, new Set(), new Map());
-    const check = (performance.now() - t1) / runs;
+    let check = Infinity;
+    for (let batch = 0; batch < 5; batch++) {
+      const t1 = performance.now();
+      for (let i = 0; i < runs; i++) checkTags(text, {start: 0, end: text.length}, index, new Set(), new Map());
+      check = Math.min(check, (performance.now() - t1) / runs);
+    }
     // The measured times, for the release report.
     process.stdout.write(`writing-help perf: index of ${index.size} tags built in ${build.toFixed(1)} ms, burst check ${check.toFixed(3)} ms\n`);
     expect(build).toBeLessThan(50);

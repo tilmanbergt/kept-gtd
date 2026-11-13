@@ -155,7 +155,7 @@ beforeEach(() => {
 });
 
 describe('EngageOverlay screens', () => {
-  it('a loop\'s line (docs/dev/history/technical-design-meetings-0.21.md R16): since, open todos, + Next without a meeting ahead', async () => {
+  it('a loop shows no "Loop since" line (docs/dev/history/technical-design-calmer-screens.md §3.9)', async () => {
     area('Coaching', [
       '## Tasks',
       '- [ ] Book room #workshop/offsite #next [created:: 2026-10-02]',
@@ -168,8 +168,8 @@ describe('EngageOverlay screens', () => {
       '- workshop/offsite: active',
     ]);
     const {r} = await open({via: 'ownerPage', owner: {kind: 'loop', itemPath: COACHING, tag: 'workshop/offsite'}});
-    expect(texts(r).some(t => /^Loop since 2\.10\.(2026)? · 2 open/.test(t))).toBe(true);
-    expect(texts(r)).toContain('+ Next workshop');
+    expect(texts(r).some(t => t.startsWith('Loop since'))).toBe(false);
+    expect(texts(r)).not.toContain('+ Next workshop');
     expect(texts(r).some(t => t.startsWith('Next here'))).toBe(false);
     act(() => r.unmount());
   });
@@ -224,7 +224,9 @@ describe('EngageOverlay screens', () => {
     expect(texts(r).some(t => t.startsWith('Waiting for Anna Meier · follow up '))).toBe(true);
     // The meeting it was agreed in is its own line (docs/dev/history/technical-design-meetings-0.21.md R15).
     expect(texts(r).some(t => /^From Retro alpha · 7\.10\.(2026)? ›$/.test(t))).toBe(true);
+    await press(r, 'More ›');
     expect(texts(r)).toContain('File: Offer v2.pdf ›');
+    await press(r, '‹');
 
     mockNoteOpen.cancelled = true;
     await press(r, 'Note ›');
@@ -234,6 +236,7 @@ describe('EngageOverlay screens', () => {
     await press(r, 'Note ›');
     expect(onClose).toHaveBeenCalledTimes(1);
 
+    await press(r, 'More ›');
     await press(r, 'File: Offer v2.pdf ›');
     expect(mockOpenedFiles).toEqual(['3 Resources/Offer v2.pdf']);
     expect(onClose).toHaveBeenCalledTimes(2);

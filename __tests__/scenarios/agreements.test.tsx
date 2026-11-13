@@ -1,6 +1,6 @@
 import {isoDateOffset} from '../../src/domain/meetingTime';
 import {validTillOf} from '../../src/domain/agreements';
-import {describeScreen, expectNotShows, expectShows, openApp, tap, tapTab, type} from '../../test-helpers/scenario/app';
+import {closeQuickAdd, describeScreen, expectNotShows, expectShows, openApp, tap, tapTab, type} from '../../test-helpers/scenario/app';
 import {areaDir, areaFile, dataFile, fileText, projectFile, putFile, sectionLines} from '../../test-helpers/scenario/files';
 import {device} from '../../test-helpers/fakeDevice/device';
 import {and, given, scenario, then, when} from '../../test-helpers/scenario/scenario';
@@ -42,14 +42,14 @@ scenario('Add an agreement from the thread overview with valid till end of year'
   given('area "Coaching" has a past sparring session with Jordan and no agreements', () => coaching([]));
   when('I open Jordan\'s thread overview, choose the Agreement tab and type "No calls after six"', async () => {
     await openJordanOverview();
-    await tap('Agreement', 1);
+    await tap('Agreement');
     await type('New agreement', 'No calls after six');
   });
   and('I tap "valid till" and choose "end of year", then + Add', async () => {
     await tap('valid till');
     await tap('end of year');
     expectShows(`till 31.12.`);
-    await tap('+ Add', 1);
+    await tap('+ Add');
   });
   then('the area file has the agreement with the thread tag, the meeting it was made in, today and the valid-till date', () => {
     expect(sectionLines(areaFile('Coaching'), 'Agreements')).toEqual([
@@ -62,23 +62,23 @@ scenario('Add an agreement from the thread overview with valid till end of year'
   });
 });
 
-scenario('Change an agreement: the old one is ended, the new one added; Cancel changes nothing', {feature: 'Agreements', design: 'technical-design-meetings-0.21.md', help: 'agreements.md#changing-and-ending'}, () => {
+scenario('Change an agreement: the old one is ended, the new one added; ✕ changes nothing', {feature: 'Agreements', design: 'technical-design-meetings-0.21.md', help: 'agreements.md#changing-and-ending'}, () => {
   const line = `- Feedback only in our 1:1s #sparring/jordan [created:: ${past}] [valid:: ${year}-12-31]`;
   given('area "Coaching" has the agreement "Feedback only in our 1:1s" with Jordan', () => coaching([line]));
-  when('I open Jordan\'s thread overview, tap the agreement and Change on its card, then Cancel', async () => {
+  when('I open Jordan\'s thread overview, tap the agreement and Change on its card, then ✕', async () => {
     await openJordanOverview();
     await tap('◇ Feedback only in our 1:1s #sparring/jordan');
-    expectShows(/^Agreement · since/);
+    expectShows(/^Agreement · Coaching( ›)? · since/);
     await tap('Change');
     expectShows(/^↳ replaces 'Feedback only in our 1:1s'/);
-    await tap('Cancel');
+    await closeQuickAdd();
   });
   then('the file is unchanged', () => expect(sectionLines(areaFile('Coaching'), 'Agreements')).toEqual([line]));
   when('I tap Change again, edit the words to "Feedback only in our 1:1s, except urgent" and tap + Add', async () => {
     await tap('◇ Feedback only in our 1:1s #sparring/jordan');
     await tap('Change');
     await type('New agreement', 'Feedback only in our 1:1s, except urgent #sparring/jordan');
-    await tap('+ Add', 1);
+    await tap('+ Add');
   });
   then('the old line is ended today and the new one is added after it, made in the meeting the overview shows', () => {
     expect(sectionLines(areaFile('Coaching'), 'Agreements')).toEqual([
@@ -259,5 +259,26 @@ scenario('Review step "Agreements": keep one past its date for three more months
     expect(sectionLines(areaFile('Coaching'), 'Agreements')[1]).toBe(`- Feedback only in our 1:1s #sparring/jordan [created:: ${past}] [ended:: ${today}]`);
     expectShows('✓ Fridays are quiet');
     expectShows('✓ Feedback only in our 1:1s #sparring/jordan');
+  });
+});
+
+scenario('A tap on an agreement\'s words opens its Change form; there is no Edit', {feature: 'Agreements', design: 'technical-design-quickadd-redesign.md', help: 'agreements.md#changing-and-ending'}, () => {
+  const line = `- Feedback only in our 1:1s #sparring/jordan [created:: ${past}] [valid:: ${year}-12-31]`;
+  given('area "Coaching" has the agreement "Feedback only in our 1:1s" with Jordan', () => coaching([line]));
+  when('I open Jordan\'s thread overview, tap the agreement and then its words on the card', async () => {
+    await openJordanOverview();
+    await tap('◇ Feedback only in our 1:1s #sparring/jordan');
+    expectNotShows('Edit');
+    await tap('Feedback only in our 1:1s');
+  });
+  then('the Change form shows with "↳ replaces …"', () => expectShows(/^↳ replaces 'Feedback only in our 1:1s'/));
+  when('I fix a typo and tap + Add', async () => {
+    await type('New agreement', 'Feedback only in our 1:1 meetings #sparring/jordan');
+    await tap('+ Add');
+  });
+  then('a new version is added and the old one ended', () => {
+    const lines = sectionLines(areaFile('Coaching'), 'Agreements');
+    expect(lines[0]).toBe(`${line} [ended:: ${today}]`);
+    expect(lines[1]).toMatch(/^- Feedback only in our 1:1 meetings #sparring\/jordan/);
   });
 });

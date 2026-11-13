@@ -8,6 +8,8 @@
  * the row. Returns what QuickAddWidget's `todoCard` prop takes.
  */
 import {todoCardModel, TodoCardModel} from '../../domain/itemCard';
+import {resolveSource} from '../../domain/provenance';
+import {findCachedItem, getCachedData} from '../../storage/dataCache';
 import {setFlowStateTag, withoutNow} from '../../domain/flowState';
 import {todayIso} from '../../domain/meetingTime';
 import {displayTaskText} from '../../domain/taskLabels';
@@ -46,6 +48,8 @@ export interface TodoCardOptions {
   /** Opens the owning Project or Area. Absent: the chip is a plain label. */
   onOpenOwner?: () => void;
   onEdit: () => void;
+  /** ✕ in the edit form: drops the changes and shows the card again (quickadd-redesign §11 G5). */
+  onBackToCard?: () => void;
   onClose: () => void;
 }
 
@@ -53,6 +57,7 @@ export interface TodoCardData {
   task: Task;
   model: TodoCardModel;
   onEdit: () => void;
+  onBackToCard?: () => void;
   onClose: () => void;
   onToggleDone: () => void;
   onFlow: (next: FlowState) => void;
@@ -66,6 +71,22 @@ export interface TodoCardData {
   onOpenOrigin?: () => void;
 }
 
+/**
+ * The card's origin for a `[source::]` (docs/dev/history/technical-design-quickadd-redesign.md
+ * §3.7): the todo whose own note it is (by that todo's title), else the note's name. `file` is the
+ * note, base-relative, which a tap opens.
+ */
+function resolveTodoSource(key: string): {label: string; file: string; known: boolean} {
+  const cache = getCachedData();
+  const base = cache?.paths.base ?? '';
+  const candidates = (cache?.items ?? []).flatMap(item => item.tasks.map(t => ({itemPath: item.path, notePath: t.notePath, entry: t})));
+  const found = resolveSource(key, candidates, base);
+  const file = `${key}.note`;
+  if (found.kind === 'todo') return {label: displayTaskText(found.entry, 'flat'), file, known: true};
+  // A plain note isn't in the cache: a tap opens it, and a moved or renamed one says so in the status line.
+  return {label: found.name, file, known: true};
+}
+
 export function useTodoCard(options: TodoCardOptions): TodoCardData | null {
   const {name, selection, updateTask} = options;
   const confirm = useStatusConfirm(`${name}.deleteTodo`);
@@ -73,12 +94,15 @@ export function useTodoCard(options: TodoCardOptions): TodoCardData | null {
   if (!selection) return null;
 
   const {task} = selection;
+  const source = task.fields.source && !task.fields.meeting ? resolveTodoSource(task.fields.source) : null;
   const model = todoCardModel({
     task,
     today: todayIso(),
     ownerName: selection.ownerName,
+    ownerAbbrev: selection.inbox ? null : (findCachedItem(selection.itemPath)?.abbrev ?? null),
     canLink: !!options.onArmLink,
     canRefile: !!options.onArmRefile,
+    source: source ? {label: source.label, open: !!options.onOpenFile && source.known} : null,
   });
 
   /** Runs one card write; the e-ink screen refreshes afterwards. */
@@ -112,6 +136,7 @@ export function useTodoCard(options: TodoCardOptions): TodoCardData | null {
     task,
     model,
     onEdit: options.onEdit,
+    onBackToCard: options.onBackToCard,
     onClose: options.onClose,
     onToggleDone: options.onToggleDone ?? (() => write('ticked done', t => withTaskDone(t, !t.done, todayIso()))),
     // Tapping the chip that is on clears it, as on the row's chips. Leaving
@@ -129,6 +154,10 @@ export function useTodoCard(options: TodoCardOptions): TodoCardData | null {
     onOpenOwner: options.onOpenOwner,
     onRefile: options.onArmRefile,
     onDelete,
-    onOpenOrigin: threadTag ? () => openOverview({tag: threadTag, ownerPath: selection.inbox ? null : selection.itemPath}) : undefined,
+    onOpenOrigin: threadTag
+      ? () => openOverview({tag: threadTag, ownerPath: selection.inbox ? null : selection.itemPath})
+      : source && source.known && options.onOpenFile
+        ? () => options.onOpenFile?.(source.file)
+        : undefined,
   };
 }

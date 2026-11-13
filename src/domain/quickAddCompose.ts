@@ -17,6 +17,11 @@ export interface TaskComposeFields {
   flowState: FlowState;
   waitingOnText: string;
   dueDate: string;
+  /**
+   * Quick Add's form (docs/dev/history/technical-design-quickadd-redesign.md §3.3): it has no flow
+   * chips, so with no flow state chosen a `#next` or `#someday` written in the text stays as written.
+   */
+  keepTypedFlow?: boolean;
 }
 
 /**
@@ -26,11 +31,10 @@ export interface TaskComposeFields {
 export function composeTaskText(fields: TaskComposeFields, abbrevTag: string | null = null): string {
   const trimmed = fields.text.trim();
   if (!trimmed) {return '';}
-  let finalText = setFlowStateTag(
-    trimmed,
-    fields.flowState,
-    fields.flowState === 'waiting-for' ? slugifyWaitingOn(fields.waitingOnText) : undefined,
-  );
+  let finalText =
+    fields.keepTypedFlow && !fields.flowState
+      ? trimmed
+      : setFlowStateTag(trimmed, fields.flowState, fields.flowState === 'waiting-for' ? slugifyWaitingOn(fields.waitingOnText) : undefined);
   if (abbrevTag) {finalText = removeTagFromText(finalText, abbrevTag);}
   return setDueInLine(finalText, fields.dueDate.trim() || null);
 }

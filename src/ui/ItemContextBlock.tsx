@@ -23,7 +23,7 @@
  * `refreshFromCache` pattern).
  *
  * Area (Projects only, `item.area`) is plain read-only text, deliberately
- * NOT `ui/ItemStatusPanel.tsx`'s interactive "Area: name ✕" pill - the Area
+ * NOT `screens/item/StatusBlock.tsx`'s interactive "Area: name ✕" pill - the Area
  * can't be reassigned from Review. See the technical design's §6.2 for why
  * that piece is not reused. Renders nothing when a Project has no Area
  * assigned (this block can't assign one) and never for Areas (which have no

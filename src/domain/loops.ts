@@ -92,7 +92,10 @@ export function loopItselfOf(task: Task, kinds: readonly string[]): LoopRef | nu
 export function loopItselfOfLine(line: string, kinds: readonly string[]): LoopRef | null {
   if (kinds.length === 0 || !line.trim()) return null;
   const {text, fields} = parseTaskInput(line);
-  return loopItselfOf(newTask({text, fields}), kinds);
+  const task = newTask({text, fields});
+  // `#someday` / `#maybe` written in the text make a loop idea, as the flow state does on a saved line.
+  if (/(^|\s)#(someday|maybe)(?![\w/-])/i.test(text)) return null;
+  return loopItselfOf(task, kinds);
 }
 
 /** A loop idea: a todo that would be the loop itself, but is someday/maybe. */

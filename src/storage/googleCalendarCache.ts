@@ -283,8 +283,8 @@ function localMeetingKey(m: Pick<Meeting, 'title' | 'date' | 'time'>): string {
  * event whose own key is in this set already has a checkmark (decided:
  * title+date+time match, not an ICS UID - no Meeting schema change).
  * Callers assemble `items` from storage/dataCache.ts's getCachedData() and
- * `inboxMeetings` from a direct loadProjectFile('inbox', ...) read, same as
- * screens/InboxScreen.tsx already does (Inbox.txt isn't part of dataCache).
+ * `inboxMeetings` from a direct loadProjectFile('inbox', ...) read, the way the
+ * Inbox's own readers do (Inbox.txt isn't part of dataCache).
  */
 export function alreadyCopiedKeys(items: CachedItem[], inboxMeetings: Meeting[]): Set<string> {
   const all = items.flatMap(item => item.meetings).concat(inboxMeetings);

@@ -2,8 +2,14 @@
  * The writing help's strip over a Quick Add text or time field
  * (docs/dev/history/technical-design-writing-help.md §3.3, §3.4): renders
  * one `stripContent` - fixes, "read as … · Undo", a choice, completions,
- * the feedback line, a time with its length, the usual slot, or the
+ * the feedback line, a time with its length, the usual slot, the starters
+ * of an empty title (Thread · Loop · Paste, then a list of tags), or the
  * clipboard buttons - with the hovering-strip styles of ui/ClipboardStrip.tsx.
+ *
+ * In Quick Add's form (`placement="above-box"`,
+ * docs/dev/history/technical-design-quickadd-redesign.md §3.2) the strip
+ * spans the box above it, and its resting view is Suggest or Clipboard,
+ * switched by the square before ✕ (a drawn bolt or clipboard).
  *
  * Always mounted, hidden with `display: 'none'` while the field has no
  * focus: blur fires on touch-down, and a strip torn out of the tree then
@@ -13,17 +19,24 @@
 import React from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
 import {StripContent} from '../../domain/writing/stripContent';
+import {suggestLabel} from '../../domain/writing/suggestOptions';
+import {completionLabel} from '../../domain/writing/completion';
+import {BoltIcon, ClipboardIcon, ClipIcon} from '../icons';
+import {stripStyles} from '../quickAdd/form/stripStyles';
 import {ClipboardActions, StripHideButton, StripPlacement, useStripHide} from '../ClipboardStrip';
 import {common} from '../commonStyles';
 import {WritingStripActions} from './useWritingHelp';
+import {useUnblocked} from '../quickAdd/form/StripHost';
 
 interface Props {
   visible: boolean;
   content: StripContent;
   actions: WritingStripActions;
-  /** The clipboard buttons, for a text field's resting state and Edit ›. */
+  /** The clipboard buttons, for a text field's resting state and the clipboard square. */
   clipboard?: ClipboardActions;
-  placement?: StripPlacement;
+  placement?: StripPlacement | 'above-box';
+  /** The form's text strip: the square that switches Suggest ⇄ Clipboard. */
+  switchable?: boolean;
   textColor: string;
   borderColor: string;
 }
@@ -35,14 +48,13 @@ const CLIPBOARD: Array<{label: string; action: keyof ClipboardActions}> = [
   {label: 'Paste', action: 'paste'},
 ];
 
-export default function WritingStrip({visible, content, actions, clipboard, placement = 'above-right', textColor, borderColor}: Props): React.JSX.Element {
-  const {shown, hide} = useStripHide(visible);
-  const button = (label: string, onPress: () => void, key = label, extra?: string) => (
-    <Pressable key={key} style={[common.floatingStripButton, {borderColor}]} onPress={onPress} hitSlop={6}>
-      <Text style={[common.floatingStripButtonText, {color: textColor}]}>
-        {label}
-        {extra ? <Text style={styles.secondary}>{` ${extra}`}</Text> : null}
-      </Text>
+export default function WritingStrip({visible, content, actions, clipboard, placement = 'above-right', switchable = false, textColor, borderColor}: Props): React.JSX.Element {
+  // A confirm, modal or error in the status slot hides the strip (D3).
+  const {shown, hide} = useStripHide(useUnblocked(visible));
+  const button = (label: string, onPress: () => void, key = label, icon?: React.ReactNode) => (
+    <Pressable key={key} style={[common.floatingStripButton, styles.button, {borderColor}]} onPress={onPress} hitSlop={6} accessibilityLabel={label}>
+      {icon}
+      <Text style={[common.floatingStripButtonText, {color: textColor}]}>{label}</Text>
     </Pressable>
   );
   const label = (text: string) => (
@@ -57,7 +69,6 @@ export default function WritingStrip({visible, content, actions, clipboard, plac
       body = [
         ...content.fixes.map((f, i) => button(`→ #${f.suggestion}`, () => actions.apply(i), `fix:${i}`)),
         button('Keep', actions.keep),
-        button('Edit ›', actions.edit),
       ];
       break;
     case 'read':
@@ -67,7 +78,7 @@ export default function WritingStrip({visible, content, actions, clipboard, plac
       body = [label('Did you mean'), ...content.options.map(o => button(o.label, () => actions.choose(o.value), `choice:${o.value}`))];
       break;
     case 'complete':
-      body = [...content.options.map(o => button(`#${o.tag}`, () => actions.complete(o.tag), `complete:${o.tag}`, o.name)), button('Edit ›', actions.edit)];
+      body = content.options.map(o => button(completionLabel(content.token, o), () => actions.complete(o.tag), `complete:${o.tag}`));
       break;
     case 'feedback':
       body = [label(content.text)];
@@ -77,6 +88,26 @@ export default function WritingStrip({visible, content, actions, clipboard, plac
       break;
     case 'usual':
       body = [button(content.usual, actions.usual)];
+      break;
+    case 'starters':
+      body = [
+        ...(content.thread ? [button('Thread', () => actions.starter('thread'))] : []),
+        ...(content.loop ? [button('Loop', () => actions.starter('loop'))] : []),
+        ...(content.paste && clipboard ? [button('Paste', () => clipboard.paste())] : []),
+      ];
+      break;
+    case 'suggest':
+      body = [
+        ...(content.thread ? [button('Thread', () => actions.starter('thread'))] : []),
+        ...(content.loop ? [button('Loop', () => actions.starter('loop'))] : []),
+        ...(content.paste && clipboard ? [button('Paste', () => clipboard.paste())] : []),
+        ...content.options.map(o =>
+          button(suggestLabel(o), () => actions.suggest(o), o.kind === 'tag' ? `suggest:${o.tag}` : 'suggest:thisFile', o.kind === 'thisFile' ? <ClipIcon size={16} color={textColor} /> : undefined),
+        ),
+      ];
+      break;
+    case 'starterList':
+      body = [button('‹', actions.back, 'back'), ...content.options.map(o => button(`#${o.tag}`, () => actions.insertStarter(o.insert), `starter:${o.tag}`))];
       break;
     case 'clipboard':
       body = clipboard ? CLIPBOARD.map(({label: text, action}) => button(text, () => {
@@ -88,10 +119,36 @@ export default function WritingStrip({visible, content, actions, clipboard, plac
       body = [];
       break;
   }
-  const empty = body.length === 0;
+  // The square before ✕ (docs/dev/history/technical-design-quickadd-redesign.md §11, G1, G3): a
+  // clipboard to All · Copy · Cut · Paste - from the Suggest view, a fix, a completion or the place
+  // line - and a lightning bolt back to the suggestions. Drawn black, never an emoji.
+  const toClipboard = content.kind === 'fixes' || content.kind === 'complete' || content.kind === 'feedback' || (switchable && content.kind === 'suggest');
+  const toSuggest = switchable && content.kind === 'clipboard';
+  const square =
+    toClipboard || toSuggest ? (
+      <Pressable
+        key="view"
+        style={[common.floatingStripButton, styles.square, {borderColor}]}
+        onPress={content.kind === 'suggest' || toSuggest ? actions.toggleView : actions.edit}
+        hitSlop={6}
+        accessibilityLabel={toSuggest ? 'Suggest' : 'Clipboard'}>
+        {toSuggest ? <BoltIcon size={18} color={textColor} /> : <ClipboardIcon size={18} color={textColor} />}
+      </Pressable>
+    ) : null;
+  const empty = body.length === 0 && !square;
+  if (placement === 'above-box') {
+    return (
+      <View style={[stripStyles.aboveBox, {borderColor}, (!shown || empty) && styles.hidden]}>
+        <View style={stripStyles.body}>{body}</View>
+        {square}
+        <StripHideButton onPress={hide} textColor={textColor} />
+      </View>
+    );
+  }
   return (
     <View style={[common.floatingStrip, placement === 'above-left' && common.floatingStripLeft, {borderColor}, (!shown || empty) && styles.hidden]}>
       {body}
+      {square}
       <StripHideButton onPress={hide} textColor={textColor} />
     </View>
   );
@@ -104,8 +161,6 @@ const styles = StyleSheet.create({
     paddingVertical: 3,
     paddingHorizontal: 6,
   },
-  /** An abbreviation's Project/Area name next to it: secondary, never the only cue. */
-  secondary: {
-    opacity: 0.6,
-  },
+  button: {flexDirection: 'row', alignItems: 'center', gap: 4},
+  square: {alignItems: 'center', justifyContent: 'center'},
 });

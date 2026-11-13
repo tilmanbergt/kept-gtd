@@ -35,13 +35,18 @@ export interface GtdParaSettings {
    */
   reviewSteps: ReviewStepsMap;
   /**
-   * "Hide done tasks" toggle state, remembered across visits - independent
-   * per surface since a Project/Area's Todos list and Daily's Inbox are
-   * different contexts (a long-lived project accumulates done tasks fast;
-   * Inbox is meant to be triaged to empty quickly, so there's rarely anything
-   * to hide there). Both default to false (shown).
+   * Retired: the Current page's "hide done" toggle. Count tabs with a Done tab
+   * replace it (docs/dev/history/technical-design-calmer-screens.md §3.5); the
+   * key stays stored and in DEFAULT_SETTINGS so an older version still reads
+   * it, and nothing reads it here.
    */
   hideDoneProjectTasks: boolean;
+  /**
+   * Retired: the Inbox tab's "Hide done tasks". The Inbox lives on Daily's Inbox
+   * tab, which lists open items only (docs/dev/history/technical-design-calmer-screens.md
+   * §3.7); the key stays stored and in DEFAULT_SETTINGS for older versions, and
+   * nothing reads it here.
+   */
   hideDoneInboxTasks: boolean;
   /**
    * The user's Google Calendar "secret address in iCal format" URL

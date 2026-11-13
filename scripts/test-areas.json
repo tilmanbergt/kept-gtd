@@ -20,17 +20,22 @@
       "name": "Daily, Week and Month",
       "help": ["daily.md", "week-and-month.md"],
       "tests": [
-        "__tests__/**/*{daily,month,period,planning,givenTime}*",
-        "__tests__/scenarios/smoke/weekAndMonth*"
+        "__tests__/**/*{daily,month,period,planning,givenTime,listTabs,inboxFileTo}*",
+        "__tests__/scenarios/smoke/weekAndMonth*",
+        "__tests__/scenarios/calmer{Rows,Tabs,Daily,Inbox}*"
       ],
       "sources": [
         "src/screens/{DailyView,WeekView,WeekPlanner,MonthView,usePlanningScreen}.ts*",
         "src/screens/daily/**",
         "src/ui/{Daily,Period,Week,Month,DayMeetings}*",
         "src/storage/{daily,weekly,monthly}Aggregate.ts",
-        "src/domain/{period,weekDate,monthHighlight,givenTime}.ts",
+        "src/storage/tagOwners.ts",
+        "src/domain/inboxFileTo.ts",
+        "src/ui/useInboxFiling.ts",
+        "src/domain/{period,weekDate,monthHighlight,givenTime,listTabs,inboxCount,projectFromItem}.ts",
         "src/ui/period/**",
-        "src/ui/KindBadge.tsx"
+        "src/ui/{KindBadge,CountTabs}.tsx",
+        "src/ui/{listTabStore,useJustDone}.ts"
       ]
     },
     {
@@ -197,8 +202,7 @@
         "src/ui/{QuickAddWidget,CollapsedQuickAdd,DestinationPicker,DateInput,ValidTillInput,FlowStateChips,InlineTextEditor,ClipboardStrip,ClipboardTextInput}.tsx",
         "src/ui/{useEntryMoveUi,useEditFlush}.ts",
         "src/domain/{quickAddCompose,itemCard,destination,dateNudge,clipboardText}.ts",
-        "src/storage/{destinationUsage,inboxFiling,inboxFolder,createItem,entryMove}.ts",
-        "src/screens/InboxScreen.tsx"
+        "src/storage/{destinationUsage,inboxFiling,inboxFolder,createItem,entryMove}.ts"
       ]
     },
     {
@@ -206,14 +210,17 @@
       "name": "Projects and Areas, status and the Current page",
       "help": ["projects-and-areas.md"],
       "tests": [
-        "__tests__/**/*{currentPage,areaProjects,itemsList,itemDetail,projectGlance,frontMatterStatus}*",
+        "__tests__/**/*{currentPage,areaProjects,itemsList,itemDetail,projectGlance,frontMatterStatus,pageShow,calmerCurrent}*",
         "__tests__/scenarios/smoke/areaPage*"
       ],
       "sources": [
         "src/screens/{ItemsList,ItemDetail,ProjectDataPanel}.tsx",
         "src/screens/area/**",
+        "src/screens/item/**",
         "src/screens/projectData/**",
-        "src/ui/{ItemStatusPanel,ItemScopePanel,ItemContextBlock,ItemContextRows}.tsx",
+        "src/domain/pageShow.ts",
+        "src/storage/pageShowCounts.ts",
+        "src/ui/{ItemScopePanel,ItemContextBlock,ItemContextRows}.tsx",
         "src/ui/{useStatusChoice,useStatusConfirm}.ts",
         "src/storage/{areaAssignment,statusControl,projectGlance}.ts"
       ]
@@ -244,7 +251,7 @@
         "src/domain/{markdown,writeGuard,fileName,fileNameFix,fileChangeText,integrityCheck,taskLine,taskEdit,types,linkTargets}.ts",
         "src/supernote/{fileSystem,fileNative,devicePaths,hostCall,pluginPermissions}.ts",
         "src/ui/{FileBrowserPane,LoadErrorNotice}.tsx",
-        "src/ui/{fileBrowserGroup,useWriteConflicts,useCachedItems,useCachedInbox,useThisFile}.ts",
+        "src/ui/{fileBrowserGroup,useWriteConflicts,useCachedItems,useCacheSignature,useCachedInbox,useThisFile}.ts",
         "src/ui/fileBrowser/**"
       ]
     },
@@ -266,7 +273,7 @@
       "name": "Settings, profiles, demo, help and logging",
       "help": ["settings.md", "profiles-and-demo.md"],
       "tests": [
-        "__tests__/**/*{settings,Settings,profile,Profile,demoSpace,buildVersionText,helpTopics,markdownBlocks,features,redact,debugBundle,logSink,userDocs,keptGtd,pluginIdentity,cleanBreak,helpLinks,setupAssistant,removeData,RemoveData,screenCheck,screenSimulation}*"
+        "__tests__/**/*{settings,Settings,profile,Profile,demoSpace,buildVersionText,helpTopics,markdownBlocks,features,redact,debugBundle,logSink,userDocs,keptGtd,pluginIdentity,cleanBreak,helpLinks,setupAssistant,removeData,RemoveData,screenCheck,screenSimulation,perfTap}*"
       ],
       "sources": [
         "src/screens/settings/**",
@@ -287,16 +294,18 @@
         "__tests__/fakeDevice/**",
         "__tests__/scenarios/smoke/appStarts*",
         "__tests__/scenarios/narrowScreen*",
+        "__tests__/scenarios/calmerSelection*",
+        "__tests__/ui/selectionStore*",
         "__tests__/domain/{dateFormat,screenLayout}.test.ts",
-        "__tests__/ui/{measuredHeightMemo,useActionError,useEditTarget,rowTapTargets,taskRow*,itemEntryRow}*",
+        "__tests__/ui/{pageCount,statusTimers,measuredHeightMemo,useActionError,useEditTarget,rowTapTargets,taskRow*,itemEntryRow}*",
         "scripts/test-*.mjs"
       ],
       "sources": [
         "App.tsx",
         "src/screens/useAppOverlays.tsx",
-        "src/ui/{PagedSection,PillButton,ProgressBar,MiniTabs,TabBar,TwoLineRow,KeepAliveTab,TaskRow,HighlightMark,ScreenSize,DoneToggle}.tsx",
+        "src/ui/{PageNavRow,PagedSection,PillButton,ProgressBar,MiniTabs,TabBar,TwoLineRow,KeepAliveTab,TaskRow,HighlightMark,ScreenSize,DoneToggle}.tsx",
         "src/ui/{icons.tsx,commonStyles.ts,theme.ts,listLayout.ts,pagination.ts,keepAliveStore.ts,screenActivity.ts,screenSimStore.ts}",
-        "src/ui/{useMeasuredHeight,useStableCallback,useActionError,useEditTarget,useEntryActions,taskRowLayout,itemEntryRow}.ts",
+        "src/ui/{useMeasuredHeight,useStableCallback,useActionError,useEditTarget,useEntryActions,taskRowLayout,itemEntryRow,selectionStore}.ts",
         "src/ui/status/**",
         "src/domain/{dateFormat,dateLabel,textLineEstimator,buttonIds,screenLayout}.ts",
         "src/utils/**",

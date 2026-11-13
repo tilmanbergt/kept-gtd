@@ -15,7 +15,7 @@ To update later, install the newer file over the old one. Read the [Upgrade note
 Kept keeps everything in four folders inside your `Note` folder ([The folder layout](files-and-folders.md#the-folder-layout)):
 
 - `1 Projects`: one folder per project
-- `2 Areas`: one folder per area of responsibility, plus `0 Inbox` for the [Inbox](quick-add.md#the-inbox)
+- `2 Areas`: one folder per area of responsibility, plus `0 Inbox` for the [Inbox](daily.md#the-inbox)
 - `3 Resources`: reference material
 - `4 Archive`: finished projects
 
@@ -36,11 +36,11 @@ Open a project and add todos with [Quick Add](quick-add.md), the small form abov
 - Waiting for someone? The [w/f](tags.md#flow-tags-for-todos) chip, or a tag like `#wf/marco` for "waiting for Marco".
 - Not now? [Someday](tags.md#flow-tags-for-todos) or [Maybe](tags.md#flow-tags-for-todos) parks it out of the way until the [weekly review](review.md#someday--maybe) brings it back.
 
-Tap a todo to open its [card](quick-add.md#the-card-one-tap-selects): done, the flow chips, its note and delete. The tags are plain words in your files, see [Tags](tags.md).
+Tap a todo to open its [card](quick-add.md#the-card-one-tap-selects): done, Next, w/f, Someday and Maybe, its note and delete. The tags are plain words in your files, see [Tags](tags.md).
 
 ## Meetings
 
-Switch Quick Add to its [Meeting](quick-add.md#adding-a-meeting) tab: a title, a date and a time, for example "Plan the beds", today, `14-15.30` (more forms in [Meeting length](week-and-month.md#meeting-length)). [Daily](daily.md#schedule-and-cards) shows today's and tomorrow's meetings next to your todos. [Week](week-and-month.md#week) and [Month](week-and-month.md#month) give the longer view. Time you keep for yourself is a [focus block](meetings.md#focus-blocks). See [Meetings](meetings.md).
+Open a [meeting](quick-add.md#adding-a-meeting) in Quick Add with its + Meeting button: a title, a date and a time, for example "Plan the beds", today, `14-15.30` (more forms in [Meeting length](week-and-month.md#meeting-length)). [Daily](daily.md#schedule-and-cards) shows today's and tomorrow's meetings next to your todos. [Week](week-and-month.md#week) and [Month](week-and-month.md#month) give the longer view. Time you keep for yourself is a [focus block](meetings.md#focus-blocks). See [Meetings](meetings.md).
 
 ## Notes
 
@@ -50,9 +50,9 @@ By default all notes of a project go into one notebook per year, its [home noteb
 
 ## Capture while you write
 
-While you write in any note, select handwriting with the [lasso](lasso.md) and tap [Capture Todo/Meeting](lasso.md#capturing-right-away): Kept recognizes it and opens Quick Add with the text. No time to sort? [Mark for later](lasso.md#marking-for-later) keeps the selection with one tap, and you [file it later](lasso.md#processing-marks) from the [Inbox](quick-add.md#the-inbox).
+While you write in any note, select handwriting with the [lasso](lasso.md) and tap [Capture Todo/Meeting](lasso.md#capturing-right-away): Kept recognizes it and opens Quick Add with the text. No time to sort? [Mark for later](lasso.md#marking-for-later) keeps the selection with one tap, and you [file it later](lasso.md#processing-marks) from the [Inbox](daily.md#the-inbox).
 
-Everything you add without a project lands in the [Inbox](quick-add.md#the-inbox).
+Everything you add without a project lands in the [Inbox](daily.md#the-inbox).
 
 ## Once a week
 

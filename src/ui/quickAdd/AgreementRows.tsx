@@ -1,17 +1,14 @@
 /**
- * Quick Add's Agreement rows (docs/dev/history/technical-design-meetings-0.21.md
- * §5, R21): R2 the words (ui/writing/WritingTextInput.tsx) and the valid-till field, whose
- * strip hovers over the tabs; R3 and R4 the tag chips, or R3 the tags and R4
- * a grey line when one is given (what the screen adds, or "↳ replaces …"
- * while changing an agreement). Mounted with the other tabs' rows and hidden
- * while another tab shows.
+ * The lasso capture panel's Agreement row (docs/dev/history/technical-design-meetings-0.21.md
+ * §5, R21): the words (ui/writing/WritingTextInput.tsx) and the valid-till
+ * field, whose strip hovers over the row. Quick Add's box has its own form
+ * (ui/quickAdd/form/). Mounted with the other kinds' rows, hidden while
+ * another kind shows.
  */
 import React from 'react';
 import {usePerfRender} from '../../utils/perf';
 import {View} from 'react-native';
 import WritingTextInput from '../writing/WritingTextInput';
-import TagChips, {useTwoRowTagChips} from '../TagChips';
-import {useTagRowBudget} from '../tagChipLayout';
 import ValidTillInput, {ValidTillStrip} from '../ValidTillInput';
 import MarkWrap from '../status/StatusMark';
 import {rowStyles} from './styles';
@@ -80,32 +77,5 @@ export function AgreementInputRow({core, agreement, today, textColor, borderColo
         borderColor={borderColor}
       />
     </View>
-  );
-}
-
-/** R3 and R4: tags over both rows, or tags in R3 and `row4` in R4. */
-export function AgreementTagRows({core, agreement, layoutKey, row4, textColor, borderColor}: Omit<Props, 'today' | 'placeholderColor'> & {layoutKey?: string; row4?: React.ReactNode}) {
-  const budget = useTagRowBudget(layoutKey ? `${layoutKey}:agreement` : undefined);
-  const hidden = core.displayType !== 'agreement' && rowStyles.hidden;
-  const common = {
-    text: agreement.fields.text,
-    recentTags: core.recentTags,
-    recognizedTags: core.recognizedAbbrevTags,
-    page: agreement.tagPage,
-    onPageChange: agreement.setTagPage,
-    onInsertTag: agreement.insertTag,
-    onRemoveTag: agreement.removeTag,
-    textColor,
-    borderColor,
-  };
-  const two = useTwoRowTagChips({...common, widths: {row3First: budget.laterWidth, row3Later: budget.laterWidth, row4: budget.laterWidth}});
-  const oneRow = row4 != null;
-  return (
-    <>
-      <View style={[rowStyles.row3, hidden]} onLayout={budget.onRowLayout}>
-        {oneRow ? <TagChips {...common} page0Width={budget.laterWidth} laterWidth={budget.laterWidth} /> : two.row3}
-      </View>
-      <View style={[rowStyles.row4, hidden]}>{oneRow ? row4 : two.row4}</View>
-    </>
   );
 }

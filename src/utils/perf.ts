@@ -27,7 +27,11 @@ import {useEffect, useLayoutEffect} from 'react';
 import {InteractionManager} from 'react-native';
 import {errorMessage} from './errorMessage';
 
-export type PerfTraceKind = 'cold' | 'reopen' | 'tab' | 'nav';
+/**
+ * `tap`: a row's first tap until its card in Quick Add's place has committed
+ * (`card:commit`, docs/dev/history/technical-design-calmer-screens.md §3.1).
+ */
+export type PerfTraceKind = 'cold' | 'reopen' | 'tab' | 'nav' | 'tap';
 type Meta = Record<string, unknown>;
 
 /** [t (ms since trace start), type, label, dur (ms, spans only), meta] */
@@ -157,6 +161,20 @@ function startFrameProbe(trace: Trace): void {
     requestAnimationFrame(onFrame);
   };
   requestAnimationFrame(onFrame);
+}
+
+/**
+ * For the first `card:commit` of a running `tap` trace: the ms since the tap,
+ * else null (no trace, another kind, or the card was already marked). Marks
+ * `card:commit` itself, so the caller only logs the number.
+ */
+export function perfCardCommit(meta?: Meta): {ms: number; meta: Meta | undefined} | null {
+  const trace = current;
+  if (!trace) return null;
+  const first = trace.kind === 'tap' && !trace.counters['card:commit'];
+  trace.counters['card:commit'] = (trace.counters['card:commit'] ?? 0) + 1;
+  perfMark('card:commit', meta);
+  return first ? {ms: round1(now() - trace.t0), meta: trace.meta} : null;
 }
 
 /** Instant event. */

@@ -45,6 +45,10 @@ export const rowStyles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: QUICK_ADD_ROWS.gap,
   },
+  /** Quick Add's form: a row 3 that starts on the left (one field). */
+  row3Start: {
+    justifyContent: 'flex-start',
+  },
   /** R4, the last row: no gap below. */
   row4: {
     height: QUICK_ADD_ROWS.extra,
@@ -80,7 +84,7 @@ export const rowStyles = StyleSheet.create({
   tabTextDisabled: {
     opacity: 0.35,
   },
-  /** Groups the lead control (flow chips / time field) with the tag chips on the row's left. Never clips: only the tag chips' own row does (ui/TagChips.tsx). */
+  /** Groups the lead control (flow chips) on the capture panel's row 3. */
   row3ChipsGroup: {
     flexDirection: 'row',
     alignItems: 'center',

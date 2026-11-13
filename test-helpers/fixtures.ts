@@ -54,6 +54,7 @@ export function item(
     defaultResourceFolder: null,
     area: null,
     abbrev: null,
+    show: {tokens: []},
     frontMatterExtraLines: [],
     ...extra,
   };

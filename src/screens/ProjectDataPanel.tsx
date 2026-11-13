@@ -112,6 +112,7 @@ import {MeetingSeed} from '../ui/quickAdd/useDraftRequests';
 import {CounterpartFilter, CounterpartFilterPill, useCounterpartPredicates} from './projectData/counterpartFilter';
 import TodosSection from './projectData/TodosSection';
 import AgreementsList, {AgreementsLink} from './projectData/AgreementsList';
+import {ShowValue} from '../domain/pageShow';
 import {PanelEditTarget, useProjectAgreements} from './projectData/useProjectAgreements';
 import MeetingsSection from './projectData/MeetingsSection';
 
@@ -126,7 +127,7 @@ const MEETINGS_WEIGHT = 3;
 /** Which row (task or meeting, by index into ProjectDataPanel's own `state.tasks`/`state.meetings`) is being edited or armed - technical-design-linked-files.md §8's cross-cutting "one edit target" lift. Owned here rather than independently by TodosSection/MeetingsSection, so starting an edit/arm on either row type always cancels whichever of the other three states (the other type's edit, either type's arm) was active - there is exactly one edit *or* arm going on at a time, screen-wide. */
 type EditTarget = PanelEditTarget;
 
-/** The one arm target for this whole screen - extends EditTarget with which action armed it, mirroring screens/InboxScreen.tsx's own ArmTarget (docs/dev/history/technical-design-filing-unification.md §3.2). 'link' picks an existing file to attach; 'refile' (storage/inboxFiling.ts's module doc comment) picks a different Project/Area to move the item into - the Current tab's own entry point for filing. */
+/** The one arm target for this whole screen - extends EditTarget with which action armed it (docs/dev/history/technical-design-filing-unification.md §3.2). 'link' picks an existing file to attach; 'refile' (storage/inboxFiling.ts's module doc comment) picks a different Project/Area to move the item into - the Current tab's own entry point for filing. */
 type ArmTarget = {type: 'task' | 'meeting'; index: number; intent: 'link' | 'refile'};
 
 interface Props {
@@ -153,6 +154,10 @@ interface Props {
   meetingSeed?: MeetingSeed | null;
   seedDestination?: Destination | null;
   onSeedUsed?: () => void;
+  /** "Show on this page" for Agreements (domain/pageShow.ts): Auto shows the link while there are some, Always also at 0, Never hides it. */
+  agreementsShow?: ShowValue;
+  /** Whether the Schedule shows (Auto: there are meetings); hidden, the Todos take the column. A short screen keeps its Todos | Schedule tabs. */
+  scheduleShown?: boolean;
 }
 
 /** Just the fields this screen actually reads/writes - CachedItem carries several more (kind/name/path/loadError/status/dailyFocus/weeklyFocus/frontMatterExtraLines/defaultResourceFolder) it doesn't need here - Status/Archive/Focus live in ui/ItemStatusPanel.tsx. */
@@ -178,6 +183,8 @@ export default function ProjectDataPanel({
   meetingSeed,
   seedDestination,
   onSeedUsed,
+  agreementsShow = 'auto',
+  scheduleShown = true,
 }: Props): React.JSX.Element {
   usePerfRender('ProjectDataPanel');
   const short = useShortScreen();
@@ -216,6 +223,7 @@ export default function ProjectDataPanel({
   // technical-design-linked-files.md §8's lifted "one edit target" - see
   // the EditTarget doc comment above.
   const {
+    store: selection,
     target: editTarget,
     mode: editMode,
     arm: armTarget,
@@ -227,7 +235,7 @@ export default function ProjectDataPanel({
     armFor,
     cancelArm: cancelArming,
     flushEditRef,
-  } = useEditTarget<EditTarget, ArmTarget>();
+  } = useEditTarget<EditTarget, ArmTarget>('Current');
   // QuickAddWidget's own add/edit/delete error surface (
   // docs/dev/history/technical-design-unified-quickadd.md §6/§10 step 2) - mirrors the
   // per-section `actionError`/`runAction` pattern TodosSection/
@@ -413,7 +421,7 @@ export default function ProjectDataPanel({
 
   /**
    * QuickAddWidget's onQuickFile in edit mode: "save, but file elsewhere"
-   * (see InboxScreen's handleQuickFileEdit). Throws instead of using
+   * (as Daily's Quick Add does). Throws instead of using
    * runWidgetAction, so the widget can show the failure inline; closes edit
    * mode only after the move succeeded. A tag naming this item itself never
    * resolves to a target (resolveAbbrevFileTarget's excludePath); the path
@@ -477,19 +485,28 @@ export default function ProjectDataPanel({
       // Abbreviation quick-file recognized a different Project/Area's
       // #tag while composing here - create it straight there.
       await addTaskToDestination(newTask, destination, {inbox: null, inboxPath: null});
+      log('Current: quickadd added kind=todo card=elsewhere');
       return;
     }
     if (!state) return;
+    const index = state.tasks.length;
     await withTasks([...state.tasks, newTask]);
+    // After + Add the box shows the new todo's card (docs/dev/history/technical-design-quickadd-redesign.md §3.5, B4).
+    log('Current: quickadd added kind=todo card=shown');
+    selectEdit({type: 'task', index});
   };
 
   const handleAddMeeting = async (fields: MeetingQuickAddFields, destination: Destination, linkedFile?: string): Promise<void> => {
     const newMeeting: Meeting = buildMeeting(fields, {linkedFile});
     if (destination.type === 'item' && destination.path !== path) {
       await addMeetingToDestination(newMeeting, destination, {inbox: null, inboxPath: null});
+      log('Current: quickadd added kind=meeting card=elsewhere');
     } else {
       if (!state) return;
+      const index = state.meetings.length;
       await withMeetings([...state.meetings, newMeeting]);
+      log('Current: quickadd added kind=meeting card=shown');
+      selectEdit({type: 'meeting', index});
     }
     onSeedUsed?.();
   };
@@ -549,7 +566,7 @@ export default function ProjectDataPanel({
     });
   };
 
-  // `root: 'browse'` - see screens/InboxScreen.tsx's own linkTarget for the
+  // `root: 'browse'` - see ui/FileBrowserPane.tsx's linkTarget for the
   // full note. Both this and area-assignment's own pickKind:'folder' arm
   // (ui/ItemStatusPanel.tsx) set `root: 'browse'` (area-assignment adds `startAt: 'area'` to
   // land inside Areas directly) - ItemDetail.tsx's `isRefileArming`
@@ -637,6 +654,7 @@ export default function ProjectDataPanel({
     onArmLink: () => todoIndex !== null && armLinkTarget('task', todoIndex),
     onArmRefile: () => todoIndex !== null && armRefileTarget('task', todoIndex),
     onEdit: editSelected,
+    onBackToCard: savedEditTarget,
     onClose: cancelEditTarget,
   });
 
@@ -664,6 +682,7 @@ export default function ProjectDataPanel({
     onArmLink: () => cardIndex !== null && armLinkTarget('meeting', cardIndex),
     onArmRefile: () => cardIndex !== null && armRefileTarget('meeting', cardIndex),
     onEdit: editSelected,
+    onBackToCard: savedEditTarget,
     onClose: cancelEditTarget,
   });
 
@@ -680,6 +699,20 @@ export default function ProjectDataPanel({
     saved: savedEditTarget,
     cancel: cancelEditTarget,
   });
+
+  const selectTask = useCallback((index: number) => selectEdit({type: 'task', index}), [selectEdit]);
+  const selectMeeting = useCallback((index: number) => selectEdit({type: 'meeting', index}), [selectEdit]);
+  const armTaskLink = useCallback((index: number) => armLinkTarget('task', index), [armLinkTarget]);
+  const closeAgreements = useCallback(() => setShowAgreements(false), []);
+  const openAgreements = useCallback(() => setShowAgreements(true), []);
+  const agreementsCount = agreements.refs.length;
+  const agreementsFooter = useMemo(
+    () =>
+      agreementsShow === 'never' ? null : (
+        <AgreementsLink count={agreementsCount} always={agreementsShow === 'always'} onOpen={openAgreements} textColor={textColor} />
+      ),
+    [agreementsCount, agreementsShow, openAgreements, textColor],
+  );
 
   if (loading) {
     return (
@@ -701,28 +734,29 @@ export default function ProjectDataPanel({
   }
 
   // The Todos (or the agreements list in their place), stacked above the schedule or, on a short
-  // screen, behind the schedule's first tab.
+  // screen, behind the schedule's first tab. The lists are memoized and get only stable props: they
+  // don't read the selection, each row reads its own (docs/dev/history/technical-design-calmer-screens.md §3.1.3).
   const todosContent = (
     <>
-      {showAgreements && agreements.refs.length > 0 ? (
-            <AgreementsList refs={agreements.refs} agreements={agreements.actions} onBack={() => setShowAgreements(false)} textColor={textColor} borderColor={borderColor} />
-          ) : (
-          <TodosSection
-            itemPath={path}
-            tasks={state.tasks}
-            onSave={withTasks}
-            editingIndex={editTarget?.type === 'task' ? editTarget.index : null}
-            armingIndex={armTarget?.type === 'task' ? armTarget.index : null}
-            onStartEdit={index => selectEdit({type: 'task', index})}
-            onArmLink={index => armLinkTarget('task', index)}
-            onOpenLinkedFile={onOpenLinkedFile}
-            filter={predicates?.task}
-            loops={item?.loops}
-            textColor={textColor}
-            borderColor={borderColor}
-            footer={<AgreementsLink count={agreements.refs.length} onOpen={() => setShowAgreements(true)} textColor={textColor} />}
-          />
-          )}
+      {showAgreements && agreementsShow !== 'never' && (agreements.refs.length > 0 || agreementsShow === 'always') ? (
+        <AgreementsList refs={agreements.refs} agreements={agreements.actions} onBack={closeAgreements} textColor={textColor} borderColor={borderColor} />
+      ) : (
+        <TodosSection
+          itemPath={path}
+          tasks={state.tasks}
+          onSave={withTasks}
+          selection={selection}
+          armingIndex={armTarget?.type === 'task' ? armTarget.index : null}
+          onStartEdit={selectTask}
+          onArmLink={armTaskLink}
+          onOpenLinkedFile={onOpenLinkedFile}
+          filter={predicates?.task}
+          loops={item?.loops}
+          textColor={textColor}
+          borderColor={borderColor}
+          footer={agreementsFooter}
+        />
+      )}
     </>
   );
 
@@ -735,10 +769,9 @@ export default function ProjectDataPanel({
       meetings={state.meetings}
       onSave={withMeetings}
       onOpenCalendarSettings={onOpenCalendarSettings}
-      editingIndex={editTarget?.type === 'meeting' ? editTarget.index : null}
-      editMode={cardOrEdit(editMode)}
+      selection={selection}
       armingIndex={armTarget?.type === 'meeting' ? armTarget.index : null}
-      onSelect={index => selectEdit({type: 'meeting', index})}
+      onSelect={selectMeeting}
       onOpenLinkedFile={onOpenLinkedFile}
       filter={predicates?.meeting}
       textColor={textColor}
@@ -761,6 +794,7 @@ export default function ProjectDataPanel({
         <CounterpartFilterPill leaf={counterpartFilter.leaf} onClear={onClearCounterpartFilter} textColor={textColor} borderColor={borderColor} />
       )}
       <QuickAddWidget
+        collapsible
         thisFileLine
         layoutKey="current"
         fixedDestination={widgetDestination}
@@ -803,6 +837,8 @@ export default function ProjectDataPanel({
       <View style={styles.stackedColumn}>
         {short ? (
           meetingsSection({label: 'Todos', content: todosContent})
+        ) : !scheduleShown ? (
+          <View style={styles.stackedColumn}>{todosContent}</View>
         ) : (
           <>
             <View style={{flex: TODOS_WEIGHT}}>{todosContent}</View>

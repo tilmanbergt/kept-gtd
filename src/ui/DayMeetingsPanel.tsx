@@ -15,7 +15,8 @@ import React from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
 import {formatDayHeader} from '../domain/dateFormat';
 import {todayIso} from '../domain/meetingTime';
-import MeetingList from './MeetingList';
+import MeetingList, {LayoutSwitch} from './MeetingList';
+import {useListLayout} from './listLayout';
 import {MeetingRowLayout} from './MeetingRow';
 import MiniTabs, {MiniTabDef} from './MiniTabs';
 import {FONT} from './theme';
@@ -42,6 +43,12 @@ interface Props<T extends {meeting: Pick<Meeting, 'tags'>}, K extends string> {
   emptyHint?: string;
   /** Extra reset signal for the list (Daily: the active context filter) - combined with `date`. */
   listResetKey?: string;
+  /**
+   * Daily (docs/dev/history/technical-design-calmer-screens.md §3.6): no header
+   * line with the day and its counts; the 1-line/2-line switch sits in the tab
+   * row instead. The list's own line keeps only its page arrows.
+   */
+  compact?: boolean;
   textColor: string;
   borderColor: string;
 }
@@ -57,10 +64,12 @@ export default function DayMeetingsPanel<T extends {meeting: Pick<Meeting, 'tags
   renderRow,
   emptyHint,
   listResetKey,
+  compact = false,
   textColor,
   borderColor,
 }: Props<T, K>): React.JSX.Element {
   const shown = visibleTabs(tabs, activeTab, GOOGLE_TAB as K, googlePanel !== null);
+  const [layout, setLayout] = useListLayout('dayPanel', 'twoLine');
   return (
     <View style={styles.root}>
       <MiniTabs
@@ -68,7 +77,9 @@ export default function DayMeetingsPanel<T extends {meeting: Pick<Meeting, 'tags
         activeKey={shown.activeKey}
         onChange={onTabChange}
         trailing={
-          onClose ? (
+          compact && shown.activeKey !== GOOGLE_TAB ? (
+            <LayoutSwitch layout={layout} onChange={setLayout} textColor={textColor} />
+          ) : onClose ? (
             <Pressable onPress={onClose} hitSlop={8} style={[styles.close, {borderColor: textColor}]}>
               <Text style={[styles.closeText, {color: textColor}]}>Close ✕</Text>
             </Pressable>
@@ -84,7 +95,8 @@ export default function DayMeetingsPanel<T extends {meeting: Pick<Meeting, 'tags
           <MeetingList
             listId="dayPanel"
             defaultLayout="twoLine"
-            header={`${formatDayHeader(date, todayIso())} · ${scheduleCountText(entries)}`}
+            header={compact ? '' : `${formatDayHeader(date, todayIso())} · ${scheduleCountText(entries)}`}
+            layout={compact ? layout : undefined}
             rows={entries}
             renderRow={renderRow}
             resetKey={`${date}|${listResetKey ?? ''}`}

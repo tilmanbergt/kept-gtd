@@ -31,7 +31,7 @@ interface Props {
   layoutKey: string;
   onAddTask: (text: string, destination: Destination, linkedFile?: string) => Promise<void>;
   onAddMeeting: (fields: MeetingQuickAddFields, destination: Destination, linkedFile?: string) => Promise<void>;
-  /** Quick Add's line offering the file Kept was opened from (ui/quickAdd/ThisFileLine.tsx). */
+  /** Quick Add offers the file Kept was opened from as `📎 This file` on its strip (ui/quickAdd/useThisFileChoice.ts). */
   thisFileLine?: boolean;
   /** The grey line: what the screen adds to new entries, a ✕ per part. */
   provenance?: QuickAddAdds | null;

@@ -41,6 +41,8 @@ interface Props<T> {
   renderRow: (row: T, layout: MeetingRowLayout) => React.ReactNode;
   resetKey?: string | number;
   emptyHint?: string;
+  /** The layout chosen outside (the day panel's switch in its tab row): no switch in the header then. */
+  layout?: MeetingRowLayout;
   textColor: string;
   borderColor: string;
 }
@@ -53,10 +55,12 @@ export default function MeetingList<T>({
   renderRow,
   resetKey,
   emptyHint,
+  layout: outerLayout,
   textColor,
   borderColor,
 }: Props<T>): React.JSX.Element {
-  const [layout, setLayout] = useListLayout(listId, defaultLayout);
+  const [ownLayout, setLayout] = useListLayout(listId, defaultLayout);
+  const layout = outerLayout ?? ownLayout;
   // First row of the current page, tracked so a layout switch can land on
   // the page that still shows it. Keyed by layout: the jump fires exactly
   // when the layout changes (and harmlessly to index 0 on mount).
@@ -66,7 +70,7 @@ export default function MeetingList<T>({
     <PagedSection
       header={header}
       heightKey={resetKey !== undefined ? [`meetings:${listId}:${resetKey}`, `meetings:${listId}`] : `meetings:${listId}`}
-      headerAccessory={<LayoutSwitch layout={layout} onChange={setLayout} textColor={textColor} />}
+      headerAccessory={outerLayout ? undefined : <LayoutSwitch layout={layout} onChange={setLayout} textColor={textColor} />}
       rows={rows}
       rowHeight={row => (isHeaderRow(row) ? MEETING_LIST_HEADER_ROW_HEIGHT : MEETING_ROW_HEIGHT[layout])}
       isCountableRow={row => !isHeaderRow(row)}

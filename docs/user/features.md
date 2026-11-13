@@ -6,13 +6,13 @@
 
 On by default. When a project is done, [Close out…](close-out.md#where-to-start-it) walks you through a checklist, where its outcomes go and an archive PDF before the folder moves to the Archive.
 
-Off: a [Done](projects-and-areas.md#status) project shows **Archive…** on its page and **Archive** in the Weekly Review's step [Done awaiting review](review.md#the-steps), and moves to the Archive after one confirmation, without the checklist and the PDF. A close-out you started earlier stays in the project's file.
+Off: a [Done](projects-and-areas.md#status) project shows **Archive…** in its [⚙ Settings](projects-and-areas.md#settings) and **Archive** in the Weekly Review's step [Done awaiting review](review.md#the-steps), and moves to the Archive after one confirmation, without the checklist and the PDF. A close-out you started earlier stays in the project's file.
 
 ## Experimental
 
 These depend on outside services or on reading your notebooks, and may be slow or stop working:
 
-- [Google Calendar](features.md#google-calendar): your Google Calendar in Daily, Week, Month, Inbox, Projects/Areas and Review
+- [Google Calendar](features.md#google-calendar): your Google Calendar in Daily, Week, Month, Projects/Areas and Review
 - [Gmail](features.md#gmail): the Gmail inbox step in the Weekly Review
 - [Notebook contents](projects-and-areas.md#contents-experimental): the headings list on a project's or area's [Notebook tab](projects-and-areas.md#the-notebook-tab)
 
@@ -30,7 +30,7 @@ Kept reads your calendar through its private address in iCal format. It only rea
 2. Switch on **Google Calendar** under Experimental.
 3. Paste the address under **Google Calendar** on the right of [Settings → Features](settings.md#google-calendar-and-gmail) and tap its **Save**.
 
-A **Google** tab then appears in [Daily](daily.md#schedule-and-cards), [Week](week-and-month.md#week), [Month](week-and-month.md#month), [Inbox](quick-add.md#the-inbox), a project's [Current](projects-and-areas.md#the-current-tab) tab and the Review's [Week ahead](review.md#the-steps) step. Tap **Load Google Calendar**. You can copy an event into a Kept meeting with one tap; copied events get a check mark, and **Hide existing** hides them. Events copied on the Month tab become [monthly highlights](week-and-month.md#month).
+A **Google** tab then appears in [Daily](daily.md#schedule-and-cards), [Week](week-and-month.md#week), [Month](week-and-month.md#month), a project's [Current](projects-and-areas.md#the-current-tab) tab and the Review's [Week ahead](review.md#the-steps) step. Tap **Load Google Calendar**. You can copy an event into a Kept meeting with one tap; copied events get a check mark, and **Hide existing** hides them. Events copied on the Month tab become [monthly highlights](week-and-month.md#month).
 
 Keep the secret address private - anyone who has it can read your calendar. You can reset it in Google Calendar.
 

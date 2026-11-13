@@ -1,79 +1,58 @@
 /**
- * Quick Add's Meeting rows: R2 (title + date, the date inline from the
- * start - meetings almost always have one), R3 (time + tag chips) and R4
- * (more tags, or what the widget puts there). All stay mounted while
- * another tab shows - see ui/quickAdd/styles.ts.
- *
- * In the box the title's wrappers are real Android views and the title
- * logs its frame and focus (ui/quickAdd/styles.ts `row2Wrap`,
- * ui/quickAdd/layoutLog.ts).
+ * The lasso capture panel's Meeting rows (ui/quickAdd/CaptureQuickAdd.tsx):
+ * R2, the title and the date (the date field draws its own strip), and R3,
+ * the time with the time strip of Quick Add's form (ui/quickAdd/form/WhenStrip.tsx,
+ * docs/dev/history/technical-design-quickadd-redesign.md §3.2: lengths, 30′
+ * shifts, the usual slot), hovering above the field. Quick Add's box has its
+ * own form (ui/quickAdd/form/). Free height; mounted while another kind shows.
  */
 import React from 'react';
 import {usePerfRender} from '../../utils/perf';
 import WritingStrip from '../writing/WritingStrip';
 import {StyleSheet, TextInput, View} from 'react-native';
-import DateInput, {DateNudgeStrip} from '../DateInput';
+import DateInput from '../DateInput';
 import MarkWrap from '../status/StatusMark';
-import TagChips, {useTwoRowTagChips} from '../TagChips';
-import {useTagRowBudget} from '../tagChipLayout';
+import {useLayoutClass} from '../ScreenSize';
 import {FONT} from '../theme';
-import {log} from '../../utils/log';
-import {layoutLogger} from './layoutLog';
 import {rowStyles} from './styles';
 import {MeetingDraftState} from './useMeetingDraft';
 import {QuickAddCore} from './useQuickAddCore';
-
-const logTitleLayout = layoutLogger('meeting title');
-const logTitleRowLayout = layoutLogger('meeting title row');
+import WhenStrip from './form/WhenStrip';
+import {formatTimeSpan, formatWeekdayShort} from '../../domain/dateFormat';
 
 interface Props {
   core: QuickAddCore;
   meeting: MeetingDraftState;
-  /** The capture panel: free height, strips where they always were, no tags or R4 (its own rows follow). */
-  capture?: boolean;
   textColor: string;
   borderColor: string;
   placeholderColor: string;
 }
 
-export function MeetingInputRow({core, meeting, capture = false, textColor, borderColor, placeholderColor}: Props) {
+export function MeetingInputRow({core, meeting, textColor, borderColor, placeholderColor}: Props) {
   usePerfRender('QuickAddRows:meeting');
   return (
-    <View style={[rowStyles.row2, capture && rowStyles.row2Free, core.displayType !== 'meeting' && rowStyles.hidden]}>
-      {/* In the capture panel the date field draws its own strip inside this
-          wrap, outside its bounds: the wrap stays flattened there. */}
-      <View style={rowStyles.row2Wrap} collapsable={capture} onLayout={capture ? undefined : logTitleRowLayout}>
-        <MarkWrap mark={core.fieldMark('title')} textColor={textColor} flex collapsable={capture}>
+    <View style={[rowStyles.row2, rowStyles.row2Free, core.displayType !== 'meeting' && rowStyles.hidden]}>
+      <View style={rowStyles.row2Wrap}>
+        <MarkWrap mark={core.fieldMark('title')} textColor={textColor} flex>
           <TextInput
             ref={meeting.inputRef}
-            onLayout={capture ? undefined : logTitleLayout}
             style={[rowStyles.input, rowStyles.inputFlex, {color: textColor, borderColor}]}
             value={meeting.fields.title}
             onChangeText={meeting.setTitle}
             onSelectionChange={e => meeting.onSelectionChange(e.nativeEvent.selection)}
             selection={meeting.selectionOverride ?? undefined}
             onFocus={() => {
-              log('QuickAdd: meeting title focused');
               meeting.setInputFocused(true);
               meeting.titleHelp.onFocus();
             }}
             onBlur={() => meeting.setInputFocused(false)}
-            placeholder="New meeting title"
+            placeholder="New meeting"
             placeholderTextColor={placeholderColor}
             autoCapitalize="none"
           />
         </MarkWrap>
         <MarkWrap mark={core.fieldMark('date')} textColor={textColor}>
           <DateInput
-            onFocusChange={
-              capture
-                ? undefined
-                : focused => {
-                    log('QuickAdd: meeting date', focused ? 'focused' : 'blurred', {titleLength: meeting.fields.title.length});
-                    meeting.setDateFocused(focused);
-                    if (focused) meeting.dateHelp.onFocus();
-                  }
-            }
             value={meeting.fields.date}
             onChangeText={meeting.setDate}
             placeholder="YYYY-MM-DD"
@@ -83,24 +62,12 @@ export function MeetingInputRow({core, meeting, capture = false, textColor, bord
           />
         </MarkWrap>
       </View>
-      {/* The same hovering strips as the Todo row's, over the tabs. */}
-      {capture ? null : (
-        <DateNudgeStrip
-          visible={meeting.dateFocused}
-          value={meeting.fields.date}
-          onChangeText={meeting.writeDate}
-          help={{content: meeting.dateHelp.strip, actions: meeting.dateHelp.actions}}
-          placement="above-left"
-          textColor={textColor}
-          borderColor={borderColor}
-        />
-      )}
       <WritingStrip
         visible={meeting.inputFocused}
         content={meeting.titleHelp.strip}
         actions={meeting.titleHelp.actions}
         clipboard={meeting.clipboard}
-        placement={capture ? 'above-right' : 'above-left'}
+        placement="above-right"
         textColor={textColor}
         borderColor={borderColor}
       />
@@ -108,91 +75,55 @@ export function MeetingInputRow({core, meeting, capture = false, textColor, bord
   );
 }
 
-interface MetaRowsProps extends Props {
-  layoutKey?: string;
-  /** What R4 holds instead of the second tag row (the edit commands); the tags then page in R3 alone. */
-  row4?: React.ReactNode;
-}
-
-/**
- * R3 (time, then tags) and R4 (more tags, or what the widget puts there).
- * No flow chips compete for R3, so the time field stays on every page; the
- * tags get what it leaves (technical-design-context-tags.md §8,
- * technical-design-item-card.md §5).
- */
-export function MeetingMetaRows({core, meeting, layoutKey, capture = false, row4, ...colors}: MetaRowsProps) {
-  const {textColor, borderColor, placeholderColor} = colors;
-  const budget = useTagRowBudget(layoutKey ? `${layoutKey}:meeting` : undefined);
-  const hidden = core.displayType !== 'meeting' && rowStyles.hidden;
-  const common = {
-    text: meeting.fields.title,
-    recentTags: core.recentTags,
-    recognizedTags: core.recognizedAbbrevTags,
-    page: meeting.tagPage,
-    onPageChange: meeting.setTagPage,
-    onInsertTag: meeting.insertTag,
-    onRemoveTag: meeting.removeTag,
-    textColor,
-    borderColor,
-  };
-  const twoRows = useTwoRowTagChips({
-    ...common,
-    widths: {row3First: budget.page0Width, row3Later: budget.page0Width, row4: budget.laterWidth},
-  });
-  const oneRow = row4 != null;
-  const tags = capture ? null : oneRow ? (
-    <TagChips {...common} page0Width={budget.page0Width} laterWidth={budget.page0Width} />
-  ) : (
-    twoRows.row3
-  );
-  const row3 = (
-    <View style={[rowStyles.row3, capture && rowStyles.row3Free, hidden]} onLayout={budget.onRowLayout}>
-      <View style={rowStyles.row3ChipsGroup}>
-        <View style={rowStyles.row3Lead} onLayout={budget.onLeadLayout}>
-          <MarkWrap mark={core.fieldMark('time')} textColor={textColor}>
-            <TextInput
-              style={[rowStyles.input, styles.timeInputCompact, {color: textColor, borderColor}]}
-              value={meeting.fields.time}
-              onChangeText={meeting.setTime}
-              onFocus={() => {
-                meeting.setTimeFocused(true);
-                meeting.timeHelp.onFocus();
-              }}
-              onBlur={() => meeting.setTimeFocused(false)}
-              placeholder="15 · 15-16.30 · 2d"
-              placeholderTextColor={placeholderColor}
-              autoCapitalize="none"
-            />
-          </MarkWrap>
-          {/* The time strip hovers above the field, left-aligned (§3.4). */}
-          <WritingStrip
-            visible={meeting.timeFocused}
-            content={meeting.timeHelp.strip}
-            actions={meeting.timeHelp.actions}
-            placement="above-left"
-            textColor={textColor}
-            borderColor={borderColor}
+/** R3: the time field with its strip. */
+export function MeetingMetaRows({core, meeting, textColor, borderColor, placeholderColor}: Props) {
+  const narrow = useLayoutClass() === 'narrow';
+  const usual = meeting.hints.usual;
+  return (
+    <View style={[rowStyles.row3, rowStyles.row3Free, core.displayType !== 'meeting' && rowStyles.hidden]}>
+      <View style={styles.timeWrap}>
+        <MarkWrap mark={core.fieldMark('time')} textColor={textColor}>
+          <TextInput
+            style={[rowStyles.input, styles.time, {color: textColor, borderColor}]}
+            value={meeting.fields.time}
+            onChangeText={meeting.setTime}
+            onFocus={() => {
+              meeting.setTimeFocused(true);
+              meeting.timeHelp.onFocus();
+            }}
+            onBlur={() => meeting.setTimeFocused(false)}
+            placeholder="15 · 15-16.30 · 2d"
+            placeholderTextColor={placeholderColor}
+            autoCapitalize="none"
           />
-        </View>
-        {tags}
+        </MarkWrap>
+        <WhenStrip
+          visible={meeting.timeFocused}
+          field="time"
+          value={meeting.fields.time}
+          content={meeting.timeHelp.strip}
+          actions={meeting.timeHelp.actions}
+          warning={meeting.hints.timeShort}
+          suggestLabel={usual ? `usual ${formatWeekdayShort(usual.date)} ${formatTimeSpan(usual.time, usual.endTime)}` : null}
+          onSuggest={usual ? () => meeting.applyUsual(usual) : undefined}
+          onChange={meeting.writeTime}
+          narrow={narrow}
+          placement="above"
+          textColor={textColor}
+          borderColor={borderColor}
+        />
       </View>
     </View>
-  );
-  if (capture) return row3;
-  return (
-    <>
-      {row3}
-      <View style={[rowStyles.row4, hidden]}>{oneRow ? row4 : twoRows.row4}</View>
-    </>
   );
 }
 
 const styles = StyleSheet.create({
-  timeInputCompact: {
+  /** The time strip's positioning context. */
+  timeWrap: {position: 'relative', flexDirection: 'row'},
+  time: {
     fontSize: FONT.small,
-    // 110 wide (docs/dev/history/technical-design-monthly-view.md §5.1): the
-    // field also takes a range/length - "15:00-16:30" must fit.
-    width: 110,
+    // The field also takes a range or a length - "15:00-16:30" must fit.
+    width: 150,
     marginRight: 6,
   },
 });

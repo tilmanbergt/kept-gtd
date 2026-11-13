@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-226 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+285 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -29,10 +29,10 @@ Test: `__tests__/scenarios/agreements.test.tsx` · design: `docs/dev/history/tec
 
 Test: `__tests__/scenarios/agreements.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md` · help: `agreements.md#adding-one`
 
-### Change an agreement: the old one is ended, the new one added; Cancel changes nothing
+### Change an agreement: the old one is ended, the new one added; ✕ changes nothing
 
 - **Given** area "Coaching" has the agreement "Feedback only in our 1:1s" with Jordan
-- **When** I open Jordan's thread overview, tap the agreement and Change on its card, then Cancel
+- **When** I open Jordan's thread overview, tap the agreement and Change on its card, then ✕
 - **Then** the file is unchanged
 - **When** I tap Change again, edit the words to "Feedback only in our 1:1s, except urgent" and tap + Add
 - **Then** the old line is ended today and the new one is added after it, made in the meeting the overview shows
@@ -81,6 +81,16 @@ Test: `__tests__/scenarios/agreements.test.tsx` · design: `docs/dev/history/tec
 
 Test: `__tests__/scenarios/agreements.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md` · help: `review.md#agreements`, `agreements.md#reviewing-and-closing-out`
 
+### A tap on an agreement's words opens its Change form; there is no Edit
+
+- **Given** area "Coaching" has the agreement "Feedback only in our 1:1s" with Jordan
+- **When** I open Jordan's thread overview, tap the agreement and then its words on the card
+- **Then** the Change form shows with "↳ replaces …"
+- **When** I fix a typo and tap + Add
+- **Then** a new version is added and the old one ended
+
+Test: `__tests__/scenarios/agreements.test.tsx` · design: `docs/dev/history/technical-design-quickadd-redesign.md` · help: `agreements.md#changing-and-ending`
+
 ## Close-out
 
 ### Close out a finished project: PDF, archive folder and Archived status
@@ -111,7 +121,10 @@ Test: `__tests__/scenarios/keptGtd.test.tsx` · help: `close-out.md#where-things
 - **Given** contexts Work (Area Team) and Home (Area Garden)
 - **When** I open Daily, tap the chip in the tab bar, choose Home in Settings → Contexts and go back to Daily
 - **Then** the chip names Home, and the status line says so
-- **And** Team's todos are hidden, its overdue one too; Garden's and the Inbox show
+- **And** Team's todos are hidden, its overdue one too; Garden's show, and the Inbox counts its todo
+- **When** I open the Inbox tab
+- **Then** the Inbox's todo shows there, the context ignored
+- **When** I go back to Next
 - **And** Team's meeting is still listed (dimmed), and the hidden line counts the hidden todos and warns of the due one
 - **When** I tap Show
 - **Then** everything shows
@@ -308,6 +321,150 @@ Test: `__tests__/scenarios/contexts.test.tsx` · help: `contexts.md#setting-up-c
 
 ## Daily
 
+### Daily counts the Inbox's marks, todos and meetings in its Inbox tab; the bell counts the due todos
+
+- **Given** on 10.11. two #next todos, one waiting todo due today, and an Inbox with 4 todos (one due today), 1 meeting and 4 open marks
+- **When** I open Daily
+- **Then** the tabs read Next 2, Waiting 1 with the bell, Inbox 9 with the bell
+- **And** the Inbox's #next todo is not under Next
+- **When** I tap Inbox 9
+- **Then** it lists the marks card, the four todos and the past meeting, not the Someday one
+
+Test: `__tests__/scenarios/calmerInbox.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `daily.md#count-tabs-and-the-bell`
+
+### An Inbox todo's card offers the place that uses its tag first
+
+- **Given** an Inbox todo "Ask Lena #lena", and #lena used in project Team offsite (#TO)
+- **When** I open Daily's Inbox tab and tap the todo
+- **Then** its card says Inbox and offers #TO first under File to
+
+Test: `__tests__/scenarios/calmerInbox.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `daily.md#filing-from-the-inbox`
+
+### Filing from the Inbox card: the todo moves, the status line says so with Undo, the next Inbox item opens
+
+- **Given** an Inbox with "Ask Lena #lena" and "Order soil", and project Team offsite (#TO) using #lena
+- **When** I open the card of "Ask Lena" and tap #TO
+- **Then** the todo is in Team offsite's file and not in the Inbox
+- **And** the status line says "Filed … to Team offsite" with Undo, and "Order soil"'s card is open
+- **When** I tap Undo
+- **Then** it is back in the Inbox
+
+Test: `__tests__/scenarios/calmerInbox.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `daily.md#filing-from-the-inbox`
+
+### More… lists the projects and areas; a tap on one files the todo there
+
+- **Given** area Home and an Inbox todo "Fix the gate"
+- **When** I open its card, tap More…, then Areas and Home
+- **Then** the todo is in Home's file and no longer in the Inbox
+
+Test: `__tests__/scenarios/calmerInbox.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `daily.md#more-places-new-project-someday`
+
+### A todo ticked on the Inbox tab stays, struck, when an earlier Inbox item is filed
+
+- **Given** area Home and the Inbox todos "Idea: Herb spiral #garden" and "Fix the gate"
+- **When** I tick "Fix the gate" on Daily's Inbox tab, then file "Idea: Herb spiral" to Home
+- **Then** "Fix the gate" is still in the list, ticked; the filed one is gone
+
+Test: `__tests__/scenarios/calmerInbox.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `daily.md#done`
+
+### An Inbox meeting on Daily: More… opens the picker in place of its context panel, and a tap files it
+
+- **Given** area Home and an Inbox meeting "Gate repair" on 12.11.
+- **When** I open its card on Daily's Inbox tab, tap More…, then Areas and Home
+- **Then** the meeting is in Home's file and no longer in the Inbox
+
+Test: `__tests__/scenarios/calmerInbox.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `daily.md#more-places-new-project-someday`
+
+### → New project: the name and abbreviation are prefilled; Create project makes the folder and files the todo with #next
+
+- **Given** an Inbox todo "Idea: Herb spiral #garden"
+- **When** I open its card and tap → New project
+- **Then** the form offers the name "Herb spiral" and the abbreviation HS; nothing is created yet
+- **When** I tap Create project
+- **Then** the project "Herb spiral" exists with HS, its file has the todo with #next, the Inbox no longer has it
+- **And** the status line names the new project with Open ›, and the next Inbox item's card is open
+
+Test: `__tests__/scenarios/calmerInbox.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `daily.md#more-places-new-project-someday`
+
+### → New project with "was only the name": the project is empty and the Inbox todo is cancelled
+
+- **Given** an Inbox todo "Idea: Herb spiral #garden"
+- **When** I open its card, tap → New project, choose "Was only the name: remove it" and Create project
+- **Then** the project exists without todos, and the Inbox todo is cancelled
+
+Test: `__tests__/scenarios/calmerInbox.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `daily.md#more-places-new-project-someday`
+
+### Someday / Maybe in the picker parks the todo: #someday, still in Inbox.txt, out of the Inbox list
+
+- **Given** an Inbox with "Idea: Herb spiral #garden" and "Fix the gate"
+- **When** I open the card of "Fix the gate", tap More… and Someday / Maybe
+- **Then** Inbox.txt still has it, with #someday, and the Inbox counts one
+- **When** I open the Review's Someday / Maybe step
+- **Then** it lists the parked todo, under the Inbox
+
+Test: `__tests__/scenarios/calmerInbox.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `daily.md#more-places-new-project-someday`
+
+### There is no Inbox tab; a meeting card's "Inbox ›" opens Daily's Inbox tab
+
+- **Given** an Inbox meeting today and a #next todo in a project
+- **When** I open Daily
+- **Then** the tab bar has no Inbox, and Next lists the project todo
+- **When** I tap the meeting in the schedule and on its card the place "Inbox ›"
+- **Then** the Inbox tab is open and the meeting's card offers File to
+
+Test: `__tests__/scenarios/calmerInbox.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `daily.md#the-inbox`
+
+### A Daily row keeps its words; the due date moves to a grey note on the right; no note icon without a note
+
+- **Given** on 3.11.2026, project "Garden renovation" with "Order soil #next" due 5.11. and "Collect topics #lena #next"
+- **When** I open Daily
+- **Then** the row reads "Order soil" with "due 5.11." after it, and no note icon
+- **And** "Collect topics" keeps its tag #lena
+
+Test: `__tests__/scenarios/calmerRows.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `daily.md#labels`
+
+### A todo with a note shows the notebook icon; one tap opens the note without a card
+
+- **Given** project "Garden renovation" with "Order soil #next" and its note
+- **When** I open Daily and tap the notebook icon on the row
+- **Then** the note opens, and no card shows
+
+Test: `__tests__/scenarios/calmerRows.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `quick-add.md#notes-and-files-on-a-todo-or-meeting`
+
+### A tap on a Daily todo shows its card without re-rendering the list
+
+- **Given** project "Garden renovation" with three #next todos
+- **When** I open Daily and tap the todo "Buy seeds"
+- **Then** its card shows in Quick Add's place
+- **And** neither the screen, the todos list nor Quick Add's hidden rows rendered again; only the rows whose mark changed did
+
+Test: `__tests__/scenarios/calmerSelection.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `quick-add.md#the-card-one-tap-selects`
+
+### Daily counts Next and Waiting in its tabs; the bell counts the waiting ones due today
+
+- **Given** on 10.11. three #next todos and two waiting ones, one of them due today
+- **When** I open Daily
+- **Then** the tabs read Next 3, Waiting 2 with the bell 1, Inbox 0; no Done tab
+- **And** Next lists the #next todos, not the waiting ones
+- **When** I tap Waiting
+- **Then** it lists both waiting todos with their grey note
+
+Test: `__tests__/scenarios/calmerTabs.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `daily.md#count-tabs-and-the-bell`
+
+### A todo ticked on Next stays struck through until another tab; then it is under Done, and unticked there it is back
+
+- **Given** on 10.11. two #next todos
+- **When** I open Daily and tick "Order soil"
+- **Then** it is done in the file and still in the list, ticked; Next counts 1, Done 1
+- **When** I open Waiting and then Next again
+- **Then** "Order soil" is gone from Next
+- **When** I open Done
+- **Then** it lists "Order soil"
+- **When** I untick it there
+- **Then** it is open again and back under Next
+
+Test: `__tests__/scenarios/calmerTabs.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `daily.md#done`
+
 ### Add a meeting for next week from Daily
 
 - **Given** an empty PARA folder
@@ -316,6 +473,35 @@ Test: `__tests__/scenarios/contexts.test.tsx` · help: `contexts.md#setting-up-c
 - **Then** the status line says where it went, since Daily doesn't show next week
 
 Test: `__tests__/scenarios/daily.test.tsx` · design: `docs/dev/history/technical-design-cache-subscription-and-shared-add-path.md` · help: `quick-add.md#adding-a-meeting`
+
+### A todo card on Daily links a file through the picker in the list's place
+
+- **Given** on 11.11. the #next todo "Order soil" in Garden renovation and plan.pdf in Resources
+- **When** I open Daily, tap the todo and the clip on its card
+- **Then** the picker replaces the list, with its way back
+- **When** I open Resources and tap plan.pdf
+- **Then** the todo links it and its card's clip is filled
+
+Test: `__tests__/scenarios/dailyLinkPicker.test.tsx` · design: `docs/dev/history/technical-design-quickadd-redesign.md` · help: `daily.md#linking-a-file-from-daily`
+
+### Daily shows no page row for a short Next list, and a page row under a long one
+
+- **Given** on 10.11. four #next todos in Garden renovation
+- **When** I open Daily
+- **Then** the four todos show and no page row
+
+Test: `__tests__/scenarios/dailyPagedNav.test.tsx` · design: `docs/dev/history/technical-design-quickadd-redesign.md` · help: `daily.md#count-tabs-and-the-bell`
+
+### A long Next list on Daily pages with the row under it
+
+- **Given** on 10.11. eighty #next todos in Garden renovation
+- **When** I open Daily
+- **Then** the page row reads 1 of several pages and the last todo is not on the first page
+- **When** I tap the next page arrow
+- **And** the row reads page 2
+- **Then** the first todo is no longer shown
+
+Test: `__tests__/scenarios/dailyPagedNav.test.tsx` · design: `docs/dev/history/technical-design-quickadd-redesign.md` · help: `daily.md#count-tabs-and-the-bell`
 
 ### Daily: a todo's card, then its edit, saved into its own file
 
@@ -338,7 +524,7 @@ Test: `__tests__/scenarios/dailySlim.test.tsx` · design: `docs/dev/history/tech
 ### Quick-file from a Daily edit: "Save to <Name>" moves the todo
 
 - **Given** "Buy bulbs" in the Inbox and project Garage (#GAR)
-- **When** I edit it on Daily, add "#GAR" and tap Save to Garage
+- **When** I edit it on Daily's Inbox tab, add "#GAR" and tap Save to Garage
 - **Then** it is in Garage's file and not in Inbox.txt
 
 Test: `__tests__/scenarios/dailySlim.test.tsx` · help: `quick-add.md#filing-directly-with-an-abbreviation`
@@ -382,7 +568,7 @@ Test: `__tests__/scenarios/meetingContext.test.tsx` · help: `meetings.md#the-co
 
 - **Given** the thread meeting "1:1 Jordan" today at 15:00, and Quick Add left on its Meeting tab
 - **When** I switch Quick Add to Meeting, tap the meeting and + Quick Add to meeting
-- **Then** the Todo tab shows, its button reads "+ Add to Coaching" and the text is empty
+- **Then** the todo form shows, its button reads "+ Add to Coaching" and the text is empty
 
 Test: `__tests__/scenarios/meetingContext.test.tsx` · help: `meetings.md#the-context-panel`
 
@@ -424,13 +610,13 @@ Test: `__tests__/scenarios/meetingContext.test.tsx` · help: `meetings.md#the-co
 
 Test: `__tests__/scenarios/meetingContext.test.tsx` · help: `quick-add.md#editing`
 
-### Daily: tomorrow's tracked meeting offers Prepped, and Daily has no Link file
+### Daily: tomorrow's tracked meeting offers Prepped and the clip that opens the file picker
 
 - **Given** area "Coaching" has a sparring session tomorrow
 - **When** I open Daily, switch to Tomorrow and tap the session
-- **Then** its card offers P, no +clip and no Reflect
+- **Then** its card offers P and +clip, no Reflect
 
-Test: `__tests__/scenarios/meetingReflection.test.tsx` · design: `docs/dev/history/technical-design-item-card.md` · help: `meetings.md#preparation-and-review`
+Test: `__tests__/scenarios/meetingReflection.test.tsx` · design: `docs/dev/history/technical-design-quickadd-redesign.md` · help: `meetings.md#preparation-and-review`
 
 ### Upgrade: 0.22 starts on a 0.21 space without writing a file or a setting
 
@@ -447,10 +633,12 @@ Test: `__tests__/scenarios/rollback.test.tsx` · help: `files-and-folders.md`
 - **Given** the smoke space on Wednesday 14.10.2026 with the context Home (Area Garden) active
 - **When** I open Daily
 - **Then** the Today tab lists "Neighbour chat" and "Dentist"
-- **And** the todos are the Inbox's, Garden's project Garage's and Garden's, each with its label; the rest is counted, Website's overdue one as "1 due!"
+- **And** the todos under Next are Garden's project Garage's and Garden's (the Inbox's are under Inbox), a due one with its grey note; the rest is counted, Website's overdue one as "1 due!"
 - **And** Someday, Maybe and done todos don't show
 - **When** I tap Show
-- **Then** Website's next todo and its Waiting For show too
+- **Then** Website's next todo shows too
+- **When** I tap the Waiting tab
+- **Then** Website's Waiting For shows there
 - **When** I tap Tomorrow
 - **Then** it lists "Supplier call"
 - **And** no error was logged
@@ -466,6 +654,14 @@ Test: `__tests__/scenarios/smoke/daily.test.tsx` · help: `daily.md#what-appears
 Test: `__tests__/scenarios/smoke/daily.test.tsx` · help: `daily.md#schedule-and-cards`
 
 ## Engage
+
+### Engage on a loop's page: no section line, no "Loop since" line, and Today next is shown
+
+- **Given** Area Sport with loop marathon, page 5 is a loop todo's page, and a physio appointment at 11:00 today
+- **When** I open Engage on page 5
+- **Then** the owner is the loop, with Today next and without the section or "Loop since" line
+
+Test: `__tests__/scenarios/calmerEngage.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `engage.md#next-here-and-today-next`
 
 ### Engage before the meeting: Before is chosen, the strip offers prep and the last note, From Thread shows the last session
 
@@ -598,7 +794,7 @@ Test: `__tests__/scenarios/meetingReflection.test.tsx` · design: `docs/dev/hist
 
 - **Given** Sport 2026.note is Area Sport's home notebook and the note of loop marathon; page 1 is its Home page
 - **When** I open Engage on page 1
-- **Then** the owner is Area Sport and the line reads "Section: Sport"
+- **Then** the owner is Area Sport
 
 Test: `__tests__/scenarios/pageSection.test.tsx` · help: `engage.md#which-owner-a-page-belongs-to`
 
@@ -606,7 +802,7 @@ Test: `__tests__/scenarios/pageSection.test.tsx` · help: `engage.md#which-owner
 
 - **Given** page 2 has no title and no keyword
 - **When** I open Engage on page 2
-- **Then** the owner is Area Sport and the line reads "Section: Sport · from p. 1"
+- **Then** the owner is Area Sport
 
 Test: `__tests__/scenarios/pageSection.test.tsx` · help: `engage.md#which-owner-a-page-belongs-to`
 
@@ -614,7 +810,7 @@ Test: `__tests__/scenarios/pageSection.test.tsx` · help: `engage.md#which-owner
 
 - **Given** page 5 is the page of the open todo "Plan long runs #loop/marathon", page 6 a follow-up
 - **When** I open Engage on page 6
-- **Then** the owner is Loop marathon, the todo is current, and the line names it from p. 5
+- **Then** the owner is Loop marathon and the todo is current
 
 Test: `__tests__/scenarios/pageSection.test.tsx` · help: `engage.md#which-owner-a-page-belongs-to`
 
@@ -622,7 +818,7 @@ Test: `__tests__/scenarios/pageSection.test.tsx` · help: `engage.md#which-owner
 
 - **Given** page 7 has my typed heading "Training plan"
 - **When** I open Engage on page 8
-- **Then** the owner is Area Sport and the line reads "Section: Training plan · from p. 7"
+- **Then** the owner is Area Sport
 
 Test: `__tests__/scenarios/pageSection.test.tsx` · help: `engage.md#which-owner-a-page-belongs-to`
 
@@ -630,7 +826,7 @@ Test: `__tests__/scenarios/pageSection.test.tsx` · help: `engage.md#which-owner
 
 - **Given** page 9 has a handwritten title
 - **When** I open Engage on page 9
-- **Then** the owner is Area Sport and the line reads "Section: Handwritten section"
+- **Then** the owner is Area Sport
 
 Test: `__tests__/scenarios/pageSection.test.tsx` · help: `engage.md#which-owner-a-page-belongs-to`
 
@@ -646,7 +842,7 @@ Test: `__tests__/scenarios/pageSection.test.tsx` · help: `engage.md#which-owner
 
 - **Given** the todo "Buy shoes" of page 10 is cancelled
 - **When** I open Engage on page 11
-- **Then** the owner is Area Sport, no todo is current, and the line still reads "Section: Buy shoes · from p. 10"
+- **Then** the owner is Area Sport and no todo is current
 
 Test: `__tests__/scenarios/pageSection.test.tsx` · help: `engage.md#which-owner-a-page-belongs-to`
 
@@ -662,7 +858,7 @@ Test: `__tests__/scenarios/pageSection.test.tsx` · help: `engage.md#which-owner
 
 - **Given** loop marathon's note "2026-11 loop marathon.note" is not a home notebook; page 2 is free
 - **When** I open Engage on page 2 of the loop note
-- **Then** the owner is the loop and the line names the loop page
+- **Then** the owner is the loop
 
 Test: `__tests__/scenarios/pageSection.test.tsx` · help: `engage.md#which-owner-a-page-belongs-to`
 
@@ -697,7 +893,6 @@ Test: `__tests__/scenarios/pageSection.test.tsx` · help: `engage.md#opening-eng
 - **Given** page 3 is the page of meeting "Coach call" (Sport, no loop tag), where "Book physio" was agreed; page 4 is handwritten without a title
 - **When** I open Engage on page 4
 - **Then** the owner is Area Sport, the moment line shows Coach call with its moment, From offers its group
-- **And** the line reads "Section: Coach call · 24.10. · from p. 3"
 
 Test: `__tests__/scenarios/smoke/engagePage.test.tsx` · help: `engage.md#which-owner-a-page-belongs-to`
 
@@ -762,20 +957,12 @@ Test: `__tests__/scenarios/helpLinksTallDiagram.test.tsx` · design: `docs/dev/h
 ### Refile a todo with its note from the Inbox to a project
 
 - **Given** Inbox.txt has the todo "Call Anna" with its note "Call Anna.note", and project "Website" exists
-- **When** I open the Inbox, tap "Call Anna", tap the refile arrow on its card, open Projects, tap "Website" and confirm Move
+- **When** I open Daily's Inbox, tap "Call Anna", tap More… on its card, tap "Website" and confirm Move
 - **Then** Website's project.txt has the todo with its note link, after "Write copy"
 - **Then** Inbox.txt no longer has it
 - **Then** the note moved into the project's folder, keywords and all
 
-Test: `__tests__/scenarios/inbox.test.tsx` · design: `docs/dev/history/technical-design-filing-unification.md` · help: `quick-add.md#the-inbox`
-
-### Refile a meeting from the card's area chip
-
-- **Given** the Inbox meeting "Kick-off" next week and project "Website"
-- **When** I tap the meeting, tap the refile arrow and pick Website in the Files pane
-- **Then** the meeting is in Website and no longer in the Inbox
-
-Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/technical-design-item-card.md` · help: `quick-add.md#the-card-one-tap-selects`
+Test: `__tests__/scenarios/inbox.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `daily.md#more-places-new-project-someday`
 
 ## Interruptions
 
@@ -803,6 +990,32 @@ Test: `__tests__/scenarios/interruptions.test.tsx` · design: `docs/dev/history/
 
 Test: `__tests__/scenarios/agreements.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md` · help: `lasso.md#capturing-an-agreement`
 
+### A todo captured on a meeting's page records the meeting, no source and no linked page
+
+- **Given** page 4 follows meeting "Coach call" and has a mark "Ask coach about intervals"
+- **When** I process the mark and save it as a todo
+- **Then** the line has [meeting::], no [source::] and no linked file
+
+Test: `__tests__/scenarios/captureOrigin.test.tsx` · help: `lasso.md#capturing-right-away`
+
+### A todo captured on a plain page records the note as its source, no linked page
+
+- **Given** page 2 of Sport 2026.note belongs to no meeting and has a mark "Stretch after runs"
+- **When** I process the mark
+- **Then** the panel shows "↳ from Sport 2026"
+- **When** I save it as a todo
+- **Then** the line has [source:: 2 Areas/Sport/Sport 2026] and no linked file
+
+Test: `__tests__/scenarios/captureOrigin.test.tsx` · help: `lasso.md#capturing-right-away`
+
+### The origin line's ✕ saves the todo without an origin
+
+- **Given** page 2 of Sport 2026.note has a mark "Stretch after runs"
+- **When** I process the mark, drop the origin with its ✕ and save
+- **Then** the line has neither [source::] nor [meeting::]
+
+Test: `__tests__/scenarios/captureOrigin.test.tsx` · help: `quick-add.md#the-grey-line-where-a-todo-comes-from`
+
 ### An agreement from a mark on a thread notebook's follow-up page: for the thread, with the sparring
 
 - **Given** Jordan's sparring notebook has the sparring's page and a follow-up page with a mark "Feedback only in our 1:1s"
@@ -817,7 +1030,7 @@ Test: `__tests__/scenarios/pageSection.test.tsx` · help: `lasso.md#capturing-an
 
 - **Given** page 8 follows the heading "Training plan" and has a mark "Book track time"
 - **When** I process the mark
-- **Then** no "↳ from" line shows
+- **Then** no meeting shows in the grey line, only the note itself
 - **When** I save it as a todo
 - **Then** no meeting is recorded
 
@@ -827,7 +1040,7 @@ Test: `__tests__/scenarios/pageSection.test.tsx` · help: `lasso.md#capturing-ri
 
 - **Given** the meeting "Coach call" of page 3 is cancelled; page 4 has a mark "Ask coach about intervals"
 - **When** I process the mark
-- **Then** no "↳ from" line shows
+- **Then** no meeting shows in the grey line, only the note itself
 - **When** I save it as a todo
 - **Then** no meeting is recorded
 
@@ -851,7 +1064,7 @@ Test: `__tests__/scenarios/smoke/captureTodo.test.tsx` · help: `lasso.md#captur
 - **When** I add the meeting "Writing session #writing/novel" tomorrow 9-11 on Daily with F on
 - **Then** Inbox.txt has the line with #focusblock
 - **When** I open Tomorrow
-- **Then** the row shows the F mark and no #focusblock; the day counts it as focus, with the smoke space's own block
+- **Then** the row shows the F mark and no #focusblock
 - **When** I tap it
 - **Then** the card says "Focus · ahead" with "writing novel ›" and has no P or R
 
@@ -875,22 +1088,30 @@ Test: `__tests__/scenarios/focusBlocks.test.tsx` · help: `meetings.md#focus-blo
 
 Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/technical-design-item-card.md` · help: `meetings.md#the-meeting-row-and-its-card`
 
+### Refile a meeting from the card's area chip
+
+- **Given** project "Garden renovation" with the meeting "Kick-off" next week, and project "Website"
+- **When** I tap the meeting, tap the refile arrow and pick Website in the Files pane
+- **Then** the meeting is in Website and no longer in Garden renovation
+
+Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/technical-design-item-card.md` · help: `quick-add.md#the-card-one-tap-selects`
+
 ### New from this and Cancel meeting from the card
 
-- **Given** the Inbox meeting "Retro" next week
+- **Given** project Website's meeting "Retro" next week
 - **When** I tap the meeting and New from this on its card
 - **Then** Create · Meeting holds the title, date and time; the card is closed
 - **When** I tap the meeting again, Cancel meeting, and confirm
-- **Then** the meeting is marked cancelled in Inbox.txt, and the card says so
+- **Then** the meeting is marked cancelled in Website's file, and the card says so
 
 Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/technical-design-item-card.md` · help: `meetings.md#the-meeting-row-and-its-card`, `meetings.md#cancelling-and-repeating`
 
-### Link a file from the card on an Area page, and unlink it
+### Link a file from the card on an Area page, and unlink it in Edit
 
 - **Given** area "Coaching" has the meeting "Sparring" next week and the file "brief.pdf" in its folder
 - **When** I tap the meeting, tap +clip on its card and pick the file in the Files pane
-- **Then** the meeting links the file, and the card shows its name
-- **When** I tap ✕ next to the file on the card
+- **Then** the meeting links the file, and the card's clip is filled
+- **When** I tap the title to edit and tap ✕ next to the file in the last row, then Save
 - **Then** the line has no link any more, and the card offers +clip again
 
 Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/technical-design-item-card.md` · help: `quick-add.md#notes-and-files-on-a-todo-or-meeting`
@@ -934,9 +1155,9 @@ Test: `__tests__/scenarios/meetingReflection.test.tsx` · design: `docs/dev/hist
 - **When** I open Coaching without tapping a meeting
 - **Then** Quick Add shows, no card
 - **When** I tap the session in two days
-- **Then** its card offers P and +clip, but no reflection yet
+- **Then** its card offers P, but no reflection yet, and +clip
 - **When** I tap the session three days ago
-- **Then** the card switches to it: R, Reflect and +clip
+- **Then** the card switches to it: R and Reflect; +clip
 
 Test: `__tests__/scenarios/meetingReflection.test.tsx` · design: `docs/dev/history/technical-design-item-card.md` · help: `meetings.md#the-meeting-row-and-its-card`
 
@@ -1148,6 +1369,116 @@ Test: `__tests__/scenarios/smoke/profiles.test.tsx` · help: `profiles-and-demo.
 
 ## Projects and Areas
 
+### ⚙ Settings hold status, area, abbreviation and scope; the page keeps only working
+
+- **Given** project "Garden renovation" (#GR) and area "Home"
+- **When** I open its page
+- **Then** the page shows the abbreviation read only, and no status, scope or area controls
+- **When** I open ⚙ Settings
+- **Then** it shows the name, abbreviation, scope, status, Close out, Assign to Area and Show on this page
+- **When** I tap Assign to Area… and pick Home in the Files pane
+- **Then** the project file names the area and ⚙ shows it
+- **When** I tap Close
+- **Then** the page is back, with its todos
+
+Test: `__tests__/scenarios/calmerCurrent.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `projects-and-areas.md#settings`
+
+### Show on this page writes the show: line at once, and removes it when all is Auto again
+
+- **Given** project "Garden renovation" without a show: line
+- **When** I open ⚙ Settings and set Loops to Always
+- **Then** the project file has show: loops=always and Always is selected
+- **When** I set the left side to open on Files
+- **Then** the line carries both
+- **When** I set Loops back to Auto and the left side back to First with content
+- **Then** the show: line is gone from the file
+
+Test: `__tests__/scenarios/calmerCurrent.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `projects-and-areas.md#show-on-this-page`, `files-and-folders.md#inside-projecttxt`
+
+### A show: line written by hand is kept as written; a hidden part with content says so
+
+- **Given** a project file with "show: loops=nevr foo=bar threads=never" and one thread
+- **When** I open ⚙ Settings
+- **Then** the typo reads as Auto, and Threads says what Never hides
+- **When** I set the status to On Hold
+- **Then** the status changed and the show: line is kept as written
+- **And** the frontmatter is still one block
+
+Test: `__tests__/scenarios/calmerCurrent.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `files-and-folders.md#inside-projecttxt`, `projects-and-areas.md#show-on-this-page`
+
+### A project with nothing but todos and its home notebook: Notebook · Files, opening on Notebook, no Schedule
+
+- **Given** project "Garden renovation" with a todo, no threads, loops or meetings, and its home notebook
+- **When** I open its page
+- **Then** the left tabs are Notebook and Files, the Notebook shows, and there is no Threads, Loops or Schedule
+- **When** I set Loops to Always on ⚙ Settings and close it
+- **Then** the Loops tab shows, empty, and the page still opens on Notebook
+
+Test: `__tests__/scenarios/calmerCurrent.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `projects-and-areas.md#the-current-tab`, `projects-and-areas.md#show-on-this-page`
+
+### The left side opens where "Left side opens on" says
+
+- **Given** project "Garden renovation" with a thread and "show: open=files"
+- **When** I open its page
+- **Then** Threads is a tab, but Files shows: the project file is listed
+
+Test: `__tests__/scenarios/calmerCurrent.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `projects-and-areas.md#show-on-this-page`
+
+### The scope shows under the name only when set; a tap opens ⚙ Settings
+
+- **Given** project "Garden renovation" with the scope "A garden we can sit in" and project "Shed" without one
+- **When** I open Garden renovation
+- **Then** the scope shows under the name
+- **When** I tap the scope
+- **Then** ⚙ Settings opens
+- **When** I open Shed
+- **Then** no scope line and no "+ Add a scope" show on the page
+
+Test: `__tests__/scenarios/calmerCurrent.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `projects-and-areas.md#the-current-tab`, `projects-and-areas.md#settings`
+
+### The header names a project's area (a tap opens it), without its time this week
+
+- **Given** on Tue 10.11. project "Garden renovation" in area "Home" with a 90-minute meeting this week
+- **When** I open its page
+- **Then** the header shows the area and no time this week (F5)
+- **When** I tap the area
+
+Test: `__tests__/scenarios/calmerCurrent.test.tsx` · design: `docs/dev/history/technical-design-quickadd-redesign.md` · help: `projects-and-areas.md#the-current-tab`
+
+### On an area, Projects and Loops are hidden each on their own inside its Projects tab
+
+- **Given** area Sport with the active loop marathon and the assigned project "Race kit"
+- **When** I open Sport, set Projects to Never on ⚙ Settings and open its Projects tab
+- **Then** the tab lists the loop, not the project
+
+Test: `__tests__/scenarios/calmerCurrent.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `projects-and-areas.md#show-on-this-page`, `projects-and-areas.md#projects-of-an-area`
+
+### A loop tag in use without a loop yet shows the Loops tab under Auto, so its New row is not hidden
+
+- **Given** project "Garden renovation" with a todo tagged #loop/hike and no ## Loops line
+- **When** I open its page with the Marathon loop setup on #loop
+- **Then** the Loops tab shows and lists the tag as new
+
+Test: `__tests__/scenarios/calmerCurrent.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `projects-and-areas.md#show-on-this-page`, `loops.md#where-loops-show`
+
+### A tap on a todo on the Current page shows its card without re-rendering the lists
+
+- **Given** project "Garden renovation" with three todos and a meeting
+- **When** I open the project and tap the todo "Buy seeds"
+- **Then** its card shows, and neither the Todos nor the Meetings list rendered again
+
+Test: `__tests__/scenarios/calmerSelection.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `quick-add.md#the-card-one-tap-selects`
+
+### Current's Done tab counts the todos done in the last 14 days
+
+- **Given** on 10.11. a project with 3 todos done on 7.11., one done on 21.10. and one #next
+- **When** I open the project
+- **Then** the tabs show Next 1 and Done 3
+- **When** I tap Done 3
+- **Then** it lists the three, not "Old plan"
+
+Test: `__tests__/scenarios/calmerTabs.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `projects-and-areas.md#the-current-tab`
+
 ### The Current pages of the big data set show what was recorded before the performance work
 
 - **Given** the big data set: area "Team" with projects "Tender" and "Migration", area "Zen", project "Solo" and the Inbox
@@ -1179,14 +1510,14 @@ Test: `__tests__/scenarios/currentPagePerf.test.tsx` · design: `docs/dev/histor
 
 Test: `__tests__/scenarios/currentPagePerf.test.tsx` · design: `docs/dev/history/technical-design-perf-current-page.md` · help: `projects-and-areas.md#files-and-linked-files`
 
-### Hiding done todos on an Area page changes the Todos list and nothing else, and is kept
+### Switching the count tab on an Area page changes the Todos list and nothing else, and is kept
 
 - **Given** the big data set and Team's page open
-- **When** I tap "hide done" in the Todos header
-- **Then** the Todos list offers to show the done ones again, and neither Quick Add nor the left pane rendered
-- **And** after opening Zen and coming back, done todos are still hidden
+- **When** I tap the Done tab over the todos
+- **Then** the Todos list shows the done ones, and neither Quick Add nor the left pane rendered
+- **And** after opening Zen and coming back, the Done tab is still the one shown
 
-Test: `__tests__/scenarios/currentPagePerf.test.tsx` · design: `docs/dev/history/technical-design-perf-current-page.md` · help: `projects-and-areas.md#the-current-tab`
+Test: `__tests__/scenarios/currentPagePerf.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `projects-and-areas.md#the-current-tab`
 
 ### Focus flags, goal spans and #now survive a todo, a meeting and a status change
 
@@ -1195,7 +1526,7 @@ Test: `__tests__/scenarios/currentPagePerf.test.tsx` · design: `docs/dev/histor
 - **Then** only its checkbox and completion field changed; #now stays in the text
 - **When** I add the meeting "Kick-off" on 2026-10-20
 - **Then** the frontmatter and the goal spans are byte for byte as before
-- **When** I set it On Hold
+- **When** I set it On Hold on ⚙ Settings
 - **Then** the status line changed and the focus lines are still there, in place
 - **And** no error was logged
 
@@ -1205,7 +1536,7 @@ Test: `__tests__/scenarios/rollback.test.tsx` · help: `files-and-folders.md#edi
 
 - **Given** the smoke space on Wednesday 14.10.2026
 - **When** I open Garden from Areas
-- **Then** Todos list "Buy bulbs" and "Repair the fence", and Meetings list "Neighbour chat"
+- **Then** the Next tab lists "Buy bulbs", Someday counts "Repair the fence", and Meetings list "Neighbour chat"
 - **And** Garden's folder is not listed
 - **When** I tap "◇ Agreements 1 ›"
 - **Then** the list shows "Water only in the morning"
@@ -1216,6 +1547,51 @@ Test: `__tests__/scenarios/rollback.test.tsx` · help: `files-and-folders.md#edi
 Test: `__tests__/scenarios/smoke/areaPage.test.tsx` · help: `projects-and-areas.md#the-current-tab`
 
 ## Quick Add
+
+### Daily: Quick Add starts closed; + Todo opens it, ✕ closes it and drops the text
+
+- **Given** project "Garden renovation" and an empty Inbox
+- **When** I open Daily
+- **Then** the box shows + Todo · + Meeting and no text field
+- **When** I tap + Todo and write "Buy seeds"
+- **Then** the Todo form shows with + Add
+- **When** I tap ✕ next to + Add
+- **Then** the buttons are back
+- **When** I tap + Todo again
+- **Then** the field is empty again (quickadd-redesign §11 G5)
+
+Test: `__tests__/scenarios/calmerQuickAdd.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `quick-add.md`
+
+### With the field still empty and in focus, ✕ closes the box on touch-down, the strip's ✕ hides the strip
+
+- **Given** project "Garden renovation" and an empty Inbox
+- **When** I open Daily, tap + Meeting and touch down on the strip's ✕ of the empty title
+- **Then** the box stays open
+- **When** I touch down on ✕ of the first row (the field blurs at that moment)
+- **Then** the kind buttons are back
+
+Test: `__tests__/scenarios/calmerQuickAdd.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `quick-add.md`
+
+### After + Add the box closes and the status line says where the todo went
+
+- **Given** project "Garden renovation" and an empty Inbox
+- **When** I open Daily, tap + Todo, write "Call Marco" and tap + Add
+- **Then** the todo is in the Inbox
+- **And** the box shows its buttons again, and the status line names the Inbox
+
+Test: `__tests__/scenarios/calmerQuickAdd.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `quick-add.md`
+
+### The todo card shows everything on one page: the flow states, Done, its note and delete
+
+- **Given** project "Garden renovation" with the todo "Order soil #next"
+- **When** I open the project and tap the todo
+- **Then** the card shows its caption, Next · w/f · Someday · Maybe, Done, the note and delete - no More
+- **When** I tap Maybe
+- **Then** the todo is Maybe, at once
+- **When** I tap the filled Maybe
+- **Then** the flow state is cleared
+
+Test: `__tests__/scenarios/calmerQuickAdd.test.tsx` · design: `docs/dev/history/technical-design-quickadd-redesign.md` · help: `quick-add.md#the-card-one-tap-selects`
 
 ### Save to <Name>: an abbreviation tag typed while editing saves the meeting and moves it there
 
@@ -1230,8 +1606,8 @@ Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/techn
 ### After + Add with an abbreviation tag, the next todo starts with that tag
 
 - **Given** project "Website" (#WEB) and an empty Inbox
-- **When** I add "Call the designer #web" from the Inbox
-- **Then** the field starts the next todo with "#WEB ", and the button still files to Website
+- **When** I add "Call the designer #web" from Daily
+- **Then** the box closes; + Todo starts the next todo with "#WEB ", and the button still files to Website
 - **When** I tap + Add with nothing but the tag
 - **Then** nothing is added
 - **When** I write the next todo after the tag and add it
@@ -1252,26 +1628,26 @@ Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/techn
 
 ### Tap a meeting shows its card; ✕ brings back the half-typed todo
 
-- **Given** the Inbox meeting "Team sync" next week
-- **When** I start the todo "Call Anna" in the Inbox and tap the meeting
+- **Given** project Website's meeting "Team sync" next week
+- **When** I start the todo "Call Anna" on Website's page and tap the meeting
 - **Then** the card names the meeting in Quick Add's place
 - **When** I tap ✕ on the card
-- **Then** Quick Add is back with "Call Anna" still in the field
+- **Then** Quick Add is back, closed; + Todo shows "Call Anna" still in the field
 
 Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/technical-design-item-card.md` · help: `quick-add.md#the-card-one-tap-selects`
 
 ### A second tap edits; Save writes it and shows the card again
 
-- **Given** the Inbox meeting "Team sync" next week
+- **Given** project Website's meeting "Team sync" next week
 - **When** I tap the meeting, tap Edit, rename it and Save
-- **Then** Inbox.txt has the new title
+- **Then** Website's file has the new title
 - **And** the card shows the meeting again, not the edit form
 
 Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/technical-design-item-card.md` · help: `quick-add.md#editing`
 
 ### Switching to another meeting while editing saves first and shows the other's card
 
-- **Given** the Inbox meetings "Team sync" and "Retro" next week
+- **Given** project Website's meetings "Team sync" and "Retro" next week
 - **When** I edit "Team sync", rename it, and tap "Retro"
 - **Then** the rename is saved
 - **And** "Retro" shows as card
@@ -1292,14 +1668,14 @@ Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/techn
 
 Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/technical-design-item-card.md` · help: `quick-add.md#the-card-one-tap-selects`
 
-### On a Nomad-sized screen, Quick Add with four tabs keeps its + Add and calls Agreement "Agree"
+### On a Nomad-sized screen, Quick Add's form keeps its + Add and its grey line on one row
 
 - **Given** area "Coaching" has a past sparring session with Jordan, and Kept is drawn at Nomad portrait size
 - **When** I open Coaching: on a short screen its Todos are the first tab of Todos | Schedule; there I open Jordan's thread overview
-- **Then** its Quick Add shows the short tab name and the main button
-- **And** back at full size the tab is called Agreement again
+- **Then** its Quick Add form keeps the main button and the ✕ of the grey line
+- **And** back at full size the form shows the same
 
-Test: `__tests__/scenarios/narrowScreen.test.tsx` · design: `docs/dev/history/technical-design-launch-ready.md` · help: `quick-add.md#adding-an-agreement`
+Test: `__tests__/scenarios/narrowScreen.test.tsx` · design: `docs/dev/history/technical-design-quickadd-redesign.md` · help: `quick-add.md#adding-an-agreement`
 
 ### Quick Add a todo in a project
 
@@ -1341,24 +1717,183 @@ Test: `__tests__/scenarios/quickAdd.test.tsx` · design: `docs/dev/history/techn
 
 - **Given** project "Website"
 - **When** I open "Website" and put the cursor into the todo field
-- **Then** All/Copy/Cut/Paste hovers over the tabs
+- **Then** the strip hovers above the box with its suggestions
 - **When** I tap its ✕
 - **Then** it is gone while the field still has the cursor
 - **When** the field loses the cursor and gets it back
 - **Then** the strip is back
-- **When** I hide it again and tap the Meeting tab
+- **When** I hide it again and open a meeting
 - **Then** the meeting form shows
 - **When** I open the due date and put the cursor into it
 - **Then** the date strip hovers there with its own ✕, which puts it away
 
 Test: `__tests__/scenarios/quickAdd.test.tsx` · design: `docs/dev/history/technical-design-item-card.md` · help: `quick-add.md#adding-a-todo`
 
+### The todo card: GR, the flow state and the due date on R1; the done box, the flow states and the icons on R4
+
+- **Given** on Wed 11.11. the Next todo "Order soil" due tomorrow in Garden renovation (#GR)
+- **When** I tap it on the project's page
+- **Then** R1 reads "Todo · GR · next · due 12.11." with the refile arrow
+- **Then** R4 offers the done box, Next (filled) · w/f · Someday · Maybe, the notebook with +, the clip with + and the trash
+
+Test: `__tests__/scenarios/quickAddCardLayout.test.tsx` · design: `docs/dev/history/technical-design-quickadd-redesign.md` · help: `quick-add.md#the-card-one-tap-selects`
+
+### The meeting card: its date and time on R1; P/R · M · F, the notebook, the clip, New from this and Cancel meeting on R4
+
+- **Given** on Wed 11.11. the meeting "Plan the beds" on Thu 19.11. 15:00-16:30 in Garden renovation
+- **When** I tap it on the project's page
+- **Then** R1 reads "Meeting · GR · Thu 19.11. 15:00-16:30"
+- **Then** R4 offers M, F, the notebook, the clip, New from this and Cancel meeting
+
+Test: `__tests__/scenarios/quickAddCardLayout.test.tsx` · design: `docs/dev/history/technical-design-quickadd-redesign.md` · help: `meetings.md#the-meeting-row-and-its-card`
+
+### On Daily, + Add to a project shows the new todo's card; its + Todo starts the next with the tag
+
+- **Given** on 11.11. project "Garden renovation" (#GR)
+- **When** on Daily I add "Order soil #GR"
+- **Then** the box shows its card: Todo · Garden renovation › · open, with + Todo, all on one page
+- **When** I tap + Todo on the card
+- **Then** the new draft starts with "#GR "
+
+Test: `__tests__/scenarios/quickAddCards.test.tsx` · design: `docs/dev/history/technical-design-quickadd-redesign.md` · help: `quick-add.md#the-card-one-tap-selects`
+
+### On a project's page, + Add shows the new todo's card; its + Todo starts empty
+
+- **Given** on 11.11. project "Garden renovation"
+- **When** on its page I add "Order soil"
+- **Then** the card shows
+- **When** I tap + Todo on the card
+- **Then** the new draft is empty
+
+Test: `__tests__/scenarios/quickAddCards.test.tsx` · design: `docs/dev/history/technical-design-quickadd-redesign.md` · help: `quick-add.md#the-card-one-tap-selects`
+
+### Opened from a todo's note, a new todo records that note; its card names the todo it came from
+
+- **Given** the todo "Order soil" in Garden renovation has its own note
+- **When** I open Kept from that note, open the project and + Todo
+- **Then** the grey line names the note
+- **When** I add "Compare soil prices"
+- **Then** the line records the note as its source, and the card names the todo it came from
+
+Test: `__tests__/scenarios/quickAddCards.test.tsx` · design: `docs/dev/history/technical-design-quickadd-redesign.md` · help: `quick-add.md#the-grey-line-where-a-todo-comes-from`
+
+### ✕ in a todo's edit drops the changes and shows its card again
+
+- **Given** project "Garden renovation" with the todo "Order soil"
+- **When** on its page I tap the todo, edit it to "Order soil and seeds" and tap ✕
+- **Then** the card shows again and the file is unchanged
+
+Test: `__tests__/scenarios/quickAddClose.test.tsx` · design: `docs/dev/history/technical-design-quickadd-redesign.md` · help: `quick-add.md#editing`
+
+### + Todo on Daily opens the form: the field, the calendar and w/f, then ✕ and + Add
+
+- **Given** on Wed 11.11. project "Garden renovation" (#GR)
+- **When** I open Daily and tap + Todo
+- **Then** the form shows the todo field, the calendar, w/f, ✕ and + Add, and no kind tabs or flow chips
+- **When** I write "Order soil #GR"
+- **Then** the main button reads + Add to Garden renovation
+- **When** a newline comes with the next words
+- **Then** the field holds one line with a space
+
+Test: `__tests__/scenarios/quickAddForm.test.tsx` · design: `docs/dev/history/technical-design-quickadd-redesign.md` · help: `quick-add.md#adding-a-todo`
+
+### The calendar opens the due date in its place; its strip lies over the field's second line
+
+- **Given** on Wed 11.11. project "Garden renovation"
+- **When** on its page I open + Todo, write "Order soil", tap the calendar and handwrite "13.11"
+- **Then** the strip reads "read as Fri 13 Nov 2026" with Undo, and the text is still there
+
+Test: `__tests__/scenarios/quickAddForm.test.tsx` · design: `docs/dev/history/technical-design-quickadd-redesign.md` · help: `quick-add.md#dates-and-times`
+
+### w/f opens "Waiting on" and closes it again, clearing the name
+
+- **Given** on Wed 11.11. project "Garden renovation"
+- **When** I open + Todo, tap w/f and write "Lena"
+- **Then** "Waiting on" holds Lena
+- **When** I tap w/f again
+- **Then** the field is gone
+- **When** I tap w/f once more and + Add
+- **Then** the todo is saved waiting for nobody named
+
+Test: `__tests__/scenarios/quickAddForm.test.tsx` · design: `docs/dev/history/technical-design-quickadd-redesign.md` · help: `quick-add.md#adding-a-todo`
+
+### An empty todo field offers suggestions above the box; a selection shows the clipboard
+
+- **Given** on Wed 11.11. project "Garden renovation"
+- **When** I open + Todo and put the cursor into the empty field
+- **Then** the strip offers #next and #someday and the clipboard square
+- **When** I write "Order soil" and select "soil"
+- **Then** the strip shows All · Copy · Cut · Paste
+- **When** the selection ends
+- **Then** the suggestions return
+- **When** I tap #someday and + Add
+- **Then** the todo is saved as a Someday todo
+
+Test: `__tests__/scenarios/quickAddForm.test.tsx` · design: `docs/dev/history/technical-design-quickadd-redesign.md` · help: `quick-add.md#the-strips`
+
+### The time strip sets the length and moves the meeting in half hours
+
+- **Given** on Wed 11.11. project "Garden renovation"
+- **When** I open + Meeting and write 15:00 into the time
+- **Then** the strip shows 15:00 · 1 h · ‹ 30′ · 30′ › · 1 d
+- **When** I tap 1 h
+- **Then** the field reads 15:00-16:00
+- **When** I tap +30′ and then 30′ ›
+- **Then** the field reads 15:30-17:00
+- **When** I write 15:00-15:30
+- **Then** −30′ is greyed
+- **When** I write 2d
+- **Then** the strip shows 2 days · −1 d · +1 d
+- **When** I tap −1 d
+- **Then** it reads 1 day and −1 d is greyed
+- **And** + Add saves the one-day meeting
+
+Test: `__tests__/scenarios/quickAddForm.test.tsx` · design: `docs/dev/history/technical-design-quickadd-redesign.md` · help: `quick-add.md#dates-and-times`
+
+### An empty time field of a thread's meeting opens on its usual slot
+
+- **Given** on Wed 11.11. the last meetings of #sparring/jordan on Thursdays 15:00-16:30
+- **When** I write "Sparring #sparring/jordan" and put the cursor into the empty time field
+- **Then** the strip shows the usual slot (no ± square: an empty field has nothing to adjust)
+- **When** I tap it
+- **Then** date and time are filled
+
+Test: `__tests__/scenarios/quickAddForm.test.tsx` · design: `docs/dev/history/technical-design-quickadd-redesign.md` · help: `quick-add.md#warnings-and-the-usual-time`
+
+### While the status line shows an error, no strip shows
+
+- **Given** on Wed 11.11. project "Garden renovation"
+- **When** I add a meeting with a time that can't be read
+- **And** I put the cursor into the title
+- **Then** an error shows and no strip
+- **When** I clear the error with its ✕ and tap into the title again
+- **Then** the strip is back
+
+Test: `__tests__/scenarios/quickAddForm.test.tsx` · design: `docs/dev/history/technical-design-quickadd-redesign.md` · help: `quick-add.md#the-strips`
+
+### On Daily the next todo starts with the abbreviation tag just used
+
+- **Given** projects "Garden renovation" (#GR) and "Website" (#WEB)
+- **When** on Daily I add "Order soil #GR" and open + Todo again
+- **Then** the todo is in Garden renovation and the new draft reads "#GR "
+
+Test: `__tests__/scenarios/quickAddPrefill.test.tsx` · design: `docs/dev/history/technical-design-quickadd-redesign.md` · help: `quick-add.md#filing-directly-with-an-abbreviation`
+
+### On a project's page the next todo starts empty after an add to another place
+
+- **Given** projects "Garden renovation" (#GR) and "Website" (#WEB)
+- **When** on Garden renovation's page I add "Call the designer #WEB" and open + Todo again
+- **Then** the todo is in Website and the new draft is empty
+
+Test: `__tests__/scenarios/quickAddPrefill.test.tsx` · design: `docs/dev/history/technical-design-quickadd-redesign.md` · help: `quick-add.md#filing-directly-with-an-abbreviation`
+
 ### Quick Add a todo from Daily (smoke)
 
 - **Given** the smoke space and Daily open
-- **When** I type "Check gutters", tap the Next chip and + Add
+- **When** I type "Check gutters", tap #next on the strip and + Add
 - **Then** Inbox.txt has it
-- **And** Daily lists it in the Inbox group
+- **When** I open the Inbox tab
+- **Then** it lists it, not Next
 
 Test: `__tests__/scenarios/smoke/daily.test.tsx` · help: `quick-add.md#adding-a-todo`
 
@@ -1502,7 +2037,7 @@ Test: `__tests__/scenarios/cleanBreak.test.tsx` · help: `settings.md`
 
 - **Given** Project close-out is switched off and project "Website" is Done
 - **When** I open Website on Current
-- **Then** its status panel offers Archive, not Close out
+- **Then** its ⚙ Settings offer Archive, not Close out
 - **When** I archive it and confirm
 - **Then** the folder is in the Archive and no close-out wizard opened
 
@@ -1527,7 +2062,7 @@ Test: `__tests__/scenarios/features.test.tsx` · help: `features.md#project-clos
 - **Then** it no longer shows the Experimental switches
 - **When** I switch Project close-out off on Features
 - **And** open the Done project Website
-- **Then** its page offers Archive at once
+- **Then** its ⚙ Settings offer Archive at once
 
 Test: `__tests__/scenarios/features.test.tsx` · help: `settings.md#features`
 
@@ -1536,7 +2071,7 @@ Test: `__tests__/scenarios/features.test.tsx` · help: `settings.md#features`
 - **Given** the stored settings are broken and the Inbox has a done todo
 - **When** I open Kept GTD
 - **Then** the status line says the settings could not be read
-- **And** a setting changed on the way (Inbox: hide done) leaves the stored settings as they were
+- **And** a setting changed on the way (Settings → Features: Project close-out) leaves the stored settings as they were
 - **And** "Start over" stores the defaults and the message goes away
 
 Test: `__tests__/scenarios/fileSafety.test.tsx` · design: `docs/dev/history/technical-design-quality-hardening.md` · help: `troubleshooting.md#common-situations`
@@ -1853,7 +2388,11 @@ Test: `__tests__/scenarios/focusBlocks.test.tsx` · help: `week-and-month.md#mon
 - **When** I open Week
 - **Then** Given time lists Garden (1 day) above Writing (3.5 h, two blocks, its next todo)
 - **And** no loop or counterpart reaches 1 h
-- **And** Worked on lists Website with its todo done
+- **And** Worked on lists Website
+- **When** I tap Website there
+- **Then** its card says "1 done" and offers Open ›; the page is not opened yet
+- **When** I tap Open ›
+- **Then** Website's page opens
 - **And** no error was logged
 
 Test: `__tests__/scenarios/givenTime.test.tsx` · help: `week-and-month.md#given-time`
@@ -1919,7 +2458,10 @@ Test: `__tests__/scenarios/narrowScreen.test.tsx` · design: `docs/dev/history/t
 - **When** I open Week
 - **Then** the grid shows Wednesday 14 "Neighbour chat" and "Dentist", Thursday 15 "Supplier call" and the focus block, Friday 16 "Delivery"
 - **And** not "Soil test", which is next week
-- **And** Given time lists Garden with "Delivery" as 1 day, its two timed meetings and its focus block; never the Inbox's Dentist
+- **And** Given time lists Garden on one line with "Delivery" as 1 day and its timed meetings and focus block; never the Inbox's Dentist
+- **When** I tap Garden's line
+- **Then** its card shows in the box with the grey line and Open ›
+- **When** I tap ✕ on the card
 - **When** I tap ›
 - **Then** the grid shows Tuesday 20 "Soil test"
 - **And** no error was logged
@@ -1939,6 +2481,16 @@ Test: `__tests__/scenarios/smoke/weekAndMonth.test.tsx` · help: `week-and-month
 Test: `__tests__/scenarios/smoke/weekAndMonth.test.tsx` · help: `week-and-month.md#month`, `week-and-month.md#given-time`
 
 ## Weekly Review
+
+### Review's Inbox to zero shows the same list and card, and filing works the same, past meetings included
+
+- **Given** an Inbox with "Ask Lena #lena", "Order soil" and last week's meeting, and project Team offsite (#TO) using #lena
+- **When** I open Review → Inbox to zero and tap "Ask Lena"
+- **Then** the list has the two todos and the past meeting, and the card offers #TO
+- **When** I tap #TO
+- **Then** the todo is in Team offsite, and "Order soil"'s card is open
+
+Test: `__tests__/scenarios/calmerInbox.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `review.md#the-steps`
 
 ### Reflect from Review's "Meetings to close out" without ticking it reviewed
 
@@ -1964,7 +2516,7 @@ Test: `__tests__/scenarios/review.test.tsx` · design: `docs/dev/history/technic
 
 - **Given** the smoke space on Wednesday 14.10.2026
 - **When** I open Review
-- **Then** the hub lists its steps with counts: the week's schedule (focus block included), the Inbox's two todos and its meeting; no focus steps
+- **Then** the hub lists its steps with counts: the week's schedule (focus block included), the Inbox's open todo and its meeting (its Maybe todo waits in Someday / Maybe); no focus steps
 - **When** I open the step "Inbox to zero"
 - **Then** it shows "Call the plumber"
 - **And** every step opens with its title, one after the other, up to the end page
@@ -2023,14 +2575,14 @@ Test: `__tests__/scenarios/writingHelpDates.test.tsx` · design: `docs/dev/histo
 
 - **Given** the meeting "Jour Fixe" today 15:00-16:00
 - **When** I enter 15:30-16:30 for a new meeting today
-- **Then** the time strip says "overlaps Jour Fixe 15:00"
+- **Then** the time strip leads with "⚠ Jour Fixe 15:00", and row 3 shows the warning sign
 
 Test: `__tests__/scenarios/writingHelpDates.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `quick-add.md#warnings-and-the-usual-time`
 
 ### A new meeting in the past is marked
 
 - **When** I date a new meeting yesterday
-- **Then** the date strip says "past"
+- **Then** the date strip says "⚠ past"
 
 Test: `__tests__/scenarios/writingHelpDates.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `quick-add.md#warnings-and-the-usual-time`
 
@@ -2038,11 +2590,11 @@ Test: `__tests__/scenarios/writingHelpDates.test.tsx` · design: `docs/dev/histo
 
 - **Given** the last meetings of #101/mieke: three on Tuesdays 14:00-14:45, two at other times
 - **When** I write "1:1 #101/mieke" and tap into the date field
-- **Then** the strip offers "Tue 10 Nov 14:00 · 45 min"
+- **Then** the date strip offers its ⚡ Suggest view with "usual Tue → 10 Nov"
 - **When** I tap it
 - **Then** date, time and end are filled
 
-Test: `__tests__/scenarios/writingHelpDates.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `quick-add.md#warnings-and-the-usual-time`
+Test: `__tests__/scenarios/writingHelpDates.test.tsx` · design: `docs/dev/history/technical-design-quickadd-redesign.md` · help: `quick-add.md#warnings-and-the-usual-time`
 
 ### A tag used once next to a known one is reported, listed and fixed on its line
 
@@ -2076,10 +2628,41 @@ Test: `__tests__/scenarios/writingHelpInput.test.tsx` · design: `docs/dev/histo
 
 Test: `__tests__/scenarios/writingHelpLasso.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `lasso.md#capturing-right-away`
 
+### An empty meeting title offers Thread and Loop, and Paste while the clipboard has text
+
+- **Given** a Thread setup on #sparring and a Loop setup on #offsite
+- **When** I open + Meeting on Daily and put the cursor into the title
+- **Then** the strip shows Thread and Loop, no Paste
+- **When** there is text on the clipboard and the cursor comes into the title again
+- **Then** Paste is offered too
+
+Test: `__tests__/scenarios/writingHelpStarters.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `quick-add.md#starting-with-a-thread-or-loop`
+
+### Thread, then #sparring: the title reads #sparring/ and the strip offers its counterparts
+
+- **Given** a Thread setup on #sparring and the counterpart jordan in use
+- **When** I open + Meeting on Daily, put the cursor into the title and tap Thread
+- **Then** the strip lists #sparring and ‹
+- **When** I tap #sparring
+- **Then** the title reads "#sparring/"
+- **And** the strip offers the counterpart as "/jordan"
+- **When** I tap /jordan
+- **Then** the title reads "#sparring/jordan "
+
+Test: `__tests__/scenarios/writingHelpStarters.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `quick-add.md#starting-with-a-thread-or-loop`
+
+### With text in the title, the strip offers no starters; its square switches to All · Copy · Cut · Paste
+
+- **Given** a Thread setup on #sparring
+- **When** I open + Meeting on Daily, write "Retro" and put the cursor into the title
+- **Then** no Thread or Loop; the square shows the clipboard buttons
+
+Test: `__tests__/scenarios/writingHelpStarters.test.tsx` · design: `docs/dev/history/technical-design-quickadd-redesign.md` · help: `quick-add.md#starting-with-a-thread-or-loop`
+
 ### Handwriting writes #DaiIy: the strip suggests #daily
 
 - **When** recognition writes "stand-up #DaiIy" into the meeting title
-- **Then** the strip shows → #daily, Keep and Edit ›, and the title is unchanged
+- **Then** the strip shows → #daily, Keep and the clipboard square, and the title is unchanged
 - **When** I tap → #daily
 - **Then** the title reads "stand-up #daily" and the strip says where its page goes
 
@@ -2125,10 +2708,10 @@ Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/histor
 
 Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `quick-add.md#adding-with-a-suggestion-open`
 
-### A new tag with nothing close is no question
+### A new tag with nothing close is no question; the strip names the home notebook
 
 - **When** I write "plan #offsite27"
-- **Then** the strip names the new tag and the home notebook
+- **Then** the strip names the project's home notebook, no "New tag"
 - **When** I tap + Add
 - **Then** the meeting is saved at once
 
@@ -2143,11 +2726,13 @@ Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/histor
 
 Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `quick-add.md#completing-a-tag`
 
-### Completion shows an abbreviation with its project
+### Completion offers an abbreviation in upper case, without its project name
 
 - **Given** project "Garden renovation" with the abbreviation GR
 - **When** I write "#g"
-- **Then** the strip offers #gr with "Garden renovation"
+- **Then** the strip offers #GR in upper case, without "Garden renovation"
+- **When** I tap #GR
+- **Then** the title reads "call #GR "
 
 Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `quick-add.md#completing-a-tag`
 
@@ -2164,6 +2749,24 @@ Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/histor
 - **Then** the title reads "x #daily " with the cursor at its end
 
 Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `tags.md#learned-corrections`
+
+### A tag typed letter by letter is completed while the cursor rests after it
+
+- **When** with #daily known I type "Call #dai" one letter at a time
+- **Then** the strip offers #daily
+- **When** I tap #daily
+- **Then** the tag is finished and followed by a space
+
+Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/history/technical-design-quickadd-redesign.md` · help: `quick-add.md#completing-a-tag`
+
+### Putting the cursor right after an unfinished tag offers its completion
+
+- **When** with #daily known the title reads "Call #dai about notes" and I touch right after "#dai"
+- **Then** the strip offers #daily
+- **When** I tap #daily
+- **Then** only that tag is finished
+
+Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/history/technical-design-quickadd-redesign.md` · help: `quick-add.md#completing-a-tag`
 
 ## Your files
 
@@ -2185,22 +2788,22 @@ Test: `__tests__/scenarios/deviceLinks.test.tsx` · design: `docs/dev/history/te
 - **Then** the Files pane shows both This-file rows on top
 - **When** I tap "This file · p. 12"
 - **Then** the todo links the PDF at page 12
-- **When** I close the card and add the todo "Read chapter 3" with Quick Add
-- **Then** the new todo links the page too: the line is on by default for a document
+- **When** I close the card, open + Todo, tap This file on the strip and add the todo "Read chapter 3"
+- **Then** the new todo links the page too: for a document This file links its page
 
 Test: `__tests__/scenarios/deviceLinks.test.tsx` · design: `docs/dev/history/technical-design-easy-start.md` · help: `quick-add.md#the-file-you-opened-kept-from`, `files-and-folders.md#files-outside-note`
 
-### This file from a note: Quick Add starts off and links the note relative to Note; launch file unknown: nothing is offered
+### This file from a note: Quick Add offers it and links the note relative to Note; launch file unknown: nothing is offered
 
 - **Given** project "Garden renovation" has the todo "Order soil" and the note Ideas.note
-- **When** I open Kept from page 2 of Ideas.note and open the project
-- **Then** Quick Add shows the note, switched off
-- **When** I switch on "no page" and add the todo "Sketch the beds"
+- **When** I open Kept from page 2 of Ideas.note, open the project and tap + Todo
+- **Then** the strip offers the note, nothing is linked yet
+- **When** I tap This file and add the todo "Sketch the beds"
 - **Then** the todo links the note by its path inside Note, without a page
 - **When** I reopen Kept and the host gives no launch file, open the project and tap +clip on "Order soil"
 - **Then** neither Quick Add nor the Files pane offers This file
 
-Test: `__tests__/scenarios/deviceLinks.test.tsx` · design: `docs/dev/history/technical-design-easy-start.md` · help: `quick-add.md#the-file-you-opened-kept-from`
+Test: `__tests__/scenarios/deviceLinks.test.tsx` · design: `docs/dev/history/technical-design-quickadd-redesign.md` · help: `quick-add.md#the-file-you-opened-kept-from`
 
 ### A hand-edited project file keeps everything Kept GTD does not own when a todo is added
 
@@ -2233,7 +2836,7 @@ Test: `__tests__/scenarios/fileSafety.test.tsx` · design: `docs/dev/history/tec
 
 - **Given** project "Website" was saved in a Windows editor (CRLF line endings)
 - **When** I open its page
-- **Then** both todos and the Scope show
+- **Then** both todos (under Next and Plan) and the Scope (on ⚙) show
 - **And** adding a todo keeps both and writes the file with plain line endings
 
 Test: `__tests__/scenarios/interruptions.test.tsx` · design: `docs/dev/history/technical-design-quality-hardening.md` · help: `files-and-folders.md#editing-by-hand`

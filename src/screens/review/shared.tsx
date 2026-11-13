@@ -3,6 +3,7 @@
  * steps share: the empty detail column, the left-list row for an item, and
  * the live lookup of a frozen item reference.
  */
+import {DEFAULT_PAGE_SHOW} from '../../domain/pageShow';
 import React from 'react';
 import {Text, View} from 'react-native';
 import {Destination} from '../../domain/destination';
@@ -84,6 +85,7 @@ function reviewFallbackItem(ref: ReviewItemRef): CachedItem {
     defaultResourceFolder: null,
     area: null,
     abbrev: null,
+    show: DEFAULT_PAGE_SHOW,
     frontMatterExtraLines: [],
   };
 }

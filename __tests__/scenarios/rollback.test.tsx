@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {device} from '../../test-helpers/fakeDevice/device';
-import {firstCheckboxOf, openApp, tap, tapTab, texts, textsBetween, type} from '../../test-helpers/scenario/app';
+import {firstCheckboxOf, openApp, openItemSettings, tap, tapTab, texts, textsBetween, type} from '../../test-helpers/scenario/app';
 import {fileText, loggedErrors, PATHS, projectFile, putFile} from '../../test-helpers/scenario/files';
 import {and, given, scenario, then, when} from '../../test-helpers/scenario/scenario';
 import {smokeClock} from '../../test-helpers/scenario/smokeSpace';
@@ -61,7 +61,7 @@ scenario('Focus flags, goal spans and #now survive a todo, a meeting and a statu
   });
   when('I add the meeting "Kick-off" on 2026-10-20', async () => {
     await tap('Meeting');
-    await type('New meeting title', 'Kick-off');
+    await type('New meeting', 'Kick-off');
     await type('YYYY-MM-DD', '2026-10-20');
     await tap('+ Add');
   });
@@ -70,7 +70,10 @@ scenario('Focus flags, goal spans and #now survive a todo, a meeting and a statu
     expect(frontMatter(fileText(projectFile('Website')))).toEqual(frontMatter(website()));
     expect(goalSpans(fileText(projectFile('Website')))).toBe(goalSpans(website()));
   });
-  when('I set it On Hold', () => tap('On Hold'));
+  when('I set it On Hold on ⚙ Settings', async () => {
+    await openItemSettings();
+    await tap('On Hold');
+  });
   then('the status line changed and the focus lines are still there, in place', () => {
     const fm = frontMatter(fileText(projectFile('Website')));
     expect(fm.slice(0, 6)).toEqual(['---', 'kind: project', 'status: on-hold', ...FOCUS_LINES]);
@@ -96,7 +99,7 @@ scenario('Upgrade: 0.22 starts on a 0.21 space without writing a file or a setti
   });
   then('Daily shows every next todo - Garage\'s too - and "Write copy #now" as "Write copy #next"', async () => {
     await tapTab('Daily');
-    expect(textsBetween('Next todos')).toEqual(expect.arrayContaining(['Sort tools  #next', 'Write copy  #next', 'Draft homepage  #next']));
+    expect(textsBetween(/^Next \d+$/)).toEqual(expect.arrayContaining(['Sort tools', 'Write copy', 'Draft homepage']));
   });
   and('no file changed', () => {
     expect(device().fs.tree(PATHS.projects)).toEqual(before);

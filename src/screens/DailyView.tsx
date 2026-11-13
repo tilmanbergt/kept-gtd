@@ -4,13 +4,19 @@
  *
  * - Left: the day panel (ui/DayMeetingsPanel.tsx: Today | Tomorrow | Google),
  *   the whole column.
- * - Right (screens/daily/DailyTodosColumn.tsx): one Quick Add, always to the
- *   Inbox (docs/dev/history/technical-design-filing-unification.md §6), above
- *   the Next todos grouped by owner. A selected row's card takes Quick Add's
- *   place (ui/useEditTarget.ts: first tap card, second tap edit). A selected
- *   meeting or focus block shows its context panel (ui/meetingContext/) in the
- *   Next todos' place; "+ Quick Add to meeting" turns the card's slot into
- *   Quick Add for it (`add` mode) until the add or "‹ Back to the card".
+ * - Right: the Quick Add zone (screens/daily/SelectionZone.tsx): one Quick
+ *   Add, always to the Inbox (docs/dev/history/technical-design-filing-unification.md
+ *   §6), above the Next todos grouped by owner (screens/daily/DailyTodosColumn.tsx).
+ *   A selected row's card takes Quick Add's place (ui/useEditTarget.ts: first
+ *   tap card, second tap edit). A selected meeting or focus block shows its
+ *   context panel (ui/meetingContext/) in the Next todos' place; "+ Quick Add
+ *   to meeting" turns the card's slot into Quick Add for it (`add` mode) until
+ *   the add or "‹ Back to the card".
+ *
+ * This component does not read the selection
+ * (docs/dev/history/technical-design-calmer-screens.md §3.1.3): the zone and
+ * each row read the screen's selection store, so a tap re-renders neither
+ * this screen nor its lists.
  *
  * What shows is storage/dailyAggregate.ts's rule over the cache and the
  * Inbox (screens/daily/useDailyData.ts). Every write goes through
@@ -21,10 +27,8 @@
  * context panel instead.
  */
 import React, {useEffect, useMemo, useState} from 'react';
-import {ActivityIndicator, Keyboard, StyleSheet, View} from 'react-native';
-import {AbbrevFileMatch} from '../domain/abbrev';
+import {ActivityIndicator, StyleSheet, View} from 'react-native';
 import {Destination} from '../domain/destination';
-import {displayTaskText} from '../domain/taskLabels';
 import {
   buildDailyAggregate,
   dailyEntryDate,
@@ -33,8 +37,11 @@ import {
   DailyMeetingEntry,
   DailyTaskEntry,
   groupDailyTasksByItem,
+  inboxItemRef,
 } from '../storage/dailyAggregate';
-import {linkedFileStatus} from '../storage/linkedFiles';
+import {inboxSummary, inboxTickKey, isOpenInboxTodo} from '../domain/inboxCount';
+import {useOpenMarks} from '../ui/useOpenMarks';
+import InboxList, {ALL_MARKS, inboxRows} from './daily/InboxList';
 import {FolderEntry} from '../supernote/fileSystem';
 import {usePerfRender} from '../utils/perf';
 import GoogleCalendarPanel from '../ui/GoogleCalendarPanel';
@@ -42,30 +49,28 @@ import {useFeatures} from '../ui/featureStore';
 import MeetingRow, {MeetingRowLayout} from '../ui/MeetingRow';
 import DayMeetingsPanel from '../ui/DayMeetingsPanel';
 import {MiniTabDef} from '../ui/MiniTabs';
-import QuickAddWidget, {editTargetFor, MeetingQuickAddFields, QuickFilePayload} from '../ui/QuickAddWidget';
 import TaskRow, {taskRowLines} from '../ui/TaskRow';
 import {common} from '../ui/commonStyles';
 import LoadErrorNotice from '../ui/LoadErrorNotice';
 import {useThemeColors} from '../ui/theme';
 import {useStableCallback} from '../ui/useStableCallback';
-import {useEntryActions} from '../ui/useEntryActions';
-import {cardOrEdit} from '../ui/useEditTarget';
-import MeetingContextPanel from '../ui/meetingContext/MeetingContextPanel';
-import {useMeetingContextSlot} from '../ui/meetingContext/useMeetingContextSlot';
+import {AddedEntry, useEntryActions} from '../ui/useEntryActions';
+import {log} from '../utils/log';
 import {tallyHidden} from '../domain/contexts';
 import HiddenLine from '../ui/context/HiddenLine';
 import {useContextMatcher} from '../ui/context/useContextMatcher';
-import {useMeetingCard} from '../ui/itemCard/useMeetingCard';
-import {useTodoCard} from '../ui/itemCard/useTodoCard';
+import {DailyTab, splitDaily} from '../domain/listTabs';
+import {CountTabDef, shownCountTabs} from '../ui/CountTabs';
+import {useListTab} from '../ui/listTabStore';
+import {useJustDone} from '../ui/useJustDone';
 import DailyTodosColumn from './daily/DailyTodosColumn';
+import SelectionZone from './daily/SelectionZone';
 import {flattenTaskGroups, FlatTaskRow, meetingKey, taskKey} from './daily/dailyRows';
 import {useDailyData} from './daily/useDailyData';
 import {estimatorWidth} from '../ui/ScreenSize';
 
 interface Props {
   onOpenItem: (kind: 'project' | 'area', entry: FolderEntry) => void;
-  /** Switches to the Inbox tab: an Inbox row's group header or source has no Project/Area to open. */
-  onOpenInbox?: () => void;
   /** Switches to Settings → Features, where the calendar link goes (the Google tab's empty state). */
   onOpenCalendarSettings?: () => void;
 }
@@ -82,24 +87,40 @@ const CALENDAR_TABS: MiniTabDef<CalendarTab>[] = [
 /** Stable empty fallback (docs/dev/history/technical-design-render-perf-ab.md §3 B4). */
 const EMPTY_DAILY_AGGREGATE: DailyAggregate = {tasks: [], meetings: [], failedItems: []};
 
-export default function DailyView({onOpenItem, onOpenInbox, onOpenCalendarSettings}: Props): React.JSX.Element {
+export default function DailyView({onOpenItem, onOpenCalendarSettings}: Props): React.JSX.Element {
   usePerfRender('DailyView');
   const {textColor, borderColor, placeholderColor} = useThemeColors();
   const data = useDailyData('DailyView');
   const {items, inbox, inboxPath, paths, settings, todayDate, tomorrowDate} = data;
-  const actions = useEntryActions('DailyView', {hiddenNotice: true});
-  const {target: editTarget, mode: editMode, select: selectEditTarget, cancel: cancelEditTarget, flushEditRef} = actions.edit;
-  const cardMode = cardOrEdit(editMode);
+  // After + Add the box shows the new item's card when Daily lists it, else it folds and the
+  // status line says where it went (docs/dev/history/technical-design-quickadd-redesign.md §3.5, O1).
+  const [pendingAdd, setPendingAdd] = useState<AddedEntry | null>(null);
+  const actions = useEntryActions('DailyView', {hiddenNotice: true, readSelection: false, onAdded: setPendingAdd});
+  const {select: selectEditTarget, store: selection} = actions.edit;
   const features = useFeatures();
   const [calendarTab, setCalendarTab] = useState<CalendarTab>('today');
+  // The count tabs (docs/dev/history/technical-design-calmer-screens.md §3.5): the chosen one, and the
+  // todos ticked here, which stay struck through in their tab until the tab changes or Daily is left.
+  const [tab, setTab] = useListTab<DailyTab>('daily', 'next');
+  const justDone = useJustDone<string>(tab);
+  const tickTodo = useStableCallback((entry: DailyTaskEntry) => {
+    // An Inbox todo by what it is (its place moves when an earlier one is filed), the others by their place.
+    if (!entry.task.done) justDone.add(entry.item.kind === 'inbox' ? inboxTickKey(entry.task) : taskKey(entry));
+    actions.toggleDone(entry);
+  });
 
-  const openItem = (item: DailyItemRef) => {
+  const openItem = useStableCallback((item: DailyItemRef) => {
+    // The Inbox lives on Daily's Inbox tab (§3.7).
     if (item.kind === 'inbox') {
-      onOpenInbox?.();
+      setTab('inbox');
       return;
     }
     onOpenItem(item.kind, {name: item.name, path: item.path, isFolder: true});
-  };
+  });
+  const openOwner = useStableCallback((path: string) => {
+    const owner = items.find(i => i.path === path);
+    if (owner) onOpenItem(owner.kind, {name: owner.name, path, isFolder: true});
+  });
 
   const inboxInput = inbox ? {tasks: inbox.tasks, meetings: inbox.meetings} : null;
   // The active context hides todos and dims meetings (docs/dev/history/technical-design-time-and-place.md §3.3).
@@ -107,9 +128,9 @@ export default function DailyView({onOpenItem, onOpenInbox, onOpenCalendarSettin
   const {matcher} = contextFilter;
   // Recomputed after midnight through todayDate (render-perf-ab §3 B4).
   const aggregate: DailyAggregate | null = useMemo(
-    () => (inboxPath !== null ? buildDailyAggregate(items, inboxInput, inboxPath, new Date(), matcher) : null),
+    () => (inboxPath !== null ? buildDailyAggregate(items, inboxInput, inboxPath, new Date(), matcher, justDone.keys) : null),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- todayDate: recompute after midnight
-    [items, inbox, inboxPath, todayDate, matcher],
+    [items, inbox, inboxPath, todayDate, matcher, justDone.keys],
   );
   const displayAggregate: DailyAggregate = aggregate ?? EMPTY_DAILY_AGGREGATE;
   const hiddenText = contextFilter.lineText(tallyHidden(displayAggregate.hiddenTasks ?? [], contextFilter.kinds, todayDate));
@@ -117,72 +138,154 @@ export default function DailyView({onOpenItem, onOpenInbox, onOpenCalendarSettin
   // dailyEntryDate: a multi-day meeting is listed on each day it covers.
   const meetingsToday = displayAggregate.meetings.filter(entry => dailyEntryDate(entry) === todayDate);
   const meetingsTomorrow = displayAggregate.meetings.filter(entry => dailyEntryDate(entry) === tomorrowDate);
-  const taskRows = flattenTaskGroups(groupDailyTasksByItem(displayAggregate.tasks));
-
-  // The rows open in Quick Add, looked up in the unfiltered aggregate each render.
-  const editingTaskEntry = editTarget?.type === 'task' ? (aggregate?.tasks ?? []).find(e => taskKey(e) === editTarget.key) ?? null : null;
-  const editingMeetingEntry = editTarget?.type === 'meeting' ? (aggregate?.meetings ?? []).find(e => meetingKey(e) === editTarget.key) ?? null : null;
-  // Quick-file needs the edited row's real location: this screen's fixedDestination is always the Inbox.
-  const editingEntryItem = editingTaskEntry?.item ?? editingMeetingEntry?.item ?? null;
-  const editingItemPath = editingEntryItem && editingEntryItem.kind !== 'inbox' ? editingEntryItem.path : null;
-
-  // The selected meeting's context panel and its Quick Add (docs/dev/history/technical-design-time-and-place.md §3.2).
-  const context = useMeetingContextSlot(editingMeetingEntry, {items, inbox, inboxPath, settings}, editMode, actions, FIXED_INBOX_DESTINATION, actions.edit.toCard);
-
-  const todoCard = useTodoCard(
-    actions.todoCardOptions(editingTaskEntry, {
-      onOpenOwner: () => {
-        if (editingTaskEntry) openItem(editingTaskEntry.item);
-      },
-    }),
+  const split = useMemo(
+    () => splitDaily(displayAggregate.tasks, displayAggregate.doneToday ?? [], todayDate),
+    [displayAggregate.tasks, displayAggregate.doneToday, todayDate],
   );
-  const meetingCard = useMeetingCard(
-    actions.cardOptions(editingMeetingEntry, {
-      onOpenOwner: () => {
-        if (editingMeetingEntry) openItem(editingMeetingEntry.item);
-      },
-    }),
+  // The Inbox tab (§3.7): marks, open todos and meetings, never hidden by the context. A todo ticked
+  // there stays, struck through, like on the other tabs.
+  const openMarks = useOpenMarks(ALL_MARKS).length;
+  const inboxLists = useMemo(() => {
+    if (!inbox || inboxPath === null) return {summary: null, todos: [] as DailyTaskEntry[], meetings: [] as DailyMeetingEntry[]};
+    const summary = inboxSummary(inbox.tasks, inbox.meetings, openMarks, todayDate);
+    const item = inboxItemRef(inboxPath);
+    const todos = inbox.tasks
+      .map((task, taskIndex): DailyTaskEntry => ({item, taskIndex, task}))
+      .filter(e => isOpenInboxTodo(e.task) || justDone.keys.has(inboxTickKey(e.task)));
+    const meetings = summary.meetings.map((meetingIndex): DailyMeetingEntry => ({item, meetingIndex, meeting: inbox.meetings[meetingIndex]}));
+    return {summary, todos, meetings};
+  }, [inbox, inboxPath, openMarks, todayDate, justDone.keys]);
+  const inboxOrder = useMemo(
+    () => [
+      ...inboxLists.todos.map(e => ({type: 'task' as const, index: e.taskIndex})),
+      ...inboxLists.meetings.map(e => ({type: 'meeting' as const, index: e.meetingIndex})),
+    ],
+    [inboxLists],
   );
-
-  // Daily is read-only for linked files: a filled clip opens it, nothing links one from here.
-  const editingLinkedFile = (editingTaskEntry?.task ?? editingMeetingEntry?.meeting)?.linkedFile;
-  const [linkedFileMissing, setLinkedFileMissing] = useState(false);
+  const inboxRowsList = useMemo(() => inboxRows(openMarks, inboxLists.todos, inboxLists.meetings), [openMarks, inboxLists]);
+  // The item just added (docs/dev/history/technical-design-quickadd-redesign.md §3.5): filed to a
+  // project or area, its card shows even when Daily doesn't list it (it joins the extra entries the
+  // selection resolves); added to the Inbox, the box folds and the status line says so, as the Inbox
+  // card is for filing.
+  const [added, setAdded] = useState<{task: DailyTaskEntry | null; meeting: DailyMeetingEntry | null}>({task: null, meeting: null});
   useEffect(() => {
-    if (!editingLinkedFile || !paths) {
-      setLinkedFileMissing(false);
+    if (!pendingAdd) return;
+    // Added to a selected meeting (its context panel's Quick Add): the meeting's card stays.
+    if ((selection.get().target as {type?: string} | null)?.type === 'meeting') {
+      setPendingAdd(null);
       return;
     }
-    let cancelled = false;
-    linkedFileStatus(paths, editingLinkedFile).then(status => {
-      if (!cancelled) setLinkedFileMissing(status === 'missing');
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [editingLinkedFile, paths]);
+    let key: string | null = null;
+    const ref = (item: (typeof items)[number]) => ({kind: item.kind, name: item.name, path: item.path, abbrev: item.abbrev});
+    if (pendingAdd.kind === 'task') {
+      for (const item of items) {
+        const taskIndex = item.tasks.map((t, i) => (!t.done && t.text === pendingAdd.text ? i : -1)).filter(i => i >= 0).pop();
+        if (taskIndex === undefined) continue;
+        const entry: DailyTaskEntry = {item: ref(item), taskIndex, task: item.tasks[taskIndex]};
+        key = taskKey(entry);
+        setAdded(prev => ({...prev, task: entry}));
+        selectEditTarget({type: 'task', key});
+        break;
+      }
+    } else {
+      for (const item of items) {
+        const meetingIndex = item.meetings.map((m, i) => (m.title === pendingAdd.title && m.date === pendingAdd.date ? i : -1)).filter(i => i >= 0).pop();
+        if (meetingIndex === undefined) continue;
+        const entry: DailyMeetingEntry = {item: ref(item), meetingIndex, meeting: item.meetings[meetingIndex]};
+        key = meetingKey(entry);
+        setAdded(prev => ({...prev, meeting: entry}));
+        selectEditTarget({type: 'meeting', key});
+        break;
+      }
+    }
+    log(`DailyView: quickadd added kind=${pendingAdd.kind === 'task' ? 'todo' : 'meeting'} card=${key ? 'shown' : 'elsewhere'}`);
+    setPendingAdd(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- once per add, on the items as written
+  }, [pendingAdd]);
+  const extraTasks = useMemo(() => (added.task ? [...inboxLists.todos, added.task] : inboxLists.todos), [inboxLists.todos, added.task]);
+  const extraMeetings = useMemo(() => (added.meeting ? [...inboxLists.meetings, added.meeting] : inboxLists.meetings), [inboxLists.meetings, added.meeting]);
+  const countTabs: CountTabDef<DailyTab>[] = useMemo(
+    () => [
+      {key: 'next', label: 'Next', count: split.counts.next, fixed: true},
+      {key: 'waiting', label: 'Waiting', count: split.counts.waiting, bell: split.bells.waiting, fixed: true},
+      {key: 'inbox', label: 'Inbox', count: inboxLists.summary?.count ?? 0, bell: inboxLists.summary?.bell ?? 0, fixed: true},
+      {key: 'done', label: 'Done', count: split.counts.done, fixed: false},
+    ],
+    [split, inboxLists],
+  );
+  // The tab shown: Done, once empty (its last item unticked), falls back to the first tab - the list follows it.
+  const shownTab = shownCountTabs(countTabs, tab).activeKey;
+  const taskRows = useMemo(() => (shownTab === 'inbox' ? [] : flattenTaskGroups(groupDailyTasksByItem(split.lists[shownTab]))), [split, shownTab]);
+  const failedNamesKey = displayAggregate.failedItems.map(f => f.item.name).join('\n');
+  const failedItemNames = useMemo(() => (failedNamesKey ? failedNamesKey.split('\n') : []), [failedNamesKey]);
 
-  const renderTaskEntry = (entry: DailyTaskEntry, heightPx: number) => {
+  const renderTaskEntry = useStableCallback((row: Extract<FlatTaskRow, {kind: 'entry'}>, heightPx: number) => {
+    const entry: DailyTaskEntry = row.entry;
     const key = taskKey(entry);
     return (
       <TaskRow
         key={key}
         task={entry.task}
-        isEditing={editTarget?.type === 'task' && editTarget.key === key}
+        selection={{store: selection, key: `task:${key}`}}
         onStartEdit={() => selectEditTarget({type: 'task', key})}
-        onToggleDone={() => actions.toggleDone(entry)}
+        onToggleDone={() => tickTodo(entry)}
         onCreateNote={() => actions.taskNote(entry)}
         onOpenNote={() => actions.taskNote(entry)}
         linkedFile={entry.task.linkedFile}
         onOpenLinkedFile={actions.openFile}
         ownerPath={entry.item.path}
-        context="flat"
+        context="quiet"
         height={heightPx}
-        numberOfLines={taskRowLines(entry.task, estimatorWidth(), 'flat')}
+        numberOfLines={taskRowLines(entry.task, estimatorWidth(), 'quiet')}
         textColor={textColor}
         borderColor={borderColor}
       />
     );
-  };
+  });
+
+  // The Inbox tab's rows: a todo's grey note says when it was captured; a meeting shows its date.
+  const renderInboxTodo = useStableCallback((entry: DailyTaskEntry, heightPx: number) => {
+    const key = taskKey(entry);
+    return (
+      <TaskRow
+        key={key}
+        task={entry.task}
+        selection={{store: selection, key: `task:${key}`}}
+        onStartEdit={() => selectEditTarget({type: 'task', key})}
+        onToggleDone={() => tickTodo(entry)}
+        onCreateNote={() => actions.taskNote(entry)}
+        onOpenNote={() => actions.taskNote(entry)}
+        linkedFile={entry.task.linkedFile}
+        onOpenLinkedFile={actions.openFile}
+        ownerPath={entry.item.path}
+        context="inbox"
+        height={heightPx}
+        numberOfLines={taskRowLines(entry.task, estimatorWidth(), 'inbox')}
+        textColor={textColor}
+        borderColor={borderColor}
+      />
+    );
+  });
+  const renderInboxMeeting = useStableCallback((entry: DailyMeetingEntry) => {
+    const key = meetingKey(entry);
+    return (
+      <MeetingRow
+        key={key}
+        meeting={entry.meeting}
+        layout="oneLine"
+        time="dateTime"
+        tracking={actions.tracking()}
+        note={{onOpen: () => actions.meetingNote(entry), onCreate: () => actions.meetingNote(entry)}}
+        noteOnlyWhenExists
+        file={{linkedFile: entry.meeting.linkedFile, onOpen: actions.openFile}}
+        onPress={() => selectEditTarget({type: 'meeting', key})}
+        selection={{store: selection, key: `meeting:${key}`}}
+        ownerPath={entry.item.path}
+        textColor={textColor}
+        borderColor={borderColor}
+      />
+    );
+  });
 
   // The standard meeting row (docs/dev/history/technical-design-meeting-lists.md §3): source, read-only M, tracking, note, linked file.
   const renderMeetingEntry = (entry: DailyMeetingEntry, layout: MeetingRowLayout) => {
@@ -194,14 +297,15 @@ export default function DailyView({onOpenItem, onOpenInbox, onOpenCalendarSettin
         span={entry.span}
         layout={layout}
         time="time"
-        source={{abbrev: entry.item.abbrev ?? entry.item.name, name: entry.item.name, onPress: () => openItem(entry.item)}}
+        source={{abbrev: entry.item.abbrev ?? entry.item.name, name: entry.item.name}}
         highlight="mark"
         tracking={actions.tracking()}
         note={{onOpen: () => actions.meetingNote(entry), onCreate: () => actions.meetingNote(entry)}}
+        noteOnlyWhenExists
         file={{linkedFile: entry.meeting.linkedFile, onOpen: actions.openFile}}
         onPress={() => selectEditTarget({type: 'meeting', key})}
         dimmed={entry.contextState === 'dimmed'}
-        state={editTarget?.type === 'meeting' && editTarget.key === key ? (cardMode === 'card' ? 'selected' : 'editing') : undefined}
+        selection={{store: selection, key: `meeting:${key}`}}
         ownerPath={entry.item.path}
         textColor={textColor}
         borderColor={borderColor}
@@ -209,54 +313,41 @@ export default function DailyView({onOpenItem, onOpenInbox, onOpenCalendarSettin
     );
   };
 
-  /** Quick Add's "Save to <Name>" in edit mode: save, then move the row to the abbreviation's item. */
-  const handleQuickFileEdit = async (target: AbbrevFileMatch, payload: QuickFilePayload): Promise<void> => {
-    if (editingTaskEntry && payload.kind === 'task') await actions.quickFile({task: editingTaskEntry}, target, payload);
-    else if (editingMeetingEntry && payload.kind === 'meeting') await actions.quickFile({meeting: editingMeetingEntry}, target, payload);
-  };
-
-  // Stable props for the memoized QuickAddWidget (render-perf-ab §3 B2): called only from its handlers, never while it renders.
-
+  // Called only from Quick Add's handlers, never while it renders.
   const stableIsMeetingDateVisible = useStableCallback((date: string) =>
     calendarTab === 'today' ? date === todayDate : calendarTab === 'tomorrow' ? date === tomorrowDate : false,
   );
-  const stableSaveEditTask = useStableCallback((nextText: string, nextLinkedFile: string) =>
-    editingTaskEntry ? actions.commitTaskEdit(editingTaskEntry, nextText, nextLinkedFile) : Promise.resolve(false),
-  );
-  const stableSaveEditMeeting = useStableCallback((fields: MeetingQuickAddFields, nextLinkedFile: string) => {
-    Keyboard.dismiss();
-    return editingMeetingEntry ? actions.commitMeetingEdit(editingMeetingEntry, fields, nextLinkedFile) : Promise.resolve(false);
-  });
-  const stableCancelEdit = useStableCallback(cancelEditTarget);
-  const stableQuickFileEdit = useStableCallback(handleQuickFileEdit);
-  const editingTaskForWidget = useMemo(
-    () => (editingTaskEntry ? {...editingTaskEntry.task, text: displayTaskText(editingTaskEntry.task, 'flat')} : undefined),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [editingTaskEntry?.task, editingTaskEntry?.task.text],
-  );
 
-  const quickAdd = (
-    <QuickAddWidget
-      thisFileLine
-      layoutKey="daily"
-      {...context.widget}
-      initialDate={calendarTab === 'tomorrow' ? tomorrowDate : todayDate}
-      // Only the shown tab's day is in the list; anything else gets the widget's "where did it go" note.
-      isMeetingDateVisible={stableIsMeetingDateVisible}
-      editTarget={editTargetFor(editTarget && `${editTarget.type}:${editTarget.key}`, {task: editingTaskForWidget, meeting: editingMeetingEntry?.meeting}, editMode)}
-      meetingCard={meetingCard}
-      todoCard={todoCard}
-      onSaveEditTask={editingTaskEntry ? stableSaveEditTask : undefined}
-      onSaveEditMeeting={editingMeetingEntry ? stableSaveEditMeeting : undefined}
-      flushEditRef={flushEditRef}
-      onCancelEdit={stableCancelEdit}
-      onQuickFile={editTarget ? stableQuickFileEdit : undefined}
-      editingItemPath={editingItemPath}
-      linkedFileMissing={linkedFileMissing}
+  const footer = useMemo(
+    () => <HiddenLine text={hiddenText} onShow={contextFilter.show} textColor={textColor} />,
+    [hiddenText, contextFilter.show, textColor],
+  );
+  const inboxList = useMemo(
+    () => (
+      <InboxList
+        rows={inboxRowsList}
+        renderTodo={renderInboxTodo}
+        renderMeeting={renderInboxMeeting}
+        marksReturnTo="daily"
+        heightKey="daily:todos:inbox"
+        textColor={textColor}
+        borderColor={borderColor}
+      />
+    ),
+    [inboxRowsList, renderInboxTodo, renderInboxMeeting, textColor, borderColor],
+  );
+  const list = (
+    <DailyTodosColumn
+      inboxList={inboxList}
+      tabs={countTabs}
+      tab={shownTab}
+      onTabChange={setTab}
+      rows={taskRows}
+      renderEntry={renderTaskEntry}
+      failedItemNames={failedItemNames}
+      footer={footer}
       textColor={textColor}
       borderColor={borderColor}
-      placeholderColor={placeholderColor}
-      {...context.todoOverride}
     />
   );
 
@@ -277,6 +368,7 @@ export default function DailyView({onOpenItem, onOpenInbox, onOpenCalendarSettin
                   onTabChange={setCalendarTab}
                   renderRow={renderMeetingEntry}
                   emptyHint={`Nothing ${calendarTab === 'tomorrow' ? 'tomorrow' : 'today'}.`}
+                  compact
                   googlePanel={
                     features.googleCalendar ? (
                       <GoogleCalendarPanel
@@ -298,36 +390,27 @@ export default function DailyView({onOpenItem, onOpenInbox, onOpenCalendarSettin
               </View>
             </View>
             <View style={common.column}>
-              <DailyTodosColumn
-                quickAdd={quickAdd}
-                panel={
-                  context.model && context.entry ? (
-                    <MeetingContextPanel
-                      model={context.model}
-                      meeting={context.entry.meeting}
-                      adding={context.adding}
-                      onQuickAdd={actions.edit.add}
-                      onBackToCard={actions.edit.toCard}
-                      onClose={cancelEditTarget}
-                      actions={context.todoActions}
-                      selectedTodoKey={context.selectedTodoKey}
-                      onSelectTodo={context.onSelectTodo}
-                      onOpenItem={path => {
-                        const owner = items.find(i => i.path === path);
-                        if (owner) onOpenItem(owner.kind, {name: owner.name, path, isFolder: true});
-                      }}
-                      textColor={textColor}
-                      borderColor={borderColor}
-                    />
-                  ) : undefined
-                }
-                rows={taskRows}
-                renderEntry={(row: Extract<FlatTaskRow, {kind: 'entry'}>, heightPx) => renderTaskEntry(row.entry, heightPx)}
-                onOpenItem={openItem}
-                failedItemNames={displayAggregate.failedItems.map(f => f.item.name)}
-                footer={context.model ? undefined : <HiddenLine text={hiddenText} onShow={contextFilter.show} textColor={textColor} />}
+              <SelectionZone
+                actions={actions}
+                aggregate={aggregate}
+                items={items}
+                inbox={inbox}
+                inboxPath={inboxPath}
+                paths={paths}
+                settings={settings}
+                initialDate={calendarTab === 'tomorrow' ? tomorrowDate : todayDate}
+                isMeetingDateVisible={stableIsMeetingDateVisible}
+                openItem={openItem}
+                onOpenOwner={openOwner}
+                onTickTodo={tickTodo}
+                extraTasks={extraTasks}
+                extraMeetings={extraMeetings}
+                inboxTab={shownTab === 'inbox'}
+                inboxOrder={inboxOrder}
+                list={list}
                 textColor={textColor}
                 borderColor={borderColor}
+                placeholderColor={placeholderColor}
               />
             </View>
           </View>

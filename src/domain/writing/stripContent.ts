@@ -3,17 +3,23 @@
  * §3.3): one thing at a time, the first that applies. Pure: the hook
  * (ui/writing/useWritingHelp.ts) keeps the state, this decides and labels.
  *
- * 1. `fixes` - up to two flagged tags, in text order: `→ #x` each, Keep, Edit ›;
+ * 1. `fixes` - up to two flagged tags, in text order: `→ #x` each, Keep, the clipboard square;
  * 2. `read` - a learned fix or a date/time read just applied: "read as …" + Undo;
  * 3. `choice` - a date or time with two readings;
- * 4. `complete` - up to three completions + Edit ›;
- * 5. `feedback` - where the page goes, or "New tag …";
+ * 4. `complete` - up to three completions + the clipboard square;
+ * 5. `feedback` - where the page goes (`#daily: Meetings/Daily 2026.note`);
  * 6. a date field: the full date (+ warning) and the nudges, and the usual
  *    slot while the time is empty; a time field: the read time and length (+ warning), or the
  *    usual slot when empty;
- * 7. a text field: All · Copy · Cut · Paste.
+ * 7. an empty title field in create mode with `starters`: Thread · Loop ·
+ *    Paste (docs/dev/history/technical-design-calmer-screens.md §3.3); a tap on
+ *    Thread or Loop is the moment `starterList` (its setups' tags and ‹);
+ * 8. a text field: All · Copy · Cut · Paste - or, in Quick Add's form
+ *    (docs/dev/history/technical-design-quickadd-redesign.md §3.2), its resting
+ *    view: `suggest` (📎 This file, the starters on an empty field, #next /
+ *    #someday, recent tags, abbreviations) unless the view is `clipboard`.
  *
- * States 2-5 are a *moment*: the hook ends one on the next touch in the field,
+ * States 2-5 and the starter list are a *moment*: the hook ends one on the next touch in the field,
  * on the next focus, or on the next burst - never by a timer.
  */
 import {formatFullDate, formatLength, formatTime, formatTimeSpan} from '../dateFormat';
@@ -21,6 +27,7 @@ import {isValidIsoDate} from '../dateNudge';
 import {parseMeetingWhen} from '../meetingTime';
 import {KnownTag} from './knownTags';
 import {UsualSlot} from './meetingHints';
+import {StarterOption} from './starters';
 
 export type StripField = 'text' | 'date' | 'time';
 
@@ -40,15 +47,31 @@ export interface ChoiceOption {
 export type StripMoment =
   | {kind: 'read'; label: string}
   | {kind: 'choice'; options: ChoiceOption[]}
-  | {kind: 'complete'; options: KnownTag[]}
-  | {kind: 'feedback'; text: string};
+  | {kind: 'complete'; token: string; options: KnownTag[]}
+  | {kind: 'feedback'; text: string}
+  | {kind: 'starterList'; options: StarterOption[]};
+
+/** What an empty title field offers (state 7); null where it offers none (edit mode, other fields). */
+export interface StripStarters {
+  thread: boolean;
+  loop: boolean;
+  paste: boolean;
+}
+
+/** One button of the Suggest view. */
+export type SuggestOption = {kind: 'thisFile'} | {kind: 'tag'; tag: string};
+
+/** The resting view of Quick Add's text strip. */
+export type StripView = 'suggest' | 'clipboard';
 
 export type StripContent =
   | {kind: 'fixes'; fixes: PendingFix[]}
+  | {kind: 'suggest'; thread: boolean; loop: boolean; paste: boolean; options: SuggestOption[]}
   | StripMoment
   | {kind: 'date'; label: string | null; warning: string | null; usual: string | null}
   | {kind: 'time'; label: string; warning: string | null}
   | {kind: 'usual'; usual: string}
+  | {kind: 'starters'; thread: boolean; loop: boolean; paste: boolean}
   | {kind: 'clipboard'}
   | {kind: 'none'};
 
@@ -59,7 +82,7 @@ export interface StripState {
   /** Unanswered flagged tags, at most two, in text order. */
   fixes: readonly PendingFix[];
   moment: StripMoment | null;
-  /** Edit › was tapped: the clipboard buttons instead of fixes or completions. */
+  /** The clipboard square was tapped: the clipboard buttons instead of fixes, completions or the place line. */
   showClipboard: boolean;
   /** Past or overlap, for a meeting's date and time strips. */
   warning?: string | null;
@@ -69,6 +92,14 @@ export interface StripState {
    * since the date field starts with today's date).
    */
   usual?: UsualSlot | null;
+  /** An empty title field in create mode: the starters it may offer (state 7). */
+  starters?: StripStarters | null;
+  /**
+   * Quick Add's form: the Suggest view's options (already fitted to the strip's width), and
+   * which resting view shows. Absent elsewhere: the starters or the clipboard as before.
+   */
+  suggest?: readonly SuggestOption[] | null;
+  view?: StripView;
 }
 
 /** The most fixes the strip shows at once (§1.4). */
@@ -109,17 +140,35 @@ export function stripContent(state: StripState): StripContent {
     const label = timeLabel(value);
     return label ? {kind: 'time', label, warning: state.warning ?? null} : {kind: 'none'};
   }
+  const starters = state.starters;
+  const offered = empty && starters ? starters : {thread: false, loop: false, paste: false};
+  if (state.suggest) {
+    if (state.view === 'clipboard') return {kind: 'clipboard'};
+    return {kind: 'suggest', ...offered, options: [...state.suggest]};
+  }
+  if (empty && starters && (starters.thread || starters.loop || starters.paste)) return {kind: 'starters', ...starters};
   return {kind: 'clipboard'};
 }
 
-/** The feedback after a burst or a correction (§1.7): `✓ Daily · Meetings/Daily.note`, or `✓ Garden renovation 2026.note` for the Default. */
-export function placeFeedback(setupName: string | null, file: string): string {
-  return setupName ? `✓ ${setupName} · ${file}` : `✓ ${file}`;
+/** Where a new item's page goes: the setup and the tag that chose it, else the item's home notebook. */
+export interface PagePlace {
+  setupName: string | null;
+  setupTag: string | null;
+  home: 'project' | 'area' | null;
+  /** Below the item's PARA folder; null for an own note. */
+  file: string | null;
 }
 
-/** A new tag with nothing close (§1.7, B3): `New tag #offsite27 · Team offsite 2026.note`. */
-export function newTagFeedback(tag: string, file: string): string {
-  return `New tag #${tag} · ${file}`;
+/**
+ * The place line (docs/dev/history/technical-design-quickadd-redesign.md §11 G8):
+ * `#daily: Meetings/Daily 2026.note`, `Project home note: Atruvia/Atruvia 2026.note`, `Own note`.
+ */
+export function placeFeedback(place: PagePlace): string {
+  const file = place.file ?? 'own note';
+  if (place.setupTag) return `#${place.setupTag}: ${file}`;
+  if (place.setupName) return `${place.setupName}: ${file}`;
+  if (place.home && place.file) return `${place.home === 'project' ? 'Project' : 'Area'} home note: ${place.file}`;
+  return place.file ?? 'Own note';
 }
 
 /** The status-slot hint of the first + Add with unanswered fixes (§1.4). */

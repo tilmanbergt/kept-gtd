@@ -26,6 +26,7 @@ import {useErrorStatus} from '../../ui/status/StatusProvider';
 import {log, logError} from '../../utils/log';
 import {errorMessage} from '../../utils/errorMessage';
 import {PaneColors, sectionStyles as styles} from './panelLayout';
+import {SelectionReader} from '../../ui/selectionStore';
 
 type MeetingsMainTab = 'todos' | 'meetings' | 'google';
 const MEETINGS_MAIN_TABS: MiniTabDef<MeetingsMainTab>[] = [
@@ -33,15 +34,14 @@ const MEETINGS_MAIN_TABS: MiniTabDef<MeetingsMainTab>[] = [
   {key: 'google', label: 'Google'},
 ];
 
-export default function MeetingsSection({
+function MeetingsSection({
   kind,
   name,
   itemPath,
   meetings,
   onSave,
   onOpenCalendarSettings,
-  editingIndex,
-  editMode,
+  selection,
   armingIndex,
   onSelect,
   onOpenLinkedFile,
@@ -57,10 +57,8 @@ export default function MeetingsSection({
   meetings: Meeting[];
   onSave: (next: Meeting[]) => Promise<void>;
   onOpenCalendarSettings?: () => void;
-  /** Lifted up into ProjectDataPanel (technical-design-linked-files.md §8) - see that component's EditTarget doc comment and TodosSection's identical props. Add/edit/delete itself lives in the single QuickAddWidget above both sections (docs/dev/history/technical-design-unified-quickadd.md §8) - see TodosSection's identical note. */
-  editingIndex: number | null;
-  /** Whether the selected meeting shows as card or edit form (ui/useEditTarget.ts). */
-  editMode: 'card' | 'edit';
+  /** The page's selection store (ui/selectionStore.ts): each row reads whether it is selected (key `meeting:<index>`) and shows card or edit mode itself - see TodosSection's identical prop. */
+  selection: SelectionReader;
   armingIndex: number | null;
   /** Row tap: the meeting's card in Quick Add's place, a second tap edits. */
   onSelect: (index: number) => void;
@@ -182,11 +180,11 @@ export default function MeetingsSection({
                 highlight="mark"
                 tracking={trackingFor()}
                 note={{onOpen: () => handleNote(row.index), onCreate: () => handleNote(row.index)}}
+                noteOnlyWhenExists
                 file={{linkedFile: row.meeting.linkedFile, onOpen: onOpenLinkedFile}}
                 onPress={() => onSelect(row.index)}
-                state={
-                  armingIndex === row.index ? 'arming' : editingIndex === row.index ? (editMode === 'card' ? 'selected' : 'editing') : undefined
-                }
+                state={armingIndex === row.index ? 'arming' : undefined}
+                selection={{store: selection, key: `meeting:${row.index}`}}
                 ownerPath={itemPath}
                 textColor={textColor}
                 borderColor={borderColor}
@@ -213,3 +211,6 @@ export default function MeetingsSection({
     </View>
   );
 }
+
+/** Memoized: the page passes stable props, so selecting a row leaves the list as it is. */
+export default React.memo(MeetingsSection);

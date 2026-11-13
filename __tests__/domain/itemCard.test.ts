@@ -1,5 +1,5 @@
 /** The item cards' models (docs/dev/history/technical-design-item-card.md K8, K9, §6). */
-import {meetingCardModel, MeetingCardInput, meetingPhase, originOfKey, todoCardModel, TodoCardInput} from '../../src/domain/itemCard';
+import {meetingCardModel, MeetingCardInput, meetingCardLayout, meetingCardState, meetingPhase, originOfKey, todoCardModel, TodoCardInput, todoCardLayout} from '../../src/domain/itemCard';
 import {deriveMeetingFields} from '../../src/domain/markdown';
 import {createNoteSetup, NoteSetupConfig} from '../../src/domain/noteSetups';
 import {Meeting} from '../../src/domain/types';
@@ -84,10 +84,10 @@ describe('todoCardModel', () => {
   const todo = (text: string, extra: Parameters<typeof task>[1] = {}, input: Partial<TodoCardInput> = {}) =>
     todoCardModel({task: task(text, extra), today, ownerName: 'Garden renovation', canLink: false, canRefile: false, ...input});
 
-  it('R1: done or deleted first, then the due date, then the flow state', () => {
+  it('R1: done or deleted first, else the flow state and the due date (§11 G9)', () => {
     expect(todo('Order soil #next', {done: true}).heading).toBe('Todo · done');
     expect(todo('Order soil', {cancelled: true}).heading).toBe('Todo · deleted');
-    expect(todo('Order soil #next', {dueDate: '2026-10-24'}).heading).toBe('Todo · due 24.10.');
+    expect(todo('Order soil #next', {dueDate: '2026-10-24'}).heading).toBe('Todo · next · due 24.10.');
     expect(todo('Order soil', {dueDate: '2026-10-21'}).heading).toBe('Todo · due today');
     expect(todo('Order soil', {dueDate: '2026-10-19'}).heading).toBe('Todo · overdue 19.10.');
     expect(todo('Quote #wf/marco').heading).toBe('Todo · waiting for Marco');
@@ -124,5 +124,63 @@ describe('todoCardModel', () => {
     expect(todo('Order soil').file).toBeNull();
     expect(todo('Order soil').canDelete).toBe(true);
     expect(todo('Order soil', {cancelled: true}).canDelete).toBe(false);
+  });
+});
+
+// The compact card (docs/dev/history/technical-design-calmer-screens.md §3.4).
+describe('the compact card', () => {
+  const todo = (text: string, extra: Parameters<typeof task>[1] = {}, input: Partial<TodoCardInput> = {}) =>
+    todoCardModel({task: task(text, extra), today: '2026-10-21', ownerName: 'Garden renovation', canLink: false, canRefile: false, ...input});
+
+  it('todo: caption with the owner, and one detail line: agreed in, else the file, else no note yet', () => {
+    expect(todo('Order soil #next', {dueDate: '2026-10-24'}).caption).toBe('Todo · Garden renovation · next · due 24.10.');
+    const agreed = todo('Send the canvas', {fields: {...task('x').fields, meeting: '2026-10-14 Sparring Jordan sparring/jordan'}, linkedFile: 'a/plan.pdf'});
+    expect(agreed.detail).toEqual({kind: 'origin', label: '↳ Sparring Jordan ›', threadTag: 'sparring/jordan'});
+    expect(todo('Order soil', {linkedFile: 'a/plan.pdf'}).detail).toEqual({kind: 'file', name: 'plan.pdf'});
+    expect(todo('Order soil').detail).toEqual({kind: 'noNote'});
+    expect(todo('Order soil', {notePath: 'Note/x.note'}).detail).toBeNull();
+  });
+
+  it('todo R4: the done box and the flow states left, the notebook, the clip and the trash right (§11 G9)', () => {
+    const t = todo('Order soil');
+    expect(todoCardLayout(t)).toEqual({row4Left: ['done', 'next', 'waiting', 'someday', 'maybe'], row4Right: ['note', 'delete']});
+    expect(todoCardLayout(todo('Order soil', {}, {canLink: true, canRefile: true})).row4Right).toEqual(['note', 'file', 'delete']);
+    expect(todoCardLayout(todo('Old', {cancelled: true})).row4Right).toEqual(['note']);
+    expect(t.status).toBe(t.caption.split(' · ').slice(2).join(' · '));
+  });
+
+  it('todo R1: the place\'s abbreviation in capitals, the flow state and the due date (§11 G9)', () => {
+    const t = todo('Order soil #next', {dueDate: '2026-11-05'}, {ownerAbbrev: 'gr'});
+    expect(t.place).toBe('GR');
+    expect(t.status).toBe('next · due 5.11.');
+    expect(todo('Order soil').place).toBe('Garden renovation');
+    expect(todo('Order soil').status).toBe('open');
+  });
+
+  it('meeting: caption with the owner, the thread as detail line, and its two pages', () => {
+    const aheadModel = model(m('2026-10-23', 'Sparring #sparring/jordan'));
+    expect(aheadModel.caption).toBe('Meeting · Coaching · ahead');
+    expect(aheadModel.detail).toEqual({kind: 'thread', tag: 'sparring/jordan', label: '#sparring/jordan ›'});
+    expect(meetingCardLayout(aheadModel)).toEqual({row4Left: ['checkpoint', 'monthly', 'focus'], row4Right: ['note', 'newFromThis', 'cancel']});
+    expect(aheadModel.kind).toBe('Meeting');
+    expect(aheadModel.status).toBe('ahead');
+    const plain = model(m('2026-10-18', 'Retro'), {canRefile: true, canLink: true});
+    expect(plain.detail).toEqual({kind: 'noNote'});
+    // Over: Cancel meeting's square stays empty, nothing moves; refile is R1's arrow.
+    expect(meetingCardLayout(plain).row4Right).toEqual(['note', 'file', 'newFromThis', 'empty']);
+  });
+
+  it('meeting R1: the date and time, then over or cancelled; narrow without weekday and end (§11 G10)', () => {
+    const overCo = model(m('2026-10-18', 'Retro', {time: '15:00', endTime: '16:30'}), {ownerAbbrev: 'co'});
+    expect(overCo.place).toBe('CO');
+    expect(meetingCardState(overCo, false)).toMatch(/^\S+ 18\.10\. 15:00-16:30 · over$/);
+    expect(meetingCardState(overCo, true)).toBe('18.10. 15:00 · over');
+  });
+
+  it('meeting: Cancel meeting only before it starts', () => {
+    expect(model(m('2026-10-21', 'Later today', {time: '15:00', endTime: '16:00'})).canCancel).toBe(true);
+    expect(model(m('2026-10-21', 'This morning', {time: '09:00', endTime: '09:30'})).canCancel).toBe(false);
+    expect(model(m('2026-10-23', 'Ahead')).canCancel).toBe(true);
+    expect(model({...m('2026-10-23', 'Ahead'), cancelled: true}).canCancel).toBe(false);
   });
 });

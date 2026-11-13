@@ -11,7 +11,7 @@ scenario('Add a meeting for next week from Daily', {feature: 'Daily', design: 't
     await openApp();
     await tapTab('Daily');
     await tap('Meeting');
-    await type('New meeting title', 'Team sync');
+    await type('New meeting', 'Team sync');
     await type('YYYY-MM-DD', inAWeek());
     await tap('+ Add');
   });

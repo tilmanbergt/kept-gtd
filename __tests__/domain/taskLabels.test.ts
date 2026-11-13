@@ -1,4 +1,4 @@
-import {displayTaskText, isFlowStateConveyed, taskLabels} from '../../src/domain/taskLabels';
+import {displayTaskText, isFlowStateConveyed, quietMeta, taskLabels} from '../../src/domain/taskLabels';
 import {isWaitingForShownOnDaily} from '../../src/domain/flowState';
 import {task} from '../../test-helpers/fixtures';
 
@@ -75,5 +75,26 @@ describe('isWaitingForShownOnDaily', () => {
   });
   it('other flow states: false', () => {
     expect(isWaitingForShownOnDaily(task('x #next'), TODAY)).toBe(false);
+  });
+});
+
+// The quiet row (docs/dev/history/technical-design-calmer-screens.md §3.4).
+describe('quiet mode', () => {
+  const today = '2026-11-03';
+  const t = (text: string, extra: Parameters<typeof task>[1] = {}) => task(text, extra);
+  it('keeps the words and free tags, drops #next/#now, the due field and the #wf tag; no labels', () => {
+    expect(displayTaskText(t('Order soil #next', {flowState: 'next', dueDate: '2026-11-05'}), 'quiet')).toBe('Order soil');
+    expect(displayTaskText(t('Collect topics #lena #next', {flowState: 'next'}), 'quiet')).toBe('Collect topics #lena');
+    expect(displayTaskText(t('Plan #someday', {flowState: 'someday'}), 'quiet')).toBe('Plan #someday');
+    expect(taskLabels(t('Order soil #next', {flowState: 'next'}), 'quiet', today)).toEqual([]);
+  });
+  it('quietMeta: due today and overdue strong, a later due plain, else w/f, else nothing', () => {
+    expect(quietMeta(t('a', {dueDate: today}), today)).toEqual({text: 'due today', strong: true});
+    expect(quietMeta(t('a', {dueDate: '2026-11-01'}), today)).toEqual({text: 'overdue 1.11.', strong: true});
+    expect(quietMeta(t('a', {dueDate: '2026-11-05'}), today)).toEqual({text: 'due 5.11.', strong: false});
+    expect(quietMeta(t('a #wf/marco', {flowState: 'waiting-for', waitingOn: 'marco'}), today)).toEqual({text: 'w/f Marco', strong: false});
+    expect(quietMeta(t('a #wf', {flowState: 'waiting-for', waitingOn: null}), today)).toEqual({text: 'w/f', strong: false});
+    expect(quietMeta(t('a'), today)).toBeNull();
+    expect(quietMeta(t('a', {dueDate: '2026-11-01', done: true}), today)).toBeNull();
   });
 });

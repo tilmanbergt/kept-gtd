@@ -16,7 +16,7 @@ it('is hidden without marks, shows the count on one line, and opens the marks sc
   setOpenMarksHandler((scope, returnTo) => opened.push([scope, returnTo]));
   let r!: TestRenderer.ReactTestRenderer;
   act(() => {
-    r = TestRenderer.create(<MarksCard scope={{type: 'all'}} returnTo="inbox" textColor="#000" borderColor="#ddd" />);
+    r = TestRenderer.create(<MarksCard scope={{type: 'all'}} returnTo="daily" textColor="#000" borderColor="#ddd" />);
   });
   expect(r.toJSON()).toBeNull();
   mockMarks.list = [om('/a.note', '2026-10-04 10:00'), om('/b.note', '2026-10-06 09:00')];

@@ -61,7 +61,7 @@ export const styles = StyleSheet.create({
     marginTop: 8,
   },
   // Inbox-to-zero step's two-pane layout (docs/dev/technical-design-filing-
-  // unification.md §5.1) - same names/values as screens/InboxScreen.tsx's
+  // unification.md §5.1) - same names/values as the Current page's
   // own body/leftPane/rightPane/paneTitle.
   body: {
     flex: 1,
@@ -81,7 +81,7 @@ export const styles = StyleSheet.create({
   // Inbox-to-zero step's Tasks/Meetings PagedSections via the weighted
   // `<View style={{flex: REVIEW_INBOX_TASKS_WEIGHT}}>`/`{flex:
   // REVIEW_INBOX_MEETINGS_WEIGHT}}` boxes wrapping them in renderInboxZero,
-  // above - same shape and same 8:6 ratio as screens/InboxScreen.tsx's own
+  // above - same shape and 8:6 ratio as the Current page's
   // stackedColumn.
   stackedColumn: {
     flex: 1,

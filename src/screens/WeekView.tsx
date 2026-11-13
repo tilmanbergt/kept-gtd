@@ -37,7 +37,7 @@ import {usePerfRender} from '../utils/perf';
 
 interface Props {
   onOpenItem: (kind: 'project' | 'area', entry: FolderEntry) => void;
-  /** Switches to the Inbox tab - an Inbox-sourced meeting's source tap jumps here (there's no Project/Area to open). */
+  /** Opens Daily's Inbox tab - an Inbox-sourced meeting's source tap jumps there (there's no Project/Area to open). */
   onOpenInbox?: () => void;
   /** Switches to Settings' Calendar sub-tab - the Google mini-tab's empty state. */
   onOpenCalendarSettings?: () => void;

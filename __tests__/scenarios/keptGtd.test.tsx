@@ -1,5 +1,5 @@
 import {device} from '../../test-helpers/fakeDevice/device';
-import {expectShows, openApp, tap, tapTab} from '../../test-helpers/scenario/app';
+import {expectShows, openApp, openItemSettings, tap, tapTab} from '../../test-helpers/scenario/app';
 import {dataFile, fileText, projectFile, putFile} from '../../test-helpers/scenario/files';
 import {given, scenario, then, when} from '../../test-helpers/scenario/scenario';
 
@@ -62,6 +62,7 @@ scenario('A close-out PDF says it was created by Kept GTD', {feature: 'Close-out
     await openApp();
     await tapTab('Projects');
     await tap(/^Website/);
+    await openItemSettings();
     await tap('🗄 Close out…');
     await tap('Next: Contents ›');
     await tap('Next: Outcomes ›');

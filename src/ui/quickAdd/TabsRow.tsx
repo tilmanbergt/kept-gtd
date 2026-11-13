@@ -30,10 +30,12 @@ interface Props {
   noteFolderPath: string | null;
   /** The main button cluster at the right end (ui/quickAdd/ActionRow.tsx). */
   actions?: React.ReactNode;
+  /** A collapsible box's ✕ after the main button: back to the kind buttons, the draft kept (docs/dev/history/technical-design-calmer-screens.md §3.2). */
+  onCollapse?: () => void;
   textColor: string;
 }
 
-export default function TabsRow({core, taskOnly, hasNoteTab, hasAgreementTab = false, noteFolderPath, actions, textColor}: Props): React.JSX.Element {
+export default function TabsRow({core, taskOnly, hasNoteTab, hasAgreementTab = false, noteFolderPath, actions, onCollapse, textColor}: Props): React.JSX.Element {
   const {displayType, isEditing, editFields} = core;
   const narrow = useLayoutClass() === 'narrow';
   const other = (kind: QuickAddType) => !!editFields && editFields.kind !== kind;
@@ -73,7 +75,24 @@ export default function TabsRow({core, taskOnly, hasNoteTab, hasAgreementTab = f
         {hasAgreementTab && tab('agreement', narrow ? 'Agree' : 'Agreement')}
         {hasNoteTab && tab('note', 'Note')}
       </View>
-      {actions != null && <View style={styles.actions}>{actions}</View>}
+      {(actions != null || onCollapse) && (
+        <View style={[styles.actions, styles.actionsRow]}>
+          {actions}
+          {onCollapse && (
+            // On touch-down as well: the field gives up its focus at that moment and the box redraws, and a pen
+            // that moves a little on the way up would lose a plain press. Closing twice changes nothing.
+            <Pressable
+              onPressIn={onCollapse}
+              onPress={onCollapse}
+              hitSlop={12}
+              accessibilityRole="button"
+              accessibilityLabel="Close Quick Add"
+              style={styles.collapse}>
+              <Text style={[styles.collapseText, {color: textColor}]}>✕</Text>
+            </Pressable>
+          )}
+        </View>
+      )}
     </View>
   );
 }
@@ -93,6 +112,9 @@ const styles = StyleSheet.create({
   actions: {
     flexShrink: 0,
   },
+  actionsRow: {flexDirection: 'row', alignItems: 'center'},
+  collapse: {marginLeft: 8, paddingHorizontal: 10, paddingVertical: 2},
+  collapseText: {fontSize: FONT.medium, fontWeight: '700'},
   tabText: {
     fontSize: FONT.small,
     fontWeight: '600',

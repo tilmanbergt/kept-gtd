@@ -36,7 +36,6 @@ import {prepareCaptureText} from '../domain/captureText';
 import {Destination, destinationLabel} from '../domain/destination';
 import {collectOpenMarks, fileNameOf, groupMarks, markDate, MarkScope, OpenMark} from '../domain/marks';
 import {findEnclosingItem, ResolvedParaPaths} from '../domain/settings';
-import {buildPageAnchor} from '../domain/sharedNotePages';
 import {getCachedData, rebuildCache, setCachedInbox} from '../storage/dataCache';
 import {addMeetingToDestination, addTaskToDestination, buildMeeting, buildTask} from '../storage/itemMutations';
 import {
@@ -47,7 +46,6 @@ import {
   runPendingIconChanges,
   setMarkOutcome,
 } from '../storage/marks';
-import {toLinkedFile} from '../storage/linkedFiles';
 import {addAgreement} from '../storage/agreements';
 import {engageInboxOf, engageSourceOf} from '../storage/engageAggregate';
 import {buildAgreement} from '../domain/agreements';
@@ -68,7 +66,8 @@ import {RecognitionResult, recognizeStrokes} from '../supernote/strokeRecognitio
 import MarksColumn, {LASSO_KEY} from '../ui/capture/MarksColumn';
 import {MarksReturnTo} from '../ui/marksNav';
 import {useRecognitionQueue} from '../ui/capture/useRecognitionQueue';
-import {useProvenance} from '../ui/quickAdd/useProvenance';
+import {useProvenance, useSource} from '../ui/quickAdd/useProvenance';
+import {sourceKey} from '../domain/provenance';
 import CaptureQuickAdd from '../ui/quickAdd/CaptureQuickAdd';
 import {CaptureSaveMode, CaptureSeed, MeetingQuickAddFields} from '../ui/QuickAddWidget';
 import {useErrorStatus, useStatus} from '../ui/status/StatusProvider';
@@ -125,7 +124,6 @@ export default function CaptureScreen({request, onOpenItem, onOpenDaily, onExit}
   const [lassoSaved, setLassoSaved] = useState(0);
   const [selectedKey, setSelectedKey] = useState<string>(fromLasso ? LASSO_KEY : '');
   const [destination, setDestination] = useState<Destination>({type: 'inbox'});
-  const [linkToPage, setLinkToPage] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
   const [discardAsk, setDiscardAsk] = useState<OpenMark | null>(null);
@@ -223,13 +221,31 @@ export default function CaptureScreen({request, onOpenItem, onOpenDaily, onExit}
   );
   const selectedMark = ordered.find(m => m.mark.id === selectedKey) ?? null;
   const recognition = useRecognitionQueue(ordered, selectedMark ? selectedMark.mark.id : null);
+  // The list as last rendered: Save & next picks the next mark from it after the reload (F8).
+  const orderedRef = useRef(ordered);
+  orderedRef.current = ordered;
 
-  // Marks source: start with the first mark; when the selected one is gone, the next.
+  // Marks source: start with the first mark; when the selected one is gone, the next. The selected
+  // key is a dependency too: a key that names no mark (any more) falls back to the first one
+  // instead of leaving nothing selected
+  // (docs/dev/history/technical-design-quickadd-redesign.md §3.8 F8).
   useEffect(() => {
     if (!loaded || fromLasso || advancingRef.current) {return;}
-    if (!selectedMark && ordered.length > 0) {selectMark(ordered[0]);}
+    if (!selectedMark && ordered.length > 0) {
+      if (selectedKey) {log(`CaptureScreen: capture next resolved=false n=${ordered.length}`);}
+      selectMark(ordered[0]);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loaded, ordered.length, selectedMark]);
+  }, [loaded, ordered.length, selectedMark, selectedKey]);
+
+  // The new selection is redrawn after React committed it, not before (F8): a refresh requested
+  // while selecting can flush the old frame.
+  useEffect(() => {
+    if (!loaded || !selectedKey) {return;}
+    if (selectedKey !== LASSO_KEY) {log(`CaptureScreen: capture next shown to=${selectedKey} selected=${!!selectedMark}`);}
+    requestEinkRefresh();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedKey]);
 
   const lassoPage = loaded?.lasso?.page ?? null;
   const marksOnThisPage =
@@ -242,7 +258,6 @@ export default function CaptureScreen({request, onOpenItem, onOpenDaily, onExit}
     setSelectedKey(open.mark.id);
     setDestination(open.owner);
     setDiscardAsk(null);
-    requestEinkRefresh();
   }
   const handleSelect = (key: string) => {
     Keyboard.dismiss();
@@ -300,16 +315,6 @@ export default function CaptureScreen({request, onOpenItem, onOpenDaily, onExit}
   // ---- saving ----
   const sourcePath = selectedMark ? selectedMark.absPath : loaded?.currentNotePath ?? null;
   const sourcePage = selectedMark ? selectedMark.mark.page : lassoPage;
-  // The source page becomes the item's LINKED FILE (the clip), never its
-  // working note: the note icon keeps creating the item's own note.
-  // Base-relative when the source lies under the base folder, else absolute.
-  const linkedSource =
-    linkToPage && sourcePath && loaded
-      ? (() => {
-          const file = toLinkedFile(loaded.paths, sourcePath);
-          return sourcePage != null ? buildPageAnchor(file, sourcePage) : file;
-        })()
-      : '';
 
   // Provenance (docs/dev/history/technical-design-engage-page-owner.md §3.6): a
   // todo captured from a meeting's page, or a follow-up page of it, records that
@@ -326,6 +331,13 @@ export default function CaptureScreen({request, onOpenItem, onOpenDaily, onExit}
     paths: loaded?.paths ?? null,
   });
   const origin = useProvenance(sourceMeeting?.meeting ?? null);
+  // One origin per item (docs/dev/history/technical-design-quickadd-redesign.md §3.7, F4): the page's
+  // meeting, else the note the selection comes from as `[source::]`. The page is not linked any more.
+  const sourceNoteKey = !sourceMeeting && sourcePath && loaded && /\.note$/i.test(sourcePath) ? sourceKey(sourcePath, loaded.paths.base) : null;
+  const source = useSource(sourceNoteKey);
+  useEffect(() => {
+    log(`CaptureScreen: origin set=${sourceMeeting ? 'meeting' : sourceNoteKey ? 'source' : 'none'}`);
+  }, [sourceMeeting, sourceNoteKey]);
 
   const inboxContext = async (dest: Destination) => {
     if (!loaded) {throw new Error('Not loaded yet.');}
@@ -334,7 +346,7 @@ export default function CaptureScreen({request, onOpenItem, onOpenDaily, onExit}
   };
 
   const onAddTask = async (text: string, dest: Destination) => {
-    const {nextInbox} = await addTaskToDestination(buildTask(origin.apply(text), {linkedFile: linkedSource}), dest, await inboxContext(dest));
+    const {nextInbox} = await addTaskToDestination(buildTask(source.apply(origin.apply(text))), dest, await inboxContext(dest));
     if (nextInbox) {setCachedInbox(nextInbox);}
     log('CaptureScreen: todo saved', destinationLabel(dest), selectedMark ? 'mark' : 'lasso');
   };
@@ -357,7 +369,7 @@ export default function CaptureScreen({request, onOpenItem, onOpenDaily, onExit}
   };
   const onAddMeeting = async (fields: MeetingQuickAddFields, dest: Destination) => {
     const {nextInbox} = await addMeetingToDestination(
-      buildMeeting({title: fields.title, date: fields.date, time: fields.time, endTime: fields.endTime, days: fields.days}, {linkedFile: linkedSource}),
+      buildMeeting({title: fields.title, date: fields.date, time: fields.time, endTime: fields.endTime, days: fields.days}),
       dest,
       await inboxContext(dest),
     );
@@ -374,13 +386,18 @@ export default function CaptureScreen({request, onOpenItem, onOpenDaily, onExit}
     else {onExit();}
   };
 
-  /** The mark after `id` in list order (null at the end). */
-  const markAfter = (id: string): OpenMark | null => {
-    const i = ordered.findIndex(m => m.mark.id === id);
-    return i >= 0 && i + 1 < ordered.length ? ordered[i + 1] : null;
-  };
-  const afterMarkGone = (next: OpenMark | null) => {
+  /** Where `id` stands in the list (-1 when it isn't in it). */
+  const markIndex = (id: string): number => ordered.findIndex(m => m.mark.id === id);
+  /**
+   * After a mark was saved or discarded: the mark that followed it, picked by position from the
+   * list as it is now (after the reload), not from the list before it (F8); at the end the lasso
+   * or the way back.
+   */
+  const afterMarkGone = (goneId: string, index: number) => {
     advancingRef.current = false;
+    const rest = orderedRef.current.filter(m => m.mark.id !== goneId);
+    const next = index >= 0 && index < rest.length ? rest[index] : null;
+    log(`CaptureScreen: capture next from=${goneId} to=${next ? next.mark.id : 'none'} left=${rest.length}`);
     if (next) {selectMark(next);}
     else if (fromLasso) {handleSelect(LASSO_KEY);}
     else {onExit();}
@@ -392,9 +409,10 @@ export default function CaptureScreen({request, onOpenItem, onOpenDaily, onExit}
     agreementSavedRef.current = null;
     const savedTo: Destination = agreementItem ? {type: 'item', kind: agreementItem.kind, name: agreementItem.name, path: agreementItem.path} : destination;
     origin.added();
+    source.added();
     if (selectedMark) {
       const open = selectedMark;
-      const next = markAfter(open.mark.id);
+      const index = markIndex(open.mark.id);
       advancingRef.current = true;
       try {
         setBusy(true);
@@ -410,7 +428,7 @@ export default function CaptureScreen({request, onOpenItem, onOpenDaily, onExit}
       advancingRef.current = false;
       if (mode === 'view') {return openDestination(savedTo);}
       if (mode === 'close') {return close();}
-      return afterMarkGone(next);
+      return afterMarkGone(open.mark.id, index);
     }
     // The lasso: it goes once the first item is saved.
     if (lassoSaved === 0) {
@@ -445,7 +463,7 @@ export default function CaptureScreen({request, onOpenItem, onOpenDaily, onExit}
   };
   const runDiscard = async (open: OpenMark) => {
     setDiscardAsk(null);
-    const next = markAfter(open.mark.id);
+    const index = markIndex(open.mark.id);
     advancingRef.current = true;
     try {
       setBusy(true);
@@ -462,7 +480,7 @@ export default function CaptureScreen({request, onOpenItem, onOpenDaily, onExit}
     } finally {
       setBusy(false);
     }
-    afterMarkGone(next);
+    afterMarkGone(open.mark.id, index);
   };
   const discardLabel = discardAsk
     ? (recognition.get(discardAsk.mark.id)?.text ?? '').replace(/\s+/g, ' ').trim().slice(0, 40) || `p${discardAsk.mark.page + 1}`
@@ -529,12 +547,6 @@ export default function CaptureScreen({request, onOpenItem, onOpenDaily, onExit}
 
   const extras = (
     <View>
-      {sourcePath ? (
-        <Pressable onPress={() => setLinkToPage(v => !v)} hitSlop={8} style={styles.checkboxRow} accessibilityRole="checkbox">
-          <Text style={[styles.checkbox, {color: textColor}]}>{linkToPage ? '☑' : '☐'}</Text>
-          <Text style={[styles.buttonText, {color: textColor}]}>{selectedMark ? 'Link to source page' : 'Link to this page'}</Text>
-        </Pressable>
-      ) : null}
       <View style={styles.extrasRow}>
         {selectedMark ? (
           <>
@@ -615,7 +627,7 @@ export default function CaptureScreen({request, onOpenItem, onOpenDaily, onExit}
                 initialDate={selectedMark ? markDate(selectedMark.mark) : undefined}
                 captureExtras={showColumn ? undefined : extras}
                 shortTags={short}
-                provenance={origin.provenance}
+                provenance={source.part ? [...(origin.provenance ?? []), source.part] : origin.provenance}
                 agreementFor={agreementChoices.length > 0 ? {choices: agreementChoices, onAdd: onAddAgreement} : null}
                 placeholder="Todo text"
                 textColor={textColor}
@@ -646,8 +658,6 @@ const styles = StyleSheet.create({
   columnExtras: {paddingTop: 8},
   picture: {width: '100%', height: '100%'},
   pictureNote: {position: 'absolute', right: 8, bottom: 4, fontSize: FONT.small, color: '#555555'},
-  checkboxRow: {flexDirection: 'row', alignItems: 'center', marginTop: 4, marginBottom: 8},
-  checkbox: {fontSize: FONT.large, marginRight: 8},
   extrasRow: {flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', rowGap: 8, marginTop: 4},
   button: {borderWidth: 1, borderRadius: 4, paddingHorizontal: 14, paddingVertical: 8, marginRight: 8},
   dashed: {borderStyle: 'dashed'},

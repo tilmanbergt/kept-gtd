@@ -1,6 +1,6 @@
 // The Quick Add box keeps one height in every state (docs/dev/history/technical-design-item-card.md
-// §4, K2): the frame is QUICK_ADD_HEIGHT and the four visible rows have their fixed heights, so the
-// lists below the box never move.
+// §4, K2; docs/dev/history/technical-design-quickadd-redesign.md §3.1): the frame is QUICK_ADD_HEIGHT
+// and the form's field, row 3 and row 4 have their fixed heights, so the lists below never move.
 jest.mock('react-native-svg', () => {
   const ReactLib = require('react');
   const stub = (props: object) => ReactLib.createElement('Svg', props);
@@ -25,11 +25,12 @@ jest.mock('../../src/ui/useAbbrevItems', () => ({
 
 import React from 'react';
 import {Pressable, StyleSheet, Text, TextInput, View, ViewStyle} from 'react-native';
+import {KIND_BUTTON_GAP, KIND_BUTTON_HEIGHT} from '../../src/ui/quickAdd/KindButtons';
 import TestRenderer, {act} from 'react-test-renderer';
 import QuickAddWidget, {editTargetFor, QuickAddEditTarget} from '../../src/ui/QuickAddWidget';
 import {QUICK_ADD_HEIGHT, QUICK_ADD_ROWS} from '../../src/ui/quickAdd/QuickAddFrame';
 import {QuickAddAdds} from '../../src/ui/quickAdd/ProvenanceLine';
-import FlowStateChips from '../../src/ui/FlowStateChips';
+import {FORM_FIELD_HEIGHT} from '../../src/ui/quickAdd/form/FormField';
 import {StatusProvider} from '../../src/ui/status/StatusProvider';
 import {Meeting, Task} from '../../src/domain/types';
 import {meetingCardModel, todoCardModel} from '../../src/domain/itemCard';
@@ -45,6 +46,7 @@ interface Setup {
   provenance?: QuickAddAdds;
   meetingCard?: MeetingCardData | null;
   todoCard?: TodoCardData | null;
+  collapsible?: boolean;
 }
 
 /** Card data for `m` as useMeetingCard builds it, every handler a mock. */
@@ -57,7 +59,7 @@ function cardFor(m: Meeting, extra: Partial<Parameters<typeof meetingCardModel>[
   };
 }
 
-function render({editTarget = null, provenance, meetingCard, todoCard}: Setup = {}) {
+function render({editTarget = null, provenance, meetingCard, todoCard, collapsible}: Setup = {}) {
   let r!: TestRenderer.ReactTestRenderer;
   act(() => {
     r = TestRenderer.create(
@@ -78,6 +80,7 @@ function render({editTarget = null, provenance, meetingCard, todoCard}: Setup = 
           provenance={provenance}
           meetingCard={meetingCard}
           todoCard={todoCard}
+          collapsible={collapsible}
           textColor="#000"
           borderColor="#000"
           placeholderColor="#888"
@@ -96,7 +99,9 @@ function heights(r: TestRenderer.ReactTestRenderer): {frame: unknown; rows: unkn
   const box = frame(r);
   // The row Views directly under the frame, through the row components that render them.
   const rowViews = (node: TestRenderer.ReactTestInstance): TestRenderer.ReactTestInstance[] =>
-    node.children.flatMap(c => (typeof c === 'string' ? [] : c.type === View ? [c] : rowViews(c)));
+    node.children.flatMap(c =>
+      typeof c === 'string' ? [] : c.type === View && c.props.testID === 'quick-add-rows-below' ? (visible(c.props.style) ? rowViews(c) : []) : c.type === View ? [c] : rowViews(c),
+    );
   // The rows sit in one wrapper, hidden while the item card shows in their place.
   const wrapper = box.findAll(n => n.type === View && n.props.testID === 'quick-add-rows')[0];
   const container = visible(wrapper.props.style) ? wrapper : rowViews(box).filter(v => v !== wrapper)[0];
@@ -106,7 +111,9 @@ function heights(r: TestRenderer.ReactTestRenderer): {frame: unknown; rows: unkn
   return {frame: StyleSheet.flatten(box.props.style).height, rows};
 }
 
-const FIXED = [QUICK_ADD_ROWS.tabs, QUICK_ADD_ROWS.input, QUICK_ADD_ROWS.meta, QUICK_ADD_ROWS.extra];
+const FIXED = [FORM_FIELD_HEIGHT, QUICK_ADD_ROWS.meta, QUICK_ADD_ROWS.extra];
+// A card: R1, the two-line title area (R2 + gap + R3, §11 G9, G10), R4.
+const CARD_FIXED = [QUICK_ADD_ROWS.tabs, QUICK_ADD_ROWS.input + QUICK_ADD_ROWS.gap + QUICK_ADD_ROWS.meta, QUICK_ADD_ROWS.extra];
 const pressText = (r: TestRenderer.ReactTestRenderer, label: string) =>
   act(() => {
     r.root.findAll(n => n.type === Pressable && n.findAllByType(Text).some(t => t.props.children === label))[0].props.onPress();
@@ -117,41 +124,48 @@ describe('Quick Add box height', () => {
     expect(QUICK_ADD_HEIGHT).toBe(174);
   });
 
-  // Measured on the A5 X: a chip label (FONT.small, weight 600) draws about 21 dp high. A chip in
-  // R3/R4 is that plus its padding and border; it must fit its row, or the row clips it.
-  const DEVICE_CHIP_LABEL_DP = 22;
-  it('a chip as tall as on the device fits R3 and R4', () => {
-    const r = render();
-    const chipStyles = r.root
-      .findAll(n => n.type === Pressable && n.findAllByType(Text).some(t => /^(Next|#tag0)$/.test(String(t.props.children))))
-      .map(p => StyleSheet.flatten(p.props.style));
-    expect(chipStyles.length).toBeGreaterThanOrEqual(2);
-    for (const style of chipStyles) {
-      const height = 2 * Number(style.borderWidth ?? 0) + 2 * Number(style.paddingVertical ?? 0) + DEVICE_CHIP_LABEL_DP;
-      expect(height).toBeLessThanOrEqual(Math.min(QUICK_ADD_ROWS.meta, QUICK_ADD_ROWS.extra));
-    }
+  it('two rows of kind buttons fit the collapsed box, so nothing is cut when they wrap', () => {
+    const inside = QUICK_ADD_HEIGHT - 2 * (1 + 10);
+    expect(2 * (KIND_BUTTON_HEIGHT + KIND_BUTTON_GAP)).toBeLessThanOrEqual(inside);
+  });
+
+  // docs/dev/history/technical-design-calmer-screens.md §6 scenario 1, §3.2.
+  it('collapsed: the kind buttons in R1, the rest hidden, the box as high as ever; + Todo opens the rows, ✕ collapses', () => {
+    const r = render({collapsible: true});
+    // R1 has no fixed height while collapsed: the large kind buttons may wrap.
+    expect(heights(r)).toEqual({frame: QUICK_ADD_HEIGHT, rows: [undefined]});
+    const labels = r.root.findAllByType(Text).map(t => String(t.props.children));
+    expect(labels.filter(l => /^\+ (Todo|Meeting|Note|Agreement)$/.test(l))).toEqual(['+ Todo', '+ Meeting', '+ Note']);
+    pressText(r, '+ Todo');
+    expect(heights(r)).toEqual({frame: QUICK_ADD_HEIGHT, rows: FIXED});
+    act(() => r.root.findAll(n => n.props.accessibilityLabel === 'Close Quick Add' && typeof n.props.onPress === 'function')[0].props.onPress());
+    expect(heights(r)).toEqual({frame: QUICK_ADD_HEIGHT, rows: [undefined]});
+  });
+
+  it('the two-line field is rows 1 and 2 with their gap', () => {
+    expect(FORM_FIELD_HEIGHT).toBe(QUICK_ADD_ROWS.tabs + QUICK_ADD_ROWS.gap + QUICK_ADD_ROWS.input);
   });
 
   const cases: Array<[string, () => TestRenderer.ReactTestRenderer]> = [
     ['create Todo', () => render()],
     ['create Meeting', () => {
-      const r = render();
-      pressText(r, 'Meeting');
+      const r = render({collapsible: true});
+      pressText(r, '+ Meeting');
       return r;
     }],
     ['create Note', () => {
-      const r = render();
-      pressText(r, 'Note');
+      const r = render({collapsible: true});
+      pressText(r, '+ Note');
       return r;
     }],
     ['create Todo, w/f', () => {
       const r = render();
-      act(() => r.root.findByType(FlowStateChips).props.onChange('waiting-for'));
+      pressText(r, 'w/f');
       return r;
     }],
-    ['create Todo, tags on page 2', () => {
+    ['create Todo, due date open', () => {
       const r = render();
-      pressText(r, '›');
+      act(() => r.root.findAll(n => n.props.accessibilityLabel === 'Due date' && typeof n.props.onPress === 'function')[0].props.onPress());
       return r;
     }],
     ['create Todo with provenance', () =>
@@ -159,7 +173,7 @@ describe('Quick Add box height', () => {
     ['edit todo with a linked file', () => render({editTarget: editTargetFor('task:1', {task})})],
     ['edit todo with "Save to"', () => {
       const r = render({editTarget: editTargetFor('task:1', {task})});
-      act(() => r.root.findAllByType(TextInput).find(i => i.props.placeholder === 'New task')!.props.onChangeText('Call Tom #gr'));
+      act(() => r.root.findAllByType(TextInput).find(i => i.props.placeholder === 'New todo')!.props.onChangeText('Call Tom #gr'));
       return r;
     }],
     ['edit meeting', () => render({editTarget: editTargetFor('meeting:1', {meeting})})],
@@ -186,24 +200,29 @@ describe('Quick Add box height', () => {
     }],
   ];
 
-  it.each(cases)('%s: the frame and its four rows keep their heights', (_name, make) => {
+  it.each(cases)('%s: the frame and its rows keep their heights', (name, make) => {
     const r = make();
-    expect(heights(r)).toEqual({frame: QUICK_ADD_HEIGHT, rows: FIXED});
+    expect(heights(r)).toEqual({frame: QUICK_ADD_HEIGHT, rows: / card/.test(name) && !name.startsWith('edit') ? CARD_FIXED : FIXED});
   });
 });
 
 describe('Quick Add rows', () => {
   const allTexts = (r: TestRenderer.ReactTestRenderer) => r.root.findAllByType(Text).map(t => [t.props.children].flat().join(''));
 
-  it('R1 holds + Add while creating and Cancel · Save while editing; Save to <Name> with an abbreviation tag', () => {
+  it('row 4 holds ✕ and + Add while creating, ✕ and Save while editing; Save to <Name> with an abbreviation tag', () => {
     const create = render();
-    expect(allTexts(create)).toContain('+ Add');
+    expect(allTexts(create)).toEqual(expect.arrayContaining(['✕', '+ Add']));
     const edit = render({editTarget: editTargetFor('task:1', {task})});
-    expect(allTexts(edit)).toEqual(expect.arrayContaining(['Cancel', 'Save', 'Refile']));
-    act(() => edit.root.findAllByType(TextInput).find(i => i.props.placeholder === 'New task')!.props.onChangeText('Call Tom #gr'));
+    expect(allTexts(edit)).toEqual(expect.arrayContaining(['✕', 'Save']));
+    expect(allTexts(edit)).not.toContain('Cancel');
+    act(() => edit.root.findAllByType(TextInput).find(i => i.props.placeholder === 'New todo')!.props.onChangeText('Call Tom #gr'));
     expect(allTexts(edit)).toContain('Save to Garden renovat…');
-    // Save to replaces Refile: the tag already names where the todo goes.
-    expect(allTexts(edit)).not.toContain('Refile');
+  });
+
+  it('a newline in the text becomes a space: the title stays one line', () => {
+    const r = render();
+    act(() => r.root.findAllByType(TextInput).find(i => i.props.placeholder === 'New todo')!.props.onChangeText('Call Tom\nabout the fence'));
+    expect(r.root.findAllByType(TextInput).find(i => i.props.placeholder === 'New todo')!.props.value).toBe('Call Tom about the fence');
   });
 
   it('the provenance line takes R4 while creating a todo', () => {
@@ -211,9 +230,12 @@ describe('Quick Add rows', () => {
     expect(allTexts(r)).toContain('↳ from Retro alpha');
   });
 
-  it('the edit form keeps delete, New from this, unlink and M in R4', () => {
+  it('the edit form has no delete, New from this or M (they are on the card); the linked file shows with its ✕', () => {
     const r = render({editTarget: editTargetFor('meeting:1', {meeting})});
-    expect(r.root.findAll(n => n.props.accessibilityLabel === 'Delete' && typeof n.props.onPress === 'function').length).toBeGreaterThan(0);
-    expect(allTexts(r)).toEqual(expect.arrayContaining(['New from this', 'M', '✕']));
+    expect(r.root.findAll(n => n.props.accessibilityLabel === 'Delete' && typeof n.props.onPress === 'function')).toHaveLength(0);
+    expect(allTexts(r)).not.toContain('New from this');
+    expect(allTexts(r)).not.toContain('M');
+    expect(allTexts(r)).toContain('a.pdf');
+    expect(r.root.findAll(n => n.props.accessibilityLabel === 'Unlink' && typeof n.props.onPress === 'function').length).toBeGreaterThan(0);
   });
 });

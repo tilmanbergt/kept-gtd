@@ -1,7 +1,7 @@
 // docs/dev/history/technical-design-lasso-0.8.md §3.7: the shared capture / marks screen.
 const mockCalls: string[] = [];
 const mockAdded: Array<{text: string; notePath: string; linkedFile: string; dest: {type: string}}> = [];
-const mockState = {marksInbox: [] as unknown[], stored: {} as Record<string, string>, recognized: [] as string[]};
+const mockState = {marksInbox: [] as unknown[], stored: {} as Record<string, string>, recognized: [] as string[], finishRemoves: false};
 
 jest.mock('react-native-svg', () => {
   const ReactLib = require('react');
@@ -71,6 +71,8 @@ jest.mock('../../src/storage/marks', () => ({
   createMarkFromLasso: async () => ({kind: 'saved', id: 'x'}),
   finishMark: async (open: {mark: {id: string}}, change: string) => {
     mockCalls.push(`finish:${open.mark.id}:${change}`);
+    // As the cache reload does: the finished mark's line is gone from the list.
+    if (mockState.finishRemoves) mockState.marksInbox = mockState.marksInbox.filter(m => (m as {id: string}).id !== open.mark.id);
     return {removed: true, iconOk: true, iconDetail: change};
   },
   outcomeNeedsScreen: () => false,
@@ -169,9 +171,10 @@ beforeEach(() => {
   mockState.marksInbox = [];
   mockState.stored = {};
   mockState.recognized = [];
+  mockState.finishRemoves = false;
 });
 
-it('lasso without marks: no column, bullets split, saves with a page link and closes', async () => {
+it('lasso without marks: no column, bullets split, saves without linking the page, with the note as source, and closes', async () => {
   const r = render({source: 'lasso'});
   await flush();
   expect(texts(r)).not.toContain('Lasso & marks');
@@ -181,7 +184,8 @@ it('lasso without marks: no column, bullets split, saves with a page link and cl
   expect(mockAdded.map(a => a.text)).toEqual(['book room', 'agenda to Tom']);
   // The source page is the item's linked file (checkpoint B), not its working note.
   expect(mockAdded[0].notePath).toBe('');
-  expect(mockAdded[0].linkedFile).toBe('/Note/2 Areas/0 Inbox/Todos/Test.note#page=2');
+  // One origin per item (docs/dev/history/technical-design-quickadd-redesign.md §3.7): no page link.
+  expect(mockAdded[0].linkedFile).toBe('');
   expect(mockCalls).toEqual(expect.arrayContaining(['lassoState:2', 'closePluginView']));
 });
 
@@ -191,7 +195,7 @@ it('marks: first mark selected and recognized, Save & next finishes it and moves
     {id: 'm-20261005-100100-002', createdAt: '2026-10-05 10:01', notePath: '/Note/x/A.note', page: 1, text: null},
   ];
   const onExit = jest.fn();
-  const r = render({source: 'marks', scope: {type: 'all'}, returnTo: 'inbox'}, onExit);
+  const r = render({source: 'marks', scope: {type: 'all'}, returnTo: 'daily'}, onExit);
   await flush();
   await flush();
   expect(texts(r)).toContain('Open marks · 2');
@@ -199,9 +203,26 @@ it('marks: first mark selected and recognized, Save & next finishes it and moves
   await press(r, 'Save & next');
   expect(mockAdded.map(a => a.text)).toEqual(['Room for offsite?']);
   expect(mockAdded[0].notePath).toBe('');
-  expect(mockAdded[0].linkedFile).toBe('/Note/x/A.note#page=1');
+  expect(mockAdded[0].linkedFile).toBe('');
   expect(mockCalls).toContain('finish:m-20261005-100000-001:done');
   expect(texts(r).join(' ')).toContain('A.note · p2');
+});
+
+it('marks: Save & next selects the next of three marks after the list reloaded (F8)', async () => {
+  mockState.finishRemoves = true;
+  mockState.marksInbox = [
+    {id: 'm-20261005-100000-001', createdAt: '2026-10-05 10:00', notePath: '/Note/x/A.note', page: 0, text: null},
+    {id: 'm-20261005-100100-002', createdAt: '2026-10-05 10:01', notePath: '/Note/x/A.note', page: 1, text: null},
+    {id: 'm-20261005-100200-003', createdAt: '2026-10-05 10:02', notePath: '/Note/x/A.note', page: 2, text: null},
+  ];
+  const r = render({source: 'marks', scope: {type: 'all'}, returnTo: 'daily'});
+  await flush();
+  await flush();
+  await press(r, 'Save & next');
+  await flush();
+  expect(mockCalls).toContain('finish:m-20261005-100000-001:done');
+  expect(texts(r).join(' ')).toContain('A.note · p2');
+  expect(r.root.findAllByType(TextInput).map(i => i.props.value)).toContain('Ask HR');
 });
 
 it('marks: text kept from an earlier open is used, not recognized again; the column shows date and status', async () => {
@@ -209,7 +230,7 @@ it('marks: text kept from an earlier open is used, not recognized again; the col
     {id: 'm-20261005-100000-001', createdAt: '2026-10-05 10:00', notePath: '/Note/x/A.note', page: 0, text: null},
   ];
   mockState.stored = {'m-20261005-100000-001': 'Stored text'};
-  const r = render({source: 'marks', scope: {type: 'all'}, returnTo: 'inbox'});
+  const r = render({source: 'marks', scope: {type: 'all'}, returnTo: 'daily'});
   await flush();
   await flush();
   expect(r.root.findAllByType(TextInput).map(i => i.props.value)).toContain('Stored text');

@@ -14,12 +14,33 @@ You can also simply create a folder yourself - in the Supernote's file manager o
 
 Every row on the Projects and Areas tabs ends with the [notebook icon](projects-and-areas.md#the-notebook-icon) of its [home notebook](projects-and-areas.md#home-notebooks). Tapping a project or area opens it on the **Current** tab:
 
-- **Header**: name, kind and the [abbreviation](projects-and-areas.md#abbreviations) (tap to change it); [Notebook](projects-and-areas.md#the-notebook-icon) opens its home notebook, or creates it; [Engage ›](engage.md#opening-engage) opens [Engage](engage.md) for this project or area
-- **Scope**: one to three sentences about what this project or area is about, right under the name (**+ Add a scope** while there is none). Tap to edit.
-- [Status](projects-and-areas.md#status): Active, On Hold, Done (projects only) - and, in the same row, [Close out…](close-out.md#where-to-start-it) or [Archive…](close-out.md#areas)
-- [Files pane](projects-and-areas.md#files-and-linked-files): up to four tabs. On a project: [Threads](projects-and-areas.md#threads) (open when the page opens), [Loops](loops.md#where-loops-show), [Notebook](projects-and-areas.md#the-notebook-tab) and **Files**. On an area: **Threads**, [Projects](projects-and-areas.md#projects-of-an-area) (its projects at a glance), **Notebook** and **Files**. **Notebook** shows the home notebook with its years and contents; it is there while the [Default](note-setups.md#the-default) note setup uses one notebook. Inside **Files** a second row picks the place: **Project**, **Area** (once one is assigned), **Resources** and [Device](files-and-folders.md#files-outside-note) on a project; **Area**, **Resources** and **Device** on an area. **Device** shows the Supernote's folders next to `Note`, such as `Document`. **Files** opens on the page's own folder.
-- **Todos** and **Meetings**, grouped and paged, with [Quick Add](quick-add.md) above them. **hide done** / **show 2 done** next to the Todos heading hides or shows the done todos. On a short screen (a turned device, a Nomad) Todos are the first tab of **Todos | Schedule | Google** instead of a list above the schedule. Todos are grouped by [flow state](tags.md#flow-tags-for-todos): Next, Waiting For, Plan (no flow state: planned, not yet next), Someday and Maybe. Tapping a todo or meeting shows its card in Quick Add's place: for a todo done, the flow chips, linking a file, moving it and delete ([The card](quick-add.md#the-card-one-tap-selects)); for a meeting the prep or review tick, **Reflect** once it is over, linking a file and moving it ([The meeting card](meetings.md#the-meeting-row-and-its-card))
+- **Header**: name, kind, a project's area (**· Home ›**, a tap opens it) and the [abbreviation](projects-and-areas.md#abbreviations). Under it the scope, when there is one; a tap on it opens [⚙ Settings](projects-and-areas.md#settings), where you edit it
+- [Files pane](projects-and-areas.md#files-and-linked-files): up to four tabs, each shown when it has something ([Show on this page](projects-and-areas.md#show-on-this-page) can show or hide each one). On a project: [Threads](projects-and-areas.md#threads), [Loops](loops.md#where-loops-show), [Notebook](projects-and-areas.md#the-notebook-tab) and **Files**. On an area: **Threads**, [Projects](projects-and-areas.md#projects-of-an-area) (its projects and loops at a glance), **Notebook** and **Files**. The page opens on the first of them with something in it, else on **Files**. **Notebook** shows the home notebook with its years and contents; it is there while the [Default](note-setups.md#the-default) note setup uses one notebook. Inside **Files** a second row picks the place: **Project**, **Area** (once one is assigned), **Resources** and [Device](files-and-folders.md#files-outside-note) on a project; **Area**, **Resources** and **Device** on an area. **Device** shows the Supernote's folders next to `Note`, such as `Document`. **Files** opens on the page's own folder.
+- Under the Files pane: [Notebook](projects-and-areas.md#the-notebook-icon) opens the home notebook, or creates it; [Engage ›](engage.md#opening-engage) opens [Engage](engage.md) for this project or area; [⚙ Settings](projects-and-areas.md#settings) holds what you set up once: abbreviation, scope, status, area and what the page shows
+- **Todos** and **Meetings**, paged, with [Quick Add](quick-add.md) above them. The meetings (Schedule) show while there are some; with none, the todos take the whole column ([Show on this page](projects-and-areas.md#show-on-this-page) → **Schedule** → **Always** keeps it, with its Google tab). The todos sit under count tabs by [flow state](tags.md#flow-tags-for-todos): **Next**, **Waiting**, **Plan** (no flow state: planned, not yet next), **Someday** (with Maybe) and **Done** (finished in the last 14 days), each with its number; a tab with nothing in it is left out, except **Next**. The page opens on **Next**, or on the first tab with todos while Next is empty and you haven't chosen a tab yet. A todo you tick stays in its tab, struck through, until you change the tab or leave the page ([Done](daily.md#done)). On a short screen (a turned device, a Nomad) Todos are the first tab of **Todos | Schedule | Google** instead of a list above the schedule. Tapping a todo or meeting shows its card in Quick Add's place ([The card](quick-add.md#the-card-one-tap-selects), [The meeting card](meetings.md#the-meeting-row-and-its-card))
 - **◇ Agreements 2 ›** at the end of the todos, when the project or area has agreements of its own (untagged, or with no thread or loop tag). Tap it to list them in the same column; **‹ Todos** goes back. Quick Add's [Agreement](quick-add.md#adding-an-agreement) tab adds one here, see [Agreements](agreements.md#where-agreements-show)
+
+## Settings
+
+**⚙ Settings** under the page's Files pane takes the place of the page until you tap **Close**. On the left:
+
+- **Name**: to rename a project or area, rename its folder ([When you rename a project or area](projects-and-areas.md#when-you-rename-a-project-or-area)).
+- **Abbreviation**: tap it to change it ([Abbreviations](projects-and-areas.md#abbreviations)).
+- **Scope**: one to three sentences about what this project or area is about (**+ Add a scope** while there is none). Tap to edit.
+- [Status](projects-and-areas.md#status): Active, On Hold, Done (projects only) - and, in the same row, [Close out…](close-out.md#where-to-start-it) or [Archive…](close-out.md#areas).
+- On a project, [Assign to Area…](projects-and-areas.md#assigning-a-project-to-an-area) or **Area: name ✕**.
+
+On the right: [Show on this page](projects-and-areas.md#show-on-this-page).
+
+### Show on this page
+
+One row per part of the page - **Threads**, **Loops**, **Agreements**, **Schedule**, **Notebook** and, on an area, **Projects** - each **Auto**, **Always** or **Never**:
+
+- **Auto** (the default): shown when there is something - threads (also new ones from tags), active loops or loop tags in use without a loop yet, active agreements, meetings, a home notebook, assigned projects. On an area, **Projects** and **Loops** share the Projects tab; each one hides its own part of it.
+- **Always**: shown even when empty.
+- **Never**: hidden. When a hidden part has something, its row says so, for example **Never · 2 loops**, so nothing disappears silently.
+
+**Left side opens on** picks where the left side opens: **First with content**, **Notebook**, **Files** or **Threads**. Todos and Files always show. Each tap is saved at once in the project's or area's file as a `show:` line ([Inside project.txt](files-and-folders.md#inside-projecttxt)); with everything back on Auto the line is removed.
 
 ## Status
 
@@ -32,13 +53,13 @@ Putting an area on hold also puts its active projects on hold.
 
 ## Assigning a project to an area
 
-A project can support one area. Tap **Assign to Area…** in the status section, then tap the area in the [Files pane](projects-and-areas.md#files-and-linked-files) (**Files** opens with **Browse** in place of **Project**, showing the areas, while you pick). The area's [Projects](projects-and-areas.md#projects-of-an-area) tab then lists the project. The project's files then also offer the area's folder. An area with active or on-hold projects can't be [archived](close-out.md#areas).
+A project can support one area. Tap **Assign to Area…** in [⚙ Settings](projects-and-areas.md#settings), then tap the area in the [Files pane](projects-and-areas.md#files-and-linked-files) (**Files** opens with **Browse** in place of **Project**, showing the areas, while you pick). The area's [Projects](projects-and-areas.md#projects-of-an-area) tab then lists the project. The project's files then also offer the area's folder. An area with active or on-hold projects can't be [archived](close-out.md#areas).
 
 Once assigned, the button reads **Area: name ✕**. Tap the name to open the area; tap **✕** to remove the assignment. To move the project to another area, tap **✕** and then **Assign to Area…** again.
 
 ## Abbreviations
 
-Every project and area gets a short abbreviation, suggested from its name (for example `GR`). You can change it; it must be unique. The Projects and Areas tabs show it after each name (`Garden renovation #GR`). Use it as a tag to [file items directly](quick-add.md#filing-directly-with-an-abbreviation).
+Every project and area gets a short abbreviation, suggested from its name (for example `GR`). You can change it in [⚙ Settings](projects-and-areas.md#settings); it must be unique. The Projects and Areas tabs show it after each name (`Garden renovation #GR`). Use it as a tag to [file items directly](quick-add.md#filing-directly-with-an-abbreviation).
 
 ## Files and linked files
 
@@ -80,11 +101,11 @@ While a counterpart is filtered, its row offers [Set inactive](threads.md#tendin
 
 Every project and area has one obvious place to write: its *home notebook*. It is the notebook of the [Default](note-setups.md#the-default) note setup, made for that project or area - with the standard name `{name} {year}`, "Garden renovation 2026.note" in the project's own folder. One tap takes you there; then Kept gets out of the way.
 
-The home notebook exists only while the Default uses [One notebook](note-setups.md#what-a-setup-is) (Settings → Note setups → Default → Notes). With **Own note per item** there are no notebook icons, no Notebook tab and no ["Go to" line](projects-and-areas.md#engage-go-to-the-notebook). The [Inbox](quick-add.md#the-inbox) has no home notebook.
+The home notebook exists only while the Default uses [One notebook](note-setups.md#what-a-setup-is) (Settings → Note setups → Default → Notes). With **Own note per item** there are no notebook icons, no Notebook tab and no ["Go to" line](projects-and-areas.md#engage-go-to-the-notebook). The [Inbox](daily.md#the-inbox) has no home notebook.
 
 ### The notebook icon
 
-A small notebook icon sits at the end of every row on the **Projects** and **Areas** tabs, and as **Notebook** at the top of a project's or area's page.
+A small notebook icon sits at the end of every row on the **Projects** and **Areas** tabs, and as **Notebook** under the Files pane of a project's or area's page.
 
 - *Plain notebook*: the notebook exists. A tap opens it on the page you last looked at in Supernote.
 - *Notebook with +*: it doesn't exist yet. A tap asks first - "new file Garden renovation 2026.note" with **Create** - then creates it and opens its first page. Afterwards the [status line](index.md#the-status-line) names the new file and its folder.
@@ -102,7 +123,7 @@ You can change the Home page's layout in Settings → Note setups → [Default](
 
 ### The Notebook tab
 
-A project's or area's page has a **Notebook** tab next to Threads and Loops (Projects on an area):
+A project's or area's page has a **Notebook** tab next to Threads and Loops (Projects on an area) once its notebook exists; before that, or always, as you choose under [Show on this page](projects-and-areas.md#show-on-this-page):
 
 - the notebook's name with **Open** (the page you last looked at)
 - a chip for every year that has a notebook, this year first; a missing current year shows as **+ 2027** and creates it. The chip you choose decides what Open and the contents show.

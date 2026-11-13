@@ -2,7 +2,7 @@
  * One task row - checkbox, tap-to-edit, labels after the title
  * (ui/TaskLabels.tsx, domain/taskLabels.ts), note-link (📓/+📓), a linked-file clip, and an optional "File" action.
  * The single task row shared by Daily's Open-tasks, ProjectDataPanel's Todos,
- * Review's Inbox-to-zero and the Inbox tab (docs/dev/history/technical-design-inbox-tab.md §1).
+ * Review's Inbox-to-zero and Daily's Inbox tab (docs/dev/history/technical-design-calmer-screens.md §3.7).
  *
  * Editing (docs/dev/history/technical-design-pagination-edit-reuse.md §5): this row
  * renders no edit form of its own. `isEditing` only highlights the row - the
@@ -54,6 +54,7 @@ import {WAITING_FOR_TYPE} from '../domain/flowState';
 import {FONT} from './theme';
 import {perfCount, usePerfRender} from '../utils/perf';
 import {estimatorWidth} from './ScreenSize';
+import {RowSelection, useSelectedMode} from './selectionStore';
 
 /** Space above and below the row's content, inside each tap target. */
 const ROW_PAD_DP = 7;
@@ -89,7 +90,13 @@ interface Props {
   task: Task;
   /** Highlights this row (see the module doc comment). The real edit form
    * lives elsewhere on screen, in ui/TaskQuickAdd.tsx's `editingTask` mode. */
-  isEditing: boolean;
+  isEditing?: boolean;
+  /**
+   * The screen's selection store and this row's key (ui/selectionStore.ts): the
+   * row reads whether it is selected itself, so a tap re-renders only the rows
+   * whose mark changes (docs/dev/history/technical-design-calmer-screens.md §3.1.3).
+   */
+  selection?: RowSelection;
   /** Highlights this row while it's the one armed for linking - same visual treatment as isEditing. */
   isArming?: boolean;
   onStartEdit: () => void;
@@ -118,9 +125,10 @@ interface Props {
   borderColor: string;
 }
 
-export default function TaskRow({
+function TaskRow({
   task,
   isEditing,
+  selection,
   isArming,
   onStartEdit,
   onToggleDone,
@@ -139,7 +147,11 @@ export default function TaskRow({
 }: Props): React.JSX.Element {
   perfCount('row:task');
   usePerfRender('TaskRow');
+  const selected = useSelectedMode(selection?.store, selection?.key) !== null;
   const layout = taskRowLayout(task, columnWidthPx, context);
+  // A quiet row (docs/dev/history/technical-design-calmer-screens.md §3.4): the note on the
+  // right, the notebook icon only where a note exists, no create-note icon, no clip.
+  const quiet = context === 'quiet' || context === 'inbox';
   return (
     <View style={styles.wrap}>
       <View
@@ -147,7 +159,7 @@ export default function TaskRow({
           styles.row,
           // Bottom border only, so the editing bar below stays black.
           {borderBottomColor: borderColor},
-          (isEditing || isArming) && styles.rowEditing,
+          (isEditing || selected || isArming) && styles.rowEditing,
           // Also overrides styles.row's own `minHeight: 64` floor -
           // minHeight and height are independent Yoga constraints, so
           // height alone would leave a 1-line row (taskRowHeight() 42)
@@ -174,29 +186,51 @@ export default function TaskRow({
             </Text>
           </Pressable>
         </View>
-        {task.notePath ? (
-          <Pressable onPress={onOpenNote} hitSlop={8} style={styles.target}>
-            <Text style={[styles.noteAction, {color: textColor}]}>📓</Text>
-          </Pressable>
+        {quiet ? (
+          <>
+            {layout.meta ? (
+              <View style={styles.target}>
+                <Text style={[styles.meta, {color: textColor}, layout.meta.strong ? styles.metaStrong : styles.metaQuiet]} numberOfLines={1}>
+                  {layout.meta.text}
+                </Text>
+              </View>
+            ) : null}
+            {task.notePath ? (
+              <Pressable onPress={onOpenNote} hitSlop={8} style={styles.target} accessibilityRole="button" accessibilityLabel="Open note">
+                <Text style={[styles.noteAction, {color: textColor}]}>📓</Text>
+              </Pressable>
+            ) : null}
+          </>
         ) : (
-          <Pressable onPress={onCreateNote} hitSlop={8} style={styles.target}>
-            <Text style={[styles.noteAction, {color: textColor}]}>+📓</Text>
-          </Pressable>
+          <>
+            {task.notePath ? (
+              <Pressable onPress={onOpenNote} hitSlop={8} style={styles.target}>
+                <Text style={[styles.noteAction, {color: textColor}]}>📓</Text>
+              </Pressable>
+            ) : (
+              <Pressable onPress={onCreateNote} hitSlop={8} style={styles.target}>
+                <Text style={[styles.noteAction, {color: textColor}]}>+📓</Text>
+              </Pressable>
+            )}
+            {linkedFile ? (
+              <Pressable onPress={() => onOpenLinkedFile?.(linkedFile)} hitSlop={8} style={[styles.target, styles.clipAction]}>
+                <ClipIcon color={textColor} />
+              </Pressable>
+            ) : onArmLink ? (
+              <Pressable onPress={onArmLink} hitSlop={8} style={[styles.target, styles.clipAction]}>
+                <Text style={[styles.clipPlus, {color: textColor}]}>+</Text>
+                <ClipIcon color={textColor} />
+              </Pressable>
+            ) : null}
+          </>
         )}
-        {linkedFile ? (
-          <Pressable onPress={() => onOpenLinkedFile?.(linkedFile)} hitSlop={8} style={[styles.target, styles.clipAction]}>
-            <ClipIcon color={textColor} />
-          </Pressable>
-        ) : onArmLink ? (
-          <Pressable onPress={onArmLink} hitSlop={8} style={[styles.target, styles.clipAction]}>
-            <Text style={[styles.clipPlus, {color: textColor}]}>+</Text>
-            <ClipIcon color={textColor} />
-          </Pressable>
-        ) : null}
       </View>
     </View>
   );
 }
+
+/** Memoized: a list re-render with the same props skips the row. */
+export default React.memo(TaskRow);
 
 /**
  * A task shown for reading only: checkbox state, text and badges, nothing
@@ -292,6 +326,10 @@ const styles = StyleSheet.create({
     opacity: 0.5,
     textDecorationLine: 'line-through',
   },
+  meta: {fontSize: FONT.small, marginLeft: 8, includeFontPadding: false},
+  // Secondary, not a meaning: what is due today or overdue is bold instead.
+  metaQuiet: {opacity: 0.65},
+  metaStrong: {fontWeight: '700'},
   noteAction: {
     fontSize: FONT.small,
     marginLeft: 8,

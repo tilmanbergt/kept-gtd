@@ -16,7 +16,6 @@ import ItemDetail from './src/screens/ItemDetail';
 import DailyView from './src/screens/DailyView';
 import WeekView from './src/screens/WeekView';
 import MonthView from './src/screens/MonthView';
-import InboxScreen from './src/screens/InboxScreen';
 import ReviewScreen from './src/screens/review/ReviewScreen';
 import CloseOutWizard from './src/screens/CloseOutWizard';
 import CaptureScreen, {CaptureRequest, CaptureReturnTo} from './src/screens/CaptureScreen';
@@ -50,6 +49,7 @@ import {clearCachedData, refreshCache} from './src/storage/dataCache';
 import {clearCachedGmailInbox} from './src/storage/gmailInboxCache';
 import {setActiveProfileId} from './src/storage/profileKeys';
 import {switchProfile} from './src/storage/profiles';
+import {resetListTabs, setListTab} from './src/ui/listTabStore';
 import {DEFAULT_PROFILE_ID} from './src/domain/profiles';
 import {DEMO_PROFILE_ID} from './src/domain/demoSpace';
 import {activeContext, EVERYTHING_LABEL} from './src/domain/contexts';
@@ -154,6 +154,9 @@ function AppRoot(): React.JSX.Element {
 function AppShell({onProfileSwitched}: {onProfileSwitched: () => void}): React.JSX.Element {
   usePerfRender('AppShell');
   const {textColor} = useThemeColors();
+  // A new shell (start, profile switch) starts every list on its first count tab
+  // (ui/listTabStore.ts, docs/dev/history/technical-design-calmer-screens.md §4).
+  useState(resetListTabs);
 
   const [mode, setMode] = useState<Mode>('loading');
   // Explicit e-ink refresh once the initial reorient() below actually lands
@@ -191,7 +194,7 @@ function AppShell({onProfileSwitched}: {onProfileSwitched: () => void}): React.J
   // default every direct TabBar tap resets it back to, in handleSelectTab
   // below), but openSettingsCalendar sets it to 'features' right before
   // switching tabs so a Google mini-tab's "Open Calendar Settings" link
-  // (DailyView/WeekView/ProjectDataPanel/InboxScreen/ReviewScreen, all
+  // (DailyView/WeekView/ProjectDataPanel/ReviewScreen, all
   // threaded to openSettingsCalendar below) lands straight there. Settings
   // itself only reads this once, via its own initialTab prop's useState
   // initializer - see that screen's module doc comment for why a watched
@@ -564,7 +567,6 @@ function AppShell({onProfileSwitched}: {onProfileSwitched: () => void}): React.J
       daily: (
         <DailyView
           onOpenItem={stableOpenItem}
-          onOpenInbox={stableNav.openInbox}
           onOpenCalendarSettings={stableNav.openSettingsCalendar}
         />
       ),
@@ -658,8 +660,7 @@ function AppShell({onProfileSwitched}: {onProfileSwitched: () => void}): React.J
 
   // Shared by Projects/Areas/Daily's "open this Project/Area" action,
   // CaptureScreen's "Save & View", screens/ReviewScreen.tsx's own cards, and
-  // every Files pane's Browse tab (screens/InboxScreen.tsx,
-  // screens/ItemDetail.tsx) - all just want to land on the "Current" tab
+  // every Files pane's Browse tab (screens/ItemDetail.tsx) - all just want to land on the "Current" tab
   // showing this item.
   const openItem = (kind: 'project' | 'area', entry: FolderEntry) => {
     perfBegin('nav', 'current', {from: activeTab, via: 'openItem'});
@@ -674,11 +675,11 @@ function AppShell({onProfileSwitched}: {onProfileSwitched: () => void}): React.J
     setMode('tabs');
   };
 
-  // DailyView's/WeekView's Inbox-sourced rows use this to jump here (their
-  // group header/source subtext) instead of onOpenItem, since there's no
-  // Project/Area to open for those (docs/dev/history/technical-design-inbox-tab.md §3).
+  // The Inbox lives on Daily's Inbox tab (docs/dev/history/technical-design-calmer-screens.md §3.7):
+  // an Inbox-sourced row (Week's source line) and every "open the Inbox" lands there.
   const openInbox = () => {
-    setActiveTab('inbox');
+    setListTab('daily', 'inbox');
+    setActiveTab('daily');
     setMode('tabs');
   };
 
@@ -778,12 +779,6 @@ function AppShell({onProfileSwitched}: {onProfileSwitched: () => void}): React.J
   // Tabs that are never kept alive - rendered while visible, in both modes.
   const nonKeptBody = (
     <>
-      {activeTab === 'inbox' && (
-        <InboxScreen
-          onOpenCalendarSettings={openSettingsCalendar}
-          onOpenItem={stableOpenItem}
-        />
-      )}
       {activeTab === 'review' &&
         (closeOut ? (
           <CloseOutWizard
@@ -869,7 +864,6 @@ function AppShell({onProfileSwitched}: {onProfileSwitched: () => void}): React.J
               {activeTab === 'daily' && (
                 <DailyView
                   onOpenItem={stableOpenItem}
-                  onOpenInbox={openInbox}
                   onOpenCalendarSettings={openSettingsCalendar}
                 />
               )}

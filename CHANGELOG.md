@@ -13,11 +13,13 @@ or your project/area files are stored.
 ### New
 - Writing help in Quick Add: after handwriting recognition writes a word, the strip over the tabs
   checks it. A tag close to one you use (`#Iena`, `#sparrlng`) gets a suggestion - **→ #lena**,
-  **Keep**, **Edit ›** - and unfinished tags are completed from your own tags, counterparts and
-  abbreviations. A tag you corrected once is corrected the same way next time ("read as #lena",
-  with **Undo**). When all tags are known, the strip says where the item's note page goes. + Add
-  with a suggestion still open asks once; a second + Add saves as written. Also in the note title,
-  the agreement words and lasso capture.
+  **Keep** and a clipboard square for **All · Copy · Cut · Paste** - and unfinished tags are
+  completed from your own tags, counterparts and abbreviations (in capitals, `#GR`; after a slash
+  only the rest, **/jordan**). A tag you corrected once is corrected the same way next time ("read
+  as #lena", with **Undo**). When all tags are known, the strip says where the item's note page
+  goes (`#daily: Website/Meetings/Daily 2026.note`, `Project home note: Atruvia/Atruvia
+  2026.note`). + Add with a suggestion still open asks once; a second + Add saves as written. Also
+  in the note title, the agreement words and lasso capture.
 - Dates and times are read from handwriting: `9.ll.26` becomes 2026-11-09, `l5,3O-l6` becomes
   15:30-16:00, always shown ("read as Mon 9 Nov 2026") with **Undo**; `3-4` and `15,3` offer both
   readings. The date strip leads with the full date and weekday, the meeting's time field gets a
@@ -31,8 +33,125 @@ or your project/area files are stored.
   and a meeting before, during and after (Meetings).
 
 ### Changed
+- Quick Add is one form for writing: the text, title or words in one field over two lines (still
+  one line in the file), below it a calendar and **w/f** for a todo, date, time and **F** for a meeting,
+  valid till for an agreement, and in the last row the clip, the grey line, **✕** and **+ Add**
+  (**✕** and **Save** while editing - there is no Cancel).
+  The kind tabs, the flow chips, the tag chips and **M** left the box: the kind comes from the
+  **+ Todo** / **+ Meeting** buttons (**✕** shows them on every screen), `#next` and `#someday` are
+  offered on the strip, and Next, Maybe, **M** and delete are on the item's card. The box keeps its
+  height.
+- The strip above Quick Add offers suggestions - `#next`, `#someday`, recent tags, abbreviations,
+  and **This file** when you opened Kept from a file - or **All · Copy · Cut · Paste**, which
+  shows by itself while text is selected; a drawn clipboard and lightning bolt switch between them.
+  The file Kept was opened from is no longer linked unless you tap **This file**. The strips' and
+  the form's icons are drawn in black instead of emoji.
+- The date and time strips lie over the text field's second line: a meeting's time strip sets the
+  length (**1 h**, **−30′**, **+30′**), moves it (**‹ 30′**, **30′ ›**) or makes it a whole day
+  (**1 d**); a button that can't act is greyed. A warning ("⚠ past", "⚠ Team sync 15:00") shows on
+  the strip, a warning sign in the row. The usual slot of a thread or loop is behind the lightning bolt. The lasso
+  capture's time field has the same strip.
+- While the status line shows an error or a question, Quick Add's strips stay hidden.
+- Quick Add starts closed on Daily, Week, Month, a project's or area's page and the Review's Inbox
+  step: large **+ Todo**, **+ Meeting** (and **+ Agreement**, **+ Note**) buttons, on two rows where
+  the width ends (Nomad portrait), open the kind you need, with the
+  cursor in its field; **✕** closes it and drops what you typed (tapping elsewhere keeps it);
+  **✕** in an edit drops the changes and shows the card again; after **+ Add** it closes again.
+  The box keeps its height, so nothing below moves.
+- The todo, meeting and agreement cards show everything on one page, no **More ›**: the kind, the
+  place's abbreviation (`GR ›`, a tap opens it), the refile arrow where a Files pane is there, and
+  the state on the first row - a todo's flow state and due date (`next · due 5.11.`), a meeting's
+  date and time (`Thu 19.11. 15:00-16:30 · over`); the title over two lines with its origin or
+  thread at its foot; then the todo's done box and **Next · w/f · Someday · Maybe** (**Sd** · **Mb**
+  on a narrow screen), the meeting's **P/R · M · F · Reflect**, and on the right the notebook (with
+  + until the note exists), the clip (with + to link, filled once linked - unlinking is in Edit),
+  delete, **New from this** and **Cancel meeting**, asking once, before a meeting starts. Delete
+  and Cancel meeting are only on the card. A tap on the title edits. Rows and Daily's group
+  headings no longer open the project or area; the card's place link does.
+- After **+ Add** on Daily or a project's or area's page, the box shows the new item's card; its
+  **+ Todo** / **+ Meeting** starts the next one for the same place (on Daily with the place's
+  abbreviation tag).
+- An agreement has one way to change: a tap on its words, or **Change**, writes a new version and
+  ends the old one. The agreement card has no Edit.
+- Daily links a file to a todo or meeting from its card: the clip opens a file picker in place of the
+  todos.
+- One origin per todo: the meeting it was agreed in, or else the note it was written in or captured
+  from, written as `[source:: …]` and shown on the card as `↳ <note> ›` (or the todo whose note it
+  is). Lasso capture no longer links the page you captured from (**Link to this page** is gone).
+- An empty todo text or meeting title offers **Thread** and **Loop** (and **Paste** with text on the
+  clipboard): a tap lists the tags of your thread or loop setups, and one more tap writes
+  `#sparring/` for the writing help to finish.
+- Quieter rows on Daily and a project's or area's page: a todo's title keeps your words and tags;
+  `#next`, the due date and the waiting-for tag move to one grey note on the right ("due 5.11.",
+  **due today**, "w/f Lena"). The notebook icon shows only where a note exists; creating a note and
+  linking a file happen on the card.
+- Count tabs over the todos: Daily shows **Next**, **Waiting**, **Inbox** and **Done**, a project's
+  or area's page **Next**, **Waiting**, **Plan**, **Someday** and **Done**, one list at a time, each
+  with its number. A bell with a number on Daily's Waiting and Inbox counts what is due today or
+  earlier. A todo you tick stays struck through in its list until you change the tab or leave the
+  page; **Done** lists what you finished today (on a project's page: in the last 14 days).
+- Daily's **Inbox** tab lists everything in the Inbox: marks to process, todos and meetings, past
+  ones too, all counted and never hidden by a context. The Inbox's todos no longer show under Next.
+- The Inbox card: tap an Inbox item and **File to** suggests up to four places - the abbreviation you
+  wrote as a tag, the projects and areas that use its tags, the places you filed to lately. A tap
+  files it, with **Undo** in the status line, and the next Inbox item opens.
+- On the Inbox card, **More…** lists every active project and area, **Someday / Maybe** parks a
+  todo (it stays in `Inbox.txt` and shows in the Review's Someday / Maybe step), and **→ New
+  project** makes a project from a todo: name and abbreviation prefilled, created only when you tap
+  **Create project**.
+- Daily's schedule has no summary line any more; its one-line/two-line buttons sit next to Today
+  and Tomorrow.
+- Week and Month: Given time is one line per owner; a tap shows its card with the details and
+  **Open ›**.
+- Engage is quieter: no section line and no "Loop since" line; the current todo offers w/f,
+  **Someday**, its note and **More ›** (Remove #next, the linked file).
+- A tap on a row shows its card faster: the list no longer redraws for it.
+- A project's or area's page keeps to the work: abbreviation, scope, status, Close out / Archive and
+  Assign to Area move to **⚙ Settings**, next to **Notebook** and **Engage ›** under the Files pane
+  (**Close** returns). The header names the kind, a project's area (a tap opens it) and the
+  abbreviation; the scope shows under it only when there is one. The time given this week stays on
+  Week, Month and the owner card.
+- The left side of a project's or area's page shows only the tabs with something in them - Threads,
+  Loops (Projects on an area), Notebook - plus Files, and opens on the first of them; the Schedule
+  shows while there are meetings.
+- **⚙ Settings → Show on this page**: Threads, Loops, Agreements, Schedule, Notebook (and Projects on
+  an area) each **Auto**, **Always** or **Never**, and where the left side opens. A hidden part with
+  something in it says so ("Never · 2 loops").
+- Messages in the status line go by themselves: what was saved after 8 seconds, a message with
+  **Undo** after 16 seconds, and a new one replaces the one before. Questions, errors and warnings
+  stay until you answer them.
+- Lists without a heading (Daily's todos, the Inbox, a page's todos, Engage's tabs) start right
+  under their tabs. A row with the page and its arrows (`‹ 1 / 2 ›`) shows under a list only when it
+  has more than one page.
 - For contributors: `SECURITY.md` says how to report a vulnerability privately and what Kept
   touches; `docs/dev/claims.md` lists every promise Kept makes and how each is checked.
+
+### Fixed
+- Tag completion shows whenever the cursor rests right after an unfinished tag: while you type it
+  letter by letter, after handwriting, or when you put the cursor there.
+- After **+ Add to …** with an abbreviation tag, only Daily starts the next item with that tag;
+  other screens start it empty.
+- Processing marks: **Save & next** selects the next mark again, also when the list was reloaded
+  in between.
+- A project's or area's page: the last todo of a page is no longer cut off at the Agreements line.
+
+### Removed
+- The **Inbox** tab: the Inbox lives on Daily's **Inbox** tab, and the Review's Inbox to zero step
+  works on the same list and card (no Files pane there any more).
+- The **hide done** / **show n done** switch on a project's or area's page: the Done tab replaces
+  it.
+
+### Upgrade notes
+- Todos can carry a `[source:: …]` field at the end of their line (the note they were written in);
+  older versions keep it untouched. Meeting lines don't get one. Items that link the page they were
+  captured from keep that link.
+- Projects and areas can carry a `show:` line in their header (what you choose under Show on this
+  page). Kept writes it only when something differs from the default; older versions keep it
+  untouched.
+- **The Inbox now lives on Daily**: tap **Inbox** over Daily's todos. Every link that opened the Inbox
+  tab opens it there. `Inbox.txt` stays where it is and as it is.
+- The project page's and the Inbox tab's "hide done" choices are no longer used. They stay in your
+  settings, so an older version still finds them.
 
 ## [0.25.1] — 2026-11-03
 

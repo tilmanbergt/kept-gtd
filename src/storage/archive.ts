@@ -51,7 +51,7 @@ import {errorMessage} from '../utils/errorMessage';
  * `item.kind === 'area'`:
  * - **Blocked** outright if any Project in `assignedProjects(item.name)`
  *   is currently Active or On Hold - the error names them, surfaced
- *   through the same `archiveError` text ui/ItemStatusPanel.tsx already
+ *   through the same `archiveError` text screens/item/StatusBlock.tsx already
  *   renders. The confirmation dialog is never even offered in that case
  *   (the caller runs this check - or lets this throw - before opening it).
  * - Otherwise, every assigned Project that's currently **Done** is
@@ -69,7 +69,7 @@ import {errorMessage} from '../utils/errorMessage';
  *   Done ones are cascaded.
  */
 /**
- * The Active/On-Hold-project block, factored out so ui/ItemStatusPanel.tsx
+ * The Active/On-Hold-project block, factored out so screens/item/StatusBlock.tsx
  * can run it *before* even opening the "Move to Archive?" confirmation for
  * an Area - the destructive dialog should never appear for an Area that
  * can't actually be archived yet. `archiveItem` below calls this too, as a

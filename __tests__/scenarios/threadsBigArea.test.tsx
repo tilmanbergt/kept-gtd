@@ -95,7 +95,7 @@ scenario('Renaming a meeting in Quick Add updates the Threads tab of the big Are
   when('I rename that meeting to "1:1 Ines #101/ines" in Quick Add', async () => {
     await tap(/^1:1 Vera/);
     await tap('Edit');
-    await type('New meeting title', '1:1 Ines #101/ines');
+    await type('New meeting', '1:1 Ines #101/ines');
     await tap('Save');
   });
   then('the file has the new title', () => {

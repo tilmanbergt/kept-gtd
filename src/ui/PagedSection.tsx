@@ -24,7 +24,7 @@
  * the arrows' visibility condition; a single-page list shows neither.
  *
  * `N` only counts "real" rows, per `isCountableRow` below. Several callers
- * (screens/ProjectDataPanel.tsx's Todos/Meetings, screens/InboxScreen.tsx's
+ * (screens/ProjectDataPanel.tsx's Todos/Meetings, screens/daily/InboxList.tsx's
  * Tasks/Meetings, screens/DailyView.tsx's Open-tasks) flatten a grouped list
  * into one paginated `rows` sequence with `{kind: 'header'}` rows standing
  * in for each group's own label (docs/dev/history/technical-design-pagination-edit-reuse.md
@@ -41,6 +41,15 @@
  * fills that same box rather than shrinking it. So a `PagedSection` can be
  * dropped into any layout without reflowing its surroundings.
  *
+ * A list without a header (`header=""` and no `headerAccessory`) draws no
+ * header row at all (docs/dev/history/technical-design-quickadd-redesign.md
+ * §3.8 F6): its page arrows go into their own row below the rows
+ * (ui/PageNavRow.tsx), drawn only when the list has more than one page. No
+ * oscillation: the pages are counted for the whole viewport first; only when
+ * that gives more than one page is the row reserved and the list paged for
+ * the smaller height, which can only give more pages, so the row stays. The
+ * measured box includes the nav row, so its height never depends on it.
+ *
  * `viewportHeight` is optional (docs/dev/history/technical-design-pagination-fixed-height.md's
  * "runtime-measured viewport height"). Hand-derived heights tend to drift
  * from the real layout in ways that are hard to catch by eye. Omitting
@@ -53,9 +62,10 @@
  * fixed-height screen in this app needs); an explicit `viewportHeight`
  * behaves as a fixed height.
  */
-import React, {useEffect} from 'react';
+import React, {useEffect, useMemo} from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
-import {JumpTo, usePagedByHeight} from './pagination';
+import {JumpTo, pageCount, usePagedByHeight} from './pagination';
+import PageNavRow, {PAGE_NAV_ROW_HEIGHT} from './PageNavRow';
 import {useMeasuredHeight} from './useMeasuredHeight';
 import {common} from './commonStyles';
 import {FONT} from './theme';
@@ -164,7 +174,20 @@ export default function PagedSection<T>({
   // nothing; the very next render (same JS tick in practice, before the
   // debounced eink refresh flushes - see requestEinkRefresh) corrects to
   // the real page contents once measuredHeight is known.
-  const effectiveViewportHeight = viewportHeight ?? measuredHeight ?? 0;
+  const fullHeight = viewportHeight ?? measuredHeight ?? 0;
+  const hasHeader = !(header === '' || header == null) || headerAccessory != null;
+  // Header-less lists: pages for the full height first, then (more than one) for the height left above the nav row.
+  const navPages = useMemo(() => {
+    if (hasHeader || fullHeight <= 0) return 1;
+    const full = pageCount(rows, rowHeight, fullHeight);
+    return full > 1 ? pageCount(rows, rowHeight, Math.max(1, fullHeight - PAGE_NAV_ROW_HEIGHT)) : 1;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasHeader, fullHeight, rows]);
+  const showNav = navPages > 1;
+  const effectiveViewportHeight = showNav ? Math.max(1, fullHeight - PAGE_NAV_ROW_HEIGHT) : fullHeight;
+  useEffect(() => {
+    if (showNav) log(`PagedSection: paged nav rows pages=${navPages}`);
+  }, [showNav, navPages]);
 
   // Logged rather than asserted - this is diagnostic only, see this
   // module's own doc comment. `header` is usually a plain string (a
@@ -174,8 +197,15 @@ export default function PagedSection<T>({
   useEffect(() => {
     if (!selfMeasuring || measuredHeight == null) return;
     const label = typeof header === 'string' ? header : '(non-text header)';
-    log('PagedSection: self-measured viewport', {header: label, measuredHeight});
-    perfMark('layout:PagedSection', {header: label, measuredHeight, rows: rows.length});
+    log('PagedSection: self-measured viewport', {
+      header: label,
+      measuredHeight,
+    });
+    perfMark('layout:PagedSection', {
+      header: label,
+      measuredHeight,
+      rows: rows.length,
+    });
     if (measuredHeight < SUSPICIOUSLY_SMALL_VIEWPORT_PX) {
       logError(
         'PagedSection: suspiciously small self-measured viewport - check for a flex-greedy sibling above this box',
@@ -187,7 +217,22 @@ export default function PagedSection<T>({
 
   // A jump waits for a viewport height: the target's page depends on it (a self-measuring list
   // has none before its first onLayout).
-  const paged = usePagedByHeight(rows, rowHeight, effectiveViewportHeight, resetKey, effectiveViewportHeight > 0 ? jumpTo : null);
+  const paged = usePagedByHeight(
+    rows,
+    rowHeight,
+    effectiveViewportHeight,
+    resetKey,
+    effectiveViewportHeight > 0 ? jumpTo : null,
+  );
+  // F9 diagnostic (docs/dev/history/technical-design-quickadd-redesign.md §3.8): what a measured
+  // list's page holds against its viewport. The label is the key's kind only, never an item path.
+  const listLabel = (typeof heightKey === 'string' ? heightKey : heightKey?.[0] ?? '').split(':').slice(0, 2).join(':');
+  useEffect(() => {
+    if (!selfMeasuring || !listLabel || effectiveViewportHeight <= 0) return;
+    const est = paged.pageItems.reduce((sum, row) => sum + rowHeight(row), 0);
+    log(`PagedSection: page fill list=${listLabel} rows=${paged.pageItems.length} est=${Math.round(est)} viewport=${Math.round(effectiveViewportHeight)}`);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [listLabel, paged.startIndex, paged.pageItems.length, effectiveViewportHeight]);
   useEffect(() => {
     onFirstRowChange?.(paged.startIndex);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -195,9 +240,38 @@ export default function PagedSection<T>({
   // Defaults to counting every row - see isCountableRow's own doc comment
   // above.
   const countableTotal = isCountableRow ? rows.filter(isCountableRow).length : rows.length;
-  const countableVisible = isCountableRow
-    ? paged.pageItems.filter(isCountableRow).length
-    : paged.pageItems.length;
+  const countableVisible = isCountableRow ? paged.pageItems.filter(isCountableRow).length : paged.pageItems.length;
+  const body =
+    viewportContent !== undefined ? (
+      viewportContent
+    ) : rows.length === 0 && emptyHint ? (
+      <Text style={[common.hint, {color: textColor}]}>{emptyHint}</Text>
+    ) : (
+      paged.pageItems.map(renderRow)
+    );
+  if (!hasHeader) {
+    return (
+      <View style={selfMeasuring ? styles.selfMeasuringRoot : undefined}>
+        {subHeader}
+        <View
+          style={selfMeasuring ? styles.viewportFlex : {height: viewportHeight}}
+          onLayout={selfMeasuring ? measuredOnLayout : undefined}>
+          <View style={[styles.viewport, styles.viewportFlex]}>{body}</View>
+          {showNav ? (
+            <PageNavRow
+              page={paged.page}
+              pages={navPages}
+              canPrev={paged.canPrev}
+              canNext={paged.canNext}
+              onPrev={paged.goPrev}
+              onNext={paged.goNext}
+              textColor={textColor}
+            />
+          ) : null}
+        </View>
+      </View>
+    );
+  }
   return (
     <View style={selfMeasuring ? styles.selfMeasuringRoot : undefined}>
       <View style={[styles.headerRow, {borderColor}]}>
@@ -207,9 +281,7 @@ export default function PagedSection<T>({
         {headerAccessory}
         {(paged.canPrev || paged.canNext) && (
           <View style={styles.arrows}>
-            <Text style={[styles.hiddenCount, {color: textColor}]}>
-              +{countableTotal - countableVisible}
-            </Text>
+            <Text style={[styles.hiddenCount, {color: textColor}]}>+{countableTotal - countableVisible}</Text>
             {paged.canPrev && (
               <Pressable onPress={paged.goPrev} hitSlop={8} style={styles.arrowButton}>
                 <Text style={[styles.arrow, {color: textColor}]}>‹</Text>
@@ -227,13 +299,7 @@ export default function PagedSection<T>({
       <View
         style={[styles.viewport, selfMeasuring ? styles.viewportFlex : {height: viewportHeight}]}
         onLayout={selfMeasuring ? measuredOnLayout : undefined}>
-        {viewportContent !== undefined ? (
-          viewportContent
-        ) : rows.length === 0 && emptyHint ? (
-          <Text style={[common.hint, {color: textColor}]}>{emptyHint}</Text>
-        ) : (
-          paged.pageItems.map(renderRow)
-        )}
+        {body}
       </View>
     </View>
   );

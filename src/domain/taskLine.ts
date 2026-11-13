@@ -4,25 +4,25 @@
  * inline fields, the format Obsidian's Tasks plugin reads when its "Task
  * Format" is Dataview. You type tags; gtdpara writes fields.
  *
- *   - [x] text #tags → [[note]] +[[file]] [meeting:: …] [created:: …] [due:: …] [completion:: …]
+ *   - [x] text #tags → [[note]] +[[file]] [meeting:: …] [created:: …] [due:: …] [completion:: …] [source:: …]
  *
  * Only fields at the very end of a line count; a field in the middle of the
  * text is text (as in Tasks). Parsing strips them right to left before the
  * links; writing appends them after the links, known keys in a fixed order
- * (`meeting`, `created`, `due`, `completion`), then unknown fields verbatim.
+ * (`meeting`, `created`, `due`, `completion`, `source`), then unknown fields verbatim.
  * Pure.
  */
 import {TaskFields} from './types';
 
-type KnownKey = 'meeting' | 'created' | 'due' | 'completion';
+type KnownKey = 'meeting' | 'created' | 'due' | 'completion' | 'source';
 
 /** Written in this order, before any unknown field. */
-export const TASK_FIELD_ORDER: readonly KnownKey[] = ['meeting', 'created', 'due', 'completion'];
+export const TASK_FIELD_ORDER: readonly KnownKey[] = ['meeting', 'created', 'due', 'completion', 'source'];
 
 const TRAILING_FIELD_RE = /\s*\[([a-z][\w-]*)::[ \t]*([^\]]*)\]\s*$/;
 
 export function emptyTaskFields(): TaskFields {
-  return {due: null, created: null, completion: null, meeting: null, extra: []};
+  return {due: null, created: null, completion: null, meeting: null, source: null, extra: []};
 }
 
 function isKnownKey(key: string): key is KnownKey {

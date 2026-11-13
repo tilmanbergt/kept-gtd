@@ -1,29 +1,22 @@
 /**
- * Quick Add's Todo rows: R2 (text + due date), R3 (flow chips + tag chips,
- * or the "Waiting on" field) and R4 (more tags, or what the widget puts
- * there). All stay mounted while another tab shows (`hidden`), so the
- * TextInputs are created once - see ui/quickAdd/styles.ts.
- *
- * In the box the text field's wrappers are real Android views and the field
- * logs its frame (ui/quickAdd/styles.ts `row2Wrap`, ui/quickAdd/layoutLog.ts).
+ * The lasso capture panel's Todo rows (ui/quickAdd/CaptureQuickAdd.tsx): R2,
+ * the multi-line text (or the Split lines rows in its place), the due-date
+ * control, and R3, the flow chips or the "Waiting on" field. Quick Add's box
+ * has its own form (ui/quickAdd/form/). The rows stay mounted while another
+ * kind shows (`hidden`), so the TextInputs are created once - see
+ * ui/quickAdd/styles.ts.
  */
 import React from 'react';
 import {usePerfRender} from '../../utils/perf';
 import WritingStrip from '../writing/WritingStrip';
 import {Pressable, StyleSheet, Text, TextInput, View} from 'react-native';
-import DateInput, {DateNudgeStrip} from '../DateInput';
+import DateInput from '../DateInput';
 import FlowStateChips from '../FlowStateChips';
-import {ClipIcon, WarningIcon} from '../icons';
 import MarkWrap from '../status/StatusMark';
-import TagChips, {useTwoRowTagChips} from '../TagChips';
-import {useTagRowBudget} from '../tagChipLayout';
 import {FONT} from '../theme';
-import {layoutLogger} from './layoutLog';
 import {rowStyles} from './styles';
 import {QuickAddCore} from './useQuickAddCore';
 import {TaskDraftState} from './useTaskDraft';
-
-const logTextLayout = layoutLogger('todo text');
 
 interface Colors {
   textColor: string;
@@ -31,9 +24,8 @@ interface Colors {
   placeholderColor: string;
 }
 
-/** The due date: a 📅 button that unfolds into an inline date field (never folds back). */
-/** `ownStrip`: the field draws its date strip itself (the capture panel); in the box the row draws it over the tabs. */
-export function TaskDueControl({task, ownStrip = false, textColor, borderColor, placeholderColor}: {task: TaskDraftState; ownStrip?: boolean} & Colors) {
+/** The due date: a 📅 button that unfolds into an inline date field with its own strip (never folds back). */
+export function TaskDueControl({task, textColor, borderColor, placeholderColor}: {task: TaskDraftState} & Colors) {
   const {fields, loopMode} = task;
   if (!fields.dueDateOpen) {
     return (
@@ -46,14 +38,6 @@ export function TaskDueControl({task, ownStrip = false, textColor, borderColor, 
     <View style={styles.dateInline}>
       <DateInput
         ref={task.dueInputRef}
-        onFocusChange={
-          ownStrip
-            ? undefined
-            : focused => {
-                task.setDueFocused(focused);
-                if (focused) task.dueHelp.onFocus();
-              }
-        }
         value={fields.dueDate}
         onChangeText={task.setDueDate}
         placeholder={loopMode.kind === 'none' || loopMode.kind === 'exists' ? 'Due YYYY-MM-DD' : 'Main date YYYY-MM-DD'}
@@ -74,28 +58,24 @@ interface InputRowProps extends Colors {
   core: QuickAddCore;
   task: TaskDraftState;
   placeholder: string;
-  /**
-   * The capture panel: a multi-line field, no due control in this row (it
-   * sits in the options row below), and `splitBlock` - the Split lines rows -
-   * in place of the field while set.
-   */
-  capture?: {splitBlock: React.ReactNode | null};
+  /** The Split lines rows, in place of the field while set. */
+  splitBlock: React.ReactNode | null;
 }
 
-export function TaskInputRow({core, task, placeholder, capture, ...colors}: InputRowProps) {
+/** R2: the multi-line text (recognized text can be several lines), its writing strip above-right. */
+export function TaskInputRow({core, task, placeholder, splitBlock, ...colors}: InputRowProps) {
   usePerfRender('QuickAddRows:task');
   const {textColor, borderColor, placeholderColor} = colors;
   return (
-    <View style={[rowStyles.row2, !!capture && rowStyles.row2Free, core.displayType !== 'task' && rowStyles.hidden]}>
-      {capture?.splitBlock ?? null}
-      <View style={[rowStyles.row2Wrap, !!capture?.splitBlock && rowStyles.hidden]} collapsable={!!capture}>
-        <MarkWrap mark={core.fieldMark('text')} textColor={textColor} flex collapsable={!!capture}>
+    <View style={[rowStyles.row2, rowStyles.row2Free, core.displayType !== 'task' && rowStyles.hidden]}>
+      {splitBlock}
+      <View style={[rowStyles.row2Wrap, !!splitBlock && rowStyles.hidden]}>
+        <MarkWrap mark={core.fieldMark('text')} textColor={textColor} flex>
           <TextInput
             ref={task.inputRef}
-            onLayout={capture ? undefined : logTextLayout}
-            style={[rowStyles.input, rowStyles.inputFlex, !!capture && styles.inputMultiline, {color: textColor, borderColor}]}
-            multiline={!!capture}
-            textAlignVertical={capture ? 'top' : undefined}
+            style={[rowStyles.input, rowStyles.inputFlex, styles.inputMultiline, {color: textColor, borderColor}]}
+            multiline
+            textAlignVertical="top"
             value={task.fields.text}
             onChangeText={task.setText}
             onSubmitEditing={task.editing ? task.submitEdit : task.submitCreate}
@@ -111,30 +91,13 @@ export function TaskInputRow({core, task, placeholder, capture, ...colors}: Inpu
             autoCapitalize="none"
           />
         </MarkWrap>
-        {capture ? null : <TaskDueControl task={task} {...colors} />}
       </View>
-      {/* The date strip and Select All/Copy/Cut/Paste hover above the row -
-          left-aligned in the box, over the tabs, so R1's main button stays
-          reachable while typing (only one field has focus at a time). They
-          stay mounted (display toggles on focus) so a tap on them isn't lost
-          when the field blurs on touch-down. */}
-      {capture ? null : (
-        <DateNudgeStrip
-          visible={task.dueFocused}
-          value={task.fields.dueDate}
-          onChangeText={task.writeDueDate}
-          help={{content: task.dueHelp.strip, actions: task.dueHelp.actions}}
-          placement="above-left"
-          textColor={textColor}
-          borderColor={borderColor}
-        />
-      )}
       <WritingStrip
         visible={task.inputFocused}
         content={task.textHelp.strip}
         actions={task.textHelp.actions}
         clipboard={task.clipboard}
-        placement={capture ? 'above-right' : 'above-left'}
+        placement="above-right"
         textColor={textColor}
         borderColor={borderColor}
       />
@@ -142,130 +105,39 @@ export function TaskInputRow({core, task, placeholder, capture, ...colors}: Inpu
   );
 }
 
-/** The edited item's linked-file mark with its ✕ (unlink). */
-export function AttachmentCluster({
-  linkedFile,
-  missing,
-  onClear,
-  textColor,
-}: {
-  linkedFile: string | null;
-  missing?: boolean;
-  onClear: () => void;
-  textColor: string;
-}) {
-  if (!linkedFile) return null;
-  return (
-    <View style={styles.attachCluster}>
-      <ClipIcon color={textColor} />
-      {missing && <WarningIcon color={textColor} />}
-      <Pressable onPress={onClear} hitSlop={8}>
-        <Text style={[styles.attachRemove, {color: textColor}]}>✕</Text>
-      </Pressable>
-    </View>
-  );
-}
-
-interface MetaRowsProps extends Colors {
-  core: QuickAddCore;
-  task: TaskDraftState;
-  /** Remembers the tag row's widths per screen slot (render-perf-ab §3 A2). */
-  layoutKey?: string;
-  /** The capture panel: R3 only, flow chips without tags (its tags are a chip grid below), free height. */
-  capture?: boolean;
-  /** What R4 holds instead of the second tag row (the provenance line, the edit commands); the tags then page in R3 alone. */
-  row4?: React.ReactNode;
-}
-
-/**
- * R3 and R4. Two-row tags (docs/dev/history/technical-design-item-card.md
- * §5): page 0 puts the flow chips first in R3, then tags, and continues in
- * R4; past page 0 the flow chips drop out and the tags take R3's whole
- * width; with w/f, R3 holds the "Waiting on" field and R4 the tags.
- *
- * One-row tags while R4 holds something else (context-tags §8): past page 0
- * the tags take the whole R3 - "‹" is the way back to the flow chips; the
- * "Waiting on" field fills R3 on its own.
- */
-export function TaskMetaRows({core, task, layoutKey, capture = false, row4, ...colors}: MetaRowsProps) {
+/** R3: the flow chips, or with w/f the "Waiting on" field; free height. */
+export function TaskMetaRows({core, task, ...colors}: {core: QuickAddCore; task: TaskDraftState} & Colors) {
   const {textColor, borderColor, placeholderColor} = colors;
-  const budget = useTagRowBudget(layoutKey ? `${layoutKey}:task` : undefined);
   const hidden = core.displayType !== 'task' && rowStyles.hidden;
-  const waiting = task.fields.flowState === 'waiting-for';
-  const common = {
-    text: task.fields.text,
-    recentTags: core.recentTags,
-    recognizedTags: core.recognizedAbbrevTags,
-    page: task.tagPage,
-    onPageChange: task.setTagPage,
-    onInsertTag: task.insertTag,
-    onRemoveTag: task.removeTag,
-    textColor,
-    borderColor,
-  };
-  const twoRows = useTwoRowTagChips({
-    ...common,
-    widths: {
-      row3First: waiting ? 0 : budget.page0Width,
-      row3Later: waiting ? 0 : budget.laterWidth,
-      row4: budget.laterWidth,
-    },
-  });
-  const oneRow = row4 != null;
-  const row3Style = [rowStyles.row3, capture && rowStyles.row3Free, hidden];
-
-  const waitingRow = (
-    <View style={row3Style} onLayout={budget.onRowLayout}>
-      <Pressable style={[rowStyles.chip, rowStyles.chipSelected]} onPress={() => task.setFlowState(null)} hitSlop={8}>
-        <Text style={rowStyles.chipTextSelected}>w/f</Text>
-      </Pressable>
-      <TextInput
-        style={[rowStyles.input, styles.waitingInput, {color: textColor, borderColor}]}
-        value={task.fields.waitingOnText}
-        onChangeText={task.setWaitingOn}
-        placeholder="Waiting on (who/what)"
-        placeholderTextColor={placeholderColor}
-        autoCapitalize="none"
-      />
-    </View>
-  );
-  const flowRow = (tags: React.ReactNode) => (
-    <View style={row3Style} onLayout={budget.onRowLayout}>
-      <View style={rowStyles.row3ChipsGroup}>
-        <View style={rowStyles.row3Lead} onLayout={budget.onLeadLayout}>
-          {task.loopMode.kind !== 'loop' && (
-            <FlowStateChips value={task.fields.flowState} onChange={task.setFlowState} compact={!capture} textColor={textColor} borderColor={borderColor} />
-          )}
-        </View>
-        {tags}
+  const row3Style = [rowStyles.row3, rowStyles.row3Free, hidden];
+  if (task.fields.flowState === 'waiting-for') {
+    return (
+      <View style={row3Style}>
+        <Pressable style={[rowStyles.chip, rowStyles.chipSelected]} onPress={() => task.setFlowState(null)} hitSlop={8}>
+          <Text style={rowStyles.chipTextSelected}>w/f</Text>
+        </Pressable>
+        <TextInput
+          style={[rowStyles.input, styles.waitingInput, {color: textColor, borderColor}]}
+          value={task.fields.waitingOnText}
+          onChangeText={task.setWaitingOn}
+          placeholder="Waiting on (who/what)"
+          placeholderTextColor={placeholderColor}
+          autoCapitalize="none"
+        />
       </View>
-    </View>
-  );
-  const tagsOnlyRow = (tags: React.ReactNode) => (
-    <View style={row3Style} onLayout={budget.onRowLayout}>
-      {tags}
-    </View>
-  );
-
-  if (capture) return waiting ? waitingRow : flowRow(null);
-
-  let row3: React.ReactNode;
-  if (oneRow) {
-    const tags = <TagChips {...common} page0Width={budget.page0Width} laterWidth={budget.laterWidth} />;
-    row3 = task.tagPage > 0 ? tagsOnlyRow(tags) : waiting ? waitingRow : flowRow(tags);
-  } else {
-    row3 = waiting ? waitingRow : task.tagPage > 0 ? tagsOnlyRow(twoRows.row3) : flowRow(twoRows.row3);
+    );
   }
   return (
-    <>
-      {row3}
-      <View style={[rowStyles.row4, hidden]}>{oneRow ? row4 : twoRows.row4}</View>
-    </>
+    <View style={row3Style}>
+      <View style={rowStyles.row3ChipsGroup}>
+        <FlowStateChips value={task.fields.flowState} onChange={task.setFlowState} compact={false} textColor={textColor} borderColor={borderColor} />
+      </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  /** Capture: recognized text can be several lines (3 visible, up to ~6). */
+  /** Recognized text can be several lines (3 visible, up to ~6). */
   inputMultiline: {
     minHeight: 96,
     maxHeight: 170,
@@ -288,17 +160,5 @@ const styles = StyleSheet.create({
   },
   iconButtonText: {
     fontSize: FONT.medium,
-  },
-  attachCluster: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flexShrink: 0,
-    paddingLeft: 8,
-  },
-  attachRemove: {
-    fontSize: FONT.small,
-    opacity: 0.7,
-    marginLeft: 3,
-    paddingHorizontal: 4,
   },
 });

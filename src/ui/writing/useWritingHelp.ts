@@ -9,6 +9,11 @@
  *   typed space or punctuation that ends a tag. Learned corrections and the
  *   one valid reading of a date or time are applied here, visibly ("read as
  *   …") and with Undo; everything else waits for a tap.
+ * - Completion (docs/dev/history/technical-design-quickadd-redesign.md §3.2
+ *   F2): whenever the cursor rests right after an unfinished tag - after a
+ *   typed character, a burst, or a touch that puts the cursor there - and
+ *   known tags complete it, the strip offers them (a flagged fix still comes
+ *   first, as everywhere in the strip).
  * - Unanswered flagged tags (`fixes`) stay until they are answered (→, Keep),
  *   or the tag has left the text. The other states are a *moment*:
  *   a touch in the field (a selection change that is not the change's own),
@@ -22,6 +27,10 @@
  */
 import {MutableRefObject, RefObject, useEffect, useRef, useState} from 'react';
 import {TextInput} from 'react-native';
+import Clipboard from '@react-native-clipboard/clipboard';
+import {NoteSetup} from '../../domain/noteSetups';
+import {insertStarter, StarterKind, starterOptions, startersOffered} from '../../domain/writing/starters';
+import {StripView, SuggestOption} from '../../domain/writing/stripContent';
 import {Selection} from '../../domain/clipboardText';
 import {formatFullDate, formatTimeSpan} from '../../domain/dateFormat';
 import {tagSpans} from '../../domain/markdown';
@@ -33,8 +42,8 @@ import {readDate, readTime} from '../../domain/writing/readDateTime';
 import {
   addAgainHint,
   MAX_SHOWN_FIXES,
-  newTagFeedback,
   PendingFix,
+  PagePlace,
   placeFeedback,
   readAsLabel,
   StripContent,
@@ -62,13 +71,27 @@ export interface WritingHelpOptions {
   inputRef?: RefObject<TextInput | null>;
   recentTags?: readonly string[];
   /** Where the item's page would go with `text` (§1.7); null when that is not known. */
-  place?: (text: string) => {setupName: string | null; file: string} | null;
+  place?: (text: string) => PagePlace | null;
   /** A meeting's date and time strips: past or overlap. */
   warning?: string | null;
   /** A meeting's usual slot, offered while the field is empty. */
   usual?: UsualSlot | null;
   /** Fills date, time and end from the usual slot. */
   onUsual?: (slot: UsualSlot) => void;
+  /**
+   * An empty title field in create mode: the Note setups its Thread and Loop
+   * starters come from (docs/dev/history/technical-design-calmer-screens.md §3.3);
+   * null or absent: no starters (edit mode, the other fields).
+   */
+  starterSetups?: readonly NoteSetup[] | null;
+  /**
+   * Quick Add's form (docs/dev/history/technical-design-quickadd-redesign.md §3.2): the
+   * Suggest view's options for the text as it is, fitted to the strip. Absent: no
+   * Suggest view (the note title, the agreement words, the capture panel).
+   */
+  suggest?: (text: string) => SuggestOption[];
+  /** 📎 This file in the Suggest view: links the file Kept was opened from. */
+  onThisFile?: () => void;
 }
 
 export interface WritingStripActions {
@@ -79,6 +102,22 @@ export interface WritingStripActions {
   choose: (value: string) => void;
   complete: (tag: string) => void;
   usual: () => void;
+  /** Thread or Loop on an empty field: their list. */
+  starter: (kind: StarterKind) => void;
+  /** A tag of the list: inserted at the cursor. */
+  insertStarter: (insert: string) => void;
+  /** ‹ on the list: back to the starters. */
+  back: () => void;
+  /** A Suggest option: a tag inserted at the cursor, or This file linked. */
+  suggest: (option: SuggestOption) => void;
+  /** The square before ✕: Suggest ⇄ Clipboard. */
+  toggleView: () => void;
+}
+
+/** Whether the clipboard holds text (hasString where the module has it). */
+function clipboardHasText(): Promise<boolean> {
+  const module = Clipboard as unknown as {hasString?: () => Promise<boolean>; getString: () => Promise<string>};
+  return typeof module.hasString === 'function' ? module.hasString() : module.getString().then(text => text.length > 0);
 }
 
 const NO_RECENT: readonly string[] = [];
@@ -114,6 +153,13 @@ export function useWritingHelp(options: WritingHelpOptions) {
   const [moment, setMoment] = useState<StripMoment | null>(null);
   const [pending, setPending] = useState<PendingFix[]>([]);
   const [showClipboard, setShowClipboard] = useState(false);
+  // The form's resting view: Suggest, Clipboard while text is selected or after the square.
+  const [view, setViewState] = useState<StripView>('suggest');
+  const setView = (next: StripView) => {
+    if (next === view) return;
+    log(`writing: strip view=${next} field=${field}`);
+    setViewState(next);
+  };
   const [hint, setHint] = useState<string | null>(null);
   const keptRef = useRef(new Set<string>());
   const undoRef = useRef<{text: string; forget: string[]} | null>(null);
@@ -123,6 +169,9 @@ export function useWritingHelp(options: WritingHelpOptions) {
   const momentCursorRef = useRef<number | null>(null);
   const askedRef = useRef(false);
   const statusId = useRef(`writing.${++nextHelpInstance}`).current;
+  // Paste among the starters: read once per focus (§3.3), never polled.
+  const [clipText, setClipText] = useState(false);
+  const starterSetups = options.starterSetups ?? null;
   useStatus(statusId, hint ? {kind: 'info', text: hint, onDismiss: () => setHint(null)} : null);
 
   // The learned corrections are read when the field mounts, before the first burst.
@@ -147,19 +196,36 @@ export function useWritingHelp(options: WritingHelpOptions) {
     if (input && !input.isFocused?.()) input.focus();
   };
 
+  /**
+   * Offers the completions of the unfinished tag right before `cursor` (F2); false - and nothing
+   * started - when there is none or no known tag completes it.
+   */
+  const offerCompletion = (text: string, cursor: number | null, at: 'rest' | 'burst'): boolean => {
+    if (field !== 'text' || cursor === null) return false;
+    const unfinished = unfinishedTagAt(text, cursor);
+    const offered = unfinished ? completions(unfinished.token, currentKnownTagIndex(options.recentTags ?? NO_RECENT)) : [];
+    if (!unfinished || offered.length === 0) return false;
+    if (moment?.kind !== 'complete') log(`writing: complete at=${at} n=${offered.length}`);
+    completionRef.current = unfinished;
+    setShowClipboard(false);
+    startMoment({kind: 'complete', token: unfinished.token, options: offered}, cursor);
+    return true;
+  };
+
   /** The feedback line for `text` (§1.7), or null without a place. */
-  const feedbackFor = (text: string, newTag: string | null): StripMoment | null => {
+  const feedbackFor = (text: string): StripMoment | null => {
     const place = options.place?.(text);
     if (!place) return null;
-    return {kind: 'feedback', text: newTag ? newTagFeedback(newTag, place.file) : placeFeedback(place.setupName, place.file)};
+    return {kind: 'feedback', text: placeFeedback(place)};
   };
 
   const changeText = (next: string, span: ReturnType<typeof insertedSpan>) => {
     const burst = isBurst(span);
     const checked = burst && span ? [span] : tagsEndedBy(next, span);
     if (checked.length === 0) {
-      if (moment) startMoment(null, null);
       write(next);
+      // A typed character: the cursor rests after it.
+      if (!offerCompletion(next, span ? span.end : null, 'rest') && moment) startMoment(null, null);
       return;
     }
     const index = currentKnownTagIndex(options.recentTags ?? NO_RECENT);
@@ -186,16 +252,8 @@ export function useWritingHelp(options: WritingHelpOptions) {
       startMoment({kind: 'read', label: readAsLabel(learned.map(f => `#${f.suggestion}`).join(' '))}, cursor);
       return;
     }
-    const unfinished = burst ? unfinishedTagAt(text, cursor) : null;
-    const options3 = unfinished ? completions(unfinished.token, index) : [];
-    if (unfinished && options3.length > 0) {
-      completionRef.current = unfinished;
-      setShowClipboard(false);
-      startMoment({kind: 'complete', options: options3}, cursor);
-      return;
-    }
-    const fresh = found.find(f => f.kind === 'new');
-    startMoment(merged.length === 0 && tagCount > 0 ? feedbackFor(text, fresh?.written ?? null) : null, cursor);
+    if (burst && offerCompletion(text, cursor, 'burst')) return;
+    startMoment(merged.length === 0 && tagCount > 0 ? feedbackFor(text) : null, cursor);
   };
 
   const changeDateTime = (next: string, span: ReturnType<typeof insertedSpan>) => {
@@ -230,18 +288,29 @@ export function useWritingHelp(options: WritingHelpOptions) {
     else changeDateTime(next, span);
   };
 
-  /** A touch in the field ends a moment; the change's own selection does not. */
+  /**
+   * A touch in the field ends a moment; the change's own selection does not. A cursor that comes
+   * to rest right after an unfinished tag offers its completions (F2).
+   */
   const onSelectionChange = (selection: Selection) => {
-    if (!moment || !selection) return;
-    const at = momentCursorRef.current;
-    if (selection.start === selection.end && selection.start === at) return;
-    startMoment(null, null);
+    if (!selection) return;
+    const collapsed = selection.start === selection.end;
+    // A selection shows the clipboard view; when it ends, the suggestions come back.
+    if (options.suggest) setView(collapsed ? 'suggest' : 'clipboard');
+    if (moment && collapsed && selection.start === momentCursorRef.current) return;
+    if (collapsed && fixes.length === 0 && offerCompletion(value, selection.start, 'rest')) return;
+    if (moment) startMoment(null, null);
   };
 
   /** A new focus starts at rest (the strip was hidden while the field had none). */
   const onFocus = () => {
     if (moment) startMoment(null, null);
     if (showClipboard) setShowClipboard(false);
+    if (starterSetups) {
+      clipboardHasText()
+        .then(setClipText)
+        .catch(e => logWarn('writing: clipboard not readable', errorMessage(e)));
+    }
   };
 
   const actions: WritingStripActions = {
@@ -260,14 +329,14 @@ export function useWritingHelp(options: WritingHelpOptions) {
       learnFix(fix.written, fix.suggestion).catch(e => logWarn('writing: learning a fix failed', errorMessage(e)));
       const rest = pending.filter(p => p.written !== fix.written);
       setPending(rest);
-      if (liveFixes(rest, text).length === 0) startMoment(feedbackFor(text, null), cursor);
+      if (liveFixes(rest, text).length === 0) startMoment(feedbackFor(text), cursor);
       refocus();
     },
     keep: () => {
       log(`writing: tap keep n=${fixes.length}`);
       for (const f of fixes) keptRef.current.add(f.written.toLowerCase());
       setPending([]);
-      startMoment(feedbackFor(value, null), selectionRef.current?.end ?? null);
+      startMoment(feedbackFor(value), selectionRef.current?.end ?? null);
       refocus();
     },
     edit: () => {
@@ -310,6 +379,53 @@ export function useWritingHelp(options: WritingHelpOptions) {
       if (!options.usual || !options.onUsual) return;
       log('writing: tap usual');
       options.onUsual(options.usual);
+    },
+    starter: kind => {
+      const list = starterOptions(starterSetups ?? [], kind);
+      log(`writing: starters kind=${kind} n=${list.length}`);
+      startMoment({kind: 'starterList', options: list}, selectionRef.current?.end ?? null);
+      refocus();
+    },
+    insertStarter: insert => {
+      log('writing: tap starter');
+      const {text, cursor} = insertStarter(value, selectionRef.current?.end ?? null, insert);
+      write(text);
+      moveCursor(cursor);
+      // The tag's counterparts or loops follow, as after a recognized `type/`.
+      const unfinished = unfinishedTagAt(text, cursor);
+      const offered = unfinished ? completions(unfinished.token, currentKnownTagIndex(options.recentTags ?? NO_RECENT)) : [];
+      if (unfinished && offered.length > 0) {
+        completionRef.current = unfinished;
+        startMoment({kind: 'complete', token: unfinished.token, options: offered}, cursor);
+      } else startMoment(null, null);
+      refocus();
+    },
+    back: () => {
+      startMoment(null, null);
+      refocus();
+    },
+    suggest: option => {
+      if (option.kind === 'thisFile') {
+        log('writing: tap suggest kind=thisFile');
+        options.onThisFile?.();
+        refocus();
+        return;
+      }
+      log('writing: tap suggest kind=tag');
+      const {text, cursor} = insertStarter(value, selectionRef.current?.end ?? null, `#${option.tag} `);
+      write(text);
+      moveCursor(cursor);
+      startMoment(null, null);
+      refocus();
+    },
+    toggleView: () => {
+      // The clipboard square of a fix, a completion or the place line shows the clipboard over
+      // either view: the bolt then goes back to the suggestions.
+      if (showClipboard) {
+        setShowClipboard(false);
+        setView('suggest');
+      } else setView(view === 'suggest' ? 'clipboard' : 'suggest');
+      refocus();
     },
   };
 
@@ -354,6 +470,9 @@ export function useWritingHelp(options: WritingHelpOptions) {
     if (found.length > 0) log(`writing: capture checked tags=${tagSpans(text).length} fix=${fixesFound.length}`);
   };
 
+  /** The box opened again: the strip starts on Suggest. */
+  const resetView = () => setViewState('suggest');
+
   /** After a save: a new draft starts without fixes, kept tags or hint. */
   const reset = () => {
     setPending([]);
@@ -365,8 +484,10 @@ export function useWritingHelp(options: WritingHelpOptions) {
     undoRef.current = null;
   };
 
-  const strip: StripContent = stripContent({field, value, fixes, moment, showClipboard, warning: options.warning, usual: options.usual});
-  return {strip, actions, onChangeText, onSelectionChange, onFocus, confirmAdd, reset, checkSeed};
+  const starters = starterSetups ? startersOffered(starterSetups, clipText) : null;
+  const suggest = options.suggest ? options.suggest(value) : null;
+  const strip: StripContent = stripContent({field, value, fixes, moment, showClipboard, warning: options.warning, usual: options.usual, starters, suggest, view});
+  return {strip, view, actions, onChangeText, onSelectionChange, onFocus, confirmAdd, reset, resetView, checkSeed};
 }
 
 export type WritingHelp = ReturnType<typeof useWritingHelp>;

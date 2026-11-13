@@ -43,6 +43,7 @@ import {ClipIcon, TrackingBoxIcon} from './icons';
 import {renderTaggableText} from './TaggableText';
 import {FONT} from './theme';
 import {perfCount, usePerfRender} from '../utils/perf';
+import {RowSelection, useSelectedMode} from './selectionStore';
 
 /**
  * What a screen supplies to switch a meeting list's prep/review icons on: the
@@ -88,11 +89,19 @@ export interface MeetingRowProps {
   highlight?: 'mark';
   tracking?: MeetingTrackingConfig;
   note?: {onOpen: () => void; onCreate: () => void};
+  /** The notebook icon only where the meeting has a note - none to create one (Daily, Current; docs/dev/history/technical-design-calmer-screens.md §3.4). */
+  noteOnlyWhenExists?: boolean;
   /** The clip, shown only when a file is linked; tapping it opens the file. */
   file?: {linkedFile: string; onOpen?: (linkedFile: string) => void};
   /** Tap on the title or the status icon: select for editing (most lists) or select (Review close-out). */
   onPress?: () => void;
   state?: 'editing' | 'arming' | 'selected' | 'done';
+  /**
+   * The screen's selection store and this row's key (ui/selectionStore.ts): the
+   * row reads whether it is selected itself, so a tap re-renders only the rows
+   * whose mark changes. An explicit `state` wins.
+   */
+  selection?: RowSelection;
   /** Outside the active context (domain/contexts.ts): drawn faint, still tappable. */
   dimmed?: boolean;
   /** The item this meeting lives in (the Inbox folder for Inbox rows): owner of the overview its nested tags open. */
@@ -110,6 +119,7 @@ function MeetingRowV2({
   highlight,
   tracking,
   note,
+  noteOnlyWhenExists,
   file,
   onPress,
   state,
@@ -125,7 +135,7 @@ function MeetingRowV2({
   const trackingState = tracking ? resolveMeetingTracking(meeting, tracking.setups) : null;
   const highlighted = isHighlight(meeting);
   const focusBlock = isFocusBlock(meeting);
-  const noteShown = note && (!!meeting.notePath || !focusBlock || !tracking || focusBlockNoteTarget(meeting, tracking.setups.setups, false) === 'meeting');
+  const noteShown = note && (!!meeting.notePath || !noteOnlyWhenExists) && (!!meeting.notePath || !focusBlock || !tracking || focusBlockNoteTarget(meeting, tracking.setups.setups, false) === 'meeting');
   const done = state === 'done';
 
   // 2-line row without a source line (single-item lists): the title may use
@@ -289,10 +299,14 @@ const v2 = StyleSheet.create({
   noteText: {fontSize: FONT.small, includeFontPadding: false},
 });
 
-/** The standard meeting row - see the module doc comment. */
-export default function MeetingRow(props: MeetingRowProps): React.JSX.Element {
+/** The standard meeting row - see the module doc comment. Memoized: a list re-render with the same props skips it. */
+function MeetingRow(props: MeetingRowProps): React.JSX.Element {
   perfCount('row:meeting');
   usePerfRender('MeetingRow');
-  return <MeetingRowV2 {...props} />;
+  const mode = useSelectedMode(props.selection?.store, props.selection?.key);
+  const state = props.state ?? (mode === null ? undefined : mode === 'edit' ? 'editing' : 'selected');
+  return <MeetingRowV2 {...props} state={state} />;
 }
+
+export default React.memo(MeetingRow);
 

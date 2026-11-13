@@ -15,16 +15,20 @@ import {isCounterpartType, threadOf} from '../../domain/threads';
 import {Meeting} from '../../domain/types';
 import {isPastNew, overlapOf, UsualSlot, usualSlot} from '../../domain/writing/meetingHints';
 import {overlapWarning, PAST_WARNING} from '../../domain/writing/stripContent';
+import {shortWarning} from '../../domain/writing/whenSteps';
 import {getCachedData, getCachedInbox} from '../../storage/dataCache';
 import {peekSettings} from '../../storage/settingsSnapshot';
 
 export interface DraftMeetingHints {
   dateWarning: string | null;
   timeWarning: string | null;
+  /** The same warnings in the strips' short form (`⚠ past`, `⚠ Team JF 15:00`). */
+  dateShort: string | null;
+  timeShort: string | null;
   usual: UsualSlot | null;
 }
 
-export const NO_MEETING_HINTS: DraftMeetingHints = {dateWarning: null, timeWarning: null, usual: null};
+export const NO_MEETING_HINTS: DraftMeetingHints = {dateWarning: null, timeWarning: null, dateShort: null, timeShort: null, usual: null};
 
 function allMeetings(): Meeting[] {
   const items = getCachedData()?.items ?? [];
@@ -51,17 +55,25 @@ export function draftMeetingHints(draft: {title: string; date: string; time: str
   const endTime = when.ok ? when.value.endTime : '';
   let dateWarning: string | null = null;
   let timeWarning: string | null = null;
+  let dateShort: string | null = null;
+  let timeShort: string | null = null;
   if (!editing && isValidIsoDate(draft.date)) {
-    const past = isPastNew(draft.date, time, now) ? PAST_WARNING : null;
+    const isPast = isPastNew(draft.date, time, now);
+    const past = isPast ? PAST_WARNING : null;
     const other = time ? overlapOf({date: draft.date, time, endTime}, meetings) : null;
-    const overlap = other ? overlapWarning(stripAllTags(meetingDisplayTitle(other)) || other.title, other.time) : null;
+    const otherTitle = other ? stripAllTags(meetingDisplayTitle(other)) || other.title : '';
+    const overlap = other ? overlapWarning(otherTitle, other.time) : null;
     dateWarning = past ?? overlap;
     timeWarning = overlap ?? past;
+    const pastShort = isPast ? shortWarning({kind: 'past'}) : null;
+    const overlapShort = other ? shortWarning({kind: 'overlap', title: otherTitle, time: other.time}) : null;
+    dateShort = pastShort ?? overlapShort;
+    timeShort = overlapShort ?? pastShort;
   }
   let usual: UsualSlot | null = null;
   if (!draft.time.trim()) {
     const tag = seriesTag(extractContextTags(draft.title));
     if (tag) usual = usualSlot(meetingsOfTag(meetings.map(meeting => ({meeting})), tag).map(e => e.meeting), now);
   }
-  return {dateWarning, timeWarning, usual};
+  return {dateWarning, timeWarning, dateShort, timeShort, usual};
 }

@@ -12,14 +12,14 @@ Like a todo, an agreement belongs where its tags say:
 - *A loop*: tagged with the loop, for example `#workshop/offsite`. It shows in the [loop's overview](loops.md#the-loop-overview).
 - *A project or area*: no thread or loop tag. It shows on its [page](projects-and-areas.md#the-current-tab).
 
-It is written into the file that owns this place: for a thread the area's `area.txt` (or the project's `project.txt` when the project has no area), for a loop the file the loop lives in, for a project or area its own file. Agreements are never kept in the [Inbox](quick-add.md#the-inbox).
+It is written into the file that owns this place: for a thread the area's `area.txt` (or the project's `project.txt` when the project has no area), for a loop the file the loop lives in, for a project or area its own file. Agreements are never kept in the [Inbox](daily.md#the-inbox).
 
 ## Adding one
 
 [Quick Add](quick-add.md#adding-an-agreement) has a tab **Agreement** wherever it knows who the agreement is with: in a [thread](threads.md#adding-from-the-overview) or loop overview, on a project's or area's page, and in [Engage](engage.md).
 
 1. Choose **Agreement** and write the words. Tags work as for todos.
-2. Optionally tap **valid till**. A strip hovers over the tabs: **none**, **+1 m**, **+3 m**, **end of year**, and **…** to type another day. **✕** puts it away.
+2. Optionally tap **valid till** in the third row. A strip shows over the second line of the text: **none**, **+1 m**, **+3 m**, **end of year**, and **…** to type another day. **✕** puts it away.
 3. Tap **+ Add**. The [status line](index.md#the-status-line) says where it went, for example "Agreement added to Coaching".
 
 With the [lasso](lasso.md#capturing-an-agreement), or when you [process a mark](lasso.md#processing-marks), choose **Agreement** in the capture panel.
@@ -39,9 +39,9 @@ Tap an agreement to see its card in Quick Add's place, as for a [todo](quick-add
 
 ## Changing and ending
 
-Agreements are never deleted: the old wording stays in your file.
+Agreements are never deleted: the old wording stays in your file. There is one way to change one, even for a typo: a new version, which ends the old one.
 
-- **Change**: Quick Add opens with the words of the agreement and the grey line "↳ replaces …". Write the new agreement and tap **+ Add**: the old one is ended today and the new one is added after it. **Cancel** (or the ✕ in the grey line) leaves the old one as it is.
+- **Change** - or a tap on the agreement's words on its card: Quick Add opens with the words of the agreement and the grey line "↳ replaces …". Write the new agreement and tap **+ Add**: the old one is ended today and the new one is added after it. **✕** next to **+ Add** (or the ✕ in the grey line) leaves the old one as it is.
 - **End**: asks once, then marks the agreement ended today.
 
 ## Where agreements show

@@ -1,13 +1,13 @@
 // docs/dev/history/technical-design-writing-help.md §6, scenarios 1-10: tags in Quick Add.
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {screen} from '@testing-library/react-native';
+import {fireEvent, screen} from '@testing-library/react-native';
 import {NoteSetup, seedNoteSetupDefaults} from '../../src/domain/noteSetups';
 import {GtdParaSettings} from '../../src/domain/settings';
-import {expectNotShows, expectShows, fieldValue, focus, openApp, tap, tapTab, type} from '../../test-helpers/scenario/app';
+import {expectNotShows, expectShows, fieldValue, focus, labelled, openApp, settle, tap, tapTab, type} from '../../test-helpers/scenario/app';
 import {dataFile, projectFile, putFile, sectionLines} from '../../test-helpers/scenario/files';
 import {given, scenario, then, when} from '../../test-helpers/scenario/scenario';
 
-const TITLE = 'New meeting title';
+const TITLE = 'New meeting';
 
 function setup(id: string, name: string, tag: string, notebook: string): NoteSetup {
   return {id, name, kind: 'thread', tags: [tag], enabled: true, notebook: {name: notebook, folder: 'Meetings'}, pages: {}, tracking: {trackPrep: false, trackReview: false}};
@@ -34,10 +34,10 @@ scenario('Handwriting writes #DaiIy: the strip suggests #daily', {feature: 'Writ
     await openMeetingTab();
     await type(TITLE, 'stand-up #DaiIy');
   });
-  then('the strip shows → #daily, Keep and Edit ›, and the title is unchanged', () => {
+  then('the strip shows → #daily, Keep and the clipboard square, and the title is unchanged', () => {
     expectShows('→ #daily');
     expectShows('Keep');
-    expectShows('Edit ›');
+    expect(labelled('Clipboard')).not.toBeNull();
     expect(fieldValue(TITLE)).toBe('stand-up #DaiIy');
   });
   when('I tap → #daily', async () => {
@@ -45,7 +45,7 @@ scenario('Handwriting writes #DaiIy: the strip suggests #daily', {feature: 'Writ
   });
   then('the title reads "stand-up #daily" and the strip says where its page goes', () => {
     expect(fieldValue(TITLE)).toBe('stand-up #daily');
-    expectShows('✓ Daily · Meetings/Daily.note');
+    expectShows('#daily: Website/Meetings/Daily.note');
   });
 });
 
@@ -79,7 +79,7 @@ scenario('A known tag in another case is never questioned', {feature: 'Writing h
   });
   then('nothing is flagged and the strip says where its page goes', () => {
     expectNotShows(/^→ #/);
-    expectShows('✓ Daily · Meetings/Daily.note');
+    expectShows('#daily: Website/Meetings/Daily.note');
     expect(fieldValue(TITLE)).toBe('stand-up #Daily');
   });
 });
@@ -127,13 +127,14 @@ scenario('+ Add with a suggestion open asks once, the second + Add saves as writ
   });
 });
 
-scenario('A new tag with nothing close is no question', {feature: 'Writing help', design: 'technical-design-writing-help.md', help: 'quick-add.md#tag-suggestions'}, () => {
+scenario('A new tag with nothing close is no question; the strip names the home notebook', {feature: 'Writing help', design: 'technical-design-writing-help.md', help: 'quick-add.md#tag-suggestions'}, () => {
   when('I write "plan #offsite27"', async () => {
     await openMeetingTab();
     await type(TITLE, 'plan #offsite27');
   });
-  then('the strip names the new tag and the home notebook', () => {
-    expectShows('New tag #offsite27 · Website 2026.note');
+  then('the strip names the project\'s home notebook, no "New tag"', () => {
+    expectShows('Project home note: Website/Website 2026.note');
+    expectNotShows(/^New tag/);
   });
   when('I tap + Add', async () => {
     await tap('+ Add');
@@ -160,7 +161,7 @@ scenario('An unfinished tag is completed from the known ones', {feature: 'Writin
   });
 });
 
-scenario('Completion shows an abbreviation with its project', {feature: 'Writing help', design: 'technical-design-writing-help.md', help: 'quick-add.md#completing-a-tag'}, () => {
+scenario('Completion offers an abbreviation in upper case, without its project name', {feature: 'Writing help', design: 'technical-design-writing-help.md', help: 'quick-add.md#completing-a-tag'}, () => {
   given('project "Garden renovation" with the abbreviation GR', () => {
     putFile(projectFile('Garden renovation'), dataFile('project', {Scope: [], Tasks: [], Meetings: []}, ['abbrev: GR']));
   });
@@ -168,9 +169,12 @@ scenario('Completion shows an abbreviation with its project', {feature: 'Writing
     await openMeetingTab();
     await type(TITLE, 'call #g');
   });
-  then('the strip offers #gr with "Garden renovation"', () => {
-    expectShows('#gr Garden renovation');
+  then('the strip offers #GR in upper case, without "Garden renovation"', () => {
+    expectShows('#GR');
+    expectNotShows('Garden renovation');
   });
+  when('I tap #GR', () => tap('#GR'));
+  then('the title reads "call #GR "', () => expect(fieldValue(TITLE)).toBe('call #GR '));
 });
 
 scenario('One tap fixes every place the tag is written so', {feature: 'Writing help', design: 'technical-design-writing-help.md', help: 'quick-add.md#tag-suggestions'}, () => {
@@ -196,5 +200,35 @@ scenario('A learned correction ended by a typed space keeps the cursor after the
   then('the title reads "x #daily " with the cursor at its end', () => {
     expect(fieldValue(TITLE)).toBe('x #daily ');
     expect(screen.getByPlaceholderText(TITLE).props.selection).toEqual({start: 9, end: 9});
+  });
+});
+
+scenario('A tag typed letter by letter is completed while the cursor rests after it', {feature: 'Writing help', design: 'technical-design-quickadd-redesign.md', help: 'quick-add.md#completing-a-tag'}, () => {
+  when('with #daily known I type "Call #dai" one letter at a time', async () => {
+    await openMeetingTab(['- 2026-10-01 10:00 Standup #daily']);
+    const text = 'Call #dai';
+    for (let i = 1; i <= text.length; i++) await type(TITLE, text.slice(0, i));
+  });
+  then('the strip offers #daily', () => {
+    expectShows('#daily');
+  });
+  when('I tap #daily', () => tap('#daily'));
+  then('the tag is finished and followed by a space', () => {
+    expect(fieldValue(TITLE)).toBe('Call #daily ');
+  });
+});
+
+scenario('Putting the cursor right after an unfinished tag offers its completion', {feature: 'Writing help', design: 'technical-design-quickadd-redesign.md', help: 'quick-add.md#completing-a-tag'}, () => {
+  when('with #daily known the title reads "Call #dai about notes" and I touch right after "#dai"', async () => {
+    await openMeetingTab(['- 2026-10-01 10:00 Standup #daily']);
+    await type(TITLE, 'Call #dai about notes');
+    const field = screen.getByPlaceholderText(TITLE);
+    fireEvent(field, 'selectionChange', {nativeEvent: {selection: {start: 9, end: 9}}});
+    await settle(2);
+  });
+  then('the strip offers #daily', () => expectShows('#daily'));
+  when('I tap #daily', () => tap('#daily'));
+  then('only that tag is finished', () => {
+    expect(fieldValue(TITLE)).toBe('Call #daily about notes');
   });
 });

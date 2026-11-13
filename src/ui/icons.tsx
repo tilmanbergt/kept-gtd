@@ -160,3 +160,65 @@ export function NotebookIcon({size = 22, color = '#000000', plus = false}: IconP
     </Svg>
   );
 }
+
+/**
+ * Feather-style bell, stroke-only: a count tab's due mark (ui/CountTabs.tsx,
+ * docs/dev/history/technical-design-calmer-screens.md §3.5) - the number next to
+ * it says how many are due; no colour.
+ */
+export function BellIcon({size = 14, color = '#000000'}: IconProps): React.JSX.Element {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Path
+        d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"
+        fill="none"
+        stroke={color}
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>
+  );
+}
+
+/**
+ * A clipboard, stroke-only: the strips' square that switches to All · Copy · Cut · Paste
+ * (docs/dev/history/technical-design-quickadd-redesign.md §11, G1, G3).
+ */
+export function ClipboardIcon({size = 20, color = '#000000'}: IconProps): React.JSX.Element {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Rect x={5} y={4} width={14} height={17} rx={1.5} fill="none" stroke={color} strokeWidth={2.2} strokeLinejoin="round" />
+      <Rect x={9} y={2} width={6} height={4} rx={1} fill="#ffffff" stroke={color} strokeWidth={2.2} />
+      <Path d="M8.5 11h7M8.5 15h7" fill="none" stroke={color} strokeWidth={2.2} strokeLinecap="round" />
+    </Svg>
+  );
+}
+
+/** A filled lightning bolt: the strips' square back to ⚡ Suggest - drawn, as the emoji shows too light on e-ink (G1). */
+export function BoltIcon({size = 20, color = '#000000'}: IconProps): React.JSX.Element {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Path d="M13 2L4 14h7l-1 8 9-12h-7z" fill={color} />
+    </Svg>
+  );
+}
+
+/** A calendar page, stroke-only: the todo form's due-date square (G1). */
+export function CalendarIcon({size = 20, color = '#000000'}: IconProps): React.JSX.Element {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Rect x={3} y={5} width={18} height={16} rx={1.5} fill="none" stroke={color} strokeWidth={2} />
+      <Path d="M3 10h18M8 3v4M16 3v4" fill="none" stroke={color} strokeWidth={2} strokeLinecap="round" />
+    </Svg>
+  );
+}
+
+/** A folder, stroke-only: the note form's folder (G1). */
+export function FolderIcon({size = 18, color = '#000000'}: IconProps): React.JSX.Element {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24">
+      <Path d="M3 6a1 1 0 0 1 1-1h5l2 2h9a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z" fill="none" stroke={color} strokeWidth={2} strokeLinejoin="round" />
+    </Svg>
+  );
+}

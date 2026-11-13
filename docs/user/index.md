@@ -5,9 +5,8 @@ Kept GTD is a calm GTD and PARA workspace for the Supernote. Your projects, area
 ## The tabs at a glance
 
 - The [Projects](projects-and-areas.md) and [Areas](projects-and-areas.md) tabs: all your projects and areas, [create new ones](projects-and-areas.md#creating-one)
-- The [Daily](daily.md) tab: today and tomorrow - your schedule and the todos that matter now
+- The [Daily](daily.md) tab: today and tomorrow - your schedule and the todos that matter now, and the [Inbox](daily.md#the-inbox): everything captured but not yet filed
 - The [Week](week-and-month.md#week) and [Month](week-and-month.md#month) tabs: plan the week and the month, and see where your time went ([Given time](week-and-month.md#given-time))
-- The [Inbox](quick-add.md#the-inbox) tab: everything captured but not yet filed
 - The [Current](projects-and-areas.md#the-current-tab) tab: the project or area you opened last, with its todos, meetings, files and notes
 - The [Review](review.md) tab: the Weekly Review, one step at a time
 - The [Settings](settings.md) tab: [folders](settings.md#folders), [contexts](contexts.md#setting-up-contexts), [Note setups](note-setups.md), [features](settings.md#features), [advanced options](settings.md#advanced), [About](settings.md#about)
@@ -22,6 +21,7 @@ The strip under the tab bar is the status line. Every message of Kept shows ther
 
 - A question has its buttons on the right, for example **Create** or **Use mine**. Nothing happens until you tap one; ✕ cancels.
 - ✕ also clears a message once you have read it.
+- What was saved or done goes by itself after a few seconds (with **Undo**, a little longer), or when the next one comes: a new message of this kind replaces the old one. Questions, errors and warnings stay until you answer or clear them.
 - A message too long for the line ends with …; tap it to read it in full.
 - When several messages wait, ‹ and › with "1/3" page through them. The most important one comes first: questions before errors, errors before the rest.
 

@@ -29,8 +29,6 @@ So the follow-up pages after a meeting's page belong to that meeting: the [meeti
 
 A cancelled todo's or meeting's page still starts a section of its owner, but nothing becomes current and there is no meeting line. Pages before the first section, and notes Kept can't read, belong to the notebook's owner. A todo's or meeting's own note is as before: every page is its.
 
-A line under the header names the section, for example "Section: Coach call · 24.10." on the meeting's page, "Section: Training plan · from p. 7" on a later page, or "Section: Handwritten section" for a handwritten heading. Kept can't read handwriting, so it doesn't say what the heading says.
-
 A heading you just wrote on the open page counts once the Supernote saved the page, for example after you turned to another page and back.
 
 ## What belongs to an owner
@@ -50,16 +48,15 @@ A meeting that ends early, or runs late: tap the moment you are in. Engage keeps
 Under the line, a row of buttons shows what fits the moment - at most three, and no row at all when nothing is needed:
 
 - **Before**: **Mark prepped** (when the meeting's Note setup [tracks prep](meetings.md#preparation-and-review) and it isn't ticked yet) and **Note from last meeting ›** (opens the note of the previous meeting with this owner).
-- **During**: **+ Next sparring** (the thread's type, or the loop's kind) when no meeting of the thread or loop is planned after this one. It opens Quick Add's Meeting tab with the next meeting copied from this one, see [+ Next sparring](threads.md#-next-sparring).
+- **During**: **+ Next sparring** (the thread's type, or the loop's kind) when no meeting of the thread or loop is planned after this one. It opens Quick Add's meeting form with the next meeting copied from this one, see [+ Next sparring](threads.md#-next-sparring).
 - **After**: **Reflect ›** (**Reflection ›** once it exists; not on the Reflection page itself) opens the meeting's [Reflection page](meetings.md#reflection-page) and closes the panel, **Mark reviewed** (when the setup tracks review), and **+ Next sparring** as above.
 
 During and after the meeting, what you add in Engage's Quick Add records the meeting (see [Quick Add, marks and leaving](engage.md#quick-add-marks-and-leaving)).
 
 ## Next here and Today next
 
-- **Next here**, under the header, names the owner's next meeting at any distance, for example "Next here: Thu 23.10. 10:00 Sparring Jordan ›". Tap it to open the meeting's note (or create it, after the [usual question](note-setups.md#before-a-note-is-created)); the panel closes. Without a meeting ahead the line is hidden, and so it is while it would name the meeting whose page you are on. For a loop the loop's own line names it (below).
-- A *loop* has one line under the header, for example "Loop since 2.10. · 3 open   next: Thu 23.10. Workshop ›": since when it runs (its first meeting or todo), its open todos, and its next meeting, whose note a tap opens. With no meeting ahead it offers **+ Next workshop** instead.
-- **Today next**, quiet above **Open Kept GTD**, names your next meeting today with a time, from all projects, areas and the [Inbox](quick-add.md#the-inbox), for example "Today next: 14:00 Plan the beds · in 40 min". How long until it starts shows only when it is less than three hours away. It is worked out when the panel opens or its data changes - there is no ticking clock. When it is the same meeting as Next here, it is left out and Next here says "· next today".
+- **Next here**, under the header, names the owner's next meeting at any distance, for example "Next here: Thu 23.10. 10:00 Sparring Jordan ›". Tap it to open the meeting's note (or create it, after the [usual question](note-setups.md#before-a-note-is-created)); the panel closes. Without a meeting ahead the line is hidden, and so it is while it would name the meeting whose page you are on. For a loop it names the loop's next meeting; a new one is planned in the [loop overview](loops.md#the-loop-overview).
+- **Today next**, quiet above **Open Kept GTD**, names your next meeting today with a time, from all projects, areas and the [Inbox](daily.md#the-inbox), for example "Today next: 14:00 Plan the beds · in 40 min". How long until it starts shows only when it is less than three hours away. It is worked out when the panel opens or its data changes - there is no ticking clock. When it is the same meeting as Next here, it is left out and Next here says "· next today".
 
 ## Working on
 
@@ -68,9 +65,9 @@ The todo you are working on stands at the top under **Working on**. When you hav
 - A line with what matters about it: the [due date](tags.md#due-dates) (with "overdue"), or for a Waiting For who you are waiting for and when to follow up.
 - The meeting it was agreed in, for example "From Sparring Jordan · 14.10. ›": tap it to open that meeting's note.
 - The large **✓** on the right ticks it off.
-- **w/f Jordan** makes it a Waiting For on the thread's [counterpart](threads.md) (`#wf/jordan` instead of `#next`); for a loop or a project it is **w/f**, a plain `#wf`. **Do someday** parks it. **Remove #next** (when it has `#next`) sends it back to the plan ([Flow tags for todos](tags.md#flow-tags-for-todos)).
+- **w/f Jordan** makes it a Waiting For on the thread's [counterpart](threads.md) (`#wf/jordan` instead of `#next`); for a loop or a project it is **w/f**, a plain `#wf`. **Someday** parks it. **More ›** shows the rest in the same row, with **‹** back: **Remove #next** (when it has `#next`) sends it back to the plan ([Flow tags for todos](tags.md#flow-tags-for-todos)), and the linked file (below).
 - **Note ›** opens its note, or its page in a loop note or a shared notebook. Without a note, **+ Note** creates one the usual way: the [status line](index.md#the-status-line) first asks where it goes, and nothing is created without your confirmation.
-- **File: name ›** opens the [file linked to it](quick-add.md#notes-and-files-on-a-todo-or-meeting), for example a PDF.
+- **File: name ›** under **More ›** opens the [file linked to it](quick-add.md#notes-and-files-on-a-todo-or-meeting), for example a PDF.
 
 Opening the note or the file closes the panel: the note is in front now.
 
@@ -109,7 +106,7 @@ With no open todo and no meeting ahead, Engage says **Nothing left in** the owne
 
 ## Choosing another owner
 
-Engage never moves on to another owner by itself. **Today's schedule ›** lists the owners of today's meetings and focus blocks that are not over yet, in time order: a line per loop, thread, Project or Area, with how many next actions it has or "pick next". The meetings of the [Inbox](quick-add.md#the-inbox) have no owner and no line. With nothing scheduled, it says **Nothing scheduled today.** Tap a line to work on that owner; **‹ Back** returns.
+Engage never moves on to another owner by itself. **Today's schedule ›** lists the owners of today's meetings and focus blocks that are not over yet, in time order: a line per loop, thread, Project or Area, with how many next actions it has or "pick next". The meetings of the [Inbox](daily.md#the-inbox) have no owner and no line. With nothing scheduled, it says **Nothing scheduled today.** Tap a line to work on that owner; **‹ Back** returns.
 
 ## Quick Add, marks and leaving
 

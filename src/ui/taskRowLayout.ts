@@ -14,9 +14,12 @@
  * result is remembered per Task object (docs/dev/history/technical-design-daily-slim.md
  * §3.4): the key holds every argument plus `task.text`, which carries every tag
  * the layout reads, and the due date, so a Task changed in place or a new day gets a fresh layout.
+ * The mode (`context`) is part of the key: a quiet row (§3.4 of
+ * docs/dev/history/technical-design-calmer-screens.md) lays out differently.
  * Perf counters: `calc:taskRowLayout` (computed), `calc:taskRowLayoutHit`.
  */
-import {TaskLabel, TaskLabelContext, displayTaskText, taskLabels} from '../domain/taskLabels';
+import {inboxTodoMeta} from '../domain/inboxCount';
+import {QuietMeta, quietMeta, TaskLabel, TaskLabelContext, displayTaskText, taskLabels} from '../domain/taskLabels';
 import {todayIso} from '../domain/meetingTime';
 import {Task} from '../domain/types';
 import {activeLineEstimator} from '../domain/textLineEstimator';
@@ -37,6 +40,19 @@ const ELLIPSIS = '…';
 /** Width the title-and-labels text gets in a row of `columnWidthPx`. */
 export function taskTextWidthPx(columnWidthPx: number): number {
   return Math.max(1, columnWidthPx - CHECKBOX_WIDTH_PX - TRAILING_ICON_ALLOWANCE_PX);
+}
+
+// A quiet row (docs/dev/history/technical-design-calmer-screens.md §3.4): the note
+// on the right at FONT.small (about 8 dp a character, an estimate that errs
+// wide) with its margin, and the notebook icon only when the todo has a note.
+const QUIET_META_CHAR_PX = 8;
+const QUIET_META_MARGIN_PX = 12;
+const QUIET_NOTE_ICON_PX = 34;
+
+/** Width a quiet row's title gets beside its note and icon. */
+export function quietTextWidthPx(columnWidthPx: number, meta: QuietMeta | null, hasNote: boolean): number {
+  const metaPx = meta ? meta.text.length * QUIET_META_CHAR_PX + QUIET_META_MARGIN_PX : 0;
+  return Math.max(1, columnWidthPx - CHECKBOX_WIDTH_PX - metaPx - (hasNote ? QUIET_NOTE_ICON_PX : 0));
 }
 
 function linesFor(text: string, widthPx: number): number {
@@ -76,6 +92,8 @@ export interface TaskRowLayout {
   labels: TaskLabel[];
   /** Lines the title and labels take together (1..TASK_ROW_MAX_LINES). */
   lines: number;
+  /** A quiet row's note on the right; null elsewhere. */
+  meta: QuietMeta | null;
 }
 
 const layoutCache = new WeakMap<Task, {key: string; layout: TaskRowLayout}>();
@@ -86,7 +104,7 @@ export function taskRowLayout(
   context: TaskLabelContext,
   today: string = todayIso(),
 ): TaskRowLayout {
-  const key = `${columnWidthPx}|${context}|${today}|${task.dueDate ?? ''}|${task.text}`;
+  const key = `${columnWidthPx}|${context}|${today}|${task.dueDate ?? ''}|${task.fields.created ?? ''}|${task.done ? 1 : 0}|${task.notePath ? 1 : 0}|${task.text}`;
   const known = layoutCache.get(task);
   if (known && known.key === key) {
     perfCount('calc:taskRowLayoutHit');
@@ -99,10 +117,16 @@ export function taskRowLayout(
 }
 
 function computeTaskRowLayout(task: Task, columnWidthPx: number, context: TaskLabelContext, today: string): TaskRowLayout {
+  if (context === 'quiet' || context === 'inbox') {
+    const meta = context === 'inbox' ? inboxTodoMeta(task, today) : quietMeta(task, today);
+    const widthPx = quietTextWidthPx(columnWidthPx, meta, !!task.notePath);
+    const title = fitTitleToLines(displayTaskText(task, context), '', widthPx, TASK_ROW_MAX_LINES);
+    return {title, labels: [], lines: Math.min(TASK_ROW_MAX_LINES, linesFor(title, widthPx)), meta};
+  }
   const labels = taskLabels(task, context, today);
   const suffix = labelSuffix(labels);
   const widthPx = taskTextWidthPx(columnWidthPx);
   const title = fitTitleToLines(displayTaskText(task, context), suffix, widthPx, TASK_ROW_MAX_LINES);
   const lines = Math.min(TASK_ROW_MAX_LINES, linesFor(title + suffix, widthPx));
-  return {title, labels, lines};
+  return {title, labels, lines, meta: null};
 }

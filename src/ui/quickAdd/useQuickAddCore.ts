@@ -12,9 +12,11 @@
 import {useCallback, useEffect, useState} from 'react';
 import {AbbrevFileMatch} from '../../domain/abbrev';
 import {Destination} from '../../domain/destination';
+import {NoteSetup} from '../../domain/noteSetups';
 import {getRecentTags, getRecentTagsSync, recordTagsUsed} from '../../storage/tagUsage';
 import {log} from '../../utils/log';
 import {useAbbrevItems} from '../useAbbrevItems';
+import {peekSettings} from '../../storage/settingsSnapshot';
 import {EditFields} from './editFields';
 import {QuickAddField, QuickAddType} from './types';
 
@@ -22,15 +24,30 @@ interface Input {
   fixedDestination: Destination;
   /** The edited item's real location - see QuickAddWidget's `editingItemPath` prop. */
   editingItemPath?: string | null;
+  /** Whether a new draft starts with the abbreviation tag of the last add (Daily only, F3). */
+  prefillAbbrev?: boolean;
+  /** The kind open when the box mounts; null: the kind buttons. */
+  startOpen?: QuickAddType | null;
 }
 
-export function useQuickAddCore({fixedDestination, editingItemPath}: Input) {
+const NO_SETUPS: readonly NoteSetup[] = [];
+
+export function useQuickAddCore({fixedDestination, editingItemPath, prefillAbbrev = false, startOpen = null}: Input) {
   const [activeType, setActiveTypeState] = useState<QuickAddType>('task');
   // Every tab change is logged: a row going from hidden to shown is part of
   // the title-field diagnosis (ui/quickAdd/layoutLog.ts).
   const setActiveType = useCallback((type: QuickAddType) => {
     setActiveTypeState(current => {
       if (current !== type) log('QuickAdd: tab', current, '->', type);
+      return type;
+    });
+  }, []);
+  // A collapsible box (docs/dev/history/technical-design-calmer-screens.md §3.2):
+  // the kind opened from the kind buttons, or null while it shows the buttons.
+  const [open, setOpenState] = useState<QuickAddType | null>(startOpen);
+  const setOpen = useCallback((type: QuickAddType | null) => {
+    setOpenState(current => {
+      if (current !== type) log(type ? `QuickAdd: open kind=${type}` : 'QuickAdd: collapse');
       return type;
     });
   }, []);
@@ -90,6 +107,11 @@ export function useQuickAddCore({fixedDestination, editingItemPath}: Input) {
   // §3 B2): it must re-render by itself when an abbreviation or status
   // changes - but only then (render-perf-ab §7). [] while no cache exists.
   const abbrevItems = useAbbrevItems();
+  // The Note setups an empty title's Thread and Loop starters come from
+  // (docs/dev/history/technical-design-calmer-screens.md §3.3); [] until the settings are known.
+  // Read, not subscribed: the strip shows on focus, which renders again anyway, and a settings
+  // save (hide done, a tab) must not re-render the memoized widget.
+  const starterSetups = peekSettings()?.noteSetups ?? NO_SETUPS;
   const recognizedAbbrevTags = new Set(
     abbrevItems
       .filter(item => item.abbrev !== null && (item.status === 'active' || item.status === 'on-hold'))
@@ -112,9 +134,11 @@ export function useQuickAddCore({fixedDestination, editingItemPath}: Input) {
    * tag again, as the Project/Area spells it, so a run of items for one
    * place needs it typed once. Tag first with a space after it - a tap into
    * the field puts the cursor at the end, where the next words then go.
+   * Only where the screen asks for it (`prefillAbbrev`, Daily:
+   * docs/dev/history/technical-design-quickadd-redesign.md §3.5 F3); elsewhere ''.
    */
   const abbrevPrefill = (target: AbbrevFileMatch | null): string => {
-    if (!target) return '';
+    if (!target || !prefillAbbrev) return '';
     const item = abbrevItems.find(i => i.path === target.path);
     return `#${item?.abbrev ?? target.tag} `;
   };
@@ -130,6 +154,8 @@ export function useQuickAddCore({fixedDestination, editingItemPath}: Input) {
   return {
     activeType,
     setActiveType,
+    open,
+    setOpen,
     editFields,
     setEditFields,
     displayType,
@@ -145,6 +171,7 @@ export function useQuickAddCore({fixedDestination, editingItemPath}: Input) {
     recentTags,
     recordTags,
     abbrevItems,
+    starterSetups,
     recognizedAbbrevTags,
     fixedExcludePath,
     abbrevExcludePath,

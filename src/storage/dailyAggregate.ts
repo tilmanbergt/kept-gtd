@@ -35,6 +35,12 @@
  * §3.3, domain/contexts.ts) applies on top, as `matcher`: a todo the rule
  * above lets through but the context hides goes to `hiddenTasks` (the
  * hidden line counts them, due ones as "3 due!"); the Inbox always passes. Meetings are never hidden, only marked `contextState: 'dimmed'`.
+ *
+ * Count tabs (docs/dev/history/technical-design-calmer-screens.md §3.5): the
+ * result also carries `doneToday` (every todo done today, the Inbox's
+ * included, for the Done tab), and a todo ticked on this screen (`keepDone`,
+ * by `<path>#<index>`) is judged as if still open, so it stays in place,
+ * struck through. domain/listTabs.ts splits `tasks` into the tabs.
  */
 import {entriesInRange, entryDate, MeetingSpanDay} from '../domain/meetingSpan';
 import {isWaitingForShownOnDaily} from '../domain/flowState';
@@ -43,6 +49,8 @@ import {GtdParaKind, Meeting, Task} from '../domain/types';
 import {ContextItem, ContextMatcher, MeetingContextState} from '../domain/contexts';
 import {CachedItem} from './dataCache';
 import {perfTime} from '../utils/perf';
+
+const NO_KEYS: ReadonlySet<string> = new Set();
 
 export interface DailyItemRef {
   kind: GtdParaKind;
@@ -83,6 +91,8 @@ export interface DailyAggregate {
   failedItems: Array<{item: DailyItemRef; error: string}>;
   /** Todos the rule shows but the active context hides (empty without a matcher). */
   hiddenTasks?: DailyTaskEntry[];
+  /** Every todo done today (completion date), file order, the Inbox's last. */
+  doneToday?: DailyTaskEntry[];
 }
 
 /** Just the two arrays buildDailyAggregate needs from Inbox.txt - storage/projectFile.ts's ProjectFileState carries more than this, callers pass just these two fields. `null` when Inbox hasn't loaded yet (same "not loaded yet" gap DailyView's own handlers already guard against elsewhere). */
@@ -98,6 +108,7 @@ function buildDailyAggregateImpl(
   inboxPath: string,
   now: Date = new Date(),
   matcher: ContextMatcher | null = null,
+  keepDone: ReadonlySet<string> = NO_KEYS,
 ): DailyAggregate {
   const todayDate = todayIso(now);
   const tomorrowDate = isoDateOffset(1, now);
@@ -106,6 +117,14 @@ function buildDailyAggregateImpl(
   const hiddenTasks: DailyTaskEntry[] = [];
   const meetings: DailyMeetingEntry[] = [];
   const failedItems: DailyAggregate['failedItems'] = [];
+  const doneToday: DailyTaskEntry[] = [];
+  /** Done today goes to `doneToday`; a done todo is still judged by the rule only while kept. */
+  const skipDone = (item: DailyItemRef, taskIndex: number, task: Task): boolean => {
+    if (task.cancelled) return true;
+    if (!task.done) return false;
+    if (task.fields.completion === todayDate) doneToday.push({item, taskIndex, task});
+    return !keepDone.has(`${item.path}#${taskIndex}`);
+  };
   // Every todo the rule lets through passes the context here.
   const tasks = {
     push(entry: DailyTaskEntry) {
@@ -133,7 +152,7 @@ function buildDailyAggregateImpl(
     }
 
     cachedItem.tasks.forEach((task, taskIndex) => {
-      if (task.done || task.cancelled) return;
+      if (skipDone(item, taskIndex, task)) return;
       // Someday / Maybe never show on Daily; Waiting For has its own rule
       // (no date or date reached, any item) - see the module doc comment.
       // Both checks win over the inclusion rule below.
@@ -156,7 +175,7 @@ function buildDailyAggregateImpl(
   if (inbox) {
     const item = inboxItemRef(inboxPath);
     inbox.tasks.forEach((task, taskIndex) => {
-      if (task.done || task.cancelled) return;
+      if (skipDone(item, taskIndex, task)) return;
       if (task.flowState === 'someday' || task.flowState === 'maybe') return;
       if (task.flowState === 'waiting-for') {
         if (isWaitingForShownOnDaily(task, todayDate)) tasks.push({item, taskIndex, task});
@@ -177,7 +196,7 @@ function buildDailyAggregateImpl(
 
   meetings.sort((a, b) => meetingTimestampMs(a.meeting, now) - meetingTimestampMs(b.meeting, now));
 
-  return {tasks: shownTasks, meetings, failedItems, hiddenTasks};
+  return {tasks: shownTasks, meetings, failedItems, hiddenTasks, doneToday};
 }
 
 /** The Project or Area at `path` as the context matcher reads it. */

@@ -26,7 +26,7 @@ scenario('Daily: a todo\'s card, then its edit, saved into its own file', {featu
   });
   when('I tap Edit on the card, change the text to "Water the lawn early" and save', async () => {
     await tap('Edit');
-    await type('New task', 'Water the lawn early');
+    await type('New todo', 'Water the lawn early');
     await tap('Save');
   });
   then('Garden\'s area.txt has the new text and the card shows again', () => {
@@ -60,12 +60,13 @@ scenario('Quick-file from a Daily edit: "Save to <Name>" moves the todo', {featu
     putSmokeSpace();
     putFile(INBOX_FILE, dataFile('inbox', {Tasks: ['- [ ] Buy bulbs #next'], Meetings: []}));
   });
-  when('I edit it on Daily, add "#GAR" and tap Save to Garage', async () => {
+  when('I edit it on Daily\'s Inbox tab, add "#GAR" and tap Save to Garage', async () => {
     await openApp();
     await tapTab('Daily');
+    await tap(/^Inbox \d+$/);
     await tap(/^Buy bulbs/);
     await tap('Edit');
-    await type('New task', 'Buy bulbs #GAR');
+    await type('New todo', 'Buy bulbs #GAR');
     await tap(/^Save to Garage/);
   });
   then('it is in Garage\'s file and not in Inbox.txt', () => {

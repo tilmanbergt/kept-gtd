@@ -62,6 +62,7 @@ describe('taskRowLayout', () => {
       title: 'Book train',
       labels: [],
       lines: 1,
+      meta: null,
     });
   });
 });

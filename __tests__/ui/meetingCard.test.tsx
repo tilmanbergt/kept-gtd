@@ -57,22 +57,33 @@ function card(m: Meeting, extra: Partial<MeetingCardInput> = {}, handlers: Parti
   };
 }
 
+/** Quick Add with `m`'s card, as a screen holds it: ending the edit clears the target. */
+function Screen({m, data, onCancelEdit}: {m: Meeting; data: MeetingCardData; onCancelEdit: () => void}) {
+  const [selected, setSelected] = React.useState(true);
+  return (
+    <QuickAddWidget
+      fixedDestination={{type: 'inbox'}}
+      onAddTask={async () => undefined}
+      onAddMeeting={async () => undefined}
+      editTarget={selected ? editTargetFor('meeting:0', {meeting: m}, 'card') : null}
+      meetingCard={selected ? data : null}
+      onCancelEdit={() => {
+        onCancelEdit();
+        setSelected(false);
+      }}
+      textColor="#000"
+      borderColor="#000"
+      placeholderColor="#888"
+    />
+  );
+}
+
 function render(m: Meeting, data: MeetingCardData, onCancelEdit = jest.fn()) {
   let r!: TestRenderer.ReactTestRenderer;
   act(() => {
     r = TestRenderer.create(
       <StatusProvider>
-        <QuickAddWidget
-          fixedDestination={{type: 'inbox'}}
-          onAddTask={async () => undefined}
-          onAddMeeting={async () => undefined}
-          editTarget={editTargetFor('meeting:0', {meeting: m}, 'card')}
-          meetingCard={data}
-          onCancelEdit={onCancelEdit}
-          textColor="#000"
-          borderColor="#000"
-          placeholderColor="#888"
-        />
+        <Screen m={m} data={data} onCancelEdit={onCancelEdit} />
       </StatusProvider>,
     );
   });
@@ -85,13 +96,19 @@ const press = (r: TestRenderer.ReactTestRenderer, label: string) =>
   act(() => r.root.findAll(n => n.props.accessibilityLabel === label && typeof n.props.onPress === 'function')[0].props.onPress());
 const pressText = (r: TestRenderer.ReactTestRenderer, text: string) =>
   act(() => r.root.findAll(n => typeof n.props.onPress === 'function' && n.findAllByType(Text).some(t => t.props.children === text))[0].props.onPress());
-const texts = (r: TestRenderer.ReactTestRenderer) => r.root.findAllByType(Text).map(t => [t.props.children].flat().join(''));
+/** A text with its nested spans (the card's R1 is one line with the owner as a span). */
+const flat = (n: TestRenderer.ReactTestInstance): string => n.children.map(c => (typeof c === 'string' ? c : flat(c))).join('');
+const texts = (r: TestRenderer.ReactTestRenderer) => r.root.findAllByType(Text).map(flat);
 
 describe('MeetingCard', () => {
-  it('a meeting ahead: P, M, note, no Reflect, no clip; thread link, owner chip, New from this, Cancel', () => {
+  // docs/dev/history/technical-design-quickadd-redesign.md §3.6: one page, no More ›.
+  it('a meeting ahead: caption, thread, P, M, F, the note, New from this and Cancel meeting on one page', () => {
     const r = render(ahead, card(ahead));
-    expect(texts(r)).toEqual(expect.arrayContaining(['Meeting · ahead', '#sparring/jordan ›', 'Sparring Jordan #sparring/jordan', 'P', 'M', 'Coaching', 'Edit', '✕']));
+    // §11 G10: R1 holds the date and time; the notebook replaces "+ Note".
+    expect(texts(r).some(t => /^Meeting · Coaching · \S+ 1\.1\.2999 /.test(t))).toBe(true);
+    expect(texts(r)).toEqual(expect.arrayContaining(['#sparring/jordan ›', 'Sparring Jordan #sparring/jordan', 'P', 'M', '✕']));
     expect(labels(r)).toEqual(expect.arrayContaining(['Close', 'Prepped', 'Month highlight', 'Create note', 'New from this', 'Cancel meeting']));
+    expect(labels(r)).not.toContain('More');
     expect(labels(r)).not.toContain('Reflect');
     expect(labels(r)).not.toContain('Link file');
     expect(labels(r)).not.toContain('Refile');
@@ -105,11 +122,11 @@ describe('MeetingCard', () => {
     expect(reflect.props.accessibilityState).toEqual({disabled: false, selected: true});
   });
 
-  it('a linked file shows its name with ✕; +clip and the refile arrow only where the screen can', () => {
+  it('a linked file is the filled clip (unlinking is in Edit); +clip and the refile arrow only where the screen can', () => {
     const linked = {...ahead, linkedFile: 'Resources/brief.pdf'};
     const r = render(linked, card(linked, {canLink: true, canRefile: true}, {onOpenFile: jest.fn(), onRefile: jest.fn(), onLink: jest.fn()}));
-    expect(texts(r)).toContain('brief.pdf');
-    expect(labels(r)).toEqual(expect.arrayContaining(['Unlink', 'Open linked file', 'Refile']));
+    expect(labels(r)).toEqual(expect.arrayContaining(['Open linked file', 'Refile']));
+    expect(labels(r)).not.toContain('Unlink');
     const plain = render(ahead, card(ahead, {canLink: true}, {onLink: jest.fn()}));
     expect(labels(plain)).toContain('Link file');
   });
@@ -117,24 +134,30 @@ describe('MeetingCard', () => {
   it('a cancelled meeting has no Cancel meeting and no P/R', () => {
     const cancelled = {...ahead, cancelled: true};
     const r = render(cancelled, card(cancelled));
-    expect(texts(r)).toContain('Meeting · cancelled');
-    expect(labels(r)).not.toContain('Cancel meeting');
+    expect(texts(r).some(t => /^Meeting · Coaching · .* · cancelled$/.test(t))).toBe(true);
     expect(labels(r)).not.toContain('Prepped');
+    expect(labels(r)).not.toContain('Cancel meeting');
+  });
+
+  it('Cancel meeting is there before it starts and calls its handler', () => {
+    const data = card(ahead);
+    const r = render(ahead, data);
+    press(r, 'Cancel meeting');
+    expect(data.onCancelMeeting).toHaveBeenCalledTimes(1);
   });
 
   it('every button calls its handler', () => {
     const data = card(over, {canLink: false}, {onOpenOwner: jest.fn()});
     const r = render(over, data);
-    pressText(r, 'Edit');
+    pressText(r, '#sparring/jordan ›');
     press(r, 'Close');
     press(r, 'Reviewed');
     press(r, 'Month highlight');
     press(r, 'Create note');
     press(r, 'Reflect');
-    press(r, 'Cancel meeting');
-    press(r, 'Open Coaching');
-    pressText(r, '#sparring/jordan ›');
-    for (const h of [data.onEdit, data.onClose, data.onCheckpoint, data.onMonthly, data.onNote, data.onReflect, data.onCancelMeeting, data.onOpenOwner, data.onOpenThread]) {
+    act(() => r.root.findAll(n => n.props.accessibilityHint === 'Edit' && typeof n.props.onPress === 'function')[0].props.onPress());
+    act(() => r.root.findAll(n => n.type === Text && typeof n.props.onPress === 'function' && n.props.children === 'Coaching ›')[0].props.onPress());
+    for (const h of [data.onEdit, data.onClose, data.onCheckpoint, data.onMonthly, data.onNote, data.onReflect, data.onOpenOwner, data.onOpenThread]) {
       expect(h).toHaveBeenCalledTimes(1);
     }
   });
@@ -144,12 +167,12 @@ describe('MeetingCard', () => {
     const r = render(ahead, card(ahead), onCancelEdit);
     press(r, 'New from this');
     expect(onCancelEdit).toHaveBeenCalledTimes(1);
-    const title = r.root.findAllByType(TextInput).find(i => i.props.placeholder === 'New meeting title')!;
+    const title = r.root.findAllByType(TextInput).find(i => i.props.placeholder === 'New meeting')!;
     expect(title.props.value).toBe('Sparring Jordan #sparring/jordan');
   });
 
   it('the create rows stay mounted behind the card, so a half-typed draft survives', () => {
     const r = render(ahead, card(ahead));
-    expect(r.root.findAllByType(TextInput).some(i => i.props.placeholder === 'New task')).toBe(true);
+    expect(r.root.findAllByType(TextInput).some(i => i.props.placeholder === 'New todo')).toBe(true);
   });
 });

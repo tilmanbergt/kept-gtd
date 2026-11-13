@@ -135,6 +135,13 @@ export function readTexts(): string[] {
     .filter(t => t.trim());
 }
 
+/** The open card's first row as one line (`Todo · GR › · next`), its refile arrow left out; '' without a card. */
+export function cardHeading(): string {
+  const found = screen.UNSAFE_root.findAll(n => n.props.testID === 'card-heading', {deep: true});
+  const last = found[found.length - 1];
+  return last ? renderedText(last as unknown as Rendered) : '';
+}
+
 const matchesText = (text: string, label: string | RegExp) => (typeof label === 'string' ? text === label : label.test(text));
 
 /**
@@ -160,10 +167,73 @@ export function describeScreen(): string {
 
 /** Taps the `nth` element showing exactly `label` (a button, a row, a tab). */
 export async function tap(label: string | RegExp, nth = 0): Promise<void> {
+  // A Quick Add kind: the user opens it from its button, closing the open form first
+  // (the form has no kind tabs, docs/dev/history/technical-design-quickadd-redesign.md §3.1).
+  if (typeof label === 'string' && QUICK_ADD_TABS.has(label) && screen.queryAllByText(label).length <= nth) {
+    await openQuickAddKind(`+ ${label}`);
+    return;
+  }
+  // The card has no Edit button: a tap on its title edits (docs/dev/history/technical-design-quickadd-redesign.md §3.6).
+  if (label === 'Edit' && screen.queryAllByText(label).length <= nth) {
+    const title = screen.queryAllByAccessibilityHint('Edit');
+    if (title.length > 0) {
+      fireEvent.press(title[title.length - 1]);
+      await settle();
+      return;
+    }
+  }
   const found = screen.queryAllByText(label);
   if (found.length <= nth) throw new Error(`nothing to tap with text ${String(label)}; the screen shows: ${describeScreen()}`);
   fireEvent.press(found[nth]);
   await settle();
+}
+
+/** Quick Add's kinds; the collapsed box (docs/dev/history/technical-design-calmer-screens.md §3.2) opens one from its `+ <kind>` button. */
+const QUICK_ADD_TABS = new Set(['Todo', 'Meeting', 'Agreement', 'Agree', 'Note']);
+const QUICK_ADD_FIELD_KIND: Record<string, string> = {
+  'New meeting': '+ Meeting',
+  'YYYY-MM-DD': '+ Meeting',
+  '15 · 15-16.30 · 2d': '+ Meeting',
+  'New agreement': '+ Agreement',
+  'New note': '+ Note',
+};
+
+/**
+ * Opens a Quick Add kind from its button; an open form is closed with its ✕ first. The last box
+ * on screen is the one in front: an overlay (thread overview) comes after the screen below it.
+ */
+async function openQuickAddKind(button: string): Promise<void> {
+  const close = screen.queryAllByLabelText('Close Quick Add');
+  const buttons = screen.queryAllByText(button);
+  if (close.length > 0 && (buttons.length === 0 || close.length >= buttons.length)) {
+    fireEvent.press(close[close.length - 1]);
+    await settle();
+  }
+  const found = screen.queryAllByText(button);
+  if (found.length === 0) return;
+  fireEvent.press(found[found.length - 1]);
+  await settle();
+}
+
+/**
+ * A Quick Add field that isn't shown while its box is collapsed: taps the kind button that opens it
+ * first (`+ Todo` for the todo fields), as the user would. Does nothing when the field shows or no
+ * such button is on screen.
+ */
+async function openQuickAddFor(placeholder: string, nth: number): Promise<void> {
+  if (screen.queryAllByPlaceholderText(placeholder).length > nth) return;
+  await openQuickAddKind(QUICK_ADD_FIELD_KIND[placeholder] ?? '+ Todo');
+}
+
+/** Opens the Inbox: Daily, then its Inbox count tab (docs/dev/history/technical-design-calmer-screens.md §3.7). */
+export async function openInbox(): Promise<void> {
+  await tapTab('Daily');
+  await tap(/^Inbox \d+$/);
+}
+
+/** Opens ⚙ Settings of the Project or Area shown on Current (docs/dev/history/technical-design-calmer-screens.md §3.8). */
+export async function openItemSettings(): Promise<void> {
+  await tap('⚙ Settings');
 }
 
 /** Taps a tab in the tab bar (drawn first on screen; a tab may carry a badge, like "Review ●"). */
@@ -176,6 +246,7 @@ export async function tapTab(label: string): Promise<void> {
  * An overlay (thread overview) draws over the screen below it, so its fields come after that screen's.
  */
 export async function type(placeholder: string, text: string, nth = 0): Promise<void> {
+  await openQuickAddFor(placeholder, nth);
   const field = screen.queryAllByPlaceholderText(placeholder)[nth];
   if (!field) throw new Error(`no field "${placeholder}"; the screen shows: ${describeScreen()}`);
   fireEvent.changeText(field, text);
@@ -184,6 +255,7 @@ export async function type(placeholder: string, text: string, nth = 0): Promise<
 
 /** Puts the cursor into (`true`) or takes it out of (`false`) the `nth` field showing `placeholder`. */
 export async function focus(placeholder: string, focused = true, nth = 0): Promise<void> {
+  await openQuickAddFor(placeholder, nth);
   const field = screen.queryAllByPlaceholderText(placeholder)[nth];
   if (!field) throw new Error(`no field "${placeholder}"; the screen shows: ${describeScreen()}`);
   fireEvent(field, focused ? 'focus' : 'blur');
@@ -195,6 +267,14 @@ export async function tapLabel(label: string, nth = 0): Promise<void> {
   const found = screen.queryAllByLabelText(label);
   if (found.length <= nth) throw new Error(`no button labelled "${label}"; the screen shows: ${describeScreen()}`);
   fireEvent.press(found[nth]);
+  await settle();
+}
+
+/** Taps ✕ beside the main button of the box in front (the last on screen): drops the draft or the edit's changes. */
+export async function closeQuickAdd(): Promise<void> {
+  const found = screen.queryAllByLabelText('Close Quick Add');
+  if (found.length === 0) throw new Error(`no ✕ beside a main button; the screen shows: ${describeScreen()}`);
+  fireEvent.press(found[found.length - 1]);
   await settle();
 }
 

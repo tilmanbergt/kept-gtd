@@ -106,6 +106,18 @@ export function formatLength(minutes: number): string {
   return `${Math.floor(minutes / 60)} h${rest > 0 ? ` ${rest} min` : ''}`;
 }
 
+/** The weekday of `iso` alone, `Thu`; `iso` itself when it is no date. */
+export function formatWeekdayShort(iso: string): string {
+  const p = parts(iso);
+  return p ? WEEKDAYS[new Date(p.year, p.month - 1, p.day).getDay()] : iso;
+}
+
+/** Day and month of `iso`, `20 Nov`; `iso` itself when it is no date. */
+export function formatDayMonthShort(iso: string): string {
+  const p = parts(iso);
+  return p ? `${p.day} ${MONTHS[p.month - 1]}` : iso;
+}
+
 /** `15:30 – 16:00`, or just `15:30` without an end. */
 export function formatTimeSpan(start: string, end: string): string {
   return end ? `${formatTime(start)} – ${formatTime(end)}` : formatTime(start);

@@ -1,7 +1,7 @@
 import {resetMomentChoices} from '../../../src/ui/meetingMomentStore';
 import {expectShows, labelled} from '../../../test-helpers/scenario/app';
-import {and, given, scenario, then, when} from '../../../test-helpers/scenario/scenario';
-import {engageOn, sectionLine, sport, sportClock} from '../../../test-helpers/scenario/sportArea';
+import {given, scenario, then, when} from '../../../test-helpers/scenario/scenario';
+import {engageOn, sport, sportClock} from '../../../test-helpers/scenario/sportArea';
 
 // Smoke: Engage opens on a meeting's page (docs/dev/history/technical-design-test-tiers.md §3.4), on Area Sport of
 // docs/dev/history/technical-design-engage-page-owner.md §6.
@@ -23,5 +23,4 @@ scenario('Engage on a meeting\'s follow-up page: the meeting is passed on', {fea
     expectShows('From meetings 1');
     expectShows('Sat 24.10. · Coach call');
   });
-  and('the line reads "Section: Coach call · 24.10. · from p. 3"', () => expect(sectionLine()).toEqual(['Section: Coach call · 24.10. · from p. 3']));
 });

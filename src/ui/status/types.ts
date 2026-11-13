@@ -45,5 +45,10 @@ export const STATUS_SLOT_HEIGHT = 32;
 /** On a short screen (ui/ScreenSize.tsx useShortScreen): still room for the slot's buttons. */
 export const STATUS_SLOT_HEIGHT_SHORT = 30;
 
+/** A success or info without actions disappears after this (docs/dev/history/technical-design-quickadd-redesign.md §3.8 F7). */
+export const STATUS_TIMED_MS = 8000;
+/** A success or info with actions (Undo) disappears after this. */
+export const STATUS_TIMED_WITH_ACTIONS_MS = 16000;
+
 /** How long the tap-to-expand overlay stays open (§8 Q11). */
 export const STATUS_EXPAND_MS = 3000;

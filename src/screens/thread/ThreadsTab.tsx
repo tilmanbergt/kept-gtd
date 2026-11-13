@@ -31,12 +31,12 @@
  */
 import React, {useMemo, useState} from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
-import {CounterpartScope, counterpartsOf, oneOffLabel, scopeMembers, scopeOwnerOf} from '../../domain/counterparts';
+import {oneOffLabel} from '../../domain/counterparts';
 import {todayIso} from '../../domain/meetingTime';
 import {belongsToThread, ThreadRef} from '../../domain/threads';
 import {rosterCountsText, rosterMeetingText} from '../../domain/threadText';
 import {formatDate} from '../../domain/dateFormat';
-import {CachedItem} from '../../storage/dataCache';
+import {pageScope} from '../../storage/pageShowCounts';
 import {buildScopeRoster, RosterEntry} from '../../storage/tendingRoster';
 import {nextMeetingOffers, NextMeetingOffer} from '../../storage/threadAggregate';
 import CounterpartCloseOut, {useSetInactive} from '../../ui/CounterpartCloseOut';
@@ -72,18 +72,6 @@ const HEIGHTS: Record<Row['kind'], number> = {
   fold: FOLD_HEIGHT,
   inactive: INACTIVE_HEIGHT,
 };
-
-/** The scope of the page `path` and, on a Project with an Area, the counterparts its own entries use. */
-function pageScope(path: string, items: CachedItem[], ruleTypes: string[]): {scope: CounterpartScope<CachedItem>; only: Set<string> | null} | null {
-  const owner = scopeOwnerOf(path, items);
-  if (!owner) return null;
-  const scope = {owner, members: scopeMembers(owner, items)};
-  if (owner.path === path) return {scope, only: null};
-  const page = items.find(i => i.path === path);
-  if (!page) return {scope, only: new Set()};
-  const used = counterpartsOf({owner: page, members: [page]}, ruleTypes).filter(c => c.inUse);
-  return {scope, only: new Set(used.map(c => c.leaf))};
-}
 
 /** What the tab needs from the row the filter is on. */
 export interface CounterpartSelection {

@@ -1,4 +1,4 @@
-import {expectNotShows, expectShows, openApp, readTexts, tap, tapTab, textsBetween, type} from '../../../test-helpers/scenario/app';
+import {expectNotShows, expectShows, focus, openApp, readTexts, tap, tapTab, textsBetween, type} from '../../../test-helpers/scenario/app';
 import {areaFile, INBOX_FILE, loggedErrors, sectionLines} from '../../../test-helpers/scenario/files';
 import {and, given, scenario, then, when} from '../../../test-helpers/scenario/scenario';
 import {putSmokeSpace, smokeClock, smokeSettings} from '../../../test-helpers/scenario/smokeSpace';
@@ -17,8 +17,8 @@ async function openDaily(underHome = false): Promise<void> {
   await tapTab('Daily');
 }
 
-/** The todo list under "Next todos": group names and rows (title and labels), without the checkboxes and note buttons. */
-const todoList = () => textsBetween('Next todos').filter(t => t !== '☐' && t !== '+📓');
+/** The list under the Next tab: group names and rows (title and grey note), without the checkboxes, the other count tabs and note buttons. */
+const todoList = () => textsBetween(/^Inbox \d+$/).filter(t => t !== '☐' && t !== '+📓');
 
 /** The index among the "☐" on screen of the checkbox in front of the row starting with `title`. */
 function checkboxOf(title: string): number {
@@ -35,11 +35,10 @@ scenario('Daily under a context shows today\'s meetings and the next todos it sh
     expect(textsBetween('Today', 'Todo')).toEqual(expect.arrayContaining(['Neighbour chat', 'Dentist']));
     expect(textsBetween('Today', 'Todo')).not.toContain('Supplier call');
   });
-  and('the todos are the Inbox\'s, Garden\'s project Garage\'s and Garden\'s, each with its label; the rest is counted, Website\'s overdue one as "1 due!"', () => {
+  and('the todos under Next are Garden\'s project Garage\'s and Garden\'s (the Inbox\'s are under Inbox), a due one with its grey note; the rest is counted, Website\'s overdue one as "1 due!"', () => {
     expect(todoList()).toEqual([
-      'Inbox', 'Call the plumber  #next',
-      'Garage', 'Sort tools  #next',
-      'Garden', 'Buy bulbs  #next', 'Water the lawn  #due 14.10.',
+      'Garage', 'Sort tools',
+      'Garden', 'Buy bulbs', 'Water the lawn', 'due today',
       'Hidden by Home: 3 todos · 1 thread · 1 due! · ', 'Show',
     ]);
   });
@@ -49,10 +48,9 @@ scenario('Daily under a context shows today\'s meetings and the next todos it sh
     expectNotShows(/^Order seeds/);
   });
   when('I tap Show', () => tap('Show'));
-  then('Website\'s next todo and its Waiting For show too', () => {
-    expectShows(/^Draft homepage/);
-    expectShows(/^Feedback on layout/);
-  });
+  then('Website\'s next todo shows too', () => expectShows(/^Draft homepage/));
+  when('I tap the Waiting tab', () => tap(/^Waiting \d+$/));
+  then('Website\'s Waiting For shows there', () => expectShows(/^Feedback on layout/));
   when('I tap Tomorrow', () => tap('Tomorrow'));
   then('it lists "Supplier call"', () => {
     expect(textsBetween('Tomorrow', 'Todo')).toContain('Supplier call');
@@ -63,15 +61,17 @@ scenario('Daily under a context shows today\'s meetings and the next todos it sh
 
 scenario('Quick Add a todo from Daily', {feature: 'Quick Add', design: DESIGN, help: 'quick-add.md#adding-a-todo'}, () => {
   given('the smoke space and Daily open', openDaily);
-  when('I type "Check gutters", tap the Next chip and + Add', async () => {
-    await type('New task', 'Check gutters');
-    await tap('Next');
+  when('I type "Check gutters", tap #next on the strip and + Add', async () => {
+    await focus('New todo');
+    await type('New todo', 'Check gutters');
+    await tap('#next');
     await tap('+ Add');
   });
   then('Inbox.txt has it', () => {
     expect(sectionLines(INBOX_FILE, 'Tasks')).toContainEqual(expect.stringMatching(/^- \[ \] Check gutters #next/));
   });
-  and('Daily lists it in the Inbox group', () => expect(textsBetween('Inbox', 'Garage')).toContain('Check gutters  #next'));
+  when('I open the Inbox tab', () => tap(/^Inbox \d+$/));
+  then('it lists it, not Next', () => expect(textsBetween(/^Inbox \d+$/)).toContain('Check gutters'));
 });
 
 scenario('Tick a todo done on Daily', {feature: 'Daily', design: DESIGN, help: 'daily.md#schedule-and-cards'}, () => {

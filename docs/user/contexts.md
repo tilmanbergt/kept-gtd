@@ -21,7 +21,7 @@ The rules:
 - With both parts filled, a todo shows when it fits either part: "Show Work, plus #computer everywhere". Tick **Only inside the selected areas and projects** to show only what fits both: "Show #computer in Work".
 - *Except wins*: what Except names is left out, even when Show names it too.
 - A project or area is listed when the context shows it, or when it holds an open todo or a meeting from today on that the context shows; an area also when one of its projects does. So a context of tags only - an "Errands" with `#errand` and `#shopping` - still lists the projects and areas where there is an errand to do.
-- The [Inbox](quick-add.md#the-inbox) always shows, in every context. Todos that are due follow the context like any other; the [hidden line](contexts.md#the-hidden-line) warns about hidden ones that are due: "3 due!".
+- The [Inbox](daily.md#the-inbox) always shows, in every context. Todos that are due follow the context like any other; the [hidden line](contexts.md#the-hidden-line) warns about hidden ones that are due: "3 due!".
 - **Meetings** are never hidden. Meetings outside the context are drawn faint (dimmed), or shown as usual if you choose that for the context.
 
 ## The sentence
@@ -43,7 +43,7 @@ On top of the editor and in the list of contexts, one sentence says what a conte
 - [Projects and Areas](projects-and-areas.md): only the context's projects and areas.
 - [Weekly Review](review.md): only when you ask for it. Review starts in **Everything**, because a context is for doing the work; **Review only in Home** on its overview narrows it, see [Reviewing in a context](review.md#reviewing-in-a-context).
 
-Not filtered: the [Inbox](quick-add.md#the-inbox) tab, a project's or area's own page ([Current](projects-and-areas.md#the-current-tab)), Settings, [Engage](engage.md), and the [thread](threads.md#opening-the-overview) and [loop overviews](loops.md#the-loop-overview).
+Not filtered: the [Inbox](daily.md#the-inbox) tab, a project's or area's own page ([Current](projects-and-areas.md#the-current-tab)), Settings, [Engage](engage.md), and the [thread](threads.md#opening-the-overview) and [loop overviews](loops.md#the-loop-overview).
 
 ## The hidden line
 

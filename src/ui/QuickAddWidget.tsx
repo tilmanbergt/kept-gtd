@@ -1,44 +1,37 @@
 /**
- * The unified Todo/Meeting/Note add-and-edit widget
+ * The unified Todo/Meeting/Agreement/Note add-and-edit widget
  * (docs/dev/history/technical-design-unified-quickadd.md). Every screen has exactly
- * one add/edit surface: a box of four rows, 170 dp in every state
- * (ui/quickAdd/QuickAddFrame.tsx, docs/dev/history/technical-design-item-card.md),
- * whose contents follow the tab and whether an item is being edited:
- *   R1 Tabs + main button - Todo/Meeting(/Agreement/Note) on the left; create: [M] + Add
- *                  ("+ Add to <Name>" when a recognized abbreviation #tag
- *                  files it elsewhere, technical-design-abbrev-quick-file.md,
- *                  or the screen adds elsewhere, `addToName`);
- *                  edit: Cancel · Save ("Save to <Name>" with such a tag:
- *                  saved and moved in one step).
- *   R2 Input     - todo text + due date, or meeting title + date, or note title.
- *   R3 Metadata  - flow chips + tag chips (or "Waiting on"), or meeting time +
- *                  tag chips, or note tag chips.
- *   R4           - more tag chips (one page spans R3 and R4); the provenance
- *                  line while a screen adds one.
+ * one add/edit surface: a box of 174 dp in every state
+ * (ui/quickAdd/QuickAddFrame.tsx), holding Quick Add's form
+ * (docs/dev/history/technical-design-quickadd-redesign.md §3.1-§3.4,
+ * ui/quickAdd/form/):
+ *   rows 1-2  one two-line field (the title stays one line of its file),
+ *             with the text strip above the box and the date / time /
+ *             valid-till strips over row 2;
+ *   row 3     per kind: 📅 and w/f; date, time, the warning sign and F;
+ *             valid till; the note's folder;
+ *   row 4     📎 (or the linked file), the grey origin line, ✕ (create) and
+ *             + Add / "+ Add to <Name>" / + Create, or Cancel · Save
+ *             ("Save to <Name>" with an abbreviation tag).
+ * The kind comes from the kind buttons (ui/quickAdd/KindButtons.tsx), shown
+ * while the box is folded; ✕ folds it and keeps the draft. A `collapsible`
+ * box starts folded and folds again after an add, the others start on Todo.
  *
- * A meeting or todo selected once shows its item card in the box instead
- * (`editTarget.mode === 'card'`, ui/itemCard/, where the screen passes
- * `meetingCard` / `todoCard`); its edit form then holds fields only. Where a
- * screen passes no card - and for a loop's own edit - the edit form keeps
- * the commands that act at once in R4 (delete, New from this, Refile, the
- * linked file's ✕, M - ui/quickAdd/ActionRow.tsx).
- *
- * The Agreement tab (docs/dev/history/technical-design-meetings-0.21.md §5)
- * shows where a screen passes `onAddAgreement`; its draft, edit and change
- * live in ui/quickAdd/useAgreementDraft.ts and AgreementRows.tsx, its card
- * in ui/itemCard/AgreementCard.tsx - the widget only routes.
+ * A meeting, todo or agreement selected once shows its item card in the box
+ * instead (`editTarget.mode === 'card'`, ui/itemCard/); delete, Refile, New
+ * from this and M act there. A loop's own edit (no card) keeps Refile in row 4.
  *
  * The parts: one hook per draft (ui/quickAdd/useTaskDraft.ts,
- * useMeetingDraft.ts, useNoteDraft.ts) over the shared state of
- * ui/quickAdd/useQuickAddCore.ts; the edit session (loading, focus,
- * save-then-switch) in ui/quickAdd/useEditSession.ts; the rows in
- * ui/quickAdd/*Rows.tsx. The lasso capture panel is its own shell over the
- * same parts (ui/quickAdd/CaptureQuickAdd.tsx).
+ * useMeetingDraft.ts, useNoteDraft.ts, useAgreementDraft.ts) over the shared
+ * state of ui/quickAdd/useQuickAddCore.ts; the edit session (loading, focus,
+ * save-then-switch) in ui/quickAdd/useEditSession.ts; the form's slots in
+ * ui/quickAdd/form/useFormSlots.tsx. The lasso capture panel is its own shell
+ * over the same drafts (ui/quickAdd/CaptureQuickAdd.tsx).
  *
  * No key-remount: remounting would wipe the create drafts, so the widget is
  * a stable, long-lived instance per screen and call sites pass no `key`.
- * An edit detour never touches the drafts, and a tab switch never remounts a
- * row (they are hidden with `display: none`).
+ * An edit detour never touches the drafts, and a kind switch never remounts
+ * a field (they are hidden with `display: none`).
  *
  * Direct switches (docs/dev/history/technical-design-meeting-lists.md §10):
  * tapping another row while an edit is open switches to it. Before the
@@ -50,11 +43,10 @@
  * implicitly.
  *
  * "New from this" (docs/dev/technical-design-meeting-date-nudge-and-new-
- * from-this.md §B): a Meeting-edit-only R4 button that ends the edit through
- * the screen's own `onCancelEdit` and turns the edit form's current values
- * into the Meeting create draft.
+ * from-this.md §B): on the meeting card; it ends the card through the
+ * screen's own `onCancelEdit` and turns the meeting into the create draft.
  */
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {onNextEinkFlush} from '../utils/einkFlush';
 import {Keyboard} from 'react-native';
 import {AbbrevFileMatch, resolveAbbrevFileTarget} from '../domain/abbrev';
@@ -73,16 +65,13 @@ import {AgreementCardData} from './itemCard/useAgreementCard';
 import TodoCard from './itemCard/TodoCard';
 import {TodoCardData} from './itemCard/useTodoCard';
 import {errorMessage} from '../utils/errorMessage';
-import HighlightMark from './HighlightMark';
 import {CreateActions, EditActions, EditCommands} from './quickAdd/ActionRow';
-import {AgreementInputRow, AgreementTagRows} from './quickAdd/AgreementRows';
 import {AgreementHandlers, useAgreementDraft} from './quickAdd/useAgreementDraft';
-import {MeetingInputRow, MeetingMetaRows} from './quickAdd/MeetingRows';
-import {NoteInputRow, NoteTagRows} from './quickAdd/NoteRows';
 import ProvenanceLine, {QuickAddAdds} from './quickAdd/ProvenanceLine';
 import QuickAddFrame from './quickAdd/QuickAddFrame';
-import TabsRow from './quickAdd/TabsRow';
-import {AttachmentCluster, TaskInputRow, TaskMetaRows} from './quickAdd/TaskRows';
+import KindButtons from './quickAdd/KindButtons';
+import FrozenWhileHidden from './quickAdd/FrozenWhileHidden';
+import {makeSuggest, recentAbbrevs, useFormSlots, useFormWidth} from './quickAdd/form/useFormSlots';
 import {MeetingQuickAddFields, QuickAddEditTarget, QuickAddType, QuickFilePayload, sameEditTarget, truncateItemName} from './quickAdd/types';
 import {DraftPrefill, MeetingSeed, useDraftRequests} from './quickAdd/useDraftRequests';
 import {useEditSession} from './quickAdd/useEditSession';
@@ -91,8 +80,11 @@ import {useNoteDraft} from './quickAdd/useNoteDraft';
 import {useQuickAddCore} from './quickAdd/useQuickAddCore';
 import {useQuickAddStatus} from './quickAdd/useQuickAddStatus';
 import {useTaskDraft} from './quickAdd/useTaskDraft';
-import ThisFileLine from './quickAdd/ThisFileLine';
 import {useThisFileChoice} from './quickAdd/useThisFileChoice';
+import {useSource} from './quickAdd/useProvenance';
+import {sourceKey} from '../domain/provenance';
+import {resolvePaths} from '../domain/settings';
+import {peekSettings} from '../storage/settingsSnapshot';
 
 export type {CaptureSaveMode, CaptureSeed, MeetingQuickAddFields, QuickAddEditTarget, QuickFilePayload} from './quickAdd/types';
 export {editTargetFor} from './quickAdd/types';
@@ -131,7 +123,7 @@ interface Props extends AgreementHandlers {
   onAddMeeting: (fields: MeetingQuickAddFields, destination: Destination, linkedFile?: string) => Promise<void>;
   /**
    * Create mode, Todo and Meeting tabs: offer the note or document Kept was opened from as the new
-   * entry's linked file (ui/quickAdd/ThisFileLine.tsx). Set only where `onAddTask`/`onAddMeeting`
+   * entry's linked file (ui/quickAdd/useThisFileChoice.ts, `📎 This file` on the strip). Set only where `onAddTask`/`onAddMeeting`
    * pass `linkedFile` on to the entry they build.
    */
   thisFileLine?: boolean;
@@ -146,6 +138,10 @@ interface Props extends AgreementHandlers {
   meetingCard?: MeetingCardData | null;
   /** The selected todo's card (ui/itemCard/useTodoCard.ts), the same way: shown while `editTarget` is a todo in 'card' mode. */
   todoCard?: TodoCardData | null;
+  /** A card that is not an item's (Week's and Month's owner card, ui/period/useOwnerCard.tsx): shown while there is no `editTarget`. */
+  ownerCard?: React.ReactNode;
+  /** Shown instead of the item's own card while `editTarget` is in 'card' mode (the Inbox card, ui/itemCard/InboxCard.tsx). */
+  cardOverride?: React.ReactNode;
   /** The selected agreement's card (ui/itemCard/useAgreementCard.ts): shown while `editTarget` is an agreement in 'card' mode. */
   agreementCard?: AgreementCardData | null;
   /** Resolve `false` when the save failed (the screen showed its own error) - the widget then keeps the edit open. */
@@ -182,7 +178,7 @@ interface Props extends AgreementHandlers {
    * resolveAbbrevFileTarget's self-exclude check - `null` when it's an Inbox
    * item (Inbox never carries an abbreviation, so it can never self-match
    * anyway). Omit this prop entirely on a screen where `fixedDestination`
-   * already always names whatever's being edited (Inbox tab, Current tab,
+   * already always names whatever's being edited (Current tab,
    * Review's Inbox-to-zero step - every one of those is either always
    * `{type: 'inbox'}` or always that Project/Area's own path): the exclude
    * check then derives it from `fixedDestination`. Daily is the one screen
@@ -196,6 +192,12 @@ interface Props extends AgreementHandlers {
    * the tag typed while editing named the item's own current Project/Area).
    */
   editingItemPath?: string | null;
+  /**
+   * After an add filed through an abbreviation tag, the next draft starts with that tag
+   * (docs/dev/history/technical-design-quickadd-redesign.md §3.5 F3). Only Daily passes it;
+   * elsewhere the screen's own place is already where the next item goes.
+   */
+  prefillAbbrev?: boolean;
   linkedFileMissing?: boolean;
 
   /**
@@ -234,7 +236,14 @@ interface Props extends AgreementHandlers {
   /** Shows the Todo tab whenever it changes to a new non-null value (the context panel's Quick Add, §10 C4). */
   showTodoKey?: string | null;
 
-  /** Task input only; defaults to "New task" everywhere. */
+  /**
+   * The box starts collapsed: R1 shows one button per kind (ui/quickAdd/KindButtons.tsx),
+   * a tap opens that kind with the cursor in its field, ✕ collapses it again
+   * (the draft is kept), and so does a successful add or the end of an edit
+   * (docs/dev/history/technical-design-calmer-screens.md §3.2). The box keeps its height.
+   */
+  collapsible?: boolean;
+  /** Todo field only; defaults to "New todo" everywhere. */
   placeholder?: string;
   textColor: string;
   borderColor: string;
@@ -244,20 +253,51 @@ interface Props extends AgreementHandlers {
 function QuickAddWidget(props: Props): React.JSX.Element {
   usePerfRender('QuickAddWidget');
   const {fixedDestination, editTarget, editingItemPath, taskOnly = false, onAddNote, noteFolderPath = null} = props;
-  const {onCancelEdit, onQuickFile, onRefile, onDeleteEdit, provenance, layoutKey, linkedFileMissing, meetingCard, todoCard} = props;
+  const {onCancelEdit, onQuickFile, onRefile, provenance, linkedFileMissing, meetingCard, todoCard} = props;
   const {textColor, borderColor, placeholderColor} = props;
   const colors = {textColor, borderColor, placeholderColor};
 
-  const core = useQuickAddCore({fixedDestination, editingItemPath});
+  // Every box folds to its kind buttons with ✕ - the form has no kind tabs
+  // (docs/dev/history/technical-design-quickadd-redesign.md §3.1). A `collapsible` box starts folded
+  // and folds again after an add; the others start on Todo and stay open after an add.
+  const collapsible = !!props.collapsible;
+  const core = useQuickAddCore({fixedDestination, editingItemPath, prefillAbbrev: !!props.prefillAbbrev, startOpen: collapsible ? null : 'task'});
   const {displayType, isEditing, editFields, pending, setError, setPending} = core;
+  /** A collapsible box goes back to its kind buttons once an add succeeded (the message is in the status slot). */
+  const collapseAfter =
+    <A extends unknown[], R>(fn: (...args: A) => Promise<R>) =>
+    async (...args: A): Promise<R> => {
+      const result = await fn(...args);
+      if (collapsible) core.setOpen(null);
+      return result;
+    };
   const thisFile = useThisFileChoice(!!props.thisFileLine && !isEditing);
+  // Opened from a note, a new todo records it as its origin (`[source::]`, §3.7) - unless the screen
+  // already names a meeting as its origin (the grey line's provenance part).
+  const screenMeeting = !!provenance?.some(part => part.key === 'provenance');
+  const launchNote = thisFile.targets?.kind === 'note' && !screenMeeting ? thisFile.targets.path : null;
+  const launchSettings = launchNote ? peekSettings() : null;
+  const source = useSource(launchNote && launchSettings ? sourceKey(launchNote, resolvePaths(launchSettings).base) : null);
+  const addTaskWithSource = (text: string, destination: Destination, linkedFile?: string) =>
+    props.onAddTask(source.apply(text), destination, linkedFile).then(result => {
+      source.added();
+      return result;
+    });
+  // The text strip's Suggest view (docs/dev/history/technical-design-quickadd-redesign.md §3.2), fitted to the box.
+  const [formWidth, setFormWidth] = useFormWidth();
+  const suggestContext = {
+    thisFile: !!thisFile.targets && thisFile.mode === 'off' && !isEditing,
+    recentTags: core.recentTags,
+    abbrevs: recentAbbrevs(core.abbrevItems, core.recentTags),
+  };
   const task = useTaskDraft(core, {
     fixedDestination,
     editingItemPath,
     editingLoop: editTarget?.kind === 'loop',
     loopsEnabled: true,
-    onAddTask: props.onAddTask,
+    onAddTask: collapseAfter(addTaskWithSource),
     linkedFileForAdd: thisFile.linkedFile,
+    form: {suggest: makeSuggest('task', suggestContext, formWidth), onThisFile: thisFile.offer},
     onSaveEditTask: props.onSaveEditTask,
   });
   const meeting = useMeetingDraft(core, {
@@ -265,13 +305,14 @@ function QuickAddWidget(props: Props): React.JSX.Element {
     initialDate: props.initialDate,
     initialMonthly: props.initialMonthly,
     isMeetingDateVisible: props.isMeetingDateVisible,
-    onAddMeeting: props.onAddMeeting,
+    onAddMeeting: collapseAfter(props.onAddMeeting),
     linkedFileForAdd: thisFile.linkedFile,
+    form: {suggest: makeSuggest('meeting', suggestContext, formWidth), onThisFile: thisFile.offer},
     onSaveEditMeeting: props.onSaveEditMeeting,
   });
-  const note = useNoteDraft(core, {onAddNote, noteFolderPath});
+  const note = useNoteDraft(core, {onAddNote: onAddNote && collapseAfter(onAddNote), noteFolderPath});
   const agreement = useAgreementDraft(core, {
-    onAddAgreement: props.onAddAgreement,
+    onAddAgreement: props.onAddAgreement && collapseAfter(props.onAddAgreement),
     onSaveEditAgreement: props.onSaveEditAgreement,
     onChangeAgreement: props.onChangeAgreement,
   });
@@ -289,9 +330,13 @@ function QuickAddWidget(props: Props): React.JSX.Element {
     text: (kind, addition) => {
       const appendTo = (current: string): string => (current.trim() ? `${current.replace(/\s+$/, '')} ${addition}` : addition);
       if (kind === 'meeting') {
-        if (!taskOnly) meeting.showDraft({...meeting.draft, title: normalizeTagSpacing(appendTo(meeting.draft.title))}, null);
+        if (!taskOnly) {
+          meeting.showDraft({...meeting.draft, title: normalizeTagSpacing(appendTo(meeting.draft.title))}, null);
+          core.setOpen('meeting');
+        }
         return;
       }
+      core.setOpen('task');
       task.setDraft(d => ({...d, text: normalizeTagSpacing(appendTo(d.text))}));
       task.lastSelectionRef.current = null;
       task.setJustAdded(null);
@@ -300,15 +345,67 @@ function QuickAddWidget(props: Props): React.JSX.Element {
       setError(null);
     },
     seed: fields => {
-      if (!taskOnly) meeting.showDraft({title: fields.title, date: fields.date, time: formatMeetingWhen(fields), monthly: false, focusBlock: fields.focusBlock === true}, null);
+      if (taskOnly) return;
+      meeting.showDraft({title: fields.title, date: fields.date, time: formatMeetingWhen(fields), monthly: false, focusBlock: fields.focusBlock === true}, null);
+      core.setOpen('meeting');
     },
   });
 
+  // The end of an edit or card collapses the box (it opens again from the kind buttons), unless the
+  // edit ended into a create draft (New from this: `openAfterEditRef`).
+  const hasEditTarget = !!editTarget;
+  const hadEditTargetRef = useRef(hasEditTarget);
+  const openAfterEditRef = useRef<QuickAddType | null>(null);
+  useEffect(() => {
+    if (hadEditTargetRef.current && !hasEditTarget) core.setOpen(openAfterEditRef.current ?? (collapsible ? null : core.activeType));
+    if (!hasEditTarget) openAfterEditRef.current = null;
+    hadEditTargetRef.current = hasEditTarget;
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only when an edit target comes or goes
+  }, [hasEditTarget]);
+
   const showTodoKey = props.showTodoKey ?? null;
   useEffect(() => {
-    if (showTodoKey !== null && !isEditing) core.setActiveType('task');
+    if (showTodoKey !== null && !isEditing) {
+      core.setActiveType('task');
+      core.setOpen('task');
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- only when the key changes
   }, [showTodoKey]);
+
+  // A kind button: that kind in the box, then the cursor in its field once the rows are shown.
+  const [focusRequest, setFocusRequest] = useState(0);
+  const openKind = (type: QuickAddType) => {
+    core.setActiveType(type);
+    core.setOpen(type);
+    setFocusRequest(n => n + 1);
+  };
+  useEffect(() => {
+    if (focusRequest === 0) return;
+    if (displayType === 'task') task.inputRef.current?.focus();
+    else if (displayType === 'meeting') meeting.inputRef.current?.focus();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- once per request
+  }, [focusRequest]);
+  /**
+   * ✕ next to the main button (docs/dev/history/technical-design-quickadd-redesign.md §11, G5): a new
+   * item's draft goes and the box folds; an edit's changes go and its card shows again (or the edit
+   * ends where there is no card). Only leaving by another tap keeps and saves what was started.
+   */
+  const closeForm = () => {
+    Keyboard.dismiss();
+    if (isEditing) {
+      const card = editFields?.kind === 'task' ? todoCard : editFields?.kind === 'meeting' ? meetingCard : null;
+      log(`QuickAdd: close editing=true toCard=${!!card?.onBackToCard}`);
+      (card?.onBackToCard ?? onCancelEdit)?.();
+      return;
+    }
+    log(`QuickAdd: close kind=${displayType} draft dropped`);
+    if (displayType === 'task') task.resetAfterAdd();
+    else if (displayType === 'meeting') meeting.resetDraft();
+    else if (displayType === 'note') note.resetDraft();
+    else if (displayType === 'agreement') agreement.reset();
+    thisFile.setMode('off');
+    core.setOpen(null);
+  };
 
   // Note has no filing concept - never matched.
   const abbrevTarget = displayType === 'task' ? task.abbrevTarget : displayType === 'meeting' ? meeting.abbrevTarget : null;
@@ -370,19 +467,32 @@ function QuickAddWidget(props: Props): React.JSX.Element {
       {title: draftTitle, date: fields.date, time: fields.time, monthly: false, focusBlock: false},
       `Copied "${truncateItemName(displayTitle, 16)}" - adjust, then Add`,
     );
+    openAfterEditRef.current = 'meeting';
+    core.setOpen('meeting');
+    onCancelEdit();
+  };
+
+  /**
+   * `+ Todo` / `+ Meeting` on a card (docs/dev/history/technical-design-quickadd-redesign.md
+   * §3.5): the card closes and the form of that kind opens for the same place. On Daily
+   * (`prefillAbbrev`) the draft starts with the card owner's abbreviation tag; elsewhere the
+   * screen's own place already is that place.
+   */
+  const newFromCard = (kind: 'task' | 'meeting') => {
+    if (!onCancelEdit) return;
+    const owner = props.prefillAbbrev && editingItemPath ? core.abbrevItems.find(i => i.path === editingItemPath) : undefined;
+    const prefill = owner?.abbrev && (owner.status === 'active' || owner.status === 'on-hold') ? `#${owner.abbrev} ` : '';
+    log(`QuickAddWidget: card new kind=${kind} prefill=${prefill ? 'abbrev' : 'none'}`);
+    if (kind === 'task') task.setDraft(d => ({...d, text: prefill || d.text}));
+    else meeting.setDraft(d => ({...d, title: prefill || d.title}));
+    core.setActiveType(kind);
+    openAfterEditRef.current = kind;
+    setFocusRequest(n => n + 1);
     onCancelEdit();
   };
 
   const buttonMark = useQuickAddStatus(core, task, meeting, note, agreement);
 
-  // The "M" and "F" boxes left of + Add (meeting tab only) - see ui/HighlightMark.tsx.
-  const monthlyToggle =
-    displayType === 'meeting' ? (
-      <>
-        <HighlightMark on={meeting.fields.monthly} variant="toggle" onPress={meeting.toggleMonthly} disabled={pending} textColor={textColor} />
-        <HighlightMark on={meeting.fields.focusBlock} letter="F" variant="toggle" onPress={meeting.toggleFocusBlock} disabled={pending} textColor={textColor} />
-      </>
-    ) : null;
   const loopMode = task.loopMode;
   // A recognized abbreviation tag while editing: Save files the item there
   // in the same step (technical-design-item-card.md K3).
@@ -390,7 +500,6 @@ function QuickAddWidget(props: Props): React.JSX.Element {
   const actions = isEditing ? (
     <EditActions
       pending={pending}
-      onCancel={onCancelEdit}
       saveLabel={
         agreement.changing
           ? '+ Add'
@@ -411,13 +520,15 @@ function QuickAddWidget(props: Props): React.JSX.Element {
   ) : (
     <CreateActions
       label={
-        loopMode.kind === 'add'
-          ? '+ Add loop'
-          : abbrevTarget
-            ? `+ Add to ${truncateItemName(abbrevTarget.name)}`
-            : props.addToName
-              ? `+ Add to ${truncateItemName(props.addToName)}`
-              : '+ Add'
+        displayType === 'note'
+          ? '+ Create'
+          : loopMode.kind === 'add' && displayType === 'task'
+            ? '+ Add loop'
+            : abbrevTarget
+              ? `+ Add to ${truncateItemName(abbrevTarget.name)}`
+              : props.addToName
+                ? `+ Add to ${truncateItemName(props.addToName)}`
+                : '+ Add'
       }
       onPress={
         displayType === 'meeting'
@@ -428,14 +539,14 @@ function QuickAddWidget(props: Props): React.JSX.Element {
               ? agreement.submitCreate
               : task.submitCreate
       }
-      disabled={pending || loopMode.kind === 'exists'}
+      disabled={pending || (displayType === 'task' && loopMode.kind === 'exists')}
       mark={buttonMark}
-      monthlyToggle={monthlyToggle}
       textColor={textColor}
     />
   );
 
   const editKind = editFields?.kind ?? null;
+  const collapsed = core.open === null && !isEditing && !editTarget;
   // The item card in the box's place: a meeting selected once, where the screen passes its card.
   const cardShown =
     editTarget?.mode === 'card' &&
@@ -445,119 +556,99 @@ function QuickAddWidget(props: Props): React.JSX.Element {
   useEffect(() => {
     log('QuickAddWidget: card', cardKind ? 'shown' : 'hidden', {kind: cardKind});
   }, [cardKind]);
-  // A loop's own edit (the loop overview) has no card: it keeps the commands.
-  const taskCommands = editKind === 'task' && (!todoCard || editTarget?.kind === 'loop');
-  const editCommands = editKind && editKind !== 'agreement' ? (
-    <EditCommands
-      pending={pending}
-      onDelete={
-        loopMode.kind === 'loop'
-          ? undefined
-          : () => {
-              Keyboard.dismiss();
-              onDeleteEdit?.();
-            }
-      }
-      onNewFromThis={editFields?.kind === 'meeting' && onCancelEdit ? () => newFromThis(editFields.fields) : undefined}
-      onRefile={
-        onRefile && !saveTo
-          ? () => {
-              Keyboard.dismiss();
-              onRefile();
-            }
-          : undefined
-      }
-      attachment={
-        <AttachmentCluster
-          linkedFile={editKind === 'task' ? task.linkedFile : meeting.linkedFile}
-          missing={linkedFileMissing}
-          onClear={editKind === 'task' ? task.clearLinkedFile : meeting.clearLinkedFile}
-          textColor={textColor}
-        />
-      }
-      monthlyToggle={editKind === 'meeting' ? monthlyToggle : null}
-      textColor={textColor}
-      borderColor={borderColor}
-    />
-  ) : null;
-  // R4 of the Todo tab: the provenance line while creating (K6), the
-  // commands while editing without a card, else the second tag row.
-  const provenanceLine = provenance && provenance.length > 0 && !isEditing ? <ProvenanceLine parts={provenance} textColor={textColor} /> : undefined;
-  const thisFileLine = thisFile.targets ? (
-    <ThisFileLine targets={thisFile.targets} mode={thisFile.mode} onChange={thisFile.setMode} textColor={textColor} borderColor={borderColor} />
-  ) : undefined;
-  const taskRow4 = taskCommands
-    ? editCommands
-    : editKind === 'task'
-      ? undefined
-      : thisFileLine
-        ? (
-            <>
-              {thisFileLine}
-              {provenanceLine}
-            </>
-          )
-        : provenanceLine;
-  // R4 of the Agreement tab: "↳ replaces …" while changing one (its ✕ cancels), the screen's line while creating.
+  // Delete, Refile, New from this and M act on the card (docs/dev/history/technical-design-quickadd-redesign.md
+  // §3.4, C2). A loop's own edit (the loop overview) has no card: it keeps them in row 4.
+  const loopCommands =
+    editKind === 'task' && editTarget?.kind === 'loop' ? (
+      <EditCommands
+        pending={pending}
+        onRefile={
+          onRefile && !saveTo
+            ? () => {
+                Keyboard.dismiss();
+                onRefile();
+              }
+            : undefined
+        }
+        textColor={textColor}
+        borderColor={borderColor}
+      />
+    ) : null;
+  // The grey origin line while creating (what the screen adds, B5); "↳ replaces …" while changing an agreement.
+  const originParts = [...(provenance ?? []), ...(source.part ? [source.part] : [])];
+  const provenanceLine = originParts.length > 0 && !isEditing ? <ProvenanceLine parts={originParts} textColor={textColor} /> : undefined;
+  // A meeting records no source (meeting lines have no trailing fields): its line shows only what the screen adds.
+  const meetingOriginLine = provenance && provenance.length > 0 && !isEditing ? <ProvenanceLine parts={provenance} textColor={textColor} /> : undefined;
   const replaces = editTarget?.kind === 'agreementChange' ? editTarget.replaces.agreement : null;
-  const agreementRow4 =
+  const agreementOrigin =
     replaces && agreement.changing ? (
       <ProvenanceLine parts={[{key: 'replaces', label: replacesLabel(replaces), onClear: () => onCancelEdit?.()}]} textColor={textColor} />
-    ) : provenance && provenance.length > 0 && !isEditing ? (
-      <ProvenanceLine parts={provenance} textColor={textColor} />
-    ) : undefined;
+    ) : (
+      meetingOriginLine
+    );
   const today = todayIso();
+  // Nobody sees the form behind a card or in the collapsed box: its re-renders are skipped then.
+  const rowsHidden = collapsed || cardShown || (!editTarget && !!props.ownerCard) || (editTarget?.mode === 'card' && !!props.cardOverride);
+  const formSlots = useFormSlots({
+    core,
+    task,
+    meeting,
+    note,
+    agreement,
+    needs,
+    rowsHidden,
+    main: actions,
+    onClose: closeForm,
+    origin: {task: loopCommands ?? provenanceLine, meeting: meetingOriginLine, agreement: agreementOrigin},
+    createFile: {linkedFile: thisFile.label, onClear: () => thisFile.setMode('off')},
+    linkedFileMissing,
+    noteFolder: noteFolderLabel(noteFolderPath),
+    today,
+    placeholder: props.placeholder,
+    onFieldLayout: setFormWidth,
+    ...colors,
+  });
 
   return (
     <QuickAddFrame
+      collapsed={collapsed}
       row1={
-        <TabsRow
-          core={core}
+        <KindButtons
+          hasAgreement={!!props.onAddAgreement}
+          hasNote={!!onAddNote}
           taskOnly={taskOnly}
-          hasNoteTab={!!onAddNote}
-          hasAgreementTab={!!props.onAddAgreement || editKind === 'agreement'}
           noteFolderPath={noteFolderPath}
-          actions={actions}
+          onOpen={openKind}
           textColor={textColor}
+          borderColor={borderColor}
         />
       }
-      row2={
-        <>
-          {needs('task') && <TaskInputRow core={core} task={task} placeholder={props.placeholder ?? 'New task'} {...colors} />}
-          {needs('meeting') && <MeetingInputRow core={core} meeting={meeting} {...colors} />}
-          {needs('note') && <NoteInputRow core={core} note={note} {...colors} />}
-          {needs('agreement') && <AgreementInputRow core={core} agreement={agreement} today={today} {...colors} />}
-        </>
-      }
-      rows34={
-        <>
-          {needs('task') && <TaskMetaRows core={core} task={task} layoutKey={layoutKey} row4={taskRow4} {...colors} />}
-          {needs('meeting') && (
-            <MeetingMetaRows
-              core={core}
-              meeting={meeting}
-              layoutKey={layoutKey}
-              row4={editKind === 'meeting' && !meetingCard ? editCommands : editKind === null ? thisFileLine : undefined}
-              {...colors}
-            />
-          )}
-          {needs('note') && <NoteTagRows core={core} note={note} layoutKey={layoutKey} textColor={textColor} borderColor={borderColor} />}
-          {needs('agreement') && (
-            <AgreementTagRows core={core} agreement={agreement} layoutKey={layoutKey} row4={agreementRow4} textColor={textColor} borderColor={borderColor} />
-          )}
-        </>
-      }
+      form={{
+        field: (
+          <FrozenWhileHidden hidden={rowsHidden} buildKey={allTabs}>
+            {formSlots.field}
+          </FrozenWhileHidden>
+        ),
+        row3: (
+          <FrozenWhileHidden hidden={rowsHidden} buildKey={allTabs}>
+            {formSlots.row3}
+          </FrozenWhileHidden>
+        ),
+        row4: formSlots.row4,
+      }}
       card={
-        !cardShown ? null : editTarget?.kind === 'agreement' && props.agreementCard ? (
+        !editTarget && props.ownerCard ? props.ownerCard : editTarget?.mode === 'card' && props.cardOverride ? props.cardOverride : !cardShown ? null : editTarget?.kind === 'agreement' && props.agreementCard ? (
           <AgreementCard card={props.agreementCard} textColor={textColor} borderColor={borderColor} />
         ) : editTarget?.kind === 'task' && todoCard ? (
-          <TodoCard card={todoCard} textColor={textColor} borderColor={borderColor} />
+          <TodoCard key={editTarget.key ?? ''} card={todoCard} onNewTodo={onCancelEdit ? () => newFromCard('task') : undefined} textColor={textColor} borderColor={borderColor} />
         ) : meetingCard ? (
           <MeetingCard
+            key={editTarget?.key ?? ''}
             card={meetingCard}
             onNewFromThis={() =>
               newFromThis({title: meetingCard.meeting.title, date: meetingCard.meeting.date, time: formatMeetingWhen(meetingCard.meeting)})
             }
+            onNewMeeting={onCancelEdit && !taskOnly ? () => newFromCard('meeting') : undefined}
             textColor={textColor}
             borderColor={borderColor}
           />
@@ -566,6 +657,13 @@ function QuickAddWidget(props: Props): React.JSX.Element {
       borderColor={borderColor}
     />
   );
+}
+
+/** The folder a new note lands in, below the Note root: `Projects/Garden renovation/Notes`. */
+function noteFolderLabel(path: string | null): string | null {
+  if (!path) return null;
+  const at = path.indexOf('/Note/');
+  return (at >= 0 ? path.slice(at + '/Note/'.length) : path).replace(/\/$/, '') || null;
 }
 
 /** React.memo's prop check: shallow, except that an edit target counts as equal when it names the same item. */

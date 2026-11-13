@@ -87,7 +87,7 @@ export function usePlanningScreen({logTag}: Options) {
     set: setEditingKey,
     flushEditRef,
     afterSave,
-  } = useEditTarget<string>();
+  } = useEditTarget<string>(logTag);
   // Both go to the central status slot (docs/dev/history/technical-design-status-slot.md §7.4),
   // not inline on the Week/Month screens.
   const widgetAction = useActionError('planning.widgetError', `${logTag}: widget action failed`);
@@ -280,6 +280,7 @@ export function usePlanningScreen({logTag}: Options) {
     onOpenFile: onOpenLinkedFile,
     onOpenOwner: () => selected && opts.onOpenSource(selected.item),
     onEdit: editSelected,
+    onBackToCard: selectedToCard,
     onClose: cancelEditTarget,
   });
 
@@ -314,20 +315,21 @@ export function usePlanningScreen({logTag}: Options) {
 
   /**
    * The planning day panel's row (2-line by default): read-only M and
-   * tracking, note, open linked file, source. The M and the tick are set on
+   * tracking, note, open linked file, source as a label (only the card's place
+   * link opens the Project/Area - quickadd-redesign §11 G2). The M and the tick are set on
    * the meeting's card (`cardOptions`).
    * Spread onto <MeetingRow key=... {...dayRowProps(...)} />.
    */
   const dayRowProps = (
     entry: WeeklyMeetingEntry,
     layout: MeetingRowLayout,
-    opts: {onOpenSource: (item: WeeklyMeetingEntry['item']) => void; textColor: string; borderColor: string},
+    opts: {textColor: string; borderColor: string},
   ): MeetingRowProps => ({
     meeting: entry.meeting,
     span: entry.span,
     layout,
     time: 'time',
-    source: {abbrev: entry.item.abbrev ?? entry.item.name, name: entry.item.name, onPress: () => opts.onOpenSource(entry.item)},
+    source: {abbrev: entry.item.abbrev ?? entry.item.name, name: entry.item.name},
     highlight: 'mark',
     tracking: trackingFor(),
     note: {onOpen: () => handleMeetingNote(entry), onCreate: () => handleMeetingNote(entry)},

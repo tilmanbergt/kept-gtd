@@ -1,5 +1,5 @@
 import {device} from '../../test-helpers/fakeDevice/device';
-import {closeApp, expectShows, openApp, runIntegrityCheck, shows, tap, tapLabel, tapTab, type} from '../../test-helpers/scenario/app';
+import {closeApp, expectShows, openApp, openItemSettings, openInbox, runIntegrityCheck, shows, tap, tapLabel, tapTab, type} from '../../test-helpers/scenario/app';
 import {dataFile, INBOX_FILE, PATHS, projectDir, projectFile, putFile} from '../../test-helpers/scenario/files';
 import {and, freshDevice, given, scenario, then, when} from '../../test-helpers/scenario/scenario';
 
@@ -43,11 +43,10 @@ scenario('A refile with its note, stopped after any write, loses nothing and is 
       device().sdk.putNote(NOTE_IN_INBOX);
 
       await openApp();
-      await tapTab('Inbox');
+      await openInbox();
       await tap('Call Anna');
-      await tapLabel('Refile');
-      await tap('📁 Projects ›');
-      await tap(/Website/);
+      await tapLabel('More places');
+      await tapLabel('File to Website');
       await stopAfter(n, () => tap('Move'));
 
       const lines = annaLines();
@@ -70,6 +69,7 @@ async function prepareCloseOut(): Promise<void> {
   await openApp();
   await tapTab('Projects');
   await tap(/^Website/);
+  await openItemSettings();
   await tap('🗄 Close out…');
   for (const label of ['Next: Contents ›', 'Next: Outcomes ›', 'Next: PDF ›', 'Create PDF', 'I checked the PDF - it looks right', 'Next: Archive ›']) await tap(label);
 }
@@ -87,6 +87,7 @@ scenario('A close-out stopped during "Archive now" can be finished, or is fully 
       await tapTab('Projects');
       if (shows(/^Website +#WEB/)) {
         await tap(/^Website +#WEB/);
+        await openItemSettings();
         await tap('🗄 Close out…');
         for (const label of ['Next: Contents ›', 'Next: Outcomes ›', 'Next: PDF ›', 'I checked the PDF - it looks right', 'Next: Archive ›']) if (shows(label)) await tap(label);
         await tap('Archive now');
@@ -109,13 +110,16 @@ scenario('A project file saved with Windows line endings shows its todos', {feat
     await tapTab('Projects');
     await tap(/^Website/);
   });
-  then('both todos and the Scope show', () => {
+  then('both todos (under Next and Plan) and the Scope (on ⚙) show', async () => {
     expectShows('Write copy');
-    expectShows('Fix footer');
+    await openItemSettings();
     expectShows('Relaunch');
+    await tap('Close');
+    await tap(/^Plan \d+$/);
+    expectShows('Fix footer');
   });
   and('adding a todo keeps both and writes the file with plain line endings', async () => {
-    await type('New task', 'Call the designer');
+    await type('New todo', 'Call the designer');
     await tap('+ Add');
     const text = device().fs.get(projectFile('Website')) ?? '';
     expect(text).not.toContain('\r');

@@ -18,9 +18,7 @@ import {LayoutChangeEvent, Text, View} from 'react-native';
 import {Destination} from '../../domain/destination';
 import {EngageAck, EngageExit, EngageRequest} from '../../domain/engageFlow';
 import {EngageFlowChoice} from '../../domain/engageOptions';
-import {agreedInMeeting, EngageOwner, EngageSource, EngageTodoRef, MeetingRef, ownerHomePath, ownerMeetings as ownerMeetingsOf, ownerTodos, todoKeyOf} from '../../domain/engageOwner';
-import {loopSince} from '../../domain/loops';
-import {nextMeetingOf} from '../../domain/nextMeeting';
+import {agreedInMeeting, EngageOwner, EngageSource, EngageTodoRef, MeetingRef, ownerHomePath, todoKeyOf} from '../../domain/engageOwner';
 import {threadOf} from '../../domain/threads';
 import {chooseMoment, momentKey} from '../../ui/meetingMomentStore';
 import {ENGAGE_TEXT, nextHereText, todayNextText} from '../../domain/engageText';
@@ -47,11 +45,9 @@ import {ENGAGE_BACKDROP_TRANSPARENT, engageStyles as styles} from './engageStyle
 import MarksLine from './MarksLine';
 import MeetingLine from './MeetingLine';
 import NowBox from './NowBox';
-import SectionLine from './SectionLine';
 import OptionTabs from './OptionTabs';
 import OwnerEmpty from './OwnerEmpty';
 import OwnerList from './OwnerList';
-import LoopLine from './LoopLine';
 import MomentLine from './MomentLine';
 import MomentStrip from './MomentStrip';
 import {useEngageQuickAdd} from './useEngageQuickAdd';
@@ -315,12 +311,11 @@ export default function EngageOverlay({request, onClose, onOpenGtdpara, onExit}:
   const ownerScreen = screen.kind === 'options' || screen.kind === 'ownerEmpty';
   const pageEntry = ownerScreen && owner ? page?.entry ?? null : null;
   const optionsNext = ownerScreen ? view.options?.nextMeeting ?? null : null;
-  // Next here hides while it names the page's meeting (R6), and for a loop, whose line names it (R16).
+  // Next here hides while it names the page's meeting (R6). No section or "loop since" line
+  // (docs/dev/history/technical-design-calmer-screens.md §3.9): a loop's next meeting shows here too.
   const isPageMeeting = !!optionsNext && !!pageEntry && optionsNext.item.path === pageEntry.item.path && optionsNext.meetingIndex === pageEntry.meetingIndex;
-  const nextMeeting = optionsNext && !isPageMeeting && owner?.kind !== 'loop' ? optionsNext : null;
+  const nextMeeting = optionsNext && !isPageMeeting ? optionsNext : null;
   const todayNext = ownerScreen ? view.todayNext : null;
-  const loopItem = owner?.kind === 'loop' && source ? source.items.find(i => i.path === owner.itemPath) : undefined;
-  const loopNext = owner?.kind === 'loop' && source && loopItem && !optionsNext ? nextMeetingOf(ownerMeetingsOf(owner, source), owner.tag, todayIso()) : null;
   const merged = !!nextMeeting && !!todayNext && nextMeeting.item.path === todayNext.item.path && nextMeeting.meetingIndex === todayNext.meetingIndex;
 
   return (
@@ -334,7 +329,6 @@ export default function EngageOverlay({request, onClose, onOpenGtdpara, onExit}:
             onBack={onScheduleScreen && owner ? () => dispatch({type: 'back'}) : undefined}
             textColor={textColor}
           />
-          {ownerScreen && owner && state.section ? <SectionLine section={state.section} textColor={textColor} /> : null}
           {pageEntry && page && owner && source ? (
             <>
               <MomentLine
@@ -355,17 +349,6 @@ export default function EngageOverlay({request, onClose, onOpenGtdpara, onExit}:
                 borderColor={borderColor}
               />
             </>
-          ) : null}
-          {ownerScreen && owner?.kind === 'loop' && loopItem && source ? (
-            <LoopLine
-              since={loopSince(loopItem, owner.tag)}
-              open={ownerTodos(owner, source).length}
-              nextMeeting={optionsNext?.meeting ?? null}
-              onOpenNext={() => optionsNext && exits.openNextMeeting(optionsNext)}
-              nextKind={loopNext ? owner.tag.split('/')[0] : null}
-              onAddNext={() => loopNext && seedNextMeeting(loopNext.seed, loopNext.base.item.path)}
-              textColor={textColor}
-            />
           ) : null}
           {nextMeeting ? (
             <MeetingLine

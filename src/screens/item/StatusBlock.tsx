@@ -1,14 +1,13 @@
 /**
- * Status (Active/On Hold/Done) + Archive + Assign to Area - the Current
- * tab's left pane, below Files (docs/dev/history/technical-design-inbox-tab.md §4).
+ * Status (Active/On Hold/Done) + Close out / Archive + Assign to Area - the
+ * left side of a Project's or Area's ⚙ Settings (screens/item/ItemSettings.tsx,
+ * docs/dev/history/technical-design-calmer-screens.md §3.8; the status logic of
+ * docs/dev/history/technical-design-inbox-tab.md §4).
  *
- * Focus is shown by ui/ItemScopePanel.tsx at the TOP of the same column -
- * see that file's module doc comment (independent load, the weekly goal
- * line, and the accepted eventual-consistency window between it and this
- * component). `dailyFocus`/`weeklyFocus` stay on this component's own
- * StatusPanelState anyway: changeStatus/handleAssignArea/handleUnassignArea
- * need them to round-trip the frontmatter block without clobbering them,
- * even though nothing here renders them.
+ * `dailyFocus`/`weeklyFocus` stay on this component's own StatusPanelState:
+ * changeStatus/handleAssignArea/handleUnassignArea need them to round-trip
+ * the frontmatter block without clobbering them, even though nothing here
+ * renders them.
  *
  * Extract, don't lift: rather than hoist status state up into
  * screens/ItemDetail.tsx (which would make ItemDetail a second owner of item
@@ -25,7 +24,7 @@
  * assignment; changing it is ✕ then "Assign to Area…" again. Picking
  * works the same way linked-files arming does: this
  * component doesn't own a FileBrowserPane of its own (that's a sibling,
- * owned by screens/ItemDetail.tsx), so pressing the button reports a full
+ * built by screens/ItemDetail.tsx, which ⚙ shows while arming), so pressing the button reports a full
  * `LinkTarget` up via `onRequestAreaAssignment` - the same
  * report-a-LinkTarget shape ProjectDataPanel's `onLinkTargetChange` uses.
  * `onPick`/`onCancel` are fully owned/constructed here (this component has
@@ -33,27 +32,28 @@
  * mutation also builds the callback" convention ProjectDataPanel's own
  * armTarget/onPick follows.
  */
-import {RetainedFocus} from '../storage/projectFile';
+import {PageShow} from '../../domain/pageShow';
+import {RetainedFocus} from '../../storage/projectFile';
 import React, {useCallback, useEffect, useState} from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
-import {ItemStatus} from '../domain/types';
-import {resolvePaths} from '../domain/settings';
-import {assignedProjects, assignProjectToArea, unassignProject} from '../storage/areaAssignment';
-import {archiveItem, archiveLeavesEmptyFolder, archiveTargetsFor, describeAreaArchiveBlock} from '../storage/archive';
-import {archiveDoneText, emptyFolderConfirmNote} from '../domain/fileChangeText';
-import {displayPath} from '../supernote/devicePaths';
-import {CachedItem, ensureItemCached, findCachedItem} from '../storage/dataCache';
-import {useOnScreenShow} from './screenActivity';
-import {loadSettings} from '../storage/settingsStorage';
-import {SettableStatus, setItemStatus} from '../storage/statusControl';
-import {logError} from '../utils/log';
-import {useEinkRefreshOnLoad} from '../utils/screenRefresh';
-import {ARMING_TEXT, LinkTarget} from './FileBrowserPane';
-import {common} from './commonStyles';
-import {COLORS, FONT} from './theme';
-import {useErrorStatus, useStatus, useStatusApi} from './status/StatusProvider';
-import {usePerfRender} from '../utils/perf';
-import {errorMessage} from '../utils/errorMessage';
+import {ItemStatus} from '../../domain/types';
+import {resolvePaths} from '../../domain/settings';
+import {assignedProjects, assignProjectToArea, unassignProject} from '../../storage/areaAssignment';
+import {archiveItem, archiveLeavesEmptyFolder, archiveTargetsFor, describeAreaArchiveBlock} from '../../storage/archive';
+import {archiveDoneText, emptyFolderConfirmNote} from '../../domain/fileChangeText';
+import {displayPath} from '../../supernote/devicePaths';
+import {CachedItem, ensureItemCached, findCachedItem} from '../../storage/dataCache';
+import {useOnScreenShow} from '../../ui/screenActivity';
+import {loadSettings} from '../../storage/settingsStorage';
+import {SettableStatus, setItemStatus} from '../../storage/statusControl';
+import {logError} from '../../utils/log';
+import {useEinkRefreshOnLoad} from '../../utils/screenRefresh';
+import {ARMING_TEXT, LinkTarget} from '../../ui/FileBrowserPane';
+import {common} from '../../ui/commonStyles';
+import {COLORS, FONT} from '../../ui/theme';
+import {useErrorStatus, useStatus, useStatusApi} from '../../ui/status/StatusProvider';
+import {usePerfRender} from '../../utils/perf';
+import {errorMessage} from '../../utils/errorMessage';
 
 interface Props {
   kind: 'project' | 'area';
@@ -86,6 +86,8 @@ interface StatusPanelState {
   area: string | null;
   /** This item's short abbreviation (docs/dev/history/technical-design-project-area-abbreviations.md), or null - carried through unchanged on every write here, same reason `area`/`defaultResourceFolder` already are (see storage/projectFile.ts's saveFrontMatter doc comment). */
   abbrev: string | null;
+  /** "Show on this page" (domain/pageShow.ts) - carried through unchanged on every write here, like `abbrev`. */
+  show: PageShow;
 }
 
 /**
@@ -110,10 +112,11 @@ function statusPanelStateOf(item: CachedItem): StatusPanelState {
     defaultResourceFolder: item.defaultResourceFolder,
     area: item.area,
     abbrev: item.abbrev,
+    show: item.show,
   };
 }
 
-export default function ItemStatusPanel({
+export default function StatusBlock({
   kind,
   name,
   path,
@@ -124,7 +127,7 @@ export default function ItemStatusPanel({
   textColor,
   borderColor,
 }: Props): React.JSX.Element | null {
-  usePerfRender('ItemStatusPanel');
+  usePerfRender('StatusBlock');
   // A cached item is shown in the first render, so the panel has its height in the first layout
   // (docs/dev/history/technical-design-perf-current-page.md §3.3, §3.5); `load` then keeps the same state.
   const [state, setState] = useState<StatusPanelState | null>(() => {
@@ -184,7 +187,7 @@ export default function ItemStatusPanel({
       setState(prev => (prev && prev.rawContent === item.rawContent ? prev : statusPanelStateOf(item)));
     } catch (e) {
       const message = errorMessage(e);
-      logError('ItemStatusPanel: load failed', kind, path, message);
+      logError('StatusBlock: load failed', kind, path, message);
       setLoadError(message);
     }
   }, [kind, name, path]);
@@ -294,14 +297,14 @@ export default function ItemStatusPanel({
                 onArchived?.();
               })
               .catch(e => {
-                logError('ItemStatusPanel: archive failed', errorMessage(e));
+                logError('StatusBlock: archive failed', errorMessage(e));
                 setArchiveError(errorMessage(e));
               })
               .finally(() => setArchiving(false));
           },
         });
       } catch (e) {
-        logError('ItemStatusPanel: archive confirm setup failed', errorMessage(e));
+        logError('StatusBlock: archive confirm setup failed', errorMessage(e));
         setArchiveError(errorMessage(e));
       }
     })();
@@ -320,7 +323,7 @@ export default function ItemStatusPanel({
         setState(prev => (prev ? {...prev, rawContent: result.rawContent, area: result.area} : prev));
       } catch (e) {
         const message = errorMessage(e);
-        logError('ItemStatusPanel: assign area failed', message);
+        logError('StatusBlock: assign area failed', message);
         setAreaError(message);
       } finally {
         onRequestAreaAssignment?.(null);
@@ -338,7 +341,7 @@ export default function ItemStatusPanel({
       setState(prev => (prev ? {...prev, rawContent: result.rawContent, area: result.area} : prev));
     } catch (e) {
       const message = errorMessage(e);
-      logError('ItemStatusPanel: unassign area failed', message);
+      logError('StatusBlock: unassign area failed', message);
       setAreaError(message);
     }
   }, [state, kind, name, path]);

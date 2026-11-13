@@ -20,7 +20,7 @@ describe('meetingContextOf: thread', () => {
   const coaching = item('area', 'Coaching', {
     meetings: [m('2026-10-09', '1:1 Jordan #sparring/jordan'), m('2026-10-19', '1:1 Jordan #sparring/jordan')],
     tasks: [
-      task('Send the slides #next', {fields: {due: null, created: null, completion: null, meeting: KEY_LAST, extra: []}}),
+      task('Send the slides #next', {fields: {due: null, created: null, completion: null, meeting: KEY_LAST, source: null, extra: []}}),
       task('Read her draft #sparring/jordan #next'),
       task('Old habit #sparring/jordan #now'),
       task('Her feedback #wf/jordan'),
@@ -68,7 +68,7 @@ describe('meetingContextOf: plain meeting', () => {
     const key = '2026-10-15 Steering committee';
     const web = item('project', 'Website', {
       meetings: [steering],
-      tasks: [task('Draft homepage #next'), task('Send minutes', {fields: {due: null, created: null, completion: null, meeting: key, extra: []}})],
+      tasks: [task('Draft homepage #next'), task('Send minutes', {fields: {due: null, created: null, completion: null, meeting: key, source: null, extra: []}})],
     });
     const model = meetingContextOf(entry(web, 0), src([web]), NOW);
     expect(model.mode).toBe('this-meeting');

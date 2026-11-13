@@ -52,10 +52,11 @@ Turn the back garden into a vegetable garden before winter.
 - 2026-10-15 09:00-11:00 Plan the beds #focusblock
 ```
 
+- In the header, an optional `show:` line holds what you chose under [Show on this page](projects-and-areas.md#show-on-this-page), for example `show: loops=always schedule=never open=notebook`. Kept writes it only while something differs from the default and removes it when everything is back to Auto. A part it doesn't know, or a typo such as `loops=nevr`, stays as you wrote it (a typo counts as Auto).
 - `- [ ]` is an open todo, `- [x]` a done one, `- [-]` a cancelled one.
 - A meeting line is date, then time (`10:00`, `10:00-11:00`) or length (`1d`, `2d`), then the title.
 - On screen, dates are shown as day and month (`4.10.`, with the year when it isn't this year) and times in 24 hours (`9:30`); in the files they stay `2026-10-04` and `09:30`.
-- A [linked note](quick-add.md#notes-and-files-on-a-todo-or-meeting) appears at the end of a line as `→ [[Meetings/…]]`, a linked file as `+[[…]]`. A link to a page, from a [lasso capture](lasso.md#capturing-right-away), ends in `#page=3`.
+- A [linked note](quick-add.md#notes-and-files-on-a-todo-or-meeting) appears at the end of a line as `→ [[Meetings/…]]`, a linked file as `+[[…]]`. A link to a page, from [This file](quick-add.md#the-file-you-opened-kept-from) on a document, ends in `#page=3`. The note a todo was written in can be recorded at the end of its line as `[source:: 1 Projects/Garden renovation/Ideas]` (its path below `Note`, without `.note`), see [The grey line](quick-add.md#the-grey-line-where-a-todo-comes-from).
 - A todo line ends in fields that Kept writes: `[meeting:: …]` (the meeting it was agreed in, see [Where a todo was agreed](threads.md#where-a-todo-was-agreed)), `[created:: …]`, `[due:: …]` and `[completion:: …]`, in this order, after the links. A field you add yourself at the end of the line, for example `[priority:: high]`, is kept. In the middle of the text, `[key:: value]` is just text.
 - Older lines with `#due:2026-10-03` or `#waiting-for:marco` are read as before. A line gets the new form only when you edit that todo; nothing is converted on its own.
 - A `## Marks` section lists open lasso marks, one per line, see [Where marks are stored](lasso.md#where-marks-are-stored).

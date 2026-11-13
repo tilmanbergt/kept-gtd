@@ -57,14 +57,14 @@ describe('taskEdit', () => {
   it('parseTaskInput splits a composed line', () => {
     expect(parseTaskInput('  Order soil #next [due:: 2026-10-09] ')).toEqual({
       text: 'Order soil #next',
-      fields: {due: '2026-10-09', created: null, completion: null, meeting: null, extra: []},
+      fields: {due: '2026-10-09', created: null, completion: null, meeting: null, source: null, extra: []},
     });
   });
 
   it('applyTaskInput takes text and due from the line and keeps created, meeting, extra', () => {
     const edited = applyTaskInput(stored, 'Call Anna and Ben #next [due:: 2026-10-20]');
     expect(edited.text).toBe('Call Anna and Ben #next');
-    expect(edited.fields).toEqual({meeting: '2026-10-01 Retro', created: '2026-10-01', due: '2026-10-20', completion: null, extra: ['[prio:: 1]']});
+    expect(edited.fields).toEqual({meeting: '2026-10-01 Retro', source: null, created: '2026-10-01', due: '2026-10-20', completion: null, extra: ['[prio:: 1]']});
     expect(edited.dueDate).toBe('2026-10-20');
   });
 

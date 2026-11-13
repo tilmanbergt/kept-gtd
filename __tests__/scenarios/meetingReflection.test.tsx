@@ -1,7 +1,7 @@
 import {isoDateOffset} from '../../src/domain/meetingTime';
 import {meetingKey} from '../../src/domain/provenance';
 import {device} from '../../test-helpers/fakeDevice/device';
-import {expectNotShows, expectShows, fieldValue, labelled, openApp, openEngage, tap, tapLabel, tapTab, type} from '../../test-helpers/scenario/app';
+import {cardHeading, expectNotShows, expectShows, fieldValue, labelled, openApp, openEngage, tap, tapLabel, tapTab, type} from '../../test-helpers/scenario/app';
 import {areaDir, areaFile, dataFile, fileText, pageKeywords, pageTexts, putFile, sectionLines} from '../../test-helpers/scenario/files';
 import {and, given, scenario, then, when} from '../../test-helpers/scenario/scenario';
 import {sparringSettings} from '../../test-helpers/scenario/setups';
@@ -52,7 +52,7 @@ scenario('Reflect on a sparring session: the page comes after the meeting\'s pag
     await tap(/^Sparring Jordan/);
   });
   then('its card offers Reflect and R (not reviewed yet)', () => {
-    expectShows('Meeting · over');
+    expect(cardHeading()).toMatch(/^Meeting · .+ · over$/);
     expect(labelled('Reflect')).toEqual({on: false, disabled: false});
     expect(labelled('Reviewed')).toEqual({on: false, disabled: false});
   });
@@ -137,24 +137,24 @@ scenario('The card follows the selected meeting', {feature: 'Meetings', design: 
   });
   when('I open Coaching without tapping a meeting', openCoaching);
   then('Quick Add shows, no card', () => {
-    expectShows('+ Add');
+    expectShows('+ Todo');
     expectNotShows(/^Meeting · /);
   });
   when('I tap the session in two days', () => tap(/^Next sparring Jordan/));
-  then('its card offers P and +clip, but no reflection yet', () => {
-    expectShows('Meeting · ahead');
+  then('its card offers P, but no reflection yet, and +clip', async () => {
+    expect(cardHeading()).toMatch(/^Meeting · .+ · \w{3} \d+\.\d+\. [\d:-]+$/);
     expect(labelled('Prepped')).toEqual({on: false, disabled: false});
-    expect(labelled('Link file')).not.toBeNull();
     expect(labelled('Reflect')).toBeNull();
     expect(labelled('Reviewed')).toBeNull();
+    expect(labelled('Link file')).not.toBeNull();
   });
   when('I tap the session three days ago', () => tap(/^Sparring Jordan/));
-  then('the card switches to it: R, Reflect and +clip', () => {
-    expectShows('Meeting · over');
+  then('the card switches to it: R and Reflect; +clip', async () => {
+    expect(cardHeading()).toMatch(/^Meeting · .+ · over$/);
     expect(labelled('Reviewed')).not.toBeNull();
     expect(labelled('Reflect')).not.toBeNull();
-    expect(labelled('Link file')).not.toBeNull();
     expect(labelled('Prepped')).toBeNull();
+    expect(labelled('Link file')).not.toBeNull();
   });
 });
 
@@ -169,14 +169,14 @@ scenario('Edit and save from the card, then tick reviewed on it: the title chang
     await tap('Edit');
   });
   then('the title field shows the title without #prepped', () => {
-    expect(fieldValue('New meeting title')).toBe('Sparring Jordan #sparring/jordan');
+    expect(fieldValue('New meeting')).toBe('Sparring Jordan #sparring/jordan');
   });
   when('I change the title and tap Save', async () => {
-    await type('New meeting title', 'Sparring Jordan roles #sparring/jordan');
+    await type('New meeting', 'Sparring Jordan roles #sparring/jordan');
     await tap('Save');
   });
   then('the card shows the meeting again', () => {
-    expectShows('Meeting · over');
+    expect(cardHeading()).toMatch(/^Meeting · .+ · over$/);
     expectShows('Sparring Jordan roles #sparring/jordan');
   });
   when('I tick R on the card', () => tapLabel('Reviewed'));
@@ -189,7 +189,7 @@ scenario('Edit and save from the card, then tick reviewed on it: the title chang
   });
 });
 
-scenario('Daily: tomorrow\'s tracked meeting offers Prepped, and Daily has no Link file', {feature: 'Daily', design: 'technical-design-item-card.md', help: 'meetings.md#preparation-and-review'}, () => {
+scenario('Daily: tomorrow\'s tracked meeting offers Prepped and the clip that opens the file picker', {feature: 'Daily', design: 'technical-design-quickadd-redesign.md', help: 'meetings.md#preparation-and-review'}, () => {
   given('area "Coaching" has a sparring session tomorrow', () => {
     coaching([`- ${isoDateOffset(1)} 10:00-11:00 Sparring Jordan #sparring/jordan`]);
   });
@@ -199,9 +199,9 @@ scenario('Daily: tomorrow\'s tracked meeting offers Prepped, and Daily has no Li
     await tap('Tomorrow');
     await tap(/^Sparring Jordan/);
   });
-  then('its card offers P, no +clip and no Reflect', () => {
+  then('its card offers P and +clip, no Reflect', () => {
     expect(labelled('Prepped')).toEqual({on: false, disabled: false});
-    expect(labelled('Link file')).toBeNull();
+    expect(labelled('Link file')).not.toBeNull();
     expect(labelled('Reflect')).toBeNull();
   });
 });

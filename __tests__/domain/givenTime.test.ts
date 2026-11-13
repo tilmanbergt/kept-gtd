@@ -10,7 +10,7 @@ import {item, meeting, task} from '../../test-helpers/fixtures';
 const WEEK = {start: '2026-10-12', end: '2026-10-18'};
 const loopLine = (tag: string): LoopLine => ({tag, status: 'active', mainDate: null, linkedFile: null, extraColumns: [], raw: null});
 const m = (date: string, title: string, extra: Partial<Meeting> = {}) => meeting(date, title, {...deriveMeetingFields(title), ...extra});
-const done = (text: string, completion: string) => task(text, {done: true, fields: {due: null, created: null, completion, meeting: null, extra: []}});
+const done = (text: string, completion: string) => task(text, {done: true, fields: {due: null, created: null, completion, meeting: null, source: null, extra: []}});
 const src = (items: EngageItem[], inboxMeetings: Meeting[] = []): EngageSource => ({
   items,
   inbox: {path: '/Note/0 Inbox', tasks: [], meetings: inboxMeetings},

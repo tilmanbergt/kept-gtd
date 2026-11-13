@@ -1,0 +1,295 @@
+/**
+ * Daily's Quick Add zone (docs/dev/history/technical-design-calmer-screens.md
+ * §3.1.3): Quick Add, or the selected row's card in its place, and below it
+ * the selected meeting's context panel in the list's place
+ * (docs/dev/history/technical-design-time-and-place.md §3.2) or `list`.
+ *
+ * The only part of Daily that reads the selection (ui/selectionStore.ts
+ * `useSelection`): a tap on a row re-renders this zone and the rows whose mark
+ * changes, not the screen or its lists. `list` is the memoized todos list
+ * DailyView renders; it stays the same element while only the selection
+ * changes.
+ */
+import React, {useEffect, useMemo, useState} from 'react';
+import LinkPicker from './LinkPicker';
+import {log} from '../../utils/log';
+import {toLinkedFile} from '../../storage/linkedFiles';
+import {Keyboard, View} from 'react-native';
+import {AbbrevFileMatch} from '../../domain/abbrev';
+import {Destination} from '../../domain/destination';
+import {GtdParaSettings, ResolvedParaPaths} from '../../domain/settings';
+import {displayTaskText} from '../../domain/taskLabels';
+import {CachedItem} from '../../storage/dataCache';
+import {DailyAggregate, DailyItemRef, DailyMeetingEntry, DailyTaskEntry} from '../../storage/dailyAggregate';
+import {linkedFileStatus} from '../../storage/linkedFiles';
+import {ProjectFileState} from '../../storage/projectFile';
+import {common} from '../../ui/commonStyles';
+import {useMeetingCard} from '../../ui/itemCard/useMeetingCard';
+import {useTodoCard} from '../../ui/itemCard/useTodoCard';
+import MeetingContextPanel from '../../ui/meetingContext/MeetingContextPanel';
+import {useMeetingContextSlot} from '../../ui/meetingContext/useMeetingContextSlot';
+import QuickAddWidget, {editTargetFor, MeetingQuickAddFields, QuickFilePayload} from '../../ui/QuickAddWidget';
+import {useSelection} from '../../ui/selectionStore';
+import {EntryActions} from '../../ui/useEntryActions';
+import {useStableCallback} from '../../ui/useStableCallback';
+import {usePerfRender} from '../../utils/perf';
+import {meetingKey, taskKey} from './dailyRows';
+import InboxCard from '../../ui/itemCard/InboxCard';
+import {existingAbbrevs, inboxEntryOf, InboxListEntry, pickerPlaces, useInboxCard} from './useInboxCard';
+import FilePicker from './FilePicker';
+import NewProjectForm from './NewProjectForm';
+
+const FIXED_INBOX_DESTINATION: Destination = {type: 'inbox'};
+
+interface Props {
+  /** ui/useEntryActions.ts with `readSelection: false`: this zone reads `actions.edit.store`. */
+  actions: EntryActions;
+  aggregate: DailyAggregate | null;
+  items: CachedItem[];
+  inbox: ProjectFileState | null;
+  inboxPath: string | null;
+  paths: ResolvedParaPaths | null;
+  settings: GtdParaSettings | null;
+  /** The day Quick Add's meeting form starts on (the calendar tab's day). */
+  initialDate: string;
+  /** Whether a meeting on that date shows in the day panel (Quick Add's "where did it go" note). */
+  isMeetingDateVisible: (date: string) => boolean;
+  openItem: (item: DailyItemRef) => void;
+  onOpenOwner: (path: string) => void;
+  /** The Inbox tab's todos and meetings: the selection is found among them too. */
+  extraTasks: readonly DailyTaskEntry[];
+  extraMeetings: readonly DailyMeetingEntry[];
+  /** Daily shows its Inbox tab: an Inbox row's card is the Inbox card (§3.7). */
+  inboxTab: boolean;
+  /** The Inbox list's todos and meetings in order (the next one after filing). */
+  inboxOrder: readonly InboxListEntry[];
+  /** Ticks a todo done or open (DailyView: it stays struck through in its tab, §3.5). */
+  onTickTodo: (entry: DailyTaskEntry) => void;
+  /** The list under the box while no meeting's context panel replaces it. */
+  list: React.ReactNode;
+  textColor: string;
+  borderColor: string;
+  placeholderColor: string;
+}
+
+export default function SelectionZone({
+  actions,
+  aggregate,
+  items,
+  inbox,
+  inboxPath,
+  paths,
+  settings,
+  initialDate,
+  isMeetingDateVisible,
+  openItem,
+  onOpenOwner,
+  onTickTodo,
+  extraTasks,
+  extraMeetings,
+  inboxTab,
+  inboxOrder,
+  list,
+  textColor,
+  borderColor,
+  placeholderColor,
+}: Props): React.JSX.Element {
+  usePerfRender('SelectionZone');
+  const {target: editTarget, mode: editMode} = useSelection(actions.edit.store);
+  const {cancel: cancelEditTarget, flushEditRef} = actions.edit;
+
+  // The rows open in Quick Add, looked up in the unfiltered aggregate (the Done tab's todos included).
+  const editingTaskEntry =
+    editTarget?.type === 'task'
+      ? [aggregate?.tasks ?? [], aggregate?.doneToday ?? [], extraTasks].flatMap(entries => entries.find(e => taskKey(e) === editTarget.key) ?? [])[0] ?? null
+      : null;
+  const editingMeetingEntry =
+    editTarget?.type === 'meeting'
+      ? (aggregate?.meetings ?? []).find(e => meetingKey(e) === editTarget.key) ?? extraMeetings.find(e => meetingKey(e) === editTarget.key) ?? null
+      : null;
+  // Quick-file needs the edited row's real location: this screen's fixedDestination is always the Inbox.
+  const editingEntryItem = editingTaskEntry?.item ?? editingMeetingEntry?.item ?? null;
+  const editingItemPath = editingEntryItem && editingEntryItem.kind !== 'inbox' ? editingEntryItem.path : null;
+
+  // The selected meeting's context panel and its Quick Add (docs/dev/history/technical-design-time-and-place.md §3.2).
+  const context = useMeetingContextSlot(editingMeetingEntry, {items, inbox, inboxPath, settings}, editMode, actions, FIXED_INBOX_DESTINATION, actions.edit.toCard);
+
+  // 📎 on a card: the file picker in the list's place (F1, screens/daily/LinkPicker.tsx); another selection ends it.
+  const [linking, setLinking] = useState(false);
+  const linkKey = editTarget ? `${editTarget.type}:${editTarget.key}` : null;
+  useEffect(() => setLinking(false), [linkKey]);
+  const startLinking = () => {
+    log('DailyView: card link from=daily');
+    setLinking(true);
+  };
+  const pickLink = (absolutePath: string) => {
+    if (!paths) return;
+    const linkedFile = toLinkedFile(paths, absolutePath);
+    setLinking(false);
+    if (editingTaskEntry) {
+      const entry = editingTaskEntry;
+      actions.rowRun(async () => {
+        await actions.saveTasks(entry, tasks => tasks.map((t, i) => (i === entry.taskIndex ? {...t, linkedFile} : t)));
+      });
+    } else if (editingMeetingEntry) {
+      const entry = editingMeetingEntry;
+      actions.rowRun(() => actions.saveMeetings(entry, meetings => meetings.map((m, i) => (i === entry.meetingIndex ? {...m, linkedFile} : m))));
+    }
+  };
+
+  const todoCard = useTodoCard(
+    actions.todoCardOptions(editingTaskEntry, {
+      onArmLink: paths ? startLinking : undefined,
+      onOpenOwner: () => {
+        if (editingTaskEntry) openItem(editingTaskEntry.item);
+      },
+      onToggleDone: () => {
+        if (editingTaskEntry) onTickTodo(editingTaskEntry);
+      },
+    }),
+  );
+  const meetingCard = useMeetingCard(
+    actions.cardOptions(editingMeetingEntry, {
+      onArmLink: paths ? startLinking : undefined,
+      onOpenOwner: () => {
+        if (editingMeetingEntry) openItem(editingMeetingEntry.item);
+      },
+    }),
+  );
+
+  // On the Inbox tab, an Inbox item's card is the Inbox card: File to first (§3.7).
+  const inboxEntry = inboxTab && editMode === 'card' ? inboxEntryOf(editingTaskEntry, editingMeetingEntry) : null;
+  // More… and → New project replace the list while the card stays (§3.7); another selection ends them.
+  const [inboxPanel, setInboxPanel] = useState<'picker' | 'newProject' | null>(null);
+  const selectedKey = editTarget ? `${editTarget.type}:${editTarget.key}:${editMode}` : null;
+  useEffect(() => setInboxPanel(null), [selectedKey]);
+  const inboxCard = useInboxCard({
+    name: 'DailyView',
+    entry: inboxEntry,
+    items,
+    inboxPath,
+    order: inboxOrder,
+    // Set, not select: the next row often has the filed one's key (its index moved up), which select would read as a second tap.
+    select: row => {
+      setInboxPanel(null);
+      if (inboxPath !== null) actions.edit.set({type: row.type, key: `${inboxPath}#${row.index}`}, 'card');
+    },
+    close: cancelEditTarget,
+    todoCard,
+    meetingCard,
+    onMore: () => setInboxPanel('picker'),
+    onNewProject: () => setInboxPanel('newProject'),
+    onOpenProject: onOpenOwner,
+  });
+  const places = useMemo(() => pickerPlaces(items), [items]);
+
+  // Daily is read-only for linked files: a filled clip opens it, nothing links one from here.
+  const editingLinkedFile = (editingTaskEntry?.task ?? editingMeetingEntry?.meeting)?.linkedFile;
+  const [linkedFileMissing, setLinkedFileMissing] = useState(false);
+  useEffect(() => {
+    if (!editingLinkedFile || !paths) {
+      setLinkedFileMissing(false);
+      return;
+    }
+    let cancelled = false;
+    linkedFileStatus(paths, editingLinkedFile).then(status => {
+      if (!cancelled) setLinkedFileMissing(status === 'missing');
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [editingLinkedFile, paths]);
+
+  /** Quick Add's "Save to <Name>" in edit mode: save, then move the row to the abbreviation's item. */
+  const handleQuickFileEdit = async (target: AbbrevFileMatch, payload: QuickFilePayload): Promise<void> => {
+    if (editingTaskEntry && payload.kind === 'task') await actions.quickFile({task: editingTaskEntry}, target, payload);
+    else if (editingMeetingEntry && payload.kind === 'meeting') await actions.quickFile({meeting: editingMeetingEntry}, target, payload);
+  };
+
+  // Stable props for the memoized QuickAddWidget (render-perf-ab §3 B2): called only from its handlers, never while it renders.
+  const stableSaveEditTask = useStableCallback((nextText: string, nextLinkedFile: string) =>
+    editingTaskEntry ? actions.commitTaskEdit(editingTaskEntry, nextText, nextLinkedFile) : Promise.resolve(false),
+  );
+  const stableSaveEditMeeting = useStableCallback((fields: MeetingQuickAddFields, nextLinkedFile: string) => {
+    Keyboard.dismiss();
+    return editingMeetingEntry ? actions.commitMeetingEdit(editingMeetingEntry, fields, nextLinkedFile) : Promise.resolve(false);
+  });
+  const stableCancelEdit = useStableCallback(cancelEditTarget);
+  const stableQuickFileEdit = useStableCallback(handleQuickFileEdit);
+  const editingTaskForWidget = useMemo(
+    () => (editingTaskEntry ? {...editingTaskEntry.task, text: displayTaskText(editingTaskEntry.task, 'flat')} : undefined),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [editingTaskEntry?.task, editingTaskEntry?.task.text],
+  );
+
+  return (
+    <>
+      <QuickAddWidget
+        collapsible
+        thisFileLine
+        prefillAbbrev
+        layoutKey="daily"
+        {...context.widget}
+        initialDate={initialDate}
+        isMeetingDateVisible={isMeetingDateVisible}
+        editTarget={editTargetFor(editTarget && `${editTarget.type}:${editTarget.key}`, {task: editingTaskForWidget, meeting: editingMeetingEntry?.meeting}, editMode)}
+        meetingCard={meetingCard}
+        todoCard={todoCard}
+        cardOverride={inboxCard ? <InboxCard card={inboxCard.card} textColor={textColor} borderColor={borderColor} /> : undefined}
+        onSaveEditTask={editingTaskEntry ? stableSaveEditTask : undefined}
+        onSaveEditMeeting={editingMeetingEntry ? stableSaveEditMeeting : undefined}
+        flushEditRef={flushEditRef}
+        onCancelEdit={stableCancelEdit}
+        onQuickFile={editTarget ? stableQuickFileEdit : undefined}
+        editingItemPath={editingItemPath}
+        linkedFileMissing={linkedFileMissing}
+        textColor={textColor}
+        borderColor={borderColor}
+        placeholderColor={placeholderColor}
+        {...context.todoOverride}
+      />
+      <View style={[common.divider, {backgroundColor: borderColor}]} />
+      {/* The link picker, More… and → New project win over the meeting's context panel: an Inbox meeting is filed there too. */}
+      {linking && paths && (editingTaskEntry || editingMeetingEntry) ? (
+        <LinkPicker paths={paths} onPick={pickLink} onBack={() => setLinking(false)} textColor={textColor} borderColor={borderColor} />
+      ) : inboxCard && inboxPanel === 'picker' ? (
+        <FilePicker
+          places={places}
+          onPick={inboxCard.fileTo}
+          onBack={() => setInboxPanel(null)}
+          onNewProject={inboxEntry?.kind === 'task' ? () => setInboxPanel('newProject') : undefined}
+          onSomeday={inboxEntry?.kind === 'task' ? inboxCard.someday : undefined}
+          textColor={textColor}
+          borderColor={borderColor}
+        />
+      ) : inboxCard && inboxPanel === 'newProject' && inboxEntry?.kind === 'task' ? (
+        <NewProjectForm
+          itemText={inboxCard.card.title}
+          existingAbbrevs={existingAbbrevs(items)}
+          onCreate={inboxCard.createProject}
+          onBack={() => setInboxPanel(null)}
+          textColor={textColor}
+          borderColor={borderColor}
+          placeholderColor={placeholderColor}
+        />
+      ) : context.model && context.entry ? (
+        <MeetingContextPanel
+          model={context.model}
+          meeting={context.entry.meeting}
+          adding={context.adding}
+          onQuickAdd={actions.edit.add}
+          onBackToCard={actions.edit.toCard}
+          onClose={cancelEditTarget}
+          actions={context.todoActions}
+          selectedTodoKey={context.selectedTodoKey}
+          onSelectTodo={context.onSelectTodo}
+          onOpenItem={onOpenOwner}
+          textColor={textColor}
+          borderColor={borderColor}
+        />
+      ) : (
+        list
+      )}
+    </>
+  );
+}

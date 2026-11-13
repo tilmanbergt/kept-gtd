@@ -41,7 +41,7 @@ const NARROW_WIDTH_EM = 0.32;
 const AVERAGE_WIDTH_EM = 0.55;
 const WIDE_WIDTH_EM = 0.78;
 
-/** Also used by ui/tagChipLayout.ts to budget QuickAddWidget's Row 3 tag chips by width. */
+/** A text's estimated width at `fontSizePx`. */
 export function estimateTextWidthPx(text: string, fontSizePx: number): number {
   let widthEm = 0;
   for (const ch of text) {

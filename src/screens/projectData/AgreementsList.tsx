@@ -54,9 +54,9 @@ export default function AgreementsList({refs, agreements, onBack, textColor, bor
   );
 }
 
-/** The quiet line at the end of the Todos column: "◇ Agreements n ›" (only when there are some). */
-export function AgreementsLink({count, onOpen, textColor}: {count: number; onOpen: () => void; textColor: string}): React.JSX.Element | null {
-  if (count === 0) return null;
+/** The quiet line at the end of the Todos column: "◇ Agreements n ›"; nothing at 0 unless `always` ("Show on this page", domain/pageShow.ts). */
+export function AgreementsLink({count, always = false, onOpen, textColor}: {count: number; always?: boolean; onOpen: () => void; textColor: string}): React.JSX.Element | null {
+  if (count === 0 && !always) return null;
   return (
     <Pressable onPress={onOpen} hitSlop={8} style={styles.link} accessibilityRole="button">
       <Text style={[styles.linkText, {color: textColor}]}>{agreementsLinkText(count)}</Text>
