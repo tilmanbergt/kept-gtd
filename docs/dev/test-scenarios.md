@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-282 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+283 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -29,10 +29,10 @@ Test: `__tests__/scenarios/agreements.test.tsx` · design: `docs/dev/history/tec
 
 Test: `__tests__/scenarios/agreements.test.tsx` · design: `docs/dev/history/technical-design-meetings-0.21.md` · help: `agreements.md#adding-one`
 
-### Change an agreement: the old one is ended, the new one added; Cancel changes nothing
+### Change an agreement: the old one is ended, the new one added; ✕ changes nothing
 
 - **Given** area "Coaching" has the agreement "Feedback only in our 1:1s" with Jordan
-- **When** I open Jordan's thread overview, tap the agreement and Change on its card, then Cancel
+- **When** I open Jordan's thread overview, tap the agreement and Change on its card, then ✕
 - **Then** the file is unchanged
 - **When** I tap Change again, edit the words to "Feedback only in our 1:1s, except urgent" and tap + Add
 - **Then** the old line is ended today and the new one is added after it, made in the meeting the overview shows
@@ -1548,17 +1548,17 @@ Test: `__tests__/scenarios/smoke/areaPage.test.tsx` · help: `projects-and-areas
 
 ## Quick Add
 
-### Daily: Quick Add starts closed; + Todo opens it, ✕ closes it and keeps the text
+### Daily: Quick Add starts closed; + Todo opens it, ✕ closes it and drops the text
 
 - **Given** project "Garden renovation" and an empty Inbox
 - **When** I open Daily
 - **Then** the box shows + Todo · + Meeting and no text field
 - **When** I tap + Todo and write "Buy seeds"
 - **Then** the Todo form shows with + Add
-- **When** I tap ✕ at the end of its first row
+- **When** I tap ✕ next to + Add
 - **Then** the buttons are back
 - **When** I tap + Todo again
-- **Then** the text is still there
+- **Then** the field is empty again (quickadd-redesign §11 G5)
 
 Test: `__tests__/scenarios/calmerQuickAdd.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `quick-add.md`
 
@@ -1758,6 +1758,14 @@ Test: `__tests__/scenarios/quickAddCards.test.tsx` · design: `docs/dev/history/
 - **Then** the line records the note as its source, and the card names the todo it came from
 
 Test: `__tests__/scenarios/quickAddCards.test.tsx` · design: `docs/dev/history/technical-design-quickadd-redesign.md` · help: `quick-add.md#the-grey-line-where-a-todo-comes-from`
+
+### ✕ in a todo's edit drops the changes and shows its card again
+
+- **Given** project "Garden renovation" with the todo "Order soil"
+- **When** on its page I tap the todo, edit it to "Order soil and seeds" and tap ✕
+- **Then** the card shows again and the file is unchanged
+
+Test: `__tests__/scenarios/quickAddClose.test.tsx` · design: `docs/dev/history/technical-design-quickadd-redesign.md` · help: `quick-add.md#editing`
 
 ### + Todo on Daily opens the form: the field, the calendar and w/f, then ✕ and + Add
 

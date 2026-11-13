@@ -308,8 +308,17 @@ export function useMeetingDraft(core: QuickAddCore, input: Input) {
     };
   };
 
+  /** ✕ on the form: the draft goes, the screen's date stays (quickadd-redesign §11 G5). */
+  const resetDraft = () => {
+    setDraft(makeMeetingDraft(initialDate, initialMonthly));
+    titleHelp.reset();
+    lastSelectionRef.current = null;
+    setCopyNote(null);
+  };
+
   return {
     draft,
+    resetDraft,
     setDraft,
     fields,
     editing,

@@ -58,6 +58,8 @@ export interface MeetingCardOptions {
   onOpenOwner?: () => void;
   /** The card's Edit. */
   onEdit: () => void;
+  /** ✕ in the edit form: drops the changes and shows the card again (quickadd-redesign §11 G5). */
+  onBackToCard?: () => void;
   /** The card's ✕. */
   onClose: () => void;
 }
@@ -68,6 +70,7 @@ export interface MeetingCardData {
   model: MeetingCardModel;
   busy: boolean;
   onEdit: () => void;
+  onBackToCard?: () => void;
   onClose: () => void;
   onCheckpoint: () => void;
   onMonthly: () => void;
@@ -159,6 +162,7 @@ export function useMeetingCard(options: MeetingCardOptions): MeetingCardData | n
     model,
     busy,
     onEdit: options.onEdit,
+    onBackToCard: options.onBackToCard,
     onClose: options.onClose,
     onCheckpoint: () => {
       const kind = model.checkpoint?.kind;

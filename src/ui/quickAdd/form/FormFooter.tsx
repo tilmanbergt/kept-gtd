@@ -1,9 +1,9 @@
 /**
  * Row 4 of Quick Add's form (docs/dev/history/technical-design-quickadd-redesign.md
- * §3.4): `[clip] [origin line] … [✕ | Cancel] [main button]`, all 32 dp high.
+ * §3.4, §11 G5): `[clip] [origin line] … [✕] [main button]`, all 32 dp high.
  * The clip slot is a 📎 square that starts linking where the screen can link,
  * or the linked file's chip with ✕; the grey origin line names where the item
- * comes from, its ✕ drops it for this item. The main button and ✕ / Cancel
+ * comes from, its ✕ drops it for this item. The main button and ✕
  * keep their width; the origin line, then the file name, shorten first (§3.9).
  */
 import React from 'react';
@@ -18,15 +18,15 @@ interface Props {
   clip: {linkedFile: string | null; missing?: boolean; onArmLink?: () => void; onClear?: () => void} | null;
   /** The grey origin line, or a loop's own edit commands. */
   origin?: React.ReactNode;
-  /** ✕ (create: folds the box, keeps the draft); edit's Cancel lives in `main`. */
-  onCollapse?: () => void;
+  /** ✕: drops a new item's draft and folds the box, or drops an edit's changes. */
+  onClose: () => void;
   main: React.ReactNode;
   hidden?: boolean;
   textColor: string;
   borderColor: string;
 }
 
-export default function FormFooter({clip, origin, onCollapse, main, hidden = false, textColor, borderColor}: Props): React.JSX.Element {
+export default function FormFooter({clip, origin, onClose, main, hidden = false, textColor, borderColor}: Props): React.JSX.Element {
   let clipNode: React.ReactNode = null;
   if (clip?.linkedFile) {
     clipNode = (
@@ -54,12 +54,10 @@ export default function FormFooter({clip, origin, onCollapse, main, hidden = fal
     <View style={[styles.row, hidden && styles.hidden]}>
       {clipNode}
       <View style={styles.origin}>{origin}</View>
-      {onCollapse ? (
-        // On touch-down as well: the field gives up its focus at that moment and the box redraws.
-        <Pressable onPressIn={onCollapse} onPress={onCollapse} hitSlop={12} accessibilityRole="button" accessibilityLabel="Close Quick Add" style={styles.close}>
-          <Text style={[styles.closeText, {color: textColor}]}>✕</Text>
-        </Pressable>
-      ) : null}
+      {/* On touch-down as well: the field gives up its focus at that moment and the box redraws; a second call changes nothing. */}
+      <Pressable onPressIn={onClose} onPress={onClose} hitSlop={12} accessibilityRole="button" accessibilityLabel="Close Quick Add" style={styles.close}>
+        <Text style={[styles.closeText, {color: textColor}]}>✕</Text>
+      </Pressable>
       <View style={styles.main}>{main}</View>
     </View>
   );

@@ -48,7 +48,6 @@ export function CreateActions({label, onPress, disabled, mark, monthlyToggle, te
 
 interface EditProps {
   pending: boolean;
-  onCancel?: () => void;
   /** "Save", "Save loop", "Make loop" or "Save to <Name>". */
   saveLabel: string;
   onSave: () => void;
@@ -57,13 +56,10 @@ interface EditProps {
   textColor: string;
 }
 
-/** R1, edit: Cancel · Save. */
-export function EditActions({pending, onCancel, saveLabel, onSave, errorOnSave, textColor}: EditProps): React.JSX.Element {
+/** The main button while editing: Save (✕ beside it drops the changes, quickadd-redesign §11 G5). */
+export function EditActions({pending, saveLabel, onSave, errorOnSave, textColor}: EditProps): React.JSX.Element {
   return (
     <View style={quickAddButtons.actionsRight}>
-      <Pressable onPress={onCancel} hitSlop={8}>
-        <Text style={[quickAddButtons.textButton, {color: textColor}]}>Cancel</Text>
-      </Pressable>
       <MarkWrap mark={errorOnSave ? 'warning' : null} textColor={textColor}>
         <Pressable style={quickAddButtons.primaryButton} onPress={onSave} disabled={pending} hitSlop={8}>
           <Text style={quickAddButtons.primaryButtonText} numberOfLines={1}>

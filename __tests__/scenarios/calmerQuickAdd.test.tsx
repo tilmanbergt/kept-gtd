@@ -8,7 +8,7 @@ import {and, given, scenario, then, when} from '../../test-helpers/scenario/scen
 const garden = () =>
   putFile(projectFile('Garden renovation'), dataFile('project', {Scope: [], Tasks: ['- [ ] Order soil #next'], Meetings: []}, ['abbrev: GR']));
 
-scenario('Daily: Quick Add starts closed; + Todo opens it, ✕ closes it and keeps the text', {feature: 'Quick Add', design: 'technical-design-calmer-screens.md', help: 'quick-add.md'}, () => {
+scenario('Daily: Quick Add starts closed; + Todo opens it, ✕ closes it and drops the text', {feature: 'Quick Add', design: 'technical-design-calmer-screens.md', help: 'quick-add.md'}, () => {
   given('project "Garden renovation" and an empty Inbox', () => {
     garden();
     putFile(INBOX_FILE, dataFile('inbox', {Tasks: [], Meetings: []}));
@@ -27,13 +27,13 @@ scenario('Daily: Quick Add starts closed; + Todo opens it, ✕ closes it and kee
     await type('New todo', 'Buy seeds');
   });
   then('the Todo form shows with + Add', () => expectShows('+ Add'));
-  when('I tap ✕ at the end of its first row', () => tapLabel('Close Quick Add'));
+  when('I tap ✕ next to + Add', () => tapLabel('Close Quick Add'));
   then('the buttons are back', () => {
     expectShows('+ Todo');
     expectNotShows('+ Add');
   });
   when('I tap + Todo again', () => tap('+ Todo'));
-  then('the text is still there', () => expect(fieldValue('New todo')).toBe('Buy seeds'));
+  then('the field is empty again (quickadd-redesign §11 G5)', () => expect(fieldValue('New todo')).toBe(''));
 });
 
 scenario('With the field still empty and in focus, ✕ closes the box on touch-down, the strip\'s ✕ hides the strip', {feature: 'Quick Add', design: 'technical-design-calmer-screens.md', help: 'quick-add.md'}, () => {

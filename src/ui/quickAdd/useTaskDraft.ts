@@ -205,7 +205,7 @@ export function useTaskDraft(core: QuickAddCore, input: Input) {
   // Custom Select All/Copy/Cut/Paste (domain/clipboardText.ts says why).
   const clipboard = clipboardActions(fields.text, lastSelectionRef, setText, setSelectionOverride);
 
-  /** Empties the draft's text and chips after a save (the unfolded due field stays). */
+  /** Empties the draft's text and chips after a save, or on ✕ (the unfolded due field stays). */
   const resetAfterAdd = () => {
     setDraft(d => ({...d, text: '', flowState: null, waitingOnText: '', dueDate: ''}));
     lastSelectionRef.current = null;

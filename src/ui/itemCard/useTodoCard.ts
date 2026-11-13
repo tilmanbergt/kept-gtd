@@ -48,6 +48,8 @@ export interface TodoCardOptions {
   /** Opens the owning Project or Area. Absent: the chip is a plain label. */
   onOpenOwner?: () => void;
   onEdit: () => void;
+  /** ✕ in the edit form: drops the changes and shows the card again (quickadd-redesign §11 G5). */
+  onBackToCard?: () => void;
   onClose: () => void;
 }
 
@@ -55,6 +57,7 @@ export interface TodoCardData {
   task: Task;
   model: TodoCardModel;
   onEdit: () => void;
+  onBackToCard?: () => void;
   onClose: () => void;
   onToggleDone: () => void;
   onFlow: (next: FlowState) => void;
@@ -132,6 +135,7 @@ export function useTodoCard(options: TodoCardOptions): TodoCardData | null {
     task,
     model,
     onEdit: options.onEdit,
+    onBackToCard: options.onBackToCard,
     onClose: options.onClose,
     onToggleDone: options.onToggleDone ?? (() => write('ticked done', t => withTaskDone(t, !t.done, todayIso()))),
     // Tapping the chip that is on clears it, as on the row's chips. Leaving

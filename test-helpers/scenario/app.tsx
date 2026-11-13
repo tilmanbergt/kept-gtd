@@ -263,6 +263,14 @@ export async function tapLabel(label: string, nth = 0): Promise<void> {
   await settle();
 }
 
+/** Taps ✕ beside the main button of the box in front (the last on screen): drops the draft or the edit's changes. */
+export async function closeQuickAdd(): Promise<void> {
+  const found = screen.queryAllByLabelText('Close Quick Add');
+  if (found.length === 0) throw new Error(`no ✕ beside a main button; the screen shows: ${describeScreen()}`);
+  fireEvent.press(found[found.length - 1]);
+  await settle();
+}
+
 /** Whether a button labelled `label` is on screen, and whether it is on (filled) - null when there is none. */
 export function labelled(label: string): {on: boolean; disabled: boolean} | null {
   const found = screen.queryAllByLabelText(label)[0];

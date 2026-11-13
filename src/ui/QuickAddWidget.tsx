@@ -385,8 +385,25 @@ function QuickAddWidget(props: Props): React.JSX.Element {
     else if (displayType === 'meeting') meeting.inputRef.current?.focus();
     // eslint-disable-next-line react-hooks/exhaustive-deps -- once per request
   }, [focusRequest]);
-  const collapse = () => {
+  /**
+   * ✕ next to the main button (docs/dev/history/technical-design-quickadd-redesign.md §11, G5): a new
+   * item's draft goes and the box folds; an edit's changes go and its card shows again (or the edit
+   * ends where there is no card). Only leaving by another tap keeps and saves what was started.
+   */
+  const closeForm = () => {
     Keyboard.dismiss();
+    if (isEditing) {
+      const card = editFields?.kind === 'task' ? todoCard : editFields?.kind === 'meeting' ? meetingCard : null;
+      log(`QuickAdd: close editing=true toCard=${!!card?.onBackToCard}`);
+      (card?.onBackToCard ?? onCancelEdit)?.();
+      return;
+    }
+    log(`QuickAdd: close kind=${displayType} draft dropped`);
+    if (displayType === 'task') task.resetAfterAdd();
+    else if (displayType === 'meeting') meeting.resetDraft();
+    else if (displayType === 'note') note.resetDraft();
+    else if (displayType === 'agreement') agreement.reset();
+    thisFile.setMode('off');
     core.setOpen(null);
   };
 
@@ -483,7 +500,6 @@ function QuickAddWidget(props: Props): React.JSX.Element {
   const actions = isEditing ? (
     <EditActions
       pending={pending}
-      onCancel={onCancelEdit}
       saveLabel={
         agreement.changing
           ? '+ Add'
@@ -582,7 +598,7 @@ function QuickAddWidget(props: Props): React.JSX.Element {
     needs,
     rowsHidden,
     main: actions,
-    onCollapse: collapse,
+    onClose: closeForm,
     origin: {task: loopCommands ?? provenanceLine, meeting: meetingOriginLine, agreement: agreementOrigin},
     createFile: {linkedFile: thisFile.label, onClear: () => thisFile.setMode('off')},
     linkedFileMissing,

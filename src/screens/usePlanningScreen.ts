@@ -280,6 +280,7 @@ export function usePlanningScreen({logTag}: Options) {
     onOpenFile: onOpenLinkedFile,
     onOpenOwner: () => selected && opts.onOpenSource(selected.item),
     onEdit: editSelected,
+    onBackToCard: selectedToCard,
     onClose: cancelEditTarget,
   });
 

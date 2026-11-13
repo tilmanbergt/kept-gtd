@@ -209,11 +209,12 @@ describe('Quick Add box height', () => {
 describe('Quick Add rows', () => {
   const allTexts = (r: TestRenderer.ReactTestRenderer) => r.root.findAllByType(Text).map(t => [t.props.children].flat().join(''));
 
-  it('row 4 holds ✕ and + Add while creating, Cancel · Save while editing; Save to <Name> with an abbreviation tag', () => {
+  it('row 4 holds ✕ and + Add while creating, ✕ and Save while editing; Save to <Name> with an abbreviation tag', () => {
     const create = render();
     expect(allTexts(create)).toEqual(expect.arrayContaining(['✕', '+ Add']));
     const edit = render({editTarget: editTargetFor('task:1', {task})});
-    expect(allTexts(edit)).toEqual(expect.arrayContaining(['Cancel', 'Save']));
+    expect(allTexts(edit)).toEqual(expect.arrayContaining(['✕', 'Save']));
+    expect(allTexts(edit)).not.toContain('Cancel');
     act(() => edit.root.findAllByType(TextInput).find(i => i.props.placeholder === 'New todo')!.props.onChangeText('Call Tom #gr'));
     expect(allTexts(edit)).toContain('Save to Garden renovat…');
   });

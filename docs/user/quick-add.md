@@ -2,13 +2,13 @@
 
 Quick Add is the small form you find on [Daily](daily.md), [Week](week-and-month.md#week), [Month](week-and-month.md#month), [Current](projects-and-areas.md#the-current-tab) and in the [Review](review.md). It adds and edits todos, meetings and notes. Where an item goes depends on the screen: on a project's Current tab it goes into that project, on Daily, Week and Month into the Inbox - unless you [file it right away](quick-add.md#filing-directly-with-an-abbreviation).
 
-The box starts closed on [Daily](daily.md), [Week](week-and-month.md#week), [Month](week-and-month.md#month), a project's or area's [Current](projects-and-areas.md#the-current-tab) tab and the Review's [Inbox step](review.md#the-steps): large buttons, on two rows where the width ends, **+ Todo**, **+ Meeting** (and **+ Agreement**, **+ Note** where they are offered). A button opens that kind in the same box, with the cursor in its text field. **✕** in the last row closes it again; what you had typed stays for the next time. After **+ Add** the box closes by itself there, and the [status line](index.md#the-status-line) says where the item went. In a [thread](threads.md#opening-the-overview) or [loop overview](loops.md#the-loop-overview) and in the other Review steps it starts open on a todo; **✕** shows the kind buttons there too.
+The box starts closed on [Daily](daily.md), [Week](week-and-month.md#week), [Month](week-and-month.md#month), a project's or area's [Current](projects-and-areas.md#the-current-tab) tab and the Review's [Inbox step](review.md#the-steps): large buttons, on two rows where the width ends, **+ Todo**, **+ Meeting** (and **+ Agreement**, **+ Note** where they are offered). A button opens that kind in the same box, with the cursor in its text field. **✕** in the last row closes it again and drops what you had typed. To keep a draft, tap something else instead - another row or tab: the draft stays for the next time. After **+ Add** the box closes by itself there, and the [status line](index.md#the-status-line) says where the item went. In a [thread](threads.md#opening-the-overview) or [loop overview](loops.md#the-loop-overview) and in the other Review steps it starts open on a todo; **✕** shows the kind buttons there too.
 
 The box always keeps the same height, open or closed, so the lists below it never move:
 
 - Rows 1 and 2: one text field over two lines - the todo's text, the meeting's title, the agreement's words or the note's title. It is still one line in the file: a new line from the keyboard or from handwriting becomes a space.
-- Row 3: when and how - for a [todo](quick-add.md#adding-a-todo) 📅 and **w/f**, for a [meeting](quick-add.md#adding-a-meeting) date, time and **F**, for an [agreement](quick-add.md#adding-an-agreement) valid till, for a [note](quick-add.md#adding-a-note) its folder.
-- Row 4: the clip or the linked file, the [grey line](quick-add.md#the-grey-line-where-a-todo-comes-from), **✕** and the main button - **+ Add**, or **Cancel** and **Save** while you [edit](quick-add.md#editing).
+- Row 3: when and how - for a [todo](quick-add.md#adding-a-todo) the calendar and **w/f**, for a [meeting](quick-add.md#adding-a-meeting) date, time and **F**, for an [agreement](quick-add.md#adding-an-agreement) valid till, for a [note](quick-add.md#adding-a-note) its folder.
+- Row 4: the clip or the linked file, the [grey line](quick-add.md#the-grey-line-where-a-todo-comes-from), **✕** and the main button - **+ Add**, or **Save** while you [edit](quick-add.md#editing).
 
 A tap on a todo, meeting or agreement puts its [card](quick-add.md#the-card-one-tap-selects) into the same box. Next, Someday, Maybe, **M**, delete and the other things you do with an item are on its card.
 
@@ -16,17 +16,17 @@ A tap on a todo, meeting or agreement puts its [card](quick-add.md#the-card-one-
 
 While you write in the text field, a strip hovers above the box, as wide as the box. It shows one thing at a time: the [writing help](quick-add.md#writing-help) when it has something to say, else one of two views:
 
-- ⚡ *Suggest*: on an empty field **Thread**, **Loop** and **Paste** ([Starting with a thread or loop](quick-add.md#starting-with-a-thread-or-loop)), then `#next` and `#someday` for a todo, tags you used lately and the [abbreviations](projects-and-areas.md#abbreviations) of places you used lately - as many as fit. A tap writes the tag where the cursor is. When you opened Kept from a file, **📎 This file** comes first, see [The file you opened Kept from](quick-add.md#the-file-you-opened-kept-from).
+- *Suggest* (a lightning bolt): on an empty field **Thread**, **Loop** and **Paste** ([Starting with a thread or loop](quick-add.md#starting-with-a-thread-or-loop)), then `#next` and `#someday` for a todo, tags you used lately and the [abbreviations](projects-and-areas.md#abbreviations) of places you used lately - as many as fit. A tap writes the tag where the cursor is. When you opened Kept from a file, **This file** with the clip comes first, see [The file you opened Kept from](quick-add.md#the-file-you-opened-kept-from).
 - *Clipboard*: **All**, **Copy**, **Cut** and **Paste**. It shows by itself while text is selected, and the suggestions come back when the selection ends.
 
-The square before **✕** switches between the two; each time the box opens it starts on ⚡ Suggest. **✕** puts the strip away until you tap into the field again.
+The square before **✕** switches between the two: a clipboard to the clipboard buttons, a lightning bolt back to the suggestions. Each time the box opens it starts on Suggest. **✕** puts the strip away until you tap into the field again.
 
 A date, time or valid-till field has its strip over the second line of the text field, so its first line stays readable; it is described under [Dates and times](quick-add.md#dates-and-times). While the status line shows an error or a question, no strip shows.
 
 ## Adding a todo
 
 1. Tap **+ Todo** and write the text. Handwriting is recognized as you write. `#next` or `#someday` in the text - the strip offers both - make it a [Next or Someday todo](tags.md#flow-tags-for-todos).
-2. Optionally tap 📅 for a [due date](tags.md#due-dates): the date field takes its place, with the cursor in it.
+2. Optionally tap the calendar for a [due date](tags.md#due-dates): the date field takes its place, with the cursor in it.
 3. Optionally tap **w/f** (waiting for): "Waiting on" opens to its left for the name. Tap **w/f** again to drop it; the name goes too.
 4. Tap **+ Add** at the bottom right.
 
@@ -68,8 +68,8 @@ While a new todo's text or a new meeting's title is still empty, the strip offer
 
 Each tag that recognition writes is compared with the tags you already use: in your todos and meetings, your [Note setups](note-setups.md#what-a-setup-is), [abbreviations](projects-and-areas.md#abbreviations), [counterparts](threads.md), [contexts](contexts.md) and recent tags. Capital letters never count as a difference: `#Sparring` is your `#sparring`.
 
-- When a tag is close to one you use - `#sparrlng`, `#Iena`, `#workshops` - the strip shows the tag it means, for example **→ #sparring**, then **Keep** and **Edit ›**. Up to two such tags, in the order of the text.
-- **→ #sparring** replaces the tag, wherever it is written that way in the text; **Keep** leaves every suggested tag as written; **Edit ›** shows **All**, **Copy**, **Cut** and **Paste**.
+- When a tag is close to one you use - `#sparrlng`, `#Iena`, `#workshops` - the strip shows the tag it means, for example **→ #sparring**, then **Keep** and the clipboard square. Up to two such tags, in the order of the text.
+- **→ #sparring** replaces the tag, wherever it is written that way in the text; **Keep** leaves every suggested tag as written; the clipboard square shows **All**, **Copy**, **Cut** and **Paste**.
 - A nested tag is checked part by part: the type against your tags, the part after the slash against that type's counterparts. A part that is right keeps its spelling, so only the part that is off changes, and the strip shows the whole tag, for example **→ #sparring/jordan**.
 - Two spaces are removed without asking, so a handwritten tag is one tag: a space right after `#`, and a space right after a `/` inside a tag (`#sparring/ jordan` becomes `#sparring/jordan`). A wide ＃ counts as `#`.
 
@@ -103,7 +103,7 @@ A button that can't act is greyed, not hidden: **−30′** at 30 minutes, a ste
 
 A new meeting that starts in the past, or overlaps another meeting that day, shows a warning sign in row 3 and the warning on the left of its date and time strips ("⚠ past", "⚠ Team sync 15:00"). They only inform: nothing is moved or held back.
 
-When the meeting's tags name a [thread](threads.md) or a [loop](loops.md) that has met before, the strips have a second view, ⚡ *Suggest*, behind the square before **✕**: the time strip offers the usual slot, for example "usual Tue 14:00 – 14:45" - the weekday and start most of its last five meetings share, else the last one, with the usual length - and the date strip the next such day, "usual Tue → 17 Nov", which also fills in the usual time while the time field is empty. An empty time field opens on this view.
+When the meeting's tags name a [thread](threads.md) or a [loop](loops.md) that has met before, the strips have a second view, *Suggest* (the lightning bolt), behind the square before **✕**: the time strip offers the usual slot, for example "usual Tue 14:00 – 14:45" - the weekday and start most of its last five meetings share, else the last one, with the usual length - and the date strip the next such day, "usual Tue → 17 Nov", which also fills in the usual time while the time field is empty. An empty time field opens on this view.
 
 ### Adding with a suggestion open
 
@@ -126,7 +126,7 @@ The meeting card is described in [The meeting row and its card](meetings.md#the-
 
 ## Editing
 
-A tap on the card's title, or a second tap on the selected row, opens the item in Quick Add. Change what you need, then **Save** - or **Cancel** - at the bottom right; **Save** brings you back to the card. Only one item is edited at a time: tapping another row saves the open edit first. With an [abbreviation tag](quick-add.md#filing-directly-with-an-abbreviation) in the text, **Save** reads **Save to** followed by that project's name: it saves your changes and moves the item there in one step.
+A tap on the card's title, or a second tap on the selected row, opens the item in Quick Add. Change what you need, then **Save** at the bottom right; **Save** brings you back to the card. **✕** next to it drops your changes and shows the card again. Only one item is edited at a time: tapping another row saves the open edit first. With an [abbreviation tag](quick-add.md#filing-directly-with-an-abbreviation) in the text, **Save** reads **Save to** followed by that project's name: it saves your changes and moves the item there in one step.
 
 ## Notes and files on a todo or meeting
 
@@ -137,7 +137,7 @@ Every todo and meeting can have its own handwritten note - one of Kept's most us
 
 ## The file you opened Kept from
 
-When you opened Kept from a note or a document - a PDF, an EPUB - the [strip](quick-add.md#the-strips) of a new todo or meeting offers **📎 This file** first. Nothing is linked until you tap it: then the new item links that file - a document with the page you were on, a note without a page - and the last row shows the file's name with **✕** to drop it again. It is offered on a project's or area's page, [Daily](daily.md), [Week](week-and-month.md#week), [Month](week-and-month.md#month), the [thread](threads.md#opening-the-overview) and [loop overviews](loops.md#the-loop-overview) and in [Engage](engage.md); when Kept can't tell which file it was opened from, it isn't. The same file is offered at the top of the Files pane when you link a file, see [Files outside Note](files-and-folders.md#files-outside-note).
+When you opened Kept from a note or a document - a PDF, an EPUB - the [strip](quick-add.md#the-strips) of a new todo or meeting offers **This file** (with the clip) first. Nothing is linked until you tap it: then the new item links that file - a document with the page you were on, a note without a page - and the last row shows the file's name with **✕** to drop it again. It is offered on a project's or area's page, [Daily](daily.md), [Week](week-and-month.md#week), [Month](week-and-month.md#month), the [thread](threads.md#opening-the-overview) and [loop overviews](loops.md#the-loop-overview) and in [Engage](engage.md); when Kept can't tell which file it was opened from, it isn't. The same file is offered at the top of the Files pane when you link a file, see [Files outside Note](files-and-folders.md#files-outside-note).
 
 ## Capturing handwriting with the lasso
 

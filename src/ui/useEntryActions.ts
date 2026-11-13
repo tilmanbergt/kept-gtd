@@ -335,6 +335,7 @@ export function useEntryActions(
     },
     onOpenFile: linkedFile => openFile(linkedFile),
     onEdit: edit.edit,
+    onBackToCard: edit.saved,
     onClose: edit.cancel,
     ...extra,
   });
@@ -353,6 +354,7 @@ export function useEntryActions(
     },
     onOpenFile: linkedFile => openFile(linkedFile),
     onEdit: edit.edit,
+    onBackToCard: edit.saved,
     onClose: edit.cancel,
     ...extra,
   });

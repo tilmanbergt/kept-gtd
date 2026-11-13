@@ -13,7 +13,7 @@ or your project/area files are stored.
 ### New
 - Writing help in Quick Add: after handwriting recognition writes a word, the strip over the tabs
   checks it. A tag close to one you use (`#Iena`, `#sparrlng`) gets a suggestion - **→ #lena**,
-  **Keep**, **Edit ›** - and unfinished tags are completed from your own tags, counterparts and
+  **Keep** and a clipboard square for **All · Copy · Cut · Paste** - and unfinished tags are completed from your own tags, counterparts and
   abbreviations. A tag you corrected once is corrected the same way next time ("read as #lena",
   with **Undo**). When all tags are known, the strip says where the item's note page goes. + Add
   with a suggestion still open asks once; a second + Add saves as written. Also in the note title,
@@ -32,32 +32,36 @@ or your project/area files are stored.
 
 ### Changed
 - Quick Add is one form for writing: the text, title or words in one field over two lines (still
-  one line in the file), below it 📅 and **w/f** for a todo, date, time and **F** for a meeting,
-  valid till for an agreement, and in the last row the clip, the grey line, **✕** and **+ Add**.
+  one line in the file), below it a calendar and **w/f** for a todo, date, time and **F** for a meeting,
+  valid till for an agreement, and in the last row the clip, the grey line, **✕** and **+ Add**
+  (**✕** and **Save** while editing - there is no Cancel).
   The kind tabs, the flow chips, the tag chips and **M** left the box: the kind comes from the
   **+ Todo** / **+ Meeting** buttons (**✕** shows them on every screen), `#next` and `#someday` are
   offered on the strip, and Next, Maybe, **M** and delete are on the item's card. The box keeps its
   height.
-- The strip above Quick Add offers ⚡ suggestions - `#next`, `#someday`, recent tags, abbreviations,
-  and **📎 This file** when you opened Kept from a file - or **All · Copy · Cut · Paste**, which
-  shows by itself while text is selected. The file Kept was opened from is no longer linked unless
-  you tap **📎 This file**.
+- The strip above Quick Add offers suggestions - `#next`, `#someday`, recent tags, abbreviations,
+  and **This file** when you opened Kept from a file - or **All · Copy · Cut · Paste**, which
+  shows by itself while text is selected; a drawn clipboard and lightning bolt switch between them.
+  The file Kept was opened from is no longer linked unless you tap **This file**. The strips' and
+  the form's icons are drawn in black instead of emoji.
 - The date and time strips lie over the text field's second line: a meeting's time strip sets the
   length (**1 h**, **−30′**, **+30′**), moves it (**‹ 30′**, **30′ ›**) or makes it a whole day
   (**1 d**); a button that can't act is greyed. A warning ("⚠ past", "⚠ Team sync 15:00") shows on
-  the strip, a warning sign in the row. The usual slot of a thread or loop is behind ⚡. The lasso
+  the strip, a warning sign in the row. The usual slot of a thread or loop is behind the lightning bolt. The lasso
   capture's time field has the same strip.
 - While the status line shows an error or a question, Quick Add's strips stay hidden.
 - Quick Add starts closed on Daily, Week, Month, a project's or area's page and the Review's Inbox
   step: large **+ Todo**, **+ Meeting** (and **+ Agreement**, **+ Note**) buttons, on two rows where
   the width ends (Nomad portrait), open the kind you need, with the
-  cursor in its field; **✕** closes it and keeps what you typed; after **+ Add** it closes again.
+  cursor in its field; **✕** closes it and drops what you typed (tapping elsewhere keeps it);
+  **✕** in an edit drops the changes and shows the card again; after **+ Add** it closes again.
   The box keeps its height, so nothing below moves.
 - The todo, meeting and agreement cards show everything on one page, no **More ›**: the kind, where
   it lives (a tap opens it) and its state on the first row; the todo's **Next · w/f · Someday ·
   Maybe** (tap the filled one to clear it), the meeting's **P/R · M · F · Reflect**; Done, the note,
   the clip, moving and delete - and **Cancel meeting**, asking once, before a meeting starts. Delete
-  and Cancel meeting are only on the card. A tap on the title edits.
+  and Cancel meeting are only on the card. A tap on the title edits. Rows and Daily's group
+  headings no longer open the project or area; the card's place link does.
 - After **+ Add** on Daily or a project's or area's page, the box shows the new item's card; its
   **+ Todo** / **+ Meeting** starts the next one for the same place (on Daily with the place's
   abbreviation tag).

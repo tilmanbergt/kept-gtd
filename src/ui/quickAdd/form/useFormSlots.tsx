@@ -137,7 +137,8 @@ export interface FormInput extends Colors {
   /** The main button (+ Add … / Cancel · Save). */
   main: React.ReactNode;
   /** ✕ of a create form in a collapsible box. */
-  onCollapse?: () => void;
+  /** ✕ beside the main button: drops the draft or the edit's changes (§11 G5). */
+  onClose: () => void;
   /** The grey origin line (or a loop's own commands) per kind. */
   origin: {task?: React.ReactNode; meeting?: React.ReactNode; agreement?: React.ReactNode};
   /** The clip slot's file while creating (📎 This file), with its ✕. */
@@ -150,7 +151,7 @@ export interface FormInput extends Colors {
 }
 
 export function useFormSlots(input: FormInput): {field: React.ReactNode; row3: React.ReactNode; row4: React.ReactNode} {
-  const {core, task, meeting, note, agreement, needs, rowsHidden, main, onCollapse, origin, createFile, linkedFileMissing, noteFolder, today} = input;
+  const {core, task, meeting, note, agreement, needs, rowsHidden, main, onClose, origin, createFile, linkedFileMissing, noteFolder, today} = input;
   const colors = {textColor: input.textColor, borderColor: input.borderColor, placeholderColor: input.placeholderColor};
   const {textColor, borderColor} = colors;
   const narrow = useLayoutClass() === 'narrow';
@@ -348,13 +349,12 @@ export function useFormSlots(input: FormInput): {field: React.ReactNode; row3: R
   const editing = core.isEditing;
   const clip = (linkedFile: string | null, onClearEdit: () => void) =>
     editing ? {linkedFile: linkedFile || null, missing: linkedFileMissing, onClear: onClearEdit} : {linkedFile: createFile.linkedFile, onClear: createFile.onClear};
-  const collapse = editing ? undefined : onCollapse;
   const row4 = isTask ? (
-    <FormFooter clip={clip(task.linkedFile, task.clearLinkedFile)} origin={origin.task} onCollapse={collapse} main={main} {...colors} />
+    <FormFooter clip={clip(task.linkedFile, task.clearLinkedFile)} origin={origin.task} onClose={onClose} main={main} {...colors} />
   ) : isMeeting ? (
-    <FormFooter clip={clip(meeting.linkedFile, meeting.clearLinkedFile)} origin={origin.meeting} onCollapse={collapse} main={main} {...colors} />
+    <FormFooter clip={clip(meeting.linkedFile, meeting.clearLinkedFile)} origin={origin.meeting} onClose={onClose} main={main} {...colors} />
   ) : (
-    <FormFooter clip={null} origin={isAgreement ? origin.agreement : undefined} onCollapse={collapse} main={main} {...colors} />
+    <FormFooter clip={null} origin={isAgreement ? origin.agreement : undefined} onClose={onClose} main={main} {...colors} />
   );
   return {field, row3, row4};
 }

@@ -69,7 +69,14 @@ export function useNoteDraft(core: QuickAddCore, {onAddNote, noteFolderPath}: In
       .finally(() => setPending(false));
   };
 
-  return {draft, justAdded, setJustAdded, tagPage, setTagPage, setTitleRaw, titleField, insertTag, removeTag, submitCreate};
+  /** ✕ on the form: the draft goes (quickadd-redesign §11 G5). */
+  const resetDraft = () => {
+    setDraft(makeNoteDraft());
+    titleField.help.reset();
+    setTagPage(0);
+  };
+
+  return {draft, justAdded, setJustAdded, tagPage, setTagPage, setTitleRaw, titleField, insertTag, removeTag, submitCreate, resetDraft};
 }
 
 export type NoteDraftState = ReturnType<typeof useNoteDraft>;

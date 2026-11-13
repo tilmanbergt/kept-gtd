@@ -41,7 +41,7 @@ Tap an agreement to see its card in Quick Add's place, as for a [todo](quick-add
 
 Agreements are never deleted: the old wording stays in your file. There is one way to change one, even for a typo: a new version, which ends the old one.
 
-- **Change** - or a tap on the agreement's words on its card: Quick Add opens with the words of the agreement and the grey line "↳ replaces …". Write the new agreement and tap **+ Add**: the old one is ended today and the new one is added after it. **Cancel** (or the ✕ in the grey line) leaves the old one as it is.
+- **Change** - or a tap on the agreement's words on its card: Quick Add opens with the words of the agreement and the grey line "↳ replaces …". Write the new agreement and tap **+ Add**: the old one is ended today and the new one is added after it. **✕** next to **+ Add** (or the ✕ in the grey line) leaves the old one as it is.
 - **End**: asks once, then marks the agreement ended today.
 
 ## Where agreements show

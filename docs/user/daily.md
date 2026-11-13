@@ -10,7 +10,7 @@ A todo appears on Daily when it is open and one of these is true:
 - it is [due](tags.md#due-dates) today, tomorrow or overdue
 - it is marked [Waiting for](tags.md#flow-tags-for-todos) and has no date, or its date is today or earlier
 
-Todos marked Someday or Maybe never appear on Daily. Todos are grouped by project or area. The [Inbox](daily.md#the-inbox)'s own todos are not among them: they are on the **Inbox** tab, until they have a place.
+Todos marked Someday or Maybe never appear on Daily. Todos are grouped by project or area; to open one, tap its name on a todo's [card](quick-add.md#the-card-one-tap-selects). The [Inbox](daily.md#the-inbox)'s own todos are not among them: they are on the **Inbox** tab, until they have a place.
 
 ## Count tabs and the bell
 

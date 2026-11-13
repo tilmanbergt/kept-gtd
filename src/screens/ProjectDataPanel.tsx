@@ -654,6 +654,7 @@ export default function ProjectDataPanel({
     onArmLink: () => todoIndex !== null && armLinkTarget('task', todoIndex),
     onArmRefile: () => todoIndex !== null && armRefileTarget('task', todoIndex),
     onEdit: editSelected,
+    onBackToCard: savedEditTarget,
     onClose: cancelEditTarget,
   });
 
@@ -681,6 +682,7 @@ export default function ProjectDataPanel({
     onArmLink: () => cardIndex !== null && armLinkTarget('meeting', cardIndex),
     onArmRefile: () => cardIndex !== null && armRefileTarget('meeting', cardIndex),
     onEdit: editSelected,
+    onBackToCard: savedEditTarget,
     onClose: cancelEditTarget,
   });
 

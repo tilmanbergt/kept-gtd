@@ -151,6 +151,7 @@ export default function InboxStep({data, onOpenItem, onAddTask, textColor, borde
     onNote: () => todoIndex !== null && taskNote(todoIndex),
     onOpenFile: openFile,
     onEdit: edit.edit,
+    onBackToCard: edit.saved,
     onClose: cancelEditTarget,
   });
   const meetingCard = useMeetingCard({
@@ -164,6 +165,7 @@ export default function InboxStep({data, onOpenItem, onAddTask, textColor, borde
     onNote: () => meetingIndex !== null && meetingNote(meetingIndex),
     onOpenFile: openFile,
     onEdit: edit.edit,
+    onBackToCard: edit.saved,
     onClose: cancelEditTarget,
   });
 
