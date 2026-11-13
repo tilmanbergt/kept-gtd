@@ -617,3 +617,22 @@ wide 473 dp and narrow 350 dp; the strip's view switch). Same branch, same relea
 One commit per group, each green on `npm run check:affected`: G1–G3 (icons, rows, strip switch),
 G5 (✕), G6–G8 (completion and place line), G9–G10 (cards), G4 (logs), then docs, CHANGELOG and a
 device build.
+
+### 11.5 As built
+
+- G1–G3: `WritingStrip`'s square is a drawn clipboard (to All · Copy · Cut · Paste - from Suggest,
+  fixes, completions and the place line) or a bolt (back to Suggest); `toggleView` clears a
+  clipboard opened by that square. `WhenStrip`'s Suggest square, the todo form's calendar, This
+  file's clip and the note form's folder are drawn too. Rows (`MeetingRow` sources on Daily and the
+  Week/Month day panels) and Daily's group headings no longer open the place.
+- G5: `FormFooter` always shows ✕ (`onClose`); create drops the open kind's draft
+  (`resetAfterAdd`, `resetDraft`, `reset`) and This file, then folds; edit calls the card's
+  `onBackToCard` (the edit target's `saved`), else `onCancelEdit`. `EditActions` has only Save.
+- G6–G8: `completionLabel(token, option)`; `completions` and `suggestOptions` upper-case
+  abbreviations; `notePlaceOf` returns `NotePlace {setupName, setupTag, home, file}` with the file
+  below the item's PARA folder; `placeFeedback(place)`; `newTagFeedback` is gone.
+- G9–G10: as in 11.2; `CardRow1` splits into place, arrow and state when the arrow shows; the
+  scenario helper `cardHeading()` reads R1 as one line either way. Narrow boxes use
+  `useLayoutClass() === 'narrow'`.
+- G4: `FormField` logs touch-down and focus with `logKey`; the main button's wrapper logs
+  touch-down (also while disabled); ✕ logs through `closeForm`.
