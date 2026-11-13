@@ -104,7 +104,9 @@ describe('MeetingCard', () => {
   // docs/dev/history/technical-design-quickadd-redesign.md §3.6: one page, no More ›.
   it('a meeting ahead: caption, thread, P, M, F, the note, New from this and Cancel meeting on one page', () => {
     const r = render(ahead, card(ahead));
-    expect(texts(r)).toEqual(expect.arrayContaining(['Meeting · Coaching · ahead', '#sparring/jordan ›', 'Sparring Jordan #sparring/jordan', 'P', 'M', '+ Note', '✕']));
+    // §11 G10: R1 holds the date and time; the notebook replaces "+ Note".
+    expect(texts(r).some(t => /^Meeting · Coaching · \S+ 1\.1\.2999 /.test(t))).toBe(true);
+    expect(texts(r)).toEqual(expect.arrayContaining(['#sparring/jordan ›', 'Sparring Jordan #sparring/jordan', 'P', 'M', '✕']));
     expect(labels(r)).toEqual(expect.arrayContaining(['Close', 'Prepped', 'Month highlight', 'Create note', 'New from this', 'Cancel meeting']));
     expect(labels(r)).not.toContain('More');
     expect(labels(r)).not.toContain('Reflect');
@@ -120,11 +122,11 @@ describe('MeetingCard', () => {
     expect(reflect.props.accessibilityState).toEqual({disabled: false, selected: true});
   });
 
-  it('a linked file shows its name with ✕; +clip and the refile arrow only where the screen can', () => {
+  it('a linked file is the filled clip (unlinking is in Edit); +clip and the refile arrow only where the screen can', () => {
     const linked = {...ahead, linkedFile: 'Resources/brief.pdf'};
     const r = render(linked, card(linked, {canLink: true, canRefile: true}, {onOpenFile: jest.fn(), onRefile: jest.fn(), onLink: jest.fn()}));
-    expect(texts(r)).toContain('brief.pdf');
-    expect(labels(r)).toEqual(expect.arrayContaining(['Unlink', 'Open linked file', 'Refile']));
+    expect(labels(r)).toEqual(expect.arrayContaining(['Open linked file', 'Refile']));
+    expect(labels(r)).not.toContain('Unlink');
     const plain = render(ahead, card(ahead, {canLink: true}, {onLink: jest.fn()}));
     expect(labels(plain)).toContain('Link file');
   });
@@ -132,7 +134,7 @@ describe('MeetingCard', () => {
   it('a cancelled meeting has no Cancel meeting and no P/R', () => {
     const cancelled = {...ahead, cancelled: true};
     const r = render(cancelled, card(cancelled));
-    expect(texts(r)).toContain('Meeting · Coaching · cancelled');
+    expect(texts(r).some(t => /^Meeting · Coaching · .* · cancelled$/.test(t))).toBe(true);
     expect(labels(r)).not.toContain('Prepped');
     expect(labels(r)).not.toContain('Cancel meeting');
   });

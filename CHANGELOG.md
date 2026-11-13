@@ -58,10 +58,14 @@ or your project/area files are stored.
   cursor in its field; **✕** closes it and drops what you typed (tapping elsewhere keeps it);
   **✕** in an edit drops the changes and shows the card again; after **+ Add** it closes again.
   The box keeps its height, so nothing below moves.
-- The todo, meeting and agreement cards show everything on one page, no **More ›**: the kind, where
-  it lives (a tap opens it) and its state on the first row; the todo's **Next · w/f · Someday ·
-  Maybe** (tap the filled one to clear it), the meeting's **P/R · M · F · Reflect**; Done, the note,
-  the clip, moving and delete - and **Cancel meeting**, asking once, before a meeting starts. Delete
+- The todo, meeting and agreement cards show everything on one page, no **More ›**: the kind, the
+  place's abbreviation (`GR ›`, a tap opens it), the refile arrow where a Files pane is there, and
+  the state on the first row - a todo's flow state and due date (`next · due 5.11.`), a meeting's
+  date and time (`Thu 19.11. 15:00-16:30 · over`); the title over two lines with its origin or
+  thread at its foot; then the todo's done box and **Next · w/f · Someday · Maybe** (**Sd** · **Mb**
+  on a narrow screen), the meeting's **P/R · M · F · Reflect**, and on the right the notebook (with
+  + until the note exists), the clip (with + to link, filled once linked - unlinking is in Edit),
+  delete, **New from this** and **Cancel meeting**, asking once, before a meeting starts. Delete
   and Cancel meeting are only on the card. A tap on the title edits. Rows and Daily's group
   headings no longer open the project or area; the card's place link does.
 - After **+ Add** on Daily or a project's or area's page, the box shows the new item's card; its

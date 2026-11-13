@@ -1,6 +1,6 @@
 // docs/dev/history/technical-design-quickadd-redesign.md §6 scenarios 16-18: after + Add the new
 // item's card, with + Todo for the next one.
-import {expectShows, fieldValue, labelled, openApp, tap, tapTab, type} from '../../test-helpers/scenario/app';
+import {cardHeading, expectShows, fieldValue, labelled, openApp, tap, tapTab, type} from '../../test-helpers/scenario/app';
 import {dataFile, INBOX_FILE, projectFile, putFile, sectionLines} from '../../test-helpers/scenario/files';
 import {fixedClock} from '../../test-helpers/scenario/clock';
 import {given, scenario, then, when} from '../../test-helpers/scenario/scenario';
@@ -24,7 +24,7 @@ scenario('On Daily, + Add to a project shows the new todo\'s card; its + Todo st
   });
   then('the box shows its card: Todo · Garden renovation › · open, with + Todo, all on one page', () => {
     expect(sectionLines(projectFile('Garden renovation'), 'Tasks')).toEqual([expect.stringMatching(/^- \[ \] Order soil/)]);
-    expectShows('Todo · Garden renovation › · open');
+    expect(cardHeading()).toBe('Todo · GR › · open');
     for (const label of ['Next', 'w/f', 'Someday', 'Maybe', 'Done', 'Delete', 'Link file']) expect(labelled(label)).not.toBeNull();
   });
   when('I tap + Todo on the card', () => tap('+ Todo'));
@@ -40,7 +40,7 @@ scenario('On a project\'s page, + Add shows the new todo\'s card; its + Todo sta
     await type('New todo', 'Order soil');
     await tap('+ Add');
   });
-  then('the card shows', () => expectShows('Todo · Garden renovation · open'));
+  then('the card shows', () => expect(cardHeading()).toBe('Todo · GR · open'));
   when('I tap + Todo on the card', () => tap('+ Todo'));
   then('the new draft is empty', () => expect(fieldValue('New todo')).toBe(''));
 });

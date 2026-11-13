@@ -28,9 +28,8 @@ scenario('A todo card on Daily links a file through the picker in the list\'s pl
     await tap('Resources');
     await tap(/plan\.pdf/);
   });
-  then('the todo links it and its card shows the name', () => {
+  then('the todo links it and its card\'s clip is filled', () => {
     expect(sectionLines(projectFile('Garden renovation'), 'Tasks')[0]).toMatch(/^- \[ \] Order soil #next \+\[\[3 Resources\/plan\.pdf\]\]/);
-    expectShows('plan.pdf');
-    expect(labelled('Unlink')).not.toBeNull();
+    expect(labelled('Open linked file')?.on).toBe(true);
   });
 });

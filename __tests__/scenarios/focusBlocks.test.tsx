@@ -1,4 +1,4 @@
-import {expectNotShows, expectShows, openApp, openEngage, readTexts, tap, tapTab, textsBetween, type} from '../../test-helpers/scenario/app';
+import {cardHeading, expectNotShows, expectShows, openApp, openEngage, readTexts, tap, tapTab, textsBetween, type} from '../../test-helpers/scenario/app';
 import {areaFile, dataFile, INBOX_FILE, loggedErrors, putFile, sectionLines} from '../../test-helpers/scenario/files';
 import {and, given, scenario, then, when} from '../../test-helpers/scenario/scenario';
 import {putSmokeSpace, smokeClock} from '../../test-helpers/scenario/smokeSpace';
@@ -39,7 +39,7 @@ scenario('Focus block from Quick Add: F on, the tag in the file, an F row and a 
   });
   when('I tap it', () => tap('Writing session #writing/novel'));
   then('the card says "Focus · ahead" with "writing novel ›" and has no P or R', () => {
-    expectShows(/^Focus · .+ · ahead$/);
+    expect(cardHeading()).toMatch(/^Focus · .+ · \w{3} \d+\.\d+\. /);
     expectShows('writing novel ›');
     expect(readTexts()).not.toContain('P');
     expect(readTexts()).not.toContain('R');

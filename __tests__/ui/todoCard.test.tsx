@@ -77,10 +77,12 @@ const pressSpan = (r: TestRenderer.ReactTestRenderer, text: string) =>
 
 describe('TodoCard', () => {
   // docs/dev/history/technical-design-quickadd-redesign.md §3.6: one page, no More ›.
+  // §11 G9: R1 the place's abbreviation, the flow state and the due date; R4 the done box, the flow states, the notebook.
   it('a Next todo with a due date: caption, title, the flow states, Done, the note, delete - all on one page', () => {
     const t = task('Order soil #next', {dueDate: '2026-10-24'});
-    const r = render(t, card(t));
-    expect(texts(r)).toEqual(expect.arrayContaining(['Todo · Garden renovation · due 24.10.', 'Order soil', '☐ Done', 'Next', 'w/f', 'Someday', 'Maybe', '+ Note']));
+    const r = render(t, card(t, {ownerAbbrev: 'gr'}));
+    expect(texts(r)).toEqual(expect.arrayContaining(['Todo · GR · next · due 24.10.', 'Order soil', 'Next', 'w/f', 'Someday', 'Maybe']));
+    expect(texts(r)).not.toContain('☐ Done');
     expect(labels(r)).toEqual(expect.arrayContaining(['Close', 'Done', 'Next', 'w/f', 'Someday', 'Maybe', 'Create note', 'Delete']));
     expect(labels(r)).not.toContain('More');
     expect(labels(r)).not.toContain('Now');
@@ -109,17 +111,17 @@ describe('TodoCard', () => {
     const t = task('Order soil #next', {linkedFile: 'Resources/plan.pdf'});
     const data = card(t, {}, {onOpenFile: jest.fn(), onOpenOwner: jest.fn()});
     const r = render(t, data);
-    pressText(r, 'plan.pdf');
+    press(r, 'Open linked file');
     press(r, 'Close');
     press(r, 'Done');
     press(r, 'Create note');
     press(r, 'Someday');
     act(() => r.root.findAll(n => n.props.accessibilityHint === 'Edit' && typeof n.props.onPress === 'function')[0].props.onPress());
     press(r, 'Delete');
-    press(r, 'Unlink');
+    expect(labels(r)).not.toContain('Unlink');
     pressSpan(r, 'Garden renovation ›');
     press(r, 'Maybe');
-    for (const h of [data.onEdit, data.onClose, data.onToggleDone, data.onNote, data.onDelete, data.onUnlink, data.onOpenFile, data.onOpenOwner]) {
+    for (const h of [data.onEdit, data.onClose, data.onToggleDone, data.onNote, data.onDelete, data.onOpenFile, data.onOpenOwner]) {
       expect(h).toHaveBeenCalledTimes(1);
     }
     expect(data.onFlow).toHaveBeenCalledWith('someday');

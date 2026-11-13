@@ -1,5 +1,5 @@
 import {isoDateOffset} from '../../src/domain/meetingTime';
-import {expectNotShows, expectShows, fieldValue, labelled, openApp, openInbox, readTexts, tap, tapLabel, tapTab, type} from '../../test-helpers/scenario/app';
+import {cardHeading, expectNotShows, expectShows, fieldValue, labelled, openApp, openInbox, readTexts, tap, tapLabel, tapTab, type} from '../../test-helpers/scenario/app';
 import {areaDir, areaFile, dataFile, INBOX_FILE, loggedErrors, projectFile, putFile, sectionLines} from '../../test-helpers/scenario/files';
 import {and, given, scenario, then, when} from '../../test-helpers/scenario/scenario';
 import {sparringSettings} from '../../test-helpers/scenario/setups';
@@ -112,14 +112,14 @@ scenario('Tap a meeting shows its card; ✕ brings back the half-typed todo', {f
     await tap(/^Team sync/);
   });
   then('the card names the meeting in Quick Add\'s place', () => {
-    expectShows(/^Meeting · .+ · ahead$/);
+    expect(cardHeading()).toMatch(/^Meeting · .+ · \w{3} \d+\.\d+\. [\d:-]+$/);
     expect(labelled('Close')).not.toBeNull();
     expectNotShows('+ Add');
   });
   when('I tap ✕ on the card', () => tapLabel('Close'));
   then('Quick Add is back, closed; + Todo shows "Call Anna" still in the field', async () => {
     expectShows('+ Todo');
-    expectNotShows(/^Meeting · .+ · ahead$/);
+    expect(cardHeading()).not.toMatch(/^Meeting · /);
     await tap('+ Todo');
     expect(fieldValue('New todo')).toBe('Call Anna');
   });
@@ -142,7 +142,7 @@ scenario('A second tap edits; Save writes it and shows the card again', {feature
     expect(sectionLines(projectFile('Website'), 'Meetings')).toEqual([`- ${nextWeek} 10:00 Team sync and planning`]);
   });
   and('the card shows the meeting again, not the edit form', () => {
-    expectShows(/^Meeting · .+ · ahead$/);
+    expect(cardHeading()).toMatch(/^Meeting · .+ · \w{3} \d+\.\d+\. [\d:-]+$/);
     expectShows('Team sync and planning');
     expectNotShows('Save');
   });
@@ -214,7 +214,7 @@ scenario('New from this and Cancel meeting from the card', {feature: 'Meetings',
   });
   then('the meeting is marked cancelled in Website\'s file, and the card says so', () => {
     expect(sectionLines(projectFile('Website'), 'Meetings')).toEqual([`- [-] ${nextWeek} 15:00-16:00 Retro`]);
-    expectShows(/^Meeting · .+ · cancelled$/);
+    expect(cardHeading()).toMatch(/^Meeting · .+ · cancelled$/);
     expect(labelled('Cancel meeting')).toBeNull();
   });
 });
@@ -236,16 +236,16 @@ scenario('Switching to another meeting while editing saves first and shows the o
     expect(sectionLines(projectFile('Website'), 'Meetings')).toEqual([`- ${nextWeek} 10:00 Team sync moved`, `- ${nextWeek} 15:00 Retro`]);
   });
   and('"Retro" shows as card', () => {
-    expectShows(/^Meeting · .+ · ahead$/);
+    expect(cardHeading()).toMatch(/^Meeting · .+ · \w{3} \d+\.\d+\. [\d:-]+$/);
     expect(labelled('Close')).not.toBeNull();
     // The card's title follows its R1 (caption, + Meeting, ✕).
     const shown = readTexts();
-    const at = shown.findIndex(t => /^Meeting · .+ · ahead$/.test(t));
-    expect(shown.slice(at, at + 8)).toContain('Retro');
+    const at = shown.findIndex(t => t === '+ Meeting');
+    expect(shown.slice(at, at + 4)).toContain('Retro');
   });
 });
 
-scenario('Link a file from the card on an Area page, and unlink it', {feature: 'Meetings', design: 'technical-design-item-card.md', help: 'quick-add.md#notes-and-files-on-a-todo-or-meeting'}, () => {
+scenario('Link a file from the card on an Area page, and unlink it in Edit', {feature: 'Meetings', design: 'technical-design-item-card.md', help: 'quick-add.md#notes-and-files-on-a-todo-or-meeting'}, () => {
   given('area "Coaching" has the meeting "Sparring" next week and the file "brief.pdf" in its folder', () => {
     putFile(areaFile('Coaching'), dataFile('area', {Scope: [], Tasks: [], Meetings: [`- ${nextWeek} 10:00 Sparring`]}));
     putFile(`${areaDir('Coaching')}/brief.pdf`, '%PDF');
@@ -259,11 +259,15 @@ scenario('Link a file from the card on an Area page, and unlink it', {feature: '
     expectShows(/^Select attachment/);
     await tap('📄 brief.pdf');
   });
-  then('the meeting links the file, and the card shows its name', () => {
+  then('the meeting links the file, and the card\'s clip is filled', () => {
     expect(sectionLines(areaFile('Coaching'), 'Meetings')[0]).toMatch(/brief\.pdf/);
-    expectShows('brief.pdf');
+    expect(labelled('Open linked file')?.on).toBe(true);
   });
-  when('I tap ✕ next to the file on the card', () => tapLabel('Unlink'));
+  when('I tap the title to edit and tap ✕ next to the file in the last row, then Save', async () => {
+    await tap('Edit');
+    await tapLabel('Unlink');
+    await tap('Save');
+  });
   then('the line has no link any more, and the card offers +clip again', () => {
     expect(sectionLines(areaFile('Coaching'), 'Meetings')).toEqual([`- ${nextWeek} 10:00 Sparring`]);
     expect(labelled('Link file')).not.toBeNull();
@@ -281,13 +285,13 @@ scenario('Todo card: a flow chip, done and delete act at once; a retired #now le
     await tap('Order soil');
   });
   then('its card shows it as Next, with no Now', () => {
-    expectShows(/^Todo · .+ · next$/);
+    expect(cardHeading()).toMatch(/^Todo · .+ · next$/);
     expect(labelled('Now')).toBeNull();
   });
   when('I tap Someday on the card', () => tap('Someday'));
   then('it is Someday, and #now went with Next', () => {
     expect(sectionLines(projectFile('Garden renovation'), 'Tasks')[0]).toBe('- [ ] Order soil #someday');
-    expectShows(/^Todo · .+ · someday$/);
+    expect(cardHeading()).toMatch(/^Todo · .+ · someday$/);
   });
   when('I tick it done on the card', () => tapLabel('Done'));
   then('it is done with today\'s completion date', () => {

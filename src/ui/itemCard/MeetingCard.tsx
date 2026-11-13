@@ -1,19 +1,21 @@
 /**
  * The meeting card (docs/dev/history/technical-design-quickadd-redesign.md
- * §3.6, C1): in Quick Add's place after one tap on a meeting, one page in the
+ * §3.6, C1, §11 G10): in Quick Add's place after one tap on a meeting, one page in the
  * same four rows.
- *   R1 Meeting · <owner ›> · <phase>, + Meeting, ✕
- *   R2 the title (a tap edits) and its time
- *   R3 P / R · M · F · Reflect (once over), the thread on the right
- *   R4 Note › / + Note · 📎 · ↪ refile · + Next (New from this) · ⊘ Cancel
- *      meeting (before it starts; asks once in the status slot)
+ *   R1    Meeting · <place ›> ↪ · <date and time> (· over / · cancelled),
+ *         + Meeting, ✕; narrow without the kind word, weekday and end
+ *   R2-R3 the title over two lines (a tap edits), the thread at its foot
+ *   R4    P / R · M · F · Reflect (once over), then the notebook · 📎 ·
+ *         New from this · ⊘ Cancel meeting (before it starts; asks once in
+ *         the status slot; after the start its square stays empty)
  * Every button acts at once; what shows is decided in domain/itemCard.ts.
  */
 import React from 'react';
-import {Text, View} from 'react-native';
-import {MeetingCardButton, meetingCardLayout} from '../../domain/itemCard';
-import {CancelMeetingIcon, NewFromThisIcon, ReflectIcon, RefileIcon} from './icons';
-import {cardStyles, CardRow1, DetailLine, FileSlot, letter, SquareButton, TextButton} from './parts';
+import {View} from 'react-native';
+import {MeetingCardButton, meetingCardLayout, meetingCardState} from '../../domain/itemCard';
+import {useLayoutClass} from '../ScreenSize';
+import {CancelMeetingIcon, NewFromThisIcon, ReflectIcon} from './icons';
+import {cardStyles, CardRow1, ClipSquare, DetailLine, EmptySquare, letter, NoteSquare, SquareButton, TitleArea} from './parts';
 import {useCardCommitTrace} from './useCardCommitTrace';
 import {usePerfRender} from '../../utils/perf';
 import {MeetingCardData} from './useMeetingCard';
@@ -31,6 +33,7 @@ interface Props {
 export default function MeetingCard({card, onNewFromThis, onNewMeeting, textColor, borderColor}: Props): React.JSX.Element {
   usePerfRender('MeetingCard');
   useCardCommitTrace('meeting');
+  const narrow = useLayoutClass() === 'narrow';
   const {model, busy} = card;
   const colors = {textColor, borderColor};
   const layout = meetingCardLayout(model);
@@ -44,15 +47,7 @@ export default function MeetingCard({card, onNewFromThis, onNewMeeting, textColo
           </SquareButton>
         ) : null;
       case 'note':
-        return (
-          <TextButton
-            key={kind}
-            label={model.note === 'open' ? 'Open note' : model.note === 'home' ? 'Home notebook' : 'Create note'}
-            text={model.note === 'create' ? '+ Note' : 'Note ›'}
-            onPress={card.onNote}
-            {...colors}
-          />
-        );
+        return model.note ? <NoteSquare key={kind} note={model.note} onPress={card.onNote} {...colors} /> : null;
       case 'reflect':
         return (
           <SquareButton
@@ -77,14 +72,8 @@ export default function MeetingCard({card, onNewFromThis, onNewMeeting, textColo
             {letter('F')}
           </SquareButton>
         ) : null;
-      case 'refile':
-        return (
-          <SquareButton key={kind} label="Refile" onPress={card.onRefile} {...colors}>
-            {color => <RefileIcon size={18} color={color} />}
-          </SquareButton>
-        );
       case 'file':
-        return <FileSlot key={kind} file={model.file} onOpen={card.onOpenFile} onUnlink={card.onUnlink} onLink={card.onLink} {...colors} />;
+        return <ClipSquare key={kind} file={model.file} onOpen={card.onOpenFile} onLink={card.onLink} {...colors} />;
       case 'newFromThis':
         return (
           <SquareButton key={kind} label="New from this" onPress={onNewFromThis} {...colors}>
@@ -97,6 +86,8 @@ export default function MeetingCard({card, onNewFromThis, onNewMeeting, textColo
             {color => <CancelMeetingIcon color={color} />}
           </SquareButton>
         );
+      case 'empty':
+        return <EmptySquare key={kind} />;
     }
   };
 
@@ -105,36 +96,20 @@ export default function MeetingCard({card, onNewFromThis, onNewMeeting, textColo
   return (
     <View>
       <CardRow1
-        heading={model.kind}
-        link={{label: card.onOpenOwner ? `${model.owner.name} ›` : model.owner.name, onPress: card.onOpenOwner}}
-        status={`· ${model.status}`}
+        heading={narrow ? '' : model.kind}
+        link={{label: card.onOpenOwner ? `${model.place} ›` : model.place, onPress: card.onOpenOwner}}
+        onRefile={model.owner.canRefile ? card.onRefile : undefined}
+        status={`· ${meetingCardState(model, narrow)}`}
         next={onNewMeeting ? {label: '+ Meeting', onPress: onNewMeeting} : null}
         onClose={card.onClose}
         {...colors}
       />
-
-      <View style={[cardStyles.row, cardStyles.row2]}>
-        <Text
-          style={[cardStyles.title, {color: textColor}, model.phase === 'cancelled' && cardStyles.struck]}
-          numberOfLines={1}
-          onPress={card.onEdit}
-          accessibilityRole="button"
-          accessibilityHint="Edit">
-          {model.title}
-        </Text>
+      <TitleArea title={model.title} struck={model.phase === 'cancelled'} onEdit={card.onEdit} foot={thread} {...colors} />
+      <View style={[cardStyles.row, cardStyles.row4]}>
+        {layout.row4Left.map(button)}
         <View style={cardStyles.spacer} />
-        <Text style={[cardStyles.small, {color: textColor}]} numberOfLines={1}>
-          {model.when}
-        </Text>
+        {layout.row4Right.map(button)}
       </View>
-
-      <View style={[cardStyles.row, cardStyles.row3]}>
-        {layout.row3.map(button)}
-        <View style={cardStyles.spacer} />
-        {thread}
-      </View>
-
-      <View style={[cardStyles.row, cardStyles.row4]}>{layout.row4.map(button)}</View>
     </View>
   );
 }

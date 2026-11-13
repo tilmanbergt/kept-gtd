@@ -135,6 +135,13 @@ export function readTexts(): string[] {
     .filter(t => t.trim());
 }
 
+/** The open card's first row as one line (`Todo · GR › · next`), its refile arrow left out; '' without a card. */
+export function cardHeading(): string {
+  const found = screen.UNSAFE_root.findAll(n => n.props.testID === 'card-heading', {deep: true});
+  const last = found[found.length - 1];
+  return last ? renderedText(last as unknown as Rendered) : '';
+}
+
 const matchesText = (text: string, label: string | RegExp) => (typeof label === 'string' ? text === label : label.test(text));
 
 /**

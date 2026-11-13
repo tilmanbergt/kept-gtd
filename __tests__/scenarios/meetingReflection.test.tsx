@@ -1,7 +1,7 @@
 import {isoDateOffset} from '../../src/domain/meetingTime';
 import {meetingKey} from '../../src/domain/provenance';
 import {device} from '../../test-helpers/fakeDevice/device';
-import {expectNotShows, expectShows, fieldValue, labelled, openApp, openEngage, tap, tapLabel, tapTab, type} from '../../test-helpers/scenario/app';
+import {cardHeading, expectNotShows, expectShows, fieldValue, labelled, openApp, openEngage, tap, tapLabel, tapTab, type} from '../../test-helpers/scenario/app';
 import {areaDir, areaFile, dataFile, fileText, pageKeywords, pageTexts, putFile, sectionLines} from '../../test-helpers/scenario/files';
 import {and, given, scenario, then, when} from '../../test-helpers/scenario/scenario';
 import {sparringSettings} from '../../test-helpers/scenario/setups';
@@ -52,7 +52,7 @@ scenario('Reflect on a sparring session: the page comes after the meeting\'s pag
     await tap(/^Sparring Jordan/);
   });
   then('its card offers Reflect and R (not reviewed yet)', () => {
-    expectShows(/^Meeting · .+ · over$/);
+    expect(cardHeading()).toMatch(/^Meeting · .+ · over$/);
     expect(labelled('Reflect')).toEqual({on: false, disabled: false});
     expect(labelled('Reviewed')).toEqual({on: false, disabled: false});
   });
@@ -142,7 +142,7 @@ scenario('The card follows the selected meeting', {feature: 'Meetings', design: 
   });
   when('I tap the session in two days', () => tap(/^Next sparring Jordan/));
   then('its card offers P, but no reflection yet, and +clip', async () => {
-    expectShows(/^Meeting · .+ · ahead$/);
+    expect(cardHeading()).toMatch(/^Meeting · .+ · \w{3} \d+\.\d+\. [\d:-]+$/);
     expect(labelled('Prepped')).toEqual({on: false, disabled: false});
     expect(labelled('Reflect')).toBeNull();
     expect(labelled('Reviewed')).toBeNull();
@@ -150,7 +150,7 @@ scenario('The card follows the selected meeting', {feature: 'Meetings', design: 
   });
   when('I tap the session three days ago', () => tap(/^Sparring Jordan/));
   then('the card switches to it: R and Reflect; +clip', async () => {
-    expectShows(/^Meeting · .+ · over$/);
+    expect(cardHeading()).toMatch(/^Meeting · .+ · over$/);
     expect(labelled('Reviewed')).not.toBeNull();
     expect(labelled('Reflect')).not.toBeNull();
     expect(labelled('Prepped')).toBeNull();
@@ -176,7 +176,7 @@ scenario('Edit and save from the card, then tick reviewed on it: the title chang
     await tap('Save');
   });
   then('the card shows the meeting again', () => {
-    expectShows(/^Meeting · .+ · over$/);
+    expect(cardHeading()).toMatch(/^Meeting · .+ · over$/);
     expectShows('Sparring Jordan roles #sparring/jordan');
   });
   when('I tick R on the card', () => tapLabel('Reviewed'));

@@ -106,6 +106,7 @@ export function useMeetingCard(options: MeetingCardOptions): MeetingCardData | n
     nowMs: Date.now(),
     reflection: state,
     ownerName: selection.ownerName,
+    ownerAbbrev: selection.inbox ? null : (findCachedItem(selection.itemPath)?.abbrev ?? null),
     canLink: !!options.onArmLink,
     canRefile: !!options.onArmRefile,
     inbox: selection.inbox,

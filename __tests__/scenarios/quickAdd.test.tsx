@@ -1,4 +1,4 @@
-import {expectNotShows, expectShows, fieldValue, firstCheckboxOf, focus, labelled, openApp, openInbox, tap, tapLabel, tapTab, type} from '../../test-helpers/scenario/app';
+import {cardHeading, expectNotShows, expectShows, fieldValue, firstCheckboxOf, focus, labelled, openApp, openInbox, tap, tapLabel, tapTab, type} from '../../test-helpers/scenario/app';
 import {dataFile, expectFileContains, INBOX_FILE, loggedErrors, projectFile, putFile, sectionLines} from '../../test-helpers/scenario/files';
 import {given, scenario, then, when} from '../../test-helpers/scenario/scenario';
 
@@ -49,7 +49,7 @@ scenario('Edit a todo, then tap another one: the first edit is saved', {feature:
     expect(sectionLines(projectFile('Website'), 'Tasks')).toEqual(['- [ ] Write landing page copy #next', '- [ ] Fix footer #next']);
   });
   then('"Fix footer" is now the selected one, shown as its card (technical-design-item-card.md §3)', () => {
-    expectShows(/^Todo · .+ · next$/);
+    expect(cardHeading()).toMatch(/^Todo · .+ · next$/);
     expect(labelled('Close')).not.toBeNull();
   });
 });

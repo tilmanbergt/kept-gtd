@@ -112,8 +112,8 @@ function heights(r: TestRenderer.ReactTestRenderer): {frame: unknown; rows: unkn
 }
 
 const FIXED = [FORM_FIELD_HEIGHT, QUICK_ADD_ROWS.meta, QUICK_ADD_ROWS.extra];
-/** A card keeps the four rows. */
-const CARD_FIXED = [QUICK_ADD_ROWS.tabs, QUICK_ADD_ROWS.input, QUICK_ADD_ROWS.meta, QUICK_ADD_ROWS.extra];
+// A card: R1, the two-line title area (R2 + gap + R3, §11 G9, G10), R4.
+const CARD_FIXED = [QUICK_ADD_ROWS.tabs, QUICK_ADD_ROWS.input + QUICK_ADD_ROWS.gap + QUICK_ADD_ROWS.meta, QUICK_ADD_ROWS.extra];
 const pressText = (r: TestRenderer.ReactTestRenderer, label: string) =>
   act(() => {
     r.root.findAll(n => n.type === Pressable && n.findAllByType(Text).some(t => t.props.children === label))[0].props.onPress();

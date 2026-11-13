@@ -9,7 +9,7 @@
  */
 import {todoCardModel, TodoCardModel} from '../../domain/itemCard';
 import {resolveSource} from '../../domain/provenance';
-import {getCachedData} from '../../storage/dataCache';
+import {findCachedItem, getCachedData} from '../../storage/dataCache';
 import {setFlowStateTag, withoutNow} from '../../domain/flowState';
 import {todayIso} from '../../domain/meetingTime';
 import {displayTaskText} from '../../domain/taskLabels';
@@ -99,6 +99,7 @@ export function useTodoCard(options: TodoCardOptions): TodoCardData | null {
     task,
     today: todayIso(),
     ownerName: selection.ownerName,
+    ownerAbbrev: selection.inbox ? null : (findCachedItem(selection.itemPath)?.abbrev ?? null),
     canLink: !!options.onArmLink,
     canRefile: !!options.onArmRefile,
     source: source ? {label: source.label, open: !!options.onOpenFile && source.known} : null,

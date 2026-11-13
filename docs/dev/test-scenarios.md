@@ -5,7 +5,7 @@
 > `npm run check`; a change to this file shows which tested behavior a change adds or alters.
 > What the fake device cannot show is tested on the device instead (`RELEASING.md`).
 
-283 scenarios, 12 of them smoke (`npm run check -- --smoke`).
+285 scenarios, 12 of them smoke (`npm run check -- --smoke`).
 
 ## Agreements
 
@@ -480,7 +480,7 @@ Test: `__tests__/scenarios/daily.test.tsx` · design: `docs/dev/history/technica
 - **When** I open Daily, tap the todo and the clip on its card
 - **Then** the picker replaces the list, with its way back
 - **When** I open Resources and tap plan.pdf
-- **Then** the todo links it and its card shows the name
+- **Then** the todo links it and its card's clip is filled
 
 Test: `__tests__/scenarios/dailyLinkPicker.test.tsx` · design: `docs/dev/history/technical-design-quickadd-redesign.md` · help: `daily.md#linking-a-file-from-daily`
 
@@ -1106,12 +1106,12 @@ Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/techn
 
 Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/technical-design-item-card.md` · help: `meetings.md#the-meeting-row-and-its-card`, `meetings.md#cancelling-and-repeating`
 
-### Link a file from the card on an Area page, and unlink it
+### Link a file from the card on an Area page, and unlink it in Edit
 
 - **Given** area "Coaching" has the meeting "Sparring" next week and the file "brief.pdf" in its folder
 - **When** I tap the meeting, tap +clip on its card and pick the file in the Files pane
-- **Then** the meeting links the file, and the card shows its name
-- **When** I tap ✕ next to the file on the card
+- **Then** the meeting links the file, and the card's clip is filled
+- **When** I tap the title to edit and tap ✕ next to the file in the last row, then Save
 - **Then** the line has no link any more, and the card offers +clip again
 
 Test: `__tests__/scenarios/itemCard.test.tsx` · design: `docs/dev/history/technical-design-item-card.md` · help: `quick-add.md#notes-and-files-on-a-todo-or-meeting`
@@ -1728,6 +1728,24 @@ Test: `__tests__/scenarios/quickAdd.test.tsx` · design: `docs/dev/history/techn
 - **Then** the date strip hovers there with its own ✕, which puts it away
 
 Test: `__tests__/scenarios/quickAdd.test.tsx` · design: `docs/dev/history/technical-design-item-card.md` · help: `quick-add.md#adding-a-todo`
+
+### The todo card: GR, the flow state and the due date on R1; the done box, the flow states and the icons on R4
+
+- **Given** on Wed 11.11. the Next todo "Order soil" due tomorrow in Garden renovation (#GR)
+- **When** I tap it on the project's page
+- **Then** R1 reads "Todo · GR · next · due 12.11." with the refile arrow
+- **Then** R4 offers the done box, Next (filled) · w/f · Someday · Maybe, the notebook with +, the clip with + and the trash
+
+Test: `__tests__/scenarios/quickAddCardLayout.test.tsx` · design: `docs/dev/history/technical-design-quickadd-redesign.md` · help: `quick-add.md#the-card-one-tap-selects`
+
+### The meeting card: its date and time on R1; P/R · M · F, the notebook, the clip, New from this and Cancel meeting on R4
+
+- **Given** on Wed 11.11. the meeting "Plan the beds" on Thu 19.11. 15:00-16:30 in Garden renovation
+- **When** I tap it on the project's page
+- **Then** R1 reads "Meeting · GR · Thu 19.11. 15:00-16:30"
+- **Then** R4 offers M, F, the notebook, the clip, New from this and Cancel meeting
+
+Test: `__tests__/scenarios/quickAddCardLayout.test.tsx` · design: `docs/dev/history/technical-design-quickadd-redesign.md` · help: `meetings.md#the-meeting-row-and-its-card`
 
 ### On Daily, + Add to a project shows the new todo's card; its + Todo starts the next with the tag
 
