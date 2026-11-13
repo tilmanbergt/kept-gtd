@@ -189,6 +189,7 @@ export function useFormSlots(input: FormInput): {field: React.ReactNode; row3: R
           mark={core.fieldMark('text')}
           hidden={!isTask}
           onLayout={input.onFieldLayout}
+          logKey={`kind=task editing=${core.isEditing} pending=${core.pending}`}
           strips={
             <>
               <TextStrip visible={visibleWhile(isTask, taskVis.text)} content={task.textHelp.strip} actions={task.textHelp.actions} clipboard={task.clipboard} {...colors} />
@@ -225,6 +226,7 @@ export function useFormSlots(input: FormInput): {field: React.ReactNode; row3: R
           mark={core.fieldMark('title')}
           hidden={!isMeeting}
           onLayout={input.onFieldLayout}
+          logKey={`kind=meeting editing=${core.isEditing} pending=${core.pending}`}
           strips={
             <>
               <TextStrip
@@ -278,6 +280,7 @@ export function useFormSlots(input: FormInput): {field: React.ReactNode; row3: R
           mark={null}
           editable={!core.pending}
           hidden={!isNote}
+          logKey={`kind=note pending=${core.pending}`}
           onLayout={input.onFieldLayout}
           strips={
             <TextStrip
@@ -305,6 +308,7 @@ export function useFormSlots(input: FormInput): {field: React.ReactNode; row3: R
           editable={!core.pending}
           hidden={!isAgreement}
           onLayout={input.onFieldLayout}
+          logKey={`kind=agreement editing=${core.isEditing} pending=${core.pending}`}
           strips={
             <>
               <TextStrip

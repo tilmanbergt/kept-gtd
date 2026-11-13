@@ -12,6 +12,7 @@ import React, {RefObject} from 'react';
 import {LayoutChangeEvent, StyleSheet, TextInput, View} from 'react-native';
 import {Selection} from '../../../domain/clipboardText';
 import MarkWrap from '../../status/StatusMark';
+import {log} from '../../../utils/log';
 import {FONT} from '../../theme';
 import {QUICK_ADD_ROWS} from '../QuickAddFrame';
 
@@ -34,16 +35,26 @@ interface Props {
   /** The strips (StripHost), drawn over and above the field. */
   strips?: React.ReactNode;
   onLayout?: (e: LayoutChangeEvent) => void;
+  /**
+   * For the log (docs/dev/history/technical-design-quickadd-redesign.md §11 G4): which field
+   * (`kind=task editing=true`) - a touch-down and every focus change are logged, so a field that
+   * takes no input shows whether touches arrive at all.
+   */
+  logKey: string;
   textColor: string;
   borderColor: string;
   placeholderColor: string;
 }
 
 export default function FormField(props: Props): React.JSX.Element {
-  const {inputRef, value, onChangeText, onSelectionChange, selection, onFocus, onBlur, placeholder, mark, editable = true, hidden, strips, onLayout} = props;
+  const {inputRef, value, onChangeText, onSelectionChange, selection, onFocus, onBlur, placeholder, mark, editable = true, hidden, strips, onLayout, logKey} = props;
   const {textColor, borderColor, placeholderColor} = props;
   return (
-    <View style={[styles.slot, hidden && styles.hidden]} collapsable={false} onLayout={onLayout}>
+    <View
+      style={[styles.slot, hidden && styles.hidden]}
+      collapsable={false}
+      onLayout={onLayout}
+      onTouchStart={() => log(`QuickAdd: touch field ${logKey} editable=${editable} hidden=${hidden}`)}>
       <MarkWrap mark={mark} textColor={textColor} flex collapsable={false}>
         <TextInput
           ref={inputRef}
@@ -56,8 +67,14 @@ export default function FormField(props: Props): React.JSX.Element {
           onChangeText={onChangeText}
           onSelectionChange={e => onSelectionChange(e.nativeEvent.selection)}
           selection={selection ?? undefined}
-          onFocus={onFocus}
-          onBlur={onBlur}
+          onFocus={() => {
+            log(`QuickAdd: field focus=on ${logKey}`);
+            onFocus();
+          }}
+          onBlur={() => {
+            log(`QuickAdd: field focus=off ${logKey}`);
+            onBlur();
+          }}
           placeholder={placeholder}
           placeholderTextColor={placeholderColor}
           editable={editable}

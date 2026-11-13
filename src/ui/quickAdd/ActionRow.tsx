@@ -8,6 +8,7 @@
  */
 import React from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
+import {log} from '../../utils/log';
 import {TrashIcon} from '../icons';
 import MarkWrap from '../status/StatusMark';
 import {COLORS, FONT} from '../theme';
@@ -29,7 +30,8 @@ interface CreateProps {
 /** R1, create: [M] + Add. */
 export function CreateActions({label, onPress, disabled, mark, monthlyToggle, textColor}: CreateProps): React.JSX.Element {
   return (
-    <View style={quickAddButtons.actionsRight}>
+    // Touch-down on the wrapper is logged even while the button is disabled (quickadd-redesign §11 G4).
+    <View style={quickAddButtons.actionsRight} onTouchStart={() => log(`QuickAdd: touch main editing=false disabled=${disabled}`)}>
       {monthlyToggle}
       <MarkWrap mark={mark} textColor={textColor}>
         <Pressable
@@ -59,7 +61,8 @@ interface EditProps {
 /** The main button while editing: Save (✕ beside it drops the changes, quickadd-redesign §11 G5). */
 export function EditActions({pending, saveLabel, onSave, errorOnSave, textColor}: EditProps): React.JSX.Element {
   return (
-    <View style={quickAddButtons.actionsRight}>
+    // Touch-down on the wrapper is logged even while Save is disabled (quickadd-redesign §11 G4).
+    <View style={quickAddButtons.actionsRight} onTouchStart={() => log(`QuickAdd: touch main editing=true pending=${pending}`)}>
       <MarkWrap mark={errorOnSave ? 'warning' : null} textColor={textColor}>
         <Pressable style={quickAddButtons.primaryButton} onPress={onSave} disabled={pending} hitSlop={8}>
           <Text style={quickAddButtons.primaryButtonText} numberOfLines={1}>
