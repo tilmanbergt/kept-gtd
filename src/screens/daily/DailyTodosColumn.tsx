@@ -3,16 +3,16 @@
  * §3.5, §3.6): the count tabs `Next · Waiting · Inbox · Done` and the list of
  * the chosen tab, grouped by owner, under the Quick Add zone
  * (screens/daily/SelectionZone.tsx); the hidden line under Next only, and the
- * line naming items that couldn't be read. The list measures its own height;
+ * line naming items that couldn't be read. Group headings are plain text: the
+ * card's place link opens the Project/Area (quickadd-redesign §11 G2). The list measures its own height;
  * its height is remembered per tab, so a remount starts with the right page.
  *
  * Memoized, with stable props from DailyView: it does not read the selection,
  * so a tap on a row re-renders only that row (§3.1.3).
  */
 import React from 'react';
-import {Pressable, StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, View} from 'react-native';
 import {DailyTab} from '../../domain/listTabs';
-import {DailyItemRef} from '../../storage/dailyAggregate';
 import {common} from '../../ui/commonStyles';
 import CountTabs, {CountTabDef} from '../../ui/CountTabs';
 import PagedSection from '../../ui/PagedSection';
@@ -30,7 +30,6 @@ interface Props {
   /** The chosen tab's rows. */
   rows: FlatTaskRow[];
   renderEntry: (row: Extract<FlatTaskRow, {kind: 'entry'}>, heightPx: number) => React.ReactNode;
-  onOpenItem: (item: DailyItemRef) => void;
   failedItemNames: string[];
   /** The hidden line (ui/context/HiddenLine.tsx) under Next. */
   footer?: React.ReactNode;
@@ -45,18 +44,16 @@ const EMPTY_HINT: Record<DailyTab, string> = {
   done: 'Nothing done today yet.',
 };
 
-function DailyTodosColumn({inboxList, tabs, tab, onTabChange, rows, renderEntry, onOpenItem, failedItemNames, footer, textColor, borderColor}: Props): React.JSX.Element {
+function DailyTodosColumn({inboxList, tabs, tab, onTabChange, rows, renderEntry, failedItemNames, footer, textColor, borderColor}: Props): React.JSX.Element {
   usePerfRender('DailyTodosColumn');
   const rowHeight = (row: FlatTaskRow) => (row.kind === 'header' ? GROUP_HEADER_ROW_PX : taskRowHeight(row.entry.task, estimatorWidth(), 'quiet'));
   const renderRow = (row: FlatTaskRow) => {
     if (row.kind === 'header') {
       // Natural height: clipping it to GROUP_HEADER_ROW_PX would cut the text; the list measures its real viewport.
       return (
-        <Pressable key={`header-${row.item.path}`} onPress={() => onOpenItem(row.item)} hitSlop={8}>
-          <Text style={[common.subheading, styles.groupHeading, {color: textColor}]} numberOfLines={1}>
-            {row.item.name}
-          </Text>
-        </Pressable>
+        <Text key={`header-${row.item.path}`} style={[common.subheading, styles.groupHeading, {color: textColor}]} numberOfLines={1}>
+          {row.item.name}
+        </Text>
       );
     }
     return renderEntry(row, rowHeight(row));

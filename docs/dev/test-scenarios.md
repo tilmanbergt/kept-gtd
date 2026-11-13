@@ -404,13 +404,13 @@ Test: `__tests__/scenarios/calmerInbox.test.tsx` · design: `docs/dev/history/te
 
 Test: `__tests__/scenarios/calmerInbox.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `daily.md#more-places-new-project-someday`
 
-### There is no Inbox tab; a meeting's "Inbox" source opens Daily's Inbox tab
+### There is no Inbox tab; a meeting card's "Inbox ›" opens Daily's Inbox tab
 
 - **Given** an Inbox meeting today and a #next todo in a project
 - **When** I open Daily
 - **Then** the tab bar has no Inbox, and Next lists the project todo
-- **When** I tap the meeting's source "Inbox" in the schedule
-- **Then** the Inbox tab is open and lists the meeting
+- **When** I tap the meeting in the schedule and on its card the place "Inbox ›"
+- **Then** the Inbox tab is open and the meeting's card offers File to
 
 Test: `__tests__/scenarios/calmerInbox.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `daily.md#the-inbox`
 
@@ -1759,11 +1759,11 @@ Test: `__tests__/scenarios/quickAddCards.test.tsx` · design: `docs/dev/history/
 
 Test: `__tests__/scenarios/quickAddCards.test.tsx` · design: `docs/dev/history/technical-design-quickadd-redesign.md` · help: `quick-add.md#the-grey-line-where-a-todo-comes-from`
 
-### + Todo on Daily opens the form: the field, 📅 and w/f, then ✕ and + Add
+### + Todo on Daily opens the form: the field, the calendar and w/f, then ✕ and + Add
 
 - **Given** on Wed 11.11. project "Garden renovation" (#GR)
 - **When** I open Daily and tap + Todo
-- **Then** the form shows the todo field, 📅, w/f, ✕ and + Add, and no kind tabs or flow chips
+- **Then** the form shows the todo field, the calendar, w/f, ✕ and + Add, and no kind tabs or flow chips
 - **When** I write "Order soil #GR"
 - **Then** the main button reads + Add to Garden renovation
 - **When** a newline comes with the next words
@@ -1771,10 +1771,10 @@ Test: `__tests__/scenarios/quickAddCards.test.tsx` · design: `docs/dev/history/
 
 Test: `__tests__/scenarios/quickAddForm.test.tsx` · design: `docs/dev/history/technical-design-quickadd-redesign.md` · help: `quick-add.md#adding-a-todo`
 
-### 📅 opens the due date in its place; its strip lies over the field's second line
+### The calendar opens the due date in its place; its strip lies over the field's second line
 
 - **Given** on Wed 11.11. project "Garden renovation"
-- **When** on its page I open + Todo, write "Order soil", tap 📅 and handwrite "13.11"
+- **When** on its page I open + Todo, write "Order soil", tap the calendar and handwrite "13.11"
 - **Then** the strip reads "read as Fri 13 Nov 2026" with Undo, and the text is still there
 
 Test: `__tests__/scenarios/quickAddForm.test.tsx` · design: `docs/dev/history/technical-design-quickadd-redesign.md` · help: `quick-add.md#dates-and-times`
@@ -2634,7 +2634,7 @@ Test: `__tests__/scenarios/writingHelpStarters.test.tsx` · design: `docs/dev/hi
 ### Handwriting writes #DaiIy: the strip suggests #daily
 
 - **When** recognition writes "stand-up #DaiIy" into the meeting title
-- **Then** the strip shows → #daily, Keep and Edit ›, and the title is unchanged
+- **Then** the strip shows → #daily, Keep and the clipboard square, and the title is unchanged
 - **When** I tap → #daily
 - **Then** the title reads "stand-up #daily" and the strip says where its page goes
 
@@ -2698,11 +2698,11 @@ Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/histor
 
 Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `quick-add.md#completing-a-tag`
 
-### Completion shows an abbreviation with its project
+### Completion shows an abbreviation without its project name
 
 - **Given** project "Garden renovation" with the abbreviation GR
 - **When** I write "#g"
-- **Then** the strip offers #gr with "Garden renovation"
+- **Then** the strip offers #gr, without "Garden renovation"
 
 Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `quick-add.md#completing-a-tag`
 
@@ -2758,7 +2758,7 @@ Test: `__tests__/scenarios/deviceLinks.test.tsx` · design: `docs/dev/history/te
 - **Then** the Files pane shows both This-file rows on top
 - **When** I tap "This file · p. 12"
 - **Then** the todo links the PDF at page 12
-- **When** I close the card, open + Todo, tap 📎 This file on the strip and add the todo "Read chapter 3"
+- **When** I close the card, open + Todo, tap This file on the strip and add the todo "Read chapter 3"
 - **Then** the new todo links the page too: for a document This file links its page
 
 Test: `__tests__/scenarios/deviceLinks.test.tsx` · design: `docs/dev/history/technical-design-easy-start.md` · help: `quick-add.md#the-file-you-opened-kept-from`, `files-and-folders.md#files-outside-note`
@@ -2768,7 +2768,7 @@ Test: `__tests__/scenarios/deviceLinks.test.tsx` · design: `docs/dev/history/te
 - **Given** project "Garden renovation" has the todo "Order soil" and the note Ideas.note
 - **When** I open Kept from page 2 of Ideas.note, open the project and tap + Todo
 - **Then** the strip offers the note, nothing is linked yet
-- **When** I tap 📎 This file and add the todo "Sketch the beds"
+- **When** I tap This file and add the todo "Sketch the beds"
 - **Then** the todo links the note by its path inside Note, without a page
 - **When** I reopen Kept and the host gives no launch file, open the project and tap +clip on "Order soil"
 - **Then** neither Quick Add nor the Files pane offers This file

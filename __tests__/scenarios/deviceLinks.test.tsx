@@ -69,11 +69,11 @@ scenario('This file: link the PDF Kept was opened from, with its page, in the Fi
   then('the todo links the PDF at page 12', () => {
     expect(sectionLines(projectFile(GARDEN), 'Tasks')[0]).toBe(`- [ ] Order soil +[[${BOOK}#page=12]]`);
   });
-  when('I close the card, open + Todo, tap 📎 This file on the strip and add the todo "Read chapter 3"', async () => {
+  when('I close the card, open + Todo, tap This file on the strip and add the todo "Read chapter 3"', async () => {
     await tapLabel('Close');
     await tap('+ Todo');
     await focus('New todo');
-    await tap('📎 This file');
+    await tap('This file');
     expectShows('Book.pdf');
     await type('New todo', 'Read chapter 3');
     await tap('+ Add');
@@ -99,11 +99,11 @@ scenario('This file from a note: Quick Add offers it and links the note relative
   });
   then('the strip offers the note, nothing is linked yet', async () => {
     await focus('New todo');
-    expectShows('📎 This file');
+    expectShows('This file');
     expectNotShows('Ideas.note');
   });
-  when('I tap 📎 This file and add the todo "Sketch the beds"', async () => {
-    await tap('📎 This file');
+  when('I tap This file and add the todo "Sketch the beds"', async () => {
+    await tap('This file');
     await type('New todo', 'Sketch the beds');
     await tap('+ Add');
   });

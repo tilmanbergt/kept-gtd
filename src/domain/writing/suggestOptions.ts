@@ -28,6 +28,8 @@ export interface SuggestInput {
 /** About 9 dp per character at the strip's small font, plus the button's padding, border and gap. */
 const CHAR_DP = 9;
 const BUTTON_DP = 20;
+/** The drawn clip before "This file". */
+const ICON_DP = 20;
 /** The view switch square and ✕ at the strip's end. */
 const END_DP = 80;
 
@@ -37,7 +39,7 @@ export function suggestButtonDp(label: string): number {
 }
 
 export function suggestLabel(option: SuggestOption): string {
-  return option.kind === 'thisFile' ? '📎 This file' : `#${option.tag}`;
+  return option.kind === 'thisFile' ? 'This file' : `#${option.tag}`;
 }
 
 /** The options for `input`, as many as fit `maxWidthDp`, no tag twice and none already in the text. */
@@ -61,7 +63,7 @@ export function suggestOptions(input: SuggestInput, maxWidthDp: number): Suggest
   let room = maxWidthDp - END_DP - (input.reservedDp ?? 0);
   const out: SuggestOption[] = [];
   for (const option of candidates) {
-    const width = suggestButtonDp(suggestLabel(option));
+    const width = suggestButtonDp(suggestLabel(option)) + (option.kind === 'thisFile' ? ICON_DP : 0);
     if (width > room) break;
     room -= width;
     out.push(option);

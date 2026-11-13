@@ -53,6 +53,8 @@ export const stripStyles = StyleSheet.create({
     paddingVertical: 3,
     paddingHorizontal: 3,
   },
+  /** A switch square: its drawn icon centred. */
+  square: {alignItems: 'center', justifyContent: 'center'},
   /** The buttons take the room left of the switch square and ✕, and never wrap. */
   body: {
     flex: 1,

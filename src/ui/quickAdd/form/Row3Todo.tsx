@@ -1,6 +1,6 @@
 /**
  * Row 3 of the todo form (docs/dev/history/technical-design-quickadd-redesign.md
- * §3.3): 📅 on the left - a tap opens the due-date field in its place, with the
+ * §3.3, §11 G1): a drawn calendar on the left - a tap opens the due-date field in its place, with the
  * cursor in it, and it stays once open - and w/f on the right: on, "Waiting on"
  * opens left of it; off, the field goes and its name is cleared. The flow state
  * is otherwise not touched by the form; `#next` and `#someday` are written in
@@ -12,6 +12,7 @@ import DateInput from '../../DateInput';
 import MarkWrap from '../../status/StatusMark';
 import {COLORS, FONT} from '../../theme';
 import {rowStyles} from '../styles';
+import {CalendarIcon} from '../../icons';
 import {TaskDraftState} from '../useTaskDraft';
 
 interface Props {
@@ -45,7 +46,7 @@ export default function Row3Todo({task, hidden, textColor, borderColor, placehol
         </MarkWrap>
       ) : (
         <Pressable style={[styles.square, {borderColor}]} onPress={task.openDueDate} hitSlop={8} accessibilityRole="button" accessibilityLabel="Due date">
-          <Text style={[styles.squareText, {color: textColor}]}>📅</Text>
+          <CalendarIcon size={20} color={textColor} />
         </Pressable>
       )}
       <View style={styles.spacer} />
@@ -75,7 +76,6 @@ export default function Row3Todo({task, hidden, textColor, borderColor, placehol
 
 const styles = StyleSheet.create({
   square: {width: 32, height: 32, borderWidth: 1, borderRadius: 4, alignItems: 'center', justifyContent: 'center'},
-  squareText: {fontSize: FONT.medium},
   spacer: {flex: 1},
   waitingInput: {width: 170, marginRight: 6, paddingVertical: 4, fontSize: FONT.small},
   wf: {height: 32, borderWidth: 1, borderRadius: 4, paddingHorizontal: 10, justifyContent: 'center', flexShrink: 0},

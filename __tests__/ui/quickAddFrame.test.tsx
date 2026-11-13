@@ -165,7 +165,7 @@ describe('Quick Add box height', () => {
     }],
     ['create Todo, due date open', () => {
       const r = render();
-      pressText(r, '📅');
+      act(() => r.root.findAll(n => n.props.accessibilityLabel === 'Due date' && typeof n.props.onPress === 'function')[0].props.onPress());
       return r;
     }],
     ['create Todo with provenance', () =>

@@ -297,7 +297,7 @@ export default function DailyView({onOpenItem, onOpenCalendarSettings}: Props): 
         span={entry.span}
         layout={layout}
         time="time"
-        source={{abbrev: entry.item.abbrev ?? entry.item.name, name: entry.item.name, onPress: () => openItem(entry.item)}}
+        source={{abbrev: entry.item.abbrev ?? entry.item.name, name: entry.item.name}}
         highlight="mark"
         tracking={actions.tracking()}
         note={{onOpen: () => actions.meetingNote(entry), onCreate: () => actions.meetingNote(entry)}}
@@ -344,7 +344,6 @@ export default function DailyView({onOpenItem, onOpenCalendarSettings}: Props): 
       onTabChange={setTab}
       rows={taskRows}
       renderEntry={renderTaskEntry}
-      onOpenItem={openItem}
       failedItemNames={failedItemNames}
       footer={footer}
       textColor={textColor}

@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {fireEvent, screen} from '@testing-library/react-native';
 import {NoteSetup, seedNoteSetupDefaults} from '../../src/domain/noteSetups';
 import {GtdParaSettings} from '../../src/domain/settings';
-import {expectNotShows, expectShows, fieldValue, focus, openApp, settle, tap, tapTab, type} from '../../test-helpers/scenario/app';
+import {expectNotShows, expectShows, fieldValue, focus, labelled, openApp, settle, tap, tapTab, type} from '../../test-helpers/scenario/app';
 import {dataFile, projectFile, putFile, sectionLines} from '../../test-helpers/scenario/files';
 import {given, scenario, then, when} from '../../test-helpers/scenario/scenario';
 
@@ -34,10 +34,10 @@ scenario('Handwriting writes #DaiIy: the strip suggests #daily', {feature: 'Writ
     await openMeetingTab();
     await type(TITLE, 'stand-up #DaiIy');
   });
-  then('the strip shows → #daily, Keep and Edit ›, and the title is unchanged', () => {
+  then('the strip shows → #daily, Keep and the clipboard square, and the title is unchanged', () => {
     expectShows('→ #daily');
     expectShows('Keep');
-    expectShows('Edit ›');
+    expect(labelled('Clipboard')).not.toBeNull();
     expect(fieldValue(TITLE)).toBe('stand-up #DaiIy');
   });
   when('I tap → #daily', async () => {
@@ -160,7 +160,7 @@ scenario('An unfinished tag is completed from the known ones', {feature: 'Writin
   });
 });
 
-scenario('Completion shows an abbreviation with its project', {feature: 'Writing help', design: 'technical-design-writing-help.md', help: 'quick-add.md#completing-a-tag'}, () => {
+scenario('Completion shows an abbreviation without its project name', {feature: 'Writing help', design: 'technical-design-writing-help.md', help: 'quick-add.md#completing-a-tag'}, () => {
   given('project "Garden renovation" with the abbreviation GR', () => {
     putFile(projectFile('Garden renovation'), dataFile('project', {Scope: [], Tasks: [], Meetings: []}, ['abbrev: GR']));
   });
@@ -168,8 +168,9 @@ scenario('Completion shows an abbreviation with its project', {feature: 'Writing
     await openMeetingTab();
     await type(TITLE, 'call #g');
   });
-  then('the strip offers #gr with "Garden renovation"', () => {
-    expectShows('#gr Garden renovation');
+  then('the strip offers #gr, without "Garden renovation"', () => {
+    expectShows('#gr');
+    expectNotShows('Garden renovation');
   });
 });
 

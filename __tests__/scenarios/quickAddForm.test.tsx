@@ -28,16 +28,16 @@ function select(placeholder: string, start: number, end: number): void {
   fireEvent(screen.getByPlaceholderText(placeholder), 'selectionChange', {nativeEvent: {selection: {start, end}}});
 }
 
-scenario('+ Todo on Daily opens the form: the field, 📅 and w/f, then ✕ and + Add', {feature: 'Quick Add', design: 'technical-design-quickadd-redesign.md', help: 'quick-add.md#adding-a-todo'}, () => {
+scenario('+ Todo on Daily opens the form: the field, the calendar and w/f, then ✕ and + Add', {feature: 'Quick Add', design: 'technical-design-quickadd-redesign.md', help: 'quick-add.md#adding-a-todo'}, () => {
   given('on Wed 11.11. project "Garden renovation" (#GR)', () => garden());
   when('I open Daily and tap + Todo', async () => {
     await openApp();
     await tapTab('Daily');
     await tap('+ Todo');
   });
-  then('the form shows the todo field, 📅, w/f, ✕ and + Add, and no kind tabs or flow chips', () => {
+  then('the form shows the todo field, the calendar, w/f, ✕ and + Add, and no kind tabs or flow chips', () => {
     expect(fieldValue(TODO)).toBe('');
-    expectShows('📅');
+    expect(labelled('Due date')).not.toBeNull();
     expectShows('w/f');
     expectShows('+ Add');
     expect(labelled('Close Quick Add')).not.toBeNull();
@@ -50,12 +50,12 @@ scenario('+ Todo on Daily opens the form: the field, 📅 and w/f, then ✕ and 
   then('the field holds one line with a space', () => expect(fieldValue(TODO)).toBe('Order soil and seeds #GR'));
 });
 
-scenario('📅 opens the due date in its place; its strip lies over the field\'s second line', {feature: 'Quick Add', design: 'technical-design-quickadd-redesign.md', help: 'quick-add.md#dates-and-times'}, () => {
+scenario('The calendar opens the due date in its place; its strip lies over the field\'s second line', {feature: 'Quick Add', design: 'technical-design-quickadd-redesign.md', help: 'quick-add.md#dates-and-times'}, () => {
   given('on Wed 11.11. project "Garden renovation"', () => garden());
-  when('on its page I open + Todo, write "Order soil", tap 📅 and handwrite "13.11"', async () => {
+  when('on its page I open + Todo, write "Order soil", tap the calendar and handwrite "13.11"', async () => {
     await openGarden();
     await type(TODO, 'Order soil');
-    await tap('📅');
+    await tapLabel('Due date');
     await focus('Due YYYY-MM-DD');
     await type('Due YYYY-MM-DD', '13.11');
   });

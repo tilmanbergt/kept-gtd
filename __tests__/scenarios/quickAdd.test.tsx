@@ -125,7 +125,7 @@ scenario('The ✕ puts a hovering strip away until the field gains focus again',
   });
   when('I open the due date and put the cursor into it', async () => {
     await tap('Todo');
-    await tap('📅');
+    await tapLabel('Due date');
     await focus('Due YYYY-MM-DD');
   });
   then('the date strip hovers there with its own ✕, which puts it away', async () => {

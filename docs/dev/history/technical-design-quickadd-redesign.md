@@ -526,3 +526,94 @@ Stop 3 (cards and origin):
 - **F1 on other screens:** Week, Month, overviews and Review pass no link arming (O2), so their
   cards show no link square; Daily's `LinkPicker` covers Projects, Areas, Resources and the Inbox
   folder, plus the This-file rows.
+
+## 11. Follow-up after the first device test (G1–G10)
+
+Status: **agreed** (2026-11-13) with Tilman after testing the stop 3 build (`55cf375`). Visual
+reference: the card design drawn in A5 X device pixels during that review (todo and meeting card,
+wide 473 dp and narrow 350 dp; the strip's view switch). Same branch, same release.
+
+### 11.1 Requirements as decided
+
+- **G1 Icons are black and white.** Every icon on the strips, the form and the cards is drawn (SVG,
+  black), never a colour emoji: the view switch is a clipboard icon (Suggest → Clipboard) or a
+  lightning bolt (Clipboard → Suggest); 📅, 📎 and 📁 in the form are drawn icons.
+- **G2 Rows select, cards open.** A tap on a meeting row's place (two-line subline, one-line `#GR`
+  badge), on Daily's todo group headings and on Week's and Month's meeting chips selects or does
+  nothing more; only the card's place link opens the project or area.
+- **G3 One way to the clipboard.** "Edit ›" on the completion and tag-fix strips is the clipboard
+  square of G1 (it switches to All · Copy · Cut · Paste).
+- **G4 Stuck edit (diagnosis).** On Current an edit opened from a card sometimes takes no input and
+  ignores Save/Cancel until another tab is opened (log of 2026-11-13: 2 min 18 s without any event
+  after "edit loaded"). Root cause not found off-device: log touch-down on the form's field, ✕ and
+  main button, and the field's focus, so the next bundle shows whether touches arrive; look for a
+  frozen or hidden form on the card → edit path.
+- **G5 ✕ drops.** Row 4 always ends in ✕ next to the main button; there is no Cancel. ✕ on a new
+  item drops the draft (and folds the box); ✕ in an edit drops the changes and returns to the card.
+  Only tapping something else (another row, another tab) keeps and saves what was started (as now).
+- **G6 Completion after a slash** shows only the rest: `#loop/ch` → `/christopher`; a tap writes the
+  whole tag.
+- **G7 Place abbreviations in upper case**, without the place's name, in completion and the Suggest
+  view; a tap writes them in upper case (`#ATR`).
+- **G8 Note setup line:** `#daily: Meetings/Daily 2026.note`, or `Project home note: Atruvia/Atruvia
+  2026.note` (`Area home note: …`); no ✓, the file with its folder below the Note root; the strip's
+  clipboard square shows next to it. There is no "New tag" line: only a setup's tags choose a note.
+- **G9 Todo card:** R1 `Todo · GR › ↪ · next · due 5.11.` (the place's abbreviation as a link, else
+  its name; the refile arrow where refiling is possible; the active flow state and the due date only
+  here), `+ Todo`, ✕. R2–R3 the text over two lines (a tap edits), the origin on its own line at the
+  bottom right. R4 Engage's done box (smaller, no word), Next · w/f · Someday · Maybe (narrow: Next ·
+  w/f · Sd · Mb), then the notebook (with + until the note exists), the clip (with + to link; filled
+  once linked, a tap opens the file), the trash. Unlinking happens in the edit form (`📎 name ✕`).
+- **G10 Meeting card:** R1 `Meeting · CO › ↪ · Thu 19.11. 15:00–16:30` (`· over`, `· cancelled`;
+  narrow drops the kind word, weekday and end time first), `+ Meeting`, ✕. R2–R3 the title over two
+  lines, the thread (or a focus block's loop) on its own line at the bottom right. R4 P/R · M · F ·
+  Reflect, then the notebook, the clip, New from this, Cancel meeting (before it starts; after the
+  start its square stays empty).
+
+### 11.2 Design
+
+- `ui/icons.tsx` gains `ClipboardIcon`, `BoltIcon`, `CalendarIcon`, `FolderIcon`;
+  `NotebookIcon` (`plus`) and `ClipIcon` (a `plus` variant, a filled variant) serve the cards.
+- G2: `MeetingRow`'s `source.onPress` is no longer passed; Daily's group heading is plain text; the
+  Week/Month chips' place tap is removed.
+- G3/G1: `WritingStrip` renders the switch as an icon square for `suggest`, `clipboard`, `complete`,
+  `fixes` and `feedback`; `actions.edit` keeps its meaning (to the Clipboard view).
+- G5: `FormFooter` always gets ✕; in edit mode it calls `onCancelEdit`; `EditActions` loses Cancel.
+  In create mode ✕ resets the open kind's draft (`resetDraft` per draft hook) and folds the box.
+- G6/G7: `domain/writing/completion.ts` labels: `completionLabel(token, tag)` (the rest after the
+  typed type's slash) and upper case for abbreviations (the known-tag index marks them); `applyCompletion`
+  writes the abbreviation in upper case; `suggestOptions` drops the name and writes upper case.
+- G8: `placeFeedback(setup, file)` → `#tag: folder/file` or `Project home note: folder/file`;
+  `draftNotePlace` hands over the matched setup tag and the folder path.
+- G9/G10: `domain/itemCard.ts` layouts: `todoCardLayout` → `{row4Left: ['done','next','waiting',
+  'someday','maybe'], row4Right: ['note','file','delete']}`, `meetingCardLayout` → `{row4Left:
+  [checkpoint?, 'monthly','focus', reflect?], row4Right: ['note','file','newFromThis', cancel|empty]}`;
+  models get `placeLabel` (abbreviation or name). Refile moves into `CardRow1`. The title area spans
+  R2–R3 (76 dp), two lines, origin/thread line at its foot.
+- G4: `log('QuickAdd: touch field|close|main kind=… editing=…')` on `onTouchStart` of the form's
+  field wrapper and on ✕ / main button press-in; `QuickAdd: field focus=…`.
+
+### 11.3 Test scenarios
+
+31. Given a meeting row on Daily, when its place is tapped, then the meeting's card shows and the
+    project does not open; its card's place link opens it (G2).
+32. Given a todo draft, when ✕ is tapped, then the box folds and `+ Todo` opens an empty draft (G5).
+33. Given a todo's edit, when the text is changed and ✕ tapped, then the card shows and the file is
+    unchanged (G5).
+34. Given `#sparring/jordan` known, when `#sparring/jo` is written, then the strip offers `/jordan`
+    and a tap writes `#sparring/jordan ` (G6).
+35. Given project Garden renovation (#GR), when `#g` is written, then the strip offers `#GR` without
+    the name, and a tap writes `#GR ` (G7).
+36. Given a Note setup on `#daily`, when `Standup #daily` is written, then the strip reads
+    `#daily: <folder>/<file>` (G8).
+37. Given a Next todo due tomorrow in Garden renovation, then its card reads `Todo · GR › · next · due
+    <date>` and R4 offers the done box, Next · w/f · Someday · Maybe, the notebook, the clip and the
+    trash (G9).
+38. Given a meeting ahead, then its card's first row holds its date and time and R4 offers P, M, F,
+    the notebook, the clip, New from this and Cancel meeting (G10).
+
+### 11.4 Plan
+
+One commit per group, each green on `npm run check:affected`: G1–G3 (icons, rows, strip switch),
+G5 (✕), G6–G8 (completion and place line), G9–G10 (cards), G4 (logs), then docs, CHANGELOG and a
+device build.

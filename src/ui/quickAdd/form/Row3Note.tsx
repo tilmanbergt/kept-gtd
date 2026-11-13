@@ -7,6 +7,7 @@ import React from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import {FONT} from '../../theme';
 import {rowStyles} from '../styles';
+import {FolderIcon} from '../../icons';
 
 interface Props {
   /** The folder below its root, or null when the Files pane shows none. */
@@ -18,13 +19,14 @@ interface Props {
 export default function Row3Note({folder, hidden, textColor}: Props): React.JSX.Element {
   return (
     <View style={[rowStyles.row3, rowStyles.row3Start, hidden && rowStyles.hidden]}>
+      {folder ? <FolderIcon size={16} color={textColor} /> : null}
       <Text style={[styles.folder, {color: textColor}]} numberOfLines={1}>
-        {folder ? `📁 ${folder}` : 'Open a folder in the Files pane'}
+        {folder ?? 'Open a folder in the Files pane'}
       </Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  folder: {fontSize: FONT.small, opacity: 0.6, flexShrink: 1},
+  folder: {fontSize: FONT.small, flexShrink: 1, marginLeft: 4},
 });

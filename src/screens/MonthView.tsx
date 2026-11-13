@@ -287,11 +287,7 @@ export default function MonthView({
                     renderRow={(entry, layout) => (
                       <MeetingRow
                         key={dayEntryKey(entry)}
-                        {...planning.dayRowProps(entry, layout, {
-                          onOpenSource: openSource,
-                          textColor,
-                          borderColor,
-                        })}
+                        {...planning.dayRowProps(entry, layout, {textColor, borderColor})}
                       />
                     )}
                     emptyHint="No meetings on this day. Add one above - it starts with M on."

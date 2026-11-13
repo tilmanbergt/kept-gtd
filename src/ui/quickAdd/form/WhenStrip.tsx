@@ -23,6 +23,7 @@ import {StripHideButton, useStripHide} from '../../ClipboardStrip';
 import {common} from '../../commonStyles';
 import {WritingStripActions} from '../../writing/useWritingHelp';
 import {stripStyles} from './stripStyles';
+import {BoltIcon} from '../../icons';
 import {useUnblocked} from './StripHost';
 
 export type WhenView = 'adjust' | 'suggest';
@@ -110,7 +111,7 @@ export default function WhenStrip(props: Props): React.JSX.Element {
       <View style={stripStyles.body}>{body}</View>
       {other ? (
         <Pressable
-          style={[common.floatingStripButton, {borderColor}]}
+          style={[common.floatingStripButton, stripStyles.square, {borderColor}]}
           onPress={() => {
             const next = showing === 'adjust' ? 'suggest' : 'adjust';
             log(`QuickAdd: strip view=${next === 'suggest' ? 'when-suggest' : 'adjust'} field=${field}`);
@@ -118,7 +119,7 @@ export default function WhenStrip(props: Props): React.JSX.Element {
           }}
           hitSlop={6}
           accessibilityLabel={showing === 'adjust' ? 'Suggest' : 'Adjust'}>
-          <Text style={[common.floatingStripButtonText, {color: textColor}]}>{showing === 'adjust' ? '⚡' : '±'}</Text>
+          {showing === 'adjust' ? <BoltIcon size={18} color={textColor} /> : <Text style={[common.floatingStripButtonText, {color: textColor}]}>±</Text>}
         </Pressable>
       ) : null}
       <StripHideButton onPress={hide} textColor={textColor} />

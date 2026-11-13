@@ -10,7 +10,7 @@ const labels = (o: ReturnType<typeof suggestOptions>) => o.map(suggestLabel);
 
 describe('suggestOptions', () => {
   it('offers This file, #next and #someday, recent tags, then abbreviations', () => {
-    expect(labels(suggestOptions({...base, thisFile: true}, 2000))).toEqual(['📎 This file', '#next', '#someday', '#garden', '#lena', '#GR']);
+    expect(labels(suggestOptions({...base, thisFile: true}, 2000))).toEqual(['This file', '#next', '#someday', '#garden', '#lena', '#GR']);
   });
 
   it('leaves out tags already in the text and never offers one twice', () => {

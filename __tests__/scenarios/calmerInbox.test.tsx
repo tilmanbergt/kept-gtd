@@ -241,7 +241,7 @@ scenario('Review\'s Inbox to zero shows the same list and card, and filing works
   });
 });
 
-scenario('There is no Inbox tab; a meeting\'s "Inbox" source opens Daily\'s Inbox tab', {feature: 'Daily', design: 'technical-design-calmer-screens.md', help: 'daily.md#the-inbox'}, () => {
+scenario('There is no Inbox tab; a meeting card\'s "Inbox ›" opens Daily\'s Inbox tab', {feature: 'Daily', design: 'technical-design-calmer-screens.md', help: 'daily.md#the-inbox'}, () => {
   given('an Inbox meeting today and a #next todo in a project', () => {
     putFile(projectFile('Garden renovation'), dataFile('project', {Scope: [], Tasks: ['- [ ] Order soil #next'], Meetings: []}));
     putFile(INBOX_FILE, dataFile('inbox', {Tasks: [], Meetings: [`- ${todayIso()} 23:00 Call with Sam`]}));
@@ -254,9 +254,12 @@ scenario('There is no Inbox tab; a meeting\'s "Inbox" source opens Daily\'s Inbo
     expect(readTexts().slice(0, 9)).not.toContain('Inbox');
     expectShows('Order soil');
   });
-  when('I tap the meeting\'s source "Inbox" in the schedule', () => tap('Inbox'));
-  then('the Inbox tab is open and lists the meeting', () => {
+  when('I tap the meeting in the schedule and on its card the place "Inbox ›"', async () => {
+    await tap('Call with Sam');
+    await tap('Inbox ›');
+  });
+  then('the Inbox tab is open and the meeting\'s card offers File to', () => {
     expectNotShows('Order soil');
-    expect(textsBetween('Inbox 1')).toContain('Call with Sam');
+    expectShows('File to');
   });
 });

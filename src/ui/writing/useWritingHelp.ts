@@ -420,7 +420,12 @@ export function useWritingHelp(options: WritingHelpOptions) {
       refocus();
     },
     toggleView: () => {
-      setView(view === 'suggest' ? 'clipboard' : 'suggest');
+      // The clipboard square of a fix, a completion or the place line shows the clipboard over
+      // either view: the bolt then goes back to the suggestions.
+      if (showClipboard) {
+        setShowClipboard(false);
+        setView('suggest');
+      } else setView(view === 'suggest' ? 'clipboard' : 'suggest');
       refocus();
     },
   };

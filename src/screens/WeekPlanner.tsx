@@ -291,7 +291,7 @@ export default function WeekPlanner({
               renderRow={(entry, layout) => (
                 <MeetingRow
                   key={dayEntryKey(entry)}
-                  {...planning.dayRowProps(entry, layout, {onOpenSource: openSource, textColor, borderColor})}
+                  {...planning.dayRowProps(entry, layout, {textColor, borderColor})}
                 />
               )}
               googlePanel={

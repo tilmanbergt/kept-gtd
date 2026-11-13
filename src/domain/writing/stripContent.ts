@@ -3,10 +3,10 @@
  * §3.3): one thing at a time, the first that applies. Pure: the hook
  * (ui/writing/useWritingHelp.ts) keeps the state, this decides and labels.
  *
- * 1. `fixes` - up to two flagged tags, in text order: `→ #x` each, Keep, Edit ›;
+ * 1. `fixes` - up to two flagged tags, in text order: `→ #x` each, Keep, the clipboard square;
  * 2. `read` - a learned fix or a date/time read just applied: "read as …" + Undo;
  * 3. `choice` - a date or time with two readings;
- * 4. `complete` - up to three completions + Edit ›;
+ * 4. `complete` - up to three completions + the clipboard square;
  * 5. `feedback` - where the page goes, or "New tag …";
  * 6. a date field: the full date (+ warning) and the nudges, and the usual
  *    slot while the time is empty; a time field: the read time and length (+ warning), or the
@@ -82,7 +82,7 @@ export interface StripState {
   /** Unanswered flagged tags, at most two, in text order. */
   fixes: readonly PendingFix[];
   moment: StripMoment | null;
-  /** Edit › was tapped: the clipboard buttons instead of fixes or completions. */
+  /** The clipboard square was tapped: the clipboard buttons instead of fixes, completions or the place line. */
   showClipboard: boolean;
   /** Past or overlap, for a meeting's date and time strips. */
   warning?: string | null;
