@@ -25,6 +25,7 @@ import {renderSharedFileName} from '../domain/sharedNotePages';
 import {activeLoopsOf, LoopNoteTarget, loopNoteTargetOf} from './loopNotes';
 import {sanitizeFileNameComponent} from './noteLinks';
 import {noteOwnerNames} from './noteOwner';
+import {findCachedItem} from './dataCache';
 
 /** A note candidate with the file its note would live in. */
 export interface PlacedCandidate {
@@ -149,8 +150,29 @@ export function setupForLink(input: NoteTargetInput & {linkedFile: string | null
  * `placeNoteCandidates` - the note icon's own call, so the line never disagrees
  * with it. `setupName` null for the Default; `file` 'own note' for an own note.
  */
-export function notePlaceOf(input: NoteTargetInput): {setupName: string | null; file: string} | null {
+export function notePlaceOf(input: NoteTargetInput): NotePlace | null {
   const best = placeNoteCandidates(input)[0];
   if (!best) return null;
-  return {setupName: best.candidate.setup?.name ?? null, file: best.shared?.relativeFile ?? 'own note'};
+  const {setup} = best.candidate;
+  // The file with its folder below the item's PARA folder: `Atruvia/Atruvia 2026.note` (§11 G8).
+  const {itemName} = noteOwnerNames(input.itemPath);
+  const relative = best.shared?.relativeFile ?? null;
+  return {
+    setupName: setup?.name ?? null,
+    setupTag: setup ? setupTypeTag(input.tags, setup.tags) || null : null,
+    home: setup || !relative || !input.itemPath ? null : (findCachedItem(input.itemPath)?.kind ?? null),
+    file: relative ? (itemName ? `${itemName}/${relative}` : relative) : null,
+  };
+}
+
+/**
+ * Where a new item's page goes (docs/dev/history/technical-design-quickadd-redesign.md §11 G8): the
+ * Note setup with the tag that chose it, else the item's home notebook (a project's or an area's),
+ * and the file - null for an own note.
+ */
+export interface NotePlace {
+  setupName: string | null;
+  setupTag: string | null;
+  home: 'project' | 'area' | null;
+  file: string | null;
 }

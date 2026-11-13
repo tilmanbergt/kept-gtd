@@ -13,11 +13,13 @@ or your project/area files are stored.
 ### New
 - Writing help in Quick Add: after handwriting recognition writes a word, the strip over the tabs
   checks it. A tag close to one you use (`#Iena`, `#sparrlng`) gets a suggestion - **→ #lena**,
-  **Keep** and a clipboard square for **All · Copy · Cut · Paste** - and unfinished tags are completed from your own tags, counterparts and
-  abbreviations. A tag you corrected once is corrected the same way next time ("read as #lena",
-  with **Undo**). When all tags are known, the strip says where the item's note page goes. + Add
-  with a suggestion still open asks once; a second + Add saves as written. Also in the note title,
-  the agreement words and lasso capture.
+  **Keep** and a clipboard square for **All · Copy · Cut · Paste** - and unfinished tags are
+  completed from your own tags, counterparts and abbreviations (in capitals, `#GR`; after a slash
+  only the rest, **/jordan**). A tag you corrected once is corrected the same way next time ("read
+  as #lena", with **Undo**). When all tags are known, the strip says where the item's note page
+  goes (`#daily: Website/Meetings/Daily 2026.note`, `Project home note: Atruvia/Atruvia
+  2026.note`). + Add with a suggestion still open asks once; a second + Add saves as written. Also
+  in the note title, the agreement words and lasso capture.
 - Dates and times are read from handwriting: `9.ll.26` becomes 2026-11-09, `l5,3O-l6` becomes
   15:30-16:00, always shown ("read as Mon 9 Nov 2026") with **Undo**; `3-4` and `15,3` offer both
   readings. The date strip leads with the full date and weekday, the meeting's time field gets a

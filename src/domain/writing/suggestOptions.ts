@@ -2,7 +2,7 @@
  * The Suggest view of Quick Add's text strip
  * (docs/dev/history/technical-design-quickadd-redesign.md §3.2, D1): what is
  * offered while nothing else is going on, in this order, until the strip is
- * full - 📎 This file (Kept opened from a file, nothing linked yet), the
+ * full - This file (Kept opened from a file, nothing linked yet), the
  * starters on an empty field (counted by the caller), `#next` and
  * `#someday` (todos only, unless written already), recent tags not in the
  * text, the abbreviations of recently used places. Offered, never applied.
@@ -15,11 +15,11 @@ import {SuggestOption} from './stripContent';
 export interface SuggestInput {
   text: string;
   kind: 'task' | 'meeting' | 'agreement' | 'note';
-  /** 📎 This file can be offered (opened from a file, the item links nothing yet). */
+  /** This file can be offered (opened from a file, the item links nothing yet). */
   thisFile: boolean;
   /** Most recent first, without `#`. */
   recentTags: readonly string[];
-  /** Abbreviations of the places used lately, most recent first, without `#`, with the place's name. */
+  /** Abbreviations of the places used lately, most recent first, without `#` (the name is not shown). */
   abbrevs: ReadonlyArray<{tag: string; name: string}>;
   /** Width the starters (Thread · Loop · Paste) already take, in dp. */
   reservedDp?: number;
@@ -48,18 +48,20 @@ export function suggestOptions(input: SuggestInput, maxWidthDp: number): Suggest
   const seen = new Set<string>();
   const candidates: SuggestOption[] = [];
   if (input.thisFile) candidates.push({kind: 'thisFile'});
-  const tag = (t: string, name?: string) => {
+  // A place's abbreviation is offered and written in upper case, without the place's name (§11 G7).
+  const abbrevs = new Set(input.abbrevs.map(a => a.tag.replace(/^#/, '').toLowerCase()));
+  const tag = (t: string) => {
     const lower = t.replace(/^#/, '').toLowerCase();
     if (!lower || inText.has(lower) || seen.has(lower)) return;
     seen.add(lower);
-    candidates.push(name ? {kind: 'tag', tag: t.replace(/^#/, ''), name} : {kind: 'tag', tag: t.replace(/^#/, '')});
+    candidates.push({kind: 'tag', tag: abbrevs.has(lower) ? lower.toUpperCase() : t.replace(/^#/, '')});
   };
   if (input.kind === 'task') {
     tag('next');
     tag('someday');
   }
   for (const t of input.recentTags) tag(t);
-  for (const a of input.abbrevs) tag(a.tag, a.name);
+  for (const a of input.abbrevs) tag(a.tag);
   let room = maxWidthDp - END_DP - (input.reservedDp ?? 0);
   const out: SuggestOption[] = [];
   for (const option of candidates) {

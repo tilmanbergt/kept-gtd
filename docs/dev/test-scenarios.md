@@ -2627,7 +2627,9 @@ Test: `__tests__/scenarios/writingHelpStarters.test.tsx` · design: `docs/dev/hi
 - **Then** the strip lists #sparring and ‹
 - **When** I tap #sparring
 - **Then** the title reads "#sparring/"
-- **And** the strip offers the counterpart
+- **And** the strip offers the counterpart as "/jordan"
+- **When** I tap /jordan
+- **Then** the title reads "#sparring/jordan "
 
 Test: `__tests__/scenarios/writingHelpStarters.test.tsx` · design: `docs/dev/history/technical-design-calmer-screens.md` · help: `quick-add.md#starting-with-a-thread-or-loop`
 
@@ -2688,10 +2690,10 @@ Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/histor
 
 Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `quick-add.md#adding-with-a-suggestion-open`
 
-### A new tag with nothing close is no question
+### A new tag with nothing close is no question; the strip names the home notebook
 
 - **When** I write "plan #offsite27"
-- **Then** the strip names the new tag and the home notebook
+- **Then** the strip names the project's home notebook, no "New tag"
 - **When** I tap + Add
 - **Then** the meeting is saved at once
 
@@ -2706,11 +2708,13 @@ Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/histor
 
 Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `quick-add.md#completing-a-tag`
 
-### Completion shows an abbreviation without its project name
+### Completion offers an abbreviation in upper case, without its project name
 
 - **Given** project "Garden renovation" with the abbreviation GR
 - **When** I write "#g"
-- **Then** the strip offers #gr, without "Garden renovation"
+- **Then** the strip offers #GR in upper case, without "Garden renovation"
+- **When** I tap #GR
+- **Then** the title reads "call #GR "
 
 Test: `__tests__/scenarios/writingHelpTags.test.tsx` · design: `docs/dev/history/technical-design-writing-help.md` · help: `quick-add.md#completing-a-tag`
 

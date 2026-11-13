@@ -7,7 +7,7 @@
  * 2. `read` - a learned fix or a date/time read just applied: "read as …" + Undo;
  * 3. `choice` - a date or time with two readings;
  * 4. `complete` - up to three completions + the clipboard square;
- * 5. `feedback` - where the page goes, or "New tag …";
+ * 5. `feedback` - where the page goes (`#daily: Meetings/Daily 2026.note`);
  * 6. a date field: the full date (+ warning) and the nudges, and the usual
  *    slot while the time is empty; a time field: the read time and length (+ warning), or the
  *    usual slot when empty;
@@ -47,7 +47,7 @@ export interface ChoiceOption {
 export type StripMoment =
   | {kind: 'read'; label: string}
   | {kind: 'choice'; options: ChoiceOption[]}
-  | {kind: 'complete'; options: KnownTag[]}
+  | {kind: 'complete'; token: string; options: KnownTag[]}
   | {kind: 'feedback'; text: string}
   | {kind: 'starterList'; options: StarterOption[]};
 
@@ -59,7 +59,7 @@ export interface StripStarters {
 }
 
 /** One button of the Suggest view. */
-export type SuggestOption = {kind: 'thisFile'} | {kind: 'tag'; tag: string; name?: string};
+export type SuggestOption = {kind: 'thisFile'} | {kind: 'tag'; tag: string};
 
 /** The resting view of Quick Add's text strip. */
 export type StripView = 'suggest' | 'clipboard';
@@ -150,14 +150,25 @@ export function stripContent(state: StripState): StripContent {
   return {kind: 'clipboard'};
 }
 
-/** The feedback after a burst or a correction (§1.7): `✓ Daily · Meetings/Daily.note`, or `✓ Garden renovation 2026.note` for the Default. */
-export function placeFeedback(setupName: string | null, file: string): string {
-  return setupName ? `✓ ${setupName} · ${file}` : `✓ ${file}`;
+/** Where a new item's page goes: the setup and the tag that chose it, else the item's home notebook. */
+export interface PagePlace {
+  setupName: string | null;
+  setupTag: string | null;
+  home: 'project' | 'area' | null;
+  /** Below the item's PARA folder; null for an own note. */
+  file: string | null;
 }
 
-/** A new tag with nothing close (§1.7, B3): `New tag #offsite27 · Team offsite 2026.note`. */
-export function newTagFeedback(tag: string, file: string): string {
-  return `New tag #${tag} · ${file}`;
+/**
+ * The place line (docs/dev/history/technical-design-quickadd-redesign.md §11 G8):
+ * `#daily: Meetings/Daily 2026.note`, `Project home note: Atruvia/Atruvia 2026.note`, `Own note`.
+ */
+export function placeFeedback(place: PagePlace): string {
+  const file = place.file ?? 'own note';
+  if (place.setupTag) return `#${place.setupTag}: ${file}`;
+  if (place.setupName) return `${place.setupName}: ${file}`;
+  if (place.home && place.file) return `${place.home === 'project' ? 'Project' : 'Area'} home note: ${place.file}`;
+  return place.file ?? 'Own note';
 }
 
 /** The status-slot hint of the first + Add with unanswered fixes (§1.4). */

@@ -1,7 +1,6 @@
 // docs/dev/history/technical-design-writing-help.md §3.3: what the strip shows, first that applies.
 import {
   addAgainHint,
-  newTagFeedback,
   overlapWarning,
   placeFeedback,
   StripState,
@@ -30,7 +29,7 @@ describe('stripContent', () => {
     for (const moment of [
       {kind: 'read' as const, label: 'read as #daily'},
       {kind: 'choice' as const, options: [{value: '15:00', label: '15:00'}]},
-      {kind: 'complete' as const, options: [{tag: 'sparring'}]},
+      {kind: 'complete' as const, token: 'spa', options: [{tag: 'sparring'}]},
       {kind: 'feedback' as const, text: '✓ Daily · Meetings/Daily.note'},
     ]) {
       expect(stripContent(state({moment}))).toEqual(moment);
@@ -79,9 +78,11 @@ describe('labels', () => {
 
   it('writes the usual slot, the feedback, the hint and the warning', () => {
     expect(usualSlotLabel(usual)).toBe('Tue 17 Nov 14:00 · 45 min');
-    expect(placeFeedback('Daily', 'Meetings/Daily.note')).toBe('✓ Daily · Meetings/Daily.note');
-    expect(placeFeedback(null, 'Website 2026.note')).toBe('✓ Website 2026.note');
-    expect(newTagFeedback('offsite27', 'Website 2026.note')).toBe('New tag #offsite27 · Website 2026.note');
+    expect(placeFeedback({setupName: 'Daily', setupTag: 'daily', home: null, file: 'Meetings/Daily 2026.note'})).toBe('#daily: Meetings/Daily 2026.note');
+    expect(placeFeedback({setupName: 'Daily', setupTag: null, home: null, file: null})).toBe('Daily: own note');
+    expect(placeFeedback({setupName: null, setupTag: null, home: 'project', file: 'Atruvia/Atruvia 2026.note'})).toBe('Project home note: Atruvia/Atruvia 2026.note');
+    expect(placeFeedback({setupName: null, setupTag: null, home: 'area', file: 'Health/Health.note'})).toBe('Area home note: Health/Health.note');
+    expect(placeFeedback({setupName: null, setupTag: null, home: null, file: null})).toBe('Own note');
     expect(addAgainHint([{written: 'DaiIy', suggestion: 'daily'}])).toBe('Check #DaiIy, or Add again to keep it');
     expect(addAgainHint([{written: 'retros', suggestion: 'retro'}, {written: 'Iena', suggestion: 'lena'}])).toBe(
       'Check #retros and #Iena, or Add again to keep them',

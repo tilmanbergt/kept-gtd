@@ -27,8 +27,9 @@ describe('suggestOptions', () => {
     expect(suggestOptions(base, 50)).toEqual([]);
   });
 
-  it('keeps the abbreviation\'s place name for the button', () => {
-    expect(suggestOptions({...base, recentTags: []}, 2000).find(o => o.kind === 'tag' && o.tag === 'GR')).toEqual({kind: 'tag', tag: 'GR', name: 'Garden renovation'});
+  it('offers an abbreviation in upper case without its place name, also when it is a recent tag (§11 G7)', () => {
+    expect(suggestOptions({...base, recentTags: []}, 2000).find(o => o.kind === 'tag' && o.tag === 'GR')).toEqual({kind: 'tag', tag: 'GR'});
+    expect(labels(suggestOptions({...base, kind: 'meeting', recentTags: ['gr'], abbrevs: [{tag: 'gr', name: 'Garden renovation'}]}, 2000))).toEqual(['#GR']);
   });
 });
 

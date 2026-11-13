@@ -45,7 +45,7 @@ scenario('Handwriting writes #DaiIy: the strip suggests #daily', {feature: 'Writ
   });
   then('the title reads "stand-up #daily" and the strip says where its page goes', () => {
     expect(fieldValue(TITLE)).toBe('stand-up #daily');
-    expectShows('✓ Daily · Meetings/Daily.note');
+    expectShows('#daily: Website/Meetings/Daily.note');
   });
 });
 
@@ -79,7 +79,7 @@ scenario('A known tag in another case is never questioned', {feature: 'Writing h
   });
   then('nothing is flagged and the strip says where its page goes', () => {
     expectNotShows(/^→ #/);
-    expectShows('✓ Daily · Meetings/Daily.note');
+    expectShows('#daily: Website/Meetings/Daily.note');
     expect(fieldValue(TITLE)).toBe('stand-up #Daily');
   });
 });
@@ -127,13 +127,14 @@ scenario('+ Add with a suggestion open asks once, the second + Add saves as writ
   });
 });
 
-scenario('A new tag with nothing close is no question', {feature: 'Writing help', design: 'technical-design-writing-help.md', help: 'quick-add.md#tag-suggestions'}, () => {
+scenario('A new tag with nothing close is no question; the strip names the home notebook', {feature: 'Writing help', design: 'technical-design-writing-help.md', help: 'quick-add.md#tag-suggestions'}, () => {
   when('I write "plan #offsite27"', async () => {
     await openMeetingTab();
     await type(TITLE, 'plan #offsite27');
   });
-  then('the strip names the new tag and the home notebook', () => {
-    expectShows('New tag #offsite27 · Website 2026.note');
+  then('the strip names the project\'s home notebook, no "New tag"', () => {
+    expectShows('Project home note: Website/Website 2026.note');
+    expectNotShows(/^New tag/);
   });
   when('I tap + Add', async () => {
     await tap('+ Add');
@@ -160,7 +161,7 @@ scenario('An unfinished tag is completed from the known ones', {feature: 'Writin
   });
 });
 
-scenario('Completion shows an abbreviation without its project name', {feature: 'Writing help', design: 'technical-design-writing-help.md', help: 'quick-add.md#completing-a-tag'}, () => {
+scenario('Completion offers an abbreviation in upper case, without its project name', {feature: 'Writing help', design: 'technical-design-writing-help.md', help: 'quick-add.md#completing-a-tag'}, () => {
   given('project "Garden renovation" with the abbreviation GR', () => {
     putFile(projectFile('Garden renovation'), dataFile('project', {Scope: [], Tasks: [], Meetings: []}, ['abbrev: GR']));
   });
@@ -168,10 +169,12 @@ scenario('Completion shows an abbreviation without its project name', {feature: 
     await openMeetingTab();
     await type(TITLE, 'call #g');
   });
-  then('the strip offers #gr, without "Garden renovation"', () => {
-    expectShows('#gr');
+  then('the strip offers #GR in upper case, without "Garden renovation"', () => {
+    expectShows('#GR');
     expectNotShows('Garden renovation');
   });
+  when('I tap #GR', () => tap('#GR'));
+  then('the title reads "call #GR "', () => expect(fieldValue(TITLE)).toBe('call #GR '));
 });
 
 scenario('One tap fixes every place the tag is written so', {feature: 'Writing help', design: 'technical-design-writing-help.md', help: 'quick-add.md#tag-suggestions'}, () => {

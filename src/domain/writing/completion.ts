@@ -28,7 +28,10 @@ export function unfinishedTagAt(text: string, cursor: number): UnfinishedTag | n
 
 export const COMPLETION_LIMIT = 3;
 
-/** The known tags `token` can be completed to, best first; never `token` itself. */
+/**
+ * The known tags `token` can be completed to, best first; never `token` itself. A Project's or
+ * Area's abbreviation comes in upper case, as it is written (quickadd-redesign §11 G7).
+ */
 export function completions(token: string, index: KnownTagIndex, limit = COMPLETION_LIMIT): KnownTag[] {
   const lower = token.toLowerCase();
   if (lower.endsWith('/')) {
@@ -39,7 +42,17 @@ export function completions(token: string, index: KnownTagIndex, limit = COMPLET
       .slice(0, limit)
       .map(child => ({tag: `${type}/${child}`}));
   }
-  return index.complete(lower, limit);
+  return index.complete(lower, limit).map(t => (t.name ? {tag: t.tag.toUpperCase(), name: t.name} : t));
+}
+
+/**
+ * A completion's button (quickadd-redesign §11 G6, G7): after a slash only the rest
+ * (`#loop/ch` → `/christopher`), else the whole tag; never the place's name.
+ */
+export function completionLabel(token: string, option: KnownTag): string {
+  const slash = token.lastIndexOf('/');
+  if (slash >= 0 && option.tag.toLowerCase().startsWith(token.slice(0, slash + 1).toLowerCase())) return option.tag.slice(slash);
+  return `#${option.tag}`;
 }
 
 /** `text` with the unfinished tag replaced by `#tag` and a space; the cursor after the space. */

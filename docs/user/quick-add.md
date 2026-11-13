@@ -16,7 +16,7 @@ A tap on a todo, meeting or agreement puts its [card](quick-add.md#the-card-one-
 
 While you write in the text field, a strip hovers above the box, as wide as the box. It shows one thing at a time: the [writing help](quick-add.md#writing-help) when it has something to say, else one of two views:
 
-- *Suggest* (a lightning bolt): on an empty field **Thread**, **Loop** and **Paste** ([Starting with a thread or loop](quick-add.md#starting-with-a-thread-or-loop)), then `#next` and `#someday` for a todo, tags you used lately and the [abbreviations](projects-and-areas.md#abbreviations) of places you used lately - as many as fit. A tap writes the tag where the cursor is. When you opened Kept from a file, **This file** with the clip comes first, see [The file you opened Kept from](quick-add.md#the-file-you-opened-kept-from).
+- *Suggest* (a lightning bolt): on an empty field **Thread**, **Loop** and **Paste** ([Starting with a thread or loop](quick-add.md#starting-with-a-thread-or-loop)), then `#next` and `#someday` for a todo, tags you used lately and the [abbreviations](projects-and-areas.md#abbreviations) of places you used lately (in capitals, `#GR`) - as many as fit. A tap writes the tag where the cursor is. When you opened Kept from a file, **This file** with the clip comes first, see [The file you opened Kept from](quick-add.md#the-file-you-opened-kept-from).
 - *Clipboard*: **All**, **Copy**, **Cut** and **Paste**. It shows by itself while text is selected, and the suggestions come back when the selection ends.
 
 The square before **✕** switches between the two: a clipboard to the clipboard buttons, a lightning bolt back to the suggestions. Each time the box opens it starts on Suggest. **✕** puts the strip away until you tap into the field again.
@@ -73,13 +73,13 @@ Each tag that recognition writes is compared with the tags you already use: in y
 - A nested tag is checked part by part: the type against your tags, the part after the slash against that type's counterparts. A part that is right keeps its spelling, so only the part that is off changes, and the strip shows the whole tag, for example **→ #sparring/jordan**.
 - Two spaces are removed without asking, so a handwritten tag is one tag: a space right after `#`, and a space right after a `/` inside a tag (`#sparring/ jordan` becomes `#sparring/jordan`). A wide ＃ counts as `#`.
 
-When every tag is known or answered, the strip says where the item's note page would go, for example "✓ Sparring · Coaching 2026.note" - the same place the [note icon](quick-add.md#notes-and-files-on-a-todo-or-meeting) uses. A tag you have never used, with nothing close, is no question: "New tag #offsite27 · Team offsite 2026.note".
+When every tag is known or answered, the strip says where the item's note page would go - the same place the [note icon](quick-add.md#notes-and-files-on-a-todo-or-meeting) uses: the tag of the [Note setup](note-setups.md#what-a-setup-is) that chose it and the file with its folder, for example `#sparring: Coaching/Coaching 2026.note`, or the home notebook of the project or area, `Project home note: Atruvia/Atruvia 2026.note`. Only a setup's tags choose a note; a tag you have never used, with nothing close, is no question. The clipboard square sits next to the line.
 
 A tag you corrected once is corrected the same way next time, see [Learned corrections](tags.md#learned-corrections).
 
 ### Completing a tag
 
-Whenever the cursor rests right after an unfinished tag - while you type it letter by letter, after handwriting, or when you tap there - the strip offers up to three of your tags that start with it: `#spa` offers **#sparring** and **#sparring/jordan**. After a type and a slash, `#sparring/`, it offers that type's counterparts, the most recent first. An abbreviation shows its project or area next to it: **#gr Garden renovation**. A tap puts the tag in place, followed by a space.
+Whenever the cursor rests right after an unfinished tag - while you type it letter by letter, after handwriting, or when you tap there - the strip offers up to three of your tags that start with it: `#spa` offers **#sparring** and **#sparring/jordan**. After a type and a slash, `#sparring/`, it offers that type's counterparts, the most recent first. After a slash the buttons show only the rest - `#sparring/` offers **/jordan** - and a tap writes the whole tag, `#sparring/jordan`. An abbreviation is offered in capitals, without its project's name: `#gr` offers **#GR**, and a tap writes `#GR`. A tap puts the tag in place, followed by a space.
 
 ### Dates and times
 

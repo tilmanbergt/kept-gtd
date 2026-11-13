@@ -20,6 +20,7 @@ import React from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
 import {StripContent} from '../../domain/writing/stripContent';
 import {suggestLabel} from '../../domain/writing/suggestOptions';
+import {completionLabel} from '../../domain/writing/completion';
 import {BoltIcon, ClipboardIcon, ClipIcon} from '../icons';
 import {stripStyles} from '../quickAdd/form/stripStyles';
 import {ClipboardActions, StripHideButton, StripPlacement, useStripHide} from '../ClipboardStrip';
@@ -77,7 +78,7 @@ export default function WritingStrip({visible, content, actions, clipboard, plac
       body = [label('Did you mean'), ...content.options.map(o => button(o.label, () => actions.choose(o.value), `choice:${o.value}`))];
       break;
     case 'complete':
-      body = content.options.map(o => button(`#${o.tag}`, () => actions.complete(o.tag), `complete:${o.tag}`));
+      body = content.options.map(o => button(completionLabel(content.token, o), () => actions.complete(o.tag), `complete:${o.tag}`));
       break;
     case 'feedback':
       body = [label(content.text)];

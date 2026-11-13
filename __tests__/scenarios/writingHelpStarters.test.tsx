@@ -51,7 +51,9 @@ scenario('Thread, then #sparring: the title reads #sparring/ and the strip offer
   });
   when('I tap #sparring', () => tap('#sparring'));
   then('the title reads "#sparring/"', () => expect(fieldValue(TITLE)).toBe('#sparring/'));
-  and('the strip offers the counterpart', () => expectShows(/^#sparring\/jordan/));
+  and('the strip offers the counterpart as "/jordan"', () => expectShows('/jordan'));
+  when('I tap /jordan', () => tap('/jordan'));
+  then('the title reads "#sparring/jordan "', () => expect(fieldValue(TITLE)).toBe('#sparring/jordan '));
 });
 
 scenario('With text in the title, the strip offers no starters; its square switches to All · Copy · Cut · Paste', {feature: 'Writing help', design: 'technical-design-quickadd-redesign.md', help: 'quick-add.md#starting-with-a-thread-or-loop'}, () => {

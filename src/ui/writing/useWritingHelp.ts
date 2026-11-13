@@ -42,8 +42,8 @@ import {readDate, readTime} from '../../domain/writing/readDateTime';
 import {
   addAgainHint,
   MAX_SHOWN_FIXES,
-  newTagFeedback,
   PendingFix,
+  PagePlace,
   placeFeedback,
   readAsLabel,
   StripContent,
@@ -71,7 +71,7 @@ export interface WritingHelpOptions {
   inputRef?: RefObject<TextInput | null>;
   recentTags?: readonly string[];
   /** Where the item's page would go with `text` (§1.7); null when that is not known. */
-  place?: (text: string) => {setupName: string | null; file: string} | null;
+  place?: (text: string) => PagePlace | null;
   /** A meeting's date and time strips: past or overlap. */
   warning?: string | null;
   /** A meeting's usual slot, offered while the field is empty. */
@@ -208,15 +208,15 @@ export function useWritingHelp(options: WritingHelpOptions) {
     if (moment?.kind !== 'complete') log(`writing: complete at=${at} n=${offered.length}`);
     completionRef.current = unfinished;
     setShowClipboard(false);
-    startMoment({kind: 'complete', options: offered}, cursor);
+    startMoment({kind: 'complete', token: unfinished.token, options: offered}, cursor);
     return true;
   };
 
   /** The feedback line for `text` (§1.7), or null without a place. */
-  const feedbackFor = (text: string, newTag: string | null): StripMoment | null => {
+  const feedbackFor = (text: string): StripMoment | null => {
     const place = options.place?.(text);
     if (!place) return null;
-    return {kind: 'feedback', text: newTag ? newTagFeedback(newTag, place.file) : placeFeedback(place.setupName, place.file)};
+    return {kind: 'feedback', text: placeFeedback(place)};
   };
 
   const changeText = (next: string, span: ReturnType<typeof insertedSpan>) => {
@@ -253,8 +253,7 @@ export function useWritingHelp(options: WritingHelpOptions) {
       return;
     }
     if (burst && offerCompletion(text, cursor, 'burst')) return;
-    const fresh = found.find(f => f.kind === 'new');
-    startMoment(merged.length === 0 && tagCount > 0 ? feedbackFor(text, fresh?.written ?? null) : null, cursor);
+    startMoment(merged.length === 0 && tagCount > 0 ? feedbackFor(text) : null, cursor);
   };
 
   const changeDateTime = (next: string, span: ReturnType<typeof insertedSpan>) => {
@@ -330,14 +329,14 @@ export function useWritingHelp(options: WritingHelpOptions) {
       learnFix(fix.written, fix.suggestion).catch(e => logWarn('writing: learning a fix failed', errorMessage(e)));
       const rest = pending.filter(p => p.written !== fix.written);
       setPending(rest);
-      if (liveFixes(rest, text).length === 0) startMoment(feedbackFor(text, null), cursor);
+      if (liveFixes(rest, text).length === 0) startMoment(feedbackFor(text), cursor);
       refocus();
     },
     keep: () => {
       log(`writing: tap keep n=${fixes.length}`);
       for (const f of fixes) keptRef.current.add(f.written.toLowerCase());
       setPending([]);
-      startMoment(feedbackFor(value, null), selectionRef.current?.end ?? null);
+      startMoment(feedbackFor(value), selectionRef.current?.end ?? null);
       refocus();
     },
     edit: () => {
@@ -397,7 +396,7 @@ export function useWritingHelp(options: WritingHelpOptions) {
       const offered = unfinished ? completions(unfinished.token, currentKnownTagIndex(options.recentTags ?? NO_RECENT)) : [];
       if (unfinished && offered.length > 0) {
         completionRef.current = unfinished;
-        startMoment({kind: 'complete', options: offered}, cursor);
+        startMoment({kind: 'complete', token: unfinished.token, options: offered}, cursor);
       } else startMoment(null, null);
       refocus();
     },

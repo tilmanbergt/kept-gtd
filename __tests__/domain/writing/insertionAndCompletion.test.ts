@@ -1,6 +1,6 @@
 // docs/dev/history/technical-design-writing-help.md §1.1 (bursts), §1.3 (completion).
 import {buildKnownTagIndex} from '../../../src/domain/writing/knownTags';
-import {applyCompletion, completions, unfinishedTagAt} from '../../../src/domain/writing/completion';
+import {applyCompletion, completionLabel, completions, unfinishedTagAt} from '../../../src/domain/writing/completion';
 import {insertedSpan, isBurst, tagsEndedBy} from '../../../src/domain/writing/insertion';
 
 describe('insertedSpan', () => {
@@ -78,8 +78,15 @@ describe('completion', () => {
     expect(completions('sparring/', index)).toEqual([{tag: 'sparring/lena'}, {tag: 'sparring/sam'}]);
   });
 
-  it('shows the Project/Area name of an abbreviation (scenario 10)', () => {
-    expect(completions('at', index)).toEqual([{tag: 'atr', name: 'Team offsite'}]);
+  it('completes an abbreviation in upper case (scenario 10, §11 G7)', () => {
+    expect(completions('at', index)).toEqual([{tag: 'ATR', name: 'Team offsite'}]);
+  });
+
+  it('labels a completion after a slash with the rest only, else the whole tag (§11 G6, G7)', () => {
+    expect(completionLabel('loop/ch', {tag: 'loop/christopher'})).toBe('/christopher');
+    expect(completionLabel('sparring/', {tag: 'sparring/jordan'})).toBe('/jordan');
+    expect(completionLabel('at', {tag: 'ATR', name: 'Team offsite'})).toBe('#ATR');
+    expect(completionLabel('spa', {tag: 'sparring'})).toBe('#sparring');
   });
 
   it('replaces the unfinished tag and adds a space', () => {
